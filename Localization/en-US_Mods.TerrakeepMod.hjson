@@ -1,1 +1,37 @@
 Keybinds.AbrirPanel.DisplayName: Open Terrakeep
+
+# WS4 - builds and auto-equip.
+Keybinds.AbrirBuilds.DisplayName: Open Terrakeep Builds
+
+# WS7 - settings and undo/redo history.
+Keybinds.AbrirAjustes.DisplayName: Open Terrakeep Settings
+Keybinds.Deshacer.DisplayName: Undo (hold Ctrl)
+Keybinds.Rehacer.DisplayName: Redo (hold Ctrl)
+
+Configs.AjustesConfig.DisplayName: Terrakeep Settings
+Configs.AjustesConfig.Idioma.Label: Interface language
+Configs.AjustesConfig.Idioma.Tooltip: "Which language Terrakeep uses for its panels. Picking Spanish or English switches the whole game's language right away, because tModLoader only has one active language at a time."
+Configs.IdiomaDeTerrakeep.SeguirElJuego.Label: Follow the game
+Configs.IdiomaDeTerrakeep.Espanol.Label: Spanish
+Configs.IdiomaDeTerrakeep.English.Label: English
+
+Ajustes.Titulo: Terrakeep - Settings
+Ajustes.Idioma: Interface language
+Ajustes.IdiomaSeguirElJuego: Follow the game
+Ajustes.IdiomaEspanol: Spanish
+Ajustes.IdiomaIngles: English
+Ajustes.CulturaActiva: "Game language in use right now: {0}"
+Ajustes.Cerrar: Close
+
+Ajustes.Historial: Undo and redo
+Ajustes.HistorialVacio: Nothing in this session's history yet.
+Ajustes.HistorialEntradas: "Actions stored in the history: {0}"
+Ajustes.Deshacer: Undo (Ctrl+Z)
+Ajustes.Rehacer: Redo (Ctrl+Y)
+Ajustes.DeshacerAlgo: "Undo: {0}"
+Ajustes.RehacerAlgo: "Redo: {0}"
+
+Historial.Deshecho: "Terrakeep undid: {0}"
+Historial.Rehecho: "Terrakeep redid: {0}"
+Historial.NadaQueDeshacer: Terrakeep has nothing to undo.
+Historial.NadaQueRehacer: Terrakeep has nothing to redo.

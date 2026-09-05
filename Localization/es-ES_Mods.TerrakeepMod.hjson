@@ -1,1 +1,37 @@
 Keybinds.AbrirPanel.DisplayName: Abrir Terrakeep
+
+# WS4 - Builds y auto-equipar.
+Keybinds.AbrirBuilds.DisplayName: Abrir las Builds de Terrakeep
+
+# WS7 - Ajustes e historial de deshacer/rehacer.
+Keybinds.AbrirAjustes.DisplayName: Abrir los Ajustes de Terrakeep
+Keybinds.Deshacer.DisplayName: Deshacer (con Ctrl)
+Keybinds.Rehacer.DisplayName: Rehacer (con Ctrl)
+
+Configs.AjustesConfig.DisplayName: Ajustes de Terrakeep
+Configs.AjustesConfig.Idioma.Label: Idioma de la interfaz
+Configs.AjustesConfig.Idioma.Tooltip: "En qué idioma muestra Terrakeep sus paneles. Elegir Español o English cambia el idioma del juego entero en el acto, porque tModLoader tiene un único idioma activo para todo."
+Configs.IdiomaDeTerrakeep.SeguirElJuego.Label: El del juego
+Configs.IdiomaDeTerrakeep.Espanol.Label: Español
+Configs.IdiomaDeTerrakeep.English.Label: English
+
+Ajustes.Titulo: Terrakeep - Ajustes
+Ajustes.Idioma: Idioma de la interfaz
+Ajustes.IdiomaSeguirElJuego: El del juego
+Ajustes.IdiomaEspanol: Español
+Ajustes.IdiomaIngles: English
+Ajustes.CulturaActiva: "Idioma activo del juego ahora mismo: {0}"
+Ajustes.Cerrar: Cerrar
+
+Ajustes.Historial: Deshacer y rehacer
+Ajustes.HistorialVacio: No hay nada en el historial de esta sesión.
+Ajustes.HistorialEntradas: "Acciones guardadas en el historial: {0}"
+Ajustes.Deshacer: Deshacer (Ctrl+Z)
+Ajustes.Rehacer: Rehacer (Ctrl+Y)
+Ajustes.DeshacerAlgo: "Deshacer: {0}"
+Ajustes.RehacerAlgo: "Rehacer: {0}"
+
+Historial.Deshecho: "Terrakeep ha deshecho: {0}"
+Historial.Rehecho: "Terrakeep ha rehecho: {0}"
+Historial.NadaQueDeshacer: Terrakeep no tiene nada que deshacer.
+Historial.NadaQueRehacer: Terrakeep no tiene nada que rehacer.
