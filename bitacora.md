@@ -511,3 +511,26 @@ Paso 19 - cierre con 3 monedas de oro cogidas: monedas antes=2072355, despues=21
   `tModLoader-Logs\client.log`, y además cada uno mata al final todos los `dotnet` de la carpeta
   de tModLoader. Se resolvió reintentando cuando el otro terminó. Si se vuelve a dar mucho,
   merecería la pena que cada script use su propio archivo de log.
+
+### Nota: el commit de WS1 arrastró archivos de WS4
+
+El commit `69a2281` (WS1) incluye también archivos de WS4/Builds
+(`Common/Builds/RegistroBuilds.cs`, `evidencia/ws4-builds*.log.txt` y cambios en
+`Common/Builds/*.cs`, `UI/Builds/PanelBuildsState.cs`, `Localization/*.hjson` y
+`scripts/verificar-builds-en-juego.ps1`). **No se ha perdido nada**, solo está mal repartido
+entre commits.
+
+Qué pasó, exactamente: WS1 hizo `git add` nombrando SOLO sus archivos, como manda la norma con
+varios agentes a la vez, pero **el índice de git es único para todo el repositorio**. Entre ese
+`git add` y el `git commit` de WS1, el agente de WS4 preparó los suyos, y el commit se llevó todo
+lo que había preparado en ese momento, no solo lo de WS1 (comprobado: justo antes del `git add`,
+`git status` daba esos archivos como no preparados).
+
+No se ha reescrito el historial para separarlo: `git reset` sobre un repositorio con otros tres
+agentes trabajando a la vez puede pisarles un commit a medias, y el riesgo de eso es mucho peor
+que un commit con dos temas dentro. El árbol resultante compila limpio
+(`Compilation finished with 0 errors and 0 warnings`).
+
+**Para la próxima**: nombrar los archivos en `git add` no basta en un repositorio compartido. Lo
+que sí aísla de verdad es `git commit --only <archivos>` (comitea exactamente esas rutas, ignore
+lo que haya preparado en el índice) o darle a cada agente su propio `GIT_INDEX_FILE`.
