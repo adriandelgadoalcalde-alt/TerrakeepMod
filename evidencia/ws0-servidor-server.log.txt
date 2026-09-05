@@ -1,0 +1,14 @@
+Extracto real de tModLoader-Logs\server.log (6-sep-2026), generado por
+scripts\verificar-en-juego.ps1 -Servidor. Prueba de que el .tmod carga en tModLoader
+de verdad y de que lib/TerrasavrNative.Core.dll (compilado para net8.0) se resuelve y
+EJECUTA dentro del runtime .NET 8 del juego.
+
+[00:27:14.641] [Main Thread/INFO] [tML]: Running on Windows (v10.0.26200.0) X64 NetCore 8.0.0
+[00:27:14.642] [Main Thread/INFO] [tML]: FrameworkDescription: .NET 8.0.0
+[00:27:14.788] [Main Thread/INFO] [tML]: Saves Are Located At: C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS0
+[00:27:16.147] [Main Thread/DEBUG] [tML]: Selected TerrakeepMod 0.1.0 for tML 2026.7.3.0 from Local.
+[00:27:16.160] [Main Thread/INFO] [tML]: Sandboxing: TerrakeepMod (Terrakeep) v0.1.0
+[00:27:16.231] [Main Thread/INFO] [tML]: Adding Content: TerrakeepMod (Terrakeep) v0.1.0
+[00:27:16.238] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Mod cargado. Prueba de humo de TerrasavrNative.Core: GameItem(Id=3389).IsEmpty=False, .IsCalamity=False, ensamblado real = TerrasavrNative.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[00:27:16.299] [Main Thread/INFO] [tML]: Mods using the most RAM: TerrakeepMod 317.6 KB
+[00:27:16.485] [.NET TP Worker/INFO] [Terraria]: Loading World: TerrakeepPrueba, IsCloud=False, Width: 4200, Height: 1200, Evil: 0, GameMode: 0

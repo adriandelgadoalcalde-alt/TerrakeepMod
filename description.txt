@@ -1,0 +1,7 @@
+Terrakeep dentro del juego: edita en vivo el personaje y el mundo de la partida ya cargada,
+con la interfaz nativa de Terraria.
+
+Puerto a tModLoader de la aplicacion de escritorio Terrakeep (editor offline de personajes y
+mundos de Terraria + Calamity Mod).
+
+Version {ModVersion} - cimientos (WS0): panel de prueba minimo.

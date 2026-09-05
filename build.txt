@@ -1,0 +1,24 @@
+displayName = Terrakeep
+author = IncrediBad
+version = 0.1.0
+homepage = https://github.com/
+
+# NoSync: es una herramienta local (interfaz + edicion del personaje/mundo de la partida
+# propia). No añade contenido que haya que sincronizar entre cliente y servidor, asi que ni
+# obliga al servidor a tenerlo ni exige que las dos partes coincidan.
+# Ventaja practica añadida, y no menor: con NoSync el mod TAMBIEN carga en el servidor
+# dedicado, que arranca sin ventana y sin audio. Eso permite verificar de forma automatica y
+# reproducible que el .tmod carga y que lib/TerrasavrNative.Core.dll (compilado para net8) se
+# resuelve y EJECUTA dentro del runtime .NET 8 de tModLoader, sin depender de que haya una
+# sesion de escritorio interactiva. Ver bitacora.md, entrada de WS0.
+side = NoSync
+
+# El DLL de TerrasavrNative.Core (compilado para net8.0, el runtime real de tModLoader) vive
+# en lib\TerrasavrNative.Core.dll. ModCompile.DllRefPath lo busca literalmente ahi
+# (Path.Combine(mod.path, "lib", dllName) + ".dll") y ModCompile.PackageMod lo mete dentro
+# del .tmod como "lib/TerrasavrNative.Core.dll".
+dllReferences = TerrasavrNative.Core
+
+# El .csproj, los .md de documentacion y las carpetas de trabajo no pintan nada dentro del
+# .tmod. Los .cs ya los excluye tModLoader por su cuenta salvo includeSource = true.
+buildIgnore = *.csproj, *.user, *.md, .git\*, .vs\*, .idea\*, obj\*, bin\*, Properties\*

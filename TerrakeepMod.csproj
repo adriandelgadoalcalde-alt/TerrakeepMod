@@ -1,0 +1,42 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<!-- Propiedades de mod de tModLoader. Este .targets es el generico que tModLoader deja en
+	     ModSources\ y que a su vez importa el real de la instalacion del juego
+	     ("C:\Program Files (x86)\Steam\steamapps\common\tModLoader\tMLMod.targets"), del que
+	     salen TargetFramework=net8.0, LangVersion=12.0, las referencias a tModLoader.dll y a
+	     Libraries\, y el target BuildMod que genera el .tmod. -->
+	<Import Project="..\tModLoader.targets" />
+
+	<PropertyGroup>
+		<AssemblyName>TerrakeepMod</AssemblyName>
+		<RootNamespace>TerrakeepMod</RootNamespace>
+		<!-- Los mismos valores que ya fija tMLMod.targets. Se repiten aqui a proposito porque
+		     alli van dentro de <PropertyGroup Condition="'$(BuildMod)' == 'true'">, asi que al
+		     compilar con -p:BuildMod=false (lo que hace scripts\compilar.ps1 en su primera fase,
+		     para validar el C# sin lanzar el empaquetado del .tmod) el proyecto se quedaba sin
+		     TargetFramework y el SDK abortaba con NETSDK1013. Si algun dia tModLoader cambia de
+		     runtime, estos dos valores hay que actualizarlos junto con el TargetFrameworks de
+		     TerrasavrNative.Core. -->
+		<TargetFramework>net8.0</TargetFramework>
+		<LangVersion>12.0</LangVersion>
+		<!-- A proposito NO se activan ImplicitUsings ni Nullable: tModLoader NO compila el mod
+		     con MSBuild, lo compila el mismo con Roslyn desde ModCompile.RoslynCompile (ver el
+		     codigo real en tModLoader-Decompiled\tModLoader\Terraria\ModLoader\Core\
+		     ModCompile.cs), y ahi las opciones estan fijadas en el codigo: NullableContextOptions
+		     = Disable y sin usings implicitos. Si se activasen aqui, el proyecto compilaria en
+		     Visual Studio / dotnet build pero fallaria al generar el .tmod de verdad. Todos los
+		     using van explicitos en cada archivo. -->
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- TerrasavrNative.Core compilado para net8.0 (repo hermano Terrasavr-Native). Esta
+		     referencia es solo para que compile MSBuild / el IDE; el compilador propio de
+		     tModLoader resuelve el mismo DLL por su cuenta a partir de "dllReferences" en
+		     build.txt. Private=false para no copiarlo a bin\ (el que cuenta es el de lib\). -->
+		<Reference Include="TerrasavrNative.Core">
+			<HintPath>lib\TerrasavrNative.Core.dll</HintPath>
+			<Private>false</Private>
+		</Reference>
+	</ItemGroup>
+
+</Project>
