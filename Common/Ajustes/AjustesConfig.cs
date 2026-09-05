@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using System.ComponentModel;
 using Terraria.ModLoader.Config;
 
@@ -51,6 +52,29 @@ namespace TerrakeepMod.Common.Ajustes
 		/// </summary>
 		[DefaultValue(IdiomaDeTerrakeep.SeguirElJuego)]
 		public IdiomaDeTerrakeep Idioma { get; set; }
+
+		/// <summary>
+		/// Atajos del mod a los que ya se les ha puesto su tecla por defecto alguna vez (ver
+		/// <see cref="SembradorDeAtajos"/>, y el porque en su documentacion). Se guarda para no
+		/// volver a ponersela a un atajo al que el usuario se la quito a proposito.
+		/// </summary>
+		public List<string> AtajosYaSembrados { get; set; }
+
+		/// <summary>
+		/// Obligatorio en cuanto un <c>ModConfig</c> tiene un tipo por referencia: tModLoader
+		/// clona la configuracion para comparar valores y decidir si hace falta recargar, y el
+		/// <c>MemberwiseClone</c> por defecto compartiria la MISMA lista entre el original y la
+		/// copia ("Modders need to override this method if their config contains reference types.
+		/// Failure to do so will lead to bugs", documentacion real de <c>ModConfig.Clone</c>).
+		/// </summary>
+		public override ModConfig Clone()
+		{
+			AjustesConfig copia = (AjustesConfig)base.Clone();
+			copia.AtajosYaSembrados = AtajosYaSembrados != null
+				? new List<string>(AtajosYaSembrados)
+				: new List<string>();
+			return copia;
+		}
 
 		/// <summary>
 		/// Se llama cada vez que la configuracion pasa a estar lista o cambia: al cargar el mod,

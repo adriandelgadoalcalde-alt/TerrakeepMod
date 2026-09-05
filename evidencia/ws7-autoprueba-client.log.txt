@@ -1,0 +1,167 @@
+[01:42:27.683] [Main Thread/INFO] [tML]: Starting tModLoader client 1.4.4.9+2026.07.3.0|2026.07|stable|Stable|666f69962d3bdffde54fc14025f02634965b4e7c|5250924198908260370 built 01/09/2026 2:07
+[01:42:27.687] [Main Thread/INFO] [tML]: Log date: 06/09/2026
+[01:42:27.687] [Main Thread/INFO] [tML]: Running on Windows (v10.0.26200.0) X64 NetCore 8.0.0
+[01:42:27.688] [Main Thread/INFO] [tML]: CPU: 8 processors. RAM: 31,1 GB
+[01:42:27.688] [Main Thread/INFO] [tML]: FrameworkDescription: .NET 8.0.0
+[01:42:27.688] [Main Thread/INFO] [tML]: Executable: C:\Program Files (x86)\Steam\steamapps\common\tModLoader\tModLoader.dll
+[01:42:27.688] [Main Thread/INFO] [tML]: Working Directory: C:\Program Files (x86)\Steam\steamapps\common\tModLoader
+[01:42:27.689] [Main Thread/INFO] [tML]: Launch Parameters: -tmlsavedirectory C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS7 -skipselect TerrakeepPrueba:TerrakeepPrueba
+[01:42:27.690] [Main Thread/INFO] [tML]: Parsed Launch Parameters: -tmlsavedirectory C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS7 -skipselect TerrakeepPrueba:TerrakeepPrueba
+[01:42:27.860] [Main Thread/INFO] [tML]: Saves Are Located At: C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS7
+[01:42:27.866] [Main Thread/INFO] [tML]: Display DPI: Diagonal DPI is 96. Vertical DPI is 96. Horizontal DPI is 96
+[01:42:27.866] [Main Thread/INFO] [tML]: High DPI Display detected: setting FNA to highdpi mode
+[01:42:27.868] [Main Thread/DEBUG] [FNA]: Querying linked library versions...
+[01:42:27.868] [Main Thread/DEBUG] [FNA]: SDL v2.28.2
+[01:42:27.869] [Main Thread/DEBUG] [FNA]: FNA3D v23.10.0
+[01:42:27.870] [Main Thread/DEBUG] [FNA]: FAudio v22.9.1
+[01:42:28.055] [Main Thread/INFO] [tML]: Distribution Platform: Steam. Detection method: CWD is /steamapps/
+[01:42:28.059] [Main Thread/DEBUG] [TerrariaSteamClient]: Disabled. Launched outside steam client.
+[01:42:28.121] [Main Thread/INFO] [FNA]: SDL.SDL_Init(SDL.SDL_INIT_VIDEO)...
+[01:42:28.122] [Main Thread/INFO] [FNA]: Success
+[01:42:28.122] [Main Thread/INFO] [FNA]: SDL.SDL_InitSubSystem(SDL.SDL_INIT_GAMECONTROLLER)...
+[01:42:28.252] [Main Thread/INFO] [FNA]: Success
+[01:42:28.354] [Main Thread/DEBUG] [tML]: Native Resolve: Steamworks.NET, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null -> steam_api
+[01:42:28.355] [Main Thread/DEBUG] [tML]: 	delegating to Steamworks.NET.AnyCPU resolver
+[01:42:28.507] [Main Thread/INFO] [Terraria]: Steam Cloud Quota: 878.2 MB available
+[01:42:28.513] [Main Thread/INFO] [tML]: Steam beta branch: None
+[01:42:28.514] [Main Thread/INFO] [tML]: SteamBackend: Running standard Steam Desktop Client API
+[01:42:28.520] [Main Thread/INFO] [tML]: Current 1281930 Workshop Folder Directory: C:\Program Files (x86)\Steam\steamapps\common\tModLoader\..\..\workshop
+[01:42:28.636] [Main Thread/INFO] [FNA]: SDL Video Diver: windows
+[01:42:28.636] [Main Thread/INFO] [FNA]: FNA3D Driver: D3D11
+[01:42:28.636] [Main Thread/INFO] [FNA]: D3D11 Adapter: NVIDIA GeForce RTX 4070 Ti
+[01:42:28.643] [Main Thread/INFO] [tML]: Terraria Steam Install Location assumed to be: C:\Program Files (x86)\Steam\steamapps\common\Terraria
+[01:42:28.849] [Main Thread/INFO] [tML]: Maximum Resolution is 2560 x 1440
+[01:42:28.854] [Main Thread/DEBUG] [Terraria]: Device Created, Adapter: LG ULTRAGEAR, DisplayMode: {{Width:2560 Height:1440 Format:Color}}, Profile: HiDef, Width: 1280, Height: 720, Fullscreen: False, Display: \\.\DISPLAY1
+[01:42:28.858] [Main Thread/INFO] [tML]: Language: es-ES
+[01:42:29.004] [Main Thread/INFO] [FNA]: SDL Audio Driver: 
+[01:42:29.624] [8/DEBUG] [tML]: SSDP search line separator: CRLF
+[01:42:30.011] [8/DEBUG] [tML]: Hook System.Runtime.Loader.AssemblyLoadContext::ValidateAssemblyNameWithSimpleName(Assembly, string) added by tModLoader
+[01:42:41.692] [Main Thread/INFO] [tML]: Finding Mods...
+[01:42:41.717] [Main Thread/INFO] [tML]: 3 most recently changed workshop mods: CalamityModEsp v2.2.0.1 27/08/2026, CalamityMod v2.2.4 27/08/2026, CalamityModMusic v2.1 27/08/2026
+[01:42:41.718] [Main Thread/INFO] [tML]: Finding Mods...
+[01:42:42.035] [Main Thread/INFO] [tML]: Finding Mods...
+[01:42:42.037] [Main Thread/INFO] [tML]: Finding Mods...
+[01:42:42.653] [.NET TP Worker/INFO] [tML]: Finding Mods...
+[01:42:42.656] [.NET TP Worker/DEBUG] [tML]: Skipped CalamityMod 2.0.2.3 for tML 2022.9.47.46 from Workshop. Reason: mod is for a different Terraria version/LTS release stream.
+[01:42:42.656] [.NET TP Worker/DEBUG] [tML]: Skipped CalamityMod 2.2.1 for tML 2026.4.3.0 from Workshop. Reason: a newer version exists.
+[01:42:42.656] [.NET TP Worker/DEBUG] [tML]: Skipped CalamityMod 2.1.2 for tML 2025.12.3.1 from Workshop. Reason: a newer version exists.
+[01:42:42.656] [.NET TP Worker/DEBUG] [tML]: Selected CalamityMod 2.2.4 for tML 2026.6.3.4 from Workshop.
+[01:42:42.656] [.NET TP Worker/DEBUG] [tML]: Skipped CalamityModEsp 1.9.8.6 for tML 2022.9.47.30 from Workshop. Reason: mod is for a different Terraria version/LTS release stream.
+[01:42:42.657] [.NET TP Worker/DEBUG] [tML]: Skipped CalamityModEsp 2.2.0.0 for tML 2026.4.3.0 from Workshop. Reason: a newer version exists.
+[01:42:42.657] [.NET TP Worker/DEBUG] [tML]: Skipped CalamityModEsp 2.1.3.1 for tML 2025.12.3.0 from Workshop. Reason: a newer version exists.
+[01:42:42.657] [.NET TP Worker/DEBUG] [tML]: Selected CalamityModEsp 2.2.0.1 for tML 2026.6.3.4 from Workshop.
+[01:42:42.657] [.NET TP Worker/DEBUG] [tML]: Skipped CalamityModMusic 2.0.2.2 for tML 2022.9.47.30 from Workshop. Reason: mod is for a different Terraria version/LTS release stream.
+[01:42:42.657] [.NET TP Worker/DEBUG] [tML]: Skipped CalamityModMusic 2.0.5 for tML 2025.4.3.0 from Workshop. Reason: a newer version exists.
+[01:42:42.657] [.NET TP Worker/DEBUG] [tML]: Skipped CalamityModMusic 2.0.4.3 for tML 2024.4.3.0 from Workshop. Reason: a newer version exists.
+[01:42:42.657] [.NET TP Worker/DEBUG] [tML]: Selected CalamityModMusic 2.1 for tML 2025.12.3.0 from Workshop.
+[01:42:42.657] [.NET TP Worker/DEBUG] [tML]: Skipped HEROsMod 0.4.12 for tML 2022.9.47.30 from Workshop. Reason: mod is for a different Terraria version/LTS release stream.
+[01:42:42.657] [.NET TP Worker/DEBUG] [tML]: Skipped HEROsMod 0.4.17.2 for tML 2025.7.3.1 from Workshop. Reason: a newer version exists.
+[01:42:42.657] [.NET TP Worker/DEBUG] [tML]: Skipped HEROsMod 0.4.17.1 for tML 2025.4.3.0 from Workshop. Reason: a newer version exists.
+[01:42:42.657] [.NET TP Worker/DEBUG] [tML]: Selected HEROsMod 0.4.18 for tML 2025.9.3.0 from Workshop.
+[01:42:42.657] [.NET TP Worker/DEBUG] [tML]: Skipped MaxLuck 1.4.4 for tML 2022.9.47.30 from Workshop. Reason: mod is for a different Terraria version/LTS release stream.
+[01:42:42.658] [.NET TP Worker/DEBUG] [tML]: Skipped MaxLuck 1.4.3.1 for tML 2022.8.54.4 from Workshop. Reason: mod is for a different Terraria version/LTS release stream.
+[01:42:42.658] [.NET TP Worker/DEBUG] [tML]: Selected MaxLuck 1.5 for tML 2023.6.25.31 from Workshop.
+[01:42:42.658] [.NET TP Worker/DEBUG] [tML]: Selected TerrakeepMod 0.1.0 for tML 2026.7.3.0 from Local.
+[01:42:42.660] [.NET TP Worker/INFO] [tML]: Buscando mods...
+[01:42:42.665] [.NET TP Worker/INFO] [tML]: Aislando: TerrakeepMod (Terrakeep) v0.1.0
+[01:42:42.697] [.NET TP Worker/INFO] [tML]: Instanciando mods...
+[01:42:42.703] [.NET TP Worker/INFO] [tML]: Cargando mod: ModLoader (tModLoader) v2026.7.3.0
+[01:42:42.739] [.NET TP Worker/INFO] [tML]: Cargando mod: TerrakeepMod (Terrakeep) v0.1.0
+[01:42:42.740] [.NET TP Worker/INFO] [tML]: JITModsAsync completed in 42ms
+[01:42:42.763] [.NET TP Worker/WARN] [TerrakeepMod]: Failed to load icon_small.png. Reason: icon_small.png does not exist.
+[01:42:42.769] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Mod cargado. Prueba de humo de TerrasavrNative.Core: GameItem(Id=3389).IsEmpty=False, .IsCalamity=False, ensamblado real = TerrasavrNative.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[01:42:42.769] [.NET TP Worker/WARN] [tML]: TerrakeepMod spent 16ms blocking on asset loading. Avoid using AssetRequestMode.ImmediateLoad during mod loading where possible
+[01:42:42.769] [.NET TP Worker/INFO] [tML]: Redimensionando...
+[01:42:42.929] [.NET TP Worker/INFO] [tML]: Configurando contenido: ModLoader (tModLoader) v2026.7.3.0
+[01:42:42.931] [.NET TP Worker/INFO] [tML]: Configurando contenido: TerrakeepMod (Terrakeep) v0.1.0
+[01:42:42.965] [.NET TP Worker/INFO] [tML]: Completando contenido: ModLoader (tModLoader) v2026.7.3.0
+[01:42:42.968] [.NET TP Worker/INFO] [tML]: Completando contenido: TerrakeepMod (Terrakeep) v0.1.0
+[01:42:43.000] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Builds: la fuente "Calamity" no es utilizable en esta partida (35/154 objetos resueltos, y 0/119 de los que vienen de un mod); no se enseñara en el panel.
+[01:42:43.001] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Builds: catalogo resuelto. [Vanilla: 3 etapas, 156/156 objetos resueltos] 
+[01:42:43.004] [.NET TP Worker/INFO] [tML]: Mods using the most RAM: TerrakeepMod 2,2 MB
+[01:42:43.015] [.NET TP Worker/INFO] [tML]: RAM physical: tModLoader usage: 780,8 MB, All processes usage: 15,9 GB, Available: 15,2 GB, Total Installed: 31,1 GB
+[01:42:43.015] [.NET TP Worker/INFO] [tML]: RAM virtual: tModLoader usage: 1,3 GB, All processes usage: 14,8 GB
+[01:42:43.049] [.NET TP Worker/DEBUG] [tML]: GlobalItem registration stats. Count: 1, Slots per Entity: 1
+	Instanced: 1, Conditional with slot: 0, Conditional by type: 0, Applies to single type: 0
+	List Permutations: 1, Est Memory Consumption: 16 bytes
+[01:42:43.058] [.NET TP Worker/DEBUG] [tML]: GlobalNPC registration stats. Count: 2, Slots per Entity: 1
+	Instanced: 1, Conditional with slot: 0, Conditional by type: 0, Applies to single type: 0
+	List Permutations: 1, Est Memory Consumption: 16 bytes
+[01:42:43.061] [.NET TP Worker/DEBUG] [tML]: GlobalProjectile registration stats. Count: 0, Slots per Entity: 0
+	Instanced: 0, Conditional with slot: 0, Conditional by type: 0, Applies to single type: 0
+	List Permutations: 0, Est Memory Consumption: 0 bytes
+[01:42:43.097] [.NET TP Worker/INFO] [tML]: Añadiendo recetas...
+[01:42:43.171] [.NET TP Worker/INFO] [tML]: Finding Mods...
+[01:42:43.173] [.NET TP Worker/INFO] [tML]: Mod Load Completed in 515ms
+[01:42:43.217] [.NET TP Worker/INFO] [Terraria]: Loading World: TerrakeepPrueba, IsCloud=False, Width: 4200, Height: 1200, Evil: 0, GameMode: 0
+[01:42:43.219] [.NET TP Worker/INFO] [StatusText]: Cargando datos del mundo
+[01:42:43.356] [.NET TP Worker/INFO] [StatusText]: Distribuyendo líquidos
+[01:42:43.747] [Main Thread/DEBUG] [tML]: Assembly Resolve: System.Reflection.Metadata, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a -> System.Reflection.Metadata.resources, Version=8.0.0.0, Culture=es-ES, PublicKeyToken=b03f5f7f11d50a3a
+[01:42:43.748] [Main Thread/DEBUG] [tML]: Assembly Resolve: System.Reflection.Metadata, Version=8.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a -> System.Reflection.Metadata.resources, Version=8.0.0.0, Culture=es, PublicKeyToken=b03f5f7f11d50a3a
+[01:42:43.748] [Main Thread/WARN] [tML]: Excepción silenciosa: 
+System.Collections.Generic.KeyNotFoundException: The given key 'TerrakeepMod/AbrirAjustes' was not present in the dictionary.
+   at TerrakeepMod.Common.Ajustes.AjustesSystem.UpdateUI(GameTime gameTime) in TerrakeepMod\Common\Ajustes\AjustesSystem.cs:line 97
+   at Terraria.ModLoader.SystemLoader.UpdateUI(GameTime gameTime) in tModLoader\Terraria\ModLoader\SystemLoader.cs:line 281
+   at Terraria.Main.UpdateUIStates(GameTime gameTime) in tModLoader\Terraria\Main.cs:line 14999
+   at Terraria.Main.DoUpdate(GameTime& gameTime) in tModLoader\Terraria\Main.cs:line 14585
+   at Terraria.Main.Update(GameTime gameTime) in tModLoader\Terraria\Main.cs:line 14364
+   at Microsoft.Xna.Framework.Game.Tick() in D:\a\tModLoader\tModLoader\FNA\src\Game.cs:line 488
+   at Microsoft.Xna.Framework.Game.RunLoop() in D:\a\tModLoader\tModLoader\FNA\src\Game.cs:line 878
+   at Microsoft.Xna.Framework.Game.Run() in D:\a\tModLoader\tModLoader\FNA\src\Game.cs:line 419
+   at Terraria.Program.RunGame() in tModLoader\Terraria\Program.cs:line 271
+   at Terraria.Program.LaunchGame_(Boolean isServer) in tModLoader\Terraria\Program.cs:line 245
+   at Terraria.Program.LaunchGame(String[] args, Boolean monoArgs) in tModLoader\Terraria\Program.cs:line 218
+   at Terraria.MonoLaunch.Main_End(String[] args) in tModLoader\Terraria\MonoLaunch.cs:line 79
+   at Terraria.MonoLaunch.<>c__DisplayClass1_0.<Main>b__1() in tModLoader\Terraria\MonoLaunch.cs:line 65
+
+[01:42:43.749] [Main Thread/WARN] [tML]: Excepción silenciosa: 
+System.Collections.Generic.KeyNotFoundException: The given key 'TerrakeepMod/AbrirBuilds' was not present in the dictionary.
+   at TerrakeepMod.Common.Builds.PanelBuildsSystem.UpdateUI(GameTime gameTime) in TerrakeepMod\Common\Builds\PanelBuildsSystem.cs:line 96
+   at Terraria.ModLoader.SystemLoader.UpdateUI(GameTime gameTime) in tModLoader\Terraria\ModLoader\SystemLoader.cs:line 281
+   at Terraria.Main.UpdateUIStates(GameTime gameTime) in tModLoader\Terraria\Main.cs:line 14999
+   at Terraria.Main.DoUpdate(GameTime& gameTime) in tModLoader\Terraria\Main.cs:line 14585
+   at Terraria.Main.Update(GameTime gameTime) in tModLoader\Terraria\Main.cs:line 14364
+   at Microsoft.Xna.Framework.Game.Tick() in D:\a\tModLoader\tModLoader\FNA\src\Game.cs:line 488
+   at Microsoft.Xna.Framework.Game.RunLoop() in D:\a\tModLoader\tModLoader\FNA\src\Game.cs:line 878
+   at Microsoft.Xna.Framework.Game.Run() in D:\a\tModLoader\tModLoader\FNA\src\Game.cs:line 419
+   at Terraria.Program.RunGame() in tModLoader\Terraria\Program.cs:line 271
+   at Terraria.Program.LaunchGame_(Boolean isServer) in tModLoader\Terraria\Program.cs:line 245
+   at Terraria.Program.LaunchGame(String[] args, Boolean monoArgs) in tModLoader\Terraria\Program.cs:line 218
+   at Terraria.MonoLaunch.Main_End(String[] args) in tModLoader\Terraria\MonoLaunch.cs:line 79
+   at Terraria.MonoLaunch.<>c__DisplayClass1_0.<Main>b__1() in tModLoader\Terraria\MonoLaunch.cs:line 65
+
+[01:42:43.750] [Main Thread/WARN] [tML]: Excepción silenciosa: 
+System.Collections.Generic.KeyNotFoundException: The given key 'TerrakeepMod/AbrirPanel' was not present in the dictionary.
+   at TerrakeepMod.Common.PanelPruebaSystem.UpdateUI(GameTime gameTime) in TerrakeepMod\Common\PanelPruebaSystem.cs:line 80
+   at Terraria.ModLoader.SystemLoader.UpdateUI(GameTime gameTime) in tModLoader\Terraria\ModLoader\SystemLoader.cs:line 281
+   at Terraria.Main.UpdateUIStates(GameTime gameTime) in tModLoader\Terraria\Main.cs:line 14999
+   at Terraria.Main.DoUpdate(GameTime& gameTime) in tModLoader\Terraria\Main.cs:line 14585
+   at Terraria.Main.Update(GameTime gameTime) in tModLoader\Terraria\Main.cs:line 14364
+   at Microsoft.Xna.Framework.Game.Tick() in D:\a\tModLoader\tModLoader\FNA\src\Game.cs:line 488
+   at Microsoft.Xna.Framework.Game.RunLoop() in D:\a\tModLoader\tModLoader\FNA\src\Game.cs:line 878
+   at Microsoft.Xna.Framework.Game.Run() in D:\a\tModLoader\tModLoader\FNA\src\Game.cs:line 419
+   at Terraria.Program.RunGame() in tModLoader\Terraria\Program.cs:line 271
+   at Terraria.Program.LaunchGame_(Boolean isServer) in tModLoader\Terraria\Program.cs:line 245
+   at Terraria.Program.LaunchGame(String[] args, Boolean monoArgs) in tModLoader\Terraria\Program.cs:line 218
+   at Terraria.MonoLaunch.Main_End(String[] args) in tModLoader\Terraria\MonoLaunch.cs:line 79
+   at Terraria.MonoLaunch.<>c__DisplayClass1_0.<Main>b__1() in tModLoader\Terraria\MonoLaunch.cs:line 65
+
+[01:42:43.756] [Main Thread/INFO] [Terraria]: Entering world with player: TerrakeepPrueba, IsCloud=False, Width: 4200, Height: 1200, Evil: 0, GameMode: 0
+[01:42:46.745] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] AUTOPRUEBA WS7: empieza (modo="1"). Idioma configurado=Espanol, cultura activa=es-ES.
+[01:42:46.745] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] HISTORIAL/1 estado inicial: inventory[5]="Espada corta de cobre" x1 (type=3507), inventory[9]=vacio
+[01:42:46.745] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] HISTORIAL/2 tras la accion (registrada=True): inventory[5]=vacio, inventory[9]="Espada corta de cobre" x1 (type=3507) | puedeDeshacer=True, etiqueta="Mover objeto de la ranura 6 a la 10"
+[01:42:46.745] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] HISTORIAL/3 tras DESHACER ("Mover objeto de la ranura 6 a la 10"): inventory[5]="Espada corta de cobre" x1 (type=3507), inventory[9]=vacio | OK: el objeto ha vuelto a su ranura original (ranura 5).
+[01:42:46.746] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] HISTORIAL/4 tras REHACER ("Mover objeto de la ranura 6 a la 10"): inventory[5]=vacio, inventory[9]="Espada corta de cobre" x1 (type=3507) | OK: el objeto ha vuelto a la ranura de destino (ranura 9).
+[01:42:46.746] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] HISTORIAL/5 limpieza: inventory[5]=vacio, inventory[9]=vacio | historial vaciado (entradas=0).
+[01:42:46.746] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PANEL DE AJUSTES ABIERTO via autoprueba WS7 (TERRAKEEP_AUTOTEST_WS7). Idioma configurado=Espanol, cultura activa del juego=es-ES, InGameUI.CurrentState=TerrakeepMod.UI.Ajustes.PanelAjustesState
+[01:42:46.746] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] IDIOMA/1 de partida: configurado=Espanol, cultura=es-ES, Ajustes.Titulo="Terrakeep - Ajustes", Ajustes.Deshacer="Deshacer (Ctrl+Z)"
+[01:42:46.748] [Main Thread/INFO] [tML]: Language: en-US
+[01:42:46.769] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma cambiado EN VIVO via ModConfig.OnChanged: es-ES -> en-US. Prueba real de la recarga, clave propia del mod "Ajustes.Titulo" = "Terrakeep - Settings".
+[01:42:46.769] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma guardado en ModConfig (persistente entre partidas): English. Resultado de SaveChanges: Success.
+[01:42:46.769] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] IDIOMA/2 tras elegir English: cultura=en-US, Ajustes.Titulo="Terrakeep - Settings", Ajustes.Deshacer="Undo (Ctrl+Z)"
+[01:42:46.770] [Main Thread/INFO] [tML]: Language: es-ES
+[01:42:46.783] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma cambiado EN VIVO via ModConfig.OnChanged: en-US -> es-ES. Prueba real de la recarga, clave propia del mod "Ajustes.Titulo" = "Terrakeep - Ajustes".
+[01:42:46.783] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma guardado en ModConfig (persistente entre partidas): Espanol. Resultado de SaveChanges: Success.
+[01:42:46.783] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] IDIOMA/3 tras elegir Espanol: cultura=es-ES, Ajustes.Titulo="Terrakeep - Ajustes", Ajustes.Deshacer="Deshacer (Ctrl+Z)"
+[01:42:46.783] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] IDIOMA/4 persistencia: AjustesConfig.Instance.Idioma=Espanol - guardado por ModConfig, se recordara en la siguiente partida.
+[01:42:46.783] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] AUTOPRUEBA WS7: terminada.

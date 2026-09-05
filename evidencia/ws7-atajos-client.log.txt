@@ -1,0 +1,113 @@
+[01:43:03.025] [Main Thread/INFO] [tML]: Starting tModLoader client 1.4.4.9+2026.07.3.0|2026.07|stable|Stable|666f69962d3bdffde54fc14025f02634965b4e7c|5250924198908260370 built 01/09/2026 2:07
+[01:43:03.029] [Main Thread/INFO] [tML]: Log date: 06/09/2026
+[01:43:03.029] [Main Thread/INFO] [tML]: Running on Windows (v10.0.26200.0) X64 NetCore 8.0.0
+[01:43:03.031] [Main Thread/INFO] [tML]: CPU: 8 processors. RAM: 31,1 GB
+[01:43:03.031] [Main Thread/INFO] [tML]: FrameworkDescription: .NET 8.0.0
+[01:43:03.031] [Main Thread/INFO] [tML]: Executable: C:\Program Files (x86)\Steam\steamapps\common\tModLoader\tModLoader.dll
+[01:43:03.031] [Main Thread/INFO] [tML]: Working Directory: C:\Program Files (x86)\Steam\steamapps\common\tModLoader
+[01:43:03.032] [Main Thread/INFO] [tML]: Launch Parameters: -tmlsavedirectory C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS7 -skipselect TerrakeepPrueba:TerrakeepPrueba
+[01:43:03.033] [Main Thread/INFO] [tML]: Parsed Launch Parameters: -tmlsavedirectory C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS7 -skipselect TerrakeepPrueba:TerrakeepPrueba
+[01:43:03.183] [Main Thread/INFO] [tML]: Saves Are Located At: C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS7
+[01:43:03.189] [Main Thread/INFO] [tML]: Display DPI: Diagonal DPI is 96. Vertical DPI is 96. Horizontal DPI is 96
+[01:43:03.189] [Main Thread/INFO] [tML]: High DPI Display detected: setting FNA to highdpi mode
+[01:43:03.191] [Main Thread/DEBUG] [FNA]: Querying linked library versions...
+[01:43:03.191] [Main Thread/DEBUG] [FNA]: SDL v2.28.2
+[01:43:03.191] [Main Thread/DEBUG] [FNA]: FNA3D v23.10.0
+[01:43:03.192] [Main Thread/DEBUG] [FNA]: FAudio v22.9.1
+[01:43:03.383] [Main Thread/INFO] [tML]: Distribution Platform: Steam. Detection method: CWD is /steamapps/
+[01:43:03.387] [Main Thread/DEBUG] [TerrariaSteamClient]: Disabled. Launched outside steam client.
+[01:43:03.450] [Main Thread/INFO] [FNA]: SDL.SDL_Init(SDL.SDL_INIT_VIDEO)...
+[01:43:03.451] [Main Thread/INFO] [FNA]: Success
+[01:43:03.451] [Main Thread/INFO] [FNA]: SDL.SDL_InitSubSystem(SDL.SDL_INIT_GAMECONTROLLER)...
+[01:43:03.580] [Main Thread/INFO] [FNA]: Success
+[01:43:03.683] [Main Thread/DEBUG] [tML]: Native Resolve: Steamworks.NET, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null -> steam_api
+[01:43:03.684] [Main Thread/DEBUG] [tML]: 	delegating to Steamworks.NET.AnyCPU resolver
+[01:43:03.857] [Main Thread/INFO] [Terraria]: Steam Cloud Quota: 878.2 MB available
+[01:43:03.862] [Main Thread/INFO] [tML]: Steam beta branch: None
+[01:43:03.863] [Main Thread/INFO] [tML]: SteamBackend: Running standard Steam Desktop Client API
+[01:43:03.869] [Main Thread/INFO] [tML]: Current 1281930 Workshop Folder Directory: C:\Program Files (x86)\Steam\steamapps\common\tModLoader\..\..\workshop
+[01:43:03.989] [Main Thread/INFO] [FNA]: SDL Video Diver: windows
+[01:43:03.989] [Main Thread/INFO] [FNA]: FNA3D Driver: D3D11
+[01:43:03.989] [Main Thread/INFO] [FNA]: D3D11 Adapter: NVIDIA GeForce RTX 4070 Ti
+[01:43:03.996] [Main Thread/INFO] [tML]: Terraria Steam Install Location assumed to be: C:\Program Files (x86)\Steam\steamapps\common\Terraria
+[01:43:04.196] [Main Thread/INFO] [tML]: Maximum Resolution is 2560 x 1440
+[01:43:04.201] [Main Thread/DEBUG] [Terraria]: Device Created, Adapter: LG ULTRAGEAR, DisplayMode: {{Width:2560 Height:1440 Format:Color}}, Profile: HiDef, Width: 1280, Height: 720, Fullscreen: False, Display: \\.\DISPLAY1
+[01:43:04.206] [Main Thread/INFO] [tML]: Language: es-ES
+[01:43:04.353] [Main Thread/INFO] [FNA]: SDL Audio Driver: 
+[01:43:04.955] [8/DEBUG] [tML]: SSDP search line separator: CRLF
+[01:43:05.358] [8/DEBUG] [tML]: Hook System.Runtime.Loader.AssemblyLoadContext::ValidateAssemblyNameWithSimpleName(Assembly, string) added by tModLoader
+[01:43:17.143] [Main Thread/INFO] [tML]: Finding Mods...
+[01:43:17.169] [Main Thread/INFO] [tML]: 3 most recently changed workshop mods: CalamityModEsp v2.2.0.1 27/08/2026, CalamityMod v2.2.4 27/08/2026, CalamityModMusic v2.1 27/08/2026
+[01:43:17.170] [Main Thread/INFO] [tML]: Finding Mods...
+[01:43:17.504] [Main Thread/INFO] [tML]: Finding Mods...
+[01:43:17.507] [Main Thread/INFO] [tML]: Finding Mods...
+[01:43:18.264] [.NET TP Worker/INFO] [tML]: Finding Mods...
+[01:43:18.266] [.NET TP Worker/DEBUG] [tML]: Skipped CalamityMod 2.0.2.3 for tML 2022.9.47.46 from Workshop. Reason: mod is for a different Terraria version/LTS release stream.
+[01:43:18.266] [.NET TP Worker/DEBUG] [tML]: Skipped CalamityMod 2.2.1 for tML 2026.4.3.0 from Workshop. Reason: a newer version exists.
+[01:43:18.267] [.NET TP Worker/DEBUG] [tML]: Skipped CalamityMod 2.1.2 for tML 2025.12.3.1 from Workshop. Reason: a newer version exists.
+[01:43:18.267] [.NET TP Worker/DEBUG] [tML]: Selected CalamityMod 2.2.4 for tML 2026.6.3.4 from Workshop.
+[01:43:18.267] [.NET TP Worker/DEBUG] [tML]: Skipped CalamityModEsp 1.9.8.6 for tML 2022.9.47.30 from Workshop. Reason: mod is for a different Terraria version/LTS release stream.
+[01:43:18.267] [.NET TP Worker/DEBUG] [tML]: Skipped CalamityModEsp 2.2.0.0 for tML 2026.4.3.0 from Workshop. Reason: a newer version exists.
+[01:43:18.267] [.NET TP Worker/DEBUG] [tML]: Skipped CalamityModEsp 2.1.3.1 for tML 2025.12.3.0 from Workshop. Reason: a newer version exists.
+[01:43:18.267] [.NET TP Worker/DEBUG] [tML]: Selected CalamityModEsp 2.2.0.1 for tML 2026.6.3.4 from Workshop.
+[01:43:18.267] [.NET TP Worker/DEBUG] [tML]: Skipped CalamityModMusic 2.0.2.2 for tML 2022.9.47.30 from Workshop. Reason: mod is for a different Terraria version/LTS release stream.
+[01:43:18.267] [.NET TP Worker/DEBUG] [tML]: Skipped CalamityModMusic 2.0.5 for tML 2025.4.3.0 from Workshop. Reason: a newer version exists.
+[01:43:18.267] [.NET TP Worker/DEBUG] [tML]: Skipped CalamityModMusic 2.0.4.3 for tML 2024.4.3.0 from Workshop. Reason: a newer version exists.
+[01:43:18.268] [.NET TP Worker/DEBUG] [tML]: Selected CalamityModMusic 2.1 for tML 2025.12.3.0 from Workshop.
+[01:43:18.268] [.NET TP Worker/DEBUG] [tML]: Skipped HEROsMod 0.4.12 for tML 2022.9.47.30 from Workshop. Reason: mod is for a different Terraria version/LTS release stream.
+[01:43:18.268] [.NET TP Worker/DEBUG] [tML]: Skipped HEROsMod 0.4.17.2 for tML 2025.7.3.1 from Workshop. Reason: a newer version exists.
+[01:43:18.268] [.NET TP Worker/DEBUG] [tML]: Skipped HEROsMod 0.4.17.1 for tML 2025.4.3.0 from Workshop. Reason: a newer version exists.
+[01:43:18.268] [.NET TP Worker/DEBUG] [tML]: Selected HEROsMod 0.4.18 for tML 2025.9.3.0 from Workshop.
+[01:43:18.268] [.NET TP Worker/DEBUG] [tML]: Skipped MaxLuck 1.4.4 for tML 2022.9.47.30 from Workshop. Reason: mod is for a different Terraria version/LTS release stream.
+[01:43:18.268] [.NET TP Worker/DEBUG] [tML]: Skipped MaxLuck 1.4.3.1 for tML 2022.8.54.4 from Workshop. Reason: mod is for a different Terraria version/LTS release stream.
+[01:43:18.268] [.NET TP Worker/DEBUG] [tML]: Selected MaxLuck 1.5 for tML 2023.6.25.31 from Workshop.
+[01:43:18.268] [.NET TP Worker/DEBUG] [tML]: Selected TerrakeepMod 0.1.0 for tML 2026.7.3.0 from Local.
+[01:43:18.270] [.NET TP Worker/INFO] [tML]: Buscando mods...
+[01:43:18.274] [.NET TP Worker/INFO] [tML]: Aislando: TerrakeepMod (Terrakeep) v0.1.0
+[01:43:18.306] [.NET TP Worker/INFO] [tML]: Instanciando mods...
+[01:43:18.313] [.NET TP Worker/INFO] [tML]: Cargando mod: ModLoader (tModLoader) v2026.7.3.0
+[01:43:18.343] [.NET TP Worker/INFO] [tML]: Cargando mod: TerrakeepMod (Terrakeep) v0.1.0
+[01:43:18.350] [.NET TP Worker/INFO] [tML]: JITModsAsync completed in 42ms
+[01:43:18.357] [.NET TP Worker/WARN] [TerrakeepMod]: Failed to load icon_small.png. Reason: icon_small.png does not exist.
+[01:43:18.363] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Mod cargado. Prueba de humo de TerrasavrNative.Core: GameItem(Id=3389).IsEmpty=False, .IsCalamity=False, ensamblado real = TerrasavrNative.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[01:43:18.363] [.NET TP Worker/INFO] [tML]: Redimensionando...
+[01:43:18.524] [.NET TP Worker/INFO] [tML]: Configurando contenido: ModLoader (tModLoader) v2026.7.3.0
+[01:43:18.526] [.NET TP Worker/INFO] [tML]: Configurando contenido: TerrakeepMod (Terrakeep) v0.1.0
+[01:43:18.561] [.NET TP Worker/INFO] [tML]: Completando contenido: ModLoader (tModLoader) v2026.7.3.0
+[01:43:18.561] [.NET TP Worker/INFO] [tML]: Completando contenido: TerrakeepMod (Terrakeep) v0.1.0
+[01:43:18.593] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Builds: la fuente "Calamity" no es utilizable en esta partida (35/154 objetos resueltos, y 0/119 de los que vienen de un mod); no se enseñara en el panel.
+[01:43:18.593] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Builds: catalogo resuelto. [Vanilla: 3 etapas, 156/156 objetos resueltos] 
+[01:43:18.597] [.NET TP Worker/INFO] [tML]: Mods using the most RAM: TerrakeepMod 2,3 MB
+[01:43:18.609] [.NET TP Worker/INFO] [tML]: RAM physical: tModLoader usage: 779,5 MB, All processes usage: 16,0 GB, Available: 15,0 GB, Total Installed: 31,1 GB
+[01:43:18.609] [.NET TP Worker/INFO] [tML]: RAM virtual: tModLoader usage: 1,3 GB, All processes usage: 14,8 GB
+[01:43:18.640] [.NET TP Worker/DEBUG] [tML]: GlobalItem registration stats. Count: 1, Slots per Entity: 1
+	Instanced: 1, Conditional with slot: 0, Conditional by type: 0, Applies to single type: 0
+	List Permutations: 1, Est Memory Consumption: 16 bytes
+[01:43:18.650] [.NET TP Worker/DEBUG] [tML]: GlobalNPC registration stats. Count: 2, Slots per Entity: 1
+	Instanced: 1, Conditional with slot: 0, Conditional by type: 0, Applies to single type: 0
+	List Permutations: 1, Est Memory Consumption: 16 bytes
+[01:43:18.653] [.NET TP Worker/DEBUG] [tML]: GlobalProjectile registration stats. Count: 0, Slots per Entity: 0
+	Instanced: 0, Conditional with slot: 0, Conditional by type: 0, Applies to single type: 0
+	List Permutations: 0, Est Memory Consumption: 0 bytes
+[01:43:18.688] [.NET TP Worker/INFO] [tML]: Añadiendo recetas...
+[01:43:18.764] [.NET TP Worker/INFO] [tML]: Finding Mods...
+[01:43:18.766] [.NET TP Worker/INFO] [tML]: Mod Load Completed in 497ms
+[01:43:18.812] [.NET TP Worker/INFO] [Terraria]: Loading World: TerrakeepPrueba, IsCloud=False, Width: 4200, Height: 1200, Evil: 0, GameMode: 0
+[01:43:18.813] [.NET TP Worker/INFO] [StatusText]: Cargando datos del mundo
+[01:43:18.949] [.NET TP Worker/INFO] [StatusText]: Distribuyendo líquidos
+[01:43:19.343] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Atajos sembrados por primera vez (1): TerrakeepMod/AbrirBuilds=[L], TerrakeepMod/AbrirPanel=[K], TerrakeepMod/AbrirAjustes=[J], TerrakeepMod/Deshacer=[Z], TerrakeepMod/Rehacer=[Y]. Guardado en input profiles.json y anotado en el ModConfig.
+[01:43:19.349] [Main Thread/INFO] [Terraria]: Entering world with player: TerrakeepPrueba, IsCloud=False, Width: 4200, Height: 1200, Evil: 0, GameMode: 0
+[01:43:22.487] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] AUTOPRUEBA WS7: empieza (modo="atajos"). Idioma configurado=Espanol, cultura activa=es-ES.
+[01:43:22.488] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] ATAJOS/0 escenario preparado: inventory[5]=vacio, inventory[9]="Espada corta de cobre" x1 (type=3507) | puedeDeshacer=True. LISTO PARA ATAJOS: se dispararan Ctrl+Z y Ctrl+Y por el camino real del juego.
+[01:43:23.487] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] ATAJOS/diag t=1s: Main.hasFocus=True, Ctrl pulsado segun Main.keyState=False, teclas pulsadas ahora=0, VISTO alguna vez desde que empezo: Ctrl=False Z=False trigger del atajo=False, atajo Deshacer: JustPressed=False, Current=False, asignado a [Z]
+[01:43:23.487] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] ATAJOS/diag perfil de controles activo="Custom". Teclas asignadas a CADA atajo del mod: AbrirPanel(WS0)=[K], AbrirAjustes(WS7)=[J], Deshacer=[Z], Rehacer=[Y]. Para comparar, un atajo VANILLA: QuickHeal=[H]
+[01:43:24.487] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] ATAJOS/diag t=2s: Main.hasFocus=True, Ctrl pulsado segun Main.keyState=False, teclas pulsadas ahora=0, VISTO alguna vez desde que empezo: Ctrl=False Z=False trigger del atajo=False, atajo Deshacer: JustPressed=False, Current=False, asignado a [Z]
+[01:43:24.487] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] ATAJOS: simulando Ctrl+Z (Ctrl en Main.keyState + TerrakeepMod/Deshacer en PlayerInput.Triggers.JustPressed) y llamando al codigo real de HistorialSystem.
+[01:43:24.488] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] HISTORIAL via Ctrl+Z: Terrakeep ha deshecho: Mover objeto de la ranura 6 a la 10 (entrada=Mover objeto de la ranura 6 a la 10, puedeDeshacer=False, puedeRehacer=True).
+[01:43:24.488] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] ATAJOS/1 tras Ctrl+Z: inventory[5]="Espada corta de cobre" x1 (type=3507), inventory[9]=vacio | OK: el objeto ha vuelto a su ranura original (ranura 5).
+[01:43:25.487] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] ATAJOS/diag t=3s: Main.hasFocus=True, Ctrl pulsado segun Main.keyState=False, teclas pulsadas ahora=0, VISTO alguna vez desde que empezo: Ctrl=False Z=False trigger del atajo=False, atajo Deshacer: JustPressed=False, Current=False, asignado a [Z]
+[01:43:26.487] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] ATAJOS/diag t=4s: Main.hasFocus=True, Ctrl pulsado segun Main.keyState=False, teclas pulsadas ahora=0, VISTO alguna vez desde que empezo: Ctrl=False Z=False trigger del atajo=False, atajo Deshacer: JustPressed=False, Current=False, asignado a [Z]
+[01:43:26.487] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] ATAJOS: simulando Ctrl+Y (Ctrl en Main.keyState + TerrakeepMod/Rehacer en PlayerInput.Triggers.JustPressed) y llamando al codigo real de HistorialSystem.
+[01:43:26.488] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] HISTORIAL via Ctrl+Y: Terrakeep ha rehecho: Mover objeto de la ranura 6 a la 10 (entrada=Mover objeto de la ranura 6 a la 10, puedeDeshacer=True, puedeRehacer=False).
+[01:43:26.488] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] ATAJOS/2 tras Ctrl+Y: inventory[5]=vacio, inventory[9]="Espada corta de cobre" x1 (type=3507) | OK: el objeto ha vuelto a la ranura de destino (ranura 9).
+[01:43:26.488] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] AUTOPRUEBA WS7: terminada.

@@ -202,3 +202,161 @@ cliente gráfico real, no solo con el servidor dedicado.
 
 A partir de aquí, según el plan (`streamed-leaping-balloon.md`), tocan WS1/WS2/WS4/WS7 en
 paralelo.
+
+---
+
+## 6-sep-2026 — WS7: deshacer/rehacer + Ajustes e idioma
+
+Workstream 7 del plan, en paralelo con WS1 (Personaje), WS4 (Builds) y WS2 (datos en el repo
+hermano). Dos piezas independientes: el modelo de deshacer/rehacer que van a compartir todos los
+paneles del mod, y el panel de Ajustes con cambio de idioma en vivo.
+
+### 1. Deshacer/rehacer: snapshots, no closures
+
+`Common/Undo/PilaDeSnapshots.cs` (la pila, genérica y sin dependencias) + `Common/Undo/
+Historial.cs` (la fachada, ya con tipos de Terraria) + `Common/Undo/HistorialSystem.cs` (atajos y
+ciclo de vida).
+
+**Por qué no vale el modelo de la app de escritorio.** `TerrasavrNative.App/Services/UndoStack.cs`
+guarda por entrada dos closures `Undo`/`Redo` encadenadas. Ahí funciona porque el editor es el
+único que toca el personaje: entre deshacer y rehacer no puede haber pasado nada más. En una
+partida en marcha esa suposición es falsa — el jugador recoge objetos, los NPCs pegan, el
+autoguardado escribe. Una closure del tipo "quita 1 a la pila del slot 3" aplicada sobre un
+estado que ya cambió corrompe los datos en silencio. Una **foto completa del subconjunto tocado**
+no: como mucho pisa un cambio ajeno, pero siempre deja un estado coherente. Es el mismo patrón
+que ya usa la propia app para su deshacer local de 6 s al vaciar un contenedor
+(`ContainerViewModel.ClearAll` guarda el array de objetos tal cual estaban).
+
+Cada entrada guarda **dos** fotos, la de antes y la de después (esta capturada en el momento de
+la acción original), y la función que sabe volcarlas. `Item.Clone()` sirve como copia profunda de
+verdad: clona también `ModItem` y los `GlobalItem` (comprobado en el `tModLoader.dll` instalado).
+Se vuelve a clonar en cada volcado, para que la foto siga siendo válida al deshacer y rehacer
+varias veces seguidas.
+
+**Vive en el MOD, no en `TerrasavrNative.Core`, y es una decisión, no un descuido.** La pila en sí
+no depende de nada (sería portable tal cual), pero:
+- lo único portable serían esas ~200 líneas, mientras que todo lo que las hace útiles aquí
+  (clonar `Item`, saber que un array es `Player.inventory`, vaciar el historial al cambiar de
+  mundo) necesita tipos de Terraria y no podría acompañarlas;
+- meterlas en Core obligaría a regenerar y re-empaquetar `lib\TerrasavrNative.Core.dll` con
+  `scripts\actualizar-core.ps1` en cada retoque del historial;
+- y Core lo está tocando otro workstream ahora mismo.
+
+Queda anotado en el propio código por si algún día compensa moverlo.
+
+### 2. Ajustes e idioma en vivo (tecla J)
+
+`Common/Ajustes/` + `UI/Ajustes/PanelAjustesState.cs` + `Localization/README.md`.
+
+- **Localización**: mecanismo oficial de tModLoader, un `.hjson` por idioma en `Localization\` y
+  `Language.GetTextValue("Mods.TerrakeepMod.<clave>")`, envuelto en `Idiomas.Texto()`. Todo el
+  texto del panel de Ajustes sale de ahí, ni una cadena fija. Cómo migrar los textos de los demás
+  paneles está escrito en `Localization/README.md` (entregable de WS7); **no se ha tocado el
+  texto de ningún otro workstream**, eso es una pasada de integración posterior.
+- **Cambio en vivo**: `LanguageManager.Instance.SetLanguage(cultura)`, la misma llamada pública
+  que usa el menú de idioma del propio juego. Recarga los textos de Terraria y los de todos los
+  mods y avisa por `ModSystem.OnLocalizationsLoaded`, que es donde el panel se repinta.
+- **Efecto que hay que conocer**: en tModLoader **no existe un "idioma solo para mi mod"**. Un
+  `LocalizedText` guarda un único valor, el de la cultura activa, así que poner Terrakeep en
+  inglés pone el juego entero en inglés. Por eso el valor por defecto es *"el del juego"*.
+- **Persistencia**: `ModConfig` con `ConfigScope.ClientSide`. En esta versión `SaveChanges()` es
+  público y hace lo correcto dentro de la partida (guarda, recarga y llama a `OnChanged`).
+  Verificado: `ModConfigs\TerrakeepMod_AjustesConfig.json` queda con `{"Idioma": 1}` y la partida
+  siguiente arranca ya en español.
+
+### El fallo gordo que apareció por el camino: NINGÚN atajo del mod tenía tecla
+
+Al ir a probar Ctrl+Z de verdad, el diagnóstico dejó esto en el log del juego:
+
+```
+Teclas asignadas a CADA atajo del mod: AbrirPanel(WS0)=[], AbrirAjustes(WS7)=[],
+Deshacer=[], Rehacer=[]. Para comparar, un atajo VANILLA: QuickHeal=[H]
+```
+
+**La tecla que se le pasa a `KeybindLoader.RegisterKeybind(mod, nombre, Keys.X)` no se aplica
+sola.** Un `ModKeybind` recién registrado nace sin ninguna tecla. La cadena real, leída en el
+`tModLoader.dll` instalado (v2026.7.3.0):
+
+1. `KeyConfiguration.SetupKeys()` mete cada atajo de mod en el perfil **con la lista vacía**;
+2. `PlayerInput.Reset(...)`, que reparte las teclas por defecto, solo conoce los atajos de
+   vanilla — no toca los de mods;
+3. `PlayerInputProfile.Load(...)` → `ReadPreferences` solo copia lo que ya estuviera en
+   `input profiles.json`, y un atajo nuevo no está;
+4. el **único** sitio de todo tModLoader que lee `ModKeybind.DefaultBinding` es la pantalla de
+   Controles (`UIManageControls`), al pulsar "Restablecer".
+
+Esto afectaba a **todo el mod**, no solo a WS7: la tecla K de WS0 tampoco funcionaba (aquel panel
+se abrió por la autoprueba, nunca por el teclado), ni la J ni la L. Arreglado en
+`Common/Ajustes/SembradorDeAtajos.cs`: recorre las claves del perfil que empiezan por
+`TerrakeepMod/` — así cubre también los atajos de los demás workstreams sin tocar sus archivos —
+y a las que estén vacías les aplica su default llamando a
+`PlayerInputProfile.CopyIndividualModKeybindSettingsFrom`, que es público y es exactamente lo que
+ejecuta el botón "Restablecer". Se hace **una sola vez por atajo**, anotado en el `ModConfig`: si
+el usuario le quita la tecla a mano después, no se le vuelve a poner. Resultado en el juego:
+
+```
+Atajos sembrados por primera vez (4): TerrakeepMod/AbrirPanel=[K],
+TerrakeepMod/AbrirAjustes=[J], TerrakeepMod/Deshacer=[Z], TerrakeepMod/Rehacer=[Y].
+```
+
+**Combinaciones con modificador**: no existen en esta versión. Las dos sobrecargas de
+`RegisterKeybind` aceptan una sola tecla y `ModKeybind` resuelve su estado indexando
+`PlayerInput.Triggers.JustPressed.KeyStatus[FullName]`, un diccionario de tecla suelta. La forma
+real de hacer un Ctrl+Z es la que se ha usado: `ModKeybind` normal para la letra (reasignable por
+el usuario como cualquier otro) y el modificador leído de `Main.keyState`.
+
+### Verificado de verdad, en el juego real
+
+Todo con `scripts\verificar-ws7.ps1` y `scripts\verificar-ws7-interactivo.ps1`, sandbox propio
+`tModLoader-TerrakeepWS7` (copiado del de WS0, personaje sintético `TerrakeepPrueba`), sobre el
+`.tmod` que ya lleva dentro también el código de WS4 — o sea, integrado, no aislado. Logs
+completos en `evidencia\ws7-autoprueba-client.log.txt` y `evidencia\ws7-atajos-client.log.txt`.
+
+| Qué | Evidencia real del log |
+|---|---|
+| Deshacer revierte un cambio concreto | `HISTORIAL/3 tras DESHACER: inventory[5]="Espada corta de cobre" ..., inventory[9]=vacio \| OK: el objeto ha vuelto a su ranura original` |
+| Rehacer lo vuelve a aplicar | `HISTORIAL/4 tras REHACER: inventory[5]=vacio, inventory[9]="Espada corta de cobre" ... \| OK` |
+| Ctrl+Z por el camino real del juego | `HISTORIAL via Ctrl+Z: Terrakeep ha deshecho: Mover objeto de la ranura 6 a la 10` + `ATAJOS/1 ... OK` |
+| Ctrl+Y idem | `HISTORIAL via Ctrl+Y: Terrakeep ha rehecho: ...` + `ATAJOS/2 ... OK` |
+| Los cuatro atajos con su tecla | `AbrirPanel(WS0)=[K], AbrirAjustes(WS7)=[J], Deshacer=[Z], Rehacer=[Y]` |
+| Panel de Ajustes abierto con la UI nativa | `InGameUI.CurrentState=TerrakeepMod.UI.Ajustes.PanelAjustesState` |
+| Idioma en vivo, sin reiniciar | `Ajustes.Titulo="Terrakeep - Ajustes"` → `"Terrakeep - Settings"` → `"Terrakeep - Ajustes"` |
+| El mensaje del historial también se traduce | `Ajustes.Deshacer="Deshacer (Ctrl+Z)"` → `"Undo (Ctrl+Z)"` |
+| Se recuerda entre partidas | `ModConfigs\TerrakeepMod_AjustesConfig.json` = `{"Idioma": 1}`, y la partida siguiente arrancó con `Idioma configurado=Espanol` |
+
+### Lo que NO se pudo verificar, y por qué (dos intentos, se paró ahí)
+
+**1. Pulsaciones físicas de teclado.** `keybd_event` desde PowerShell **no llega al juego**. Con
+la ventana en primer plano según Windows (`SetForegroundWindow` devolviendo true) y
+`Main.hasFocus=True` en el log durante los 12 s de la prueba, ni el Ctrl ni la letra aparecen
+jamás en `Main.keyState` — comprobado acumulando el estado fotograma a fotograma, no muestreando
+(muestrear a 1 Hz podría perderse una pulsación de 150 ms; acumular no). Limitación del arnés
+(FNA/SDL no ve esa entrada sintética), no del mod.
+
+Lo que sí se probó, y cubre todo menos el último eslabón físico: rellenar las **dos entradas
+reales** de las que depende el atajo — `Main.keyState` para el Ctrl y
+`PlayerInput.Triggers.JustPressed` para la tecla, que es literalmente lo que lee
+`ModKeybind.JustPressed` — y dejar correr el código de producción tal cual
+(`HistorialSystem.ComprobarAtajos`, el mismo método que llama `UpdateUI` cada fotograma).
+
+**2. Captura de pantalla del panel.** Dos intentos, los dos fallidos:
+- `CopyFromScreen` (pantalla completa): el juego no estaba en primer plano y lo que se fotografió
+  fue **lo que el usuario tenía abierto en ese momento**. Evidencia inservible y además contenido
+  privado; se borró en el acto y nunca llegó a git. **No volver a hacer capturas de pantalla
+  completa en este proyecto.**
+- `PrintWindow` sobre la ventana del juego: devuelve `True` pero la imagen sale **negra**. Es lo
+  esperable en una aplicación acelerada por GPU (FNA dibuja por Direct3D, no por GDI). También se
+  borraron.
+
+Se paró ahí, siguiendo la regla de no insistir dos veces por la misma causa. La evidencia del
+panel es el log, que es además el criterio que ya había fijado WS0.
+
+### Para los demás workstreams
+
+- Envolved vuestras ediciones con `Historial.CambiarObjetos(etiqueta, array, indices, () => ...)`
+  (o `Historial.CambiarValor<T>` para lo que no sean objetos) y ya son deshacibles. Los botones
+  cuelgan de `Historial.Pila.PuedeDeshacer` / `.EtiquetaDeshacer` / `.Deshacer()`.
+- El historial se vacía solo al entrar y salir de mundo: las fotos guardan referencias a los
+  arrays reales de la partida.
+- Vuestros textos: `Localization/README.md`.
+- Vuestros atajos ya funcionan sin hacer nada, gracias al sembrador.

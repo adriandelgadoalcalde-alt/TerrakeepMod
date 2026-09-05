@@ -79,6 +79,10 @@ namespace TerrakeepMod.Common.Ajustes
 				Idiomas.ElJuegoYaEstaEnMarcha();
 			}
 
+			// Sin esto NINGUN atajo del mod tiene tecla asignada - ver la explicacion completa,
+			// con el codigo real de tModLoader que lo provoca, en SembradorDeAtajos.
+			SembradorDeAtajos.SembrarSiHaceFalta();
+
 			// La autoprueba va primero e incondicional, por la misma razon que en WS0: si el
 			// atajo lanza KeyNotFoundException (PlayerInput.Triggers todavia no conoce los
 			// atajos del mod), la excepcion abortaria el resto del metodo y la autoprueba no
@@ -144,7 +148,14 @@ namespace TerrakeepMod.Common.Ajustes
 
 		private void ActualizarAutoprueba()
 		{
-			if (_autopruebaHecha || string.IsNullOrEmpty(Environment.GetEnvironmentVariable(VariableAutoprueba))) {
+			if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(VariableAutoprueba))) {
+				return;
+			}
+
+			if (_autopruebaHecha) {
+				// Los modos que esperan a algo de fuera (una pulsacion real de Ctrl+Z, una
+				// captura de pantalla) siguen vivos despues de arrancar.
+				AutopruebaWs7.Vigilar();
 				return;
 			}
 

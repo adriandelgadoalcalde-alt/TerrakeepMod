@@ -64,12 +64,30 @@ namespace TerrakeepMod.Common.Undo
 			Historial.Pila.Limpiar();
 		}
 
+		/// <summary>Nombre completo del atajo de deshacer dentro de <c>PlayerInput</c>: el nombre
+		/// del mod (que es el de la carpeta) mas el del atajo.</summary>
+		public const string NombreCompletoDeshacer = "TerrakeepMod/Deshacer";
+
+		/// <summary>Idem para el de rehacer.</summary>
+		public const string NombreCompletoRehacer = "TerrakeepMod/Rehacer";
+
 		public override void UpdateUI(GameTime gameTime)
 		{
 			if (Main.dedServ || Main.gameMenu || Main.drawingPlayerChat) {
 				return;
 			}
 
+			ComprobarAtajos();
+		}
+
+		/// <summary>
+		/// La comprobacion real de los atajos, tal cual la ejecuta el juego en cada fotograma.
+		/// Esta separada de <see cref="UpdateUI"/> para que la autoprueba pueda ejercitarla
+		/// exactamente igual que el juego (mismo <c>ModKeybind.JustPressed</c>, mismo
+		/// <c>Main.keyState</c>) sin depender de que un teclado fisico llegue hasta aqui.
+		/// </summary>
+		public static void ComprobarAtajos()
+		{
 			if (!CtrlPulsado()) {
 				return;
 			}
