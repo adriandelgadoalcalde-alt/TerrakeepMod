@@ -274,6 +274,41 @@ namespace TerrakeepMod.Common.Builds
 				$"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: objetos sembrados para la prueba: {string.Join(", ", puestos)}");
 		}
 
+		/// <summary>
+		/// SOLO ARNES DE PRUEBAS: comprueba el filtro por clase pulsando de verdad las pildoras.
+		/// </summary>
+		private static void ProbarPildorasDeClase(string claveFinal)
+		{
+			EtapaBuild etapa = _panel.EtapaActual;
+			if (etapa == null || etapa.Clases.Count < 2) {
+				return;
+			}
+
+			string antes = _panel.ClaseActual?.Etiqueta;
+			int ultima = etapa.Clases.Count - 1;
+			string pulsada = _panel.PulsarPildoraClase(ultima);
+			string despues = _panel.ClaseActual?.Etiqueta;
+
+			RegistroBuilds.Linea($"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: filtro por clase con un clic real en la " +
+				$"pildora {ultima + 1} de {etapa.Clases.Count} (\"{pulsada}\"): clase \"{antes}\" -> \"{despues}\". " +
+				$"Objetos de la clase ahora: {ContarObjetos(_panel.ClaseActual)}.");
+
+			// Se deja el panel como lo pedia la prueba antes de auto-equipar.
+			_panel.SeleccionarClase(claveFinal);
+		}
+
+		private static int ContarObjetos(ClaseBuild clase)
+		{
+			if (clase == null) {
+				return 0;
+			}
+			int n = 0;
+			foreach (ObjetoBuild o in clase.Todos()) {
+				n++;
+			}
+			return n;
+		}
+
 		/// <summary>SOLO ARNES DE PRUEBAS: ejecuta auto-equipar sobre la clase indicada.</summary>
 		private static void AutoEquiparDePrueba()
 		{
@@ -297,6 +332,11 @@ namespace TerrakeepMod.Common.Builds
 				$"Clase=\"{_panel.ClaseActual?.Etiqueta}\" (clave pedida: \"{clase.Trim()}\").");
 
 			RegistrarEstadoBuild(_panel, "con el filtro ya aplicado");
+
+			// Filtro por clase de punta a punta: se pulsa de verdad la ULTIMA pildora de clase
+			// (disparando su OnLeftClick, el mismo camino que un clic de raton) y se comprueba
+			// que el panel cambia de clase, y luego se vuelve a la que pedia la prueba.
+			ProbarPildorasDeClase(clase.Trim());
 
 			RegistroBuilds.Linea(
 				$"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: equipo ANTES de auto-equipar: " +

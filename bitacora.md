@@ -660,3 +660,22 @@ comprobación.
 El `SembradorDeAtajos` de WS7 recorre **todas** las claves de atajo que empiezan por
 `TerrakeepMod/`, así que la tecla **L** de Builds queda asignada de fábrica por ese mismo arreglo
 sin tocar nada aquí. Sin él, ningún atajo del mod tenía tecla realmente asignada.
+
+### Añadido después: el filtro por clase, con un clic de verdad
+
+La primera tanda de pruebas verificaba el cambio de clase llamando al método del panel, no
+pulsando la píldora. Se cerró ese hueco: `PanelBuildsState.PulsarPildoraClase` dispara el
+`OnLeftClick` real de la píldora con `UIElement.LeftClick(new UIMouseEvent(...))`, que es
+exactamente el camino que recorre un clic de ratón una vez resuelto sobre qué elemento cae.
+Evidencia real:
+
+```
+filtro por clase con un clic real en la pildora 4 de 4 ("Invocador"):
+clase "Cuerpo a cuerpo" -> "Invocador". Objetos de la clase ahora: 13.
+```
+
+De paso, otro efecto de trabajar cuatro agentes a la vez sobre el mismo juego: **una ejecución
+del cliente no llegó a arrancar** (ni escribió el archivo de evidencia ni apareció en el
+`client.log`, que en ese momento era el de WS1 haciendo su propia prueba). Al reintentarla sin
+nadie más lanzando el juego, salió a la primera. No parece un problema del mod: lanzar dos
+clientes de tModLoader a la vez es lo que no le sienta bien.

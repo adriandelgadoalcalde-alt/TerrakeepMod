@@ -319,6 +319,33 @@ namespace TerrakeepMod.UI.Builds
 			Reconstruir();
 		}
 
+		/// <summary>
+		/// Pulsa de verdad la pildora de clase que hay en la posicion indicada, disparando su
+		/// <c>OnLeftClick</c> con <c>UIElement.LeftClick</c> (el mismo camino exacto que recorre
+		/// un clic de raton una vez resuelto sobre que elemento cae). Devuelve la etiqueta de la
+		/// pildora pulsada, o null si no hay ninguna en esa posicion.
+		/// <para />
+		/// La usa el arnes de pruebas para verificar el filtro por clase de punta a punta sin
+		/// depender de mover el raton.
+		/// </summary>
+		public string PulsarPildoraClase(int indice)
+		{
+			int i = 0;
+			foreach (UIElement hijo in _filaClases.Children) {
+				if (i++ != indice) {
+					continue;
+				}
+				UITextPanel<string> pildora = hijo as UITextPanel<string>;
+				if (pildora == null) {
+					return null;
+				}
+				string etiqueta = pildora.Text;
+				pildora.LeftClick(new UIMouseEvent(pildora, pildora.GetDimensions().Center()));
+				return etiqueta;
+			}
+			return null;
+		}
+
 		/// <summary>Selecciona una fuente por su clave ("vanilla" / "calamity"). Devuelve false si
 		/// esa fuente no esta disponible en esta partida.</summary>
 		public bool SeleccionarFuente(string clave)
