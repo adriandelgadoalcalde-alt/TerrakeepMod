@@ -44,6 +44,11 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// <summary>Si es true solo se aceptan digitos (y un signo menos inicial).</summary>
 		public bool SoloNumeros;
 
+		/// <summary>Cuenta los fotogramas en los que ALGUN campo ha capturado el teclado. Lo lee
+		/// la autoprueba para demostrar que la ruta de entrada de texto se ejecuta de verdad (y
+		/// que por tanto escribir no dispara los atajos del juego).</summary>
+		public static int FotogramasCapturandoTeclado;
+
 		public CampoTextoTk(string pista, int longitudMaxima = 32, float escalaTexto = 0.85f)
 		{
 			_pista = pista ?? "";
@@ -132,6 +137,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			// Mientras haya un campo enfocado, el motor no debe interpretar las teclas como
 			// atajos de juego (ni como el atajo del propio mod).
 			PlayerInput.WritingText = true;
+			FotogramasCapturandoTeclado++;
 			Main.instance.HandleIME();
 
 			string nuevo = Main.GetInputText(_texto);

@@ -477,7 +477,7 @@ con `Player.GetItem` (comprobado: +30000 de cobre al cerrar con 3 monedas de oro
 ### Verificado de verdad en el juego
 
 `scripts\verificar-personaje.ps1` (sandbox propio `tModLoader-TerrakeepWS1`, variable
-`TERRAKEEP_AUTOTEST_WS1`) recorre 20 pasos sobre el jugador real y deja el antes y el después de
+`TERRAKEEP_AUTOTEST_WS1`) recorre 23 pasos sobre el jugador real y deja el antes y el después de
 cada uno en `client.log`. Evidencia completa en `evidencia\ws1-personaje-client.log.txt`.
 **Cero excepciones en todo el log.** Lo más significativo:
 
@@ -494,8 +494,21 @@ Paso 8 - buffTime al aplicarlo=3600, ahora=3534. Ticks de partida transcurridos=
 Paso 11 - 13 desbloqueos: todos False antes, todos True despues, 13 de 13 releidos como activos.
 Pestaña "Inventario" dibujada: 64 elementos, 58 ranuras de objeto, la 1ª en x=110 y=189 46x46.
 Pestaña "Equipo" dibujada: 68 elementos, 40 ranuras de objeto.
-Paso 19 - cierre con 3 monedas de oro cogidas: monedas antes=2072355, despues=2102355 (+30000).
+Paso 19 - deslizador de color accionado por su ruta real (LeftMouseDown). Deslizador en
+          x=290 y=290 110x20, clic al 25% (x=317). hairColor (200,40,90) -> (64,40,90),
+          FillPercent=0,250. OK: el canal rojo ha ido al 25%.
+Paso 20 - campo de texto de la cabecera enfocado con su ruta real (LeftClick). Enfocado=True.
+Paso 21 - el campo de texto ha capturado el teclado en 54 fotogramas (PlayerInput.WritingText).
+Paso 22 - cierre con 3 monedas de oro cogidas: monedas antes=2072355, despues=2102355 (+30000).
 ```
+
+Los dos controles propios que no son de vanilla se accionan por su ruta de entrada REAL, no
+llamando a su manejador: al deslizador se le manda un `LeftMouseDown` con
+`Main.InGameUI.MousePosition` colocado al 25% de su ancho (que es exactamente lo que hace
+`UserInterface` con un clic), y al campo de texto un `LeftClick`. Lo unico que no se puede
+simular sin teclado real es escribir; en su lugar se cuenta cuantos fotogramas ha tenido el
+campo capturado el teclado (`PlayerInput.WritingText`), que es la parte que protege al panel
+de que escribir una "k" lo cierre.
 
 ### Obstáculos del entorno (anotados, no bloquean)
 

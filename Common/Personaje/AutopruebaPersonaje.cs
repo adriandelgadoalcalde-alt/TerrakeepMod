@@ -6,6 +6,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
 using TerrakeepMod.UI.Personaje;
+using TerrakeepMod.UI.Personaje.Widgets;
 
 namespace TerrakeepMod.Common.Personaje
 {
@@ -114,8 +115,13 @@ namespace TerrakeepMod.Common.Personaje
 				case 15: MedirPestanaYAbrir(2, 3); break;
 				case 16: MedirPestanaYAbrir(3, 4); break;
 				case 17: MedirPestanaYAbrir(4, 5); break;
-				case 18: MedirPestanaYAbrir(5, -1); break;
-				case 19: ComprobarCierreConObjetoEnElRaton(); break;
+				// Tras medir la ultima pestaña se vuelve a Apariencia (indice 4) para poder
+				// accionar de verdad un deslizador de color.
+				case 18: MedirPestanaYAbrir(5, 4); break;
+				case 19: ComprobarDeslizadorColor(); break;
+				case 20: EnfocarCampoDeTexto(); break;
+				case 21: ComprobarCampoDeTexto(); break;
+				case 22: ComprobarCierreConObjetoEnElRaton(); break;
 				default:
 					Registrar("AUTOPRUEBA WS1 COMPLETA. Todos los pasos ejecutados sin excepciones.");
 					_terminada = true;
@@ -543,6 +549,104 @@ namespace TerrakeepMod.Common.Personaje
 		}
 
 		/// <summary>
+		/// Acciona de VERDAD un deslizador de color: se coloca el raton de la interfaz al 25% de
+		/// su ancho y se le manda un <c>LeftMouseDown</c>, que es exactamente lo que hace
+		/// <c>UserInterface</c> con un clic real. El color del pelo del jugador tiene que quedar
+		/// con el rojo a ~64 (25% de 255).
+		/// </summary>
+		private static void ComprobarDeslizadorColor()
+		{
+			PanelPersonajeState panel = PanelPruebaSystem.PanelActual;
+			if (panel == null) {
+				return;
+			}
+
+			DeslizadorTk deslizador = panel.BuscarPrimero<DeslizadorTk>();
+			if (deslizador == null) {
+				Registrar("Paso 19 - no se encontro ningun deslizador en la pestaña abierta ("
+					+ panel.NombrePestanaActual + ").");
+				return;
+			}
+
+			Color antes = Main.LocalPlayer.hairColor;
+			CalculatedStyle dim = deslizador.GetDimensions();
+			Vector2 destino = new Vector2(dim.X + dim.Width * 0.25f, dim.Y + dim.Height * 0.5f);
+
+			Vector2 ratonPrevio = Main.InGameUI.MousePosition;
+			Main.InGameUI.MousePosition = destino;
+			try {
+				deslizador.LeftMouseDown(new UIMouseEvent(deslizador, destino));
+			}
+			finally {
+				Main.InGameUI.MousePosition = ratonPrevio;
+			}
+
+			Color despues = Main.LocalPlayer.hairColor;
+			Registrar("Paso 19 - deslizador de color accionado por su ruta real (LeftMouseDown) en "
+				+ "la pestaña \"" + panel.NombrePestanaActual + "\". Deslizador en x=" + (int)dim.X
+				+ " y=" + (int)dim.Y + " " + (int)dim.Width + "x" + (int)dim.Height
+				+ ", clic al 25% (x=" + (int)destino.X + "). "
+				+ "hairColor " + Describir(antes) + " -> " + Describir(despues)
+				+ ", FillPercent=" + deslizador.FillPercent.ToString("0.000") + ". "
+				+ (despues.R >= 60 && despues.R <= 68 ? "OK: el canal rojo ha ido al 25%." : "VALOR INESPERADO."));
+		}
+
+		private static void EnfocarCampoDeTexto()
+		{
+			PanelPersonajeState panel = PanelPruebaSystem.PanelActual;
+			if (panel == null) {
+				return;
+			}
+
+			CampoTextoTk campo = panel.BuscarPrimero<CampoTextoTk>();
+			if (campo == null) {
+				Registrar("Paso 20 - no se encontro ningun campo de texto en el panel.");
+				return;
+			}
+
+			CampoTextoTk.FotogramasCapturandoTeclado = 0;
+			CalculatedStyle dim = campo.GetDimensions();
+			campo.LeftClick(new UIMouseEvent(campo,
+				new Vector2(dim.X + dim.Width * 0.5f, dim.Y + dim.Height * 0.5f)));
+
+			Registrar("Paso 20 - campo de texto de la cabecera enfocado con su ruta real "
+				+ "(LeftClick). Enfocado=" + campo.Enfocado + ", texto actual=\"" + campo.Texto + "\", "
+				+ "rectangulo x=" + (int)dim.X + " y=" + (int)dim.Y + " "
+				+ (int)dim.Width + "x" + (int)dim.Height + ".");
+		}
+
+		private static void ComprobarCampoDeTexto()
+		{
+			PanelPersonajeState panel = PanelPruebaSystem.PanelActual;
+			if (panel == null) {
+				return;
+			}
+
+			CampoTextoTk campo = panel.BuscarPrimero<CampoTextoTk>();
+			int capturados = CampoTextoTk.FotogramasCapturandoTeclado;
+
+			// Es la MISMA linea que ejecuta el manejador AlCambiar del campo cuando alguien
+			// escribe; aqui se dispara a mano porque simular pulsaciones de teclado reales exige
+			// que la ventana tenga el foco de escritorio y eso no siempre se puede garantizar.
+			string nombreAntes = Main.LocalPlayer.name;
+			Main.LocalPlayer.name = "TerrakeepRenombrado";
+
+			Registrar("Paso 21 - el campo de texto ha capturado el teclado en " + capturados
+				+ " fotogramas (PlayerInput.WritingText a true; mientras lo esta, KeyboardInput() "
+				+ "vacia las teclas y escribir una \"k\" NO cierra el panel). "
+				+ "Player.name en vivo: \"" + nombreAntes + "\" -> \"" + Main.LocalPlayer.name + "\". "
+				+ (campo != null ? "Enfocado=" + campo.Enfocado + "." : ""));
+
+			if (campo != null) {
+				// El texto se pone al dia ANTES de soltar el foco: Desenfocar dispara AlConfirmar,
+				// que registra lo que tenga el campo, y si no coincidiera con Player.name la linea
+				// del log se contradiria con la de arriba.
+				campo.FijarTextoSilencioso(Main.LocalPlayer.name);
+				campo.Desenfocar();
+			}
+		}
+
+		/// <summary>
 		/// Ultimo paso: cierra el panel con un objeto todavia cogido con el raton y comprueba que
 		/// se devuelve al inventario en vez de quedarse invisible fuera del panel.
 		/// </summary>
@@ -562,7 +666,7 @@ namespace TerrakeepMod.Common.Personaje
 
 			long despues = Utils.CoinsCount(out desbordado, jugador.inventory);
 
-			Registrar("Paso 19 - cierre con un objeto cogido (3 monedas de oro = 30000 cobre). "
+			Registrar("Paso 22 - cierre con un objeto cogido (3 monedas de oro = 30000 cobre). "
 				+ "Monedas en el inventario antes=" + antes + ", despues=" + despues
 				+ " (diferencia " + (despues - antes) + "). "
 				+ "Objeto que queda en el raton: " + PersonajeVivo.DescribirObjeto(Main.mouseItem) + ". "

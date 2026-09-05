@@ -203,6 +203,20 @@ namespace TerrakeepMod.UI.Personaje
 		/// Lo lee la autoprueba para demostrar que esa ruta de dibujado se ejecuta de verdad.</summary>
 		public static int FotogramasObjetoEnRaton;
 
+		/// <summary>Primer elemento del panel del tipo pedido, buscando por todo el arbol de la
+		/// interfaz. Lo usa la autoprueba para llegar a los controles propios (deslizadores,
+		/// campos de texto) sin tener que exponerlos uno a uno.</summary>
+		public T BuscarPrimero<T>() where T : UIElement
+		{
+			T encontrado = null;
+			ExecuteRecursively(elemento => {
+				if (encontrado == null && elemento is T) {
+					encontrado = (T)elemento;
+				}
+			});
+			return encontrado;
+		}
+
 		/// <summary>
 		/// Deja <c>Main.playerInventory</c> a true mientras el panel esta abierto.
 		/// <para />
