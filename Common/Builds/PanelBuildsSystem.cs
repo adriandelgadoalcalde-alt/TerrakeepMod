@@ -38,6 +38,10 @@ namespace TerrakeepMod.Common.Builds
 		/// auto-equipar automaticamente tras abrir el panel.</summary>
 		public const string VariableAutoEquipar = "TERRAKEEP_BUILDS_AUTOEQUIPAR";
 
+		/// <summary>SOLO ARNES DE PRUEBAS: clave de fuente ("vanilla" / "calamity") que
+		/// seleccionar antes de auto-equipar.</summary>
+		public const string VariableFuente = "TERRAKEEP_BUILDS_FUENTE";
+
 		private static ModKeybind _atajo;
 		private static PanelBuildsState _panel;
 		private static uint _ultimoFotogramaAlternado;
@@ -51,6 +55,8 @@ namespace TerrakeepMod.Common.Builds
 
 		public override void Load()
 		{
+			RegistroBuilds.Mod = Mod;
+
 			// Los .json hay que leerlos mientras el .tmod sigue abierto (ver CatalogoBuilds).
 			CatalogoBuilds.LeerArchivos(Mod);
 
@@ -73,6 +79,7 @@ namespace TerrakeepMod.Common.Builds
 		{
 			_atajo = null;
 			_panel = null;
+			RegistroBuilds.Mod = null;
 			CatalogoBuilds.Descargar();
 		}
 
@@ -124,7 +131,7 @@ namespace TerrakeepMod.Common.Builds
 			}
 
 			if (!CatalogoBuilds.Listo) {
-				Terrakeep.Instance.Logger.Warn(
+				RegistroBuilds.Aviso(
 					$"{Terrakeep.LogTag} Builds: no hay catalogo cargado, no se abre el panel.");
 				return;
 			}
@@ -134,7 +141,7 @@ namespace TerrakeepMod.Common.Builds
 			_panel = new PanelBuildsState();
 			IngameFancyUI.OpenUIState(_panel);
 
-			Terrakeep.Instance.Logger.Info(
+			RegistroBuilds.Linea(
 				$"{Terrakeep.LogTag} PANEL BUILDS ABIERTO via {origen}. " +
 				$"Jugador: \"{Main.LocalPlayer.name}\". Mundo: \"{Main.worldName}\". " +
 				$"Fuente=\"{_panel.FuenteActual?.Etiqueta}\" Etapa=\"{_panel.EtapaActual?.Etiqueta}\" " +
@@ -150,7 +157,7 @@ namespace TerrakeepMod.Common.Builds
 				return;
 			}
 
-			Terrakeep.Instance.Logger.Info($"{Terrakeep.LogTag} PANEL BUILDS CERRADO via {origen}.");
+			RegistroBuilds.Linea($"{Terrakeep.LogTag} PANEL BUILDS CERRADO via {origen}.");
 			IngameFancyUI.Close();
 			_panel = null;
 		}
@@ -185,11 +192,11 @@ namespace TerrakeepMod.Common.Builds
 				}
 			}
 
-			Terrakeep.Instance.Logger.Info(
+			RegistroBuilds.Linea(
 				$"{Terrakeep.LogTag} Builds \"ya lo tienes\" ({momento}): {tiene} de {total} objetos de " +
 				$"\"{panel.EtapaActual?.Etiqueta}\" / {clase.Etiqueta}.");
 			foreach (string linea in lineas) {
-				Terrakeep.Instance.Logger.Info($"{Terrakeep.LogTag}   - {linea}");
+				RegistroBuilds.Linea($"{Terrakeep.LogTag}   - {linea}");
 			}
 		}
 
@@ -215,7 +222,7 @@ namespace TerrakeepMod.Common.Builds
 			// con varios workstreams probando a la vez hace falta poder identificar CUAL es el
 			// log de esta ejecucion concreta.
 			string marca = Environment.GetEnvironmentVariable("TERRAKEEP_BUILDS_MARCA");
-			Terrakeep.Instance.Logger.Info(
+			RegistroBuilds.Linea(
 				$"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: {VariableAutoprueba} detectada. Marca de ejecucion: {marca}");
 
 			SembrarObjetosDePrueba();
@@ -263,7 +270,7 @@ namespace TerrakeepMod.Common.Builds
 				puestos.Add($"{pid}(type={tipo})->inventario[{hueco}]");
 			}
 
-			Terrakeep.Instance.Logger.Info(
+			RegistroBuilds.Linea(
 				$"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: objetos sembrados para la prueba: {string.Join(", ", puestos)}");
 		}
 
@@ -275,9 +282,23 @@ namespace TerrakeepMod.Common.Builds
 				return;
 			}
 
-			_panel.SeleccionarClase(clase.Trim());
+			// Fuente opcional: sin esto el panel se queda en la primera (Vanilla), que no tiene
+			// clase "rogue" - hace falta para poder ejercitar de verdad la fuente de Calamity.
+			string fuente = Environment.GetEnvironmentVariable(VariableFuente);
+			if (!string.IsNullOrEmpty(fuente)) {
+				bool ok = _panel.SeleccionarFuente(fuente.Trim());
+				RegistroBuilds.Linea($"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: fuente pedida \"{fuente.Trim()}\" -> " +
+					(ok ? $"seleccionada (\"{_panel.FuenteActual?.Etiqueta}\")" : "NO disponible en esta partida"));
+			}
 
-			Terrakeep.Instance.Logger.Info(
+			_panel.SeleccionarClase(clase.Trim());
+			RegistroBuilds.Linea($"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: filtro activo -> " +
+				$"Fuente=\"{_panel.FuenteActual?.Etiqueta}\" Etapa=\"{_panel.EtapaActual?.Etiqueta}\" " +
+				$"Clase=\"{_panel.ClaseActual?.Etiqueta}\" (clave pedida: \"{clase.Trim()}\").");
+
+			RegistrarEstadoBuild(_panel, "con el filtro ya aplicado");
+
+			RegistroBuilds.Linea(
 				$"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: equipo ANTES de auto-equipar: " +
 				AutoEquipar.EstadoEquipo(Main.LocalPlayer));
 
@@ -288,7 +309,7 @@ namespace TerrakeepMod.Common.Builds
 			// Segunda pasada: comprueba que auto-equipar es IDEMPOTENTE. Si estuviera moviendo
 			// objetos a lo tonto (o creandolos), aqui volveria a contar movimientos; lo correcto
 			// es que salga movidos=0 y todo lo demas como "ya colocados".
-			Terrakeep.Instance.Logger.Info(
+			RegistroBuilds.Linea(
 				$"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: segunda pasada de auto-equipar (prueba de idempotencia).");
 			_panel.EjecutarAutoEquipar();
 		}

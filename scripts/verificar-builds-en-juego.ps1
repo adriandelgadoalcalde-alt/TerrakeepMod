@@ -33,7 +33,9 @@ param(
 	# Es solo el escenario de la prueba: la funcionalidad real de auto-equipar nunca crea nada.
 	# A proposito NO estan todos los de la build, para poder ver tambien los casos "no lo tienes".
 	[string]$Sembrar = 'MoltenHelmet,MoltenGreaves,NightsEdge,FeralClaws,ObsidianShield,BandofRegeneration',
-	[string]$Clase = 'melee'
+	[string]$Clase = 'melee',
+	# Fuente del catalogo a seleccionar antes de auto-equipar: 'vanilla' o 'calamity'.
+	[string]$Fuente = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -57,17 +59,20 @@ if ($Completo) {
 	Write-Host '== Compilando el PROYECTO ENTERO (todos los workstreams) ==' -ForegroundColor Cyan
 } else {
 	$proyecto = Join-Path $sandbox 'ModSources\TerrakeepMod'
-	Write-Host '== Compilando una copia AISLADA con WS0 + WS4 ==' -ForegroundColor Cyan
+	Write-Host '== Compilando una copia AISLADA (nucleo + WS4) ==' -ForegroundColor Cyan
 
+	# Solo lo IMPRESCINDIBLE: la clase raiz del mod (de la que WS4 usa nada mas que LogTag e
+	# Instance) y los archivos propios de WS4. Nada de otros workstreams: durante la
+	# construccion en paralelo se ha visto que borran y renombran sus archivos en caliente
+	# (UI\PanelPruebaState.cs desaparecio a mitad de una prueba), asi que copiar "los de WS0"
+	# por nombre rompia la verificacion por causas ajenas a este workstream.
 	if (Test-Path $proyecto) { Remove-Item $proyecto -Recurse -Force -Confirm:$false }
 	New-Item -ItemType Directory -Force -Path $proyecto, "$proyecto\Common\Builds",
 		"$proyecto\UI\Builds", "$proyecto\Localization", "$proyecto\lib", "$proyecto\Assets" | Out-Null
 
 	Copy-Item (Join-Path (Split-Path -Parent $repo) 'tModLoader.targets') (Split-Path -Parent $proyecto) -Force
 	Copy-Item "$repo\build.txt","$repo\description.txt","$repo\TerrakeepMod.csproj","$repo\Terrakeep.cs" $proyecto -Force
-	Copy-Item "$repo\Common\PanelPruebaPlayer.cs","$repo\Common\PanelPruebaSystem.cs" "$proyecto\Common" -Force
 	Copy-Item "$repo\Common\Builds\*.cs" "$proyecto\Common\Builds" -Force
-	Copy-Item "$repo\UI\PanelPruebaState.cs","$repo\UI\SlotObjetoVanilla.cs" "$proyecto\UI" -Force
 	Copy-Item "$repo\UI\Builds\*.cs" "$proyecto\UI\Builds" -Force
 	Copy-Item "$repo\Localization\*.hjson" "$proyecto\Localization" -Force
 	Copy-Item "$repo\lib\TerrasavrNative.Core.dll" "$proyecto\lib" -Force
@@ -101,52 +106,52 @@ if ($Calamity) {
 }
 
 # ---- 4. Lanzar el cliente real ------------------------------------------------------------
-# El log del juego es COMPARTIDO entre todas las instancias, y tModLoader rota client.log ->
-# client1.log al arrancar. Con varios workstreams lanzando el juego a la vez, la evidencia
-# puede acabar en cualquiera de ellos, asi que se buscan todos los client*.log y se elige el
-# que contenga la marca de ESTA ejecucion.
+# La evidencia se lee del archivo PROPIO que escribe el mod en la carpeta de guardado de este
+# sandbox, no del client.log del juego. Motivo real, medido: tModLoader-Logs\client.log es uno
+# solo para todas las instancias y se rota al arrancar, asi que otro workstream lanzando el
+# juego a la vez se lleva por delante la evidencia de esta prueba (paso dos veces seguidas:
+# el client.log acabo siendo el de WS1 y luego el de WS7). El archivo del sandbox es inmune.
 $marca = "WS4-$([DateTime]::Now.ToString('HHmmss'))-$PID"
 $env:TERRAKEEP_BUILDS_MARCA = $marca
-
-function Buscar-LogConMarca {
-	param([string]$patron)
-	Get-ChildItem $logDir -Filter 'client*.log' -ErrorAction SilentlyContinue |
-		Sort-Object LastWriteTime -Descending |
-		Where-Object { Select-String -Path $_.FullName -Pattern ([regex]::Escape($marca)) -Quiet -ErrorAction SilentlyContinue } |
-		Where-Object { Select-String -Path $_.FullName -Pattern $patron -Quiet -ErrorAction SilentlyContinue } |
-		Select-Object -First 1
-}
+$evidencia = Join-Path $sandbox 'terrakeep-ws4-evidencia.log'
+Remove-Item $evidencia -Force -ErrorAction SilentlyContinue
 
 # Autoprueba propia de WS4 (variable distinta de la de WS0, para no abrir los dos paneles).
 $env:TERRAKEEP_AUTOTEST_BUILDS   = '1'
 $env:TERRAKEEP_BUILDS_SEMBRAR    = $Sembrar
 $env:TERRAKEEP_BUILDS_AUTOEQUIPAR = $Clase
+$env:TERRAKEEP_BUILDS_FUENTE     = $Fuente
 
 Write-Host '== Cliente grafico ==' -ForegroundColor Cyan
 $p = Start-Process -FilePath (Join-Path $tmlDir 'start-tModLoader.bat') -WorkingDirectory $tmlDir -PassThru `
 	-ArgumentList @('-tmlsavedirectory', "`"$sandbox`"", '-skipselect', "${personaje}:${mundo}")
 
-Write-Host "Esperando evidencia en $logDir\client*.log (marca $marca, hasta $SegundosEspera s)..."
+Write-Host "Esperando evidencia en $evidencia (marca $marca, hasta $SegundosEspera s)..."
 $objetivo = 'segunda pasada de auto-equipar'
-$log = $null
+$encontrado = $false
 for ($i = 0; $i -lt $SegundosEspera; $i++) {
 	Start-Sleep -Seconds 1
-	$log = Buscar-LogConMarca $objetivo
-	if ($log) {
-		Start-Sleep -Seconds 2   # deja que termine de escribir la segunda pasada
+	if ((Test-Path $evidencia) -and (Select-String -Path $evidencia -Pattern $objetivo -Quiet -ErrorAction SilentlyContinue)) {
+		$encontrado = $true
+		Start-Sleep -Seconds 3   # deja que termine de escribir la segunda pasada
 		break
 	}
 }
-$encontrado = [bool]$log
-if (-not $log) { $log = Buscar-LogConMarca '\[Terrakeep\]' }
 
 Write-Host ''
-Write-Host '== Lineas [Terrakeep] del log real ==' -ForegroundColor Cyan
-if ($log) {
-	Write-Host "(log: $($log.FullName))" -ForegroundColor DarkGray
-	Select-String -Path $log.FullName -Pattern '\[Terrakeep\]' | ForEach-Object { $_.Line }
+Write-Host '== Evidencia real de WS4 ==' -ForegroundColor Cyan
+if (Test-Path $evidencia) {
+	# -Encoding UTF8 explicito: el mod escribe UTF-8 y Windows PowerShell 5.1 leeria el archivo
+	# con la pagina de codigos ANSI, destrozando las tildes y las eñes de los nombres.
+	Get-Content $evidencia -Encoding UTF8 | ForEach-Object { $_ }
+	$destino = Join-Path $repo ('evidencia\ws4-builds' + $(if ($Calamity) { '-calamity' } else { '' }) + '.log.txt')
+	New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destino) | Out-Null
+	Copy-Item $evidencia $destino -Force
+	Write-Host "(copia guardada en $destino)" -ForegroundColor DarkGray
 } else {
-	Write-Host "(ningun client*.log con la marca $marca)" -ForegroundColor Red
+	Write-Host "(el mod no llego a escribir $evidencia)" -ForegroundColor Red
+	Write-Host 'Ultimas lineas del client.log del juego, por si dice algo:' -ForegroundColor DarkGray
+	Get-Content (Join-Path $logDir 'client.log') -Tail 15 -ErrorAction SilentlyContinue
 }
 
 # Solo se mata LO QUE HA LANZADO ESTE SCRIPT: con varios workstreams probando a la vez, un

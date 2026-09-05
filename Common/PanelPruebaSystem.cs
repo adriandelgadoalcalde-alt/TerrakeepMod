@@ -4,13 +4,20 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.UI;
-using TerrakeepMod.UI;
+using TerrakeepMod.Common.Personaje;
+using TerrakeepMod.UI.Personaje;
 
 namespace TerrakeepMod.Common
 {
 	/// <summary>
-	/// Abre y cierra el panel de prueba de WS0, y contiene el modo de autoprueba que permite
-	/// verificar la cadena entera sin depender de que alguien pulse teclas a mano.
+	/// Abre y cierra el panel principal del mod con la tecla K, y contiene el modo de autoprueba
+	/// que permite verificarlo sin depender de que alguien pulse teclas a mano.
+	/// <para />
+	/// Nacio en WS0 abriendo un panel de prueba de una sola ranura; desde WS1 abre el panel real
+	/// de <b>Personaje</b> (<see cref="PanelPersonajeState"/>). Se ha conservado a proposito el
+	/// nombre de la clase y del archivo: es el punto de entrada compartido del mod y hay mas
+	/// trabajo en curso en paralelo sobre este mismo repositorio; renombrarlo romperia
+	/// compilaciones ajenas sin aportar nada al usuario.
 	/// </summary>
 	public class PanelPruebaSystem : ModSystem
 	{
@@ -19,7 +26,11 @@ namespace TerrakeepMod.Common
 		/// comporta con total normalidad y no hace nada por su cuenta.</summary>
 		public const string VariableAutoprueba = "TERRAKEEP_AUTOTEST";
 
-		private static PanelPruebaState _panel;
+		private static PanelPersonajeState _panel;
+
+		/// <summary>Instancia del panel abierto ahora mismo, o null. La usa la autoprueba de WS1
+		/// para recorrer las pestañas sin simular clics.</summary>
+		public static PanelPersonajeState PanelActual => _panel;
 
 		// Guarda contra el doble disparo: el atajo se consulta desde dos sitios (UpdateUI, que
 		// funciona tambien con el panel abierto, y ModPlayer.ProcessTriggers, que es la via
@@ -30,9 +41,9 @@ namespace TerrakeepMod.Common
 		private static bool _autopruebaHecha;
 		private static int _fotogramasEnMundo;
 
-		/// <summary>true si el panel de prueba esta abierto ahora mismo.</summary>
+		/// <summary>true si el panel esta abierto ahora mismo.</summary>
 		public static bool PanelAbierto =>
-			Main.InGameUI != null && Main.InGameUI.CurrentState is PanelPruebaState;
+			Main.InGameUI != null && Main.InGameUI.CurrentState is PanelPersonajeState;
 
 		// Bug real encontrado verificando WS0 en el juego real (6-sep-2026): PlayerInput.Triggers
 		// solo se rellena con los atajos base de vanilla en Main.Initialize() (antes de que
@@ -53,6 +64,13 @@ namespace TerrakeepMod.Common
 			}
 
 			ActualizarAutoprueba();
+			AutopruebaPersonaje.Actualizar();
+
+			if (PanelAbierto) {
+				// Se reafirma en cada fotograma: si algo del juego lo volviera a poner a false,
+				// Player.dropItemCheck vaciaria el objeto que se lleva cogido con el raton.
+				PanelPersonajeState.MantenerInventarioAbierto();
+			}
 
 			if (Terrakeep.AbrirPanelKeybind == null) {
 				return;
@@ -67,6 +85,16 @@ namespace TerrakeepMod.Common
 				// PlayerInput.Triggers todavia no conoce este atajo (ver comentario de arriba) -
 				// se autocorrige solo un fotograma despues, no hace falta hacer nada mas aqui.
 			}
+		}
+
+		/// <summary>Los catalogos que cachea el panel (tintes de pelo, lista de desbloqueos) se
+		/// tiran al descargar el mod: al recargar mods los ids cambian y una lista vieja seria
+		/// mentira.</summary>
+		public override void Unload()
+		{
+			PersonajeVivo.Descargar();
+			Desbloqueos.Descargar();
+			_panel = null;
 		}
 
 		/// <summary>Abre el panel si esta cerrado y lo cierra si esta abierto.</summary>
@@ -95,18 +123,27 @@ namespace TerrakeepMod.Common
 			// una vez por instancia, y captura el array Main.LocalPlayer.inventory. Ese array se
 			// reasigna al cargar otro personaje, asi que reutilizar la instancia dejaria el slot
 			// apuntando al inventario de la partida anterior.
-			_panel = new PanelPruebaState();
+			_panel = new PanelPersonajeState();
 
 			// Mismo mecanismo que usan el bestiario, el menu de emotes y los menus de ajustes
 			// del propio juego: oculta el resto de la interfaz y toma el control.
 			IngameFancyUI.OpenUIState(_panel);
+			PanelPersonajeState.MantenerInventarioAbierto();
 
-			Item objeto = Main.LocalPlayer.inventory[0];
+			Player jugador = Main.LocalPlayer;
+			long enInventario;
+			long enAlmacenes;
+			long dinero = PersonajeVivo.DineroTotal(out enInventario, out enAlmacenes);
+
 			Terrakeep.Instance.Logger.Info(
 				$"{Terrakeep.LogTag} PANEL ABIERTO via {origen}. " +
-				$"Jugador: \"{Main.LocalPlayer.name}\" (vida {Main.LocalPlayer.statLife}/{Main.LocalPlayer.statLifeMax}). " +
+				$"Jugador: \"{jugador.name}\" (vida {jugador.statLife}/{jugador.statLifeMax2}, " +
+				$"mana {jugador.statMana}/{jugador.statManaMax2}). " +
 				$"Mundo: \"{Main.worldName}\". " +
-				$"inventory[0]: type={objeto.type} stack={objeto.stack} prefix={objeto.prefix} nombre=\"{objeto.Name}\". " +
+				$"inventory={jugador.inventory.Length} armor={jugador.armor.Length} dye={jugador.dye.Length} " +
+				$"miscEquips={jugador.miscEquips.Length} buffs={jugador.buffType.Length} " +
+				$"loadouts={jugador.Loadouts.Length} (activo {jugador.CurrentLoadoutIndex}). " +
+				$"Dinero total: {PersonajeVivo.FormatearDinero(dinero)}. " +
 				$"Main.inFancyUI={Main.inFancyUI}, InGameUI.CurrentState={Main.InGameUI.CurrentState?.GetType().FullName}");
 		}
 
@@ -116,10 +153,13 @@ namespace TerrakeepMod.Common
 				return;
 			}
 
-			Item objeto = Main.LocalPlayer.inventory[0];
+			// Fuera del panel nadie dibuja el objeto que se lleva "cogido" con el raton, asi que
+			// se devuelve al inventario antes de cerrar (ver PanelPersonajeState).
+			PanelPersonajeState.DevolverObjetoDelRaton();
+
 			Terrakeep.Instance.Logger.Info(
 				$"{Terrakeep.LogTag} PANEL CERRADO via {origen}. " +
-				$"inventory[0] al cerrar: type={objeto.type} stack={objeto.stack} nombre=\"{objeto.Name}\".");
+				$"Pestaña al cerrar: \"{(_panel != null ? _panel.NombrePestanaActual : "(desconocida)")}\".");
 
 			IngameFancyUI.Close();
 			_panel = null;

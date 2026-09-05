@@ -218,13 +218,13 @@ namespace TerrakeepMod.Common.Builds
 			texto.Append($"{Terrakeep.LogTag} AUTO-EQUIPAR \"{etiquetaBuild}\" / {build.Etiqueta}: {resultado.Resumen}. ");
 			texto.Append($"Conjunto activo (CurrentLoadoutIndex)={jugador.CurrentLoadoutIndex}, ");
 			texto.Append($"slots de accesorio disponibles={EquipoJugador.SlotsAccesorioDisponibles(jugador)}.");
-			Terrakeep.Instance.Logger.Info(texto.ToString());
+			RegistroBuilds.Linea(texto.ToString());
 
 			foreach (string linea in resultado.Detalle) {
-				Terrakeep.Instance.Logger.Info($"{Terrakeep.LogTag}   - {linea}");
+				RegistroBuilds.Linea($"{Terrakeep.LogTag}   - {linea}");
 			}
 
-			Terrakeep.Instance.Logger.Info($"{Terrakeep.LogTag}   Equipo tras auto-equipar: {EstadoEquipo(jugador)}");
+			RegistroBuilds.Linea($"{Terrakeep.LogTag}   Equipo tras auto-equipar: {EstadoEquipo(jugador)}");
 		}
 
 		/// <summary>Foto del equipo actual, en una linea, para el log.</summary>

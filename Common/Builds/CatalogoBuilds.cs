@@ -87,13 +87,13 @@ namespace TerrakeepMod.Common.Builds
 		{
 			try {
 				if (!mod.FileExists(ruta)) {
-					mod.Logger.Warn($"{Terrakeep.LogTag} Builds: no se encontro {ruta} dentro del .tmod.");
+					RegistroBuilds.Aviso($"{Terrakeep.LogTag} Builds: no se encontro {ruta} dentro del .tmod.");
 					return null;
 				}
 				return mod.GetFileBytes(ruta);
 			}
 			catch (Exception ex) {
-				mod.Logger.Error($"{Terrakeep.LogTag} Builds: fallo leyendo {ruta}: {ex.Message}");
+				RegistroBuilds.Error($"{Terrakeep.LogTag} Builds: fallo leyendo {ruta}: {ex.Message}");
 				return null;
 			}
 		}
@@ -122,7 +122,7 @@ namespace TerrakeepMod.Common.Builds
 			if (_fuentes.Count == 0) {
 				resumen.Append("(ninguna fuente utilizable)");
 			}
-			mod.Logger.Info(resumen.ToString());
+			RegistroBuilds.Linea(resumen.ToString());
 		}
 
 		private static void AgregarFuente(Mod mod, string clave, string etiqueta, byte[] bytes)
@@ -142,7 +142,7 @@ namespace TerrakeepMod.Common.Builds
 				}
 			}
 			catch (Exception ex) {
-				mod.Logger.Error($"{Terrakeep.LogTag} Builds: no se pudo parsear la fuente \"{etiqueta}\": {ex}");
+				RegistroBuilds.Error($"{Terrakeep.LogTag} Builds: no se pudo parsear la fuente \"{etiqueta}\": {ex}");
 				return;
 			}
 
@@ -173,14 +173,14 @@ namespace TerrakeepMod.Common.Builds
 			if (!fuente.Utilizable) {
 				// Caso normal y esperado: builds_calamity.json con Calamity sin instalar. No es
 				// un error, simplemente esa fuente no se enseña.
-				mod.Logger.Info($"{Terrakeep.LogTag} Builds: la fuente \"{etiqueta}\" no es utilizable en esta partida " +
+				RegistroBuilds.Linea($"{Terrakeep.LogTag} Builds: la fuente \"{etiqueta}\" no es utilizable en esta partida " +
 					$"({fuente.Resueltos}/{fuente.Total} objetos resueltos, y {fuente.DeModResueltos}/{fuente.DeMod} " +
 					$"de los que vienen de un mod); no se enseñara en el panel.");
 				return;
 			}
 
 			if (sinResolver.Count > 0) {
-				mod.Logger.Info($"{Terrakeep.LogTag} Builds: en \"{etiqueta}\" quedaron {sinResolver.Count} pid sin resolver. " +
+				RegistroBuilds.Linea($"{Terrakeep.LogTag} Builds: en \"{etiqueta}\" quedaron {sinResolver.Count} pid sin resolver. " +
 					$"Ejemplos: {string.Join(", ", sinResolver.GetRange(0, Math.Min(8, sinResolver.Count)))}");
 			}
 

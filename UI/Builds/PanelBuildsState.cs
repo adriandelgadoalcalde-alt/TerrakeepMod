@@ -319,6 +319,26 @@ namespace TerrakeepMod.UI.Builds
 			Reconstruir();
 		}
 
+		/// <summary>Selecciona una fuente por su clave ("vanilla" / "calamity"). Devuelve false si
+		/// esa fuente no esta disponible en esta partida.</summary>
+		public bool SeleccionarFuente(string clave)
+		{
+			if (string.IsNullOrEmpty(clave)) {
+				return false;
+			}
+
+			IReadOnlyList<FuenteBuilds> fuentes = CatalogoBuilds.Fuentes;
+			for (int i = 0; i < fuentes.Count; i++) {
+				if (fuentes[i].Clave == clave) {
+					_indiceFuente = i;
+					_indiceEtapa = 0;
+					Reconstruir();
+					return true;
+				}
+			}
+			return false;
+		}
+
 		public override void Update(GameTime gameTime)
 		{
 			base.Update(gameTime);
@@ -367,7 +387,7 @@ namespace TerrakeepMod.UI.Builds
 				texto.Append($"[\"{_slots[i].Objeto.Nombre}\" x={(int)d.X} y={(int)d.Y} w={(int)d.Width} h={(int)d.Height} " +
 					$"loTiene={_slots[i].LoTiene}] ");
 			}
-			Terrakeep.Instance.Logger.Info(texto.ToString());
+			RegistroBuilds.Linea(texto.ToString());
 		}
 
 		/// <summary>Recalcula "ya lo tienes" de cada slot contra los contenedores reales.</summary>

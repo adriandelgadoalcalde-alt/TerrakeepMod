@@ -360,3 +360,154 @@ panel es el log, que es además el criterio que ya había fijado WS0.
   arrays reales de la partida.
 - Vuestros textos: `Localization/README.md`.
 - Vuestros atajos ya funcionan sin hacer nada, gracias al sembrador.
+
+---
+
+## 6-sep-2026 — WS1: panel de Personaje en vivo
+
+Segundo workstream del plan. El panel de prueba de WS0 (una sola ranura) pasa a ser el panel
+**real de Personaje**: misma tecla **K**, mismo `IngameFancyUI.OpenUIState`, misma costumbre de
+construir un `UIState` nuevo en cada apertura (porque `Main.LocalPlayer.inventory` se reasigna al
+cargar otro personaje). Todo lo que hay dentro escribe **directamente sobre `Main.LocalPlayer`**:
+ni un archivo, ni una copia intermedia.
+
+### Qué quedó hecho
+
+Seis pestañas, más una cabecera común:
+
+| Pestaña | Qué toca de `Player` |
+|---|---|
+| Inventario | `inventory[0..49]` + monedas `[50..53]` + munición `[54..57]` |
+| Almacenes | `bank`/`bank2`/`bank3`/`bank4` (`.item`, 40 ranuras cada uno) |
+| Equipo | `armor` (20), `dye` (10), `miscEquips` (5), `miscDyes` (5) y los 3 `Loadouts` |
+| Buffs | `buffType`/`buffTime` vía `AddBuff`/`ClearBuff`/`DelBuff`, con refresco solo |
+| Apariencia | `hair`, `hairDye`, `skinVariant` y los 7 colores |
+| Desbloqueos | los 13 marcadores permanentes |
+| Cabecera | `name`, `statLife/statLifeMax`, `statMana/statManaMax` y el dinero contado |
+
+Cada ranura es un `ItemSlot` **nativo de vanilla** con su contexto correcto (`InventoryItem`,
+`InventoryCoin`, `InventoryAmmo`, `BankItem`, `VoidItem`, `EquipArmor`, `EquipAccessory`,
+`EquipArmorVanity`, `EquipAccessoryVanity`, `EquipDye`, `EquipPet`, `EquipLight`,
+`EquipMinecart`, `EquipMount`, `EquipGrapple`, `EquipMiscDye`), reutilizando el
+`SlotObjetoVanilla` que dejó WS0.
+
+### Dos fallos REALES encontrados en el juego, no en teoría
+
+**1. Con un panel de `IngameFancyUI` abierto, el juego no dibuja el objeto que llevas cogido con
+el ratón.** La interfaz es una lista de capas que se recorre **hasta que una devuelve false**
+(`Main.DrawInterface`), y la capa `"Vanilla: Fancy UI"` (índice 12) devuelve false siempre que
+hay un panel abierto. La capa que dibuja el objeto cogido,
+`DrawInterface_38_MouseCarriedObject`, va después (índice 38) y **nunca se ejecuta**. En un editor
+de inventario eso es fatal: coges un objeto y parece que lo has perdido. Resuelto dibujándolo
+nosotros al final de `PanelPersonajeState.Draw`, con el mismo código de esa capa (incluido el
+cambio temporal de `Main.inventoryScale` a `Main.cursorScale`). Evidencia: el contador
+`FotogramasObjetoEnRaton` del log.
+
+**2. Peor todavía: el juego te VACIABA el objeto del ratón cada tick.**
+`IngameFancyUI.OpenUIState` pone `Main.playerInventory = false`, y `Player.dropItemCheck` (que
+corre en cada `Player.Update`) tiene esto:
+
+```csharp
+if (Main.mouseItem.type > 0 && !Main.playerInventory) {
+    ... GetItem de vuelta al inventario, y al suelo lo que no quepa ...
+    Main.mouseItem = new Item();
+}
+```
+
+O sea: **arrastrar un objeto de una ranura a otra era literalmente imposible**, y con el
+inventario lleno el objeto se habría caído al suelo. No se dedujo leyendo código: se vio en el
+log de la autoprueba, con un objeto puesto en el ratón que aparecía vacío 10 fotogramas después.
+Resuelto manteniendo `Main.playerInventory = true` mientras el panel está abierto
+(`PanelPersonajeState.MantenerInventarioAbierto`, reafirmado cada fotograma). No dibuja el
+inventario de vanilla porque su capa es la 27 y la lista se corta en la 12; los únicos efectos
+reales son que se llama a `Player.AdjTiles()` cada tick y que se desactiva el cambio de objeto
+con la rueda, las dos deseables con un editor abierto. Además `IngameFancyUI.Close()` ya lo deja
+a true al cerrar por su cuenta, así que no hay nada que restaurar.
+
+Como red de seguridad, al cerrar el panel con un objeto todavía cogido se devuelve al inventario
+con `Player.GetItem` (comprobado: +30000 de cobre al cerrar con 3 monedas de oro en el ratón).
+
+### Decisiones técnicas que no estaban en el plan
+
+- **API real comprobada contra el `tModLoader.dll` instalado (v2026.7.3.0) con `ilspycmd`**, no
+  contra la referencia decompilada vieja (v1.4.4.9). Lo confirmado: `inventory = new Item[59]`
+  (50 mochila + 4 monedas + 4 munición + 1 comodín, así que lo de "54 ranuras" del enunciado no
+  era exacto), `armor[20]`, `dye[10]`, `miscEquips[5]`, `miscDyes[5]`,
+  `maxBuffs => 44 + BuffLoader.extraPlayerBuffCount` (**no es fijo**, se lee del array real),
+  `Loadouts[3]`, `HairID.Count = 165` pero el tope bueno es `HairLoader.Count` (incluye mods),
+  `PlayerVariantID.Count = 12`.
+- **Los conjuntos de equipo van al revés de lo que parece**: el conjunto ACTIVO vive en
+  `Player.armor`/`dye`/`hideVisibleAccessory`, y su entrada en `Loadouts[]` está VACÍA (guarda el
+  anterior). `EquipmentLoadout.Swap` intercambia **elemento a elemento**, no reasigna los arrays,
+  así que las ranuras del panel siguen valiendo después de cambiar de conjunto. Se cambia con
+  `Player.TrySwitchingLoadout(i)` (API oficial: mantiene sonido, partículas, red y el aviso a los
+  mods) y se edita siempre `Player.armor`.
+- **Los 13 desbloqueos se sacaron del orden real de deserialización del `.plr`** en
+  `Player.LoadPlayer_*`, que es la definición autoritativa. Uno de ellos, `UsingBiomeTorches`, no
+  es un campo sino una propiedad que guarda en `builderAccStatus[11]` y que devuelve false si
+  `unlockedBiomeTorches` es false; `enabledSuperCart` depende igual de `unlockedSuperCart`.
+- **`Terraria.ModLoader.UI.UIFocusInputTextField` es `internal`**: un mod no puede usarlo. Se
+  reimplementó el campo de texto (`CampoTextoTk`) sobre la maquinaria pública que ese mismo campo
+  usa por debajo (`Main.GetInputText`, `Main.clrInput`, `Main.instance.HandleIME`,
+  `PlayerInput.WritingText`). Detalle importante: `PlayerInput.WritingText` hay que ponerlo a
+  true en **cada dibujado** porque el motor lo devuelve a false al final de cada `UpdateInput`;
+  mientras está a true, `KeyboardInput()` vacía la lista de teclas y por eso escribir una "k" en
+  un campo no cierra el panel.
+- **No hay tabla pública de tintes de pelo** (`HairShaderDataSet._shaderDataCount` es
+  `protected internal`). La lista se construye recorriendo `ContentSamples.ItemsByType` y
+  quedándose con los `Item.hairDye > 0` — que es literalmente de donde el juego copia el valor
+  (`Player.cs`: `hairDye = item.hairDye;`). Da nombres de verdad y cubre los tintes de cualquier
+  mod cargado. En vanilla salen 13.
+- **`UIColoredSliderSimple` es público pero solo dibuja**, no lee el ratón. `DeslizadorTk` hereda
+  de él y le añade el arrastre. La posición del ratón se toma de `Main.InGameUI.MousePosition` y
+  no de `Main.MouseScreen`: la interfaz del mod se dibuja con `InterfaceScaleType.UI`, así que
+  con `MouseScreen` se descuadraría en cuanto alguien tuviera la escala de interfaz distinta de
+  100%.
+- **El personaje de prueba se puebla desde dentro del juego**, no generando un `.plr` con
+  `TerrasavrNative.Core`: lo que WS1 tiene que demostrar es precisamente que se puede escribir en
+  vivo. Los objetos se buscan por sus propiedades (`headSlot`, `accessory`, `dye`, `mountType`,
+  `Main.vanityPet`...) en `ContentSamples.ItemsByType`, no por ids fijos, así que la prueba no
+  depende de que haya ningún mod de contenido cargado.
+- **`Common/PanelPruebaSystem.cs` y `PanelPruebaPlayer.cs` conservan su nombre a propósito.** Son
+  el punto de entrada compartido del mod y hay otros tres workstreams trabajando en paralelo
+  sobre este mismo repositorio; renombrarlos rompería compilaciones ajenas sin aportarle nada al
+  usuario. Solo se cambió lo justo para que abran `PanelPersonajeState`. `UI/PanelPruebaState.cs`
+  (el panel de una ranura de WS0) sí se borró: ya no lo usa nadie.
+
+### Verificado de verdad en el juego
+
+`scripts\verificar-personaje.ps1` (sandbox propio `tModLoader-TerrakeepWS1`, variable
+`TERRAKEEP_AUTOTEST_WS1`) recorre 20 pasos sobre el jugador real y deja el antes y el después de
+cada uno en `client.log`. Evidencia completa en `evidencia\ws1-personaje-client.log.txt`.
+**Cero excepciones en todo el log.** Lo más significativo:
+
+```
+Paso 3 - Inventario=2072355 cobre (2 plat 7 oro 23 plata 55 cobre), esperado 2072355 -> OK.
+         Almacenes=1000000 cobre (1 plat), esperado 1000000 -> OK.
+Paso 5 - ItemSlot.LeftClick de vanilla sobre inventory[10]. El objeto SIGUE en el raton 10
+         fotogramas despues y se dibujo en 55 fotogramas. ANTES ranura=(vacio), raton="Bloque
+         de tierra" x42. DESPUES ranura="Bloque de tierra" x42, raton=(vacio).
+Paso 6 - Tras pedir el conjunto 1: CurrentLoadoutIndex=1, armor[0]=(vacio). Al volver al 0:
+         armor[0]="Gafas de proteccion" -> OK, cada conjunto conserva lo suyo.
+Paso 8 - buffTime al aplicarlo=3600, ahora=3534. Ticks de partida transcurridos=66. OK: baja
+         solo, por eso la pestaña de buffs TIENE que refrescarse sola.
+Paso 11 - 13 desbloqueos: todos False antes, todos True despues, 13 de 13 releidos como activos.
+Pestaña "Inventario" dibujada: 64 elementos, 58 ranuras de objeto, la 1ª en x=110 y=189 46x46.
+Pestaña "Equipo" dibujada: 68 elementos, 40 ranuras de objeto.
+Paso 19 - cierre con 3 monedas de oro cogidas: monedas antes=2072355, despues=2102355 (+30000).
+```
+
+### Obstáculos del entorno (anotados, no bloquean)
+
+- **Terraria congela la partida en un jugador cuando su ventana pierde el foco**
+  (`Main.hasFocus = IsActive` → `Main.gamePaused`). Con la partida congelada los buffs no
+  caducan y el paso 8 no podía dar verde, porque comprueba justo eso. Se vio en el log con
+  `Ticks de partida transcurridos=0, Main.hasFocus=False, Main.gamePaused=True`. Resuelto en dos
+  frentes: el paso espera a ver 60 ticks REALES de partida antes de juzgar (no da por hecho que
+  pasan por el mero hecho de dibujar), y el script le devuelve el foco a la ventana del juego con
+  `SetForegroundWindow` tras lanzarla.
+- **Colisión entre agentes en paralelo**: una tanda se perdió porque otro workstream lanzó su
+  propia verificación a la vez y los dos scripts borran y releen el mismo
+  `tModLoader-Logs\client.log`, y además cada uno mata al final todos los `dotnet` de la carpeta
+  de tModLoader. Se resolvió reintentando cuando el otro terminó. Si se vuelve a dar mucho,
+  merecería la pena que cada script use su propio archivo de log.
