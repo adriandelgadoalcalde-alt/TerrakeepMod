@@ -1,0 +1,1061 @@
+{
+	"_note": "Equipo de referencia para Calamity Mod, investigado en la Wiki oficial de Calamity (Guide:Class setups/Pre-Hardmode, /Hardmode, /Post-Moon Lord, agosto 2026) y cruzado uno a uno contra catalog.json real (2709 objetos) - cualquier objeto de la wiki que no se encontró en el catalogo real se descarto en vez de adivinar el nombre interno. Los pids de Calamity llevan el prefijo 'CalamityMod/'; los que no lo llevan son objetos VANILLA (Molten, Mythril, Star Veil, etc - Calamity construye su progresion apoyandose en huecos del equipo vanilla, no lo sustituye todo). Prefijos: los de Pícaro usan 'prefixId' (10000+ , ver rogue_prefixes.json) en vez de 'prefix' por nombre, ya que son prefijos reales de Calamity (modPrefixMod/modPrefixName), no vanilla. El resto de clases se deja sin prefijo (null) - a diferencia del equipo vanilla, la elegibilidad de prefijo de cada arma de Calamity no se ha verificado objeto por objeto todavia.",
+	"prehardmode": {
+		"label": "Pre-Hardmode (listo para el Muro de Carne)",
+		"melee": {
+			"armor": [
+				{
+					"pid": "MoltenHelmet",
+					"en": "Molten Helmet",
+					"es": "Casco fundido"
+				},
+				{
+					"pid": "MoltenBreastplate",
+					"en": "Molten Breastplate",
+					"es": "Coraza fundida"
+				},
+				{
+					"pid": "MoltenGreaves",
+					"en": "Molten Greaves",
+					"es": "Grebas fundidas"
+				}
+			],
+			"weapons": [
+				{
+					"pid": "CalamityMod/SmokingComet",
+					"en": "Smoking Comet",
+					"es": "Cometa Humeante",
+					"prefix": null
+				},
+				{
+					"pid": "CalamityMod/OldLordClaymore",
+					"en": "Old Lord Claymore",
+					"es": "Mandoble del Viejo Señor",
+					"prefix": null
+				},
+				{
+					"pid": "CalamityMod/AmidiasTrident",
+					"en": "Amidias' Trident",
+					"es": "Tridente de Amidias",
+					"prefix": null
+				}
+			],
+			"accessories": [
+				{
+					"pid": "CalamityMod/CrownJewel",
+					"en": "Crown Jewel",
+					"es": "Joya de la Corona"
+				},
+				{
+					"pid": "CalamityMod/CrawCarapace",
+					"en": "Craw Carapace",
+					"es": "Caparazón de Craw"
+				},
+				{
+					"pid": "WormScarf",
+					"en": "Worm Scarf",
+					"es": "Bufanda de gusano"
+				},
+				{
+					"pid": "ObsidianShield",
+					"en": "Obsidian Shield",
+					"es": "Escudo de obsidiana"
+				}
+			],
+			"buffs": [
+				"Ironskin",
+				"Regeneration",
+				"Swiftness",
+				"Thorns"
+			]
+		},
+		"ranged": {
+			"armor": [
+				{
+					"pid": "MoltenHelmet",
+					"en": "Molten Helmet",
+					"es": "Casco fundido"
+				},
+				{
+					"pid": "MoltenBreastplate",
+					"en": "Molten Breastplate",
+					"es": "Coraza fundida"
+				},
+				{
+					"pid": "MoltenGreaves",
+					"en": "Molten Greaves",
+					"es": "Grebas fundidas"
+				}
+			],
+			"weapons": [
+				{
+					"pid": "CalamityMod/Fungicide",
+					"en": "Fungicide",
+					"es": "Fungicida",
+					"prefix": null
+				},
+				{
+					"pid": "CalamityMod/PolarisParrotfish",
+					"en": "Polaris Parrotfish",
+					"es": "Pez Loro Polar",
+					"prefix": null
+				},
+				{
+					"pid": "Boomstick",
+					"en": "Boomstick",
+					"es": "Trabuco",
+					"prefix": null
+				}
+			],
+			"accessories": [
+				{
+					"pid": "CalamityMod/CrownJewel",
+					"en": "Crown Jewel",
+					"es": "Joya de la Corona"
+				},
+				{
+					"pid": "CalamityMod/CrawCarapace",
+					"en": "Craw Carapace",
+					"es": "Caparazón de Craw"
+				},
+				{
+					"pid": "CalamityMod/ScionsCurio",
+					"en": "Scion's Curio",
+					"es": "Curiosidad del Vástago"
+				},
+				{
+					"pid": "CalamityMod/AmidiasPendant",
+					"en": "Amidias' Pendant",
+					"es": "Colgante de Amidias"
+				}
+			],
+			"buffs": [
+				"Archery",
+				"Regeneration",
+				"Swiftness",
+				"Hunter"
+			]
+		},
+		"mage": {
+			"armor": [
+				{
+					"pid": "CalamityMod/VictideHeadMagic",
+					"en": "Victide Head (Magic)",
+					"es": "Cabeza de Victide (Magia)"
+				},
+				{
+					"pid": "CalamityMod/VictideBreastplate",
+					"en": "Victide Breastplate",
+					"es": "Coraza de Victide"
+				},
+				{
+					"pid": "CalamityMod/VictideGreaves",
+					"en": "Victide Greaves",
+					"es": "Grebas de Victide"
+				}
+			],
+			"weapons": [
+				{
+					"pid": "CalamityMod/BrimroseStaff",
+					"en": "Brimrose Staff",
+					"es": "Báculo de Brimrose",
+					"prefix": null
+				},
+				{
+					"pid": "CalamityMod/SparklingEmpress",
+					"en": "Sparkling Empress",
+					"es": "Emperatriz Reluciente",
+					"prefix": null
+				}
+			],
+			"accessories": [
+				{
+					"pid": "CalamityMod/ManaPolarizer",
+					"en": "Mana Polarizer",
+					"es": "Polarizador de Maná"
+				},
+				{
+					"pid": "CalamityMod/CrawCarapace",
+					"en": "Craw Carapace",
+					"es": "Caparazón de Craw"
+				},
+				{
+					"pid": "ManaFlower",
+					"en": "Mana Flower",
+					"es": "Flor de maná"
+				},
+				{
+					"pid": "BandofStarpower",
+					"en": "Band of Starpower",
+					"es": "Banda de poder estelar"
+				}
+			],
+			"buffs": [
+				"Magic Power",
+				"Mana Regeneration",
+				"Regeneration",
+				"Swiftness"
+			]
+		},
+		"summoner": {
+			"armor": [
+				{
+					"pid": "CalamityMod/WulfrumHat",
+					"en": "Wulfrum Hat",
+					"es": "Sombrero Wulfrum"
+				},
+				{
+					"pid": "CalamityMod/WulfrumJacket",
+					"en": "Wulfrum Jacket",
+					"es": "Chaqueta Wulfrum"
+				},
+				{
+					"pid": "CalamityMod/WulfrumOveralls",
+					"en": "Wulfrum Overalls",
+					"es": "Peto Wulfrum"
+				}
+			],
+			"weapons": [
+				{
+					"pid": "CalamityMod/BrittleStarStaff",
+					"en": "Brittle Star Staff",
+					"es": "Báculo de Estrella Quebradiza",
+					"prefix": null
+				},
+				{
+					"pid": "CalamityMod/PolypLauncher",
+					"en": "Polyp Launcher",
+					"es": "Lanza-pólipos",
+					"prefix": null
+				}
+			],
+			"accessories": [
+				{
+					"pid": "CalamityMod/SpiritGlyph",
+					"en": "Spirit Glyph",
+					"es": "Glifo Espiritual"
+				},
+				{
+					"pid": "CalamityMod/VoltaicJelly",
+					"en": "Voltaic Jelly",
+					"es": "Gelatina Voltaica"
+				},
+				{
+					"pid": "CalamityMod/AmidiasPendant",
+					"en": "Amidias' Pendant",
+					"es": "Colgante de Amidias"
+				}
+			],
+			"buffs": [
+				"Summoning",
+				"Regeneration",
+				"Swiftness",
+				"Well Fed"
+			]
+		},
+		"rogue": {
+			"armor": [
+				{
+					"pid": "CalamityMod/SulphurousHelmet",
+					"en": "Sulphurous Helmet",
+					"es": "Casco Sulfuroso"
+				},
+				{
+					"pid": "CalamityMod/SulphurousBreastplate",
+					"en": "Sulphurous Breastplate",
+					"es": "Coraza Sulfurosa"
+				},
+				{
+					"pid": "CalamityMod/SulphurousLeggings",
+					"en": "Sulphurous Leggings",
+					"es": "Grebas Sulfurosas"
+				}
+			],
+			"weapons": [
+				{
+					"pid": "CalamityMod/ScourgeoftheDesert",
+					"en": "Scourge of the Desert",
+					"es": "Azote del Desierto",
+					"prefixId": 10002
+				},
+				{
+					"pid": "CalamityMod/SporeKnife",
+					"en": "Spore Knife",
+					"es": "Cuchillo de Espora",
+					"prefixId": 10002
+				}
+			],
+			"accessories": [
+				{
+					"pid": "CalamityMod/CoinofDeceit",
+					"en": "Coin of Deceit",
+					"es": "Moneda del Engaño",
+					"prefixId": 10020
+				},
+				{
+					"pid": "CalamityMod/ScuttlersJewel",
+					"en": "Scuttler's Jewel",
+					"es": "Joya del Corredor",
+					"prefixId": 10020
+				},
+				{
+					"pid": "CalamityMod/AmidiasPendant",
+					"en": "Amidias' Pendant",
+					"es": "Colgante de Amidias",
+					"prefixId": 10020
+				}
+			],
+			"buffs": [
+				"Regeneration",
+				"Swiftness",
+				"Thorns",
+				"Well Fed"
+			]
+		}
+	},
+	"earlyhardmode": {
+		"label": "Hardmode (post-Plantera / pre-Golem, aprox.)",
+		"melee": {
+			"armor": [
+				{
+					"pid": "OrichalcumHelmet",
+					"en": "Orichalcum Helmet",
+					"es": "Casco de oricalco"
+				},
+				{
+					"pid": "OrichalcumBreastplate",
+					"en": "Orichalcum Breastplate",
+					"es": "Coraza de oricalco"
+				},
+				{
+					"pid": "OrichalcumLeggings",
+					"en": "Orichalcum Leggings",
+					"es": "Perneras de oricalco"
+				}
+			],
+			"weapons": [
+				{
+					"pid": "CalamityMod/StormSaber",
+					"en": "Storm Saber",
+					"es": "Sable de la Tormenta",
+					"prefix": null
+				},
+				{
+					"pid": "CalamityMod/InfernaCutter",
+					"en": "Inferna Cutter",
+					"es": "Cortador Inferna",
+					"prefix": null
+				}
+			],
+			"accessories": [
+				{
+					"pid": "PowerGlove",
+					"en": "Power Glove",
+					"es": "Guante de poder"
+				},
+				{
+					"pid": "WarriorEmblem",
+					"en": "Warrior Emblem",
+					"es": "Emblema de guerrero"
+				},
+				{
+					"pid": "StarVeil",
+					"en": "Star Veil",
+					"es": "Velo estelar"
+				},
+				{
+					"pid": "CalamityMod/GiantTortoiseShell",
+					"en": "Giant Tortoise Shell",
+					"es": "Caparazón de Tortuga Gigante"
+				}
+			],
+			"buffs": [
+				"Ironskin",
+				"Endurance",
+				"Regeneration",
+				"Swiftness",
+				"Thorns"
+			]
+		},
+		"ranged": {
+			"armor": [
+				{
+					"pid": "OrichalcumHelmet",
+					"en": "Orichalcum Helmet",
+					"es": "Casco de oricalco"
+				},
+				{
+					"pid": "OrichalcumBreastplate",
+					"en": "Orichalcum Breastplate",
+					"es": "Coraza de oricalco"
+				},
+				{
+					"pid": "OrichalcumLeggings",
+					"en": "Orichalcum Leggings",
+					"es": "Perneras de oricalco"
+				}
+			],
+			"weapons": [
+				{
+					"pid": "Megashark",
+					"en": "Megashark",
+					"es": "Megatiburón",
+					"prefix": null
+				},
+				{
+					"pid": "DaedalusStormbow",
+					"en": "Daedalus Stormbow",
+					"es": "Arco de tormenta de Dédalo",
+					"prefix": null
+				}
+			],
+			"accessories": [
+				{
+					"pid": "MagicQuiver",
+					"en": "Magic Quiver",
+					"es": "Carcaj mágico"
+				},
+				{
+					"pid": "RangerEmblem",
+					"en": "Ranger Emblem",
+					"es": "Emblema de guardabosques"
+				},
+				{
+					"pid": "StarVeil",
+					"en": "Star Veil",
+					"es": "Velo estelar"
+				},
+				{
+					"pid": "CalamityMod/GiantTortoiseShell",
+					"en": "Giant Tortoise Shell",
+					"es": "Caparazón de Tortuga Gigante"
+				}
+			],
+			"buffs": [
+				"Archery",
+				"Ammo Reservation",
+				"Regeneration",
+				"Swiftness",
+				"Hunter"
+			]
+		},
+		"mage": {
+			"armor": [
+				{
+					"pid": "OrichalcumHelmet",
+					"en": "Orichalcum Helmet",
+					"es": "Casco de oricalco"
+				},
+				{
+					"pid": "OrichalcumBreastplate",
+					"en": "Orichalcum Breastplate",
+					"es": "Coraza de oricalco"
+				},
+				{
+					"pid": "OrichalcumLeggings",
+					"en": "Orichalcum Leggings",
+					"es": "Perneras de oricalco"
+				}
+			],
+			"weapons": [
+				{
+					"pid": "CalamityMod/ThornBlossom",
+					"en": "Thorn Blossom",
+					"es": "Flor de Espina",
+					"prefix": null
+				},
+				{
+					"pid": "CalamityMod/BrimroseStaff",
+					"en": "Brimrose Staff",
+					"es": "Báculo de Brimrose",
+					"prefix": null
+				}
+			],
+			"accessories": [
+				{
+					"pid": "SorcererEmblem",
+					"en": "Sorcerer Emblem",
+					"es": "Emblema de hechicero"
+				},
+				{
+					"pid": "StarVeil",
+					"en": "Star Veil",
+					"es": "Velo estelar"
+				},
+				{
+					"pid": "CalamityMod/ManaPolarizer",
+					"en": "Mana Polarizer",
+					"es": "Polarizador de Maná"
+				},
+				{
+					"pid": "CalamityMod/GiantTortoiseShell",
+					"en": "Giant Tortoise Shell",
+					"es": "Caparazón de Tortuga Gigante"
+				}
+			],
+			"buffs": [
+				"Magic Power",
+				"Mana Regeneration",
+				"Regeneration",
+				"Swiftness"
+			]
+		},
+		"summoner": {
+			"armor": [
+				{
+					"pid": "SpiderMask",
+					"en": "Spider Mask",
+					"es": "Máscara de araña"
+				},
+				{
+					"pid": "SpiderBreastplate",
+					"en": "Spider Breastplate",
+					"es": "Coraza de araña"
+				},
+				{
+					"pid": "SpiderGreaves",
+					"en": "Spider Greaves",
+					"es": "Grebas de araña"
+				}
+			],
+			"weapons": [
+				{
+					"pid": "CalamityMod/DeepseaStaff",
+					"en": "Deepsea Staff",
+					"es": "Báculo Abisal",
+					"prefix": null
+				},
+				{
+					"pid": "CalamityMod/OrthoceraShell",
+					"en": "Orthocera Shell",
+					"es": "Concha de Ortócera",
+					"prefix": null
+				}
+			],
+			"accessories": [
+				{
+					"pid": "CalamityMod/TheFirstShadowflame",
+					"en": "The First Shadowflame",
+					"es": "La Primera Llamasombra"
+				},
+				{
+					"pid": "CalamityMod/JellyChargedBattery",
+					"en": "Jelly-Charged Battery",
+					"es": "Batería Cargada de Gelatina"
+				},
+				{
+					"pid": "StarVeil",
+					"en": "Star Veil",
+					"es": "Velo estelar"
+				},
+				{
+					"pid": "CalamityMod/GiantTortoiseShell",
+					"en": "Giant Tortoise Shell",
+					"es": "Caparazón de Tortuga Gigante"
+				}
+			],
+			"buffs": [
+				"Summoning",
+				"Regeneration",
+				"Swiftness",
+				"Well Fed"
+			]
+		},
+		"rogue": {
+			"armor": [
+				{
+					"pid": "CalamityMod/TitanHeartMask",
+					"en": "Titan Heart Mask",
+					"es": "Máscara de Corazón de Titán"
+				},
+				{
+					"pid": "CalamityMod/TitanHeartMantle",
+					"en": "Titan Heart Mantle",
+					"es": "Manto de Corazón de Titán"
+				},
+				{
+					"pid": "CalamityMod/TitanHeartBoots",
+					"en": "Titan Heart Boots",
+					"es": "Botas de Corazón de Titán"
+				}
+			],
+			"weapons": [
+				{
+					"pid": "CalamityMod/ScourgeoftheSeas",
+					"en": "Scourge of the Seas",
+					"es": "Azote de los Mares",
+					"prefixId": 10002
+				},
+				{
+					"pid": "CalamityMod/BlazingStar",
+					"en": "Blazing Star",
+					"es": "Estrella Ardiente",
+					"prefixId": 10002
+				},
+				{
+					"pid": "CalamityMod/IceStar",
+					"en": "Ice Star",
+					"es": "Estrella de Hielo",
+					"prefixId": 10002
+				}
+			],
+			"accessories": [
+				{
+					"pid": "CalamityMod/RogueEmblem",
+					"en": "Rogue Emblem",
+					"es": "Emblema Pícaro",
+					"prefixId": 10020
+				},
+				{
+					"pid": "CalamityMod/CoinofDeceit",
+					"en": "Coin of Deceit",
+					"es": "Moneda del Engaño",
+					"prefixId": 10020
+				},
+				{
+					"pid": "CalamityMod/MirageMirror",
+					"en": "Mirage Mirror",
+					"es": "Espejo de Espejismo",
+					"prefixId": 10020
+				},
+				{
+					"pid": "StarVeil",
+					"en": "Star Veil",
+					"es": "Velo estelar",
+					"prefixId": 10020
+				}
+			],
+			"buffs": [
+				"Endurance",
+				"Regeneration",
+				"Swiftness",
+				"Thorns",
+				"Well Fed"
+			]
+		}
+	},
+	"endgame": {
+		"label": "Final del juego (Auric Tesla, post-Yharon/Exo Mechs)",
+		"melee": {
+			"armor": [
+				{
+					"pid": "CalamityMod/AuricTeslaHeadMelee",
+					"en": "Auric Tesla Royal Helm",
+					"es": "Yelmo Real Tesla Áurico"
+				},
+				{
+					"pid": "CalamityMod/AuricTeslaBodyArmor",
+					"en": "Auric Tesla Body Armor",
+					"es": "Armadura Corporal Tesla Áurica"
+				},
+				{
+					"pid": "CalamityMod/AuricTeslaCuisses",
+					"en": "Auric Tesla Cuisses",
+					"es": "Perneras Tesla Áuricas"
+				}
+			],
+			"weapons": [
+				{
+					"pid": "CalamityMod/Terratomere",
+					"en": "Terratomere",
+					"es": "Terratomo",
+					"prefix": null
+				},
+				{
+					"pid": "CalamityMod/StellarContempt",
+					"en": "Stellar Contempt",
+					"es": "Desprecio Estelar",
+					"prefix": null
+				}
+			],
+			"accessories": [
+				{
+					"pid": "CalamityMod/ElysianWings",
+					"en": "Elysian Wings",
+					"es": "Alas Elíseas"
+				},
+				{
+					"pid": "CalamityMod/ElysianAegis",
+					"en": "Elysian Aegis",
+					"es": "Égida Elísea"
+				},
+				{
+					"pid": "CalamityMod/AscendantInsignia",
+					"en": "Ascendant Insignia",
+					"es": "Insignia Ascendente"
+				},
+				{
+					"pid": "CalamityMod/ArcFlashRing",
+					"en": "Arc Flash Ring",
+					"es": "Anillo de Arco Voltaico"
+				},
+				{
+					"pid": "CalamityMod/WarbanneroftheRighteous",
+					"en": "Warbanner of the Righteous",
+					"es": "Estandarte de los Justos"
+				},
+				{
+					"pid": "CalamityMod/AmbrosialAmpoule",
+					"en": "Ambrosial Ampoule",
+					"es": "Ampolla de Ambrosía"
+				},
+				{
+					"pid": "CalamityMod/DeificAmulet",
+					"en": "Deific Amulet",
+					"es": "Amuleto Deífico"
+				}
+			],
+			"buffs": [
+				"Ironskin",
+				"Endurance",
+				"Regeneration",
+				"Swiftness",
+				"Rage",
+				"Wrath",
+				"Lifeforce"
+			]
+		},
+		"ranged": {
+			"armor": [
+				{
+					"pid": "CalamityMod/AuricTeslaHeadRanged",
+					"en": "Auric Tesla Hooded Facemask",
+					"es": "Careta Encapuchada Tesla Áurica"
+				},
+				{
+					"pid": "CalamityMod/AuricTeslaBodyArmor",
+					"en": "Auric Tesla Body Armor",
+					"es": "Armadura Corporal Tesla Áurica"
+				},
+				{
+					"pid": "CalamityMod/AuricTeslaCuisses",
+					"en": "Auric Tesla Cuisses",
+					"es": "Perneras Tesla Áuricas"
+				}
+			],
+			"weapons": [
+				{
+					"pid": "CalamityMod/TelluricGlare",
+					"en": "Telluric Glare",
+					"es": "Deslumbramiento Telúrico",
+					"prefix": null
+				},
+				{
+					"pid": "CalamityMod/Spyker",
+					"en": "Spyker",
+					"es": "Spyker",
+					"prefix": null
+				},
+				{
+					"pid": "CalamityMod/OntologicalDespoiler",
+					"en": "Ontological Despoiler",
+					"es": "Expoliador Ontológico",
+					"prefix": null
+				}
+			],
+			"accessories": [
+				{
+					"pid": "CalamityMod/ElysianWings",
+					"en": "Elysian Wings",
+					"es": "Alas Elíseas"
+				},
+				{
+					"pid": "CalamityMod/ElysianAegis",
+					"en": "Elysian Aegis",
+					"es": "Égida Elísea"
+				},
+				{
+					"pid": "CalamityMod/AscendantInsignia",
+					"en": "Ascendant Insignia",
+					"es": "Insignia Ascendente"
+				},
+				{
+					"pid": "CalamityMod/ArcFlashRing",
+					"en": "Arc Flash Ring",
+					"es": "Anillo de Arco Voltaico"
+				},
+				{
+					"pid": "CalamityMod/DynamoStemCells",
+					"en": "Dynamo Stem Cells",
+					"es": "Células Madre Dinamo"
+				},
+				{
+					"pid": "CalamityMod/AmbrosialAmpoule",
+					"en": "Ambrosial Ampoule",
+					"es": "Ampolla de Ambrosía"
+				},
+				{
+					"pid": "CalamityMod/DeificAmulet",
+					"en": "Deific Amulet",
+					"es": "Amuleto Deífico"
+				}
+			],
+			"buffs": [
+				"Archery",
+				"Ammo Reservation",
+				"Endurance",
+				"Regeneration",
+				"Swiftness",
+				"Rage",
+				"Wrath",
+				"Lifeforce"
+			]
+		},
+		"mage": {
+			"armor": [
+				{
+					"pid": "CalamityMod/AuricTeslaHeadMagic",
+					"en": "Auric Tesla Wire-Hemmed Visage",
+					"es": "Semblante de Filo de Cable Tesla Áurico"
+				},
+				{
+					"pid": "CalamityMod/AuricTeslaBodyArmor",
+					"en": "Auric Tesla Body Armor",
+					"es": "Armadura Corporal Tesla Áurica"
+				},
+				{
+					"pid": "CalamityMod/AuricTeslaCuisses",
+					"en": "Auric Tesla Cuisses",
+					"es": "Perneras Tesla Áuricas"
+				}
+			],
+			"weapons": [
+				{
+					"pid": "CalamityMod/Volterion",
+					"en": "Volterion",
+					"es": "Volterion",
+					"prefix": null
+				},
+				{
+					"pid": "CalamityMod/NanoPurge",
+					"en": "Nano Purge",
+					"es": "Nano Purga",
+					"prefix": null
+				},
+				{
+					"pid": "CalamityMod/PurgeGuzzler",
+					"en": "Purge Guzzler",
+					"es": "Devorador de Purga",
+					"prefix": null
+				}
+			],
+			"accessories": [
+				{
+					"pid": "CalamityMod/ElysianWings",
+					"en": "Elysian Wings",
+					"es": "Alas Elíseas"
+				},
+				{
+					"pid": "CalamityMod/ElysianAegis",
+					"en": "Elysian Aegis",
+					"es": "Égida Elísea"
+				},
+				{
+					"pid": "CalamityMod/AscendantInsignia",
+					"en": "Ascendant Insignia",
+					"es": "Insignia Ascendente"
+				},
+				{
+					"pid": "CalamityMod/ArcFlashRing",
+					"en": "Arc Flash Ring",
+					"es": "Anillo de Arco Voltaico"
+				},
+				{
+					"pid": "CalamityMod/SigilofCalamitas",
+					"en": "Sigil of Calamitas",
+					"es": "Sigilo de Calamitas"
+				},
+				{
+					"pid": "CalamityMod/AmbrosialAmpoule",
+					"en": "Ambrosial Ampoule",
+					"es": "Ampolla de Ambrosía"
+				},
+				{
+					"pid": "CalamityMod/DeificAmulet",
+					"en": "Deific Amulet",
+					"es": "Amuleto Deífico"
+				}
+			],
+			"buffs": [
+				"Magic Power",
+				"Mana Regeneration",
+				"Endurance",
+				"Regeneration",
+				"Swiftness",
+				"Rage",
+				"Wrath",
+				"Lifeforce"
+			]
+		},
+		"summoner": {
+			"armor": [
+				{
+					"pid": "CalamityMod/AuricTeslaHeadSummon",
+					"en": "Auric Tesla Space Helmet",
+					"es": "Casco Espacial Tesla Áurico"
+				},
+				{
+					"pid": "CalamityMod/AuricTeslaBodyArmor",
+					"en": "Auric Tesla Body Armor",
+					"es": "Armadura Corporal Tesla Áurica"
+				},
+				{
+					"pid": "CalamityMod/AuricTeslaCuisses",
+					"en": "Auric Tesla Cuisses",
+					"es": "Perneras Tesla Áuricas"
+				}
+			],
+			"weapons": [
+				{
+					"pid": "CalamityMod/ViridVanguard",
+					"en": "Virid Vanguard",
+					"es": "Vanguardia Vírida",
+					"prefix": null
+				},
+				{
+					"pid": "CalamityMod/SnakeEyes",
+					"en": "Snake Eyes",
+					"es": "Ojos de Serpiente",
+					"prefix": null
+				}
+			],
+			"accessories": [
+				{
+					"pid": "CalamityMod/ElysianWings",
+					"en": "Elysian Wings",
+					"es": "Alas Elíseas"
+				},
+				{
+					"pid": "CalamityMod/ElysianAegis",
+					"en": "Elysian Aegis",
+					"es": "Égida Elísea"
+				},
+				{
+					"pid": "CalamityMod/AscendantInsignia",
+					"en": "Ascendant Insignia",
+					"es": "Insignia Ascendente"
+				},
+				{
+					"pid": "CalamityMod/StarTaintedGenerator",
+					"en": "Star-Tainted Generator",
+					"es": "Generador Estelar Corrompido"
+				},
+				{
+					"pid": "CalamityMod/ProfanedSoulArtifact",
+					"en": "Profaned Soul Artifact",
+					"es": "Artefacto del Alma Profanada"
+				},
+				{
+					"pid": "CalamityMod/AmbrosialAmpoule",
+					"en": "Ambrosial Ampoule",
+					"es": "Ampolla de Ambrosía"
+				},
+				{
+					"pid": "CalamityMod/DeificAmulet",
+					"en": "Deific Amulet",
+					"es": "Amuleto Deífico"
+				}
+			],
+			"buffs": [
+				"Summoning",
+				"Endurance",
+				"Regeneration",
+				"Swiftness",
+				"Rage",
+				"Wrath",
+				"Lifeforce"
+			]
+		},
+		"rogue": {
+			"armor": [
+				{
+					"pid": "CalamityMod/AuricTeslaHeadRogue",
+					"en": "Auric Tesla Plumed Helm",
+					"es": "Yelmo Emplumado Tesla Áurico"
+				},
+				{
+					"pid": "CalamityMod/AuricTeslaBodyArmor",
+					"en": "Auric Tesla Body Armor",
+					"es": "Armadura Corporal Tesla Áurica"
+				},
+				{
+					"pid": "CalamityMod/AuricTeslaCuisses",
+					"en": "Auric Tesla Cuisses",
+					"es": "Perneras Tesla Áuricas"
+				}
+			],
+			"weapons": [
+				{
+					"pid": "CalamityMod/RealityRupture",
+					"en": "Reality Rupture",
+					"es": "Ruptura de la Realidad",
+					"prefixId": 10002
+				},
+				{
+					"pid": "CalamityMod/TwistingThunder",
+					"en": "Twisting Thunder",
+					"es": "Trueno Retorcido",
+					"prefixId": 10002
+				},
+				{
+					"pid": "CalamityMod/CosmicKunai",
+					"en": "Cosmic Kunai",
+					"es": "Kunai Cósmico",
+					"prefixId": 10002
+				}
+			],
+			"accessories": [
+				{
+					"pid": "CalamityMod/ElysianWings",
+					"en": "Elysian Wings",
+					"es": "Alas Elíseas",
+					"prefixId": 10020
+				},
+				{
+					"pid": "CalamityMod/ElysianAegis",
+					"en": "Elysian Aegis",
+					"es": "Égida Elísea",
+					"prefixId": 10020
+				},
+				{
+					"pid": "CalamityMod/AscendantInsignia",
+					"en": "Ascendant Insignia",
+					"es": "Insignia Ascendente",
+					"prefixId": 10020
+				},
+				{
+					"pid": "CalamityMod/Nanotech",
+					"en": "Nanotech",
+					"es": "Nanotecnología",
+					"prefixId": 10020
+				},
+				{
+					"pid": "CalamityMod/EclipseMirror",
+					"en": "Eclipse Mirror",
+					"es": "Espejo de Eclipse",
+					"prefixId": 10020
+				},
+				{
+					"pid": "CalamityMod/AmbrosialAmpoule",
+					"en": "Ambrosial Ampoule",
+					"es": "Ampolla de Ambrosía",
+					"prefixId": 10020
+				},
+				{
+					"pid": "CalamityMod/DeificAmulet",
+					"en": "Deific Amulet",
+					"es": "Amuleto Deífico",
+					"prefixId": 10020
+				}
+			],
+			"buffs": [
+				"Endurance",
+				"Regeneration",
+				"Swiftness",
+				"Rage",
+				"Wrath",
+				"Lifeforce"
+			]
+		}
+	}
+}

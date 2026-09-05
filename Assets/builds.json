@@ -1,0 +1,1011 @@
+{
+    "prehardmode":  {
+                        "label":  "Pre-Hardmode (listo para el Muro de Carne)",
+                        "melee":  {
+                                      "armor":  [
+                                                    {
+                                                        "pid":  "MoltenHelmet",
+                                                        "en":  "Molten Helmet",
+                                                        "es":  "Casco fundido"
+                                                    },
+                                                    {
+                                                        "pid":  "MoltenBreastplate",
+                                                        "en":  "Molten Breastplate",
+                                                        "es":  "Coraza fundida"
+                                                    },
+                                                    {
+                                                        "pid":  "MoltenGreaves",
+                                                        "en":  "Molten Greaves",
+                                                        "es":  "Grebas fundidas"
+                                                    }
+                                                ],
+                                      "weapons":  [
+                                                      {
+                                                          "pid":  "NightsEdge",
+                                                          "en":  "Night\u0027s Edge",
+                                                          "es":  "Filo de la noche",
+                                                          "prefix":  "Legendary"
+                                                      },
+                                                      {
+                                                          "pid":  "Sunfury",
+                                                          "en":  "Sunfury",
+                                                          "es":  "Furia solar",
+                                                          "prefix":  "Godly"
+                                                      },
+                                                      {
+                                                          "pid":  "TheBreaker",
+                                                          "en":  "The Breaker",
+                                                          "es":  "La Despedazadora",
+                                                          "prefix":  "Legendary"
+                                                      }
+                                                  ],
+                                      "accessories":  [
+                                                          {
+                                                              "pid":  "FeralClaws",
+                                                              "en":  "Feral Claws",
+                                                              "es":  "Garras de bestia"
+                                                          },
+                                                          {
+                                                              "pid":  "PhilosophersStone",
+                                                              "en":  "Philosopher\u0027s Stone",
+                                                              "es":  "Piedra filosofal"
+                                                          },
+                                                          {
+                                                              "pid":  "CrossNecklace",
+                                                              "en":  "Cross Necklace",
+                                                              "es":  "Collar con cruz"
+                                                          },
+                                                          {
+                                                              "pid":  "ObsidianShield",
+                                                              "en":  "Obsidian Shield",
+                                                              "es":  "Escudo de obsidiana"
+                                                          },
+                                                          {
+                                                              "pid":  "BandofRegeneration",
+                                                              "en":  "Band of Regeneration",
+                                                              "es":  "Banda de regeneración"
+                                                          },
+                                                          {
+                                                              "pid":  "CountercurseMantra",
+                                                              "en":  "Countercurse Mantra",
+                                                              "es":  "Mantra antimaldición"
+                                                          },
+                                                          {
+                                                              "pid":  "Bezoar",
+                                                              "en":  "Bezoar",
+                                                              "es":  "Bezoar"
+                                                          }
+                                                      ],
+                                      "buffs":  [
+                                                    "Ironskin",
+                                                    "Regeneration",
+                                                    "Swiftness",
+                                                    "Thorns"
+                                                ]
+                                  },
+                        "ranged":  {
+                                       "armor":  [
+                                                     {
+                                                         "pid":  "NecroHelmet",
+                                                         "en":  "Necro Helmet",
+                                                         "es":  "Casco de los muertos"
+                                                     },
+                                                     {
+                                                         "pid":  "NecroBreastplate",
+                                                         "en":  "Necro Breastplate",
+                                                         "es":  "Coraza de los muertos"
+                                                     },
+                                                     {
+                                                         "pid":  "NecroGreaves",
+                                                         "en":  "Necro Greaves",
+                                                         "es":  "Grebas de los muertos"
+                                                     }
+                                                 ],
+                                       "weapons":  [
+                                                       {
+                                                           "pid":  "StarCannon",
+                                                           "en":  "Star Cannon",
+                                                           "es":  "Cañón de estrellas",
+                                                           "prefix":  "Unreal"
+                                                       },
+                                                       {
+                                                           "pid":  "Minishark",
+                                                           "en":  "Minishark",
+                                                           "es":  "Minitiburón",
+                                                           "prefix":  "Demonic"
+                                                       },
+                                                       {
+                                                           "pid":  "TheUndertaker",
+                                                           "en":  "The Undertaker",
+                                                           "es":  "El enterrador",
+                                                           "prefix":  "Unreal"
+                                                       }
+                                                   ],
+                                       "accessories":  [
+                                                           {
+                                                               "pid":  "MagicQuiver",
+                                                               "en":  "Magic Quiver",
+                                                               "es":  "Carcaj mágico"
+                                                           },
+                                                           {
+                                                               "pid":  "PhilosophersStone",
+                                                               "en":  "Philosopher\u0027s Stone",
+                                                               "es":  "Piedra filosofal"
+                                                           },
+                                                           {
+                                                               "pid":  "CrossNecklace",
+                                                               "en":  "Cross Necklace",
+                                                               "es":  "Collar con cruz"
+                                                           },
+                                                           {
+                                                               "pid":  "ObsidianShield",
+                                                               "en":  "Obsidian Shield",
+                                                               "es":  "Escudo de obsidiana"
+                                                           },
+                                                           {
+                                                               "pid":  "BandofRegeneration",
+                                                               "en":  "Band of Regeneration",
+                                                               "es":  "Banda de regeneración"
+                                                           },
+                                                           {
+                                                               "pid":  "CountercurseMantra",
+                                                               "en":  "Countercurse Mantra",
+                                                               "es":  "Mantra antimaldición"
+                                                           },
+                                                           {
+                                                               "pid":  "Bezoar",
+                                                               "en":  "Bezoar",
+                                                               "es":  "Bezoar"
+                                                           }
+                                                       ],
+                                       "buffs":  [
+                                                     "Archery",
+                                                     "Regeneration",
+                                                     "Swiftness",
+                                                     "Hunter"
+                                                 ]
+                                   },
+                        "mage":  {
+                                     "armor":  [
+                                                   {
+                                                       "pid":  "JungleHat",
+                                                       "en":  "Jungle Hat",
+                                                       "es":  "Casco para la selva"
+                                                   },
+                                                   {
+                                                       "pid":  "JungleShirt",
+                                                       "en":  "Jungle Shirt",
+                                                       "es":  "Camisa para la selva"
+                                                   },
+                                                   {
+                                                       "pid":  "JunglePants",
+                                                       "en":  "Jungle Pants",
+                                                       "es":  "Pantalones para la selva"
+                                                   }
+                                               ],
+                                     "weapons":  [
+                                                     {
+                                                         "pid":  "WaterBolt",
+                                                         "en":  "Water Bolt",
+                                                         "es":  "Proyectil de agua",
+                                                         "prefix":  "Mythical"
+                                                     },
+                                                     {
+                                                         "pid":  "DemonScythe",
+                                                         "en":  "Demon Scythe",
+                                                         "es":  "Guadaña demoníaca",
+                                                         "prefix":  "Mythical"
+                                                     },
+                                                     {
+                                                         "pid":  "FlowerofFire",
+                                                         "en":  "Flower of Fire",
+                                                         "es":  "Flor de fuego",
+                                                         "prefix":  "Mythical"
+                                                     }
+                                                 ],
+                                     "accessories":  [
+                                                         {
+                                                             "pid":  "ManaFlower",
+                                                             "en":  "Mana Flower",
+                                                             "es":  "Flor de maná"
+                                                         },
+                                                         {
+                                                             "pid":  "PhilosophersStone",
+                                                             "en":  "Philosopher\u0027s Stone",
+                                                             "es":  "Piedra filosofal"
+                                                         },
+                                                         {
+                                                             "pid":  "CrossNecklace",
+                                                             "en":  "Cross Necklace",
+                                                             "es":  "Collar con cruz"
+                                                         },
+                                                         {
+                                                             "pid":  "ObsidianShield",
+                                                             "en":  "Obsidian Shield",
+                                                             "es":  "Escudo de obsidiana"
+                                                         },
+                                                         {
+                                                             "pid":  "BandofRegeneration",
+                                                             "en":  "Band of Regeneration",
+                                                             "es":  "Banda de regeneración"
+                                                         },
+                                                         {
+                                                             "pid":  "CountercurseMantra",
+                                                             "en":  "Countercurse Mantra",
+                                                             "es":  "Mantra antimaldición"
+                                                         },
+                                                         {
+                                                             "pid":  "Bezoar",
+                                                             "en":  "Bezoar",
+                                                             "es":  "Bezoar"
+                                                         }
+                                                     ],
+                                     "buffs":  [
+                                                   "Magic Power",
+                                                   "Mana Regeneration",
+                                                   "Regeneration",
+                                                   "Swiftness"
+                                               ]
+                                 },
+                        "summoner":  {
+                                         "armor":  [
+                                                       {
+                                                           "pid":  "BeeHeadgear",
+                                                           "en":  "Bee Headgear",
+                                                           "es":  "Tocado de abeja"
+                                                       },
+                                                       {
+                                                           "pid":  "BeeBreastplate",
+                                                           "en":  "Bee Breastplate",
+                                                           "es":  "Coraza de abeja"
+                                                       },
+                                                       {
+                                                           "pid":  "BeeGreaves",
+                                                           "en":  "Bee Greaves",
+                                                           "es":  "Grebas de abeja"
+                                                       }
+                                                   ],
+                                         "weapons":  [
+                                                         {
+                                                             "pid":  "HornetStaff",
+                                                             "en":  "Hornet Staff",
+                                                             "es":  "Báculo de avispón",
+                                                             "prefix":  "Agile"
+                                                         },
+                                                         {
+                                                             "pid":  "ImpStaff",
+                                                             "en":  "Imp Staff",
+                                                             "es":  "Báculo de diablillo",
+                                                             "prefix":  null
+                                                         },
+                                                         {
+                                                             "pid":  "OpticStaff",
+                                                             "en":  "Optic Staff",
+                                                             "es":  "Báculo óptico",
+                                                             "prefix":  "Agile"
+                                                         }
+                                                     ],
+                                         "accessories":  [
+                                                             {
+                                                                 "pid":  "FeralClaws",
+                                                                 "en":  "Feral Claws",
+                                                                 "es":  "Garras de bestia"
+                                                             },
+                                                             {
+                                                                 "pid":  "PhilosophersStone",
+                                                                 "en":  "Philosopher\u0027s Stone",
+                                                                 "es":  "Piedra filosofal"
+                                                             },
+                                                             {
+                                                                 "pid":  "CrossNecklace",
+                                                                 "en":  "Cross Necklace",
+                                                                 "es":  "Collar con cruz"
+                                                             },
+                                                             {
+                                                                 "pid":  "ObsidianShield",
+                                                                 "en":  "Obsidian Shield",
+                                                                 "es":  "Escudo de obsidiana"
+                                                             },
+                                                             {
+                                                                 "pid":  "BandofRegeneration",
+                                                                 "en":  "Band of Regeneration",
+                                                                 "es":  "Banda de regeneración"
+                                                             },
+                                                             {
+                                                                 "pid":  "CountercurseMantra",
+                                                                 "en":  "Countercurse Mantra",
+                                                                 "es":  "Mantra antimaldición"
+                                                             },
+                                                             {
+                                                                 "pid":  "Bezoar",
+                                                                 "en":  "Bezoar",
+                                                                 "es":  "Bezoar"
+                                                             }
+                                                         ],
+                                         "buffs":  [
+                                                       "Summoning",
+                                                       "Regeneration",
+                                                       "Swiftness",
+                                                       "Well Fed"
+                                                   ]
+                                     }
+                    },
+    "earlyhardmode":  {
+                          "label":  "Hardmode temprano (antes de los jefes mecanicos)",
+                          "melee":  {
+                                        "armor":  [
+                                                      {
+                                                          "pid":  "CobaltHelmet",
+                                                          "en":  "Cobalt Helmet",
+                                                          "es":  "Casco de cobalto"
+                                                      },
+                                                      {
+                                                          "pid":  "CobaltBreastplate",
+                                                          "en":  "Cobalt Breastplate",
+                                                          "es":  "Coraza de cobalto"
+                                                      },
+                                                      {
+                                                          "pid":  "CobaltLeggings",
+                                                          "en":  "Cobalt Leggings",
+                                                          "es":  "Perneras de cobalto"
+                                                      }
+                                                  ],
+                                        "weapons":  [
+                                                        {
+                                                            "pid":  "Cutlass",
+                                                            "en":  "Cutlass",
+                                                            "es":  "Alfanje",
+                                                            "prefix":  "Legendary"
+                                                        },
+                                                        {
+                                                            "pid":  "IceSickle",
+                                                            "en":  "Ice Sickle",
+                                                            "es":  "Hoz de hielo",
+                                                            "prefix":  "Legendary"
+                                                        },
+                                                        {
+                                                            "pid":  "CobaltSword",
+                                                            "en":  "Cobalt Sword",
+                                                            "es":  "Espada de cobalto",
+                                                            "prefix":  "Legendary"
+                                                        }
+                                                    ],
+                                        "accessories":  [
+                                                            {
+                                                                "pid":  "AnkhShield",
+                                                                "en":  "Ankh Shield",
+                                                                "es":  "Escudo de cruz ansata"
+                                                            },
+                                                            {
+                                                                "pid":  "FrostsparkBoots",
+                                                                "en":  "Frostspark Boots",
+                                                                "es":  "Botas del campo helado"
+                                                            },
+                                                            {
+                                                                "pid":  "FeralClaws",
+                                                                "en":  "Feral Claws",
+                                                                "es":  "Garras de bestia"
+                                                            },
+                                                            {
+                                                                "pid":  "TitanGlove",
+                                                                "en":  "Titan Glove",
+                                                                "es":  "Guante de titán"
+                                                            },
+                                                            {
+                                                                "pid":  "BandofRegeneration",
+                                                                "en":  "Band of Regeneration",
+                                                                "es":  "Banda de regeneración"
+                                                            },
+                                                            {
+                                                                "pid":  "PanicNecklace",
+                                                                "en":  "Panic Necklace",
+                                                                "es":  "Collar del pánico"
+                                                            },
+                                                            {
+                                                                "pid":  "TrifoldMap",
+                                                                "en":  "Trifold Map",
+                                                                "es":  "Mapa tríptico"
+                                                            }
+                                                        ],
+                                        "buffs":  [
+                                                      "Ironskin",
+                                                      "Endurance",
+                                                      "Regeneration",
+                                                      "Swiftness",
+                                                      "Thorns"
+                                                  ]
+                                    },
+                          "ranged":  {
+                                         "armor":  [
+                                                       {
+                                                           "pid":  "CobaltHelmet",
+                                                           "en":  "Cobalt Helmet",
+                                                           "es":  "Casco de cobalto"
+                                                       },
+                                                       {
+                                                           "pid":  "CobaltBreastplate",
+                                                           "en":  "Cobalt Breastplate",
+                                                           "es":  "Coraza de cobalto"
+                                                       },
+                                                       {
+                                                           "pid":  "CobaltLeggings",
+                                                           "en":  "Cobalt Leggings",
+                                                           "es":  "Perneras de cobalto"
+                                                       }
+                                                   ],
+                                         "weapons":  [
+                                                         {
+                                                             "pid":  "Shotgun",
+                                                             "en":  "Shotgun",
+                                                             "es":  "Escopeta",
+                                                             "prefix":  "Unreal"
+                                                         },
+                                                         {
+                                                             "pid":  "ClockworkAssaultRifle",
+                                                             "en":  "Clockwork Assault Rifle",
+                                                             "es":  "Fusil de asalto de precisión",
+                                                             "prefix":  "Demonic"
+                                                         },
+                                                         {
+                                                             "pid":  "Minishark",
+                                                             "en":  "Minishark",
+                                                             "es":  "Minitiburón",
+                                                             "prefix":  "Unreal"
+                                                         }
+                                                     ],
+                                         "accessories":  [
+                                                             {
+                                                                 "pid":  "AnkhShield",
+                                                                 "en":  "Ankh Shield",
+                                                                 "es":  "Escudo de cruz ansata"
+                                                             },
+                                                             {
+                                                                 "pid":  "FrostsparkBoots",
+                                                                 "en":  "Frostspark Boots",
+                                                                 "es":  "Botas del campo helado"
+                                                             },
+                                                             {
+                                                                 "pid":  "MagicQuiver",
+                                                                 "en":  "Magic Quiver",
+                                                                 "es":  "Carcaj mágico"
+                                                             },
+                                                             {
+                                                                 "pid":  "TitanGlove",
+                                                                 "en":  "Titan Glove",
+                                                                 "es":  "Guante de titán"
+                                                             },
+                                                             {
+                                                                 "pid":  "BandofRegeneration",
+                                                                 "en":  "Band of Regeneration",
+                                                                 "es":  "Banda de regeneración"
+                                                             },
+                                                             {
+                                                                 "pid":  "PanicNecklace",
+                                                                 "en":  "Panic Necklace",
+                                                                 "es":  "Collar del pánico"
+                                                             },
+                                                             {
+                                                                 "pid":  "TrifoldMap",
+                                                                 "en":  "Trifold Map",
+                                                                 "es":  "Mapa tríptico"
+                                                             }
+                                                         ],
+                                         "buffs":  [
+                                                       "Archery",
+                                                       "Ammo Reservation",
+                                                       "Regeneration",
+                                                       "Swiftness",
+                                                       "Hunter"
+                                                   ]
+                                     },
+                          "mage":  {
+                                       "armor":  [
+                                                     {
+                                                         "pid":  "MeteorHelmet",
+                                                         "en":  "Meteor Helmet",
+                                                         "es":  "Casco de meteorito"
+                                                     },
+                                                     {
+                                                         "pid":  "MeteorSuit",
+                                                         "en":  "Meteor Suit",
+                                                         "es":  "Cota de meteorito"
+                                                     },
+                                                     {
+                                                         "pid":  "MeteorLeggings",
+                                                         "en":  "Meteor Leggings",
+                                                         "es":  "Perneras de meteorito"
+                                                     }
+                                                 ],
+                                       "weapons":  [
+                                                       {
+                                                           "pid":  "WaterBolt",
+                                                           "en":  "Water Bolt",
+                                                           "es":  "Proyectil de agua",
+                                                           "prefix":  "Mythical"
+                                                       },
+                                                       {
+                                                           "pid":  "GoldenShower",
+                                                           "en":  "Golden Shower",
+                                                           "es":  "Ducha dorada",
+                                                           "prefix":  "Mythical"
+                                                       },
+                                                       {
+                                                           "pid":  "CrystalStorm",
+                                                           "en":  "Crystal Storm",
+                                                           "es":  "Tormenta de cristal",
+                                                           "prefix":  "Mythical"
+                                                       }
+                                                   ],
+                                       "accessories":  [
+                                                           {
+                                                               "pid":  "AnkhShield",
+                                                               "en":  "Ankh Shield",
+                                                               "es":  "Escudo de cruz ansata"
+                                                           },
+                                                           {
+                                                               "pid":  "FrostsparkBoots",
+                                                               "en":  "Frostspark Boots",
+                                                               "es":  "Botas del campo helado"
+                                                           },
+                                                           {
+                                                               "pid":  "ManaFlower",
+                                                               "en":  "Mana Flower",
+                                                               "es":  "Flor de maná"
+                                                           },
+                                                           {
+                                                               "pid":  "Nazar",
+                                                               "en":  "Nazar",
+                                                               "es":  "Nazar"
+                                                           },
+                                                           {
+                                                               "pid":  "BandofRegeneration",
+                                                               "en":  "Band of Regeneration",
+                                                               "es":  "Banda de regeneración"
+                                                           },
+                                                           {
+                                                               "pid":  "PanicNecklace",
+                                                               "en":  "Panic Necklace",
+                                                               "es":  "Collar del pánico"
+                                                           },
+                                                           {
+                                                               "pid":  "TrifoldMap",
+                                                               "en":  "Trifold Map",
+                                                               "es":  "Mapa tríptico"
+                                                           }
+                                                       ],
+                                       "buffs":  [
+                                                     "Magic Power",
+                                                     "Mana Regeneration",
+                                                     "Regeneration",
+                                                     "Swiftness"
+                                                 ]
+                                   },
+                          "summoner":  {
+                                           "armor":  [
+                                                         {
+                                                             "pid":  "SpiderMask",
+                                                             "en":  "Spider Mask",
+                                                             "es":  "Máscara de araña"
+                                                         },
+                                                         {
+                                                             "pid":  "SpiderBreastplate",
+                                                             "en":  "Spider Breastplate",
+                                                             "es":  "Coraza de araña"
+                                                         },
+                                                         {
+                                                             "pid":  "SpiderGreaves",
+                                                             "en":  "Spider Greaves",
+                                                             "es":  "Grebas de araña"
+                                                         }
+                                                     ],
+                                           "weapons":  [
+                                                           {
+                                                               "pid":  "HornetStaff",
+                                                               "en":  "Hornet Staff",
+                                                               "es":  "Báculo de avispón",
+                                                               "prefix":  "Mythical"
+                                                           },
+                                                           {
+                                                               "pid":  "ImpStaff",
+                                                               "en":  "Imp Staff",
+                                                               "es":  "Báculo de diablillo",
+                                                               "prefix":  "Mythical"
+                                                           },
+                                                           {
+                                                               "pid":  "OpticStaff",
+                                                               "en":  "Optic Staff",
+                                                               "es":  "Báculo óptico",
+                                                               "prefix":  "Mythical"
+                                                           }
+                                                       ],
+                                           "accessories":  [
+                                                               {
+                                                                   "pid":  "AnkhShield",
+                                                                   "en":  "Ankh Shield",
+                                                                   "es":  "Escudo de cruz ansata"
+                                                               },
+                                                               {
+                                                                   "pid":  "FrostsparkBoots",
+                                                                   "en":  "Frostspark Boots",
+                                                                   "es":  "Botas del campo helado"
+                                                               },
+                                                               {
+                                                                   "pid":  "FeralClaws",
+                                                                   "en":  "Feral Claws",
+                                                                   "es":  "Garras de bestia"
+                                                               },
+                                                               {
+                                                                   "pid":  "TitanGlove",
+                                                                   "en":  "Titan Glove",
+                                                                   "es":  "Guante de titán"
+                                                               },
+                                                               {
+                                                                   "pid":  "BandofRegeneration",
+                                                                   "en":  "Band of Regeneration",
+                                                                   "es":  "Banda de regeneración"
+                                                               },
+                                                               {
+                                                                   "pid":  "PanicNecklace",
+                                                                   "en":  "Panic Necklace",
+                                                                   "es":  "Collar del pánico"
+                                                               },
+                                                               {
+                                                                   "pid":  "TrifoldMap",
+                                                                   "en":  "Trifold Map",
+                                                                   "es":  "Mapa tríptico"
+                                                               }
+                                                           ],
+                                           "buffs":  [
+                                                         "Summoning",
+                                                         "Regeneration",
+                                                         "Swiftness",
+                                                         "Well Fed"
+                                                     ]
+                                       }
+                      },
+    "endgame":  {
+                    "label":  "Final del juego (post Lunatic Cultist / Moon Lord)",
+                    "melee":  {
+                                  "armor":  [
+                                                {
+                                                    "pid":  "SolarFlareHelmet",
+                                                    "en":  "Solar Flare Helmet",
+                                                    "es":  "Casco de fulguración solar"
+                                                },
+                                                {
+                                                    "pid":  "SolarFlareBreastplate",
+                                                    "en":  "Solar Flare Breastplate",
+                                                    "es":  "Coraza de fulguración solar"
+                                                },
+                                                {
+                                                    "pid":  "SolarFlareLeggings",
+                                                    "en":  "Solar Flare Leggings",
+                                                    "es":  "Perneras de fulguración solar"
+                                                }
+                                            ],
+                                  "weapons":  [
+                                                  {
+                                                      "pid":  "TerraBlade",
+                                                      "en":  "Terra Blade",
+                                                      "es":  "Espada Terra",
+                                                      "prefix":  "Legendary"
+                                                  },
+                                                  {
+                                                      "pid":  "Zenith",
+                                                      "en":  "Zenith",
+                                                      "es":  "Cénit",
+                                                      "prefix":  "Legendary"
+                                                  },
+                                                  {
+                                                      "pid":  "StarWrath",
+                                                      "en":  "Star Wrath",
+                                                      "es":  "Ira estelar",
+                                                      "prefix":  "Legendary"
+                                                  }
+                                              ],
+                                  "accessories":  [
+                                                      {
+                                                          "pid":  "AnkhShield",
+                                                          "en":  "Ankh Shield",
+                                                          "es":  "Escudo de cruz ansata"
+                                                      },
+                                                      {
+                                                          "pid":  "TerrasparkBoots",
+                                                          "en":  "Terraspark Boots",
+                                                          "es":  "Botas de terrachispa"
+                                                      },
+                                                      {
+                                                          "pid":  "WarriorEmblem",
+                                                          "en":  "Warrior Emblem",
+                                                          "es":  "Emblema de guerrero"
+                                                      },
+                                                      {
+                                                          "pid":  "YoyoBag",
+                                                          "en":  "Yoyo Bag",
+                                                          "es":  "Bolsa yoyó"
+                                                      },
+                                                      {
+                                                          "pid":  "DestroyerEmblem",
+                                                          "en":  "Destroyer Emblem",
+                                                          "es":  "Emblema del Destructor"
+                                                      },
+                                                      {
+                                                          "pid":  "CharmofMyths",
+                                                          "en":  "Charm of Myths",
+                                                          "es":  "Talismán de mitos"
+                                                      },
+                                                      {
+                                                          "pid":  "StarVeil",
+                                                          "en":  "Star Veil",
+                                                          "es":  "Velo estelar"
+                                                      }
+                                                  ],
+                                  "buffs":  [
+                                                "Ironskin",
+                                                "Endurance",
+                                                "Regeneration",
+                                                "Swiftness",
+                                                "Rage",
+                                                "Wrath",
+                                                "Lifeforce"
+                                            ]
+                              },
+                    "ranged":  {
+                                   "armor":  [
+                                                 {
+                                                     "pid":  "ShroomiteHelmet",
+                                                     "en":  "Shroomite Helmet",
+                                                     "es":  "Casco de piñonita"
+                                                 },
+                                                 {
+                                                     "pid":  "ShroomiteBreastplate",
+                                                     "en":  "Shroomite Breastplate",
+                                                     "es":  "Coraza de piñonita"
+                                                 },
+                                                 {
+                                                     "pid":  "ShroomiteLeggings",
+                                                     "en":  "Shroomite Leggings",
+                                                     "es":  "Perneras de piñonita"
+                                                 }
+                                             ],
+                                   "weapons":  [
+                                                   {
+                                                       "pid":  "Phantasm",
+                                                       "en":  "Phantasm",
+                                                       "es":  "Fantasma",
+                                                       "prefix":  "Unreal"
+                                                   },
+                                                   {
+                                                       "pid":  "VortexBeater",
+                                                       "en":  "Vortex Beater",
+                                                       "es":  "Golpeador del vórtice",
+                                                       "prefix":  "Unreal"
+                                                   },
+                                                   {
+                                                       "pid":  "SDMG",
+                                                       "en":  "S.D.M.G.",
+                                                       "es":  "ADEE",
+                                                       "prefix":  "Unreal"
+                                                   }
+                                               ],
+                                   "accessories":  [
+                                                       {
+                                                           "pid":  "AnkhShield",
+                                                           "en":  "Ankh Shield",
+                                                           "es":  "Escudo de cruz ansata"
+                                                       },
+                                                       {
+                                                           "pid":  "TerrasparkBoots",
+                                                           "en":  "Terraspark Boots",
+                                                           "es":  "Botas de terrachispa"
+                                                       },
+                                                       {
+                                                           "pid":  "RangerEmblem",
+                                                           "en":  "Ranger Emblem",
+                                                           "es":  "Emblema de guardián"
+                                                       },
+                                                       {
+                                                           "pid":  "DestroyerEmblem",
+                                                           "en":  "Destroyer Emblem",
+                                                           "es":  "Emblema del Destructor"
+                                                       },
+                                                       {
+                                                           "pid":  "AvengerEmblem",
+                                                           "en":  "Avenger Emblem",
+                                                           "es":  "Emblema de vengador"
+                                                       },
+                                                       {
+                                                           "pid":  "CharmofMyths",
+                                                           "en":  "Charm of Myths",
+                                                           "es":  "Talismán de mitos"
+                                                       },
+                                                       {
+                                                           "pid":  "StarVeil",
+                                                           "en":  "Star Veil",
+                                                           "es":  "Velo estelar"
+                                                       }
+                                                   ],
+                                   "buffs":  [
+                                                 "Archery",
+                                                 "Ammo Reservation",
+                                                 "Endurance",
+                                                 "Regeneration",
+                                                 "Swiftness",
+                                                 "Rage",
+                                                 "Wrath",
+                                                 "Lifeforce"
+                                             ]
+                               },
+                    "mage":  {
+                                 "armor":  [
+                                               {
+                                                   "pid":  "SpectreHood",
+                                                   "en":  "Spectre Hood",
+                                                   "es":  "Caperuza espectral"
+                                               },
+                                               {
+                                                   "pid":  "SpectreRobe",
+                                                   "en":  "Spectre Robe",
+                                                   "es":  "Vestido espectral"
+                                               },
+                                               {
+                                                   "pid":  "SpectrePants",
+                                                   "en":  "Spectre Pants",
+                                                   "es":  "Pantalones espectrales"
+                                               }
+                                           ],
+                                 "weapons":  [
+                                                 {
+                                                     "pid":  "LastPrism",
+                                                     "en":  "Last Prism",
+                                                     "es":  "Último prisma",
+                                                     "prefix":  "Mythical"
+                                                 },
+                                                 {
+                                                     "pid":  "NebulaBlaze",
+                                                     "en":  "Nebula Blaze",
+                                                     "es":  "Llama de nebulosa",
+                                                     "prefix":  "Mythical"
+                                                 },
+                                                 {
+                                                     "pid":  "RazorbladeTyphoon",
+                                                     "en":  "Razorblade Typhoon",
+                                                     "es":  "Tifón de cuchillas",
+                                                     "prefix":  "Agile"
+                                                 }
+                                             ],
+                                 "accessories":  [
+                                                     {
+                                                         "pid":  "AnkhShield",
+                                                         "en":  "Ankh Shield",
+                                                         "es":  "Escudo de cruz ansata"
+                                                     },
+                                                     {
+                                                         "pid":  "TerrasparkBoots",
+                                                         "en":  "Terraspark Boots",
+                                                         "es":  "Botas de terrachispa"
+                                                     },
+                                                     {
+                                                         "pid":  "SorcererEmblem",
+                                                         "en":  "Sorcerer Emblem",
+                                                         "es":  "Emblema de hechicero"
+                                                     },
+                                                     {
+                                                         "pid":  "CelestialEmblem",
+                                                         "en":  "Celestial Emblem",
+                                                         "es":  "Emblema celestial"
+                                                     },
+                                                     {
+                                                         "pid":  "ManaFlower",
+                                                         "en":  "Mana Flower",
+                                                         "es":  "Flor de maná"
+                                                     },
+                                                     {
+                                                         "pid":  "CharmofMyths",
+                                                         "en":  "Charm of Myths",
+                                                         "es":  "Talismán de mitos"
+                                                     },
+                                                     {
+                                                         "pid":  "StarVeil",
+                                                         "en":  "Star Veil",
+                                                         "es":  "Velo estelar"
+                                                     }
+                                                 ],
+                                 "buffs":  [
+                                               "Magic Power",
+                                               "Mana Regeneration",
+                                               "Endurance",
+                                               "Regeneration",
+                                               "Swiftness",
+                                               "Rage",
+                                               "Wrath",
+                                               "Lifeforce"
+                                           ]
+                             },
+                    "summoner":  {
+                                     "armor":  [
+                                                   {
+                                                       "pid":  "StardustHelmet",
+                                                       "en":  "Stardust Helmet",
+                                                       "es":  "Casco de polvo estelar"
+                                                   },
+                                                   {
+                                                       "pid":  "StardustBreastplate",
+                                                       "en":  "Stardust Plate",
+                                                       "es":  "Placa de polvo estelar"
+                                                   },
+                                                   {
+                                                       "pid":  "StardustLeggings",
+                                                       "en":  "Stardust Leggings",
+                                                       "es":  "Perneras de polvo estelar"
+                                                   }
+                                               ],
+                                     "weapons":  [
+                                                     {
+                                                         "pid":  "StardustDragonStaff",
+                                                         "en":  "Stardust Dragon Staff",
+                                                         "es":  "Báculo de dragón de polvo estelar",
+                                                         "prefix":  "Ruthless"
+                                                     },
+                                                     {
+                                                         "pid":  "XenoStaff",
+                                                         "en":  "Xeno Staff",
+                                                         "es":  "Xenobáculo",
+                                                         "prefix":  "Agile"
+                                                     },
+                                                     {
+                                                         "pid":  "EmpressBlade",
+                                                         "en":  "Terraprisma",
+                                                         "es":  "Terraprisma",
+                                                         "prefix":  "Ruthless"
+                                                     }
+                                                 ],
+                                     "accessories":  [
+                                                         {
+                                                             "pid":  "AnkhShield",
+                                                             "en":  "Ankh Shield",
+                                                             "es":  "Escudo de cruz ansata"
+                                                         },
+                                                         {
+                                                             "pid":  "TerrasparkBoots",
+                                                             "en":  "Terraspark Boots",
+                                                             "es":  "Botas de terrachispa"
+                                                         },
+                                                         {
+                                                             "pid":  "SummonerEmblem",
+                                                             "en":  "Summoner Emblem",
+                                                             "es":  "Emblema de invocador"
+                                                         },
+                                                         {
+                                                             "pid":  "PapyrusScarab",
+                                                             "en":  "Papyrus Scarab",
+                                                             "es":  "Escarabajo de papiro"
+                                                         },
+                                                         {
+                                                             "pid":  "NecromanticScroll",
+                                                             "en":  "Necromantic Scroll",
+                                                             "es":  "Pergamino de nigromante"
+                                                         },
+                                                         {
+                                                             "pid":  "CharmofMyths",
+                                                             "en":  "Charm of Myths",
+                                                             "es":  "Talismán de mitos"
+                                                         },
+                                                         {
+                                                             "pid":  "StarVeil",
+                                                             "en":  "Star Veil",
+                                                             "es":  "Velo estelar"
+                                                         }
+                                                     ],
+                                     "buffs":  [
+                                                   "Summoning",
+                                                   "Endurance",
+                                                   "Regeneration",
+                                                   "Swiftness",
+                                                   "Rage",
+                                                   "Wrath",
+                                                   "Lifeforce"
+                                               ]
+                                 }
+                }
+}
