@@ -534,3 +534,116 @@ que un commit con dos temas dentro. El árbol resultante compila limpio
 **Para la próxima**: nombrar los archivos en `git add` no basta en un repositorio compartido. Lo
 que sí aísla de verdad es `git commit --only <archivos>` (comitea exactamente esas rutas, ignore
 lo que haya preparado en el índice) o darle a cada agente su propio `GIT_INDEX_FILE`.
+
+---
+
+## 6-sep-2026 — WS4: Builds y auto-equipar
+
+Cuarto workstream del plan. Panel propio de **Builds** (tecla **L**), con el catálogo estático
+de equipo por etapa y clase que ya usa la app de escritorio, marca de "ya lo tienes" contra el
+inventario real, y auto-equipar.
+
+### Lo que se hizo
+
+- `Assets/builds.json` y `Assets/builds_calamity.json` copiados del repo hermano y **parseados
+  con el mismo código de `TerrasavrNative.Core`** (`BuildsCatalog.LoadFromStream`), tal como
+  preveía el plan. Nada reimplementado.
+- `Common/Builds/`: modelo, catálogo, búsqueda en los contenedores del jugador, auto-equipar,
+  el `ModSystem` con el atajo y el registro de evidencia.
+- `UI/Builds/`: el panel (`PanelBuildsState`) y el slot de catálogo (`SlotCatalogoBuild`).
+- `scripts/verificar-builds-en-juego.ps1`: ciclo de prueba propio, con sandbox propio.
+
+### Hallazgos reales (código del tModLoader instalado, v2026.7.3.0)
+
+1. **Los `.json` entran solos en el `.tmod`**, no hay que declararlos en ningún sitio.
+   `ModCompile.PackageMod` empaqueta **todos** los archivos de la carpeta salvo los que descarta
+   `IgnoreResource`: `buildIgnore`, los que empiezan por ".", `bin\`, `obj\`, el código fuente
+   (sin `includeSource`) y `Thumbs.db`. Comprobado con `node tmod-extract.js`: dentro del `.tmod`
+   aparecen `Assets/builds.json` y `Assets/builds_calamity.json`, con la ruta normalizada a "/"
+   por `TmodFile.Sanitize`.
+2. **`ItemID.Search` resuelve los DOS formatos de pid de una sola llamada**, que es justo lo que
+   necesita este catálogo. Es el `IdDictionary` de ReLogic: para vanilla, sus claves son los
+   nombres de campo de `Terraria.ID.ItemID` (los 101 pid vanilla de los dos archivos existen ahí,
+   comprobado uno a uno contra el decompilado); para los mods, `ModItem.Register` hace
+   `ItemID.Search.Add(FullName, Type)` con `FullName = "Mod/NombreInterno"`. Más directo que
+   `ModContent.Find<ModItem>(mod, interno).Type`, no hay que distinguir los dos casos, y **no
+   lanza** si el mod no está instalado. Los ids sintéticos de Calamity de la app de escritorio
+   (`CalamityIds.ItemIdBase`) no hacen ninguna falta aquí, como decía el plan.
+3. **`GetFileStream` falla una vez cerrado el `.tmod`** (`TmodFile.GetStream` lanza
+   `IOException("File not open")`). Por eso los bytes se leen en `ModSystem.Load()` (archivo
+   abierto seguro) y se parsean en `PostSetupContent()`, que es cuando ya han registrado su
+   contenido todos los mods y los pid de Calamity sí se pueden resolver.
+4. **Slots de accesorio reales**: `Player.armor` es 0-2 armadura, 3-9 accesorios, 10-19 vanity
+   (su propio XMLdoc lo dice), y los usables son 5 + `Player.GetAmountOfExtraAccessorySlotsToShow()`
+   (Corazón de Demonio + modo Maestro). Se calcula en vivo, no se supone un máximo fijo. Para
+   validar si un accesorio cabe en un hueco se usa `ItemSlot.AccCheck` (público; devuelve **true
+   cuando NO se puede**), que es lo que impide duplicados y dos pares de alas.
+5. **`Player.armor` ES el conjunto activo**; los otros viven en `Player.Loadouts[i]` y solo se
+   intercambian con `Loadouts[i].Swap(player)`. Escribir en `armor` afecta únicamente al conjunto
+   que el jugador lleva puesto.
+6. **`-build` acepta `-tmlsavedirectory`**: el `.tmod` sale directamente en el sandbox de la
+   prueba en vez de en la carpeta `Mods` compartida. Con cuatro agentes compilando el mismo mod,
+   esto elimina que se pisen el `.tmod` unos a otros.
+
+### Decisiones tomadas
+
+- **Auto-equipar solo MUEVE, nunca crea objetos**, igual que la app de escritorio. Lo que el
+  jugador no tenga se cuenta como "no lo tienes" y ya. Dar objetos de la nada convertiría una
+  herramienta de organización en un generador de trampas y arruinaría la progresión que el propio
+  catálogo describe. Por lo mismo **tampoco cambia prefijos**: el prefijo recomendado del catálogo
+  se enseña como texto y el objeto se mueve con el que ya tuviera.
+- **La única operación es un intercambio** entre dos posiciones de arrays vivos. Si el hueco de
+  destino estaba ocupado, lo que había se va al sitio de donde salió el objeto. Es predecible y
+  reversible, y no puede perder nada.
+- **La fuente "Calamity" no se ofrece si Calamity no está cargado.** No basta con "resolvió algo":
+  `builds_calamity.json` apoya su progresión en bastante equipo vanilla, así que sin Calamity
+  resuelve igualmente 35 de 154 y se ofrecería una pestaña con casi todo en rojo. Se exige que al
+  menos uno de los pid **de mod** haya resuelto.
+- **El atajo se registra desde el propio `ModSystem` de WS4** (`KeybindLoader.RegisterKeybind`
+  solo necesita el `Mod`, que `ModType.Mod` ya trae asignado antes de `Load()`), no desde la clase
+  `Terrakeep`. Así este workstream no toca ni un archivo compartido.
+
+### Verificado de verdad en el juego
+
+Tres ejecuciones reales de `scripts\verificar-builds-en-juego.ps1`, evidencia completa en
+`evidencia\ws4-builds.log.txt` y `evidencia\ws4-builds-calamity.log.txt`:
+
+| Qué | Resultado real |
+|---|---|
+| Catálogo vanilla | `[Vanilla: 3 etapas, 156/156 objetos resueltos]` |
+| Catálogo Calamity (con Calamity cargado) | `[Calamity: 3 etapas, 154/154 objetos resueltos]` |
+| Catálogo Calamity (sin Calamity) | descartado solo: `35/154 objetos, y 0/119 de los que vienen de un mod` |
+| "Ya lo tienes" | `6 de 13` (vanilla) y `5 de 8` (Calamity/Pícaro), con la ubicación exacta de cada uno |
+| Auto-equipar | `movidos=5, ya colocados=1, no los tienes=7, sin sitio=0, no existen aqui=0` |
+| Idempotencia (segunda pasada) | `movidos=0, ya colocados=6` |
+| Filtro de clase con rogue (solo Calamity) | `Fuente="Calamity" ... Clase="Pícaro"`, 8 objetos |
+| Panel realmente dibujado | `Marco: x=150 y=60 w=980 h=600` sobre 1280x720, 13 `ItemSlot` con rectángulo propio en pantalla |
+| Con el mod ENTERO (WS0+WS1+WS4+WS7) | compila con 0 errores y la autoprueba de WS4 pasa igual |
+
+Los ids resueltos son reales y comprobables: `MoltenHelmet`→231, `NightsEdge`→273,
+`CalamityMod/SulphurousHelmet`→5959, `CalamityMod/ScuttlersJewel`→5753.
+
+### Obstáculo real, y cómo se resolvió
+
+**El `client.log` del juego es uno solo para todas las instancias** y tModLoader lo rota al
+arrancar (`client.log` → `client1.log`). Con cuatro workstreams construyéndose en paralelo, dos
+verificaciones que se solapan se pisan la evidencia: pasó **dos veces seguidas** intentando
+cerrar la prueba con Calamity (el `client.log` acabó siendo el de WS1 la primera vez y el de WS7
+la segunda, identificados por el `-tmlsavedirectory` de su cabecera). En vez de insistir una
+tercera vez, se quitó la causa: `Common/Builds/RegistroBuilds.cs` escribe cada línea **también**
+a `terrakeep-ws4-evidencia.log` dentro de la carpeta de guardado de la propia prueba
+(`Main.SavePath`, o sea el `-tmlsavedirectory`), que es privada de cada ejecución. Solo lo hace
+cuando hay una autoprueba en marcha; jugando normal no deja ningún archivo suelto.
+
+Segundo problema de convivencia: **los otros workstreams borran y renombran sus archivos en
+caliente** (`UI\PanelPruebaState.cs` desapareció a mitad de una prueba, sustituido por el panel
+de Personaje de WS1), lo que rompía una verificación de WS4 por causas ajenas a WS4. El script
+compila por defecto una **copia aislada** con el núcleo del mod (`Terrakeep.cs`) y los archivos
+de WS4 y nada más; con `-Completo` compila el proyecto entero, que es como se hizo la última
+comprobación.
+
+### Regalo de WS7 que afecta a este panel
+
+El `SembradorDeAtajos` de WS7 recorre **todas** las claves de atajo que empiezan por
+`TerrakeepMod/`, así que la tecla **L** de Builds queda asignada de fábrica por ese mismo arreglo
+sin tocar nada aquí. Sin él, ningún atajo del mod tenía tecla realmente asignada.
