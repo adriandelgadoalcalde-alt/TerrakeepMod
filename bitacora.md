@@ -147,3 +147,58 @@ bitácora del repo hermano como pendiente de repetir con la sesión desbloqueada
 personaje de prueba. **No es una regresión del cambio de multi-targeting** (no se tocó nada de
 C#), y el juego sí carga ese personaje sin problema. Queda anotado por si le interesa al repo
 hermano; no se investigó más porque se sale de WS0.
+
+## WS0 cerrado de verdad: panel visto en el cliente gráfico real (6-sep-2026)
+
+La entrega anterior de WS0 dejó sin confirmar la mitad grafica (pantalla bloqueada + sin salida
+de audio en la máquina en ese momento). Al desbloquear la sesión y reintentar, aparecieron DOS
+problemas reales, los dos corregidos y verificados:
+
+**1. El "personaje de prueba" del sandbox era una copia LITERAL del `prueba.plr` real del
+usuario** (confirmado con `cmp` byte a byte - mismos 3808 bytes) - ya sabíamos por la auditoría
+de la app de escritorio que ese archivo concreto está corrupto, y aquí se vio la consecuencia
+real: tModLoader entero petaba al hacer spawn con `NullReferenceException` en
+`Terraria.GameContent.Creative.CreativePowers.GodmodePower.ApplyLoadedDataToOutOfPlayerFields`
+(vía `CreativePowerManager.ApplyLoadedDataToPlayer` → `Player.SetPlayerDataToOutOfClassFields`)
+- nada que ver con `TerrakeepMod`, el stack no lo menciona en ningún sitio. Corregido generando
+un personaje sintético limpio (`TerrakeepPrueba.plr`, `PlrFile.Write` de
+`TerrasavrNative.Core` sobre un `PlrCharacter` nuevo, dificultad 0) - nunca derivado de ningún
+archivo real del usuario, y el script de verificación se actualizó para usarlo en vez de
+`prueba`.
+
+**2. Bug real en `PanelPruebaSystem.UpdateUI`**: con el personaje limpio, el juego ya no petaba,
+pero el panel seguía sin abrirse - `client.log` mostraba una "Excepción silenciosa" repetida:
+`KeyNotFoundException` en `ModKeybind.JustPressed` (indexa
+`PlayerInput.Triggers.JustPressed.KeyStatus` por `"TerrakeepMod/AbrirPanel"`). Investigado con
+`ilspycmd` sobre el **`tModLoader.dll` real instalado** (v2026.7.3.0 - la referencia decompilada
+del repo hermano, `tModLoader-Decompiled\`, es de la versión 1.4.4.9, bastante más antigua; para
+dudas de API de esta versión concreta, decompilar el `.dll` instalado directamente, más fiable
+que la referencia vieja): `PlayerInput.Triggers` solo se rellena con los atajos base de vanilla
+en `Main.Initialize()`, **antes de que ningún mod cargue**; los atajos de mods se añaden después
+vía `PlayerInput.reinitialize` (activado por `ModContent.cs:541`), que el motor solo consume en
+su siguiente `PlayerInput.UpdateInput()`. Con `-skipselect` entrando directo a una partida, ese
+hueco se ha visto persistir varios segundos. El bug real no era el hueco en sí (se autocorrige
+solo) sino que la excepción abortaba el resto de `UpdateUI` **antes** de llegar a
+`ActualizarAutoprueba()` (la comprobación del atajo estaba primero) - así que la autoprueba
+nunca llegaba a dispararse por mucho que pasaran los 180 fotogramas de espera. Corregido: la
+autoprueba va primero e incondicional, y la comprobación del atajo se protege con
+`try/catch(KeyNotFoundException)`.
+
+**Evidencia real final** (`client.log`, filtrado por `[Terrakeep]`):
+```
+PANEL ABIERTO via autoprueba (TERRAKEEP_AUTOTEST). Jugador: "TerrakeepPrueba" (vida 100/100).
+Mundo: "TerrakeepPrueba". inventory[0]: type=0 stack=0 prefix=0 nombre="".
+Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.PanelPruebaState
+ItemSlot dibujado. Rectangulo en coordenadas de pantalla del juego: x=614 y=334 w=52 h=52
+centro=(640,360). Resolucion actual: 1280x720.
+```
+`inventory[0]` vacío es correcto (el personaje sintético no tiene objetos) - lo que demuestra
+esta línea es que el `ItemSlot` nativo de vanilla está leyendo de verdad
+`Main.LocalPlayer.inventory[0]` y dibujándose en coordenadas reales de pantalla, dentro de un
+panel abierto con `IngameFancyUI.OpenUIState`. **WS0 queda cerrado del todo**: la cadena
+completa (mod compilado con `dllReferences` a `TerrasavrNative.Core` net8 + UI nativa de
+Terraria + acceso en vivo al jugador real) funciona de principio a fin, verificado con el
+cliente gráfico real, no solo con el servidor dedicado.
+
+A partir de aquí, según el plan (`streamed-leaping-balloon.md`), tocan WS1/WS2/WS4/WS7 en
+paralelo.

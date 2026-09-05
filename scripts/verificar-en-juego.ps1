@@ -33,7 +33,12 @@ $tmlDotnet = Join-Path $tmlDir 'dotnet\dotnet.exe'
 $logDir    = Join-Path $tmlDir 'tModLoader-Logs'
 $sandbox   = Join-Path $env:USERPROFILE 'Documents\My Games\Terraria\tModLoader-TerrakeepWS0'
 $mundo     = 'TerrakeepPrueba'
-$personaje = 'prueba'
+# Antes usaba "prueba" (copia literal del prueba.plr real del usuario, confirmado corrupto por
+# diff byte a byte) - hacia petar tModLoader entero al hacer spawn (NullReferenceException en
+# GodmodePower.ApplyLoadedDataToOutOfPlayerFields via CreativePowerManager), nada que ver con
+# TerrakeepMod. Sustituido por un personaje sintetico limpio (PlrFile.Write de
+# TerrasavrNative.Core), nunca derivado de ningun archivo real del usuario.
+$personaje = 'TerrakeepPrueba'
 
 if (-not (Test-Path (Join-Path $sandbox "Worlds\$mundo.wld"))) {
 	throw "Falta el mundo de prueba en $sandbox. Se genera con:`n" +

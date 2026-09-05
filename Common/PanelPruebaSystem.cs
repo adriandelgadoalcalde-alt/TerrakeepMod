@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ModLoader;
@@ -33,17 +34,39 @@ namespace TerrakeepMod.Common
 		public static bool PanelAbierto =>
 			Main.InGameUI != null && Main.InGameUI.CurrentState is PanelPruebaState;
 
+		// Bug real encontrado verificando WS0 en el juego real (6-sep-2026): PlayerInput.Triggers
+		// solo se rellena con los atajos base de vanilla en Main.Initialize() (antes de que
+		// ningun mod cargue) - los atajos de mods se añaden despues via PlayerInput.reinitialize,
+		// que el propio motor consume en su siguiente PlayerInput.UpdateInput(). Con -skipselect
+		// entrando directo a una partida, se ha visto que ModKeybind.JustPressed (indexa
+		// PlayerInput.Triggers.JustPressed.KeyStatus por FullName) puede seguir lanzando
+		// KeyNotFoundException varios segundos despues de que el mod ya este cargado y jugando -
+		// una excepcion "silenciosa" real de tModLoader (no petaba el juego, pero SI abortaba el
+		// resto de este UpdateUI antes de llegar a ActualizarAutoprueba(), asi que la autoprueba
+		// nunca llegaba a dispararse por mucho que pasaran los 180 fotogramas). Solucion real:
+		// la autoprueba va PRIMERO y sin depender del atajo, y el atajo se protege con try/catch
+		// (se autocorrige solo en cuanto el motor procesa el reinitialize pendiente).
 		public override void UpdateUI(GameTime gameTime)
 		{
-			if (Main.dedServ || Terrakeep.AbrirPanelKeybind == null) {
+			if (Main.dedServ) {
 				return;
 			}
 
-			if (Terrakeep.AbrirPanelKeybind.JustPressed) {
-				AlternarPanel("atajo de teclado (ModSystem.UpdateUI)");
+			ActualizarAutoprueba();
+
+			if (Terrakeep.AbrirPanelKeybind == null) {
+				return;
 			}
 
-			ActualizarAutoprueba();
+			try {
+				if (Terrakeep.AbrirPanelKeybind.JustPressed) {
+					AlternarPanel("atajo de teclado (ModSystem.UpdateUI)");
+				}
+			}
+			catch (KeyNotFoundException) {
+				// PlayerInput.Triggers todavia no conoce este atajo (ver comentario de arriba) -
+				// se autocorrige solo un fotograma despues, no hace falta hacer nada mas aqui.
+			}
 		}
 
 		/// <summary>Abre el panel si esta cerrado y lo cierra si esta abierto.</summary>
