@@ -116,12 +116,5 @@ namespace TerrakeepMod.UI
 				}
 			}
 		}
-
-		/// <summary>Vuelve a permitir que se registre el rectangulo del slot la proxima vez que se
-		/// abra el panel (util para comprobar la posicion tras cambiar de resolucion).</summary>
-		public void ReiniciarRegistroDeCoordenadas()
-		{
-			_coordenadasRegistradas = false;
-		}
 	}
 }
