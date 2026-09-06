@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using System.ComponentModel;
+using Newtonsoft.Json;
 using Terraria.ModLoader.Config;
 
 namespace TerrakeepMod.Common.Ajustes
@@ -49,7 +50,15 @@ namespace TerrakeepMod.Common.Ajustes
 		/// Idioma de la interfaz de Terrakeep. Cambiarlo desde aqui o desde el panel de Ajustes
 		/// (tecla J) tiene el mismo efecto: los dos caminos acaban en
 		/// <see cref="Idiomas.Aplicar"/>.
+		/// <para />
+		/// El <c>[Header]</c> le pone titulo a la seccion en la pantalla que genera tModLoader
+		/// (<c>UIModConfig</c>). Con un identificador sin "$", la clave que busca es
+		/// <c>Mods.TerrakeepMod.Configs.AjustesConfig.Headers.Interfaz</c>
+		/// (<c>ConfigManager.GetLocalizedHeader</c> -&gt; <c>GetDefaultLocalizationKey</c>), y la
+		/// etiqueta y el tooltip salen de <c>...AjustesConfig.Idioma.Label</c>/<c>.Tooltip</c>. Los
+		/// tres estan en los dos <c>.hjson</c>.
 		/// </summary>
+		[Header("Interfaz")]
 		[DefaultValue(IdiomaDeTerrakeep.SeguirElJuego)]
 		public IdiomaDeTerrakeep Idioma { get; set; }
 
@@ -57,8 +66,47 @@ namespace TerrakeepMod.Common.Ajustes
 		/// Atajos del mod a los que ya se les ha puesto su tecla por defecto alguna vez (ver
 		/// <see cref="SembradorDeAtajos"/>, y el porque en su documentacion). Se guarda para no
 		/// volver a ponersela a un atajo al que el usuario se la quito a proposito.
+		///
+		/// <para />
+		/// <b>Es contabilidad interna, y NO tiene que salir en la pantalla de Configuracion de
+		/// Mods.</b> Salia: tModLoader le generaba una lista editable titulada "Atajos Ya
+		/// Sembrados" con cadenas tipo <c>TerrakeepMod/AbrirPanel</c> dentro, que no significan
+		/// nada para quien juega y que, tocadas a mano, solo pueden estropear el sembrado de
+		/// teclas.
+		///
+		/// <para />
+		/// <b>Como se oculta, de verdad.</b> El unico mecanismo que tiene tModLoader para esto es
+		/// <c>[JsonIgnore]</c>: tanto <c>UIModConfig.SetupList</c> como
+		/// <c>ConfigManager.RegisterLocalizationKeysForMembers</c> saltan cualquier miembro que lo
+		/// lleve (salvo que ademas lleve <c>ShowDespiteJsonIgnoreAttribute</c>, que es justo lo
+		/// contrario de lo que se busca). No hay ningun atributo tipo "Hide" - comprobado listando
+		/// los 40 atributos reales de <c>Terraria.ModLoader.Config</c>.
+		///
+		/// <para />
+		/// El problema es que <c>[JsonIgnore]</c> a secas tambien lo dejaria <b>sin guardar</b>, y
+		/// esto tiene que persistir entre partidas. De ahi las dos mitades: la propiedad publica
+		/// (la que ve el codigo del mod) lleva <c>[JsonIgnore]</c> y desaparece de la pantalla, y
+		/// el campo <b>privado</b> de abajo lleva <c>[JsonProperty]</c> y es el que se serializa.
+		/// Encaja con como funcionan las dos piezas por separado, sin trucos:
+		/// <list type="bullet">
+		/// <item><c>ConfigManager.GetFieldsAndProperties</c> solo mira
+		/// <c>BindingFlags.Instance | BindingFlags.Public</c>, asi que un campo privado no puede
+		/// aparecer en la interfaz aunque quisiera;</item>
+		/// <item>Newtonsoft si serializa un miembro no publico cuando lleva <c>[JsonProperty]</c>
+		/// (comportamiento estandar de <c>DefaultContractResolver</c>, del que hereda el
+		/// <c>ReferenceDefaultsPreservingResolver</c> que usa tModLoader).</item>
+		/// </list>
+		/// El nombre JSON se fija explicitamente para que los archivos de configuracion que ya
+		/// existan se sigan leyendo igual.
 		/// </summary>
-		public List<string> AtajosYaSembrados { get; set; }
+		[JsonIgnore]
+		public List<string> AtajosYaSembrados {
+			get { return _atajosYaSembrados; }
+			set { _atajosYaSembrados = value; }
+		}
+
+		[JsonProperty("AtajosYaSembrados")]
+		private List<string> _atajosYaSembrados = new List<string>();
 
 		/// <summary>
 		/// Obligatorio en cuanto un <c>ModConfig</c> tiene un tipo por referencia: tModLoader
