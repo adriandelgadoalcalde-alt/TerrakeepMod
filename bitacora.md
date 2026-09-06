@@ -679,3 +679,32 @@ del cliente no llegó a arrancar** (ni escribió el archivo de evidencia ni apar
 `client.log`, que en ese momento era el de WS1 haciendo su propia prueba). Al reintentarla sin
 nadie más lanzando el juego, salió a la primera. No parece un problema del mod: lanzar dos
 clientes de tModLoader a la vez es lo que no le sienta bien.
+
+## Verificación de integración final de la noche (6-sep-2026, madrugada)
+
+Con los cuatro workstreams ya cerrados por separado (WS0, WS1, WS4, WS7 - WS2 vive en el repo
+hermano), tocaba comprobar que **las cuatro piezas juntas, en el mismo `.tmod`**, siguen
+funcionando - cada agente había verificado la suya en copias/sandboxes aislados, pero nadie
+había vuelto a compilar y probar el árbol entero integrado desde que se fusionaron.
+
+- `git status` tenía un cambio sin comitear en los dos `Localization/*.hjson`: el propio
+  tModLoader los había reescrito (de claves con punto a bloques anidados, mismo contenido) al
+  cargar el mod con el campo `AtajosYaSembrados` nuevo de WS7. Comiteado tal cual (`c43752f`).
+- `scripts\compilar.ps1` sobre el árbol completo: **0 errores** con el compilador real de
+  tModLoader (solo 9 avisos de estilo `ChangeMagicNumberToID` en código de autoprueba, cosmético).
+  `.tmod` de 212.408 bytes (104.558 en WS0 con solo el panel de prueba - las cuatro piezas están
+  dentro de verdad).
+- Las tres autopruebas reales de WS1/WS4/WS7, ejecutadas contra ESE `.tmod` integrado (no una
+  copia aislada): **`AUTOPRUEBA WS1 COMPLETA`** (23 pasos, inventario/almacenes/loadouts/buffs/
+  apariencia/desbloqueos/cabecera, cero excepciones), **auto-equipar con clic real en la píldora
+  + segunda pasada idempotente** (Builds), **`AUTOPRUEBA WS7: terminada`** (deshacer/rehacer real
+  sobre un objeto movido, y cambio de idioma en vivo con persistencia en `ModConfig`
+  verificada). Los tres a la vez, sin ningún conflicto entre ellos.
+- `dotnet build`/`dotnet test`/arnés de UI Automation del repo hermano `Terrasavr-Native`,
+  también repetidos desde cero tras los commits de WS2 y de la ronda de idioma: **0 errores,
+  408+329 tests, arnés en 540 líneas con 0 FALLO**.
+
+**Estado real al cierre de la noche: los cinco workstreams de esta ronda (WS0, WS1, WS2, WS4,
+WS7) están cerrados, comiteados, y verificados juntos de verdad en el juego real - no solo cada
+uno por separado.** Quedan sin empezar, según el plan: WS3 (Librería del mod, depende del árbol
+ya portado en WS2), WS5 (Investigación) y WS6 (Exploración/mapa del mundo, el más grande).
