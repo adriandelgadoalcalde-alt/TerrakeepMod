@@ -80,6 +80,11 @@ namespace TerrakeepMod.Common.Panel
 				return;
 			}
 
+			// La autoprueba va PRIMERO y sin condiciones, por lo que ya documento WS0: una
+			// excepcion leyendo un atajo abortaria el resto del metodo y la autoprueba no llegaria
+			// a dispararse nunca.
+			AutopruebaPanelUnico.Avanzar();
+
 			ComprobarAtajos();
 
 			if (PanelAbierto) {
@@ -119,6 +124,38 @@ namespace TerrakeepMod.Common.Panel
 		}
 
 		/// <summary>
+		/// Nombre interno del atajo de cada area. Son los nombres HISTORICOS con los que cada
+		/// workstream registro el suyo, y no se cambian a proposito: el perfil de controles del
+		/// usuario (<c>input profiles.json</c>) los guarda por nombre, asi que renombrarlos le
+		/// borraria las teclas que tuviera puestas.
+		/// </summary>
+		public static string NombreDelAtajo(AreaTerrakeep area)
+		{
+			switch (area) {
+				case AreaTerrakeep.Personaje: return "AbrirPanel";
+				case AreaTerrakeep.Libreria: return "AbrirLibreria";
+				case AreaTerrakeep.Builds: return "AbrirBuilds";
+				case AreaTerrakeep.Investigacion: return "AbrirInvestigacion";
+				case AreaTerrakeep.Exploracion: return "AbrirExploracion";
+				case AreaTerrakeep.Ajustes: return "AbrirAjustes";
+				default: return null;
+			}
+		}
+
+		/// <summary>
+		/// Clave con la que <c>PlayerInput</c> indexa el atajo de un area. Es la misma que usa
+		/// <c>ModKeybind.JustPressed</c> por dentro
+		/// (<c>PlayerInput.Triggers.JustPressed.KeyStatus[FullName]</c>), y se construye a mano
+		/// porque <c>ModKeybind.FullName</c> <b>no es accesible desde un mod</b> en esta version
+		/// (comprobado: el compilador de tModLoader lo rechaza con CS1061).
+		/// </summary>
+		public static string ClaveDeAtajo(AreaTerrakeep area)
+		{
+			string nombre = NombreDelAtajo(area);
+			return nombre == null ? null : "TerrakeepMod/" + nombre;
+		}
+
+		/// <summary>
 		/// Tecla que tiene asignada AHORA MISMO el atajo de un area, tal como la ve el juego. Se
 		/// lee del propio <c>ModKeybind</c>, no de una constante: si el usuario la reasigna en
 		/// Ajustes &gt; Controles, el boton "Cerrar (X)" y el tooltip de la pestaña cambian solos.
@@ -141,7 +178,7 @@ namespace TerrakeepMod.Common.Panel
 		/// atajos de mods (<c>PlayerInput.reinitialize</c>), asi que puede lanzar
 		/// <c>KeyNotFoundException</c> al principio de una partida. Se autocorrige solo.
 		/// </summary>
-		private static void ComprobarAtajos()
+		public static void ComprobarAtajos()
 		{
 			// Con el chat abierto las teclas son texto, no atajos.
 			if (Main.drawingPlayerChat) {
