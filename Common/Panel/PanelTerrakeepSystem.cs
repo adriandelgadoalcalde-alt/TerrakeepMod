@@ -84,6 +84,7 @@ namespace TerrakeepMod.Common.Panel
 			// excepcion leyendo un atajo abortaria el resto del metodo y la autoprueba no llegaria
 			// a dispararse nunca.
 			AutopruebaPanelUnico.Avanzar();
+			AutopruebaIdiomas.Avanzar();
 
 			ComprobarAtajos();
 
@@ -167,7 +168,23 @@ namespace TerrakeepMod.Common.Panel
 				return "?";
 			}
 
-			List<string> teclas = atajo.GetAssignedKeys();
+			List<string> teclas;
+			try {
+				teclas = atajo.GetAssignedKeys();
+			}
+			catch (KeyNotFoundException) {
+				// El MISMO hueco que ya documento WS0 para ModKeybind.JustPressed, y aqui muerde
+				// mucho mas fuerte: GetAssignedKeys indexa por dentro el diccionario del perfil de
+				// controles, que no conoce los atajos de mods hasta que PlayerInput procesa su
+				// reinitialize pendiente, y eso tarda varios segundos al entrar en una partida.
+				//
+				// Sin este catch la excepcion sube por PanelTerrakeepState.RefrescarTextos ->
+				// CambiarArea -> UIElement.Activate y ABORTA LA CONSTRUCCION ENTERA DEL PANEL:
+				// abrirlo en los primeros segundos de un mundo lo dejaba a medias, sin contenido.
+				// Se vio en el juego real con la autoprueba de idiomas, no leyendo codigo.
+				return "sin tecla";
+			}
+
 			return teclas == null || teclas.Count == 0 ? "sin tecla" : string.Join("+", teclas);
 		}
 

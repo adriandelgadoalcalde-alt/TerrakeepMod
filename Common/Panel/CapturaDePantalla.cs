@@ -41,11 +41,22 @@ namespace TerrakeepMod.Common.Panel
 		/// <summary>Carpeta, dentro de la carpeta de guardado de la prueba, donde van las imagenes.</summary>
 		public const string Carpeta = "terrakeep-capturas";
 
+		/// <summary>
+		/// true solo si hay alguna autoprueba de las que piden capturas en marcha. Jugando normal el
+		/// mod no escribe ninguna imagen en ningun sitio.
+		/// </summary>
+		private static bool Permitida {
+			get {
+				return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaPanelUnico.Variable))
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaIdiomas.Variable));
+			}
+		}
+
 		/// <summary>Guarda el fotograma ya presentado en <c>&lt;guardado&gt;/terrakeep-capturas/
 		/// &lt;nombre&gt;.png</c>. Devuelve una linea describiendo lo que ha pasado, para el log.</summary>
 		public static string Guardar(string nombre)
 		{
-			if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaPanelUnico.Variable))) {
+			if (!Permitida) {
 				return "captura no pedida (sin variable de autoprueba)";
 			}
 

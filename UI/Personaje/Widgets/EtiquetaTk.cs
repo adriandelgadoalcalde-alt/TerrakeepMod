@@ -33,6 +33,11 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			Height.Set(alto, 0f);
 		}
 
+		/// <summary>Texto que se esta enseñando ahora mismo, ya resuelto. Lo lee la autoprueba de
+		/// idiomas para recoger TODO el texto visible de una pestaña sin tener que exponer cada
+		/// etiqueta una a una.</summary>
+		public string TextoActual => _texto != null ? (_texto() ?? "") : "";
+
 		protected override void DrawSelf(SpriteBatch spriteBatch)
 		{
 			string cadena = _texto();
