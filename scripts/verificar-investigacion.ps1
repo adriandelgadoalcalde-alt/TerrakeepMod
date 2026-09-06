@@ -51,7 +51,7 @@ $origenWs0 = Join-Path $env:USERPROFILE 'Documents\My Games\Terraria\tModLoader-
 $mundo     = 'TerrakeepPrueba'
 $personaje = 'TerrakeepPrueba'
 $evidencia = Join-Path $sandbox 'terrakeep-ws5-evidencia.log'
-$destino   = Join-Path $repo 'evidencia\ws5-investigacion.log.txt'
+$destino   = Join-Path $repo ('evidencia\ws5-investigacion' + $(if ($Calamity) { '-calamity' } else { '' }) + '.log.txt')
 
 # ---- 0. Sandbox propio, copiando el personaje y el mundo sinteticos de WS0 -----------------
 # El personaje TerrakeepPrueba lo genero WS0 desde cero (nunca deriva de ningun archivo real del

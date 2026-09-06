@@ -271,12 +271,42 @@ namespace TerrakeepMod.Common.Investigacion
 				}
 
 				case 15: {
+					// Objetos de MOD: solo tiene sentido si hay algun mod de contenido cargado
+					// (el script lo hace con -Calamity). Demuestra que el arbol los recoge y que
+					// se investigan por la misma via oficial que los de vanilla.
+					int tipoDeMod = PrimerTipoDeMod();
+					if (tipoDeMod <= 0) {
+						Registrar("Paso 15 - No hay ningun objeto investigable de mod en esta partida; " +
+							"nada que probar aqui (relanzar con -Calamity para cubrirlo).");
+						break;
+					}
+
+					CarpetaInvestigacion carpeta = BuscarCarpetaDe(tipoDeMod);
+					if (carpeta != null && contenido != null) {
+						contenido.Seleccionar(carpeta, true);
+					}
+					string antes = EstadoInvestigacion.Describir(tipoDeMod);
+					string boton = contenido?.PulsarBotonDeObjeto(tipoDeMod);
+					if (boton == null) {
+						// La fila no esta listada (carpeta muy grande, tope de filas): se ejercita
+						// igual la accion, y se dice claramente que no fue por el boton.
+						EstadoInvestigacion.Investigar("Investigar objeto de mod", new int[] { tipoDeMod });
+					}
+					Registrar($"Paso 15 - Objeto de MOD en la carpeta \"{carpeta?.Nombre}\" " +
+						$"(ruta \"{carpeta?.Ruta}\"). " +
+						(boton != null ? $"CLIC REAL en el boton \"{boton}\". " : "Sin fila visible, via directa. ") +
+						$"ANTES: {antes}. DESPUES: {EstadoInvestigacion.Describir(tipoDeMod)}. " +
+						$"Progreso global: {EstadoInvestigacion.TotalCompletos}/{EstadoInvestigacion.TotalInvestigable}.");
+					break;
+				}
+
+				case 16: {
 					string texto = contenido?.PulsarBotonGlobal(false);
 					// Se deja caducar la confirmacion a proposito en vez de darle el segundo clic:
 					// lo que hay que demostrar es que UN SOLO clic no borra nada. Confirmarla de
 					// verdad destruiria justo el estado que necesita la fase de persistencia.
 					_espera = 320;   // algo mas de los 240 fotogramas que dura la confirmacion
-					Registrar($"Paso 15 - Primer clic REAL en \"Quitar TODA la investigacion\": el boton pasa " +
+					Registrar($"Paso 16 - Primer clic REAL en \"Quitar TODA la investigacion\": el boton pasa " +
 						$"a \"{texto}\" y NO se ha ejecutado nada " +
 						$"(esperando confirmacion: {contenido?.EsperandoConfirmacion}). " +
 						$"El objeto de prueba sigue: {EstadoInvestigacion.Describir(TipoDePrueba)}. " +
@@ -284,8 +314,8 @@ namespace TerrakeepMod.Common.Investigacion
 					break;
 				}
 
-				case 16: {
-					Registrar($"Paso 16 - Sin segundo clic, la confirmacion caduca sola. " +
+				case 17: {
+					Registrar($"Paso 17 - Sin segundo clic, la confirmacion caduca sola. " +
 						$"Esperando confirmacion: {contenido?.EsperandoConfirmacion} (esperado False), " +
 						$"boton otra vez en \"{contenido?.TextoBotonGlobal(false)}\". " +
 						$"Estado intacto: {EstadoInvestigacion.Describir(TipoDePrueba)}. " +
@@ -293,17 +323,17 @@ namespace TerrakeepMod.Common.Investigacion
 					break;
 				}
 
-				case 17: {
+				case 18: {
 					Main.LocalPlayer.difficulty = _dificultadOriginal;
 					Player.SavePlayer(Main.ActivePlayerFileData, true);
-					Registrar($"Paso 17 - Dificultad devuelta a {_dificultadOriginal} y personaje guardado " +
+					Registrar($"Paso 18 - Dificultad devuelta a {_dificultadOriginal} y personaje guardado " +
 						$"con Player.SavePlayer. Lo investigado NO depende de la dificultad: se guarda en " +
 						$"Player.creativeTracker, dentro del propio .plr. La siguiente ejecucion con " +
 						$"{VariableFase}=comprobar lo leera del disco.");
 					break;
 				}
 
-				case 18:
+				case 19:
 					Registrar("AUTOPRUEBA WS5 COMPLETA.");
 					_terminada = true;
 					break;
@@ -320,6 +350,26 @@ namespace TerrakeepMod.Common.Investigacion
 			bool completo;
 			int cuantas = Terraria.GameContent.Creative.CreativeUI.GetSacrificeCount(tipo, out completo);
 			return $"{cuantas} sacrificados, completo={completo}";
+		}
+
+		/// <summary>
+		/// El primer objeto investigable que aporte un MOD (tipo por encima de
+		/// <c>ItemID.Count</c>), sin contar los que ya estuvieran investigados. 0 si no hay
+		/// ninguno, que es lo normal en una partida sin mods de contenido.
+		/// </summary>
+		private static int PrimerTipoDeMod()
+		{
+			int mejor = 0;
+			foreach (int tipo in EstadoInvestigacion.TiposInvestigables) {
+				int canonico = EstadoInvestigacion.TipoCanonico(tipo);
+				if (canonico < ItemID.Count || EstadoInvestigacion.Completo(canonico)) {
+					continue;
+				}
+				if (mejor == 0 || canonico < mejor) {
+					mejor = canonico;
+				}
+			}
+			return mejor;
 		}
 
 		private static CarpetaInvestigacion BuscarCarpetaDe(int tipo)

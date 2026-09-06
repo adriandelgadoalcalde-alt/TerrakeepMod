@@ -106,6 +106,10 @@ namespace TerrakeepMod.Common.Investigacion
 		private const string RutaArbol = "Assets/vanilla_library_tree.json";
 		private const string RutaEtiquetas = "Assets/vanilla_library_labels_es.json";
 
+		/// <summary>Nombre que ningun mod real puede tener. Ver donde se usa, en
+		/// <see cref="ConstruirArbolDeMods"/>.</summary>
+		private const string NombreImposibleDeMod = "(sin vanilla)";
+
 		private static byte[] _bytesArbol;
 		private static byte[] _bytesEtiquetas;
 
@@ -119,6 +123,16 @@ namespace TerrakeepMod.Common.Investigacion
 
 		/// <summary>true si hay arbol utilizable.</summary>
 		public static bool Listo => _raices.Count > 0;
+
+		/// <summary>Las carpetas raiz con su recuento, para el log de las pruebas.</summary>
+		public static string ResumenRaices()
+		{
+			List<string> partes = new List<string>();
+			foreach (CarpetaInvestigacion raiz in _raices) {
+				partes.Add("\"" + raiz.Nombre + "\" " + raiz.Hechos + "/" + raiz.Total);
+			}
+			return string.Join(" | ", partes);
+		}
 
 		/// <summary>
 		/// Lee los .json de dentro del .tmod. Hay que llamarlo mientras el archivo del mod sigue
@@ -164,7 +178,7 @@ namespace TerrakeepMod.Common.Investigacion
 			int raicesEstaticas = 0;
 			List<CategoryTreeNodeData> nodosEstaticos = ConstruirArbolEstatico();
 			foreach (CategoryTreeNodeData nodo in nodosEstaticos) {
-				CarpetaInvestigacion carpeta = Convertir(nodo, null, 0, yaColocados);
+				CarpetaInvestigacion carpeta = Convertir(nodo, null, 0, yaColocados, true);
 				if (carpeta != null) {
 					raices.Add(carpeta);
 					raicesEstaticas++;
@@ -174,7 +188,7 @@ namespace TerrakeepMod.Common.Investigacion
 			// --- 2. Una raiz por mod, descubierta en vivo -------------------------------------
 			int raicesDeMod = 0;
 			foreach (CategoryTreeNodeData nodo in ConstruirArbolDeMods()) {
-				CarpetaInvestigacion carpeta = Convertir(nodo, null, 0, yaColocados);
+				CarpetaInvestigacion carpeta = Convertir(nodo, null, 0, yaColocados, false);
 				if (carpeta != null) {
 					raices.Add(carpeta);
 					raicesDeMod++;
@@ -276,9 +290,11 @@ namespace TerrakeepMod.Common.Investigacion
 				return new List<CategoryTreeNodeData>();
 			}
 
-			// vanillaModName con un valor que ningun mod puede tener: aqui NO hay objetos de
-			// vanilla, asi que no queremos que LiveItemTreeBuilder ponga ninguna raiz por delante.
-			return LiveItemTreeBuilder.BuildTree(deMods, id => null, null, n => "Pagina " + n, " ");
+			// LiveItemTreeBuilder pone SIEMPRE la primera la carpeta del mod que se llame como
+			// vanillaModName. Aqui no hay ni un objeto de vanilla (los filtra EsDeMod), asi que se
+			// le pasa un nombre que ningun mod puede tener y todas las raices quedan ordenadas por
+			// orden ordinal, sin ninguna privilegiada.
+			return LiveItemTreeBuilder.BuildTree(deMods, id => null, null, n => "Pagina " + n, NombreImposibleDeMod);
 		}
 
 		/// <summary>true si el tipo lo aporta un mod (no es contenido de Terraria).</summary>
@@ -360,12 +376,22 @@ namespace TerrakeepMod.Common.Investigacion
 		/// investigable y descartando las carpetas que se quedan vacias.
 		/// </summary>
 		private static CarpetaInvestigacion Convertir(CategoryTreeNodeData nodo, CarpetaInvestigacion padre,
-			int profundidad, HashSet<int> yaColocados)
+			int profundidad, HashSet<int> yaColocados, bool soloVanilla)
 		{
 			// Los tipos investigables de este nodo, canonizados y sin repetir.
 			List<int> propios = new List<int>();
 			HashSet<int> enEsteNodo = new HashSet<int>();
 			foreach (int id in nodo.ItemIdsOrdered) {
+				// El arbol vanilla estatico SOLO puede aportar objetos de vanilla. El catalogo de
+				// Terrasavr del que sale trae ids por encima del ItemID.Count de esta version del
+				// juego (5456), y esos ids, dentro de la partida, ya no son de vanilla: los ocupan
+				// los objetos que registran los mods. Sin este filtro, un objeto de mod aparecia
+				// DOS veces - colado en una carpeta vanilla que no le corresponde y otra vez en la
+				// carpeta de su mod. Visto de verdad en la prueba con Calamity: "Andromedon Body"
+				// (type=5456, de tModLoader) salia dentro de "Daño de Invocacion".
+				if (soloVanilla && id >= ItemID.Count) {
+					continue;
+				}
 				int canonico = EstadoInvestigacion.TipoCanonico(id);
 				if (EstadoInvestigacion.EsInvestigable(canonico) && enEsteNodo.Add(canonico)) {
 					propios.Add(canonico);
@@ -384,7 +410,7 @@ namespace TerrakeepMod.Common.Investigacion
 				nodo.Children.Count == 0 ? tipos : new int[0]);
 
 			foreach (CategoryTreeNodeData hijo in nodo.Children) {
-				CarpetaInvestigacion carpetaHija = Convertir(hijo, carpeta, profundidad + 1, yaColocados);
+				CarpetaInvestigacion carpetaHija = Convertir(hijo, carpeta, profundidad + 1, yaColocados, soloVanilla);
 				if (carpetaHija != null) {
 					carpeta.Hijos.Add(carpetaHija);
 				}

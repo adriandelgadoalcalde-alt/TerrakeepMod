@@ -76,6 +76,8 @@ namespace TerrakeepMod.Common.Investigacion
 
 			RegistroInvestigacion.Linea(
 				$"{Terrakeep.LogTag} Investigacion: arbol construido. {CatalogoInvestigacion.ResumenConstruccion}");
+			RegistroInvestigacion.Linea(
+				$"{Terrakeep.LogTag} Investigacion: carpetas raiz -> {CatalogoInvestigacion.ResumenRaices()}");
 		}
 
 		public override void Unload()

@@ -1,32 +1,36 @@
-﻿# Evidencia de WS5 (Investigacion) - 2026-09-06 09:39:23
-[09:39:23.429] [Terrakeep] Investigacion: arbol construido. 10 carpetas raiz (9 del arbol vanilla de Terrasavr, 1 de mods, 0 de "Otros objetos" con 0). Objetos investigables en el arbol: 5480; segun la tabla real del juego: 5480 (cuadra)
-[09:39:24.231] [Terrakeep] AUTOPRUEBA WS5: variable TERRAKEEP_AUTOTEST_WS5 detectada. Fase: investigar. Marca de ejecucion: WS5-investigar-093906-42940
-[09:39:27.228] [Terrakeep] Paso 0 - Entorno: jugador "TerrakeepPrueba", dificultad=0, mundo "TerrakeepPrueba" GameMode=0. EstadoInvestigacion.ModoViaje=False, MundoModoViaje=False. Objetos investigables segun la tabla real del juego: 5480, ya investigados: 1.
-[09:39:27.414] [Terrakeep] PANEL INVESTIGACION ABIERTO via autoprueba (TERRAKEEP_AUTOTEST_WS5). Jugador: "TerrakeepPrueba" (dificultad=0, ModoViaje=False). Mundo: "TerrakeepPrueba" (GameMode=0). Progreso global: 1/5480. Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Investigacion.PanelInvestigacionState
-[09:39:27.419] [Terrakeep] Panel de Investigacion dibujado. Marco en coordenadas de pantalla: x=16 y=21 w=768 h=676. Resolucion 800x720, escala de interfaz 1. Contenido: 391 elementos, 10 filas de carpeta y 120 slots de objeto (el 1o en x=343 y=216 37x37); caja del arbol x=26 y=173 299x430, caja de objetos x=335 y=173 438x430
-[09:39:27.594] [Terrakeep] Paso 2 - Panel abierto: SI, sin Modo Viaje. AVISO que se esta pintando: "AVISO: este personaje NO es de Modo Viaje (dificultad 0). La investigacion se guarda igual en el personaje, pero el juego no la usa para nada fuera del Modo Viaje: no habra menu de duplicar objetos.". Arbol: 10 carpetas raiz (9 del arbol vanilla de Terrasavr, 1 de mods, 0 de "Otros objetos" con 0). Objetos investigables en el arbol: 5480; segun la tabla real del juego: 5480 (cuadra)
-[09:39:27.777] [Terrakeep] Paso 3 - ESCENARIO: Player.difficulty 0 -> 3. EstadoInvestigacion.ModoViaje=True (esperado True).
-[09:39:27.960] [Terrakeep] Paso 4 - Con Modo Viaje, el aviso desaparece solo: "" (esperado vacio). Contenido: 391 elementos, 10 filas de carpeta y 120 slots de objeto (el 1o en x=343 y=216 37x37); caja del arbol x=26 y=173 299x430, caja de objetos x=335 y=173 438x430
-[09:39:28.144] [Terrakeep] Paso 5 - Punto de partida del objeto de prueba. ANTES: "Dirt Block" (type=2, pid=DirtBlock) 100/100 INVESTIGADO. DESPUES de quitarle la investigacion: "Dirt Block" (type=2, pid=DirtBlock) 0/100 sin terminar.
-[09:39:28.327] [Terrakeep] Paso 6 - Carpeta del objeto de prueba: "Pagina 1" (ruta "Categories/Placeable (3219)/Pages 1+/Page 1", 0/40). Filas de carpeta visibles en el arbol: 10.
-[09:39:28.510] [Terrakeep] Investigacion: Investigado: Dirt Block -> "Dirt Block" (type=2, pid=DirtBlock) 100/100 INVESTIGADO
-[09:39:28.512] [Terrakeep] Paso 7 - CLIC REAL en el boton "Investigar" de la fila del objeto de prueba. ANTES: 0/100. DESPUES: "Dirt Block" (type=2, pid=DirtBlock) 100/100 INVESTIGADO.
-[09:39:28.694] [Terrakeep] Paso 8 - Segun el JUEGO (FillListOfItemsThatCanBeObtainedInfinitely): 1 objetos disponibles infinitamente, y el de prueba esta en la lista: True. CreativeUI.GetSacrificeCount dice: 100 sacrificados, completo=True.
-[09:39:28.877] [Terrakeep] Paso 9 - Ctrl+Z sobre la investigacion. Historial ha deshecho: "Investigar Dirt Block". Estado ahora: "Dirt Block" (type=2, pid=DirtBlock) 0/100 sin terminar.
-[09:39:29.060] [Terrakeep] Paso 10 - Ctrl+Y. Historial ha rehecho: "Investigar Dirt Block". Estado ahora: "Dirt Block" (type=2, pid=DirtBlock) 100/100 INVESTIGADO.
-[09:39:29.244] [Terrakeep] Paso 11 - Carpeta elegida para la prueba de carpeta entera: "Alas (7)" (0/7). Progreso global antes: 1/5480.
-[09:39:29.427] [Terrakeep] Investigacion: Carpeta "Alas (7)": cambiados=7, sin cambio=0, no investigables=0
-[09:39:29.428] [Terrakeep] Paso 12 - CLIC REAL en "Investigar carpeta". Carpeta "Alas (7)" ahora: 7/7 (esperado que cuadren). Progreso global: 8/5480 (antes 1).
-[09:39:29.610] [Terrakeep] Investigacion: Carpeta "Alas (7)" sin investigar: cambiados=7, sin cambio=0, no investigables=0
-[09:39:29.611] [Terrakeep] Paso 13 - CLIC REAL en "Quitar carpeta". Carpeta "Alas (7)" ahora: 0/7 (esperado 0/N). Progreso global: 1.
-[09:39:29.794] [Terrakeep] Paso 14 - El objeto de prueba sigue como lo dejo el rehacer: "Dirt Block" (type=2, pid=DirtBlock) 100/100 INVESTIGADO.
-[09:39:29.977] [Terrakeep] Paso 15 - Primer clic REAL en "Quitar TODA la investigacion": el boton pasa a "Seguro? Pulsa otra vez" y NO se ha ejecutado nada (esperando confirmacion: True). El objeto de prueba sigue: "Dirt Block" (type=2, pid=DirtBlock) 100/100 INVESTIGADO. Progreso global: 1/5480.
-[09:39:35.327] [Terrakeep] Paso 16 - Sin segundo clic, la confirmacion caduca sola. Esperando confirmacion: False (esperado False), boton otra vez en "Quitar TODA la investigacion". Estado intacto: "Dirt Block" (type=2, pid=DirtBlock) 100/100 INVESTIGADO. Progreso global: 1/5480.
-[09:39:35.561] [Terrakeep] Paso 17 - Dificultad devuelta a 0 y personaje guardado con Player.SavePlayer. Lo investigado NO depende de la dificultad: se guarda en Player.creativeTracker, dentro del propio .plr. La siguiente ejecucion con TERRAKEEP_WS5_FASE=comprobar lo leera del disco.
-[09:39:35.693] [Terrakeep] AUTOPRUEBA WS5 COMPLETA.
-# Evidencia de WS5 (Investigacion) - 2026-09-06 09:40:03
-[09:40:03.054] [Terrakeep] Investigacion: arbol construido. 10 carpetas raiz (9 del arbol vanilla de Terrasavr, 1 de mods, 0 de "Otros objetos" con 0). Objetos investigables en el arbol: 5480; segun la tabla real del juego: 5480 (cuadra)
-[09:40:03.928] [Terrakeep] AUTOPRUEBA WS5: variable TERRAKEEP_AUTOTEST_WS5 detectada. Fase: comprobar (solo lectura). Marca de ejecucion: WS5-comprobar-093940-42940
-[09:40:06.923] [Terrakeep] PERSISTENCIA/1 - Personaje recien cargado del disco por el propio juego. Estado del objeto de prueba: "Dirt Block" (type=2, pid=DirtBlock) 100/100 INVESTIGADO
-[09:40:06.924] [Terrakeep] PERSISTENCIA/2 - El juego considera 1 objetos disponibles de forma infinita; el de prueba esta en esa lista: True. Progreso global: 1/5480.
-[09:40:06.925] [Terrakeep] AUTOPRUEBA WS5: fase de comprobacion terminada.
+﻿# Evidencia de WS5 (Investigacion) - 2026-09-06 09:54:54
+[09:54:54.089] [Terrakeep] Investigacion: arbol construido. 10 carpetas raiz (9 del arbol vanilla de Terrasavr, 1 de mods, 0 de "Otros objetos" con 0). Objetos investigables en el arbol: 5480; segun la tabla real del juego: 5480 (cuadra)
+[09:54:54.089] [Terrakeep] Investigacion: carpetas raiz -> "Materiales" 0/1583 | "Decoraciones" 0/784 | "Mascotas, Monturas, Herramientas" 0/141 | "Pociones (regeneracion)" 0/14 | "Pociones (efectos)" 0/44 | "Jefes & Eventos" 0/23 | "Mision de Pez" 0/40 | "Categorias" 0/4628 | "Objectos por ID" 0/5391 | "tModLoader (89)" 0/89
+[09:54:54.962] [Terrakeep] AUTOPRUEBA WS5: variable TERRAKEEP_AUTOTEST_WS5 detectada. Fase: investigar. Marca de ejecucion: WS5-investigar-095436-48284
+[09:54:58.017] [Terrakeep] Paso 0 - Entorno: jugador "TerrakeepPrueba", dificultad=0, mundo "TerrakeepPrueba" GameMode=0. EstadoInvestigacion.ModoViaje=False, MundoModoViaje=False. Objetos investigables segun la tabla real del juego: 5480, ya investigados: 5.
+[09:54:58.203] [Terrakeep] PANEL INVESTIGACION ABIERTO via autoprueba (TERRAKEEP_AUTOTEST_WS5). Jugador: "TerrakeepPrueba" (dificultad=0, ModoViaje=False). Mundo: "TerrakeepPrueba" (GameMode=0). Progreso global: 5/5480. Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Investigacion.PanelInvestigacionState
+[09:54:58.207] [Terrakeep] Panel de Investigacion dibujado. Marco en coordenadas de pantalla: x=16 y=21 w=768 h=676. Resolucion 800x720, escala de interfaz 1. Contenido: 391 elementos, 10 filas de carpeta y 120 slots de objeto (el 1o en x=343 y=216 37x37); caja del arbol x=26 y=173 299x430, caja de objetos x=335 y=173 438x430
+[09:54:58.383] [Terrakeep] Paso 2 - Panel abierto: SI, sin Modo Viaje. AVISO que se esta pintando: "AVISO: este personaje NO es de Modo Viaje (dificultad 0). La investigacion se guarda igual en el personaje, pero el juego no la usa para nada fuera del Modo Viaje: no habra menu de duplicar objetos.". Arbol: 10 carpetas raiz (9 del arbol vanilla de Terrasavr, 1 de mods, 0 de "Otros objetos" con 0). Objetos investigables en el arbol: 5480; segun la tabla real del juego: 5480 (cuadra)
+[09:54:58.566] [Terrakeep] Paso 3 - ESCENARIO: Player.difficulty 0 -> 3. EstadoInvestigacion.ModoViaje=True (esperado True).
+[09:54:58.750] [Terrakeep] Paso 4 - Con Modo Viaje, el aviso desaparece solo: "" (esperado vacio). Contenido: 391 elementos, 10 filas de carpeta y 120 slots de objeto (el 1o en x=343 y=216 37x37); caja del arbol x=26 y=173 299x430, caja de objetos x=335 y=173 438x430
+[09:54:58.934] [Terrakeep] Paso 5 - Punto de partida del objeto de prueba. ANTES: "Dirt Block" (type=2, pid=DirtBlock) 100/100 INVESTIGADO. DESPUES de quitarle la investigacion: "Dirt Block" (type=2, pid=DirtBlock) 0/100 sin terminar.
+[09:54:59.117] [Terrakeep] Paso 6 - Carpeta del objeto de prueba: "Pagina 1" (ruta "Categories/Placeable (3219)/Pages 1+/Page 1", 0/40). Filas de carpeta visibles en el arbol: 10.
+[09:54:59.300] [Terrakeep] Investigacion: Investigado: Dirt Block -> "Dirt Block" (type=2, pid=DirtBlock) 100/100 INVESTIGADO
+[09:54:59.301] [Terrakeep] Paso 7 - CLIC REAL en el boton "Investigar" de la fila del objeto de prueba. ANTES: 0/100. DESPUES: "Dirt Block" (type=2, pid=DirtBlock) 100/100 INVESTIGADO.
+[09:54:59.483] [Terrakeep] Paso 8 - Segun el JUEGO (FillListOfItemsThatCanBeObtainedInfinitely): 5 objetos disponibles infinitamente, y el de prueba esta en la lista: True. CreativeUI.GetSacrificeCount dice: 100 sacrificados, completo=True.
+[09:54:59.667] [Terrakeep] Paso 9 - Ctrl+Z sobre la investigacion. Historial ha deshecho: "Investigar Dirt Block". Estado ahora: "Dirt Block" (type=2, pid=DirtBlock) 0/100 sin terminar.
+[09:54:59.850] [Terrakeep] Paso 10 - Ctrl+Y. Historial ha rehecho: "Investigar Dirt Block". Estado ahora: "Dirt Block" (type=2, pid=DirtBlock) 100/100 INVESTIGADO.
+[09:55:00.033] [Terrakeep] Paso 11 - Carpeta elegida para la prueba de carpeta entera: "Alas (7)" (0/7). Progreso global antes: 5/5480.
+[09:55:00.216] [Terrakeep] Investigacion: Carpeta "Alas (7)": cambiados=7, sin cambio=0, no investigables=0
+[09:55:00.218] [Terrakeep] Paso 12 - CLIC REAL en "Investigar carpeta". Carpeta "Alas (7)" ahora: 7/7 (esperado que cuadren). Progreso global: 12/5480 (antes 5).
+[09:55:00.400] [Terrakeep] Investigacion: Carpeta "Alas (7)" sin investigar: cambiados=7, sin cambio=0, no investigables=0
+[09:55:00.401] [Terrakeep] Paso 13 - CLIC REAL en "Quitar carpeta". Carpeta "Alas (7)" ahora: 0/7 (esperado 0/N). Progreso global: 5.
+[09:55:00.583] [Terrakeep] Paso 14 - El objeto de prueba sigue como lo dejo el rehacer: "Dirt Block" (type=2, pid=DirtBlock) 100/100 INVESTIGADO.
+[09:55:00.767] [Terrakeep] Investigacion: Investigado: AetherBreaker's Head -> "AetherBreaker's Head" (type=5460, pid=ModLoader/AetherBreaker_Head) 1/1 INVESTIGADO
+[09:55:00.768] [Terrakeep] Paso 15 - Objeto de MOD en la carpeta "Armadura/Cascos (26)" (ruta "tModLoader/Armadura/Cascos"). CLIC REAL en el boton "Investigar". ANTES: "AetherBreaker's Head" (type=5460, pid=ModLoader/AetherBreaker_Head) 0/1 sin terminar. DESPUES: "AetherBreaker's Head" (type=5460, pid=ModLoader/AetherBreaker_Head) 1/1 INVESTIGADO. Progreso global: 6/5480.
+[09:55:00.950] [Terrakeep] Paso 16 - Primer clic REAL en "Quitar TODA la investigacion": el boton pasa a "Seguro? Pulsa otra vez" y NO se ha ejecutado nada (esperando confirmacion: True). El objeto de prueba sigue: "Dirt Block" (type=2, pid=DirtBlock) 100/100 INVESTIGADO. Progreso global: 6/5480.
+[09:55:06.300] [Terrakeep] Paso 17 - Sin segundo clic, la confirmacion caduca sola. Esperando confirmacion: False (esperado False), boton otra vez en "Quitar TODA la investigacion". Estado intacto: "Dirt Block" (type=2, pid=DirtBlock) 100/100 INVESTIGADO. Progreso global: 6/5480.
+[09:55:06.530] [Terrakeep] Paso 18 - Dificultad devuelta a 0 y personaje guardado con Player.SavePlayer. Lo investigado NO depende de la dificultad: se guarda en Player.creativeTracker, dentro del propio .plr. La siguiente ejecucion con TERRAKEEP_WS5_FASE=comprobar lo leera del disco.
+[09:55:06.682] [Terrakeep] AUTOPRUEBA WS5 COMPLETA.
+# Evidencia de WS5 (Investigacion) - 2026-09-06 09:55:28
+[09:55:28.180] [Terrakeep] Investigacion: arbol construido. 10 carpetas raiz (9 del arbol vanilla de Terrasavr, 1 de mods, 0 de "Otros objetos" con 0). Objetos investigables en el arbol: 5480; segun la tabla real del juego: 5480 (cuadra)
+[09:55:28.181] [Terrakeep] Investigacion: carpetas raiz -> "Materiales" 0/1583 | "Decoraciones" 0/784 | "Mascotas, Monturas, Herramientas" 0/141 | "Pociones (regeneracion)" 0/14 | "Pociones (efectos)" 0/44 | "Jefes & Eventos" 0/23 | "Mision de Pez" 0/40 | "Categorias" 0/4628 | "Objectos por ID" 0/5391 | "tModLoader (89)" 0/89
+[09:55:29.054] [Terrakeep] AUTOPRUEBA WS5: variable TERRAKEEP_AUTOTEST_WS5 detectada. Fase: comprobar (solo lectura). Marca de ejecucion: WS5-comprobar-095511-48284
+[09:55:32.105] [Terrakeep] PERSISTENCIA/1 - Personaje recien cargado del disco por el propio juego. Estado del objeto de prueba: "Dirt Block" (type=2, pid=DirtBlock) 100/100 INVESTIGADO
+[09:55:32.106] [Terrakeep] PERSISTENCIA/2 - El juego considera 6 objetos disponibles de forma infinita; el de prueba esta en esa lista: True. Progreso global: 6/5480.
+[09:55:32.106] [Terrakeep] AUTOPRUEBA WS5: fase de comprobacion terminada.
