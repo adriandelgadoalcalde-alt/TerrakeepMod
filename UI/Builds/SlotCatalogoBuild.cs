@@ -28,7 +28,7 @@ namespace TerrakeepMod.UI.Builds
 		private static readonly Color IconoNoLoTienes = new Color(120, 120, 120, 190);
 
 		private readonly Item[] _muestra = new Item[1];
-		private readonly float _escala;
+		private float _escala;
 
 		/// <summary>El objeto del catalogo que representa este slot.</summary>
 		public readonly ObjetoBuild Objeto;
@@ -38,6 +38,21 @@ namespace TerrakeepMod.UI.Builds
 
 		/// <summary>Donde lo tiene, si lo tiene (para el texto de al lado).</summary>
 		public string DondeLoTiene;
+
+		/// <summary>
+		/// Escala de dibujado, cambiable despues de crear la ranura: cuando la ventana es baja no
+		/// caben las 7 filas de accesorios y hay que encogerlas (ver
+		/// <c>ContenidoBuilds.ColocarFilasDeObjetos</c>). Es lo mismo que ya hace
+		/// <c>SlotObjetoVanilla</c> en la pestaña de Equipo.
+		/// </summary>
+		public float Escala {
+			get { return _escala; }
+			set {
+				_escala = value;
+				Width.Set(52f * value, 0f);
+				Height.Set(52f * value, 0f);
+			}
+		}
 
 		public SlotCatalogoBuild(ObjetoBuild objeto, float escala = 0.85f)
 		{

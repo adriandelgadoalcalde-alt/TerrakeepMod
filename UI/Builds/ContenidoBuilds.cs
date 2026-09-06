@@ -53,8 +53,25 @@ namespace TerrakeepMod.UI.Builds
 		private string _textoResumen = "";
 
 		private const float ArribaPrimeraFila = 28f;
-		private const float PasoMinimo = 45f;
+
+		/// <summary>
+		/// Paso minimo entre filas de objeto.
+		/// <para />
+		/// Era 45 (el lado de la ranura a escala 0,85 mas un pixel de aire) y no bastaba: a
+		/// 1600x900 el juego usa escala de interfaz 1,47 y la pantalla logica se queda en 1090x613,
+		/// asi que al cuerpo le sobran ~218 px para SIETE filas de accesorio (mas la fila extra de
+		/// fuentes que añade Calamity). Con 45 salian cinco y media y las dos ultimas quedaban
+		/// cortadas por abajo - visto en una captura real con Calamity a esa resolucion. Ahora,
+		/// cuando el paso baja de 45, la RANURA se encoge con el (hasta 0,55) igual que en la
+		/// pestaña de Equipo, en vez de dejar filas fuera.
+		/// </summary>
+		private const float PasoMinimo = 30f;
+
 		private const float PasoMaximo = 52f;
+
+		/// <summary>Escala de ranura ideal y minima.</summary>
+		private const float EscalaSlotMaxima = 0.85f;
+		private const float EscalaSlotMinima = 0.55f;
 
 		private readonly List<SlotCatalogoBuild> _slots = new List<SlotCatalogoBuild>();
 		private readonly List<UIText> _etiquetasSlot = new List<UIText>();
@@ -357,12 +374,12 @@ namespace TerrakeepMod.UI.Builds
 		/// alto REAL del cuerpo, que en el constructor todavia no existe.</summary>
 		private class FilaObjeto
 		{
-			public readonly UIElement Slot;
+			public readonly SlotCatalogoBuild Slot;
 			public readonly UIElement Nombre;
 			public readonly UIElement Pie;
 			public readonly int Indice;
 
-			public FilaObjeto(UIElement slot, UIElement nombre, UIElement pie, int indice)
+			public FilaObjeto(SlotCatalogoBuild slot, UIElement nombre, UIElement pie, int indice)
 			{
 				Slot = slot;
 				Nombre = nombre;
@@ -399,12 +416,33 @@ namespace TerrakeepMod.UI.Builds
 				paso = PasoMinimo;
 			}
 
+			// La ranura solo encoge cuando el paso se queda por debajo de su tamaño natural.
+			float escalaSlot = (paso - 1f) / 52f;
+			if (escalaSlot > EscalaSlotMaxima) {
+				escalaSlot = EscalaSlotMaxima;
+			}
+			if (escalaSlot < EscalaSlotMinima) {
+				escalaSlot = EscalaSlotMinima;
+			}
+
+			// Con las filas apretadas, el prefijo sugerido de debajo del nombre ya no cabe: se
+			// esconde en vez de pintarse encima de la fila siguiente.
+			bool cabeElPie = paso >= 44f;
+
 			foreach (FilaObjeto f in _filas) {
 				float y = ArribaPrimeraFila + f.Indice * paso;
+				f.Slot.Escala = escalaSlot;
 				f.Slot.Top.Set(y, 0f);
-				f.Nombre.Top.Set(y + 6f, 0f);
+				f.Nombre.Top.Set(y + (paso - 20f) / 2f, 0f);
 				if (f.Pie != null) {
 					f.Pie.Top.Set(y + 26f, 0f);
+					if (cabeElPie) {
+						f.Pie.Left.Set(54f, 0f);
+					}
+					else {
+						// Fuera de la vista: OverflowHidden del cuerpo lo recorta.
+						f.Pie.Left.Set(-4000f, 0f);
+					}
 				}
 			}
 
