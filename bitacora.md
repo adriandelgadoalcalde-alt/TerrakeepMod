@@ -882,3 +882,13 @@ en los 13 pasos, en las dos configuraciones.**
   `GIT_INDEX_FILE=<ruta propia> git read-tree HEAD` + `git add <mis archivos>` + `git commit`. El
   `.git/index` compartido no se toca en ningún momento, así que es imposible arrastrar los
   archivos de otro agente (que es lo que le pasó a WS1 con el commit `69a2281`).
+- **Corolario que hay que conocer, porque muerde**: precisamente por no tocarlo, el `.git/index`
+  compartido **se queda obsoleto** tras un commit hecho con índice privado (o tras cualquier
+  commit de otro agente que use la misma técnica). Se vio en real: `git status` pasó a marcar con
+  `D` (borrado PREPARADO) los ~30 archivos de WS3 y de WS6 que sí existen en disco y en `HEAD`.
+  Si en ese momento otro agente hubiera hecho un `git commit` normal, **habría comiteado el
+  borrado de todos ellos**. Se arregla con un `git reset` a secas (sin `--hard` y sin rutas):
+  solo reescribe el índice para que vuelva a coincidir con `HEAD`, no toca ni un archivo del
+  árbol de trabajo. Comprobado antes de ejecutarlo que no había ninguna entrada `A` (contenido
+  que existiera únicamente en el índice), o sea que no se perdía nada. **Conviene hacerlo
+  siempre después de comitear con índice privado.**
