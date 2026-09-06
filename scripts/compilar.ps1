@@ -44,7 +44,15 @@ if ($LASTEXITCODE -ne 0) { throw "Fallo el dotnet build (fase 1)" }
 Write-Host "== Fase 2: compilar y empaquetar el .tmod con tModLoader ==" -ForegroundColor Cyan
 Push-Location $tmlDir
 try {
+	# El "-build" real de tModLoader escribe alguna linea benigna de aviso a stderr (p.ej.
+	# "WARN: Image loading failed: unknown image type" al procesar icon.png/icon_small.png -
+	# no impide que el .tmod se genere bien, comprobado). Con $ErrorActionPreference='Stop' (fijado
+	# arriba del todo del script) PowerShell 5.1 puede tratar esa salida nativa como un error
+	# terminante aunque el proceso acabe con exit code 0 - se relaja aqui, alrededor de esta
+	# unica llamada, y se sigue comprobando $LASTEXITCODE de verdad justo debajo.
+	$ErrorActionPreference = 'Continue'
 	& $tmlDotnet 'tModLoader.dll' '-server' '-build' $proyecto '-unsafe' 'false'
+	$ErrorActionPreference = 'Stop'
 	if ($LASTEXITCODE -ne 0) { throw "Fallo el -build de tModLoader (fase 2)" }
 }
 finally {
