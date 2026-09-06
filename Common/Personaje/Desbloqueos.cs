@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Terraria;
+using TerrakeepMod.Common.Ajustes;
 
 namespace TerrakeepMod.Common.Personaje
 {
@@ -8,21 +9,25 @@ namespace TerrakeepMod.Common.Personaje
 	/// <see cref="Player"/> que lo guarda.</summary>
 	public class Desbloqueo
 	{
-		public readonly string Nombre;
-		public readonly string Descripcion;
 		public readonly Func<Player, bool> Leer;
 		public readonly Action<Player, bool> Escribir;
 
-		/// <summary>Nombre del campo real de Player, para poder citarlo en el log de las
-		/// pruebas y que la evidencia sea comprobable.</summary>
+		/// <summary>Nombre del campo real de Player. Sirve para dos cosas: citarlo en el log de
+		/// las pruebas (para que la evidencia sea comprobable) y, como es unico y estable, hacer
+		/// de CLAVE de localizacion de esta entrada.</summary>
 		public readonly string CampoReal;
 
-		public Desbloqueo(string nombre, string campoReal, string descripcion,
-			Func<Player, bool> leer, Action<Player, bool> escribir)
+		/// <summary>Rotulo de la casilla, traducido al idioma activo. Es una propiedad y no un
+		/// campo porque la lista se construye una sola vez y se cachea: guardado ya resuelto se
+		/// quedaria con el idioma que hubiera en ese momento.</summary>
+		public string Nombre => Idiomas.Texto("Personaje.Desbloqueos." + CampoReal + ".Nombre");
+
+		/// <summary>Explicacion que se ve en el tooltip de la casilla, traducida.</summary>
+		public string Descripcion => Idiomas.Texto("Personaje.Desbloqueos." + CampoReal + ".Descripcion");
+
+		public Desbloqueo(string campoReal, Func<Player, bool> leer, Action<Player, bool> escribir)
 		{
-			Nombre = nombre;
 			CampoReal = campoReal;
-			Descripcion = descripcion;
 			Leer = leer;
 			Escribir = escribir;
 		}
@@ -68,56 +73,43 @@ namespace TerrakeepMod.Common.Personaje
 		private static List<Desbloqueo> Construir()
 		{
 			return new List<Desbloqueo> {
-				new Desbloqueo("6º ranura de accesorio", "extraAccessory",
-					"Corazon de Demonio. Solo surte efecto en modo Experto o superior.",
+				new Desbloqueo("extraAccessory",
 					j => j.extraAccessory, (j, v) => j.extraAccessory = v),
 
-				new Desbloqueo("Antorchas de bioma desbloqueadas", "unlockedBiomeTorches",
-					"Torch God's Favor. Sin esto, la casilla de abajo no hace nada.",
+				new Desbloqueo("unlockedBiomeTorches",
 					j => j.unlockedBiomeTorches, (j, v) => j.unlockedBiomeTorches = v),
 
-				new Desbloqueo("Antorchas de bioma activadas", "UsingBiomeTorches",
-					"Propiedad: guarda en builderAccStatus[11] y exige el desbloqueo de arriba.",
+				new Desbloqueo("UsingBiomeTorches",
 					j => j.UsingBiomeTorches, (j, v) => j.UsingBiomeTorches = v),
 
-				new Desbloqueo("Pan de artesano comido", "ateArtisanBread",
-					"Artisan Loaf: permite crear cerca de cualquier estacion.",
+				new Desbloqueo("ateArtisanBread",
 					j => j.ateArtisanBread, (j, v) => j.ateArtisanBread = v),
 
-				new Desbloqueo("Cristal de Egida usado", "usedAegisCrystal",
-					"Aegis Crystal: +defensa permanente.",
+				new Desbloqueo("usedAegisCrystal",
 					j => j.usedAegisCrystal, (j, v) => j.usedAegisCrystal = v),
 
-				new Desbloqueo("Fruta de Egida usada", "usedAegisFruit",
-					"Aegis Fruit: +vida permanente.",
+				new Desbloqueo("usedAegisFruit",
 					j => j.usedAegisFruit, (j, v) => j.usedAegisFruit = v),
 
-				new Desbloqueo("Cristal arcano usado", "usedArcaneCrystal",
-					"Arcane Crystal: +regeneracion de mana permanente.",
+				new Desbloqueo("usedArcaneCrystal",
 					j => j.usedArcaneCrystal, (j, v) => j.usedArcaneCrystal = v),
 
-				new Desbloqueo("Perla galactica usada", "usedGalaxyPearl",
-					"Galaxy Pearl: +suerte permanente.",
+				new Desbloqueo("usedGalaxyPearl",
 					j => j.usedGalaxyPearl, (j, v) => j.usedGalaxyPearl = v),
 
-				new Desbloqueo("Gusano de goma usado", "usedGummyWorm",
-					"Gummy Worm: +pesca permanente.",
+				new Desbloqueo("usedGummyWorm",
 					j => j.usedGummyWorm, (j, v) => j.usedGummyWorm = v),
 
-				new Desbloqueo("Ambrosia usada", "usedAmbrosia",
-					"Ambrosia: +velocidad de mineria y recoleccion permanente.",
+				new Desbloqueo("usedAmbrosia",
 					j => j.usedAmbrosia, (j, v) => j.usedAmbrosia = v),
 
-				new Desbloqueo("Evento DD2 superado", "downedDD2EventAnyDifficulty",
-					"Ejercito Antiguo derrotado alguna vez, en cualquier dificultad.",
+				new Desbloqueo("downedDD2EventAnyDifficulty",
 					j => j.downedDD2EventAnyDifficulty, (j, v) => j.downedDD2EventAnyDifficulty = v),
 
-				new Desbloqueo("Supercarrito desbloqueado", "unlockedSuperCart",
-					"Mechanical Cart: mejora permanente de las vagonetas.",
+				new Desbloqueo("unlockedSuperCart",
 					j => j.unlockedSuperCart, (j, v) => j.unlockedSuperCart = v),
 
-				new Desbloqueo("Supercarrito activado", "enabledSuperCart",
-					"Exige el desbloqueo de arriba (Player.UsingSuperCart comprueba los dos).",
+				new Desbloqueo("enabledSuperCart",
 					j => j.enabledSuperCart, (j, v) => j.enabledSuperCart = v)
 			};
 		}

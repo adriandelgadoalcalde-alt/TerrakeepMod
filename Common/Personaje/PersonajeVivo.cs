@@ -3,6 +3,7 @@ using System.Text;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using TerrakeepMod.Common.Ajustes;
 
 namespace TerrakeepMod.Common.Personaje
 {
@@ -60,11 +61,30 @@ namespace TerrakeepMod.Common.Personaje
 
 		// ---------------------------------------------------------------- almacenes
 
-		/// <summary>Nombres de los 4 almacenes, en el mismo orden que
-		/// <see cref="ObtenerAlmacen"/>.</summary>
-		public static readonly string[] NombresAlmacen = {
-			"Hucha", "Caja fuerte", "Forja del Defensor", "Boveda del Vacio"
-		};
+		/// <summary>Claves de localizacion de los 4 almacenes, en el mismo orden que
+		/// <see cref="ObtenerAlmacen"/>. Son nombres internos, no texto que se enseñe.</summary>
+		public static readonly string[] ClavesAlmacen = { "Hucha", "Caja", "Forja", "Boveda" };
+
+		/// <summary>Nombres de los 4 almacenes ya traducidos al idioma activo. Es una propiedad y
+		/// no un array fijo porque cambian con el idioma.</summary>
+		public static string[] NombresAlmacen {
+			get {
+				string[] nombres = new string[ClavesAlmacen.Length];
+				for (int i = 0; i < nombres.Length; i++) {
+					nombres[i] = NombreAlmacen(i);
+				}
+				return nombres;
+			}
+		}
+
+		/// <summary>Nombre traducido de uno de los cuatro almacenes.</summary>
+		public static string NombreAlmacen(int indice)
+		{
+			if (indice < 0 || indice >= ClavesAlmacen.Length) {
+				return "";
+			}
+			return Idiomas.Texto("Personaje.Almacenes.Nombre." + ClavesAlmacen[indice]);
+		}
 
 		/// <summary>Array vivo de objetos del almacen indicado (0..3).</summary>
 		public static Item[] ObtenerAlmacen(int indice)
@@ -103,15 +123,15 @@ namespace TerrakeepMod.Common.Personaje
 		public static string FormatearDinero(long cobre)
 		{
 			if (cobre <= 0L) {
-				return "0 cobre";
+				return "0 " + Idiomas.Texto("Personaje.Moneda.Cobre");
 			}
 
 			int[] partes = Utils.CoinsSplit(cobre);
 			StringBuilder sb = new StringBuilder();
-			AnexarMoneda(sb, partes[3], "plat");
-			AnexarMoneda(sb, partes[2], "oro");
-			AnexarMoneda(sb, partes[1], "plata");
-			AnexarMoneda(sb, partes[0], "cobre");
+			AnexarMoneda(sb, partes[3], Idiomas.Texto("Personaje.Moneda.Platino"));
+			AnexarMoneda(sb, partes[2], Idiomas.Texto("Personaje.Moneda.Oro"));
+			AnexarMoneda(sb, partes[1], Idiomas.Texto("Personaje.Moneda.Plata"));
+			AnexarMoneda(sb, partes[0], Idiomas.Texto("Personaje.Moneda.Cobre"));
 			return sb.ToString();
 		}
 
@@ -140,12 +160,13 @@ namespace TerrakeepMod.Common.Personaje
 		public static string FormatearTiempoBuff(int ticks)
 		{
 			if (ticks < 0) {
-				return "permanente";
+				return Idiomas.Texto("Personaje.Buffs.Permanente");
 			}
 
 			int segundosTotales = ticks / 60;
 			if (segundosTotales >= 3600) {
-				return (segundosTotales / 3600) + " h " + ((segundosTotales % 3600) / 60) + " min";
+				return Idiomas.Texto("Personaje.Buffs.HorasMinutos",
+					segundosTotales / 3600, (segundosTotales % 3600) / 60);
 			}
 			return (segundosTotales / 60) + ":" + (segundosTotales % 60).ToString("00");
 		}
@@ -169,21 +190,29 @@ namespace TerrakeepMod.Common.Personaje
 		/// (<c>Player.skinVariant</c>, valores de <see cref="PlayerVariantID"/>).</summary>
 		public static string NombreVariante(int variante)
 		{
+			// El nombre visible se compone de dos claves: el genero y el atuendo. Asi son 2 + 6
+			// cadenas a traducir en vez de 12, y no hay que repetir "Hombre"/"Mujer" seis veces.
+			string genero;
+			string atuendo;
 			switch (variante) {
-				case PlayerVariantID.MaleStarter: return "Hombre - inicial";
-				case PlayerVariantID.MaleSticker: return "Hombre - pegatina";
-				case PlayerVariantID.MaleGangster: return "Hombre - gangster";
-				case PlayerVariantID.MaleCoat: return "Hombre - abrigo";
-				case PlayerVariantID.FemaleStarter: return "Mujer - inicial";
-				case PlayerVariantID.FemaleSticker: return "Mujer - pegatina";
-				case PlayerVariantID.FemaleGangster: return "Mujer - gangster";
-				case PlayerVariantID.FemaleCoat: return "Mujer - abrigo";
-				case PlayerVariantID.MaleDress: return "Hombre - vestido";
-				case PlayerVariantID.FemaleDress: return "Mujer - vestido";
-				case PlayerVariantID.MaleDisplayDoll: return "Hombre - maniqui";
-				case PlayerVariantID.FemaleDisplayDoll: return "Mujer - maniqui";
-				default: return "Variante " + variante;
+				case PlayerVariantID.MaleStarter: genero = "Hombre"; atuendo = "Inicial"; break;
+				case PlayerVariantID.MaleSticker: genero = "Hombre"; atuendo = "Pegatina"; break;
+				case PlayerVariantID.MaleGangster: genero = "Hombre"; atuendo = "Gangster"; break;
+				case PlayerVariantID.MaleCoat: genero = "Hombre"; atuendo = "Abrigo"; break;
+				case PlayerVariantID.FemaleStarter: genero = "Mujer"; atuendo = "Inicial"; break;
+				case PlayerVariantID.FemaleSticker: genero = "Mujer"; atuendo = "Pegatina"; break;
+				case PlayerVariantID.FemaleGangster: genero = "Mujer"; atuendo = "Gangster"; break;
+				case PlayerVariantID.FemaleCoat: genero = "Mujer"; atuendo = "Abrigo"; break;
+				case PlayerVariantID.MaleDress: genero = "Hombre"; atuendo = "Vestido"; break;
+				case PlayerVariantID.FemaleDress: genero = "Mujer"; atuendo = "Vestido"; break;
+				case PlayerVariantID.MaleDisplayDoll: genero = "Hombre"; atuendo = "Maniqui"; break;
+				case PlayerVariantID.FemaleDisplayDoll: genero = "Mujer"; atuendo = "Maniqui"; break;
+				default: return Idiomas.Texto("Personaje.Apariencia.VarianteDesconocida", variante);
 			}
+
+			return Idiomas.Texto("Personaje.Apariencia.Variante",
+				Idiomas.Texto("Personaje.Apariencia.Genero." + genero),
+				Idiomas.Texto("Personaje.Apariencia.Atuendo." + atuendo));
 		}
 
 		private static List<int> _tintesPeloItem;
@@ -205,7 +234,7 @@ namespace TerrakeepMod.Common.Personaje
 		{
 			if (_tintesPeloItem == null) {
 				_tintesPeloItem = new List<int> { 0 };
-				_tintesPeloNombre = new List<string> { "Ninguno" };
+				_tintesPeloNombre = new List<string> { Idiomas.Texto("Personaje.Apariencia.SinTinte") };
 
 				SortedDictionary<int, string> encontrados = new SortedDictionary<int, string>();
 				foreach (KeyValuePair<int, Item> par in ContentSamples.ItemsByType) {

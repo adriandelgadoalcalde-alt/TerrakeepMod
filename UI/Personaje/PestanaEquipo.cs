@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Terraria;
 using Terraria.UI;
+using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Personaje;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -28,14 +29,20 @@ namespace TerrakeepMod.UI.Personaje
 	{
 		private const float Escala = 0.75f;
 
-		private static readonly string[] NombresFila = {
-			"Cabeza", "Pecho", "Piernas",
-			"Accesorio 1", "Accesorio 2", "Accesorio 3", "Accesorio 4",
-			"Accesorio 5", "Accesorio 6", "Accesorio 7"
-		};
+		/// <summary>Rotulo de cada fila: las tres piezas de armadura por su clave propia y los
+		/// siete accesorios numerados con una sola clave con parametro.</summary>
+		private static string NombreFila(int fila)
+		{
+			switch (fila) {
+				case 0: return Idiomas.Texto("Personaje.Equipo.Cabeza");
+				case 1: return Idiomas.Texto("Personaje.Equipo.Pecho");
+				case 2: return Idiomas.Texto("Personaje.Equipo.Piernas");
+				default: return Idiomas.Texto("Personaje.Equipo.Accesorio", fila - 2);
+			}
+		}
 
-		private static readonly string[] NombresMisc = {
-			"Mascota", "Mascota de luz", "Vagoneta", "Montura", "Gancho"
+		private static readonly string[] ClavesMisc = {
+			"Mascota", "MascotaLuz", "Vagoneta", "Montura", "Gancho"
 		};
 
 		// Contexto de ItemSlot de cada ranura de Player.miscEquips, en su orden real
@@ -64,7 +71,8 @@ namespace TerrakeepMod.UI.Personaje
 		{
 			Player jugador = PersonajeVivo.Jugador;
 
-			EtiquetaTk etiqueta = new EtiquetaTk(() => "Conjunto de equipo", 0.85f, 170f, 22f);
+			EtiquetaTk etiqueta = new EtiquetaTk(
+				() => Idiomas.Texto("Personaje.Equipo.Conjunto"), 0.85f, 170f, 22f);
 			etiqueta.ColorTexto = EstiloTk.TextoSuave;
 			etiqueta.Left.Set(0f, 0f);
 			etiqueta.Top.Set(4f, 0f);
@@ -72,7 +80,7 @@ namespace TerrakeepMod.UI.Personaje
 
 			for (int i = 0; i < jugador.Loadouts.Length; i++) {
 				int indice = i;
-				BotonTk boton = new BotonTk("Conjunto " + (i + 1), 0.8f);
+				BotonTk boton = new BotonTk(Idiomas.Texto("Personaje.Equipo.ConjuntoN", i + 1), 0.8f);
 				boton.Width.Set(110f, 0f);
 				boton.Height.Set(28f, 0f);
 				boton.Left.Set(170f + i * 116f, 0f);
@@ -83,8 +91,7 @@ namespace TerrakeepMod.UI.Personaje
 			}
 
 			EtiquetaTk aviso = new EtiquetaTk(
-				() => "El conjunto activo se edita en Player.armor/dye; cambiar de conjunto usa "
-					+ "Player.TrySwitchingLoadout (no funciona muerto ni usando un objeto).",
+				() => Idiomas.Texto("Personaje.Equipo.Nota"),
 				0.72f, 900f, 18f);
 			aviso.ColorTexto = EstiloTk.TextoSuave;
 			aviso.Left.Set(0f, 0f);
@@ -124,9 +131,9 @@ namespace TerrakeepMod.UI.Personaje
 			float paso = RejillaSlots.Paso(Escala);
 			float arriba = 74f;
 
-			Cabecera("Equipado", 0f, arriba - 22f);
-			Cabecera("Vanidad", paso, arriba - 22f);
-			Cabecera("Tinte", paso * 2f, arriba - 22f);
+			Cabecera("Personaje.Equipo.Equipado", 0f, arriba - 22f);
+			Cabecera("Personaje.Equipo.Vanidad", paso, arriba - 22f);
+			Cabecera("Personaje.Equipo.Tinte", paso * 2f, arriba - 22f);
 
 			for (int i = 0; i < PersonajeVivo.SlotsTinte; i++) {
 				float y = arriba + i * paso;
@@ -160,7 +167,7 @@ namespace TerrakeepMod.UI.Personaje
 		private static string TextoFila(int fila)
 		{
 			if (fila < 3) {
-				return NombresFila[fila];
+				return NombreFila(fila);
 			}
 
 			Player jugador = PersonajeVivo.Jugador;
@@ -168,8 +175,8 @@ namespace TerrakeepMod.UI.Personaje
 			int numeroAccesorio = fila - 2;
 
 			return numeroAccesorio <= accesoriosActivos
-				? NombresFila[fila]
-				: NombresFila[fila] + "  (no activa)";
+				? NombreFila(fila)
+				: NombreFila(fila) + Idiomas.Texto("Personaje.Equipo.NoActiva");
 		}
 
 		private void ConstruirMisc()
@@ -179,9 +186,9 @@ namespace TerrakeepMod.UI.Personaje
 			float izquierda = paso * 3f + 260f;
 			float arriba = 74f;
 
-			Cabecera("Equipo especial", izquierda, arriba - 44f);
-			Cabecera("Puesto", izquierda, arriba - 22f);
-			Cabecera("Tinte", izquierda + paso, arriba - 22f);
+			Cabecera("Personaje.Equipo.Especial", izquierda, arriba - 44f);
+			Cabecera("Personaje.Equipo.Puesto", izquierda, arriba - 22f);
+			Cabecera("Personaje.Equipo.Tinte", izquierda + paso, arriba - 22f);
 
 			for (int i = 0; i < PersonajeVivo.SlotsMisc; i++) {
 				float y = arriba + i * paso;
@@ -193,15 +200,16 @@ namespace TerrakeepMod.UI.Personaje
 				RejillaSlots.Uno(this, jugador.miscDyes, i, ItemSlot.Context.EquipMiscDye, Escala,
 					izquierda + paso, y);
 
-				EtiquetaTk nombre = new EtiquetaTk(() => NombresMisc[indice], 0.78f, 200f, 20f);
+				EtiquetaTk nombre = new EtiquetaTk(
+					() => Idiomas.Texto("Personaje.Equipo.Misc." + ClavesMisc[indice]), 0.78f, 200f, 20f);
 				nombre.Left.Set(izquierda + paso * 2f + 6f, 0f);
 				nombre.Top.Set(y + 12f, 0f);
 				Append(nombre);
 			}
 
 			EtiquetaTk resumen = new EtiquetaTk(
-				() => "Ranuras de accesorio activas: " + (5 + PersonajeVivo.Jugador.extraAccessorySlots)
-					+ " de 7  (la 6ª exige el Corazon de Demonio y modo Experto)",
+				() => Idiomas.Texto("Personaje.Equipo.RanurasActivas",
+					5 + PersonajeVivo.Jugador.extraAccessorySlots),
 				0.75f, 520f, 20f);
 			resumen.ColorTexto = EstiloTk.TextoSuave;
 			resumen.Left.Set(izquierda, 0f);
@@ -209,9 +217,11 @@ namespace TerrakeepMod.UI.Personaje
 			Append(resumen);
 		}
 
-		private void Cabecera(string texto, float izquierda, float arriba)
+		/// <summary>Rotulo de columna. Recibe la CLAVE de localizacion, no el texto ya resuelto:
+		/// asi cambia con el idioma sin reabrir el panel.</summary>
+		private void Cabecera(string clave, float izquierda, float arriba)
 		{
-			EtiquetaTk etiqueta = new EtiquetaTk(() => texto, 0.78f, 180f, 20f);
+			EtiquetaTk etiqueta = new EtiquetaTk(() => Idiomas.Texto(clave), 0.78f, 180f, 20f);
 			etiqueta.ColorTexto = EstiloTk.TextoSuave;
 			etiqueta.Left.Set(izquierda, 0f);
 			etiqueta.Top.Set(arriba, 0f);
@@ -223,8 +233,12 @@ namespace TerrakeepMod.UI.Personaje
 			base.Update(gameTime);
 
 			// El jugador puede cambiar de conjunto con las teclas del juego mientras el panel
-			// esta abierto; los botones tienen que seguirlo.
+			// esta abierto; los botones tienen que seguirlo. Y su rotulo se vuelve a pedir para que
+			// cambie con el idioma sin reabrir el panel.
 			ActualizarBotonesLoadout();
+			for (int i = 0; i < _botonesLoadout.Count; i++) {
+				_botonesLoadout[i].FijarTexto(Idiomas.Texto("Personaje.Equipo.ConjuntoN", i + 1));
+			}
 		}
 	}
 }

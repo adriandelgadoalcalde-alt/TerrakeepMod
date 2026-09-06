@@ -1,5 +1,7 @@
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Terraria.UI;
+using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Personaje;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -28,9 +30,22 @@ namespace TerrakeepMod.UI.Personaje
 
 		private UIElement _contenedor;
 		private readonly List<BotonTk> _botonesPestana = new List<BotonTk>();
-		private readonly List<string> _nombresPestana = new List<string>();
 		private UIElement _pestanaActual;
 		private int _indicePestana;
+
+		/// <summary>Nombres internos de las seis sub-pestañas: son la ultima parte de su clave de
+		/// localizacion (<c>Personaje.Pestana.&lt;clave&gt;</c>), no texto que se enseñe.</summary>
+		public static readonly string[] ClavesPestana = {
+			"Inventario", "Almacenes", "Equipo", "Buffs", "Apariencia", "Desbloqueos"
+		};
+
+		private static string NombrePestana(int indice)
+		{
+			if (indice < 0 || indice >= ClavesPestana.Length) {
+				return "";
+			}
+			return Idiomas.Texto("Personaje.Pestana." + ClavesPestana[indice]);
+		}
 
 		/// <summary>Indice de la sub-pestaña abierta la ultima vez. Se guarda entre aperturas para
 		/// que volver al area de Personaje devuelva a donde estabas.</summary>
@@ -56,21 +71,14 @@ namespace TerrakeepMod.UI.Personaje
 
 		private void ConstruirBarraPestanas()
 		{
-			_nombresPestana.Add("Inventario");
-			_nombresPestana.Add("Almacenes");
-			_nombresPestana.Add("Equipo");
-			_nombresPestana.Add("Buffs");
-			_nombresPestana.Add("Apariencia");
-			_nombresPestana.Add("Desbloqueos");
-
 			// Anchos en PORCENTAJE, no en pixeles fijos: el panel se estira con la pantalla y en
 			// una ventana pequeña (800x720 en la maquina de pruebas) seis botones de 150 px fijos
 			// se salian del marco.
-			float fraccion = 1f / _nombresPestana.Count;
+			float fraccion = 1f / ClavesPestana.Length;
 
-			for (int i = 0; i < _nombresPestana.Count; i++) {
+			for (int i = 0; i < ClavesPestana.Length; i++) {
 				int indice = i;
-				BotonTk boton = new BotonTk(_nombresPestana[i], 0.8f);
+				BotonTk boton = new BotonTk(NombrePestana(i), 0.8f);
 				boton.EsPestana = true;
 				boton.Width.Set(-SeparacionPestanas, fraccion);
 				boton.Height.Set(AltoBarraPestanas, 0f);
@@ -84,7 +92,7 @@ namespace TerrakeepMod.UI.Personaje
 
 		private void CambiarPestana(int indice)
 		{
-			if (indice < 0 || indice >= _nombresPestana.Count) {
+			if (indice < 0 || indice >= ClavesPestana.Length) {
 				return;
 			}
 
@@ -112,7 +120,17 @@ namespace TerrakeepMod.UI.Personaje
 
 			_contenedor.Recalculate();
 
-			Terrakeep.Instance.Logger.Info($"{Terrakeep.LogTag} Pestaña activa: \"{_nombresPestana[indice]}\".");
+			Terrakeep.Instance.Logger.Info($"{Terrakeep.LogTag} Pestaña activa: \"{NombrePestana(indice)}\".");
+		}
+
+		/// <summary>Los rotulos de las seis sub-pestañas se vuelven a pedir en cada fotograma, para
+		/// que cambien en vivo con el selector de idioma del area de Ajustes.</summary>
+		public override void Update(GameTime gameTime)
+		{
+			base.Update(gameTime);
+			for (int i = 0; i < _botonesPestana.Count; i++) {
+				_botonesPestana[i].FijarTexto(NombrePestana(i));
+			}
 		}
 
 		private static UIElement CrearPestana(int indice)
@@ -130,12 +148,12 @@ namespace TerrakeepMod.UI.Personaje
 
 		/// <summary>Nombre de la sub-pestaña abierta, para el log de las pruebas.</summary>
 		public string NombrePestanaActual =>
-			_indicePestana >= 0 && _indicePestana < _nombresPestana.Count
-				? _nombresPestana[_indicePestana]
+			_indicePestana >= 0 && _indicePestana < ClavesPestana.Length
+				? NombrePestana(_indicePestana)
 				: "(ninguna)";
 
 		/// <summary>Numero de sub-pestañas. Lo usa la autoprueba para recorrerlas todas.</summary>
-		public int TotalPestanas => _nombresPestana.Count;
+		public int TotalPestanas => ClavesPestana.Length;
 
 		/// <summary>Cambia de sub-pestaña desde fuera (autoprueba).</summary>
 		public void IrAPestana(int indice)

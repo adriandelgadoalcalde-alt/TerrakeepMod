@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Terraria;
 using Terraria.UI;
+using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Personaje;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -22,7 +23,7 @@ namespace TerrakeepMod.UI.Personaje
 			Height.Set(0f, 1f);
 
 			EtiquetaTk titulo = new EtiquetaTk(
-				() => "13 desbloqueos permanentes. Se escriben directamente en Main.LocalPlayer.",
+				() => Idiomas.Texto("Personaje.Desbloqueos.Titulo", Desbloqueos.Lista.Count),
 				0.85f, 900f, 22f);
 			titulo.ColorTexto = EstiloTk.TextoSuave;
 			titulo.Left.Set(0f, 0f);
@@ -37,11 +38,11 @@ namespace TerrakeepMod.UI.Personaje
 			for (int i = 0; i < lista.Count; i++) {
 				Desbloqueo desbloqueo = lista[i];
 
-				AlternadorTk casilla = new AlternadorTk(desbloqueo.Nombre,
+				AlternadorTk casilla = new AlternadorTk(() => desbloqueo.Nombre,
 					() => desbloqueo.Leer(PersonajeVivo.Jugador),
 					valor => desbloqueo.Escribir(PersonajeVivo.Jugador, valor));
 
-				casilla.Ayuda = desbloqueo.CampoReal + ": " + desbloqueo.Descripcion;
+				casilla.Ayuda = () => desbloqueo.CampoReal + ": " + desbloqueo.Descripcion;
 				casilla.Width.Set(anchoColumna - 20f, 0f);
 				casilla.Height.Set(28f, 0f);
 				casilla.Left.Set((i / porColumna) * anchoColumna, 0f);
@@ -58,8 +59,7 @@ namespace TerrakeepMod.UI.Personaje
 			}
 
 			EtiquetaTk nota = new EtiquetaTk(
-				() => "Pasa el raton por encima de una casilla para ver el campo real de Player que "
-					+ "toca y sus condiciones.",
+				() => Idiomas.Texto("Personaje.Desbloqueos.Nota"),
 				0.75f, 900f, 20f);
 			nota.ColorTexto = EstiloTk.TextoSuave;
 			nota.Left.Set(0f, 0f);

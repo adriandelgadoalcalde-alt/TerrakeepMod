@@ -1,6 +1,8 @@
 using System.Collections.Generic;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.UI;
+using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Personaje;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -29,9 +31,9 @@ namespace TerrakeepMod.UI.Personaje
 			Width.Set(0f, 1f);
 			Height.Set(0f, 1f);
 
-			for (int i = 0; i < PersonajeVivo.NombresAlmacen.Length; i++) {
+			for (int i = 0; i < PersonajeVivo.ClavesAlmacen.Length; i++) {
 				int indice = i;
-				BotonTk boton = new BotonTk(PersonajeVivo.NombresAlmacen[i], 0.8f);
+				BotonTk boton = new BotonTk(PersonajeVivo.NombreAlmacen(i), 0.8f);
 				boton.Width.Set(160f, 0f);
 				boton.Height.Set(30f, 0f);
 				boton.Left.Set(i * 166f, 0f);
@@ -67,7 +69,8 @@ namespace TerrakeepMod.UI.Personaje
 
 			string campo = indice == 0 ? "bank" : "bank" + (indice + 1);
 			EtiquetaTk titulo = new EtiquetaTk(
-				() => PersonajeVivo.NombresAlmacen[indice] + " - 40 ranuras (Player." + campo + ".item)",
+				() => Idiomas.Texto("Personaje.Almacenes.Titulo",
+					PersonajeVivo.NombreAlmacen(indice), PersonajeVivo.SlotsAlmacen, campo),
 				0.85f, 600f, 22f);
 			titulo.ColorTexto = EstiloTk.TextoSuave;
 			titulo.Left.Set(0f, 0f);
@@ -83,7 +86,7 @@ namespace TerrakeepMod.UI.Personaje
 			_rejilla.Recalculate();
 
 			Terrakeep.Instance.Logger.Info(
-				$"{Terrakeep.LogTag} Almacen mostrado: \"{PersonajeVivo.NombresAlmacen[indice]}\" " +
+				$"{Terrakeep.LogTag} Almacen mostrado: \"{PersonajeVivo.NombreAlmacen(indice)}\" " +
 				$"(Player.{campo}.item, {PersonajeVivo.ObtenerAlmacen(indice).Length} ranuras reales), " +
 				$"contexto de ItemSlot = {contexto}.");
 		}
@@ -97,8 +100,18 @@ namespace TerrakeepMod.UI.Personaje
 					ocupadas++;
 				}
 			}
-			return PersonajeVivo.NombresAlmacen[_almacenActual] + ": " + ocupadas + " de "
-				+ almacen.Length + " ranuras ocupadas.";
+			return Idiomas.Texto("Personaje.Almacenes.Ocupacion",
+				PersonajeVivo.NombreAlmacen(_almacenActual), ocupadas, almacen.Length);
+		}
+
+		/// <summary>Los cuatro botones de almacen tienen texto fijo desde que se construyen; se
+		/// vuelve a poner cada fotograma para que cambien con el idioma sin reabrir el panel.</summary>
+		public override void Update(GameTime gameTime)
+		{
+			base.Update(gameTime);
+			for (int i = 0; i < _botones.Count; i++) {
+				_botones[i].FijarTexto(PersonajeVivo.NombreAlmacen(i));
+			}
 		}
 	}
 }

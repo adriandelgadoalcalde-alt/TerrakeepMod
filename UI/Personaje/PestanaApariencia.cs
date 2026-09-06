@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.UI;
+using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Personaje;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -39,8 +40,9 @@ namespace TerrakeepMod.UI.Personaje
 
 		private void ConstruirSelectores()
 		{
-			SelectorTk peinado = new SelectorTk("Peinado",
-				() => PersonajeVivo.Jugador.hair + " de " + (PersonajeVivo.TotalPeinados - 1),
+			SelectorTk peinado = new SelectorTk(() => Idiomas.Texto("Personaje.Apariencia.Peinado"),
+				() => Idiomas.Texto("Personaje.Apariencia.PeinadoValor",
+					PersonajeVivo.Jugador.hair, PersonajeVivo.TotalPeinados - 1),
 				paso => {
 					Player jugador = PersonajeVivo.Jugador;
 					int total = PersonajeVivo.TotalPeinados;
@@ -51,7 +53,7 @@ namespace TerrakeepMod.UI.Personaje
 			peinado.Top.Set(0f, 0f);
 			Append(peinado);
 
-			SelectorTk variante = new SelectorTk("Variante / genero",
+			SelectorTk variante = new SelectorTk(() => Idiomas.Texto("Personaje.Apariencia.VarianteEtiqueta"),
 				() => PersonajeVivo.NombreVariante(PersonajeVivo.Jugador.skinVariant),
 				paso => {
 					Player jugador = PersonajeVivo.Jugador;
@@ -63,7 +65,7 @@ namespace TerrakeepMod.UI.Personaje
 			variante.Top.Set(0f, 0f);
 			Append(variante);
 
-			SelectorTk tinte = new SelectorTk("Tinte de pelo",
+			SelectorTk tinte = new SelectorTk(() => Idiomas.Texto("Personaje.Apariencia.Tinte"),
 				TextoTinte,
 				paso => {
 					Player jugador = PersonajeVivo.Jugador;
@@ -81,8 +83,7 @@ namespace TerrakeepMod.UI.Personaje
 			Append(tinte);
 
 			EtiquetaTk nota = new EtiquetaTk(
-				() => "Tintes de pelo encontrados en el juego (incluidos los de mods): "
-					+ _sombreadoresTinte.Count + ", sacados de Item.hairDye en ContentSamples.",
+				() => Idiomas.Texto("Personaje.Apariencia.NotaTintes", _sombreadoresTinte.Count),
 				0.72f, 900f, 18f);
 			nota.ColorTexto = EstiloTk.TextoSuave;
 			nota.Left.Set(0f, 0f);
@@ -95,7 +96,7 @@ namespace TerrakeepMod.UI.Personaje
 			int sombreador = PersonajeVivo.Jugador.hairDye;
 			int posicion = _sombreadoresTinte.IndexOf(sombreador);
 			if (posicion < 0) {
-				return "sombreador " + sombreador + " (desconocido)";
+				return Idiomas.Texto("Personaje.Apariencia.TinteDesconocido", sombreador);
 			}
 			return _nombresTinte[posicion];
 		}
@@ -103,7 +104,7 @@ namespace TerrakeepMod.UI.Personaje
 		private void ConstruirColores()
 		{
 			EtiquetaTk titulo = new EtiquetaTk(
-				() => "Colores          R                         V                         A",
+				() => Idiomas.Texto("Personaje.Apariencia.CabeceraColores"),
 				0.8f, 700f, 22f);
 			titulo.ColorTexto = EstiloTk.TextoSuave;
 			titulo.Left.Set(0f, 0f);
@@ -122,7 +123,7 @@ namespace TerrakeepMod.UI.Personaje
 				() => PersonajeVivo.Jugador.eyeColor, c => PersonajeVivo.Jugador.eyeColor = c);
 			Anadir("Camisa", arriba + paso * fila++,
 				() => PersonajeVivo.Jugador.shirtColor, c => PersonajeVivo.Jugador.shirtColor = c);
-			Anadir("Camiseta interior", arriba + paso * fila++,
+			Anadir("CamisetaInterior", arriba + paso * fila++,
 				() => PersonajeVivo.Jugador.underShirtColor, c => PersonajeVivo.Jugador.underShirtColor = c);
 			Anadir("Pantalones", arriba + paso * fila++,
 				() => PersonajeVivo.Jugador.pantsColor, c => PersonajeVivo.Jugador.pantsColor = c);
@@ -130,8 +131,7 @@ namespace TerrakeepMod.UI.Personaje
 				() => PersonajeVivo.Jugador.shoeColor, c => PersonajeVivo.Jugador.shoeColor = c);
 
 			EtiquetaTk aviso = new EtiquetaTk(
-				() => "Los cambios se ven al instante sobre el personaje: el juego lo dibuja leyendo "
-					+ "estos mismos campos.",
+				() => Idiomas.Texto("Personaje.Apariencia.NotaColores"),
 				0.75f, 900f, 20f);
 			aviso.ColorTexto = EstiloTk.TextoSuave;
 			aviso.Left.Set(0f, 0f);
@@ -139,10 +139,12 @@ namespace TerrakeepMod.UI.Personaje
 			Append(aviso);
 		}
 
-		private void Anadir(string etiqueta, float arriba,
+		/// <summary>Añade una fila de color. Recibe la CLAVE de localizacion, no el texto.</summary>
+		private void Anadir(string clave, float arriba,
 			System.Func<Color> leer, System.Action<Color> escribir)
 		{
-			FilaColorTk fila = new FilaColorTk(etiqueta, leer, escribir);
+			FilaColorTk fila = new FilaColorTk(
+				() => Idiomas.Texto("Personaje.Apariencia.Color." + clave), leer, escribir);
 			fila.Left.Set(0f, 0f);
 			fila.Top.Set(arriba, 0f);
 			Append(fila);

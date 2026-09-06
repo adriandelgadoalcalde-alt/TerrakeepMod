@@ -1,5 +1,6 @@
 using Terraria;
 using Terraria.UI;
+using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Personaje;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -30,23 +31,22 @@ namespace TerrakeepMod.UI.Personaje
 			Item[] inventario = PersonajeVivo.Jugador.inventory;
 			float paso = RejillaSlots.Paso(Escala);
 
-			Titulo("Mochila - 50 ranuras (Player.inventory[0..49])", 0f, 0f);
+			Titulo("Personaje.Inventario.Mochila", 0f, 0f);
 			RejillaSlots.Rejilla(this, inventario, 0, PersonajeVivo.SlotsPrincipales,
 				ItemSlot.Context.InventoryItem, 10, Escala, 0f, 24f);
 
 			float derecha = 10f * paso + 30f;
 
-			Titulo("Monedas (50-53)", derecha, 0f);
+			Titulo("Personaje.Inventario.Monedas", derecha, 0f);
 			RejillaSlots.Rejilla(this, inventario, PersonajeVivo.PrimerSlotMonedas, 4,
 				ItemSlot.Context.InventoryCoin, 4, Escala, derecha, 24f);
 
-			Titulo("Municion (54-57)", derecha, 24f + paso + 12f);
+			Titulo("Personaje.Inventario.Municion", derecha, 24f + paso + 12f);
 			RejillaSlots.Rejilla(this, inventario, PersonajeVivo.PrimerSlotMunicion, 4,
 				ItemSlot.Context.InventoryAmmo, 4, Escala, derecha, 24f + paso + 36f);
 
 			EtiquetaTk ayuda = new EtiquetaTk(
-				() => "Arrastra, apila y usa el clic derecho igual que en el inventario del juego: "
-					+ "es el mismo ItemSlot de vanilla.",
+				() => Idiomas.Texto("Personaje.Inventario.Nota"),
 				0.75f, 900f, 20f);
 			ayuda.ColorTexto = EstiloTk.TextoSuave;
 			ayuda.Left.Set(0f, 0f);
@@ -59,9 +59,11 @@ namespace TerrakeepMod.UI.Personaje
 			Append(ocupacion);
 		}
 
-		private void Titulo(string texto, float izquierda, float arriba)
+		/// <summary>Rotulo de una zona de la pestaña. Recibe la CLAVE de localizacion, no el texto:
+		/// asi se resuelve en cada dibujado y cambia con el idioma sin reabrir el panel.</summary>
+		private void Titulo(string clave, float izquierda, float arriba)
 		{
-			EtiquetaTk etiqueta = new EtiquetaTk(() => texto, 0.85f, 500f, 22f);
+			EtiquetaTk etiqueta = new EtiquetaTk(() => Idiomas.Texto(clave), 0.85f, 500f, 22f);
 			etiqueta.ColorTexto = EstiloTk.TextoSuave;
 			etiqueta.Left.Set(izquierda, 0f);
 			etiqueta.Top.Set(arriba, 0f);
@@ -77,7 +79,7 @@ namespace TerrakeepMod.UI.Personaje
 					ocupadas++;
 				}
 			}
-			return "Mochila: " + ocupadas + " de " + PersonajeVivo.SlotsPrincipales + " ranuras ocupadas.";
+			return Idiomas.Texto("Personaje.Inventario.Ocupacion", ocupadas, PersonajeVivo.SlotsPrincipales);
 		}
 	}
 }

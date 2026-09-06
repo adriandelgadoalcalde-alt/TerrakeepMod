@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.ModLoader;
 using Terraria.UI;
+using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Personaje;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -38,6 +39,9 @@ namespace TerrakeepMod.UI.Personaje
 		private UIList _listaResultados;
 		private CampoTextoTk _campoBusqueda;
 		private CampoTextoTk _campoDuracion;
+		private BotonTk _botonQuitarTodos;
+		private readonly List<BotonTk> _botonesQuitar = new List<BotonTk>();
+		private readonly List<BotonTk> _botonesAplicar = new List<BotonTk>();
 		private int _firmaActivos = -1;
 
 		public PestanaBuffs()
@@ -57,8 +61,8 @@ namespace TerrakeepMod.UI.Personaje
 		private void ConstruirActivos()
 		{
 			EtiquetaTk titulo = new EtiquetaTk(
-				() => "Buffs activos: " + PersonajeVivo.Jugador.CountBuffs()
-					+ " de " + PersonajeVivo.RanurasBuff + " ranuras",
+				() => Idiomas.Texto("Personaje.Buffs.Activos",
+					PersonajeVivo.Jugador.CountBuffs(), PersonajeVivo.RanurasBuff),
 				0.85f, 400f, 22f);
 			titulo.ColorTexto = EstiloTk.TextoSuave;
 			titulo.Left.Set(0f, 0f);
@@ -85,7 +89,8 @@ namespace TerrakeepMod.UI.Personaje
 			caja.Append(barra);
 			_listaActivos.SetScrollbar(barra);
 
-			BotonTk quitarTodos = new BotonTk("Quitar todos", 0.8f);
+			_botonQuitarTodos = new BotonTk(Idiomas.Texto("Personaje.Buffs.QuitarTodos"), 0.8f);
+			BotonTk quitarTodos = _botonQuitarTodos;
 			quitarTodos.Width.Set(150f, 0f);
 			quitarTodos.Height.Set(28f, 0f);
 			quitarTodos.Left.Set(0f, 0f);
@@ -98,6 +103,7 @@ namespace TerrakeepMod.UI.Personaje
 		{
 			Player jugador = PersonajeVivo.Jugador;
 			_listaActivos.Clear();
+			_botonesQuitar.Clear();
 
 			for (int i = 0; i < jugador.buffType.Length; i++) {
 				int tipo = jugador.buffType[i];
@@ -122,7 +128,8 @@ namespace TerrakeepMod.UI.Personaje
 			fila.Append(icono);
 
 			EtiquetaTk nombre = new EtiquetaTk(
-				() => PersonajeVivo.NombreBuff(tipo) + "  (id " + tipo + ")", 0.8f, 240f, 20f);
+				() => Idiomas.Texto("Personaje.Buffs.NombreConId",
+					PersonajeVivo.NombreBuff(tipo), tipo), 0.8f, 240f, 20f);
 			nombre.Left.Set(40f, 0f);
 			nombre.Top.Set(8f, 0f);
 			fila.Append(nombre);
@@ -132,7 +139,8 @@ namespace TerrakeepMod.UI.Personaje
 			tiempo.Top.Set(8f, 0f);
 			fila.Append(tiempo);
 
-			BotonTk quitar = new BotonTk("Quitar", 0.75f);
+			BotonTk quitar = new BotonTk(Idiomas.Texto("Personaje.Buffs.Quitar"), 0.75f);
+			_botonesQuitar.Add(quitar);
 			quitar.Width.Set(70f, 0f);
 			quitar.Height.Set(26f, 0f);
 			quitar.Left.Set(370f, 0f);
@@ -196,19 +204,21 @@ namespace TerrakeepMod.UI.Personaje
 		{
 			float izquierda = 490f;
 
-			EtiquetaTk titulo = new EtiquetaTk(() => "Añadir un buff", 0.85f, 300f, 22f);
+			EtiquetaTk titulo = new EtiquetaTk(
+				() => Idiomas.Texto("Personaje.Buffs.Anadir"), 0.85f, 300f, 22f);
 			titulo.ColorTexto = EstiloTk.TextoSuave;
 			titulo.Left.Set(izquierda, 0f);
 			titulo.Top.Set(0f, 0f);
 			Append(titulo);
 
-			EtiquetaTk etiquetaBusqueda = new EtiquetaTk(() => "Buscar", 0.8f, 70f, 20f);
+			EtiquetaTk etiquetaBusqueda = new EtiquetaTk(
+				() => Idiomas.Texto("Personaje.Buffs.Buscar"), 0.8f, 70f, 20f);
 			etiquetaBusqueda.ColorTexto = EstiloTk.TextoSuave;
 			etiquetaBusqueda.Left.Set(izquierda, 0f);
 			etiquetaBusqueda.Top.Set(32f, 0f);
 			Append(etiquetaBusqueda);
 
-			_campoBusqueda = new CampoTextoTk("nombre o id del buff", 30);
+			_campoBusqueda = new CampoTextoTk(() => Idiomas.Texto("Personaje.Buffs.PistaBusqueda"), 30);
 			_campoBusqueda.Width.Set(230f, 0f);
 			_campoBusqueda.Height.Set(28f, 0f);
 			_campoBusqueda.Left.Set(izquierda + 66f, 0f);
@@ -216,13 +226,14 @@ namespace TerrakeepMod.UI.Personaje
 			_campoBusqueda.AlCambiar += ReconstruirResultados;
 			Append(_campoBusqueda);
 
-			EtiquetaTk etiquetaDuracion = new EtiquetaTk(() => "Segundos", 0.8f, 90f, 20f);
+			EtiquetaTk etiquetaDuracion = new EtiquetaTk(
+				() => Idiomas.Texto("Personaje.Buffs.Segundos"), 0.8f, 90f, 20f);
 			etiquetaDuracion.ColorTexto = EstiloTk.TextoSuave;
 			etiquetaDuracion.Left.Set(izquierda + 306f, 0f);
 			etiquetaDuracion.Top.Set(32f, 0f);
 			Append(etiquetaDuracion);
 
-			_campoDuracion = new CampoTextoTk("600", 6);
+			_campoDuracion = new CampoTextoTk(() => SegundosPorDefecto.ToString(), 6);
 			_campoDuracion.SoloNumeros = true;
 			_campoDuracion.FijarTextoSilencioso(SegundosPorDefecto.ToString());
 			_campoDuracion.Width.Set(80f, 0f);
@@ -253,7 +264,7 @@ namespace TerrakeepMod.UI.Personaje
 			_listaResultados.SetScrollbar(barra);
 
 			EtiquetaTk nota = new EtiquetaTk(
-				() => "Se aplica con Player.AddBuff (API oficial): respeta inmunidades y limites.",
+				() => Idiomas.Texto("Personaje.Buffs.Nota"),
 				0.72f, 470f, 18f);
 			nota.ColorTexto = EstiloTk.TextoSuave;
 			nota.Left.Set(izquierda, 0f);
@@ -264,6 +275,7 @@ namespace TerrakeepMod.UI.Personaje
 		private void ReconstruirResultados(string filtro)
 		{
 			_listaResultados.Clear();
+			_botonesAplicar.Clear();
 
 			string busqueda = (filtro ?? "").Trim();
 			int idPedido;
@@ -289,7 +301,8 @@ namespace TerrakeepMod.UI.Personaje
 			}
 
 			if (encontrados == 0) {
-				EtiquetaTk vacio = new EtiquetaTk(() => "Sin resultados.", 0.8f, 300f, 24f);
+				EtiquetaTk vacio = new EtiquetaTk(
+					() => Idiomas.Texto("Personaje.Buffs.SinResultados"), 0.8f, 300f, 24f);
 				vacio.ColorTexto = EstiloTk.TextoSuave;
 				_listaResultados.Add(vacio);
 			}
@@ -306,12 +319,14 @@ namespace TerrakeepMod.UI.Personaje
 			icono.Top.Set(2f, 0f);
 			fila.Append(icono);
 
-			EtiquetaTk etiqueta = new EtiquetaTk(() => nombre + "  (id " + tipo + ")", 0.8f, 290f, 20f);
+			EtiquetaTk etiqueta = new EtiquetaTk(
+				() => Idiomas.Texto("Personaje.Buffs.NombreConId", nombre, tipo), 0.8f, 290f, 20f);
 			etiqueta.Left.Set(40f, 0f);
 			etiqueta.Top.Set(8f, 0f);
 			fila.Append(etiqueta);
 
-			BotonTk anadir = new BotonTk("Aplicar", 0.75f);
+			BotonTk anadir = new BotonTk(Idiomas.Texto("Personaje.Buffs.Aplicar"), 0.75f);
+			_botonesAplicar.Add(anadir);
 			anadir.Width.Set(80f, 0f);
 			anadir.Height.Set(26f, 0f);
 			anadir.Left.Set(350f, 0f);
@@ -352,6 +367,18 @@ namespace TerrakeepMod.UI.Personaje
 			// ultimo fotograma, la lista de la izquierda se rehace sola.
 			if (FirmaActivos() != _firmaActivos) {
 				ReconstruirActivos();
+			}
+
+			// Los rotulos de los botones se fijan al construirlos, asi que hay que volver a
+			// ponerlos para que cambien en vivo con el selector de idioma del area de Ajustes.
+			if (_botonQuitarTodos != null) {
+				_botonQuitarTodos.FijarTexto(Idiomas.Texto("Personaje.Buffs.QuitarTodos"));
+			}
+			for (int i = 0; i < _botonesQuitar.Count; i++) {
+				_botonesQuitar[i].FijarTexto(Idiomas.Texto("Personaje.Buffs.Quitar"));
+			}
+			for (int i = 0; i < _botonesAplicar.Count; i++) {
+				_botonesAplicar[i].FijarTexto(Idiomas.Texto("Personaje.Buffs.Aplicar"));
 			}
 		}
 

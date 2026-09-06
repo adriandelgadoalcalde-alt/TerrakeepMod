@@ -1,5 +1,7 @@
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.UI;
+using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Personaje;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -27,6 +29,7 @@ namespace TerrakeepMod.UI.Personaje
 		private const float ColumnaDerecha = 270f;
 
 		private CampoTextoTk _campoNombre;
+		private BotonTk _botonLlenar;
 
 		public CabeceraPersonaje()
 		{
@@ -40,13 +43,13 @@ namespace TerrakeepMod.UI.Personaje
 
 		private void ConstruirNombre()
 		{
-			EtiquetaTk etiqueta = new EtiquetaTk(() => "Nombre", 0.85f, 60f, 24f);
+			EtiquetaTk etiqueta = new EtiquetaTk(() => Idiomas.Texto("Personaje.Nombre"), 0.85f, 60f, 24f);
 			etiqueta.ColorTexto = EstiloTk.TextoSuave;
 			etiqueta.Left.Set(0f, 0f);
 			etiqueta.Top.Set(6f, 0f);
 			Append(etiqueta);
 
-			_campoNombre = new CampoTextoTk("(sin nombre)", 20);
+			_campoNombre = new CampoTextoTk(() => Idiomas.Texto("Personaje.SinNombre"), 20);
 			_campoNombre.Width.Set(190f, 0f);
 			_campoNombre.Height.Set(28f, 0f);
 			_campoNombre.Left.Set(62f, 0f);
@@ -68,8 +71,9 @@ namespace TerrakeepMod.UI.Personaje
 
 		private void ConstruirVidaYMana()
 		{
-			SelectorTk vida = new SelectorTk("Vida máxima",
-				() => Main.LocalPlayer.statLifeMax + " (efectiva " + Main.LocalPlayer.statLifeMax2 + ")",
+			SelectorTk vida = new SelectorTk(() => Idiomas.Texto("Personaje.VidaMaxima"),
+				() => Idiomas.Texto("Personaje.VidaEfectiva",
+					Main.LocalPlayer.statLifeMax, Main.LocalPlayer.statLifeMax2),
 				paso => {
 					Player jugador = Main.LocalPlayer;
 					jugador.statLifeMax = PersonajeVivo.Acotar(
@@ -83,8 +87,9 @@ namespace TerrakeepMod.UI.Personaje
 			vida.Top.Set(0f, 0f);
 			Append(vida);
 
-			SelectorTk mana = new SelectorTk("Maná máximo",
-				() => Main.LocalPlayer.statManaMax + " (efectivo " + Main.LocalPlayer.statManaMax2 + ")",
+			SelectorTk mana = new SelectorTk(() => Idiomas.Texto("Personaje.ManaMaximo"),
+				() => Idiomas.Texto("Personaje.ManaEfectivo",
+					Main.LocalPlayer.statManaMax, Main.LocalPlayer.statManaMax2),
 				paso => {
 					Player jugador = Main.LocalPlayer;
 					jugador.statManaMax = PersonajeVivo.Acotar(
@@ -102,15 +107,17 @@ namespace TerrakeepMod.UI.Personaje
 			// mas 340 de ancho = 950) y en una ventana de 800 px se salia del marco. Se vio en una
 			// captura real del juego.
 			EtiquetaTk actuales = new EtiquetaTk(
-				() => "Ahora: " + Main.LocalPlayer.statLife + "/" + Main.LocalPlayer.statLifeMax2
-					+ " vida, " + Main.LocalPlayer.statMana + "/" + Main.LocalPlayer.statManaMax2 + " maná",
+				() => Idiomas.Texto("Personaje.Ahora",
+					Main.LocalPlayer.statLife, Main.LocalPlayer.statLifeMax2,
+					Main.LocalPlayer.statMana, Main.LocalPlayer.statManaMax2),
 				0.8f, 260f, 24f);
 			actuales.ColorTexto = EstiloTk.TextoSuave;
 			actuales.Left.Set(0f, 0f);
 			actuales.Top.Set(34f, 0f);
 			Append(actuales);
 
-			BotonTk llenar = new BotonTk("Llenar vida y maná", 0.8f);
+			_botonLlenar = new BotonTk(Idiomas.Texto("Personaje.Llenar"), 0.8f);
+			BotonTk llenar = _botonLlenar;
 			llenar.Width.Set(190f, 0f);
 			llenar.Height.Set(26f, 0f);
 			llenar.HAlign = 1f;
@@ -150,9 +157,21 @@ namespace TerrakeepMod.UI.Personaje
 			long enAlmacenes;
 			long total = PersonajeVivo.DineroTotal(out enInventario, out enAlmacenes);
 
-			return "Dinero: " + PersonajeVivo.FormatearDinero(total)
-				+ "  (inventario " + PersonajeVivo.FormatearDinero(enInventario)
-				+ " | almacenes " + PersonajeVivo.FormatearDinero(enAlmacenes) + ")";
+			return Idiomas.Texto("Personaje.Dinero",
+				PersonajeVivo.FormatearDinero(total),
+				PersonajeVivo.FormatearDinero(enInventario),
+				PersonajeVivo.FormatearDinero(enAlmacenes));
+		}
+
+		/// <summary>El unico texto de la cabecera que no es una <see cref="EtiquetaTk"/> viva es el
+		/// del boton, que se fija al construirlo; se vuelve a poner en cada fotograma para que
+		/// cambie con el idioma sin reabrir el panel.</summary>
+		public override void Update(GameTime gameTime)
+		{
+			base.Update(gameTime);
+			if (_botonLlenar != null) {
+				_botonLlenar.FijarTexto(Idiomas.Texto("Personaje.Llenar"));
+			}
 		}
 	}
 }
