@@ -1248,3 +1248,288 @@ juego y acaba dentro del `.plr`, no que se quede en memoria.
   `git add -N <rutas>` (intent-to-add) y entonces sí. Con eso, el commit lleva exactamente las rutas
   nombradas y nada de lo que otros agentes tengan preparado en el índice compartido — que es el
   problema que ya documentó WS1.
+
+---
+
+## 6-sep-2026 — FUSIÓN: los seis paneles pasan a ser uno solo con pestañas
+
+Fase final de esta ronda. Los seis paneles sueltos que dejaron WS0..WS7 (Personaje/K,
+Librería/O, Builds/L, Investigación/I, Exploración/P, Ajustes/J) se convierten en **un único
+`PanelTerrakeepState`** con una barra de seis pestañas, más un **icono propio en el HUD**, más una
+pasada de **animación de botones** y otra de **pulido visual de conjunto**.
+
+### 1. Qué se fusionó, y por qué salió barato
+
+Cada workstream había separado a propósito su CONTENIDO (un `UIElement` autocontenido) de su
+MECÁNICA DE APERTURA (`ModKeybind` + `IngameFancyUI.OpenUIState` + marco + cabecera + botón de
+cerrar). Esa previsión se pagó sola: **de las seis áreas, cuatro se movieron sin tocar ni una
+línea de su lógica**.
+
+| Área | Cómo estaba | Qué hubo que hacer |
+|---|---|---|
+| Librería (WS3) | `ContenidoLibreria` ya separado | colgarlo de la pestaña, nada más |
+| Investigación (WS5) | `ContenidoInvestigacion` ya separado | ídem |
+| Personaje (WS1) | contenido dentro del `UIState` | extraer `ContenidoPersonaje` (cabecera + sub-pestañas + contenedor) |
+| Exploración (WS6) | ídem | extraer `ContenidoExploracion` |
+| Builds (WS4) | contenido dentro del `UIState` **y sin usar los widgets compartidos** | extraer `ContenidoBuilds` **y reestilizarlo** |
+| Ajustes (WS7) | ídem | extraer `ContenidoAjustes` **y reestilizarlo** |
+
+Se borraron las seis `Panel*State` y los seis `Abrir/Cerrar/Alternar` que eran seis copias casi
+idénticas del mismo código. Ahora hay **un** marco, **una** barra de pestañas, **un** botón de
+cerrar, **un** dibujado del objeto cogido con el ratón y **un** `Main.playerInventory = true`.
+
+Los `*System` de cada área **no** se borraron: siguen registrando su `ModKeybind`, leyendo sus
+archivos de datos y albergando su autoprueba, pero su `AbrirPanel`/`CerrarPanel` ahora delegan en
+`PanelTerrakeepSystem`. Eso mantiene intactos el `SembradorDeAtajos` de WS7 (que recorre las claves
+del perfil que empiezan por `TerrakeepMod/`) y las seis autopruebas.
+
+### 2. Las seis teclas: ninguna se queda muerta
+
+Se conservan las seis **con su mismo nombre de atajo** (`AbrirPanel`, `AbrirLibreria`,
+`AbrirBuilds`, `AbrirInvestigacion`, `AbrirExploracion`, `AbrirAjustes`) — renombrarlas le habría
+borrado al usuario las teclas que tuviera puestas, porque `input profiles.json` las guarda por
+nombre. Lo que cambia es qué hacen:
+
+- con el panel **cerrado**, la tecla lo abre **en su pestaña**;
+- con el panel abierto en **otra** pestaña, salta a la suya **sin cerrar nada**;
+- con el panel abierto en **su** pestaña, lo cierra.
+
+La lectura de las seis está centralizada en `PanelTerrakeepSystem.ComprobarAtajos`. La K sigue
+leyéndose además desde `ModPlayer.ProcessTriggers` (vía recomendada por tModLoader), con el guarda
+por fotograma de siempre para que una pulsación no cuente dos veces.
+
+**Detalle de API que muerde**: `ModKeybind.FullName` **no es accesible desde un mod** en esta
+versión — el compilador real de tModLoader lo rechaza con `CS1061`. La clave con la que
+`PlayerInput.Triggers.JustPressed.KeyStatus` indexa un atajo se construye a mano en
+`PanelTerrakeepSystem.ClaveDeAtajo` (`"TerrakeepMod/" + nombre`).
+
+Además, el área de Ajustes enseña ahora **la lista real de atajos**, leída del perfil de controles
+del jugador: si reasigna una tecla, ahí se ve la que tiene de verdad.
+
+### 3. El icono del HUD
+
+Va **en la fila de iconos que el propio Terraria pone junto al inventario**, continuándola. Los
+tres de vanilla no son una fila genérica extensible: son tres métodos privados de `Terraria.Main`
+llamados en cadena desde `Main.DrawInventory()`, **con coordenadas fijas escritas a mano** que no
+dependen de `Main.screenWidth` ni de `Main.mapStyle` (comprobado en el `tModLoader.dll` instalado):
+
+- papelera `DrawTrashItemSlot` → (448, 258);
+- bestiario `DrawBestiaryIcon` → (498, 278, 30, 30);
+- emotes `DrawEmoteBubblesButton` → (534, 278, 30, 30).
+
+El de Terrakeep va en **(570, 278, 30, 30)**, respetando la misma separación de 6 px, y replica los
+mismos desplazamientos que el juego aplica a esa fila con un cofre o una tienda abiertos
+(`num2 += 168; num += 5;`) y al renombrar un cofre (`+24`). Evidencia real del log:
+`Rectangulo REAL en pantalla: x=570 y=278 30x30`, y en la captura se ve alineado con el libro del
+bestiario y la cara de los emotes.
+
+**Cómo se dibuja**: `ModSystem.ModifyInterfaceLayers`, insertando una `LegacyGameInterfaceLayer`
+justo detrás de `"Vanilla: Inventory"` con `InterfaceScaleType.UI`.
+**`ModSystem.PreDrawInterface` no existe** en esta versión, y `PostDrawInterface` está desaconsejada
+por el propio XML-doc de tModLoader (y cuelga de la capa 34, así que tampoco corre con un panel de
+`IngameFancyUI` abierto).
+
+Índices reales de las capas en esta versión (la lista tiene 43): **"Vanilla: Fancy UI" es la 14**,
+no la 12 — el "12" del nombre `DrawInterface_12_IngameFancyUI` es el sufijo histórico del método, no
+su posición. El inventario es la **28**. Como la 14 corta el recorrido cuando hay un panel de
+`IngameFancyUI` abierto, **el icono se ve con el panel cerrado y desaparece con el panel abierto**.
+Eso es lo correcto y lo que se buscaba, pero hay que decirlo claro: **en la práctica el icono sirve
+para ABRIR**; para cerrar están el botón "Cerrar" del panel y la tecla. El clic llama igualmente a
+`AlternarArea`, así que si alguna vez se viera con el panel abierto, lo cerraría.
+
+El clic usa el patrón real de vanilla para un rectángulo dibujado a mano (código de
+`DrawBestiaryIcon`): `Contains(mouseX, mouseY)`, respetar `PlayerInput.IgnoreMouseInterface`, poner
+`Main.LocalPlayer.mouseInterface = true` para que el clic no llegue al mundo, y consumirlo con
+`Main.mouseLeftRelease = false`.
+
+El arte es propio y **reproducible**: `scripts/generar-icono-hud.py` genera
+`Assets/IconoTerrakeep.png`, una hoja de dos fotogramas de 30×30 (normal / con el ratón encima),
+que es exactamente la convención que usa vanilla (`value.Frame(2, 1, flag ? 1 : 0)` con
+`Width -= 2; Height -= 2;`). Un cofre, que es lo que da nombre al mod, sobre la paleta de
+`EstiloTk`.
+
+### 4. La animación de los botones: de dónde sale, exactamente
+
+Lo primero que se comprobó al buscarla, y es un dato que conviene no volver a descubrir:
+**`UITextPanel<T>` -el botón "de manual" de la API de UI- no anima absolutamente nada.** No
+sobrescribe `MouseOver`/`MouseOut`, no reproduce ningún sonido y no tiene ningún campo de escala
+interpolada. Es más: **no hay ni un solo `UIElement` de vanilla que interpole escala al pasar el
+ratón** (grep de `MathHelper.Lerp`/`Utils.Lerp` en `Terraria.GameContent.UI.Elements`: cero
+coincidencias; `_animationFactor` no existe en todo el ensamblado). Las pantallas del juego se
+limitan a cambiarle el color de fondo desde fuera.
+
+El botón que **sí** se anima en Terraria está dibujado a mano en el HUD:
+`Main.DrawSettingButton(ref bool mouseOver, ref float scale, ...)`. Sus constantes reales, que son
+las que ahora usa `BotonTk`:
+
+- escala en reposo **0,80**, con el ratón encima **0,96**;
+- **±0,02 por fotograma** en los dos sentidos (~8 fotogramas a 60 fps, ~0,13 s);
+- el sonido suena **solo al ENTRAR** el ratón (`if (!mouseOver) PlaySound(12)`), no cada fotograma;
+- al hacer clic, `scale = 0.8f`: el botón se "hunde" de golpe y vuelve a crecer.
+
+El sonido es **`SoundID.MenuTick`**: el `PlaySound(12)` que aparece por todo el código decompilado
+es su id legacy (`SoundID.GetLegacyStyle`: `case 12: return MenuTick;`), el mismo que usan
+`UIImageButton.MouseOver`, `EmoteButton.MouseOver` y los iconos del bestiario y de emotes. Y también
+es el del CLIC (`UIIconTextButton.LeftMouseDown` y los dos iconos hacen `PlaySound(12)` justo antes
+de abrir su interfaz), así que se usa el mismo en los dos sitios. **Trampa**: la sobrecarga
+`SoundEngine.PlaySound(int)` es `internal` y un mod no la puede llamar — hay que pasar el
+`SoundStyle` (`SoundEngine.PlaySound(SoundID.MenuTick)`).
+
+**Cómo se dibuja el marco más grande sin romperlo.** `UIPanel.DrawSelf` pinta su marco de nueve
+trozos con un método `private` que lee `GetDimensions()` directamente, así que no se le puede pedir
+que dibuje inflado. La vía limpia es `Utils.DrawSplicedPanel` con márgenes de **12** sobre las
+MISMAS dos texturas (`Images/UI/PanelBackground` y `Images/UI/PanelBorder`, 28×28 las dos): como
+28 − 12 − 12 = 4 = el `_barSize` de `UIPanel`, el resultado es idéntico píxel a píxel, las esquinas
+mantienen su tamaño y solo se estiran los bordes. Es la misma técnica que usa `GroupOptionButton`
+en la creación de personaje.
+
+La animación avanza en **`Update`** y no en `DrawSelf` a propósito: `Update` corre a paso lógico
+fijo (`Main.UpdateUIStates` → `UserInterface.Update` → `UIElement.Update` recursivo), mientras que
+el dibujado se ejecuta más o menos veces según `Main.FrameSkipMode`. Acumulando en el dibujado, la
+velocidad de la animación cambiaría con la configuración de vídeo del usuario.
+
+Como `BotonTk` es el widget compartido, **las seis áreas heredaron la animación sin tocar ni una de
+ellas**, y de paso la heredaron las píldoras de Builds y los botones de Ajustes, que antes eran
+`UITextPanel` pelados sin sonido ni reacción.
+
+### 5. Evidencia VISUAL: por fin se pueden hacer capturas
+
+Hasta ahora en este proyecto la evidencia visual era imposible, y está anotado más arriba con los
+dos intentos que fallaron: `CopyFromScreen` fotografía el escritorio entero (inservible, y además
+contenido privado del usuario) y `PrintWindow` devuelve `true` pero la imagen sale **negra**, que es
+lo esperable en una aplicación acelerada por GPU (FNA dibuja por Direct3D, no por GDI).
+
+**La vía que sí funciona es pedirle la imagen al motor gráfico desde dentro del propio mod**:
+`GraphicsDevice.GetBackBufferData<Color>` + `Texture2D.SaveAsPng`, las dos públicas en la FNA que
+trae tModLoader (`Libraries\FNA\1.0.0\FNA.dll`, comprobado con `ilspycmd`). Captura exactamente lo
+que se está viendo, interfaz de mods incluida, sin tocar el escritorio y sin depender del foco de
+ventana. Vive en `Common/Panel/CapturaDePantalla.cs` y **solo escribe algo con la variable de
+autoprueba puesta**. Se llama desde `UpdateUI`, o sea que lo que captura es el fotograma anterior ya
+presentado — irrelevante para mirar una pestaña que lleva rato puesta, pero conviene saberlo.
+
+Las imágenes se quedan en la carpeta de guardado de la prueba
+(`<sandbox>\terrakeep-capturas\*.png`), **fuera del repositorio**: se regeneran con el mismo script
+y no tiene sentido versionar 200 KB por pestaña.
+
+### 6. Los cinco fallos de estética que solo se vieron en las capturas
+
+Ninguno se dedujo leyendo código, y ninguno se habría visto contando elementos en el log: en el log
+todos daban verde.
+
+1. **El HUD de vida/maná del juego tapaba la barra de pestañas.** Y no es culpa nuestra:
+   `IngameFancyUI.Draw` llama a **`Main.instance.GUIBarsDraw()`** DESPUÉS de que `InGameUI.Draw`
+   haya pintado el panel del mod, así que los corazones quedan encima. Es comportamiento vanilla
+   (pasa igual con el bestiario), pero nuestro panel es más ancho y su barra de pestañas caía justo
+   debajo: los corazones se comían el texto de "Exploración". **Resuelto con una fila de título de
+   30 px arriba**, que baja las pestañas por debajo del HUD y de paso le pone nombre al panel (el
+   texto va a la izquierda, que es donde el HUD no pinta nada).
+2. **Cabecera de Personaje, tres problemas a la vez**: se leía literalmente `Vida maxima<<` (el
+   botón `<<` de `SelectorTk` cae en `anchoEtiqueta - 32`, y con 110 caía dentro de la palabra); la
+   línea del dinero pisaba al selector de maná por compartir fila; y `Ahora: .../...` y
+   `Llenar vida y maná` se salían del marco por la derecha en una ventana de 800 px. Rehecha en
+   tres filas con `AnchoEtiqueta = 150`.
+3. **Librería**: los siete botones de destino tenían 118 px fijos = 854 px y se salían del panel
+   (se veía `InvenMonedas y muni Equipo`). Ahora van en porcentaje, con etiqueta corta
+   ("Mochila / Monedas / Equipo / Hucha / Caja / Forja / Bóveda") y el nombre completo en el
+   tooltip. El resumen del buscador también se salía; se acortó.
+4. **Builds**: la leyenda de colores y el recuento en una sola línea se salían por la derecha (ahora
+   son dos líneas), y el séptimo accesorio quedaba cortado por abajo (paso de 52 a 48 px por fila).
+5. **Ajustes**: las cuatro líneas de la caja de atajos iban **fijas en español dentro de un panel
+   que estaba en inglés**. Ahora salen del `.hjson` como el resto del área, y los títulos de las
+   tres cajas se piden en cada fotograma para que cambien con el propio selector de idioma (antes se
+   pasaban ya resueltos y se quedaban congelados).
+
+Y uno más, de Exploración: la nota de tres líneas del mapa reservaba 60 px para 63 de texto y se
+comía el título "Marcadores" de debajo.
+
+**Aviso para el que venga**: mirando la primera tanda de capturas creí ver que el fondo del marco
+desaparecía a media altura en dos pestañas. Era falso — comprobado leyendo los píxeles reales con
+PIL: `(31, 40, 74)` en toda la mitad inferior, que es exactamente `EstiloTk.FondoPanel`. Merece la
+pena confirmar con los píxeles antes de "arreglar" algo que se cree ver en una imagen reescalada.
+
+### 7. Inconsistencias de estilo corregidas al ver las seis piezas juntas
+
+- **Builds y Ajustes eran las dos únicas áreas que no usaban los widgets compartidos**: marcos de
+  tamaño fijo (980×600 y 520×400) frente al 96 %/94 % con tope 1080×700 de las demás, botones
+  `UITextPanel` pelados, y los colores de `EstiloTk` repetidos a mano con literales copiados. Ahora
+  usan `BotonTk` y la paleta común.
+- Los acentos verde/gris/rojo del "ya lo tienes" estaban **duplicados en dos archivos** con los
+  mismos valores copiados (`PanelBuildsState` y `EstiloInvestigacion`). Se subieron a `EstiloTk`
+  (`Correcto` / `Neutro` / `Peligro`) y `EstiloInvestigacion` los referencia.
+- Las medidas de la barra de pestañas (alto 30, separación 6, escala 0,8) estaban repetidas en cada
+  panel; ahora son constantes de `EstiloTk`, así que las dos filas de pestañas (la principal y las
+  sub-pestañas de Personaje y Exploración) se ven como una sola familia.
+- **Anchos fijos → porcentajes** en todas las barras de pestañas y filas de píldoras. Seis botones
+  de 150 px se salían del marco en una ventana de 800.
+- La cabecera de Exploración era la única que repetía la marca ("Terrakeep · Exploración del
+  mundo"); ahora la marca sale una sola vez, en el título del panel.
+- El aviso "todo esto se escribe en vivo sobre el personaje cargado" que llevaba dentro la cabecera
+  de Personaje pasó al **pie común**, que es donde cada área deja ahora su línea de ayuda.
+- El botón "Deshacer/Rehacer" de Ajustes se apagaba bajándole el alfa al color de fondo a mano
+  (era un `UITextPanel`, que no tiene estado "deshabilitado"); ahora usa `BotonTk.Habilitado`, que
+  es el mismo estado apagado que el resto del mod.
+
+### 8. Verificado de verdad en el juego
+
+`scripts\verificar-panel-unico.ps1`, sandbox propio `tModLoader-TerrakeepPanel`, variable
+`TERRAKEEP_AUTOTEST_PANEL`, archivo de evidencia propio. Log completo en
+`evidencia\panel-unico.log.txt`. **Cero excepciones en todo el `client.log`.**
+
+| Qué | Evidencia real |
+|---|---|
+| Las seis pestañas cambian con un **clic real** en la barra | `CLIC REAL en la pestaña "Librería" (en x=150 y=61 118x30, clic en 210,76) ... -> OK` (las seis) |
+| ...y montan su contenido de verdad | `ContenidoPersonaje: 88 elementos, 58 ranuras`, `ContenidoLibreria: 86 elementos, 50 ranuras`, `ContenidoInvestigacion: 391 elementos, 124 botones`, `ContenidoBuilds`, `ContenidoExploracion`, `ContenidoAjustes` |
+| Animación, en **dos pestañas distintas** | `escala 0.80 -> 0.96, el marco se dibuja 2 px mas grande` en Ajustes y en Personaje |
+| ...y se VE | capturas `animacion-*.png`: el botón crece, se aclara y le aparece el borde claro |
+| Las seis teclas saltan a SU pestaña | `tecla [O] ... "Personaje" -> "Librería" -> OK: salta a SU pestaña sin cerrar el panel` (las seis) |
+| ...y la del área abierta cierra | `la tecla [K] pulsada estando YA en "Personaje": panel abierto ahora=False -> OK` |
+| Icono del HUD, coordenadas reales | `Rectangulo REAL en pantalla: x=570 y=278 30x30`, dibujado en 13 fotogramas con el panel cerrado |
+| ...y un clic real lo abre | `clic en (585, 293) sobre el icono -> panel abierto=True, pestaña="Personaje"` |
+| Las **seis autopruebas de los workstreams**, contra el panel fusionado | `AUTOPRUEBA WS1 COMPLETA` (23 pasos), `AUTOPRUEBA WS3 COMPLETA` (13 pasos), auto-equipar + segunda pasada idempotente (WS4), `AUTOPRUEBA WS5 COMPLETA` + persistencia tras reiniciar el juego, `AUTOPRUEBA WS6 COMPLETA` (incluido el salto al mapa vanilla y la vuelta a `PanelTerrakeepState`), `AUTOPRUEBA WS7: terminada` |
+| El mundo de prueba queda intacto | `El mundo de prueba esta byte a byte como antes de la prueba` |
+
+**Regresiones encontradas al fusionar**: cero funcionales. Todo lo que apareció fue estético (los
+cinco puntos del apartado 6), y salió al mirar capturas, no al ejecutar las pruebas.
+
+### 9. Obstáculos y detalles sueltos
+
+- **Un cliente de tModLoader no arranca si hay otro en marcha** (ya documentado por WS3 y WS4). La
+  primera ejecución de la verificación del panel se quedó colgada en
+  `Hook System.Runtime.Loader.AssemblyLoadContext...` sin llegar a cargar mods, con el arnés de UI
+  Automation del repo hermano corriendo a la vez. Repetida a solas, salió a la primera. El script
+  ahora **espera a que no haya ningún otro cliente** antes de lanzar el suyo.
+- **`scripts\verificar-personaje.ps1` y `verificar-ws7.ps1` NO compilan**: copian el
+  `Mods\TerrakeepMod.tmod` global. Se vio en real (una ejecución de WS1 pasó con el `.tmod` de
+  antes del pulido y por eso salían coordenadas viejas). Hay que ejecutar `scripts\compilar.ps1`
+  antes de usarlos. Los demás scripts sí compilan, con `-Completo`.
+- **`WARN: Image loading failed: unknown image type`** en cada compilación. **No es del icono del
+  HUD**: comprobado quitando `Assets\IconoTerrakeep.png` del proyecto y compilando — el aviso sale
+  igual. Viene de `icon.png`/`icon_small.png` (commit `cef4219`). El `.tmod` se genera bien y el
+  asset del icono entra dentro convertido a `Assets/IconoTerrakeep.rawimg`, así que no bloquea nada;
+  queda anotado.
+- **Otro agente estaba trabajando en este mismo repositorio** durante la fusión (commit `cef4219`,
+  los iconos del mod). Todos los commits de esta fase se hicieron con **índice privado**
+  (`GIT_INDEX_FILE` + `git read-tree HEAD` + `git add` + `git commit`) seguido de `git reset` a
+  secas, que es la técnica que dejó documentada WS3.
+
+### 10. Lo que NO se ha cerrado, dicho claro
+
+- **La migración de textos a `Localization\*.hjson` sigue pendiente para cinco de las seis áreas.**
+  Solo Ajustes está localizado (lo dejó así WS7 y sigue igual). Se ve en la captura: con el juego en
+  inglés, el área de Ajustes está entera en inglés pero los nombres de las pestañas
+  ("Personaje", "Librería", "Investigación"...) y todo el texto de las otras cinco áreas siguen
+  fijos en español. Son cientos de cadenas; es una pasada propia, no un remate de esta fase.
+- **El icono del HUD no puede CERRAR el panel**, porque con el panel abierto su capa no llega a
+  dibujarse (la 14 corta antes de la 28). Es una consecuencia del motor, no un descuido, y el
+  diseño se apoya en ella a propósito; pero el pedido decía "abre/cierra" y en la práctica es
+  "abre". Para cerrar: el botón "Cerrar" del panel o la tecla.
+- **No se ha probado con Calamity cargado** en esta fase (`verificar-panel-unico.ps1 -Calamity`
+  existe y está listo). Las áreas que dependen de Calamity sí se probaron con él en su workstream, y
+  el catálogo de Builds/Librería/Investigación no se ha tocado en la fusión.
+- **El último eslabón físico teclado → SDL sigue sin poder simularse**, igual que documentó WS7. Los
+  atajos se ejercitan rellenando `PlayerInput.Triggers.JustPressed` y llamando al `ComprobarAtajos`
+  de producción; lo único que no se cubre es que una pulsación real de la tecla llegue al juego.
+- **Los nombres largos de las etapas de Builds se cortan** con "..." en la píldora
+  ("Pre-Hardmode (listo para el Mur..."). Tienen el nombre completo en el tooltip, pero en una
+  ventana estrecha no caben enteros. Se deja así a propósito: la alternativa era bajar tanto la
+  escala del texto que dejara de leerse.

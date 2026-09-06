@@ -1,75 +1,79 @@
-# Evidencia de WS6 (Exploracion) - 2026-09-06 09:45:04
-[09:45:04.455] [Terrakeep] AUTOPRUEBA WS6: TERRAKEEP_AUTOTEST_WS6 detectada. Marca de ejecucion: WS6-094442-33220
-[09:45:04.455] [Terrakeep] AUTOPRUEBA WS6/estado inicial: mundo "TerrakeepPrueba" Pequeño (4200x1200), modo Clásico (Main.GameMode=0, expertMode=False, masterMode=False), jugador "TerrakeepPrueba" difficulty=0, Main.netMode=0, Main.autoSave=False, Main.mapEnabled=True, Main.mapReady=True, explorado 0,1%.
-[09:45:04.456] [Terrakeep] AUTOPRUEBA WS6/catalogo: 38 objetivos en 6 categorías, 38 resueltos en esta partida.
-[09:45:04.468] [Terrakeep] AUTOPRUEBA WS6/0 - ESCENARIO DE PRUEBA: revelados 320000 tiles de mapa alrededor de la aparicion (1696..2496 x 70..470) con Main.Map.Update, y mapa marcado para repintar. Esto NO es funcionalidad del mod: el personaje de prueba es sintetico y no ha explorado nada.
-[09:45:04.469] [Terrakeep] Pestaña activa: "Mapa".
-[09:45:04.470] [Terrakeep] PANEL EXPLORACION ABIERTO via autoprueba (TERRAKEEP_AUTOTEST_WS6). Mundo: "TerrakeepPrueba" Pequeño (4200x1200), modo Clásico (Main.GameMode=0), semilla 1.1.1.305081517. Main.mapReady=True, Main.mapEnabled=True, Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Exploracion.PanelExploracionState
-[09:45:04.472] [Terrakeep] Panel de Exploracion dibujado. Marco en coordenadas de pantalla: x=100 y=21 w=1080 h=676. Resolucion 1280x720, escala de interfaz 1.
-[09:45:04.723] [Terrakeep] Pestaña activa: "Mapa".
-[09:45:04.723] [Terrakeep] AUTOPRUEBA WS6/1 - pestaña "Mapa": 15 elementos (5 botones); area x=110 y=165 1060x480
-[09:45:08.738] [Terrakeep] AUTOPRUEBA WS6/2 - mini-mapa en x=114 y=169 802x472, centro en el tile (2096, 268), escala 2,500 px/tile (minima 0,191), trozos de mapa dibujados el ultimo fotograma: 2, marcadores dibujados: 0
-[09:45:08.740] [Terrakeep] AUTOPRUEBA WS6/2 - pixel real de la textura del mapa del juego en el tile del jugador (2096, 268) = casilla mapTarget[1, 0] pixel (96, 268): RGBA(131, 164, 255, 255) -> OK: hay mapa dibujado ahi de verdad. El mapa del juego dice IsRevealed=True.
-[09:45:08.741] [Terrakeep] AUTOPRUEBA WS6/2 - teclas asignadas a los atajos del mod: TerrakeepMod/AbrirBuilds=[L], TerrakeepMod/AbrirExploracion=[P], TerrakeepMod/AbrirInvestigacion=[I], TerrakeepMod/AbrirLibreria=[O], TerrakeepMod/AbrirPanel=[K], TerrakeepMod/AbrirAjustes=[J], TerrakeepMod/Deshacer=[Z], TerrakeepMod/Rehacer=[Y]. Para comparar, un atajo VANILLA: QuickHeal=[H].
-[09:45:08.741] [Terrakeep] AUTOPRUEBA WS6/2 - clic real en el boton "Ver el mundo entero" (habilitado=True, en x=930 y=245 240x34, clic en 1050,262) -> mini-mapa en x=114 y=169 802x472, centro en el tile (2100, 600), escala 0,191 px/tile (minima 0,191), trozos de mapa dibujados el ultimo fotograma: 2, marcadores dibujados: 0
-[09:45:08.922] [Terrakeep] AUTOPRUEBA WS6/3 - clic real en "Acercar  +" (habilitado=True, en x=930 y=165 117x34, clic en 988,182) y en "Centrar en mí" (habilitado=True, en x=930 y=205 240x34, clic en 1050,222).
-[09:45:08.922] [Terrakeep] AUTOPRUEBA WS6/3 - tras acercar y centrar en el jugador: mini-mapa en x=114 y=169 802x472, centro en el tile (2096, 268), escala 8,000 px/tile (minima 0,191), trozos de mapa dibujados el ultimo fotograma: 3, marcadores dibujados: 0. Jugador en el tile 2096, 268; en pantalla el jugador cae en (515, 406) (el centro del mini-mapa tiene que ser ese punto).
-[09:45:09.108] [Terrakeep] Pestaña activa: "Búsqueda".
-[09:45:09.108] [Terrakeep] AUTOPRUEBA WS6/4 - pestaña "Búsqueda": 37 elementos (21 botones); area x=110 y=165 1060x480. Objetivo pedido "Cobre" -> seleccionado ("Cobre")
-[09:45:09.109] [Terrakeep] AUTOPRUEBA WS6/4 - clic real en la casilla "Solo en lo que ya he explorado" para apagarla: estaba en True, ahora False (clic dado)
-[09:45:09.109] [Terrakeep] BUSQUEDA empezada via botón "Buscar en el mundo": "Cobre" (Tile, tipos=7/166) en TODO el mundo: en marcha, columna 0 de 8401 (0%).
-[09:45:09.110] [Terrakeep] AUTOPRUEBA WS6/4 - clic real en el boton "Buscar en el mundo" (habilitado=True, en x=110 y=610 330x36, clic en 275,628)
-[09:45:09.390] [Terrakeep] BUSQUEDA terminada: "Cobre" (Tile, tipos=7/166) en TODO el mundo: 13718 tiles encontrados en 20170801 mirados, agrupados en 150 zonas, 34,9 ms de CPU en total.
-[09:45:09.391] [Terrakeep]   - Cobre x42 en el tile (2182, 365), a 129 tiles del jugador.
-[09:45:09.391] [Terrakeep]   - Cobre x28 en el tile (1965, 319), a 140 tiles del jugador.
-[09:45:09.391] [Terrakeep]   - Cobre x40 en el tile (2053, 405), a 143 tiles del jugador.
-[09:45:09.392] [Terrakeep]   - Cobre x29 en el tile (2201, 388), a 159 tiles del jugador.
-[09:45:09.392] [Terrakeep]   - Cobre x35 en el tile (2081, 484), a 216 tiles del jugador.
-[09:45:09.408] [Terrakeep] AUTOPRUEBA WS6/5 - busqueda terminada en 17 fotogramas: "Cobre" (Tile, tipos=7/166) en TODO el mundo: 13718 tiles encontrados en 20170801 mirados, agrupados en 150 zonas, 34,9 ms de CPU en total.
-[09:45:09.505] [Terrakeep] Pestaña activa: "Mapa".
-[09:45:09.505] [Terrakeep] AUTOPRUEBA WS6/6 - mini-mapa centrado en el primer resultado (2182, 365): mini-mapa en x=114 y=169 802x472, centro en el tile (2182, 365), escala 3,000 px/tile (minima 0,191), trozos de mapa dibujados el ultimo fotograma: 0, marcadores dibujados: 0
-[09:45:09.855] [Terrakeep] AUTOPRUEBA WS6/7 - con los marcadores puestos: mini-mapa en x=114 y=169 802x472, centro en el tile (2182, 365), escala 3,000 px/tile (minima 0,191), trozos de mapa dibujados el ultimo fotograma: 1, marcadores dibujados: 4
-[09:45:09.856] [Terrakeep] Pestaña activa: "Búsqueda".
-[09:45:09.857] [Terrakeep] BUSQUEDA empezada via autoprueba (Cofres y cómodas): "Cofres y cómodas" (Cofres) en TODO el mundo: 171 encontrados (barrido directo del array Main.chest, sin recorrer tiles).
-[09:45:09.857] [Terrakeep] BUSQUEDA terminada: "Cofres y cómodas" (Cofres) en TODO el mundo: 171 encontrados (barrido directo del array Main.chest, sin recorrer tiles).
-[09:45:09.857] [Terrakeep]   - Cofre (12 objetos, Bumerán de madera...) en el tile (2042, 304), a 64 tiles del jugador.
-[09:45:09.857] [Terrakeep]   - Cofre (7 objetos, Lanzatelarañas...) en el tile (2159, 488), a 228 tiles del jugador.
-[09:45:09.858] [Terrakeep]   - Cofre (7 objetos, Concha mágica...) en el tile (1889, 378), a 234 tiles del jugador.
-[09:45:09.858] [Terrakeep]   - Cofre (7 objetos, Espejo mágico...) en el tile (2015, 494), a 239 tiles del jugador.
-[09:45:09.858] [Terrakeep]   - Cofre (6 objetos, Espejo mágico...) en el tile (2011, 494), a 240 tiles del jugador.
-[09:45:09.859] [Terrakeep] Pestaña activa: "Búsqueda".
-[09:45:09.859] [Terrakeep] BUSQUEDA empezada via autoprueba (NPC vivos ahora mismo): "NPC vivos ahora mismo" (Npcs) en TODO el mundo: 3 encontrados (barrido directo del array Main.npc, sin recorrer tiles).
-[09:45:09.859] [Terrakeep] BUSQUEDA terminada: "NPC vivos ahora mismo" (Npcs) en TODO el mundo: 3 encontrados (barrido directo del array Main.npc, sin recorrer tiles).
-[09:45:09.860] [Terrakeep]   - Zach (habitante) - 250/250 de vida en el tile (2109, 269), a 12 tiles del jugador.
-[09:45:09.860] [Terrakeep]   - Pececillo - 5/5 de vida en el tile (2035, 305), a 71 tiles del jugador.
-[09:45:09.860] [Terrakeep]   - Anciano (habitante) - 250/250 de vida en el tile (3355, 223), a 1259 tiles del jugador.
-[09:45:09.956] [Terrakeep] Pestaña activa: "Este mundo".
-[09:45:09.956] [Terrakeep] Dificultad: modo "Viaje" NO disponible. Tu personaje NO es de Viaje: si pones este mundo en modo Viaje, este personaje ya no podrá volver a entrar en él.
-[09:45:09.956] [Terrakeep] AUTOPRUEBA WS6/8a - intento de poner modo VIAJE con un personaje difficulty=0: motivo="Tu personaje NO es de Viaje: si pones este mundo en modo Viaje, este personaje ya no podrá volver a entrar en él.". Main.GameMode antes=0, ahora=0 -> OK, NO se ha tocado nada.
-[09:45:09.957] [Terrakeep] AUTOPRUEBA WS6/8b - elegido el modo "Experto" (paso 1 de 2). ModoElegido del panel=1 -> OK. Main.GameMode sigue siendo 0 (todavia no se ha confirmado).
-[09:45:09.957] [Terrakeep] Dificultad CAMBIADA via panel de Exploración (dos pasos): Clásico -> Experto. Estado real releido del juego: Main.GameMode=1, Main.expertMode=True (antes False), Main.masterMode=False (antes False), Main.GameModeInfo.IsExpertMode=True, Main.GameModeInfo.IsMasterMode=False, Main.GameModeInfo.IsJourneyMode=False, ActiveWorldFileData.GameMode=1 (los dos tienen que coincidir: si no, _currentGameModeInfo estaria desincronizado).
-[09:45:09.957] [Terrakeep] AUTOPRUEBA WS6/8c - confirmado (paso 2 de 2). Main.GameMode=1 (esperado 1), Main.expertMode=True, Main.masterMode=False, Main.GameModeInfo.IsExpertMode=True, ActiveWorldFileData.GameMode=1 -> OK
-[09:45:09.958] [Terrakeep] AUTOPRUEBA WS6/8d - deshacer del historial: "Modo del mundo: Clásico -> Experto". Main.GameMode=0, expertMode=False -> OK, ha vuelto al modo original.
-[09:45:09.958] [Terrakeep] AUTOPRUEBA WS6/8e - rehacer: "Modo del mundo: Clásico -> Experto". Main.GameMode=1, expertMode=True, masterMode=False.
-[09:45:10.138] [Terrakeep] Pestaña activa: "Búsqueda".
-[09:45:10.138] [Terrakeep] BUSQUEDA empezada via autoprueba (Cobre): "Cobre" (Tile, tipos=7/166) en TODO el mundo: en marcha, columna 0 de 8401 (0%).
-[09:45:10.138] [Terrakeep] Pestaña activa: "Mapa".
-[09:45:10.291] [Terrakeep] BUSQUEDA terminada: "Cobre" (Tile, tipos=7/166) en TODO el mundo: 13718 tiles encontrados en 20170801 mirados, agrupados en 150 zonas, 18,7 ms de CPU en total.
-[09:45:10.291] [Terrakeep]   - Cobre x42 en el tile (2182, 365), a 129 tiles del jugador.
-[09:45:10.291] [Terrakeep]   - Cobre x28 en el tile (1965, 319), a 140 tiles del jugador.
-[09:45:10.291] [Terrakeep]   - Cobre x40 en el tile (2053, 405), a 143 tiles del jugador.
-[09:45:10.292] [Terrakeep]   - Cobre x29 en el tile (2201, 388), a 159 tiles del jugador.
-[09:45:10.292] [Terrakeep]   - Cobre x35 en el tile (2081, 484), a 216 tiles del jugador.
-[09:45:11.657] [Terrakeep] AUTOPRUEBA WS6/10 - antes de saltar al mapa: 150 marcadores de "Cobre" puestos, y mini-mapa en x=114 y=169 802x472, centro en el tile (2096, 268), escala 2,500 px/tile (minima 0,191), trozos de mapa dibujados el ultimo fotograma: 2, marcadores dibujados: 1
-[09:45:12.007] [Terrakeep] AUTOPRUEBA WS6/11 - el mini-mapa mira al tile (2096, 268) con escala 2,50; se pulsa "Ver en el mapa del juego" para llevarse esa misma vista al mapa vanilla.
-[09:45:12.007] [Terrakeep] PANEL EXPLORACION CERRADO via salto al mapa vanilla (botón "Ver en el mapa del juego").
-[09:45:12.008] [Terrakeep] VER EN EL MAPA via botón "Ver en el mapa del juego": Main.mapFullscreen=True, mapFullscreenPos=(2096, 268), mapFullscreenScale=2,5, marcadores de Terrakeep pendientes de dibujar=150 ("Cobre").
-[09:45:12.008] [Terrakeep] AUTOPRUEBA WS6/11 - pulsado: Main.mapFullscreen=True, Main.InGameUI.CurrentState=(null) (tiene que ser null: con el mapa abierto el juego no dibuja interfaz de mods).
-[09:45:13.523] [Terrakeep] AUTOPRUEBA WS6/12 - con el mapa vanilla abierto: Main.mapFullscreen=True, mapFullscreenPos=(2096, 268), mapFullscreenScale=2,50. La capa de mapa de Terrakeep ha dibujado marcadores en 450 fotogramas (ultimo: 150 marcadores).
-[09:45:13.523] [Terrakeep] El mapa vanilla se ha cerrado; se vuelve al panel de Exploracion. Fotogramas en los que la capa de mapa de Terrakeep dibujo marcadores: 450 (ultimo fotograma: 150 marcadores).
-[09:45:13.523] [Terrakeep] Pestaña activa: "Mapa".
-[09:45:13.524] [Terrakeep] PANEL EXPLORACION ABIERTO via vuelta del mapa vanilla. Mundo: "TerrakeepPrueba" Pequeño (4200x1200), modo Experto (Main.GameMode=1), semilla 1.2.1.305081517. Main.mapReady=True, Main.mapEnabled=True, Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Exploracion.PanelExploracionState
-[09:45:13.525] [Terrakeep] Panel de Exploracion dibujado. Marco en coordenadas de pantalla: x=100 y=21 w=1080 h=676. Resolucion 1280x720, escala de interfaz 1.
-[09:45:13.872] [Terrakeep] AUTOPRUEBA WS6/13 - tras cerrar el mapa: panel abierto de nuevo=True, InGameUI.CurrentState=PanelExploracionState.
-[09:45:13.973] [Terrakeep] AUTOPRUEBA WS6/14 - modo del mundo restaurado: Experto -> Clásico (Main.GameMode=0, expertMode=False, masterMode=False).
-[09:45:13.974] [Terrakeep] AUTOPRUEBA WS6 COMPLETA.
+# Evidencia de WS6 (Exploracion) - 2026-09-06 11:11:15
+[11:11:15.686] [Terrakeep] AUTOPRUEBA WS6: TERRAKEEP_AUTOTEST_WS6 detectada. Marca de ejecucion: WS6-111054-42428
+[11:11:15.686] [Terrakeep] AUTOPRUEBA WS6/estado inicial: mundo "TerrakeepPrueba" Pequeño (4200x1200), modo Clásico (Main.GameMode=0, expertMode=False, masterMode=False), jugador "TerrakeepPrueba" difficulty=0, Main.netMode=0, Main.autoSave=False, Main.mapEnabled=True, Main.mapReady=True, explorado 0,1%.
+[11:11:15.687] [Terrakeep] AUTOPRUEBA WS6/catalogo: 38 objetivos en 6 categorías, 38 resueltos en esta partida.
+[11:11:15.700] [Terrakeep] AUTOPRUEBA WS6/0 - ESCENARIO DE PRUEBA: revelados 320000 tiles de mapa alrededor de la aparicion (1696..2496 x 70..470) con Main.Map.Update, y mapa marcado para repintar. Esto NO es funcionalidad del mod: el personaje de prueba es sintetico y no ha explorado nada.
+[11:11:15.700] [Terrakeep] Exploracion: se pide abrir el panel via autoprueba (TERRAKEEP_AUTOTEST_WS6). Mundo: "TerrakeepPrueba" Pequeño (4200x1200), modo Clásico (Main.GameMode=0), semilla 1.1.1.305081517. Main.mapReady=True, Main.mapEnabled=True.
+[11:11:15.701] [Terrakeep] Pestaña activa: "Mapa".
+[11:11:15.701] [Terrakeep] Pestaña activa: "Exploración" (via reapertura).
+[11:11:15.701] [Terrakeep] PANEL ABIERTO via autoprueba (TERRAKEEP_AUTOTEST_WS6). Pestaña: "Exploración". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPrueba". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
+[11:11:15.704] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=100 y=21 w=1080 h=676. Resolucion 1280x720, escala de interfaz 1. Pestaña abierta: "Exploración". Barra de pestañas: ["Personaje" x=110 y=61 170x30] ["Librería" x=286 y=61 170x30] ["Builds" x=463 y=61 170x30] ["Investigación" x=640 y=61 170x30] ["Exploración" x=816 y=61 170x30 ACTIVA] ["Ajustes" x=993 y=61 170x30] 
+[11:11:15.950] [Terrakeep] Pestaña activa: "Mapa".
+[11:11:15.951] [Terrakeep] AUTOPRUEBA WS6/1 - pestaña "Mapa": 15 elementos (5 botones); area x=110 y=221 1060x422
+[11:11:19.967] [Terrakeep] AUTOPRUEBA WS6/2 - mini-mapa en x=114 y=225 802x414, centro en el tile (2096, 268), escala 2,500 px/tile (minima 0,191), trozos de mapa dibujados el ultimo fotograma: 2, marcadores dibujados: 0
+[11:11:19.970] [Terrakeep] AUTOPRUEBA WS6/2 - pixel real de la textura del mapa del juego en el tile del jugador (2096, 268) = casilla mapTarget[1, 0] pixel (96, 268): RGBA(131, 164, 255, 255) -> OK: hay mapa dibujado ahi de verdad. El mapa del juego dice IsRevealed=True.
+[11:11:19.970] [Terrakeep] AUTOPRUEBA WS6/2 - teclas asignadas a los atajos del mod: TerrakeepMod/AbrirBuilds=[L], TerrakeepMod/AbrirExploracion=[P], TerrakeepMod/AbrirInvestigacion=[I], TerrakeepMod/AbrirLibreria=[O], TerrakeepMod/AbrirPanel=[K], TerrakeepMod/AbrirAjustes=[J], TerrakeepMod/Deshacer=[Z], TerrakeepMod/Rehacer=[Y]. Para comparar, un atajo VANILLA: QuickHeal=[H].
+[11:11:19.970] [Terrakeep] AUTOPRUEBA WS6/2 - clic real en el boton "Ver el mundo entero" (habilitado=True, en x=930 y=301 240x34, clic en 1050,318) -> mini-mapa en x=114 y=225 802x414, centro en el tile (2100, 600), escala 0,191 px/tile (minima 0,191), trozos de mapa dibujados el ultimo fotograma: 2, marcadores dibujados: 0
+[11:11:20.151] [Terrakeep] AUTOPRUEBA WS6/3 - clic real en "Acercar  +" (habilitado=True, en x=930 y=221 117x34, clic en 988,238) y en "Centrar en mí" (habilitado=True, en x=930 y=261 240x34, clic en 1050,278).
+[11:11:20.151] [Terrakeep] AUTOPRUEBA WS6/3 - tras acercar y centrar en el jugador: mini-mapa en x=114 y=225 802x414, centro en el tile (2096, 268), escala 8,000 px/tile (minima 0,191), trozos de mapa dibujados el ultimo fotograma: 3, marcadores dibujados: 0. Jugador en el tile 2096, 268; en pantalla el jugador cae en (515, 433) (el centro del mini-mapa tiene que ser ese punto).
+[11:11:20.337] [Terrakeep] Pestaña activa: "Búsqueda".
+[11:11:20.337] [Terrakeep] AUTOPRUEBA WS6/4 - pestaña "Búsqueda": 37 elementos (21 botones); area x=110 y=221 1060x422. Objetivo pedido "Cobre" -> seleccionado ("Cobre")
+[11:11:20.337] [Terrakeep] AUTOPRUEBA WS6/4 - clic real en la casilla "Solo en lo que ya he explorado" para apagarla: estaba en True, ahora False (clic dado)
+[11:11:20.338] [Terrakeep] BUSQUEDA empezada via botón "Buscar en el mundo": "Cobre" (Tile, tipos=7/166) en TODO el mundo: en marcha, columna 0 de 8401 (0%).
+[11:11:20.338] [Terrakeep] AUTOPRUEBA WS6/4 - clic real en el boton "Buscar en el mundo" (habilitado=True, en x=110 y=608 330x36, clic en 275,626)
+[11:11:20.585] [Terrakeep] BUSQUEDA terminada: "Cobre" (Tile, tipos=7/166) en TODO el mundo: 13718 tiles encontrados en 20170801 mirados, agrupados en 150 zonas, 31,6 ms de CPU en total.
+[11:11:20.586] [Terrakeep]   - Cobre x42 en el tile (2182, 365), a 129 tiles del jugador.
+[11:11:20.586] [Terrakeep]   - Cobre x28 en el tile (1965, 319), a 140 tiles del jugador.
+[11:11:20.586] [Terrakeep]   - Cobre x40 en el tile (2053, 405), a 143 tiles del jugador.
+[11:11:20.586] [Terrakeep]   - Cobre x29 en el tile (2201, 388), a 159 tiles del jugador.
+[11:11:20.587] [Terrakeep]   - Cobre x35 en el tile (2081, 484), a 216 tiles del jugador.
+[11:11:20.602] [Terrakeep] AUTOPRUEBA WS6/5 - busqueda terminada en 15 fotogramas: "Cobre" (Tile, tipos=7/166) en TODO el mundo: 13718 tiles encontrados en 20170801 mirados, agrupados en 150 zonas, 31,6 ms de CPU en total.
+[11:11:20.702] [Terrakeep] Pestaña activa: "Mapa".
+[11:11:20.703] [Terrakeep] AUTOPRUEBA WS6/6 - mini-mapa centrado en el primer resultado (2182, 365): mini-mapa en x=114 y=225 802x414, centro en el tile (2182, 365), escala 3,000 px/tile (minima 0,191), trozos de mapa dibujados el ultimo fotograma: 0, marcadores dibujados: 0
+[11:11:21.053] [Terrakeep] AUTOPRUEBA WS6/7 - con los marcadores puestos: mini-mapa en x=114 y=225 802x414, centro en el tile (2182, 365), escala 3,000 px/tile (minima 0,191), trozos de mapa dibujados el ultimo fotograma: 1, marcadores dibujados: 4
+[11:11:21.053] [Terrakeep] Pestaña activa: "Búsqueda".
+[11:11:21.054] [Terrakeep] BUSQUEDA empezada via autoprueba (Cofres y cómodas): "Cofres y cómodas" (Cofres) en TODO el mundo: 171 encontrados (barrido directo del array Main.chest, sin recorrer tiles).
+[11:11:21.054] [Terrakeep] BUSQUEDA terminada: "Cofres y cómodas" (Cofres) en TODO el mundo: 171 encontrados (barrido directo del array Main.chest, sin recorrer tiles).
+[11:11:21.054] [Terrakeep]   - Cofre (12 objetos, Bumerán de madera...) en el tile (2042, 304), a 64 tiles del jugador.
+[11:11:21.054] [Terrakeep]   - Cofre (7 objetos, Lanzatelarañas...) en el tile (2159, 488), a 228 tiles del jugador.
+[11:11:21.054] [Terrakeep]   - Cofre (7 objetos, Concha mágica...) en el tile (1889, 378), a 234 tiles del jugador.
+[11:11:21.055] [Terrakeep]   - Cofre (7 objetos, Espejo mágico...) en el tile (2015, 494), a 239 tiles del jugador.
+[11:11:21.055] [Terrakeep]   - Cofre (6 objetos, Espejo mágico...) en el tile (2011, 494), a 240 tiles del jugador.
+[11:11:21.055] [Terrakeep] Pestaña activa: "Búsqueda".
+[11:11:21.056] [Terrakeep] BUSQUEDA empezada via autoprueba (NPC vivos ahora mismo): "NPC vivos ahora mismo" (Npcs) en TODO el mundo: 3 encontrados (barrido directo del array Main.npc, sin recorrer tiles).
+[11:11:21.056] [Terrakeep] BUSQUEDA terminada: "NPC vivos ahora mismo" (Npcs) en TODO el mundo: 3 encontrados (barrido directo del array Main.npc, sin recorrer tiles).
+[11:11:21.056] [Terrakeep]   - Zach (habitante) - 250/250 de vida en el tile (2126, 268), a 30 tiles del jugador.
+[11:11:21.057] [Terrakeep]   - Pájaro - 5/5 de vida en el tile (2019, 266), a 77 tiles del jugador.
+[11:11:21.057] [Terrakeep]   - Anciano (habitante) - 250/250 de vida en el tile (3355, 223), a 1259 tiles del jugador.
+[11:11:21.153] [Terrakeep] Pestaña activa: "Este mundo".
+[11:11:21.153] [Terrakeep] Dificultad: modo "Viaje" NO disponible. Tu personaje NO es de Viaje: si pones este mundo en modo Viaje, este personaje ya no podrá volver a entrar en él.
+[11:11:21.154] [Terrakeep] AUTOPRUEBA WS6/8a - intento de poner modo VIAJE con un personaje difficulty=0: motivo="Tu personaje NO es de Viaje: si pones este mundo en modo Viaje, este personaje ya no podrá volver a entrar en él.". Main.GameMode antes=0, ahora=0 -> OK, NO se ha tocado nada.
+[11:11:21.154] [Terrakeep] AUTOPRUEBA WS6/8b - elegido el modo "Experto" (paso 1 de 2). ModoElegido del panel=1 -> OK. Main.GameMode sigue siendo 0 (todavia no se ha confirmado).
+[11:11:21.154] [Terrakeep] Dificultad CAMBIADA via panel de Exploración (dos pasos): Clásico -> Experto. Estado real releido del juego: Main.GameMode=1, Main.expertMode=True (antes False), Main.masterMode=False (antes False), Main.GameModeInfo.IsExpertMode=True, Main.GameModeInfo.IsMasterMode=False, Main.GameModeInfo.IsJourneyMode=False, ActiveWorldFileData.GameMode=1 (los dos tienen que coincidir: si no, _currentGameModeInfo estaria desincronizado).
+[11:11:21.155] [Terrakeep] AUTOPRUEBA WS6/8c - confirmado (paso 2 de 2). Main.GameMode=1 (esperado 1), Main.expertMode=True, Main.masterMode=False, Main.GameModeInfo.IsExpertMode=True, ActiveWorldFileData.GameMode=1 -> OK
+[11:11:21.155] [Terrakeep] AUTOPRUEBA WS6/8d - deshacer del historial: "Modo del mundo: Clásico -> Experto". Main.GameMode=0, expertMode=False -> OK, ha vuelto al modo original.
+[11:11:21.155] [Terrakeep] AUTOPRUEBA WS6/8e - rehacer: "Modo del mundo: Clásico -> Experto". Main.GameMode=1, expertMode=True, masterMode=False.
+[11:11:21.335] [Terrakeep] Pestaña activa: "Búsqueda".
+[11:11:21.336] [Terrakeep] BUSQUEDA empezada via autoprueba (Cobre): "Cobre" (Tile, tipos=7/166) en TODO el mundo: en marcha, columna 0 de 8401 (0%).
+[11:11:21.336] [Terrakeep] Pestaña activa: "Mapa".
+[11:11:21.452] [Terrakeep] BUSQUEDA terminada: "Cobre" (Tile, tipos=7/166) en TODO el mundo: 13718 tiles encontrados en 20170801 mirados, agrupados en 150 zonas, 15,5 ms de CPU en total.
+[11:11:21.453] [Terrakeep]   - Cobre x42 en el tile (2182, 365), a 129 tiles del jugador.
+[11:11:21.453] [Terrakeep]   - Cobre x28 en el tile (1965, 319), a 140 tiles del jugador.
+[11:11:21.453] [Terrakeep]   - Cobre x40 en el tile (2053, 405), a 143 tiles del jugador.
+[11:11:21.453] [Terrakeep]   - Cobre x29 en el tile (2201, 388), a 159 tiles del jugador.
+[11:11:21.454] [Terrakeep]   - Cobre x35 en el tile (2081, 484), a 216 tiles del jugador.
+[11:11:22.852] [Terrakeep] AUTOPRUEBA WS6/10 - antes de saltar al mapa: 150 marcadores de "Cobre" puestos, y mini-mapa en x=114 y=225 802x414, centro en el tile (2096, 268), escala 2,500 px/tile (minima 0,191), trozos de mapa dibujados el ultimo fotograma: 2, marcadores dibujados: 1
+[11:11:23.202] [Terrakeep] AUTOPRUEBA WS6/11 - el mini-mapa mira al tile (2096, 268) con escala 2,50; se pulsa "Ver en el mapa del juego" para llevarse esa misma vista al mapa vanilla.
+[11:11:23.203] [Terrakeep] PANEL CERRADO via salto al mapa vanilla (botón "Ver en el mapa del juego"). Pestaña al cerrar: "Exploración".
+[11:11:23.203] [Terrakeep] VER EN EL MAPA via botón "Ver en el mapa del juego": Main.mapFullscreen=True, mapFullscreenPos=(2096, 268), mapFullscreenScale=2,5, marcadores de Terrakeep pendientes de dibujar=150 ("Cobre").
+[11:11:23.204] [Terrakeep] AUTOPRUEBA WS6/11 - pulsado: Main.mapFullscreen=True, Main.InGameUI.CurrentState=(null) (tiene que ser null: con el mapa abierto el juego no dibuja interfaz de mods).
+[11:11:24.718] [Terrakeep] AUTOPRUEBA WS6/12 - con el mapa vanilla abierto: Main.mapFullscreen=True, mapFullscreenPos=(2096, 268), mapFullscreenScale=2,50. La capa de mapa de Terrakeep ha dibujado marcadores en 450 fotogramas (ultimo: 150 marcadores).
+[11:11:24.718] [Terrakeep] El mapa vanilla se ha cerrado; se vuelve al panel de Exploracion. Fotogramas en los que la capa de mapa de Terrakeep dibujo marcadores: 450 (ultimo fotograma: 150 marcadores).
+[11:11:24.718] [Terrakeep] Exploracion: se pide abrir el panel via vuelta del mapa vanilla. Mundo: "TerrakeepPrueba" Pequeño (4200x1200), modo Experto (Main.GameMode=1), semilla 1.2.1.305081517. Main.mapReady=True, Main.mapEnabled=True.
+[11:11:24.719] [Terrakeep] Pestaña activa: "Mapa".
+[11:11:24.719] [Terrakeep] Pestaña activa: "Exploración" (via reapertura).
+[11:11:24.719] [Terrakeep] PANEL ABIERTO via vuelta del mapa vanilla. Pestaña: "Exploración". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPrueba". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
+[11:11:24.721] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=100 y=21 w=1080 h=676. Resolucion 1280x720, escala de interfaz 1. Pestaña abierta: "Exploración". Barra de pestañas: ["Personaje" x=110 y=61 170x30] ["Librería" x=286 y=61 170x30] ["Builds" x=463 y=61 170x30] ["Investigación" x=640 y=61 170x30] ["Exploración" x=816 y=61 170x30 ACTIVA] ["Ajustes" x=993 y=61 170x30] 
+[11:11:25.068] [Terrakeep] AUTOPRUEBA WS6/13 - tras cerrar el mapa: panel abierto de nuevo=True, InGameUI.CurrentState=PanelTerrakeepState.
+[11:11:25.169] [Terrakeep] AUTOPRUEBA WS6/14 - modo del mundo restaurado: Experto -> Clásico (Main.GameMode=0, expertMode=False, masterMode=False).
+[11:11:25.170] [Terrakeep] AUTOPRUEBA WS6 COMPLETA.

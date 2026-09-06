@@ -81,6 +81,45 @@ compiló MSBuild ("Loading pre-compiled TerrakeepMod.dll") en vez de compilarlo 
 - Para inspeccionar un `.tmod` ya compilado (propio o ajeno) sin descompilar nada:
   `node tmod-extract.js <ruta.tmod>` desde
   `C:\Users\adrian\Downloads\Terrasavr-Win\Terrasavr-Calamity-Beta\resources\app\`.
+- **SÍ se pueden hacer capturas de pantalla del juego**, desde dentro del propio mod:
+  `GraphicsDevice.GetBackBufferData<Color>` + `Texture2D.SaveAsPng` (las dos públicas en
+  `Libraries\FNA\1.0.0\FNA.dll`). Ver `Common\Panel\CapturaDePantalla.cs`. Es la única
+  vía que funciona: `CopyFromScreen` fotografía el escritorio del usuario y `PrintWindow`
+  sale negro con una aplicación acelerada por GPU. **Mirar las capturas encuentra fallos
+  de estética que ninguna autoprueba ve** (textos que se salen, solapamientos): la fase
+  de fusión encontró cinco así, todos con el log en verde.
+- Un fallo que se "ve" en una captura reescalada puede no existir: confirmar leyendo los
+  píxeles reales (PIL) antes de arreglar nada.
+- **Con un panel de `IngameFancyUI` abierto, el juego sigue dibujando el HUD de vida/maná
+  ENCIMA**: `IngameFancyUI.Draw` llama a `Main.instance.GUIBarsDraw()` después de que
+  `InGameUI.Draw` haya pintado el panel del mod. Por eso el panel deja una fila de título
+  arriba: para que la barra de pestañas caiga por debajo de los corazones.
+- Índices REALES de las capas de interfaz (43 en total): **"Vanilla: Fancy UI" es la 14**
+  (el "12" de `DrawInterface_12_IngameFancyUI` es el sufijo del método, no su posición) y
+  **"Vanilla: Inventory" es la 28**. Una capa insertada tras el inventario no se dibuja
+  con un panel de `IngameFancyUI` abierto, y sí con él cerrado.
+- **`ModSystem.PreDrawInterface` no existe** en esta versión. Para dibujar en el HUD,
+  `ModSystem.ModifyInterfaceLayers` (`PostDrawInterface` está desaconsejada por el propio
+  XML-doc de tModLoader).
+- **`ModKeybind.FullName` no es accesible desde un mod** (CS1061 con el compilador real de
+  tModLoader). La clave de `PlayerInput.Triggers.JustPressed.KeyStatus` hay que
+  construirla a mano: `"TerrakeepMod/" + nombre`.
+- **`SoundEngine.PlaySound(int)` es `internal`**: desde un mod hay que pasar el
+  `SoundStyle` (`SoundEngine.PlaySound(SoundID.MenuTick)`). El `PlaySound(12)` que se ve
+  por todo el código decompilado es el id legacy de `MenuTick`.
+- **`UITextPanel<T>` no anima nada** al pasar el ratón (ni escala, ni sonido, ni
+  `MouseOver`), y no hay ningún `UIElement` de vanilla que interpole escala en hover. El
+  botón animado de verdad de Terraria es `Main.DrawSettingButton`: 0,80 → 0,96 a 0,02 por
+  fotograma, `MenuTick` solo al entrar, y `scale = 0.8f` al pulsar. Es lo que replica
+  `BotonTk`.
+- Para dibujar el marco de un `UIPanel` más grande sin deformarlo:
+  `Utils.DrawSplicedPanel(..., 12, 12, 12, 12, ...)` sobre `Images/UI/PanelBackground` y
+  `Images/UI/PanelBorder` (28×28; 28−12−12 = 4 = el `_barSize` de `UIPanel`).
+- **`scripts\verificar-personaje.ps1` y `verificar-ws7.ps1` NO compilan**: copian el
+  `.tmod` de `Mods\`. Ejecutar `scripts\compilar.ps1` antes. Los demás compilan con
+  `-Completo`.
+- El aviso `WARN: Image loading failed: unknown image type` de cada compilación viene de
+  `icon.png`/`icon_small.png`, no de los assets del mod (comprobado quitándolos).
 
 ## Reglas
 - Commit **antes** de cualquier cambio grande y **también después de cada cambio verificado**,
