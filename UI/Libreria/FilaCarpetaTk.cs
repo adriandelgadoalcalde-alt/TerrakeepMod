@@ -7,6 +7,7 @@ using Terraria.GameContent;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameInput;
 using Terraria.UI;
+using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Libreria;
 using TerrakeepMod.UI.Personaje.Widgets;
 using TerrasavrNative.Core.Data;
@@ -95,8 +96,8 @@ namespace TerrakeepMod.UI.Libreria
 
 			if (IsMouseHovering) {
 				Main.instance.MouseText(_tieneHijas
-					? $"{_nombre}\n{_objetos} objetos, {Nodo.Children.Count} subcarpetas"
-					: $"{_nombre}\n{_objetos} objetos");
+					? Idiomas.Texto("Libreria.CarpetaConSubcarpetas", _nombre, _objetos, Nodo.Children.Count)
+					: Idiomas.Texto("Libreria.CarpetaObjetos", _nombre, _objetos));
 			}
 		}
 

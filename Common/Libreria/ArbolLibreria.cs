@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Globalization;
 using System.IO;
 using Terraria.ModLoader;
+using TerrakeepMod.Common.Ajustes;
 using TerrasavrNative.Core.Data;
 
 namespace TerrakeepMod.Common.Libreria
@@ -47,6 +48,10 @@ namespace TerrakeepMod.Common.Libreria
 
 		private static VanillaLibraryTreeCatalog _arbolVanilla;
 		private static LibraryLabelCatalog _etiquetas;
+
+		/// <summary>Idioma con el que se parsearon las etiquetas la ultima vez, para volver a
+		/// parsearlas si el jugador cambia de idioma en vivo.</summary>
+		private static bool _etiquetasEnEspanol;
 
 		private static List<CategoryTreeNodeData> _raices;
 
@@ -157,7 +162,7 @@ namespace TerrakeepMod.Common.Libreria
 			int raicesDeMod = 0;
 			if (deMods.Count > 0) {
 				List<CategoryTreeNodeData> porMod = LiveItemTreeBuilder.BuildTree(
-					deMods, IconoDe, LibraryTreeBuilder.CalamityCategoryLabel, NombrePagina);
+					deMods, IconoDe, EtiquetaCategoria, NombrePagina);
 				for (int i = 0; i < porMod.Count; i++) {
 					raices.Add(ConNombreBonito(porMod[i]));
 				}
@@ -172,14 +177,14 @@ namespace TerrakeepMod.Common.Libreria
 			if (vanillaSueltos.Count > 0) {
 				List<LiveItemInfo> renombrados = new List<LiveItemInfo>(vanillaSueltos.Count);
 				foreach (LiveItemInfo info in vanillaSueltos) {
-					renombrados.Add(new LiveItemInfo(info.Id, info.Name, "Terraria sin catalogar", info.Category) {
+					renombrados.Add(new LiveItemInfo(info.Id, info.Name, SinCatalogar, info.Category) {
 						EquipSlot = info.EquipSlot,
 						Rarity = info.Rarity
 					});
 				}
 				List<CategoryTreeNodeData> sueltos = LiveItemTreeBuilder.BuildTree(
-					renombrados, IconoDe, LibraryTreeBuilder.CalamityCategoryLabel, NombrePagina,
-					"Terraria sin catalogar");
+					renombrados, IconoDe, EtiquetaCategoria, NombrePagina,
+					SinCatalogar);
 				raices.AddRange(sueltos);
 			}
 
@@ -193,9 +198,21 @@ namespace TerrakeepMod.Common.Libreria
 				$"vanilla fuera del arbol curado: {vanillaSueltos.Count}";
 		}
 
+		/// <summary>
+		/// Parsea los dos <c>.json</c> del arbol curado, eligiendo las etiquetas segun el idioma.
+		/// <para />
+		/// <b>El archivo de etiquetas solo existe en español</b>
+		/// (<c>vanilla_library_labels_es.json</c>, el mismo de la app de escritorio). Pero el arbol
+		/// en si (<c>vanilla_library_tree.json</c>) trae los nombres <b>en ingles</b> - "Materials",
+		/// "Pre-Hardmode", "Copper &amp; Tin" - porque son la CLAVE con la que se busca la
+		/// traduccion. Y <c>LibraryLabelCatalog.Lookup</c> devuelve la clave tal cual cuando no la
+		/// encuentra. O sea que, para tener el arbol en ingles, no hay que traducir nada: basta con
+		/// darle un catalogo de etiquetas VACIO. Es lo que se hace aqui con <c>"{}"</c>.
+		/// </summary>
 		private static bool ParsearArchivos()
 		{
-			if (_arbolVanilla != null && _etiquetas != null) {
+			bool espanol = Idiomas.EnEspanol;
+			if (_arbolVanilla != null && _etiquetas != null && _etiquetasEnEspanol == espanol) {
 				return true;
 			}
 			if (_bytesArbol == null || _bytesEtiquetas == null) {
@@ -206,9 +223,13 @@ namespace TerrakeepMod.Common.Libreria
 				using (MemoryStream a = new MemoryStream(_bytesArbol)) {
 					_arbolVanilla = VanillaLibraryTreeCatalog.LoadFromStream(a);
 				}
-				using (MemoryStream e = new MemoryStream(_bytesEtiquetas)) {
+				byte[] bytesEtiquetas = espanol
+					? _bytesEtiquetas
+					: System.Text.Encoding.UTF8.GetBytes("{}");
+				using (MemoryStream e = new MemoryStream(bytesEtiquetas)) {
 					_etiquetas = LibraryLabelCatalog.LoadFromStream(e);
 				}
+				_etiquetasEnEspanol = espanol;
 				return true;
 			}
 			catch (Exception e) {
@@ -240,13 +261,59 @@ namespace TerrakeepMod.Common.Libreria
 			}
 
 			string bonito = string.IsNullOrWhiteSpace(mod.DisplayName) ? raiz.FullPath : mod.DisplayName;
-			return raiz with { Name = bonito + " (mod)" };
+			return raiz with { Name = Idiomas.Texto("Libreria.CarpetaDeMod", bonito) };
 		}
 
 		/// <summary>Etiqueta de una pagina de una carpeta hoja con mas de 40 objetos.</summary>
 		private static string NombrePagina(int numero)
 		{
-			return "Página " + numero;
+			return Idiomas.Texto("Libreria.Pagina", numero);
+		}
+
+		/// <summary>Rotulo de la carpeta con lo vanilla que el arbol curado no menciona.</summary>
+		private static string SinCatalogar {
+			get { return Idiomas.Texto("Libreria.SinCatalogar"); }
+		}
+
+		/// <summary>
+		/// Traduce la clave de categoria que produce <see cref="CatalogoVivo"/> ("Weapons/Melee",
+		/// "Accessories/Wings"...) al rotulo que se ve en el arbol.
+		/// <para />
+		/// En español se usa <c>LibraryTreeBuilder.CalamityCategoryLabel</c> de
+		/// <c>TerrasavrNative.Core</c>, que trae las 121 categorias traducidas a mano. Esa tabla
+		/// <b>solo existe en español</b> y vive en el repositorio hermano, asi que en cualquier otro
+		/// idioma se usa la clave en ingles separando su CamelCase, que es exactamente lo que hace
+		/// esa misma funcion de Core con una categoria que no conoce (y lo que hacen los propios
+		/// nombres internos del juego). Resultado: "Weapons/Melee" -&gt; "Weapons / Melee".
+		/// </summary>
+		private static string EtiquetaCategoria(string clave)
+		{
+			if (Idiomas.EnEspanol) {
+				return LibraryTreeBuilder.CalamityCategoryLabel(clave);
+			}
+			return SepararCamelCase(clave);
+		}
+
+		/// <summary>"Weapons/Melee" -&gt; "Weapons / Melee"; "HairDye" -&gt; "Hair Dye".</summary>
+		private static string SepararCamelCase(string clave)
+		{
+			if (string.IsNullOrEmpty(clave)) {
+				return clave;
+			}
+
+			System.Text.StringBuilder salida = new System.Text.StringBuilder(clave.Length + 8);
+			for (int i = 0; i < clave.Length; i++) {
+				char c = clave[i];
+				if (c == '/') {
+					salida.Append(" / ");
+					continue;
+				}
+				if (i > 0 && char.IsUpper(c) && !char.IsUpper(clave[i - 1]) && clave[i - 1] != '/') {
+					salida.Append(' ');
+				}
+				salida.Append(c);
+			}
+			return salida.ToString();
 		}
 
 		/// <summary>Lo que Core guarda como "ruta del icono": aqui, el id del objeto en decimal.</summary>

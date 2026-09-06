@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.ModLoader;
 using Terraria.UI;
+using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Libreria;
 using TerrakeepMod.Common.Undo;
 using TerrakeepMod.UI.Personaje.Widgets;
@@ -78,10 +79,11 @@ namespace TerrakeepMod.UI.Libreria
 		/// <summary>Ruta legible de la carpeta abierta ("Materials > Pre-Hardmode > ...").</summary>
 		public string RutaActual {
 			get {
+				string raiz = Idiomas.Texto("Panel.Area.Libreria");
 				if (_ruta.Count == 0) {
-					return "Librería";
+					return raiz;
 				}
-				System.Text.StringBuilder sb = new System.Text.StringBuilder("Librería");
+				System.Text.StringBuilder sb = new System.Text.StringBuilder(raiz);
 				for (int i = 0; i < _ruta.Count; i++) {
 					sb.Append(" > ").Append(_ruta[i].Name);
 				}
@@ -136,7 +138,7 @@ namespace TerrakeepMod.UI.Libreria
 			fila.Height.Set(AltoFilaBusqueda, 0f);
 			Append(fila);
 
-			_campoBusqueda = new CampoTextoTk("Buscar: coma = o, espacio = y, #id, .texto", 48, 0.8f);
+			_campoBusqueda = new CampoTextoTk(() => Idiomas.Texto("Libreria.PistaBusqueda"), 48, 0.8f);
 			_campoBusqueda.Width.Set(AnchoColumnaCarpetas, 0f);
 			_campoBusqueda.Height.Set(AltoFilaBusqueda, 0f);
 			_campoBusqueda.AlCambiar += texto => {
@@ -145,11 +147,11 @@ namespace TerrakeepMod.UI.Libreria
 			};
 			fila.Append(_campoBusqueda);
 
-			_botonLimpiar = new BotonTk("Limpiar", 0.78f);
+			_botonLimpiar = new BotonTk(Idiomas.Texto("Libreria.Limpiar"), 0.78f);
 			_botonLimpiar.Width.Set(90f, 0f);
 			_botonLimpiar.Height.Set(AltoFilaBusqueda, 0f);
 			_botonLimpiar.Left.Set(AnchoColumnaCarpetas + 8f, 0f);
-			_botonLimpiar.Ayuda = "Vacía el buscador";
+			_botonLimpiar.Ayuda = () => Idiomas.Texto("Libreria.LimpiarAyuda");
 			_botonLimpiar.AlPulsar += () => FijarBusqueda("");
 			fila.Append(_botonLimpiar);
 
@@ -169,18 +171,18 @@ namespace TerrakeepMod.UI.Libreria
 			columna.Height.Set(-(AltoFilaBusqueda + 8f), 1f);
 			Append(columna);
 
-			_botonRaiz = new BotonTk("Inicio", 0.78f);
+			_botonRaiz = new BotonTk(Idiomas.Texto("Libreria.Inicio"), 0.78f);
 			_botonRaiz.Width.Set(96f, 0f);
 			_botonRaiz.Height.Set(28f, 0f);
-			_botonRaiz.Ayuda = "Vuelve a las carpetas de primer nivel";
+			_botonRaiz.Ayuda = () => Idiomas.Texto("Libreria.InicioAyuda");
 			_botonRaiz.AlPulsar += IrALaRaiz;
 			columna.Append(_botonRaiz);
 
-			_botonSubir = new BotonTk("< Subir", 0.78f);
+			_botonSubir = new BotonTk(Idiomas.Texto("Libreria.Subir"), 0.78f);
 			_botonSubir.Width.Set(96f, 0f);
 			_botonSubir.Height.Set(28f, 0f);
 			_botonSubir.Left.Set(102f, 0f);
-			_botonSubir.Ayuda = "Sube a la carpeta de arriba";
+			_botonSubir.Ayuda = () => Idiomas.Texto("Libreria.SubirAyuda");
 			_botonSubir.AlPulsar += Subir;
 			columna.Append(_botonSubir);
 
@@ -258,12 +260,12 @@ namespace TerrakeepMod.UI.Libreria
 				// Etiqueta CORTA en el boton y nombre completo en el tooltip: siete botones se
 				// reparten ~420 px en una ventana de 800, o sea 60 px cada uno, y "Monedas y
 				// municion" se salia por encima del de al lado (visto en una captura real).
-				BotonTk boton = new BotonTk(NombresCortosDestino[i], 0.7f);
+				BotonTk boton = new BotonTk(NombreCortoDestino(i), 0.7f);
 				boton.EsPestana = true;
 				boton.Width.Set(-4f, fraccion);
 				boton.Height.Set(28f, 0f);
 				boton.Left.Set(0f, i * fraccion);
-				boton.Ayuda = Destinos[i].Nombre;
+				boton.Ayuda = () => Destinos[indice].Nombre;
 				boton.AlPulsar += () => MostrarDestino(indice);
 				_botonesDestino.Add(boton);
 				_zonaDestino.Append(boton);
@@ -349,7 +351,7 @@ namespace TerrakeepMod.UI.Libreria
 
 			if (carpetas.Count == 0) {
 				EtiquetaTk vacio = new EtiquetaTk(
-					() => "Esta carpeta no tiene subcarpetas.\nSus objetos están a la derecha.", 0.75f,
+					() => Idiomas.Texto("Libreria.SinSubcarpetas"), 0.75f,
 					AnchoColumnaCarpetas - AnchoBarraScroll - 4f, 40f);
 				vacio.ColorTexto = EstiloTk.TextoSuave;
 				_listaCarpetas.Add(vacio);
@@ -421,8 +423,8 @@ namespace TerrakeepMod.UI.Libreria
 				int suma = Math.Min(hueco, cantidad);
 				Main.mouseItem.stack += suma;
 				_ultimoAviso = suma > 0
-					? $"+{suma} \"{nuevo.Name}\" en el ratón (x{Main.mouseItem.stack})."
-					: $"\"{nuevo.Name}\" ya está al máximo en el ratón.";
+					? Idiomas.Texto("Libreria.Aviso.Sumado", suma, nuevo.Name, Main.mouseItem.stack)
+					: Idiomas.Texto("Libreria.Aviso.AlMaximo", nuevo.Name);
 				return;
 			}
 
@@ -431,14 +433,14 @@ namespace TerrakeepMod.UI.Libreria
 					GetItemSettings.InventoryUIToInventorySettings);
 				Main.mouseItem = sobrante;
 				if (Main.mouseItem != null && !Main.mouseItem.IsAir) {
-					_ultimoAviso = "No cabe lo que llevabas en el ratón: suéltalo antes.";
+					_ultimoAviso = Idiomas.Texto("Libreria.Aviso.NoCabe");
 					return;
 				}
 			}
 
 			nuevo.stack = cantidad;
 			Main.mouseItem = nuevo;
-			_ultimoAviso = $"\"{nuevo.Name}\" x{cantidad} en el ratón: suéltalo en una ranura de abajo.";
+			_ultimoAviso = Idiomas.Texto("Libreria.Aviso.Cogido", nuevo.Name, cantidad);
 
 			RegistroLibreria.Linea($"{Terrakeep.LogTag} Libreria: cogido del catalogo \"{nuevo.Name}\" " +
 				$"(type={tipo}) x{cantidad}; ahora esta en Main.mouseItem.");
@@ -502,15 +504,23 @@ namespace TerrakeepMod.UI.Libreria
 		/// <summary>Un contenedor real del jugador donde se pueden soltar los objetos.</summary>
 		private sealed class DestinoLibreria
 		{
-			public readonly string Nombre;
 			public readonly Func<Item[]> Array;
 			public readonly int Primero;
 			public readonly int Cuantos;
 			private readonly Func<int, int> _contexto;
 
-			public DestinoLibreria(string nombre, Func<Item[]> array, int primero, int cuantos, Func<int, int> contexto)
+			/// <summary>Clave de localizacion de este destino. Es un nombre interno, no texto que
+			/// se enseñe.</summary>
+			public readonly string Clave;
+
+			/// <summary>Nombre largo del contenedor, traducido al idioma activo. Es una propiedad y
+			/// no un campo porque el array de destinos es estatico y se construye una sola vez: un
+			/// nombre guardado ahi se quedaria con el idioma que hubiera al cargar el mod.</summary>
+			public string Nombre => Idiomas.Texto("Libreria.Destino." + Clave + ".Largo");
+
+			public DestinoLibreria(string clave, Func<Item[]> array, int primero, int cuantos, Func<int, int> contexto)
 			{
-				Nombre = nombre;
+				Clave = clave;
 				Array = array;
 				Primero = primero;
 				Cuantos = cuantos;
@@ -530,24 +540,25 @@ namespace TerrakeepMod.UI.Libreria
 		/// <see cref="Destinos"/>) sigue siendo el de verdad: se usa en el tooltip, en el titulo de
 		/// la zona y en el log. En el mismo orden que <see cref="Destinos"/>.
 		/// </summary>
-		private static readonly string[] NombresCortosDestino = {
-			"Mochila", "Monedas", "Equipo", "Hucha", "Caja", "Forja", "Bóveda"
-		};
+		private static string NombreCortoDestino(int indice)
+		{
+			return Idiomas.Texto("Libreria.Destino." + Destinos[indice].Clave + ".Corto");
+		}
 
 		private static readonly DestinoLibreria[] Destinos = {
 			new DestinoLibreria("Inventario", () => Main.LocalPlayer.inventory, 0, 50,
 				i => ItemSlot.Context.InventoryItem),
-			new DestinoLibreria("Monedas y munición", () => Main.LocalPlayer.inventory, 50, 8,
+			new DestinoLibreria("Monedas", () => Main.LocalPlayer.inventory, 50, 8,
 				i => i < 54 ? ItemSlot.Context.InventoryCoin : ItemSlot.Context.InventoryAmmo),
 			new DestinoLibreria("Equipo", () => Main.LocalPlayer.armor, 0, 10,
 				i => i < 3 ? ItemSlot.Context.EquipArmor : ItemSlot.Context.EquipAccessory),
 			new DestinoLibreria("Hucha", () => Main.LocalPlayer.bank.item, 0, 40,
 				i => ItemSlot.Context.BankItem),
-			new DestinoLibreria("Caja fuerte", () => Main.LocalPlayer.bank2.item, 0, 40,
+			new DestinoLibreria("Caja", () => Main.LocalPlayer.bank2.item, 0, 40,
 				i => ItemSlot.Context.BankItem),
 			new DestinoLibreria("Forja", () => Main.LocalPlayer.bank3.item, 0, 40,
 				i => ItemSlot.Context.BankItem),
-			new DestinoLibreria("Bóveda", () => Main.LocalPlayer.bank4.item, 0, 40,
+			new DestinoLibreria("Boveda", () => Main.LocalPlayer.bank4.item, 0, 40,
 				i => ItemSlot.Context.VoidItem)
 		};
 
@@ -605,22 +616,24 @@ namespace TerrakeepMod.UI.Libreria
 		private string TextoResumen()
 		{
 			if (!ArbolLibreria.Listo) {
-				return "Cargando el catálogo...";
+				return Idiomas.Texto("Libreria.Cargando");
 			}
 
-			string donde = CarpetaActual != null ? " en \"" + CarpetaActual.Name + "\"" : " en toda la Librería";
+			string donde = CarpetaActual != null
+				? Idiomas.Texto("Libreria.EnCarpeta", CarpetaActual.Name)
+				: Idiomas.Texto("Libreria.EnTodo");
 
 			if (_mostrados == 0) {
 				// Texto corto a proposito: esta linea va en el hueco que queda a la derecha del
 				// buscador, que en una ventana de 800 px son ~340 px.
 				return _busqueda.Length > 0
-					? "Sin resultados" + donde + "."
-					: CatalogoVivo.Objetos.Count + " objetos. Elige una carpeta o busca.";
+					? Idiomas.Texto("Libreria.SinResultados", donde)
+					: Idiomas.Texto("Libreria.ElegirCarpeta", CatalogoVivo.Objetos.Count);
 			}
 
 			return _totalCasados > _mostrados
-				? "Mostrando " + _mostrados + " de " + _totalCasados + donde + "."
-				: _mostrados + " objetos" + donde + ".";
+				? Idiomas.Texto("Libreria.MostrandoParcial", _mostrados, _totalCasados, donde)
+				: Idiomas.Texto("Libreria.MostrandoTodos", _mostrados, donde);
 		}
 
 		private string TextoAyudaDestino()
@@ -628,7 +641,7 @@ namespace TerrakeepMod.UI.Libreria
 			if (_ultimoAviso.Length > 0) {
 				return _ultimoAviso;
 			}
-			return "Clic = 1 unidad al ratón; clic derecho = pila completa. Suéltalo aquí abajo.";
+			return Idiomas.Texto("Libreria.AyudaDestino");
 		}
 
 		private string RutaCorta()
@@ -649,6 +662,15 @@ namespace TerrakeepMod.UI.Libreria
 			if (columnas != _columnasResultado) {
 				_columnasResultado = columnas;
 				RellenarResultados();
+			}
+
+			// Los rotulos de los botones se fijan al construirlos: se vuelven a pedir en cada
+			// fotograma para que cambien en vivo con el selector de idioma del area de Ajustes.
+			_botonLimpiar.FijarTexto(Idiomas.Texto("Libreria.Limpiar"));
+			_botonRaiz.FijarTexto(Idiomas.Texto("Libreria.Inicio"));
+			_botonSubir.FijarTexto(Idiomas.Texto("Libreria.Subir"));
+			for (int i = 0; i < _botonesDestino.Count; i++) {
+				_botonesDestino[i].FijarTexto(NombreCortoDestino(i));
 			}
 		}
 
