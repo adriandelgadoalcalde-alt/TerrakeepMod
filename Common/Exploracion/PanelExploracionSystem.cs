@@ -263,7 +263,7 @@ namespace TerrakeepMod.Common.Exploracion
 				case "Gemas": return new Color(200, 130, 255);
 				case "Tesoros": return new Color(255, 120, 150);
 				case "Contenedores": return new Color(255, 235, 150);
-				case "Líquidos": return new Color(120, 200, 255);
+				case "Liquidos": return new Color(120, 200, 255);
 				case "Paredes": return new Color(170, 190, 220);
 				default: return new Color(255, 210, 120);
 			}

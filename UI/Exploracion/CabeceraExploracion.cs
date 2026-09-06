@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
+using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Exploracion;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -32,15 +33,15 @@ namespace TerrakeepMod.UI.Exploracion
 			// y repetir la marca en cada area era ruido (inconsistencia real detectada al ver las
 			// seis piezas juntas: solo Exploracion lo hacia).
 			EtiquetaTk titulo = new EtiquetaTk(
-				() => "Exploración del mundo", 1.05f, 640f, 30f);
+				() => Idiomas.Texto("Exploracion.Titulo"), 1.05f, 640f, 30f);
 			titulo.Left.Set(2f, 0f);
 			titulo.Top.Set(0f, 0f);
 			caja.Append(titulo);
 
 			EtiquetaTk mundo = new EtiquetaTk(
-				() => "\"" + MundoActual.Nombre + "\"  ·  " + MundoActual.TamanoLegible +
-					"  ·  " + MundoActual.ModoDeJuegoLegible +
-					(MundoActual.EsHardmode ? "  ·  Hardmode" : ""),
+				() => Idiomas.Texto("Exploracion.LineaMundo",
+					MundoActual.Nombre, MundoActual.TamanoLegible, MundoActual.ModoDeJuegoLegible) +
+					(MundoActual.EsHardmode ? "  ·  " + Idiomas.Texto("Exploracion.Hardmode") : ""),
 				0.85f, 700f, 24f);
 			mundo.ColorTexto = EstiloTk.TextoSuave;
 			mundo.Left.Set(2f, 0f);
@@ -48,14 +49,15 @@ namespace TerrakeepMod.UI.Exploracion
 			caja.Append(mundo);
 
 			EtiquetaTk explorado = new EtiquetaTk(
-				() => "Explorado: " + MundoActual.PorcentajeExplorado().ToString("0.0") + " %",
+				() => Idiomas.Texto("Exploracion.Explorado",
+					MundoActual.PorcentajeExplorado().ToString("0.0")),
 				0.9f, 260f, 26f);
 			explorado.Left.Set(-262f, 1f);
 			explorado.Top.Set(2f, 0f);
 			caja.Append(explorado);
 
 			EtiquetaTk posicion = new EtiquetaTk(
-				() => "Estás en el tile " + MundoActual.PosicionDelJugador,
+				() => Idiomas.Texto("Exploracion.EstasEn", MundoActual.PosicionDelJugador),
 				0.8f, 260f, 24f);
 			posicion.ColorTexto = EstiloTk.TextoSuave;
 			posicion.Left.Set(-262f, 1f);
@@ -63,9 +65,9 @@ namespace TerrakeepMod.UI.Exploracion
 			caja.Append(posicion);
 
 			EtiquetaTk mapa = new EtiquetaTk(
-				() => Main.mapReady
-					? "Mapa del juego listo"
-					: "El mapa del juego todavía no está generado",
+				() => Idiomas.Texto(Main.mapReady
+					? "Exploracion.MapaListo"
+					: "Exploracion.MapaSinGenerar"),
 				0.75f, 300f, 20f);
 			mapa.ColorTexto = Main.mapReady ? EstiloTk.TextoSuave : EstiloTk.TextoAviso;
 			mapa.Left.Set(-262f, 1f);

@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Terraria.UI;
+using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Exploracion;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -24,7 +25,7 @@ namespace TerrakeepMod.UI.Exploracion
 
 		private UIElement _contenedor;
 		private readonly List<BotonTk> _botonesPestana = new List<BotonTk>();
-		private readonly List<string> _nombresPestana = new List<string>();
+		private readonly List<string> _clavesPestana = new List<string>();
 		private UIElement _pestanaActual;
 		private int _indicePestana;
 
@@ -61,9 +62,9 @@ namespace TerrakeepMod.UI.Exploracion
 
 		private void ConstruirBarraPestanas()
 		{
-			_nombresPestana.Add("Mapa");
-			_nombresPestana.Add("Búsqueda");
-			_nombresPestana.Add("Este mundo");
+			_clavesPestana.Add("Mapa");
+			_clavesPestana.Add("Busqueda");
+			_clavesPestana.Add("Mundo");
 
 			// Mismo criterio que en el area de Personaje: ancho en porcentaje, no en pixeles fijos,
 			// para que la barra se estire con el panel. Tres pestañas a un tercio cada una se veian
@@ -71,9 +72,9 @@ namespace TerrakeepMod.UI.Exploracion
 			// razonable y se alinean a la izquierda, como las de arriba.
 			float fraccion = 1f / 6f;
 
-			for (int i = 0; i < _nombresPestana.Count; i++) {
+			for (int i = 0; i < _clavesPestana.Count; i++) {
 				int indice = i;
-				BotonTk boton = new BotonTk(_nombresPestana[i], 0.8f);
+				BotonTk boton = new BotonTk(NombrePestana(i), 0.8f);
 				boton.EsPestana = true;
 				boton.Width.Set(-SeparacionPestanas, fraccion);
 				boton.Height.Set(AltoBarraPestanas, 0f);
@@ -89,7 +90,7 @@ namespace TerrakeepMod.UI.Exploracion
 		/// de resultados de la busqueda (al pulsar un resultado se salta al mapa).</summary>
 		public void CambiarPestana(int indice)
 		{
-			if (indice < 0 || indice >= _nombresPestana.Count) {
+			if (indice < 0 || indice >= _clavesPestana.Count) {
 				return;
 			}
 
@@ -116,7 +117,16 @@ namespace TerrakeepMod.UI.Exploracion
 
 			_contenedor.Recalculate();
 
-			RegistroExploracion.Linea(Terrakeep.LogTag + " Pestaña activa: \"" + _nombresPestana[indice] + "\".");
+			RegistroExploracion.Linea(Terrakeep.LogTag + " Pestaña activa: \"" + NombrePestana(indice) + "\".");
+		}
+
+		/// <summary>Rotulo traducido de una de las tres sub-pestañas.</summary>
+		private string NombrePestana(int indice)
+		{
+			if (indice < 0 || indice >= _clavesPestana.Count) {
+				return "";
+			}
+			return Idiomas.Texto("Exploracion.Pestana." + _clavesPestana[indice]);
 		}
 
 		private UIElement CrearPestana(int indice)
@@ -138,11 +148,11 @@ namespace TerrakeepMod.UI.Exploracion
 
 		/// <summary>Nombre de la sub-pestaña abierta, para el log de las pruebas.</summary>
 		public string NombrePestanaActual =>
-			_indicePestana >= 0 && _indicePestana < _nombresPestana.Count
-				? _nombresPestana[_indicePestana]
+			_indicePestana >= 0 && _indicePestana < _clavesPestana.Count
+				? NombrePestana(_indicePestana)
 				: "(ninguna)";
 
-		public int TotalPestanas => _nombresPestana.Count;
+		public int TotalPestanas => _clavesPestana.Count;
 
 		/// <summary>Primer elemento del tipo pedido dentro de este area. Lo usa la autoprueba para
 		/// llegar a los controles sin tener que exponerlos uno a uno.</summary>

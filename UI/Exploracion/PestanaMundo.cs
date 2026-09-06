@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
 using TerrakeepMod.Common.Exploracion;
+using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.UI.Personaje.Widgets;
 
 namespace TerrakeepMod.UI.Exploracion
@@ -49,28 +50,40 @@ namespace TerrakeepMod.UI.Exploracion
 			caja.SetPadding(12f);
 			Append(caja);
 
-			EtiquetaTk titulo = new EtiquetaTk(() => "Ficha del mundo", 0.95f, 380f, 26f);
+			EtiquetaTk titulo = new EtiquetaTk(
+				() => Idiomas.Texto("Exploracion.Mundo.Ficha"), 0.95f, 380f, 26f);
 			caja.Append(titulo);
 
 			float y = 34f;
 			y = Dato(caja, y, "Nombre", () => MundoActual.Nombre);
 			y = Dato(caja, y, "Semilla", () => MundoActual.Semilla);
-			y = Dato(caja, y, "Tamaño", () => MundoActual.TamanoLegible);
+			y = Dato(caja, y, "Tamano", () => MundoActual.TamanoLegible);
 			y = Dato(caja, y, "Tiles", () => MundoActual.TotalTiles.ToString("N0"));
-			y = Dato(caja, y, "Modo de juego", () => MundoActual.ModoDeJuegoLegible +
-				"  (Main.GameMode = " + MundoActual.ModoDeJuego + ")");
-			y = Dato(caja, y, "Progreso", () => MundoActual.EsHardmode ? "Hardmode" : "Pre-Hardmode");
-			y = Dato(caja, y, "Mal del mundo", () => MundoActual.MalDelMundo);
-			y = Dato(caja, y, "Semillas secretas", () => MundoActual.SemillasSecretas);
-			y = Dato(caja, y, "Aparición", () => "tile " + MundoActual.PuntoDeAparicion);
-			y = Dato(caja, y, "Estás en", () => "tile " + MundoActual.PosicionDelJugador);
-			y = Dato(caja, y, "Explorado", () => MundoActual.PorcentajeExplorado().ToString("0.0") + " %");
-			Dato(caja, y, "Autoguardado", () => Main.autoSave ? "activado" : "desactivado");
+			y = Dato(caja, y, "Modo", () => Idiomas.Texto("Exploracion.Mundo.ModoValor",
+				MundoActual.ModoDeJuegoLegible, MundoActual.ModoDeJuego));
+			y = Dato(caja, y, "Progreso", () => Idiomas.Texto(MundoActual.EsHardmode
+				? "Exploracion.Hardmode"
+				: "Exploracion.PreHardmode"));
+			y = Dato(caja, y, "MalDelMundo", () => MundoActual.MalDelMundo);
+			y = Dato(caja, y, "SemillasSecretas", () => MundoActual.SemillasSecretas);
+			y = Dato(caja, y, "Aparicion",
+				() => Idiomas.Texto("Exploracion.Mundo.Tile", MundoActual.PuntoDeAparicion));
+			y = Dato(caja, y, "EstasEn",
+				() => Idiomas.Texto("Exploracion.Mundo.Tile", MundoActual.PosicionDelJugador));
+			y = Dato(caja, y, "Explorado",
+				() => Idiomas.Texto("Exploracion.Mundo.Porcentaje",
+					MundoActual.PorcentajeExplorado().ToString("0.0")));
+			Dato(caja, y, "Autoguardado", () => Idiomas.Texto(Main.autoSave
+				? "Exploracion.Mundo.Activado"
+				: "Exploracion.Mundo.Desactivado"));
 		}
 
-		private static float Dato(UIElement padre, float y, string etiqueta, System.Func<string> valor)
+		/// <summary>Una fila "rotulo: valor" de la ficha. Recibe la CLAVE de localizacion del
+		/// rotulo, no el texto ya resuelto.</summary>
+		private static float Dato(UIElement padre, float y, string clave, System.Func<string> valor)
 		{
-			EtiquetaTk nombre = new EtiquetaTk(() => etiqueta, 0.8f, 150f, 22f);
+			EtiquetaTk nombre = new EtiquetaTk(
+				() => Idiomas.Texto("Exploracion.Mundo.Dato." + clave), 0.8f, 150f, 22f);
 			nombre.ColorTexto = EstiloTk.TextoSuave;
 			nombre.Top.Set(y, 0f);
 			padre.Append(nombre);
@@ -91,11 +104,12 @@ namespace TerrakeepMod.UI.Exploracion
 			derecha.HAlign = 1f;
 			Append(derecha);
 
-			EtiquetaTk titulo = new EtiquetaTk(() => "Dificultad del mundo, en vivo", 0.95f, 500f, 26f);
+			EtiquetaTk titulo = new EtiquetaTk(
+				() => Idiomas.Texto("Exploracion.Mundo.Dificultad"), 0.95f, 500f, 26f);
 			derecha.Append(titulo);
 
 			EtiquetaTk actual = new EtiquetaTk(
-				() => "Ahora mismo: " + MundoActual.ModoDeJuegoLegible,
+				() => Idiomas.Texto("Exploracion.Mundo.AhoraMismo", MundoActual.ModoDeJuegoLegible),
 				0.85f, 500f, 24f);
 			actual.Top.Set(30f, 0f);
 			derecha.Append(actual);
@@ -106,6 +120,7 @@ namespace TerrakeepMod.UI.Exploracion
 			foreach (int modo in MundoActual.ModosDisponibles()) {
 				int valor = modo;
 				BotonTk boton = new BotonTk(MundoActual.NombreDeModo(modo), 0.85f);
+				boton.Clave = modo.ToString();
 				boton.Left.Set((i % 3) * (ancho + 8f), 0f);
 				boton.Top.Set(y + (i / 3) * 40f, 0f);
 				boton.Width.Set(ancho, 0f);
@@ -137,7 +152,7 @@ namespace TerrakeepMod.UI.Exploracion
 			cajaAviso.Append(efecto);
 
 			EtiquetaTk deshacer = new EtiquetaTk(
-				() => "Queda en el historial de Terrakeep: se puede deshacer con Ctrl+Z mientras no se haya guardado.",
+				() => Idiomas.Texto("Exploracion.Mundo.AvisoDeshacer"),
 				0.72f, 460f, 22f);
 			deshacer.ColorTexto = new Color(235, 220, 200);
 			deshacer.Top.Set(46f, 0f);
@@ -145,7 +160,7 @@ namespace TerrakeepMod.UI.Exploracion
 
 			y += 106f;
 
-			_confirmar = new BotonTk("Elige un modo arriba", 0.85f);
+			_confirmar = new BotonTk(Idiomas.Texto("Exploracion.Mundo.EligeModo"), 0.85f);
 			_confirmar.Width.Set(0f, 1f);
 			_confirmar.Height.Set(38f, 0f);
 			_confirmar.Top.Set(y, 0f);
@@ -166,7 +181,7 @@ namespace TerrakeepMod.UI.Exploracion
 			string motivo = DificultadMundo.MotivoParaNoPoder(modo);
 			if (motivo != null) {
 				_modoElegido = -1;
-				_ultimoMensaje = "No se puede: " + motivo;
+				_ultimoMensaje = Idiomas.Texto("Exploracion.Mundo.NoSePuede", motivo);
 				RefrescarBotones();
 				RegistroExploracion.Linea(Terrakeep.LogTag + " Dificultad: modo \"" +
 					MundoActual.NombreDeModo(modo) + "\" NO disponible. " + motivo);
@@ -174,8 +189,8 @@ namespace TerrakeepMod.UI.Exploracion
 			}
 
 			_modoElegido = modo;
-			_ultimoMensaje = "Vas a pasar de " + MundoActual.ModoDeJuegoLegible + " a " +
-				MundoActual.NombreDeModo(modo) + ". Pulsa el botón de confirmar.";
+			_ultimoMensaje = Idiomas.Texto("Exploracion.Mundo.VasAPasar",
+				MundoActual.ModoDeJuegoLegible, MundoActual.NombreDeModo(modo));
 			RefrescarBotones();
 		}
 
@@ -189,11 +204,11 @@ namespace TerrakeepMod.UI.Exploracion
 			string motivo;
 			int pedido = _modoElegido;
 			if (DificultadMundo.Aplicar(pedido, "panel de Exploración (dos pasos)", out motivo)) {
-				_ultimoMensaje = "Hecho: el mundo está en modo " + MundoActual.NombreDeModo(pedido) +
-					". Se grabará en el siguiente guardado.";
+				_ultimoMensaje = Idiomas.Texto("Exploracion.Mundo.Hecho",
+					MundoActual.NombreDeModo(pedido));
 			}
 			else {
-				_ultimoMensaje = "No se pudo: " + motivo;
+				_ultimoMensaje = Idiomas.Texto("Exploracion.Mundo.NoSePudo", motivo);
 			}
 
 			_modoElegido = -1;
@@ -208,9 +223,11 @@ namespace TerrakeepMod.UI.Exploracion
 
 				par.Value.Activo = esElActual || par.Key == _modoElegido;
 				par.Value.Habilitado = motivo == null;
-				par.Value.Ayuda = esElActual
-					? "Es el modo que tiene el mundo ahora mismo."
-					: (motivo ?? "Pulsa para elegirlo; después habrá que confirmar.");
+				int modoDelBoton = par.Key;
+				par.Value.Ayuda = () => modoDelBoton == MundoActual.ModoDeJuego
+					? Idiomas.Texto("Exploracion.Mundo.AyudaModoActual")
+					: (DificultadMundo.MotivoParaNoPoder(modoDelBoton)
+						?? Idiomas.Texto("Exploracion.Mundo.AyudaElegirModo"));
 			}
 
 			if (_confirmar == null) {
@@ -218,12 +235,19 @@ namespace TerrakeepMod.UI.Exploracion
 			}
 
 			if (_modoElegido < 0) {
-				_confirmar.FijarTexto("Elige un modo arriba");
+				_confirmar.FijarTexto(Idiomas.Texto("Exploracion.Mundo.EligeModo"));
 				_confirmar.Habilitado = false;
 			}
 			else {
-				_confirmar.FijarTexto("Confirmar: pasar a " + MundoActual.NombreDeModo(_modoElegido));
+				_confirmar.FijarTexto(Idiomas.Texto("Exploracion.Mundo.Confirmar",
+					MundoActual.NombreDeModo(_modoElegido)));
 				_confirmar.Habilitado = true;
+			}
+
+			// Los rotulos de los botones de modo se fijan al construirlos: se vuelven a poner para
+			// que cambien en vivo con el selector de idioma del area de Ajustes.
+			foreach (KeyValuePair<int, BotonTk> par in _botonesModo) {
+				par.Value.FijarTexto(MundoActual.NombreDeModo(par.Key));
 			}
 		}
 

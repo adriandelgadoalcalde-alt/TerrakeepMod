@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Terraria;
+using TerrakeepMod.Common.Ajustes;
 using Terraria.ID;
 using Terraria.IO;
 
@@ -27,7 +28,7 @@ namespace TerrakeepMod.Common.Exploracion
 					return "";
 				}
 				if (!datos.HasValidSeed) {
-					return "(el mundo no guarda semilla)";
+					return Idiomas.Texto("Exploracion.Mundo.SinSemilla");
 				}
 				return datos.GetFullSeedText();
 			}
@@ -61,11 +62,11 @@ namespace TerrakeepMod.Common.Exploracion
 		public static string NombreDeModo(int modo)
 		{
 			switch (modo) {
-				case GameModeID.Normal: return "Clásico";
-				case GameModeID.Expert: return "Experto";
-				case GameModeID.Master: return "Maestro";
-				case GameModeID.Creative: return "Viaje";
-				default: return "Desconocido (" + modo + ")";
+				case GameModeID.Normal: return Idiomas.Texto("Exploracion.Modo.Clasico");
+				case GameModeID.Expert: return Idiomas.Texto("Exploracion.Modo.Experto");
+				case GameModeID.Master: return Idiomas.Texto("Exploracion.Modo.Maestro");
+				case GameModeID.Creative: return Idiomas.Texto("Exploracion.Modo.Viaje");
+				default: return Idiomas.Texto("Exploracion.Modo.Desconocido", modo);
 			}
 		}
 
@@ -86,9 +87,11 @@ namespace TerrakeepMod.Common.Exploracion
 			get {
 				WorldFileData datos = Main.ActiveWorldFileData;
 				if (datos == null) {
-					return "(desconocido)";
+					return Idiomas.Texto("Exploracion.Mundo.Desconocido");
 				}
-				return datos.HasCrimson ? "Carmesí" : "Corrupción";
+				return Idiomas.Texto(datos.HasCrimson
+					? "Exploracion.Mal.Carmesi"
+					: "Exploracion.Mal.Corrupcion");
 			}
 		}
 
@@ -98,15 +101,26 @@ namespace TerrakeepMod.Common.Exploracion
 		{
 			get {
 				List<string> activas = new List<string>();
-				if (Main.drunkWorld) { activas.Add("Mundo borracho"); }
-				if (Main.getGoodWorld) { activas.Add("Por los que lo valen"); }
-				if (Main.tenthAnniversaryWorld) { activas.Add("10º aniversario"); }
-				if (Main.notTheBeesWorld) { activas.Add("¡Las abejas no!"); }
-				if (Main.dontStarveWorld) { activas.Add("Don't Starve"); }
-				if (Main.remixWorld) { activas.Add("Remix"); }
-				if (Main.noTrapsWorld) { activas.Add("Sin trampas"); }
-				if (Main.zenithWorld) { activas.Add("Cénit"); }
-				return activas.Count == 0 ? "(ninguna)" : string.Join(", ", activas);
+				// Los nombres de las semillas secretas los tiene el propio juego traducidos.
+				AnadirSemilla(Main.drunkWorld, "Drunk", activas);
+				AnadirSemilla(Main.getGoodWorld, "ForTheWorthy", activas);
+				AnadirSemilla(Main.tenthAnniversaryWorld, "Anniversary", activas);
+				AnadirSemilla(Main.notTheBeesWorld, "NotTheBees", activas);
+				AnadirSemilla(Main.dontStarveWorld, "DontStarve", activas);
+				AnadirSemilla(Main.remixWorld, "Remix", activas);
+				AnadirSemilla(Main.noTrapsWorld, "NoTraps", activas);
+				AnadirSemilla(Main.zenithWorld, "Zenith", activas);
+				return activas.Count == 0
+					? Idiomas.Texto("Exploracion.Mundo.NingunaSemilla")
+					: string.Join(", ", activas);
+			}
+		}
+
+		/// <summary>Añade el nombre traducido de una semilla secreta si esta activa.</summary>
+		private static void AnadirSemilla(bool activa, string clave, List<string> destino)
+		{
+			if (activa) {
+				destino.Add(Idiomas.Texto("Exploracion.Semilla." + clave));
 			}
 		}
 
@@ -119,7 +133,7 @@ namespace TerrakeepMod.Common.Exploracion
 			get {
 				Player jugador = Main.LocalPlayer;
 				if (jugador == null || !jugador.active) {
-					return "(sin jugador)";
+					return Idiomas.Texto("Exploracion.Mundo.SinJugador");
 				}
 				return (int)(jugador.Center.X / 16f) + ", " + (int)(jugador.Center.Y / 16f);
 			}

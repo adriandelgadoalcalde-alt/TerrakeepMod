@@ -2,6 +2,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
+using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Exploracion;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -61,36 +62,35 @@ namespace TerrakeepMod.UI.Exploracion
 
 			float y = 0f;
 
-			BotonTk masCerca = new BotonTk("Acercar  +", 0.85f);
+			BotonTk masCerca = new BotonTk(Idiomas.Texto("Exploracion.Mapa.Acercar"), 0.85f);
 			ColocarBoton(lateral, masCerca, 0f, y, AnchoLateral / 2f - 3f);
-			masCerca.Ayuda = "También puedes usar la rueda del ratón sobre el mapa.";
+			masCerca.Ayuda = () => Idiomas.Texto("Exploracion.Mapa.AcercarAyuda");
 			masCerca.AlPulsar += () => _mapa.Acercar(1.5f);
 
-			BotonTk masLejos = new BotonTk("Alejar  −", 0.85f);
+			BotonTk masLejos = new BotonTk(Idiomas.Texto("Exploracion.Mapa.Alejar"), 0.85f);
 			ColocarBoton(lateral, masLejos, AnchoLateral / 2f + 3f, y, AnchoLateral / 2f - 3f);
 			masLejos.AlPulsar += () => _mapa.Acercar(1f / 1.5f);
 			y += 40f;
 
-			BotonTk enJugador = new BotonTk("Centrar en mí", 0.85f);
+			BotonTk enJugador = new BotonTk(Idiomas.Texto("Exploracion.Mapa.Centrar"), 0.85f);
 			ColocarBoton(lateral, enJugador, 0f, y, AnchoLateral);
 			enJugador.AlPulsar += () => _mapa.CentrarEnJugador();
 			y += 40f;
 
-			BotonTk todo = new BotonTk("Ver el mundo entero", 0.85f);
+			BotonTk todo = new BotonTk(Idiomas.Texto("Exploracion.Mapa.MundoEntero"), 0.85f);
 			ColocarBoton(lateral, todo, 0f, y, AnchoLateral);
 			todo.AlPulsar += () => _mapa.EncuadrarMundo();
 			y += 52f;
 
-			BotonTk verEnMapa = new BotonTk("Ver en el mapa del juego", 0.85f);
+			BotonTk verEnMapa = new BotonTk(Idiomas.Texto("Exploracion.Mapa.VerEnMapa"), 0.85f);
 			ColocarBoton(lateral, verEnMapa, 0f, y, AnchoLateral);
 			verEnMapa.Height.Set(40f, 0f);
-			verEnMapa.Ayuda = "Cierra Terrakeep y abre el mapa grande del juego por donde estás mirando, " +
-				"con los marcadores de la búsqueda encima. Al cerrarlo se vuelve aquí.";
+			verEnMapa.Ayuda = () => Idiomas.Texto("Exploracion.Mapa.VerEnMapaAyuda");
 			verEnMapa.AlPulsar += SaltarAlMapaVanilla;
 			y += 50f;
 
 			EtiquetaTk aviso = new EtiquetaTk(
-				() => "El mapa grande del juego no puede\nconvivir con este panel: al abrirlo,\nTerrakeep se cierra y vuelve solo.",
+				() => Idiomas.Texto("Exploracion.Mapa.AvisoExclusivo"),
 				0.7f, AnchoLateral, 50f);
 			aviso.ColorTexto = EstiloTk.TextoSuave;
 			aviso.Top.Set(y, 0f);
@@ -100,15 +100,17 @@ namespace TerrakeepMod.UI.Exploracion
 			// se vio en una captura real, no leyendo el codigo.
 			y += 74f;
 
-			EtiquetaTk leyenda = new EtiquetaTk(() => "Marcadores", 0.85f, AnchoLateral, 24f);
+			EtiquetaTk leyenda = new EtiquetaTk(
+				() => Idiomas.Texto("Exploracion.Mapa.Marcadores"), 0.85f, AnchoLateral, 24f);
 			leyenda.Top.Set(y, 0f);
 			lateral.Append(leyenda);
 			y += 24f;
 
 			EtiquetaTk detalleLeyenda = new EtiquetaTk(
 				() => MarcadoresExploracion.HayAlgo
-					? MarcadoresExploracion.Resultados.Count + " zonas de \"" + MarcadoresExploracion.Titulo + "\""
-					: "Sin búsqueda: usa la pestaña Búsqueda",
+					? Idiomas.Texto("Exploracion.Mapa.ZonasDe",
+						MarcadoresExploracion.Resultados.Count, MarcadoresExploracion.Titulo)
+					: Idiomas.Texto("Exploracion.Mapa.SinBusqueda"),
 				0.75f, AnchoLateral, 22f);
 			detalleLeyenda.ColorTexto = EstiloTk.TextoSuave;
 			detalleLeyenda.Top.Set(y, 0f);
@@ -121,7 +123,9 @@ namespace TerrakeepMod.UI.Exploracion
 			lateral.Append(bajoElRaton);
 
 			EtiquetaTk estado = new EtiquetaTk(
-				() => _mapa != null ? "Zoom: " + _mapa.Escala.ToString("0.00") + " px por tile" : "",
+				() => _mapa != null
+					? Idiomas.Texto("Exploracion.Mapa.Zoom", _mapa.Escala.ToString("0.00"))
+					: "",
 				0.75f, AnchoLateral, 22f);
 			estado.ColorTexto = EstiloTk.TextoSuave;
 			estado.VAlign = 1f;
@@ -140,10 +144,12 @@ namespace TerrakeepMod.UI.Exploracion
 			int x = (int)tile.Value.X;
 			int y = (int)tile.Value.Y;
 			if (x < 0 || y < 0 || x >= Main.maxTilesX || y >= Main.maxTilesY) {
-				return "Fuera del mundo";
+				return Idiomas.Texto("Exploracion.Mapa.FueraDelMundo");
 			}
 			bool visto = Main.Map != null && Main.Map.IsRevealed(x, y);
-			return "Tile " + x + ", " + y + (visto ? " (explorado)" : " (sin explorar)");
+			return Idiomas.Texto(visto
+				? "Exploracion.Mapa.TileExplorado"
+				: "Exploracion.Mapa.TileSinExplorar", x, y);
 		}
 
 		private void SaltarAlMapaVanilla()

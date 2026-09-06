@@ -3,6 +3,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.Map;
 using Terraria.ModLoader;
+using TerrakeepMod.Common.Ajustes;
 
 namespace TerrakeepMod.Common.Exploracion
 {
@@ -40,9 +41,26 @@ namespace TerrakeepMod.Common.Exploracion
 	/// </remarks>
 	public class ObjetivoBusqueda
 	{
-		public string Etiqueta;
+		/// <summary>Clave interna de este objetivo (estable, sin tildes). Es la ultima parte de su
+		/// clave de localizacion: <c>Exploracion.Objetivo.&lt;Clave&gt;</c>.</summary>
+		public string Clave;
+
+		/// <summary>Clave interna de la categoria a la que pertenece. Se usa para agrupar y para
+		/// elegir el color del marcador; el rotulo sale de <see cref="CategoriaLegible"/>.</summary>
 		public string Categoria;
+
 		public ClaseDeObjetivo Clase;
+
+		/// <summary>Rotulo propio del objetivo, traducido al idioma activo. Es una propiedad y no
+		/// un campo porque el catalogo se construye una sola vez y se cachea.</summary>
+		public string Etiqueta {
+			get { return Idiomas.Texto("Exploracion.Objetivo." + Clave); }
+		}
+
+		/// <summary>Nombre de la categoria, traducido al idioma activo.</summary>
+		public string CategoriaLegible {
+			get { return Idiomas.Texto("Exploracion.Categoria." + Categoria); }
+		}
 
 		/// <summary>Nombres a resolver (varios cuando una misma cosa tiene variantes, p.ej. los
 		/// dos minerales alternativos de un mismo nivel).</summary>
@@ -150,57 +168,57 @@ namespace TerrakeepMod.Common.Exploracion
 			// Los pares alternativos (cobre/estaño, hierro/plomo...) van juntos a proposito: un
 			// mundo concreto solo tiene uno de los dos, y buscarlos por separado obligaria al
 			// usuario a adivinar cual le toco.
-			Tile("Minerales", "Cobre / Estaño", "Copper", "Tin");
-			Tile("Minerales", "Hierro / Plomo", "Iron", "Lead");
-			Tile("Minerales", "Plata / Tungsteno", "Silver", "Tungsten");
-			Tile("Minerales", "Oro / Platino", "Gold", "Platinum");
-			Tile("Minerales", "Demonita / Carmesita", "Demonite", "Crimtane");
+			Tile("Minerales", "CobreEstano", "Copper", "Tin");
+			Tile("Minerales", "HierroPlomo", "Iron", "Lead");
+			Tile("Minerales", "PlataTungsteno", "Silver", "Tungsten");
+			Tile("Minerales", "OroPlatino", "Gold", "Platinum");
+			Tile("Minerales", "DemonitaCarmesita", "Demonite", "Crimtane");
 			Tile("Minerales", "Meteorito", "Meteorite");
 			Tile("Minerales", "Obsidiana", "Obsidian");
-			Tile("Minerales", "Piedra infernal", "Hellstone");
-			Tile("Minerales", "Cobalto / Paladio", "Cobalt", "Palladium");
-			Tile("Minerales", "Mithril / Oricalco", "Mythril", "Orichalcum");
-			Tile("Minerales", "Adamantita / Titanio", "Adamantite", "Titanium");
+			Tile("Minerales", "PiedraInfernal", "Hellstone");
+			Tile("Minerales", "CobaltoPaladio", "Cobalt", "Palladium");
+			Tile("Minerales", "MithrilOricalco", "Mythril", "Orichalcum");
+			Tile("Minerales", "AdamantitaTitanio", "Adamantite", "Titanium");
 			Tile("Minerales", "Clorofita", "Chlorophyte");
 			Tile("Minerales", "Luminita", "LunarOre");
-			Tile("Minerales", "Fósiles del desierto", "DesertFossil");
+			Tile("Minerales", "FosilesDesierto", "DesertFossil");
 
 			// --- Gemas -----------------------------------------------------------------------
 			Tile("Gemas", "Amatista", "Amethyst");
 			Tile("Gemas", "Topacio", "Topaz");
 			Tile("Gemas", "Zafiro", "Sapphire");
 			Tile("Gemas", "Esmeralda", "Emerald");
-			Tile("Gemas", "Rubí", "Ruby");
+			Tile("Gemas", "Rubi", "Ruby");
 			Tile("Gemas", "Diamante", "Diamond");
-			Tile("Gemas", "Gemas incrustadas", "Crystals");
+			Tile("Gemas", "GemasIncrustadas", "Crystals");
 
 			// --- Tesoros y estructuras -------------------------------------------------------
-			Tile("Tesoros", "Corazones de cristal", "Heart");
-			Tile("Tesoros", "Frutos de la vida", "LifeFruit");
-			Tile("Tesoros", "Orbes de sombra / Corazones", "ShadowOrbs");
-			Tile("Tesoros", "Altares demoníacos", "DemonAltar");
-			Tile("Tesoros", "Altar lihzahrd", "LihzahrdAltar");
-			Tile("Tesoros", "Bulbos de Plantera", "PlanteraBulb");
+			Tile("Tesoros", "CorazonesCristal", "Heart");
+			Tile("Tesoros", "FrutosVida", "LifeFruit");
+			Tile("Tesoros", "OrbesSombra", "ShadowOrbs");
+			Tile("Tesoros", "AltaresDemoniacos", "DemonAltar");
+			Tile("Tesoros", "AltarLihzahrd", "LihzahrdAltar");
+			Tile("Tesoros", "BulbosPlantera", "PlanteraBulb");
 			Tile("Tesoros", "Colmenas", "Hive");
-			Tile("Tesoros", "Larvas de abeja reina", "Larva");
+			Tile("Tesoros", "LarvasAbeja", "Larva");
 
 			// --- Contenedores y NPC ----------------------------------------------------------
 			_todos.Add(new ObjetivoBusqueda {
-				Etiqueta = "Cofres y cómodas",
+				Clave = "Cofres",
 				Categoria = "Contenedores",
 				Clase = ClaseDeObjetivo.Cofres
 			});
 			_todos.Add(new ObjetivoBusqueda {
-				Etiqueta = "NPC vivos ahora mismo",
+				Clave = "Npcs",
 				Categoria = "Contenedores",
 				Clase = ClaseDeObjetivo.Npcs
 			});
 
 			// --- Liquidos --------------------------------------------------------------------
-			Liquido("Líquidos", "Agua", LiquidID.Water);
-			Liquido("Líquidos", "Lava", LiquidID.Lava);
-			Liquido("Líquidos", "Miel", LiquidID.Honey);
-			Liquido("Líquidos", "Fulgor", LiquidID.Shimmer);
+			Liquido("Liquidos", "Agua", LiquidID.Water);
+			Liquido("Liquidos", "Lava", LiquidID.Lava);
+			Liquido("Liquidos", "Miel", LiquidID.Honey);
+			Liquido("Liquidos", "Fulgor", LiquidID.Shimmer);
 
 			// --- Paredes ---------------------------------------------------------------------
 			// Las paredes que GENERA el mundo son las "Unsafe" (las que no dejan aparecer enemigos
@@ -208,38 +226,38 @@ namespace TerrakeepMod.Common.Exploracion
 			Pared("Paredes", "Mazmorra", "BlueDungeonUnsafe", "GreenDungeonUnsafe", "PinkDungeonUnsafe",
 				"BlueDungeonSlabUnsafe", "BlueDungeonTileUnsafe", "PinkDungeonSlabUnsafe",
 				"PinkDungeonTileUnsafe", "GreenDungeonSlabUnsafe", "GreenDungeonTileUnsafe");
-			Pared("Paredes", "Templo lihzahrd", "LihzahrdBrickUnsafe");
-			Pared("Paredes", "Nido de araña", "SpiderUnsafe");
+			Pared("Paredes", "TemploLihzahrd", "LihzahrdBrickUnsafe");
+			Pared("Paredes", "NidoArana", "SpiderUnsafe");
 
 			foreach (ObjetivoBusqueda objetivo in _todos) {
 				Resolver(objetivo);
 			}
 		}
 
-		private static void Tile(string categoria, string etiqueta, params string[] nombres)
+		private static void Tile(string categoria, string clave, params string[] nombres)
 		{
 			_todos.Add(new ObjetivoBusqueda {
-				Etiqueta = etiqueta,
+				Clave = clave,
 				Categoria = categoria,
 				Clase = ClaseDeObjetivo.Tile,
 				Nombres = nombres
 			});
 		}
 
-		private static void Pared(string categoria, string etiqueta, params string[] nombres)
+		private static void Pared(string categoria, string clave, params string[] nombres)
 		{
 			_todos.Add(new ObjetivoBusqueda {
-				Etiqueta = etiqueta,
+				Clave = clave,
 				Categoria = categoria,
 				Clase = ClaseDeObjetivo.Pared,
 				Nombres = nombres
 			});
 		}
 
-		private static void Liquido(string categoria, string etiqueta, int liquido)
+		private static void Liquido(string categoria, string clave, int liquido)
 		{
 			_todos.Add(new ObjetivoBusqueda {
-				Etiqueta = etiqueta,
+				Clave = clave,
 				Categoria = categoria,
 				Clase = ClaseDeObjetivo.Liquido,
 				Liquido = liquido
@@ -273,7 +291,7 @@ namespace TerrakeepMod.Common.Exploracion
 					resueltos++;
 				}
 			}
-			return Todos.Count + " objetivos en " + Categorias().Count + " categorías, " +
+			return Todos.Count + " objetivos en " + Categorias().Count + " categorias, " +
 				resueltos + " resueltos en esta partida.";
 		}
 	}

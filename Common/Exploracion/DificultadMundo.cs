@@ -1,4 +1,5 @@
 using Terraria;
+using TerrakeepMod.Common.Ajustes;
 using Terraria.ID;
 using TerrakeepMod.Common.Undo;
 
@@ -46,34 +47,34 @@ namespace TerrakeepMod.Common.Exploracion
 		public static string MotivoParaNoPoder(int modo)
 		{
 			if (!MundoActual.HayMundo) {
-				return "No hay ningún mundo cargado.";
+				return Idiomas.Texto("Exploracion.Dificultad.SinMundo");
 			}
 
 			// Un cliente de multijugador no manda sobre el mundo: el modo vive en el servidor, y
 			// tocarlo aqui solo desincronizaria a este cliente del resto de la partida.
 			if (Main.netMode == NetmodeID.MultiplayerClient) {
-				return "Estás en una partida multijugador: el modo del mundo lo decide el servidor.";
+				return Idiomas.Texto("Exploracion.Dificultad.Multijugador");
 			}
 
 			if (modo == Main.GameMode) {
-				return "El mundo ya está en este modo.";
+				return Idiomas.Texto("Exploracion.Dificultad.YaEnEseModo");
 			}
 
 			if (!Main.RegisteredGameModes.ContainsKey(modo)) {
-				return "Este modo de juego no existe en esta versión del juego.";
+				return Idiomas.Texto("Exploracion.Dificultad.ModoInexistente");
 			}
 
 			Player jugador = Main.LocalPlayer;
 			if (jugador == null || !jugador.active) {
-				return "No hay ningún personaje cargado.";
+				return Idiomas.Texto("Exploracion.Dificultad.SinPersonaje");
 			}
 
 			bool jugadorDeViaje = jugador.difficulty == 3;
 			bool modoDeViaje = modo == GameModeID.Creative;
 			if (jugadorDeViaje != modoDeViaje) {
 				return jugadorDeViaje
-					? "Tu personaje es de Viaje y solo puede entrar en mundos de Viaje: si quitas el modo Viaje de este mundo, este personaje se quedará fuera."
-					: "Tu personaje NO es de Viaje: si pones este mundo en modo Viaje, este personaje ya no podrá volver a entrar en él.";
+					? Idiomas.Texto("Exploracion.Dificultad.SoloViaje")
+					: Idiomas.Texto("Exploracion.Dificultad.NoViaje");
 			}
 
 			return null;
@@ -136,8 +137,8 @@ namespace TerrakeepMod.Common.Exploracion
 		public static string AvisoDePermanencia()
 		{
 			return Main.autoSave
-				? "El cambio es PERMANENTE: se escribe en el mundo en el siguiente autoguardado (lo tienes activado)."
-				: "El cambio es PERMANENTE: se escribe en el mundo en cuanto se guarde (tienes el autoguardado desactivado, pero salir al menú guarda igual).";
+				? Idiomas.Texto("Exploracion.Dificultad.PermanenteAutoguardado")
+				: Idiomas.Texto("Exploracion.Dificultad.PermanenteAlGuardar");
 		}
 
 		/// <summary>
@@ -147,7 +148,7 @@ namespace TerrakeepMod.Common.Exploracion
 		/// </summary>
 		public static string AvisoDeEfecto()
 		{
-			return "Los enemigos ya generados no cambian de vida ni de daño hasta que reaparezcan; el botín sí reacciona al instante.";
+			return Idiomas.Texto("Exploracion.Dificultad.Efecto");
 		}
 	}
 }

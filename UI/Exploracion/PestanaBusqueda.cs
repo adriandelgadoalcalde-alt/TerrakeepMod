@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
+using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Exploracion;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -67,7 +68,8 @@ namespace TerrakeepMod.UI.Exploracion
 
 			for (int i = 0; i < categorias.Count; i++) {
 				string categoria = categorias[i];
-				BotonTk pildora = new BotonTk(categoria, 0.8f);
+				BotonTk pildora = new BotonTk(Idiomas.Texto("Exploracion.Categoria." + categoria), 0.8f);
+				pildora.Clave = categoria;
 				pildora.Left.Set((i % 2) * (ancho + 8f), 0f);
 				pildora.Top.Set(y + (i / 2) * 32f, 0f);
 				pildora.Width.Set(ancho, 0f);
@@ -104,17 +106,16 @@ namespace TerrakeepMod.UI.Exploracion
 			_listaObjetivos.SetScrollbar(barra);
 
 			AlternadorTk soloExplorado = new AlternadorTk(
-				"Solo en lo que ya he explorado",
+				() => Idiomas.Texto("Exploracion.SoloExplorado"),
 				() => _soloExplorado,
 				valor => _soloExplorado = valor);
-			soloExplorado.Ayuda = "Con esto activado, la búsqueda solo cuenta los tiles que ya has descubierto en el mapa. " +
-				"Desactívalo para buscar en TODO el mundo, incluido lo que no has visto nunca.";
+			soloExplorado.Ayuda = () => Idiomas.Texto("Exploracion.SoloExploradoAyuda");
 			soloExplorado.Width.Set(0f, 1f);
 			soloExplorado.Height.Set(30f, 0f);
 			soloExplorado.Top.Set(-72f, 1f);
 			izquierda.Append(soloExplorado);
 
-			BotonTk buscar = new BotonTk("Buscar en el mundo", 0.9f);
+			BotonTk buscar = new BotonTk(Idiomas.Texto("Exploracion.Buscar"), 0.9f);
 			buscar.Width.Set(0f, 1f);
 			buscar.Height.Set(36f, 0f);
 			buscar.Top.Set(-36f, 1f);
@@ -174,37 +175,41 @@ namespace TerrakeepMod.UI.Exploracion
 		{
 			BuscadorMundo buscador = PanelExploracionSystem.Buscador;
 			if (buscador.EnMarcha) {
-				return "Buscando " + (buscador.Objetivo != null ? "\"" + buscador.Objetivo.EtiquetaLegible() + "\"" : "") +
-					"...  " + (int)(buscador.Progreso * 100f) + " %";
+				return Idiomas.Texto("Exploracion.Buscando",
+					buscador.Objetivo != null ? buscador.Objetivo.EtiquetaLegible() : "",
+					(int)(buscador.Progreso * 100f));
 			}
 			if (buscador.Terminada && buscador.Objetivo != null) {
-				return buscador.Resultados.Count + " zonas con \"" + buscador.Objetivo.EtiquetaLegible() + "\"";
+				return Idiomas.Texto("Exploracion.ZonasCon",
+					buscador.Resultados.Count, buscador.Objetivo.EtiquetaLegible());
 			}
-			return "Elige qué buscar y pulsa \"Buscar en el mundo\"";
+			return Idiomas.Texto("Exploracion.EligeQueBuscar");
 		}
 
 		private string TextoDetalle()
 		{
 			BuscadorMundo buscador = PanelExploracionSystem.Buscador;
 			if (buscador.Objetivo == null) {
-				return "El mundo tiene " + MundoActual.TotalTiles.ToString("N0") + " tiles. " +
-					"La búsqueda se reparte entre fotogramas: puedes seguir jugando.";
+				return Idiomas.Texto("Exploracion.DetalleInicial", MundoActual.TotalTiles.ToString("N0"));
 			}
 			if (buscador.EnMarcha) {
-				return buscador.TilesEncontrados + " encontrados de momento, " +
-					buscador.TilesMirados.ToString("N0") + " tiles mirados.";
+				return Idiomas.Texto("Exploracion.DetalleEnMarcha",
+					buscador.TilesEncontrados, buscador.TilesMirados.ToString("N0"));
 			}
-			return buscador.TilesEncontrados.ToString("N0") + " tiles encontrados en " +
-				buscador.TilesMirados.ToString("N0") + " mirados, en " +
-				buscador.MilisegundosGastados.ToString("0.0") + " ms de CPU" +
-				(buscador.SoloExplorado ? " (solo en lo explorado)." : " (en todo el mundo).");
+			return Idiomas.Texto("Exploracion.DetalleTerminada",
+				buscador.TilesEncontrados.ToString("N0"),
+				buscador.TilesMirados.ToString("N0"),
+				buscador.MilisegundosGastados.ToString("0.0"),
+				Idiomas.Texto(buscador.SoloExplorado
+					? "Exploracion.AmbitoExplorado"
+					: "Exploracion.AmbitoTodo"));
 		}
 
 		private void SeleccionarCategoria(string categoria)
 		{
 			_categoria = categoria;
 			foreach (BotonTk pildora in _pildorasCategoria) {
-				pildora.Activo = pildora.Texto == categoria;
+				pildora.Activo = pildora.Clave == categoria;
 			}
 			RellenarObjetivos();
 		}
@@ -216,7 +221,8 @@ namespace TerrakeepMod.UI.Exploracion
 			List<ObjetivoBusqueda> objetivos = CatalogoObjetivos.DeCategoria(_categoria);
 
 			if (objetivos.Count == 0) {
-				_listaObjetivos.Add(FilaTexto("Nada de esta categoría existe en esta partida.", EstiloTk.TextoSuave));
+				_listaObjetivos.Add(FilaTexto(
+					() => Idiomas.Texto("Exploracion.CategoriaVacia"), EstiloTk.TextoSuave));
 				_seleccionado = null;
 				return;
 			}
@@ -231,7 +237,7 @@ namespace TerrakeepMod.UI.Exploracion
 				fila.Width.Set(0f, 1f);
 				fila.Height.Set(30f, 0f);
 				fila.Activo = objetivo == _seleccionado;
-				fila.Ayuda = DescribirObjetivo(objetivo);
+				fila.Ayuda = () => DescribirObjetivo(actual);
 				fila.AlPulsar += () => Seleccionar(actual);
 				_listaObjetivos.Add(fila);
 				_filasObjetivo.Add(new KeyValuePair<ObjetivoBusqueda, BotonTk>(actual, fila));
@@ -242,15 +248,15 @@ namespace TerrakeepMod.UI.Exploracion
 		{
 			switch (objetivo.Clase) {
 				case ClaseDeObjetivo.Cofres:
-					return "Recorre Main.chest: todos los cofres y cómodas del mundo, con lo que llevan dentro.";
+					return Idiomas.Texto("Exploracion.AyudaCofres");
 				case ClaseDeObjetivo.Npcs:
-					return "Recorre Main.npc: los NPC vivos ahora mismo, con su vida real.";
+					return Idiomas.Texto("Exploracion.AyudaNpcs");
 				case ClaseDeObjetivo.Liquido:
-					return "Busca este líquido en los datos de líquido de cada tile.";
+					return Idiomas.Texto("Exploracion.AyudaLiquido");
 				case ClaseDeObjetivo.Pared:
-					return "Tipos de pared: " + string.Join(", ", objetivo.Tipos);
+					return Idiomas.Texto("Exploracion.AyudaPared", string.Join(", ", objetivo.Tipos));
 				default:
-					return "Tipos de tile: " + string.Join(", ", objetivo.Tipos);
+					return Idiomas.Texto("Exploracion.AyudaTile", string.Join(", ", objetivo.Tipos));
 			}
 		}
 
@@ -331,9 +337,9 @@ namespace TerrakeepMod.UI.Exploracion
 
 			if (resultados.Count == 0) {
 				_listaResultados.Add(FilaTexto(
-					PanelExploracionSystem.Buscador.Terminada
-						? "No hay ni uno en el mundo (o no en lo que has explorado)."
-						: "Aquí saldrán los sitios donde está lo que busques.",
+					() => Idiomas.Texto(PanelExploracionSystem.Buscador.Terminada
+						? "Exploracion.SinResultados"
+						: "Exploracion.AquiSaldran"),
 					EstiloTk.TextoSuave));
 				return;
 			}
@@ -341,12 +347,13 @@ namespace TerrakeepMod.UI.Exploracion
 			foreach (ResultadoBusqueda resultado in resultados) {
 				ResultadoBusqueda actual = resultado;
 				BotonTk fila = new BotonTk(
-					"(" + (int)resultado.Tile.X + ", " + (int)resultado.Tile.Y + ")  " +
-					resultado.Etiqueta + "  ·  a " + (int)resultado.DistanciaAlJugador + " tiles",
+					Idiomas.Texto("Exploracion.FilaResultado",
+						(int)resultado.Tile.X, (int)resultado.Tile.Y,
+						resultado.Etiqueta, (int)resultado.DistanciaAlJugador),
 					0.75f);
 				fila.Width.Set(0f, 1f);
 				fila.Height.Set(26f, 0f);
-				fila.Ayuda = "Pulsa para verlo en el mini-mapa.";
+				fila.Ayuda = () => Idiomas.Texto("Exploracion.AyudaResultado");
 				fila.AlPulsar += () => IrAlResultado(actual);
 				_listaResultados.Add(fila);
 			}
@@ -373,9 +380,9 @@ namespace TerrakeepMod.UI.Exploracion
 				"el mini-mapa se centra ahi.");
 		}
 
-		private static UIElement FilaTexto(string texto, Color color)
+		private static UIElement FilaTexto(System.Func<string> texto, Color color)
 		{
-			EtiquetaTk etiqueta = new EtiquetaTk(() => texto, 0.75f, 400f, 24f);
+			EtiquetaTk etiqueta = new EtiquetaTk(texto, 0.75f, 400f, 24f);
 			etiqueta.ColorTexto = color;
 			etiqueta.Width.Set(0f, 1f);
 			return etiqueta;
