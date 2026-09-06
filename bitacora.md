@@ -1890,3 +1890,57 @@ ya migrado, que es lo que demuestra que la migración de idiomas no rompió comp
 - **Los nombres largos de las etapas de Builds se cortan** con "..." en la píldora. Tienen el
   nombre completo en el tooltip. Se deja así a propósito: la alternativa era bajar tanto la
   escala del texto que dejara de leerse.
+
+---
+
+## 7-sep-2026 — Investigación del entorno: por qué `keybd_event`/`SendInput` nunca llegan al juego
+
+Retomando el límite de WS7 ("Pulsaciones físicas de teclado"). Diagnóstico de sesión de Windows:
+la sesión 1 (RDP, usuario "adrian") llevaba desde el 30-ago-2026 en estado `Desc`
+(desconectada), coincidiendo exactamente con `LastBootUpTime` — con `HiberbootEnabled=1`
+(Windows Fast Startup) el apagado/encendido diario del usuario no hace un arranque real, así que
+la sesión nunca se reconectaba a la consola física. Hipótesis inicial: Windows bloquea a
+propósito los efectos reales de `SetCursorPos`/`keybd_event`/`SendInput` sobre una sesión
+desconectada de la consola, por diseño de seguridad — encajaba con todos los límites de
+clic/teclado arrastrados durante toda la sesión de trabajo.
+
+Se ejecutó `tscon 1 /dest:console` (reenganchar la sesión 1 a la consola física) con permiso
+explícito del usuario. Resultado: `query session` confirmó `>console adrian 1 Activo` —
+la sesión pasó de verdad a conectada.
+
+**Se volvió a correr `scripts\verificar-ws7-interactivo.ps1 -Modo atajos` con la sesión ya
+conectada, y el resultado fue IDÉNTICO al de antes**: `Ctrl pulsado según Main.keyState=False`
+en los 4 segundos de la prueba, nunca `True`. La reconexión de sesión NO era la causa (o no la
+única). Se investigaron dos hipótesis más, cada una un mecanismo real distinto, no una repetición
+de la misma:
+
+1. **UIPI (nivel de integridad)**: si el juego corriera con integridad más alta que el proceso
+   que inyecta la tecla, Windows bloquea la entrada entre procesos por diseño (User Interface
+   Privilege Isolation). Se repitió la prueba lanzando el script desde una PowerShell en
+   integridad **Alta** (confirmado con `whoami /groups` → `S-1-16-12288`) en vez de desde Bash.
+   Mismo resultado: `False` todo el rato.
+2. **Falta de scan code de hardware**: `keybd_event` sin `KEYEVENTF_SCANCODE` genera una
+   pulsación "virtual" que algunos lectores de entrada basados en Raw Input/SDL descartan por no
+   traer un código de escaneo real. Se probó `SendInput` con `KEYEVENTF_SCANCODE` +
+   `MapVirtualKey(vk, MAPVK_VK_TO_VSC)` para dar un scan code de hardware genuino a cada tecla.
+   Mismo resultado: `False` todo el rato.
+
+**Conclusión, tres causas reales descartadas una a una**: no es la sesión desconectada, no es
+UIPI, no es la falta de scan code. La única explicación que queda en pie es que tModLoader (FNA
+sobre SDL2) lee el teclado por un camino que ignora sistemáticamente la entrada sintética
+generada en espacio de usuario por cualquiera de las tres APIs estándar de Windows
+(`keybd_event`/`SendInput` con o sin scan code) — el patrón encaja con juegos que filtran por
+"dispositivo HID real" a nivel de controlador, algo que ninguna API de espacio de usuario puede
+falsificar. La única vía real que queda para pulsaciones físicas 100% indistinguibles de
+hardware sería un controlador de HID virtual en modo kernel (p. ej. Interception o ViGEmBus) —
+deliberadamente NO instalado sin preguntar antes: a diferencia de instalar una herramienta de
+compilación o un arnés de pruebas, un driver de kernel es persistente, afecta a todo el sistema y
+puede levantar sospechas en el antivirus, así que queda fuera del alcance de "no invasivo" de la
+autonomía técnica ya concedida.
+
+Se para aquí (tres intentos con causas reales distintas, no dos repeticiones de lo mismo). Lo que
+sí queda resuelto y verificado con la sesión reconectada, y no es poco: el propio código de
+producción del atajo (`HistorialSystem.ComprobarAtajos`, `Main.keyState`/
+`PlayerInput.Triggers.JustPressed`, deshacer/rehacer, persistencia del idioma) sigue
+funcionando exactamente igual que en WS7 — la limitación es y sigue siendo solo el último eslabón
+físico (la tecla en sí), nunca el mod.
