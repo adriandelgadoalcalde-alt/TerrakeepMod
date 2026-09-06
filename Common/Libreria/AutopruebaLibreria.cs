@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Text;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 using TerrakeepMod.Common.Undo;
 using TerrakeepMod.UI.Libreria;
 using TerrasavrNative.Core.Data;
@@ -100,8 +101,9 @@ namespace TerrakeepMod.Common.Libreria
 				case 8: ColocarEnElInventario(); break;
 				case 9: DeshacerYRehacer(); break;
 				case 10: RecorrerDestinos(); break;
-				case 11: PrepararInformeFinal(); break;
-				case 12: DescribirPanelDibujado(); break;
+				case 11: ExplorarCarpetaDeMod(); break;
+				case 12: PrepararInformeFinal(); break;
+				case 13: DescribirPanelDibujado(); break;
 				default:
 					Registrar("AUTOPRUEBA WS3 COMPLETA. Todos los pasos ejecutados sin excepciones.");
 					_terminada = true;
@@ -443,20 +445,90 @@ namespace TerrakeepMod.Common.Libreria
 				+ " contenedores reales de destino, cada uno apuntando a su array vivo del jugador: " + sb + ".");
 		}
 
+		/// <summary>
+		/// Entra en la carpeta madre del mod con MAS objetos (si hay alguno instalado) y deja en el
+		/// log sus subcarpetas y unos cuantos objetos reales. Es la prueba de que el descubrimiento
+		/// en vivo y la categorizacion por los campos del <c>Item</c> funcionan sobre contenido que
+		/// no es vanilla, sin ningun catalogo estatico por medio.
+		/// </summary>
+		private static void ExplorarCarpetaDeMod()
+		{
+			Contenido.IrALaRaiz();
+			Contenido.FijarBusqueda("");
+
+			IReadOnlyList<CategoryTreeNodeData> raices = ArbolLibreria.Raices;
+			int indice = -1;
+			int mejor = -1;
+			for (int i = 0; i < raices.Count; i++) {
+				// Las raices de mod son exactamente las que llevan el nombre interno de un mod
+				// cargado en su FullPath (las vanilla llevan "Materials", "Categories"...).
+				Mod mod;
+				if (!ModLoader.TryGetMod(raices[i].FullPath, out mod)) {
+					continue;
+				}
+				if (raices[i].ItemIdsOrdered.Count > mejor) {
+					mejor = raices[i].ItemIdsOrdered.Count;
+					indice = i;
+				}
+			}
+
+			if (indice < 0) {
+				Registrar("Paso 11 - no hay ningun mod de contenido cargado en esta partida; "
+					+ "el descubrimiento en vivo no tiene nada que enseñar aparte de vanilla.");
+				return;
+			}
+
+			string pulsada = Contenido.PulsarFilaCarpeta(indice);
+			CategoryTreeNodeData raiz = Contenido.CarpetaActual;
+			if (raiz == null) {
+				Registrar("Paso 11 - no se pudo abrir la carpeta del mod.");
+				return;
+			}
+
+			StringBuilder sb = new StringBuilder();
+			for (int i = 0; i < raiz.Children.Count; i++) {
+				if (sb.Length > 0) {
+					sb.Append(" | ");
+				}
+				sb.Append('"').Append(raiz.Children[i].Name).Append('"');
+			}
+
+			Registrar("Paso 11 - clic REAL en la carpeta madre del mod \"" + pulsada + "\" (ruta interna \""
+				+ raiz.FullPath + "\"): " + raiz.ItemIdsOrdered.Count + " objetos descubiertos EN VIVO, "
+				+ "repartidos en estas categorias deducidas de los campos reales del Item: " + sb + ".");
+
+			// Y se baja una vez mas, para enseñar objetos reales del mod dentro de una de ellas.
+			CategoryTreeNodeData hija = Contenido.PrimeraCarpetaConObjetos();
+			if (hija == null) {
+				return;
+			}
+			int posicion = 0;
+			for (int i = 0; i < raiz.Children.Count; i++) {
+				if (ReferenceEquals(raiz.Children[i], hija)) {
+					posicion = i;
+					break;
+				}
+			}
+			string dentro = Contenido.PulsarFilaCarpeta(posicion);
+			Registrar("Paso 11 - dentro de \"" + dentro + "\": "
+				+ Contenido.SlotsResultado.Count + " ranuras de catalogo con objetos reales del mod. "
+				+ PrimerosResultados());
+		}
+
 		/// <summary>Deja la Libreria enseñando una tanda de objetos reales, para que el informe
 		/// final se tome con ranuras de verdad colocadas en pantalla y no con la vista vacia.</summary>
 		private static void PrepararInformeFinal()
 		{
 			Contenido.IrALaRaiz();
 			Contenido.FijarBusqueda("#1-60");
-			Registrar("Paso 11 - preparado el informe final: busqueda \"#1-60\" -> "
+			Registrar("Paso 12 - preparado el informe final: busqueda \"#1-60\" -> "
 				+ Contenido.SlotsResultado.Count + " ranuras de catalogo. Se deja un fotograma para "
 				+ "que el motor las recalcule y las dibuje.");
 		}
 
 		private static void DescribirPanelDibujado()
 		{
-			Registrar("Paso 12 - estado real del panel YA DIBUJADO: " + Contenido.Informe() + ".");
+			Registrar("Paso 13 - estado real del panel YA DIBUJADO: " + Contenido.Informe() + ".");
 		}
 
 		// =========================================================================================

@@ -708,3 +708,177 @@ había vuelto a compilar y probar el árbol entero integrado desde que se fusion
 WS7) están cerrados, comiteados, y verificados juntos de verdad en el juego real - no solo cada
 uno por separado.** Quedan sin empezar, según el plan: WS3 (Librería del mod, depende del árbol
 ya portado en WS2), WS5 (Investigación) y WS6 (Exploración/mapa del mundo, el más grande).
+
+---
+
+## 6-sep-2026 — WS3: panel de Librería
+
+Tercer workstream del plan, en paralelo con WS5 (Investigación) y WS6 (Exploración). Panel
+propio de **Librería** (tecla **O**): árbol de carpetas navegable, buscador con la gramática real
+de Terrasavr, y coger un objeto del catálogo para soltarlo en cualquier contenedor real del
+jugador.
+
+### El árbol es un HÍBRIDO, y las dos mitades son deliberadas
+
+1. **El árbol vanilla CURADO** (el de Terrasavr: "Materiales / Pre-Modo Difícil / Cobre &
+   Estaño", "Categorías", "Objectos por ID"...) sale de `LibraryTreeBuilder.BuildItemTree` de
+   `TerrasavrNative.Core`, que portó WS2, sobre los mismos dos `.json` que usa la app de
+   escritorio (`vanilla_library_tree.json` + `vanilla_library_labels_es.json`, copiados a
+   `Assets\`). **Ese orden hecho a mano no se puede deducir de los campos de un `Item`**: hay que
+   traerlo. Se le pasa `calamity: null` a propósito, que es un caso que Core ya contempla.
+2. **Una carpeta madre por MOD instalado**, descubierta EN VIVO recorriendo
+   `ContentSamples.ItemsByType` y montada con `LiveItemTreeBuilder.BuildTree` (también de WS2).
+   Aquí no hay ningún `calamity/catalog.json`: es la decisión del plan, y su ventaja real se ve
+   en el log — con Calamity cargado aparecen **"Calamity Mod (mod)" con 2665 objetos**, "Calamity
+   Mod Music (mod)" con 62 y "tModLoader (mod)" con 90, sin que nadie haya escrito un catálogo.
+
+Se les suma, **solo si hace falta**, una carpeta con los objetos vanilla que el árbol curado no
+mencione. En las dos ejecuciones reales salieron **0**: el árbol de Terrasavr cubre entero el
+vanilla de esta versión. Se deja porque si algún día no lo cubriera, esos objetos quedarían
+inalcanzables navegando.
+
+### La pieza que WS2 dejó a propósito sin hacer
+
+`Common/Libreria/CatalogoVivo.cs`. Core **no puede** depender de Terraria (dejaría de compilar
+para net10.0, que es lo que consume la app de escritorio), así que la extracción tenía que vivir
+forzosamente en el mod. Rellena un `LiveItemInfo` por objeto y deduce su categoría de los campos
+REALES del `Item`, comprobados uno a uno en el `tModLoader.dll` instalado:
+
+- `headSlot`/`bodySlot`/`legSlot` + `vanity` → Armadura / Armadura - Vanidad
+- `accessory` + `wingSlot` → Accesorios / Accesorios - Alas / - Vanidad
+- `mountType` + `MountID.Sets.Cart` → Monturas / Vagonetas
+- `buffType` contra `Main.vanityPet` / `Main.lightPet` → Mascotas (es lo que mira el propio juego)
+- `hairDye >= 0` / `dye > 0` / `paint` → Tintes
+- `ammo != AmmoID.None` → Munición (**antes** que las armas: una flecha hace daño y no es un arma)
+- `pick`/`axe`/`hammer` → Herramientas (**antes** que las armas, o todas caerían en "cuerpo a cuerpo")
+- `fishingPole > 1` → Pesca. Ojo: el campo real es `public int fishingPole = 1;`, o sea que **el
+  valor por defecto es 1, no 0** — con `> 0` entraría el juego entero
+- `damage > 0` → Armas, por `Item.DamageType`, que es un `DamageClass`. Eso hace que **la clase
+  Pícaro de Calamity salga sola**, con el nombre que le da el propio mod, sin ninguna tabla
+  nuestra
+- `createWall`/`createTile` + `Main.tileFrameImportant` → Colocables - Paredes / Muebles / Bloques
+
+Las claves que devuelve son deliberadamente las mismas de `calamity/catalog.json`
+("Weapons/Melee", "Accessories/Wings"...) **para poder reutilizar tal cual
+`LibraryTreeBuilder.CalamityCategoryLabel` de Core** como traductor de etiquetas: ya trae las 121
+categorías traducidas al español y, para lo que no conozca, separa el CamelCase en vez de
+inventarse una traducción. Resultado real con Calamity: `"Accesorios (238)" | "Munición (28)" |
+"Armadura (186)" | "Criaturas (10)" | "Tintes (48)" | "Pesca (25)" | "Materiales (72)" | "Varios
+(192)" | "Monturas (9)" | "Mascotas (34)" | "Colocables (993)" | "Pociones (57)" | "Herramientas
+(30)" | "Armas (743)"`.
+
+El catálogo se construye **perezosamente** al abrir el panel por primera vez (**2 ms** para los
+8240 objetos de vanilla + Calamity, medido) y se tira al cambiar de idioma
+(`ModSystem.OnLocalizationsLoaded`), porque los nombres de los objetos cambian con él.
+
+### La gramática de búsqueda: se COPIÓ, y por qué
+
+`LibrarySearchGrammar` **sí es pura** (solo `System.Globalization`/`System.Text`), pero vive en
+`TerrasavrNative.App/ViewModels/`, o sea **dentro del ensamblado WPF** de la app de escritorio,
+que solo compila para `net10.0-windows`. El mod solo referencia `TerrasavrNative.Core` (net8), así
+que desde aquí ese tipo es **inalcanzable**. Las dos salidas eran moverla a Core o copiarla; se
+copió (`Common/Libreria/GramaticaBusqueda.cs`, ~40 líneas de lógica cerrada con pruebas propias en
+el repo hermano) porque moverla obliga a tocar el repo hermano, a regenerar y re-empaquetar
+`lib\TerrasavrNative.Core.dll` (archivo compartido) y a arreglar los `using` de la app y sus
+tests, y todo eso con dos agentes más trabajando en paralelo sobre los mismos repositorios. Queda
+anotado en el propio archivo para que se sepa que hay dos copias.
+
+Verificadas las reglas en el juego, con evidencia real y sin cadenas fijas (los términos se sacan
+del nombre/tooltip REAL que tenga el objeto con el idioma activo, así que la prueba vale igual en
+español que en inglés):
+
+| Regla | Evidencia |
+|---|---|
+| Nombre | `"Copper"` → 22 objetos, el buscado entre ellos |
+| `#id` | `"#3507"` → exactamente 1 |
+| `#a-b` | `"#3507-3511"` → 5 |
+| `.tooltip` | `".provides"` → 53 objetos; **la misma palabra sin punto → 0**. Es lo que demuestra que el punto cambia de verdad dónde se busca |
+| coma = O | `"Dirt Block,Stone Block"` → 23 |
+| espacio = Y | `"Dirt Block"` → 2, y uno es `"The Dirtiest Block"`: con subcadena simple no saldría |
+| acentos | se busca `"pina colada"` y encuentra `"Piña Colada"` |
+
+Ámbito y tope replican los reales de la app (`LibraryViewModel.Refresh`): con carpeta abierta se
+busca DENTRO de ella recorriendo `ItemIdsOrdered` (el orden curado; el `ItemIdSet` es un HashSet
+sin orden garantizado), sin carpeta abierta se busca en todo el catálogo, y se enseñan **100**
+como mucho.
+
+**Sobre el riesgo conocido de que `UIList` no virtualiza**: no llegó a aparecer. El paginado de 40
+del árbol sigue ahí, pero lo que de verdad acota la rejilla es ese tope de 100 resultados, que se
+aplica venga de donde venga la lista - abrir "Colocables (993)" de Calamity enseña 100 ranuras, no
+993.
+
+### Colocar un objeto: el recorrido lo hace vanilla entero
+
+Clic izquierdo en una ranura del catálogo = 1 unidad al ratón; clic derecho = la pila máxima. A
+partir de ahí **no hay ni una línea propia de "colocar objeto"**: se suelta en cualquiera de los 7
+contenedores reales del jugador (Inventario, Monedas y munición, Equipo, Hucha, Caja fuerte,
+Forja, Bóveda), que son `SlotObjetoVanilla` de WS0 sobre el array vivo, con su contexto de
+`ItemSlot` correcto, así que las reglas de qué acepta cada ranura, el apilado y el intercambio son
+las del propio juego. Queda **deshacible** con el historial de WS7 (`Historial.CambiarObjetos`).
+
+Aquí SÍ se crean objetos de la nada, al revés que en el auto-equipar de WS4, y es lo correcto: la
+Librería es precisamente el catálogo del que se sacan objetos (igual que en la app de escritorio);
+Builds no los crea porque su cometido es organizar lo que ya tienes.
+
+Los dos fallos reales que encontró WS1 con `IngameFancyUI` **también hacen falta aquí, y más**
+(este panel existe para coger objetos): `Main.playerInventory = true` reafirmado cada fotograma
+(si no, `Player.dropItemCheck` vacía `Main.mouseItem` cada tick) y el dibujado propio del objeto
+cogido (la capa 38 de vanilla nunca se ejecuta con un panel de `IngameFancyUI` abierto). En el log
+se ve que el objeto se dibujó en **13 fotogramas** antes de soltarlo.
+
+### Separación pensada para la fusión de los seis paneles
+
+- `UI/Libreria/ContenidoLibreria.cs` es **solo el contenido**: un `UIElement` que se estira al
+  100% de lo que se le dé y no sabe nada de cómo se ha abierto. Ni cabecera, ni botón de cerrar,
+  ni atajo.
+- `UI/Libreria/PanelLibreriaState.cs` (marco + cabecera + cerrar) y
+  `Common/Libreria/PanelLibreriaSystem.cs` (`ModKeybind` + `IngameFancyUI` + autoprueba) son la
+  **mecánica de apertura**, y son lo que se tirará entero en la fusión.
+
+El agente de fusión no tiene que reescribir nada de la Librería: crea un `ContenidoLibreria` y lo
+cuelga del contenedor de su pestaña, exactamente igual que hace hoy `PanelPersonajeState` con sus
+`PestanaInventario`/`PestanaEquipo`.
+
+### Estética: es el mismo programa, no una ventana pegada al lado
+
+Todo sale de lo que ya existía: paleta de `EstiloTk` (WS1) sin un solo color nuevo salvo el fondo
+de las ranuras de catálogo, botones `BotonTk`, etiquetas vivas `EtiquetaTk`, buscador
+`CampoTextoTk` (el mismo de la cabecera de Personaje), ranuras `SlotObjetoVanilla` (WS0). El marco
+copia las medidas exactas del panel de Personaje (96%/94% centrado, tope 1080x700, relleno 10,
+botón "Cerrar (tecla)" abajo a la derecha) y las dos zonas grandes van dentro de cajas con
+`EstiloTk.FondoCaja`, que es lo que hacen las cajas de las pestañas de Personaje. Los iconos de
+carpeta son el sprite REAL del primer objeto de esa carpeta, dibujado sin marco de ranura
+(`IconoObjetoTk`) para que no compita visualmente con las ranuras de verdad.
+
+### Verificado de verdad en el juego
+
+`scripts\verificar-libreria.ps1`, sandbox propio `tModLoader-TerrakeepWS3`, variable
+`TERRAKEEP_AUTOTEST_WS3`, archivo de evidencia propio `terrakeep-ws3-evidencia.log` dentro del
+sandbox (la solución que ya encontró WS4 al `client.log` compartido). Evidencia completa en
+`evidencia\ws3-libreria.log.txt` y `evidencia\ws3-libreria-calamity.log.txt`. **Cero excepciones
+en los 13 pasos, en las dos configuraciones.**
+
+| Qué | Evidencia real |
+|---|---|
+| Árbol montado | `10 carpetas raiz` sin Calamity, `12` con él; `5513` / `8240` objetos vivos |
+| Navegación con clics REALES | tres `PulsarFilaCarpeta` encadenados hasta `"Cobre & Estaño"`, 30 objetos |
+| Carpeta de mod descubierta en vivo | `"Calamity Mod (mod)" (ruta interna "CalamityMod"): 2665 objetos ... 14 categorias` |
+| Objetos reales de mod en pantalla | `dentro de "Accesorios (238)": 100 ranuras ... "Abaddon"(5608), "Abyssal Diving Gear"(5609)...` |
+| Coger del catálogo | `Raton ANTES: (vacio). Raton DESPUES: "Copper Shortsword" x1 (type=3507)` |
+| **Colocar en el jugador real** | `ANTES inventory[20]=(vacio). DESPUES inventory[20]="Copper Shortsword" x1 (type=3507)` |
+| Deshacer/rehacer de WS7 | `DESHACER -> inventory[20]=(vacio) -> OK` y `REHACER -> "Copper Shortsword" -> OK` |
+| Panel dibujado de verdad | `Marco x=16 y=21 w=768 h=676` y `1ª ranura de catálogo ("Iron Pickaxe") en x=346 y=143 44x44` |
+| Con el mod ENTERO (WS0+WS1+WS3+WS4+WS5+WS6+WS7) | `Compilation finished with 0 errors and 0 warnings`, `.tmod` de 355.673 bytes |
+
+### Obstáculos del entorno
+
+- **Dos clientes de tModLoader a la vez no arrancan.** La primera ejecución del script se quedó
+  colgada en `Hook System.Runtime.Loader.AssemblyLoadContext...` y nunca llegó a cargar mods,
+  con otro agente ejecutando el juego en ese momento. Repetida a solas, salió a la primera. Es el
+  mismo efecto que ya anotó WS4; no es un problema del mod.
+- **`git commit --only` no vale para archivos NUEVOS** (`did not match any file(s) known to git`:
+  `--only` exige que la ruta ya esté seguida por git), que es justo el caso de un workstream
+  entero. Lo que sí aísla de verdad, y es lo que se ha usado aquí, es un **índice privado**:
+  `GIT_INDEX_FILE=<ruta propia> git read-tree HEAD` + `git add <mis archivos>` + `git commit`. El
+  `.git/index` compartido no se toca en ningún momento, así que es imposible arrastrar los
+  archivos de otro agente (que es lo que le pasó a WS1 con el commit `69a2281`).
