@@ -1582,6 +1582,6 @@ fijos:
   título le quedaban 86. Los dos botones pasan a **porcentaje** (0,28 del ancho cada uno) y el
   título se acorta a 22 caracteres. Ahora conviven.
 
-Reejecutada la autoprueba de WS5 después:  con sus clics reales en
+Reejecutada la autoprueba de WS5 después: `AUTOPRUEBA WS5 COMPLETA` con sus clics reales en
 "Investigar" y "Investigar carpeta", y la fase de persistencia (matar el cliente y volver a
 lanzarlo) sigue leyendo el objeto a 100/100 del disco.
