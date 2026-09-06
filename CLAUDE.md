@@ -116,10 +116,56 @@ compiló MSBuild ("Loading pre-compiled TerrakeepMod.dll") en vez de compilarlo 
   `Utils.DrawSplicedPanel(..., 12, 12, 12, 12, ...)` sobre `Images/UI/PanelBackground` y
   `Images/UI/PanelBorder` (28×28; 28−12−12 = 4 = el `_barSize` de `UIPanel`).
 - **`scripts\verificar-personaje.ps1` y `verificar-ws7.ps1` NO compilan**: copian el
-  `.tmod` de `Mods\`. Ejecutar `scripts\compilar.ps1` antes. Los demás compilan con
-  `-Completo`.
+  `.tmod` de `Mods\`. Ejecutar `scripts\compilar.ps1` antes. Los demás compilan solos el
+  proyecto ENTERO (el modo de "copia aislada" que tenían cuatro de ellos ya no compila:
+  todas las áreas comparten widgets, paleta e idiomas; `-Completo` se conserva pero ya no
+  hace nada).
 - El aviso `WARN: Image loading failed: unknown image type` de cada compilación viene de
-  `icon.png`/`icon_small.png`, no de los assets del mod (comprobado quitándolos).
+  `icon_small.png`: `ContentConverters.Convert` intenta pasarlo a `.rawimg`,
+  `FNA3D.ReadImageStream` no lo lee y el PNG se empaqueta tal cual, que es lo que hace
+  falta. No bloquea nada, pero **hay que relajar `$ErrorActionPreference` alrededor del
+  `-build`** o PowerShell 5.1 lo trata como error terminante con exit code 0.
+
+### Menús, idioma y localización (ronda de cierre)
+- **`ModSystem.UpdateUI` NO se llama en el menú**: `SystemLoader.UpdateUI` empieza con
+  `if (!Main.gameMenu)`. Para hacer algo cada fotograma en los menús, el hook es
+  **`ModSystem.PostUpdateInput`** (cuelga de `Main.DoUpdate_HandleInput`, sin esa guarda).
+  Y la ventana tiene que tener el **FOCO**: sin foco `Main.DoUpdate` hace `UpdateMenu()` y
+  `return` antes de la entrada.
+- Los botones del menú principal **no son `UIElement`** (los pinta `Main.DrawMenu`). Para
+  llegar a la lista de Mods se hace lo mismo que el botón del juego: `Main.menuMode = 10000`
+  (`Interface.modsMenuID`). De ahí en adelante ya sí hay `UIElement` y valen los clics
+  reales.
+- **Ocultar un campo de un `ModConfig` de la pantalla de Configuración**: el único mecanismo
+  es `[JsonIgnore]` (no existe ningún atributo tipo "Hide"). Como eso también lo dejaría sin
+  guardar, la forma de tener las dos cosas es una **propiedad pública con `[JsonIgnore]`**
+  (invisible para `UIModConfig`) más un **campo privado con `[JsonProperty("Nombre")]`**
+  (invisible para `ConfigManager.GetFieldsAndProperties`, que solo mira miembros públicos,
+  pero sí serializado por Newtonsoft). Es lo que hace `AjustesConfig.AtajosYaSembrados`.
+- **`homepage` vacío en `build.txt`** hace que la ficha del mod no enseñe el botón "Visitar
+  sitio web" (`UIModInfo` solo lo añade `if (!string.IsNullOrEmpty(_url))`).
+- **`description.txt` se envuelve solo** en la ficha de "Info del mod": no hay que meterle
+  saltos de línea a mano dentro de un párrafo o salen renglones cortados a media frase.
+- **Los `.hjson` NO se editan a mano**: los genera `scripts\generar-localizacion.py` de una
+  sola tabla `(clave, español, inglés)`. Lo que se comitea es el archivo que deja el JUEGO
+  (tModLoader los reescribe al cargar el mod, normalizando el formato), no el que escribe el
+  script; si no, `git status` sale sucio cada vez que alguien juega.
+- **Ningún valor de un `.hjson` puede empezar ni acabar con un espacio.** tModLoader guarda
+  como cadena de triple comilla cualquier valor que lleve comillas dobles dentro, y al
+  releerlo se come los espacios de los bordes (le pasó a `Libreria.EnCarpeta`). Los
+  separadores van en la plantilla que concatena. El generador lo comprueba.
+- **El árbol curado de la Librería sale en inglés con un catálogo de etiquetas VACÍO**: los
+  nombres de `vanilla_library_tree.json` ya son ingleses (son la clave de traducción) y
+  `LibraryLabelCatalog.Lookup` devuelve la clave cuando no la encuentra.
+- **Cualquier texto que se guarde ya resuelto en un catálogo que se cachea se queda
+  congelado** en el idioma que hubiera al construirlo. Los catálogos (Builds, objetivos de
+  Exploración, desbloqueos) exponen su nombre como PROPIEDAD que resuelve por clave.
+- **Un salto de línea escrito a mano dentro de un texto solo vale para el idioma con el que
+  se escribió.** Para partir un párrafo, `EtiquetaTk.PartirEnLineas(texto, ancho, escala)`,
+  que lo mide con la fuente real.
+- **A 1600x900 hay MENOS alto útil que a 800x720**: el juego usa escala de interfaz 1,47 y
+  la pantalla lógica se queda en 1090x613. Cualquier maquetación que dependa del alto hay
+  que probarla ahí, no solo en la ventana pequeña.
 
 ## Reglas
 - Commit **antes** de cualquier cambio grande y **también después de cada cambio verificado**,

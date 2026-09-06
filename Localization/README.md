@@ -1,10 +1,34 @@
 # Textos de Terrakeep: cómo se traducen
 
-Entregable de **WS7**. Explica el mecanismo real de localización de tModLoader que usa este mod y
-**cómo tienen que migrar sus textos los demás workstreams** en la pasada de integración.
+Nació como entregable de **WS7** para explicarle a los demás workstreams cómo migrar sus textos.
+**Esa migración YA ESTÁ HECHA** (ronda de cierre del 6-sep-2026): las seis áreas del panel salen
+enteras de los `.hjson`, en español y en inglés, y no queda ni un literal de interfaz en el C#.
+Lo que sigue explica el mecanismo, que es el que hay que seguir usando para cualquier texto
+nuevo.
 
-Mientras tanto, nadie está bloqueado: un panel con sus textos escritos a pelo en español funciona
-perfectamente. Migrarlos es una pasada mecánica que se puede hacer en cualquier momento.
+## Antes de tocar nada: los `.hjson` NO se editan a mano
+
+Los genera **`scripts/generar-localizacion.py`** a partir de UNA sola tabla de
+`(clave, español, inglés)`. Con ~430 claves, mantener dos archivos a mano se descuadra solo: la
+tabla única hace imposible que a un idioma le falte una clave que el otro sí tiene, y el script
+comprueba además que no haya claves repetidas.
+
+Dos reglas que el propio script verifica y que vienen de fallos reales:
+
+- **Ningún valor puede empezar ni acabar con un espacio.** tModLoader reescribe estos archivos al
+  cargar el mod, y un valor que lleve comillas dobles dentro se guarda como cadena de triple
+  comilla y al releerlo PIERDE los espacios de los bordes. Los separadores van en la plantilla
+  que concatena, no en el trozo.
+- **Lo que se comitea es el archivo que deja el JUEGO**, no el que escribe el script: tModLoader
+  normaliza el formato al cargar, y si se comiteara el otro `git status` saldría sucio cada vez
+  que alguien juega. El ciclo es: ejecutar el script, lanzar el mod una vez, comitear.
+
+## Cómo se comprueba que no queda nada sin traducir
+
+`scriptserificar-idiomas.ps1`. Recorre las once vistas del panel dos veces, en español y en
+inglés, recoge todo el texto que se está enseñando (leído de los propios widgets) y lista las
+cadenas que salen IGUALES en los dos idiomas. Si una frase se ve igual en los dos, o está escrita
+a pelo en el C# o le falta la clave. Deja además una captura real por vista e idioma.
 
 ## El mecanismo, en corto
 

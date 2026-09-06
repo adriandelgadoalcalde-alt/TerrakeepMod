@@ -1585,3 +1585,308 @@ fijos:
 Reejecutada la autoprueba de WS5 después: `AUTOPRUEBA WS5 COMPLETA` con sus clics reales en
 "Investigar" y "Investigar carpeta", y la fase de persistencia (matar el cliente y volver a
 lanzarlo) sigue leyendo el objeto a 100/100 del disco.
+
+---
+
+## 6-sep-2026 — CIERRE: los menús de tModLoader, el idioma de las seis áreas, y diez pasadas de revisión visual
+
+Última fase del proyecto. Cierra los tres cabos que quedaban sueltos al terminar la fusión:
+lo que se ve del mod **antes de entrar en una partida**, la migración de textos que la ronda
+anterior dejó escrita como pendiente, y una revisión visual repetida con las capturas reales
+que hasta la fusión no existían.
+
+### 1. La "ventana taller": lo que nadie había mirado nunca
+
+Todas las verificaciones del mod hasta aquí entraban directas al mundo con `-skipselect`. O sea
+que **lo primero que ve quien instala Terrakeep -la lista de Mods, la ficha del mod y la
+pantalla de Configuración de Mods- no se había comprobado ni una vez.**
+
+**Arnés nuevo**: `scripts\verificar-menus.ps1` + `Common\Menus\AutopruebaMenus.cs`. Lanza el
+juego SIN `-skipselect`, se queda en el menú y desde ahí navega solo, dejando una captura real
+de cada pantalla.
+
+**Cómo se navega, y el dato del motor que costó encontrar.** Los botones del menú principal de
+Terraria no son `UIElement` (los pinta `Main.DrawMenu` a mano), así que para llegar a la lista
+de Mods se hace lo MISMO que hace el botón del juego: `Main.menuMode = 10000`
+(`Interface.modsMenuID`; ahí `Interface.ModLoaderMenus` hace `Main.MenuUI.SetState(modsMenu)`).
+De ahí en adelante ya sí hay `UIElement` de verdad, y los dos botones de la ficha se pulsan con
+`UIElement.LeftClick`, el criterio de producción de siempre.
+
+Lo que costó: **`ModSystem.UpdateUI` NO SE LLAMA EN EL MENÚ.** `SystemLoader.UpdateUI` empieza
+literalmente con `if (!Main.gameMenu)`. La primera versión de esta autoprueba colgaba de ahí y
+no se ejecutó ni una sola vez (el juego arrancaba, cargaba el mod y no pasaba nada). El hook
+bueno es **`ModSystem.PostUpdateInput`**, que cuelga de `Main.DoUpdate_HandleInput` y no tiene
+esa guarda. Y hace falta además que la ventana tenga el **FOCO**: sin foco, `Main.DoUpdate`
+llama a `UpdateMenu()` y hace `return` antes de procesar la entrada, así que el script le da el
+foco insistentemente durante los primeros 40 s.
+
+Lo que se encontró mirando esas cuatro pantallas, y se arregló:
+
+| Qué | Cómo estaba | Cómo está |
+|---|---|---|
+| **Icono** | El logo-256 del repo hermano reescalado: el hexágono naranja sobre fondo TRANSPARENTE. Al lado de mods como Calamity, que llenan sus 80x80 con arte a sangre y marco, se veía una figura flotando en un hueco | `scripts\generar-icono-mod.py` lo compone sobre el azul del propio panel (`EstiloTk.FondoPanel`), con borde de dos tonos y esquinas redondeadas, y el hexágono centrado. La marca sigue siendo la misma |
+| **Descripción** | Ya reescrita, pero con los saltos de línea a 95 columnas del archivo. La ficha envuelve el texto ella sola, así que salían renglones cortados a media frase | Cada párrafo en una sola línea; lo envuelve el juego |
+| **Botón muerto** | La ficha enseñaba "Visitar sitio web del mod" porque `build.txt` tenía `homepage = https://github.com/` a secas: llevaba a la portada de GitHub, no al proyecto | Sin valor. `UIModInfo` solo añade ese botón `if (!string.IsNullOrEmpty(_url))` |
+| **Config: campo interno** | `AtajosYaSembrados` salía como una lista editable titulada "Atajos Ya Sembrados", con cadenas tipo `TerrakeepMod/AbrirPanel` dentro | Ya no sale. Ver abajo cómo |
+| **Config: título** | "Terrakeep: Ajustes de Terrakeep" (tModLoader compone `<mod>: <config>`) | "Terrakeep: Ajustes" |
+| **Config: sección** | Sin cabecera | `[Header("Interfaz")]` |
+
+**Cómo se oculta de verdad un campo de un `ModConfig`, que es lo que pedía el encargo.** El
+ÚNICO mecanismo que tiene tModLoader es `[JsonIgnore]`: tanto `UIModConfig.SetupList` como
+`ConfigManager.RegisterLocalizationKeysForMembers` saltan cualquier miembro que lo lleve (salvo
+que además lleve `ShowDespiteJsonIgnoreAttribute`, que es justo lo contrario). **No existe
+ningún atributo tipo "Hide"** — comprobado listando los 40 atributos reales de
+`Terraria.ModLoader.Config`.
+
+El problema es que `[JsonIgnore]` a secas también lo dejaría **sin guardar**, y esto tiene que
+persistir entre partidas. La solución son dos mitades:
+
+- la **propiedad pública** (la que ve el código del mod) lleva `[JsonIgnore]` y desaparece de la
+  pantalla;
+- un **campo privado** con `[JsonProperty("AtajosYaSembrados")]` es el que se serializa.
+
+Encaja con cómo funcionan las dos piezas por separado, sin trucos:
+`ConfigManager.GetFieldsAndProperties` solo mira `BindingFlags.Instance | BindingFlags.Public`
+(un campo privado no puede aparecer en la interfaz aunque quiera), y Newtonsoft sí serializa un
+miembro no público que lleve `[JsonProperty]`.
+
+**Verificado en el juego real, en los dos idiomas** (`evidencia\menus.log.txt` y
+`evidencia\menus-en.log.txt`): los `ConfigElement` que genera tModLoader son exactamente uno
+("Idioma"), y los ocho `ModConfigs\TerrakeepMod_AjustesConfig.json` de los sandboxes siguen
+llevando dentro la lista `AtajosYaSembrados` completa. Oculto en la interfaz, guardado en el
+archivo.
+
+### 2. Las cinco áreas que faltaban por traducir
+
+Hasta aquí **solo Ajustes estaba localizado**. Con el juego en inglés se veía una mezcla real:
+Ajustes en inglés, los nombres de las seis pestañas y todo el texto de las otras cinco áreas en
+español fijo. Eran cientos de cadenas.
+
+Los dos `.hjson` pasan de **78 a ~600 líneas**: 429 claves de interfaz, 8 atajos y la
+configuración.
+
+**Los `.hjson` se generan, no se editan.** `scripts\generar-localizacion.py` los saca de UNA
+sola tabla de `(clave, español, inglés)`, así que es imposible que a un idioma le falte una
+clave que el otro sí tiene. Con 429 claves, a mano se descuadran solos.
+
+**Cinco widgets compartidos pasan a pedir su texto con un `Func<string>`** en vez de guardarlo
+ya resuelto: `BotonTk.Ayuda`, `AlternadorTk` (rótulo y ayuda), `CampoTextoTk` (la pista),
+`FilaColorTk` y `SelectorTk` (el rótulo). Guardado como cadena se quedaba congelado en el idioma
+que hubiera al construir el elemento. `BotonTk` gana además una `Clave` interna: un grupo de
+botones ya no puede identificarse por su TEXTO VISIBLE, que ahora cambia.
+
+**Si el idioma cambia con el panel abierto, la pestaña se rehace entera**
+(`PanelTerrakeepState.RehacerAreaSiCambioElIdioma`). Casi todo el texto sale de una
+`EtiquetaTk` o se refresca en su `Update`, pero hay cosas que se construyen UNA vez: las
+píldoras de Builds, las filas del árbol de la Librería, la lista de objetivos de Exploración.
+Rehacer la pestaña es lo mismo que hace ya cualquier clic en la barra, cuesta un fotograma, y
+solo pasa cuando alguien cambia de idioma de verdad. Se hace en el MARCO y no en cada área: así
+las seis quedan cubiertas de una vez.
+
+**Lo que no era sustitución mecánica:**
+
+- Los **13 desbloqueos** guardaban nombre y descripción como campos. Ahora el `Desbloqueo` solo
+  guarda `CampoReal` (el nombre del campo de `Player`, que ya era único y estable) y lo usa
+  además como clave, con `Nombre` y `Descripcion` como propiedades: la lista se construye una
+  vez y se cachea.
+- Las **12 variantes de piel** se componen de dos claves (género + atuendo): 2 + 6 cadenas a
+  traducir en vez de 12.
+- Los **38 objetivos de búsqueda** pasan a guardar una `Clave` interna estable sin tildes.
+  Efecto colateral bueno: las claves de categoría son también las del `switch` de
+  `ColorDeCategoria`, que antes dependía literalmente de que la cadena fuera `"Líquidos"` con
+  tilde.
+- **`ClaseBuild.Etiqueta`** y **`ObjetivoBusqueda.Etiqueta`** dejan de ser campos rellenos al
+  parsear y pasan a ser propiedades: esos catálogos se resuelven UNA vez, en `PostSetupContent`,
+  así que un nombre guardado ahí se quedaría con el idioma que hubiera al cargar la partida.
+
+**El árbol de la Librería y el de Investigación, enteros en inglés, sin traducir nada.** Sus
+rótulos venían de dos sitios que solo existen en español y que no son literales de este
+repositorio:
+
+1. `vanilla_library_labels_es.json`. Pero el árbol en sí (`vanilla_library_tree.json`) trae los
+   nombres **en inglés** — "Materials", "Pre-Hardmode", "Copper & Tin" — porque son la CLAVE con
+   la que se busca la traducción, y `LibraryLabelCatalog.Lookup` devuelve la clave tal cual
+   cuando no la encuentra. O sea que para tener el árbol en inglés no hay que traducir nada:
+   basta con darle un catálogo de etiquetas **VACÍO** (`"{}"`). Es lo que se hace cuando el juego
+   no está en español.
+2. `LibraryTreeBuilder.CalamityCategoryLabel` de `TerrasavrNative.Core`, con las 121 categorías
+   traducidas a mano. En inglés se sustituye por separar el CamelCase de la clave, que es
+   exactamente lo que hace esa misma función de Core con una categoría que no conoce:
+   `"Weapons/Melee"` → `"Weapons / Melee"`.
+
+**Los nombres de objeto de Builds venían del catálogo de la app de escritorio** y salían en
+español con el juego en inglés. Ahora, si el pid se resolvió a un objeto real, se usa el nombre
+que le da el propio juego (`Lang.GetItemNameValue`), que ya viene traducido y además es el bueno
+si un mod lo renombra. El del catálogo se queda de respaldo para lo que no exista en la partida.
+
+**Lo que NO se ha migrado, dicho claro**: nada. Las seis etiquetas de ETAPA de Builds venían de
+`builds.json` (solo español) y eran la única excepción real; como eran seis y no un catálogo
+entero, se han traducido por clave `fuente + etapa`, con la etiqueta del JSON de respaldo por si
+algún día aparece una etapa nueva. Los mensajes de log y de consola siguen en español a
+propósito: no los ve el jugador.
+
+### 3. El detector de literales sin migrar
+
+`scripts\verificar-idiomas.ps1` + `Common\Panel\AutopruebaIdiomas.cs`. Recorre las **once
+vistas** del panel (las seis pestañas, con las seis sub-pestañas de Personaje y las tres de
+Exploración) **dos veces, en español y en inglés**, recoge todo el texto que se está enseñando
+en cada una -leyéndolo de los propios widgets, o sea de lo que de verdad se dibuja, no de un
+listado paralelo que pudiera quedarse viejo- y deja **una captura real del back buffer por
+vista e idioma** (22 en total).
+
+Al terminar lista las cadenas que salen **IGUALES en los dos idiomas**. Eso es el detector: si
+una frase se ve igual en español y en inglés, o está escrita a pelo en el C# o le falta la clave
+en un `.hjson`. Ninguna otra autoprueba del mod hace esta comprobación, porque las demás cuentan
+elementos y miden rectángulos, no leen el texto.
+
+Hay coincidencias LEGÍTIMAS y hay que saberlo antes de mirar el informe: nombres propios
+("Terrakeep", "Builds", "Buffs", "Vanilla", "Calamity", "English"), letras de canal ("R"),
+números y coordenadas, y los nombres de objeto que pone el propio juego cuando coinciden. Por
+eso el informe las lista para mirarlas, no las da por error.
+
+**Resultado final: 573 cadenas recogidas, 10 coincidencias distintas, TODAS legítimas.** Cero
+literales sin migrar.
+
+### 4. El fallo que encontró el arnés antes de encontrar ninguno estético
+
+`PanelTerrakeepSystem.TeclaDe` llamaba a `ModKeybind.GetAssignedKeys` sin proteger, y eso indexa
+por dentro el diccionario del perfil de controles, que **no conoce los atajos de mods hasta que
+`PlayerInput` procesa su `reinitialize` pendiente** (el mismo hueco de varios segundos que WS0
+documentó para `JustPressed`). La `KeyNotFoundException` subía por `RefrescarTextos` →
+`CambiarArea` → `UIElement.Activate` y **ABORTABA LA CONSTRUCCIÓN ENTERA DEL PANEL**: abrirlo en
+los primeros segundos de un mundo lo dejaba a medias, sin contenido. Corregido con el mismo
+`try/catch` que ya usaba `ComprobarAtajos`.
+
+### 5. Diez pasadas de revisión visual, y los doce fallos que encontraron
+
+Ninguno se dedujo leyendo código, y ninguno se habría visto contando elementos en el log: ahí
+las once vistas daban verde, con sus rectángulos medidos.
+
+| # | Pasada | Qué encontró |
+|---|---|---|
+| 1 | idiomas ES/EN 800x720 | el crash de `TeclaDe` + ocho fallos de maquetación (abajo) |
+| 2 | idiomas ES/EN 800x720 | limpia: los ocho arreglados |
+| 3 | idiomas 1600x900 | el equipo se sale por abajo otra vez |
+| 4 | idiomas 1600x900 | limpia |
+| 5 | idiomas + Calamity | los accesorios de Builds se cortan |
+| 6 | idiomas + Calamity | limpia |
+| 7 | menús, español | icono, descripción, botón muerto, título del config |
+| 8 | menús, inglés | limpia |
+| 9 | panel único (funcional) | verde: seis pestañas, animación, seis atajos, icono del HUD |
+| 10 | WS1 / WS3 / WS4 / WS5 / WS6 / WS7 (funcionales) | verdes, cero excepciones |
+| 11 | idiomas 800x720, cierre | limpia, y los `.hjson` ya no cambian tras jugar |
+
+**Los ocho de la primera pasada:**
+
+1. **Equipo, el peor**: las 10 filas de la columna izquierda (3 de armadura + 7 de accesorio) NO
+   cabían. Con la escala fija de 0,75 la 7ª **se salía POR ABAJO del marco** y pintaba encima
+   del pie y del botón de cerrar. Ahora la escala de las ranuras se calcula del alto REAL
+   disponible, acotada entre 0,58 y 0,75, y las filas se recolocan cuando ese alto cambia. Para
+   eso `SlotObjetoVanilla.Escala` pasa a poder cambiarse después de crear la ranura.
+2. **Equipo**: las tres cabeceras de columna se pisaban unas con otras y se leía
+   "EquipaVanidaTinte" — el paso entre ranuras es de ~35-41 px y cada palabra mide más. Ahora es
+   UNA línea de leyenda ("Columnas: equipado · vanidad · tinte"), que no se puede solapar.
+3. **Equipo**: la nota técnica del selector de conjunto medía ~900 px, se salía por la derecha y
+   encima pisaba las cabeceras de la otra columna (se leía "PlayerSpe$ialTequipmentut"). Se ha
+   ido al tooltip de los tres botones de conjunto.
+4. **Buffs**: toda la pestaña estaba en píxeles fijos sumando 960 px de ancho. En una ventana de
+   800 la caja de resultados y la nota se salían del marco, y **el campo "Segundos" quedaba
+   FUERA DE LA PANTALLA: no se veía**. Ahora son dos columnas al 50%, con la duración en su
+   propia fila y la nota partida en líneas.
+5. **Apariencia**: la cabecera de colores era una sola cadena con espacios ("Colores  R  V  A")
+   y sus letras no caían encima de sus deslizadores. Ahora cada letra va centrada sobre el suyo,
+   en las mismas coordenadas que expone `FilaColorTk`.
+6. **Desbloqueos**: dos columnas de 500 px fijos = 980 px; la de la derecha se pintaba por
+   encima del borde del marco. Ahora van al 50%.
+7. **Este mundo**: la columna derecha eran "lo que sobre de 430 px fijos", o sea ~318 px, y ahí
+   no cabían ni los tres botones de modo (140 px cada uno) ni las tres líneas del aviso de
+   permanencia (460 px cada una). Ahora el reparto es por porcentaje, los modos van 2x2 y los
+   avisos se parten con el ancho real.
+8. **Mapa y Búsqueda**: el aviso de tres renglones del mini-mapa llevaba los saltos de línea
+   escritos A MANO, medidos para el español: en inglés la tercera se salía del marco. Se parte
+   solo con el ancho real (`EtiquetaTk.PartirEnLineas`, ahora compartido), y su hueco pasa a 96
+   px porque en inglés son cuatro líneas. Y el detalle inicial de la búsqueda se salía por la
+   derecha: texto corto + el resto al tooltip del botón.
+
+**El de 1600x900, que es el más contraintuitivo de todos.** A esa resolución el juego **NO da
+más sitio**: usa escala de interfaz 1,47 y la pantalla lógica se queda en **1090x613**, o sea
+MENOS alto útil que la ventana de 800x720 con la que se venía probando, y más ancho. Ahí el
+arreglo (1) no llegaba: harían falta 24 px por fila y una ranura legible necesita 32. Ahora la
+pestaña de Equipo decide **también cuántas columnas usa**: prueba con una y, si con la escala
+mínima no caben las 10 filas, las reparte en dos de cinco. Es usar el ancho que sobra justo
+cuando lo que falta es alto.
+
+**El de Calamity.** Con Calamity, Builds enseña una fila más (el selector Vanilla/Calamity) y la
+clase de cuerpo a cuerpo tiene SIETE accesorios. A 1090x613 el paso mínimo de 45 px solo daba
+para cinco y media: "Band of Regeneration" salía cortado y "Countercurse Mantra" y "Bezoar" no
+se veían. El paso mínimo baja a 30 y, cuando cae por debajo del tamaño natural de la ranura, la
+RANURA encoge con él (hasta 0,55). Con las filas así de apretadas el "prefijo sugerido" ya no
+cabe sin pintarse encima de la fila siguiente, así que se esconde por debajo de los 44 px de
+paso: es la única información que se pierde, y solo en ventanas bajas.
+
+### 6. Dos trampas del formato que conviene no volver a pisar
+
+**tModLoader REESCRIBE los `.hjson` al cargar el mod**, y en ese viaje de ida y vuelta un valor
+que lleve comillas dobles DENTRO se guarda como cadena de triple comilla (`'''...'''`) y al
+releerlo **PIERDE LOS ESPACIOS DE LOS BORDES**. Le pasó a `Libreria.EnCarpeta`, que era
+`" en \"{0}\""` y se quedó en `"en \"{0}\""`: el resumen del buscador pasaba a decir "Sin
+resultadosen "Materiales"". Se vio comparando el archivo del repositorio con el que dejó el
+juego, no jugando.
+
+La regla que lo evita del todo -y que el generador comprueba en cada ejecución- es que **ningún
+valor empiece ni acabe con un espacio**: los separadores van en la plantilla que concatena, no
+en el trozo. Se arreglaron los diez valores que los llevaban.
+
+Y lo que se comitea es el `.hjson` que deja el **JUEGO**, no el que escribe el script:
+tModLoader normaliza el formato (quita comillas innecesarias, separa bloques) y si se comiteara
+el otro, `git status` saldría sucio cada vez que alguien juega. Comprobado: generar, lanzar el
+juego y comparar ya no cambia ni un valor.
+
+### 7. Efectos colaterales del cierre
+
+- **El `.tmod` publicado llevaba dentro el arnés de pruebas**: los 12 `.ps1` de verificación y
+  los 12 `.log.txt` de evidencia, 39 archivos. Se vio listándolo con `node tmod-extract.js`.
+  Añadidos `scripts\*` y `evidencia\*` al `buildIgnore`: ahora son **14 archivos** y el `.tmod`
+  baja de 357.561 a ~343.000 bytes **con más código dentro**.
+- **Cuatro scripts de verificación compilaban por defecto una copia AISLADA** (el núcleo más los
+  archivos de SU workstream). Tenía sentido cuando cuatro agentes editaban el repositorio a la
+  vez; hoy todas las áreas comparten los widgets, la paleta y el sistema de idiomas, así que una
+  copia parcial **ya no compila**. Compilan siempre el proyecto entero; `-Completo` se queda por
+  compatibilidad pero ya no hace nada.
+- **Cinco scripts no relajaban `$ErrorActionPreference` alrededor del `-build`**, así que el
+  aviso benigno de stderr (`WARN: Image loading failed: unknown image type`, de
+  `icon_small.png`) los abortaba con exit code 0. Mismo arreglo que ya llevaba `compilar.ps1`.
+
+### 8. Estado real al cierre
+
+**El mod está cerrado.** Las últimas tres pasadas de revisión visual (2, 4, 6, 8 y 11) no
+encontraron nada nuevo, y las seis autopruebas funcionales de los workstreams pasan sobre el mod
+ya migrado, que es lo que demuestra que la migración de idiomas no rompió comportamiento:
+
+| Autoprueba | Evidencia real |
+|---|---|
+| Panel único | las seis pestañas con clic real, animación en dos pestañas, los seis atajos saltando a su pestaña, el de la pestaña abierta cerrando, icono del HUD en (570, 278, 30, 30) |
+| WS1 Personaje | 23 pasos, dinero contado, conjuntos de equipo ida y vuelta, caducidad real de un buff, deslizador de color por su ruta de ratón. Cero excepciones |
+| WS3 Librería | las siete reglas del buscador, coger del catálogo y colocar en el jugador real, deshacer y rehacer |
+| WS4 Builds | "ya lo tienes" 6 de 13, auto-equipar `movidos=5`, segunda pasada idempotente `movidos=0` |
+| WS5 Investigación | el árbol cuadra objeto a objeto con la tabla del juego (5480 = 5480), clic real en "Research", objeto de mod, confirmación en dos pasos, persistencia tras reiniciar el cliente |
+| WS6 Exploración | píxel real del mapa, modo Viaje bloqueado, dificultad cambiada y deshecha, mundo de prueba byte a byte como estaba |
+| WS7 | deshacer/rehacer sobre un objeto movido, cambio de idioma en vivo con persistencia en `ModConfig` |
+
+**Lo único que queda fuera y no se puede arreglar desde aquí:**
+
+- **El último eslabón físico teclado → SDL sigue sin poder simularse** (ya documentado por WS7).
+  Los atajos se ejercitan rellenando `PlayerInput.Triggers.JustPressed` y llamando al
+  `ComprobarAtajos` de producción.
+- **El icono del HUD no puede CERRAR el panel**: con el panel abierto su capa no llega a
+  dibujarse (la 14 corta antes de la 28). Es una consecuencia del motor, y el diseño se apoya en
+  ella a propósito.
+- **`WARN: Image loading failed: unknown image type`** en cada compilación. Viene de
+  `icon_small.png`: `ContentConverters.Convert` intenta pasarlo a `.rawimg` con
+  `ImageIO.ToRaw`, `FNA3D.ReadImageStream` no lo lee y devuelve false, así que el PNG se
+  empaqueta tal cual — que es exactamente lo que hace falta. El `.tmod` sale bien y el icono se
+  ve en la lista de Mods (verificado comparando por REFERENCIA contra `Mod.PlaceholderModIcon`,
+  no por el nombre del asset). No bloquea nada.
+- **Los nombres largos de las etapas de Builds se cortan** con "..." en la píldora. Tienen el
+  nombre completo en el tooltip. Se deja así a propósito: la alternativa era bajar tanto la
+  escala del texto que dejara de leerse.
