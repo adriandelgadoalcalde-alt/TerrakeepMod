@@ -1,89 +1,84 @@
-# Evidencia de la revision de idiomas - 2026-09-06 14:18:31
-[14:18:31.545] [Terrakeep] AUTOPRUEBA IDIOMAS: TERRAKEEP_AUTOTEST_IDIOMAS detectada. Jugador "TerrakeepPrueba", mundo "TerrakeepPrueba", resolucion 800x720, escala de interfaz 1.
-[14:18:31.756] [Terrakeep] IDIOMA -> es (cambio real=True, cultura activa=es-ES). Prueba: Panel.Titulo="Terrakeep", Panel.Area.Personaje="Personaje".
-[14:18:32.357] [Terrakeep] VISTA Personaje-0 [es]: 37 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Personaje-0.png" (800x720)
-[14:18:32.718] [Terrakeep] VISTA Personaje-1 [es]: 38 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Personaje-1.png" (800x720)
-[14:18:33.102] [Terrakeep] VISTA Personaje-2 [es]: 58 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Personaje-2.png" (800x720)
-[14:18:33.459] [Terrakeep] VISTA Personaje-3 [es]: 53 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Personaje-3.png" (800x720)
-[14:18:33.831] [Terrakeep] VISTA Personaje-4 [es]: 38 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Personaje-4.png" (800x720)
-[14:18:34.196] [Terrakeep] VISTA Personaje-5 [es]: 60 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Personaje-5.png" (800x720)
-[14:18:34.548] [Terrakeep] VISTA Libreria [es]: 36 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Libreria.png" (800x720)
-[14:18:34.928] [Terrakeep] VISTA Builds [es]: 32 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Builds.png" (800x720)
-[14:18:35.305] [Terrakeep] VISTA Investigacion [es]: 32 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Investigacion.png" (800x720)
-[14:18:35.831] [Terrakeep] VISTA Exploracion-0 [es]: 34 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Exploracion-0.png" (800x720)
-[14:18:36.203] [Terrakeep] VISTA Exploracion-1 [es]: 63 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Exploracion-1.png" (800x720)
-[14:18:36.581] [Terrakeep] VISTA Exploracion-2 [es]: 61 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Exploracion-2.png" (800x720)
-[14:18:36.934] [Terrakeep] VISTA Ajustes [es]: 29 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Ajustes.png" (800x720)
-[14:18:37.060] [Terrakeep] IDIOMA -> en (cambio real=True, cultura activa=en-US). Prueba: Panel.Titulo="Terrakeep", Panel.Area.Personaje="Character".
-[14:18:37.672] [Terrakeep] VISTA Personaje-0 [en]: 37 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Personaje-0.png" (800x720)
-[14:18:38.036] [Terrakeep] VISTA Personaje-1 [en]: 38 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Personaje-1.png" (800x720)
-[14:18:38.418] [Terrakeep] VISTA Personaje-2 [en]: 58 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Personaje-2.png" (800x720)
-[14:18:38.780] [Terrakeep] VISTA Personaje-3 [en]: 53 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Personaje-3.png" (800x720)
-[14:18:39.144] [Terrakeep] VISTA Personaje-4 [en]: 38 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Personaje-4.png" (800x720)
-[14:18:39.506] [Terrakeep] VISTA Personaje-5 [en]: 60 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Personaje-5.png" (800x720)
-[14:18:39.912] [Terrakeep] VISTA Libreria [en]: 37 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Libreria.png" (800x720)
-[14:18:40.327] [Terrakeep] VISTA Builds [en]: 32 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Builds.png" (800x720)
-[14:18:40.750] [Terrakeep] VISTA Investigacion [en]: 31 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Investigacion.png" (800x720)
-[14:18:41.337] [Terrakeep] VISTA Exploracion-0 [en]: 34 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Exploracion-0.png" (800x720)
-[14:18:41.743] [Terrakeep] VISTA Exploracion-1 [en]: 63 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Exploracion-1.png" (800x720)
-[14:18:42.165] [Terrakeep] VISTA Exploracion-2 [en]: 61 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Exploracion-2.png" (800x720)
-[14:18:42.573] [Terrakeep] VISTA Ajustes [en]: 29 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Ajustes.png" (800x720)
-[14:18:42.725] [Terrakeep] VISTA Personaje-0: 37 cadenas en es, 37 en en, 3 IGUALES en los dos idiomas.
-[14:18:42.725] [Terrakeep]     = "Terrakeep"
-[14:18:42.726] [Terrakeep]     = "Builds"
-[14:18:42.726] [Terrakeep]     = "Buffs"
-[14:18:42.726] [Terrakeep] VISTA Personaje-1: 38 cadenas en es, 38 en en, 3 IGUALES en los dos idiomas.
-[14:18:42.726] [Terrakeep]     = "Terrakeep"
-[14:18:42.727] [Terrakeep]     = "Builds"
-[14:18:42.727] [Terrakeep]     = "Buffs"
-[14:18:42.727] [Terrakeep] VISTA Personaje-2: 58 cadenas en es, 58 en en, 3 IGUALES en los dos idiomas.
-[14:18:42.727] [Terrakeep]     = "Terrakeep"
-[14:18:42.727] [Terrakeep]     = "Builds"
-[14:18:42.728] [Terrakeep]     = "Buffs"
-[14:18:42.728] [Terrakeep] VISTA Personaje-3: 53 cadenas en es, 53 en en, 3 IGUALES en los dos idiomas.
-[14:18:42.728] [Terrakeep]     = "Terrakeep"
-[14:18:42.728] [Terrakeep]     = "Builds"
-[14:18:42.728] [Terrakeep]     = "Buffs"
-[14:18:42.729] [Terrakeep] VISTA Personaje-4: 38 cadenas en es, 38 en en, 3 IGUALES en los dos idiomas.
-[14:18:42.729] [Terrakeep]     = "Terrakeep"
-[14:18:42.729] [Terrakeep]     = "Builds"
-[14:18:42.729] [Terrakeep]     = "Buffs"
-[14:18:42.729] [Terrakeep] VISTA Personaje-5: 60 cadenas en es, 60 en en, 3 IGUALES en los dos idiomas.
-[14:18:42.730] [Terrakeep]     = "Terrakeep"
-[14:18:42.730] [Terrakeep]     = "Builds"
-[14:18:42.730] [Terrakeep]     = "Buffs"
-[14:18:42.730] [Terrakeep] VISTA Libreria: 36 cadenas en es, 37 en en, 2 IGUALES en los dos idiomas.
-[14:18:42.730] [Terrakeep]     = "Terrakeep"
-[14:18:42.731] [Terrakeep]     = "Builds"
-[14:18:42.731] [Terrakeep] VISTA Builds: 32 cadenas en es, 32 en en, 8 IGUALES en los dos idiomas.
-[14:18:42.731] [Terrakeep]     = "Terrakeep"
-[14:18:42.731] [Terrakeep]     = "Builds"
-[14:18:42.732] [Terrakeep]     = "Pre-Hardmode (listo para el Mur..."
-[14:18:42.732] [Terrakeep]     = "Pre-Hardmode (listo para el Muro de Carne)"
-[14:18:42.732] [Terrakeep]     = "Hardmode temprano (antes de los..."
-[14:18:42.732] [Terrakeep]     = "Hardmode temprano (antes de los jefes mecanicos)"
-[14:18:42.732] [Terrakeep]     = "Final del juego (post Lunatic C..."
-[14:18:42.732] [Terrakeep]     = "Final del juego (post Lunatic Cultist / Moon Lord)"
-[14:18:42.732] [Terrakeep] VISTA Investigacion: 32 cadenas en es, 31 en en, 2 IGUALES en los dos idiomas.
-[14:18:42.733] [Terrakeep]     = "Terrakeep"
-[14:18:42.733] [Terrakeep]     = "Builds"
-[14:18:42.733] [Terrakeep] VISTA Exploracion-0: 34 cadenas en es, 34 en en, 2 IGUALES en los dos idiomas.
-[14:18:42.733] [Terrakeep]     = "Terrakeep"
-[14:18:42.733] [Terrakeep]     = "Builds"
-[14:18:42.733] [Terrakeep] VISTA Exploracion-1: 63 cadenas en es, 63 en en, 2 IGUALES en los dos idiomas.
-[14:18:42.734] [Terrakeep]     = "Terrakeep"
-[14:18:42.734] [Terrakeep]     = "Builds"
-[14:18:42.734] [Terrakeep] VISTA Exploracion-2: 61 cadenas en es, 61 en en, 7 IGUALES en los dos idiomas.
-[14:18:42.734] [Terrakeep]     = "Terrakeep"
-[14:18:42.734] [Terrakeep]     = "Builds"
-[14:18:42.735] [Terrakeep]     = "TerrakeepPrueba"
-[14:18:42.735] [Terrakeep]     = "Tiles"
-[14:18:42.735] [Terrakeep]     = "Pre-Hardmode"
-[14:18:42.735] [Terrakeep]     = "tile 2096, 270"
-[14:18:42.735] [Terrakeep]     = "tile 2096, 268"
-[14:18:42.736] [Terrakeep] VISTA Ajustes: 29 cadenas en es, 29 en en, 3 IGUALES en los dos idiomas.
-[14:18:42.736] [Terrakeep]     = "Terrakeep"
-[14:18:42.736] [Terrakeep]     = "Builds"
-[14:18:42.736] [Terrakeep]     = "English"
-[14:18:42.737] [Terrakeep] RESUMEN: 13 vistas, 571 cadenas recogidas en español, 44 coincidencias (15 distintas). Las coincidencias hay que MIRARLAS una a una: nombres propios, numeros y nombres de objeto del juego coinciden a proposito.
-[14:18:42.737] [Terrakeep] AUTOPRUEBA IDIOMAS COMPLETA.
+# Evidencia de la revision de idiomas - 2026-09-06 14:31:30
+[14:31:30.743] [Terrakeep] AUTOPRUEBA IDIOMAS: TERRAKEEP_AUTOTEST_IDIOMAS detectada. Jugador "TerrakeepPrueba", mundo "TerrakeepPrueba", resolucion 800x720, escala de interfaz 1.
+[14:31:30.951] [Terrakeep] IDIOMA -> es (cambio real=True, cultura activa=es-ES). Prueba: Panel.Titulo="Terrakeep", Panel.Area.Personaje="Personaje".
+[14:31:31.552] [Terrakeep] VISTA Personaje-0 [es]: 37 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Personaje-0.png" (800x720)
+[14:31:31.964] [Terrakeep] VISTA Personaje-1 [es]: 38 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Personaje-1.png" (800x720)
+[14:31:32.387] [Terrakeep] VISTA Personaje-2 [es]: 56 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Personaje-2.png" (800x720)
+[14:31:32.802] [Terrakeep] VISTA Personaje-3 [es]: 53 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Personaje-3.png" (800x720)
+[14:31:33.227] [Terrakeep] VISTA Personaje-4 [es]: 41 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Personaje-4.png" (800x720)
+[14:31:33.645] [Terrakeep] VISTA Personaje-5 [es]: 60 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Personaje-5.png" (800x720)
+[14:31:34.049] [Terrakeep] VISTA Libreria [es]: 36 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Libreria.png" (800x720)
+[14:31:34.464] [Terrakeep] VISTA Builds [es]: 32 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Builds.png" (800x720)
+[14:31:34.889] [Terrakeep] VISTA Investigacion [es]: 32 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Investigacion.png" (800x720)
+[14:31:35.474] [Terrakeep] VISTA Exploracion-0 [es]: 34 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Exploracion-0.png" (800x720)
+[14:31:35.882] [Terrakeep] VISTA Exploracion-1 [es]: 64 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Exploracion-1.png" (800x720)
+[14:31:36.302] [Terrakeep] VISTA Exploracion-2 [es]: 61 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Exploracion-2.png" (800x720)
+[14:31:36.707] [Terrakeep] VISTA Ajustes [es]: 29 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-es-Ajustes.png" (800x720)
+[14:31:36.877] [Terrakeep] IDIOMA -> en (cambio real=True, cultura activa=en-US). Prueba: Panel.Titulo="Terrakeep", Panel.Area.Personaje="Character".
+[14:31:37.483] [Terrakeep] VISTA Personaje-0 [en]: 37 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Personaje-0.png" (800x720)
+[14:31:37.890] [Terrakeep] VISTA Personaje-1 [en]: 38 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Personaje-1.png" (800x720)
+[14:31:38.312] [Terrakeep] VISTA Personaje-2 [en]: 56 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Personaje-2.png" (800x720)
+[14:31:38.727] [Terrakeep] VISTA Personaje-3 [en]: 53 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Personaje-3.png" (800x720)
+[14:31:39.143] [Terrakeep] VISTA Personaje-4 [en]: 41 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Personaje-4.png" (800x720)
+[14:31:39.559] [Terrakeep] VISTA Personaje-5 [en]: 60 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Personaje-5.png" (800x720)
+[14:31:39.964] [Terrakeep] VISTA Libreria [en]: 37 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Libreria.png" (800x720)
+[14:31:40.378] [Terrakeep] VISTA Builds [en]: 32 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Builds.png" (800x720)
+[14:31:40.802] [Terrakeep] VISTA Investigacion [en]: 31 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Investigacion.png" (800x720)
+[14:31:41.387] [Terrakeep] VISTA Exploracion-0 [en]: 34 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Exploracion-0.png" (800x720)
+[14:31:41.793] [Terrakeep] VISTA Exploracion-1 [en]: 64 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Exploracion-1.png" (800x720)
+[14:31:42.210] [Terrakeep] VISTA Exploracion-2 [en]: 61 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Exploracion-2.png" (800x720)
+[14:31:42.613] [Terrakeep] VISTA Ajustes [en]: 29 cadenas visibles. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepIdiomas\terrakeep-capturas\idioma-en-Ajustes.png" (800x720)
+[14:31:42.764] [Terrakeep] VISTA Personaje-0: 37 cadenas en es, 37 en en, 3 IGUALES en los dos idiomas.
+[14:31:42.764] [Terrakeep]     = "Terrakeep"
+[14:31:42.765] [Terrakeep]     = "Builds"
+[14:31:42.765] [Terrakeep]     = "Buffs"
+[14:31:42.765] [Terrakeep] VISTA Personaje-1: 38 cadenas en es, 38 en en, 3 IGUALES en los dos idiomas.
+[14:31:42.765] [Terrakeep]     = "Terrakeep"
+[14:31:42.766] [Terrakeep]     = "Builds"
+[14:31:42.766] [Terrakeep]     = "Buffs"
+[14:31:42.766] [Terrakeep] VISTA Personaje-2: 56 cadenas en es, 56 en en, 3 IGUALES en los dos idiomas.
+[14:31:42.766] [Terrakeep]     = "Terrakeep"
+[14:31:42.766] [Terrakeep]     = "Builds"
+[14:31:42.767] [Terrakeep]     = "Buffs"
+[14:31:42.767] [Terrakeep] VISTA Personaje-3: 53 cadenas en es, 53 en en, 3 IGUALES en los dos idiomas.
+[14:31:42.767] [Terrakeep]     = "Terrakeep"
+[14:31:42.767] [Terrakeep]     = "Builds"
+[14:31:42.767] [Terrakeep]     = "Buffs"
+[14:31:42.768] [Terrakeep] VISTA Personaje-4: 41 cadenas en es, 41 en en, 4 IGUALES en los dos idiomas.
+[14:31:42.768] [Terrakeep]     = "Terrakeep"
+[14:31:42.768] [Terrakeep]     = "Builds"
+[14:31:42.768] [Terrakeep]     = "Buffs"
+[14:31:42.769] [Terrakeep]     = "R"
+[14:31:42.769] [Terrakeep] VISTA Personaje-5: 60 cadenas en es, 60 en en, 3 IGUALES en los dos idiomas.
+[14:31:42.769] [Terrakeep]     = "Terrakeep"
+[14:31:42.769] [Terrakeep]     = "Builds"
+[14:31:42.769] [Terrakeep]     = "Buffs"
+[14:31:42.770] [Terrakeep] VISTA Libreria: 36 cadenas en es, 37 en en, 2 IGUALES en los dos idiomas.
+[14:31:42.770] [Terrakeep]     = "Terrakeep"
+[14:31:42.770] [Terrakeep]     = "Builds"
+[14:31:42.770] [Terrakeep] VISTA Builds: 32 cadenas en es, 32 en en, 2 IGUALES en los dos idiomas.
+[14:31:42.771] [Terrakeep]     = "Terrakeep"
+[14:31:42.771] [Terrakeep]     = "Builds"
+[14:31:42.771] [Terrakeep] VISTA Investigacion: 32 cadenas en es, 31 en en, 2 IGUALES en los dos idiomas.
+[14:31:42.771] [Terrakeep]     = "Terrakeep"
+[14:31:42.771] [Terrakeep]     = "Builds"
+[14:31:42.771] [Terrakeep] VISTA Exploracion-0: 34 cadenas en es, 34 en en, 2 IGUALES en los dos idiomas.
+[14:31:42.772] [Terrakeep]     = "Terrakeep"
+[14:31:42.772] [Terrakeep]     = "Builds"
+[14:31:42.772] [Terrakeep] VISTA Exploracion-1: 64 cadenas en es, 64 en en, 2 IGUALES en los dos idiomas.
+[14:31:42.773] [Terrakeep]     = "Terrakeep"
+[14:31:42.773] [Terrakeep]     = "Builds"
+[14:31:42.773] [Terrakeep] VISTA Exploracion-2: 61 cadenas en es, 61 en en, 7 IGUALES en los dos idiomas.
+[14:31:42.773] [Terrakeep]     = "Terrakeep"
+[14:31:42.773] [Terrakeep]     = "Builds"
+[14:31:42.774] [Terrakeep]     = "TerrakeepPrueba"
+[14:31:42.774] [Terrakeep]     = "Tiles"
+[14:31:42.774] [Terrakeep]     = "Pre-Hardmode"
+[14:31:42.774] [Terrakeep]     = "tile 2096, 270"
+[14:31:42.774] [Terrakeep]     = "tile 2096, 268"
+[14:31:42.774] [Terrakeep] VISTA Ajustes: 29 cadenas en es, 29 en en, 3 IGUALES en los dos idiomas.
+[14:31:42.775] [Terrakeep]     = "Terrakeep"
+[14:31:42.775] [Terrakeep]     = "Builds"
+[14:31:42.775] [Terrakeep]     = "English"
+[14:31:42.775] [Terrakeep] RESUMEN: 13 vistas, 573 cadenas recogidas en español, 39 coincidencias (10 distintas). Las coincidencias hay que MIRARLAS una a una: nombres propios, numeros y nombres de objeto del juego coinciden a proposito.
+[14:31:42.775] [Terrakeep] AUTOPRUEBA IDIOMAS COMPLETA.

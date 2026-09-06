@@ -103,13 +103,30 @@ namespace TerrakeepMod.UI.Personaje
 
 		private void ConstruirColores()
 		{
+			// Cuatro etiquetas y no una sola con espacios: la version anterior era una unica cadena
+			// ("Colores          R                         V                         A") y sus letras
+			// NO caian encima de sus deslizadores - se vio en una captura real, con la R a la
+			// izquierda del primer deslizador y la B casi encima del tercero. Ahora cada letra va
+			// CENTRADA sobre su deslizador, en las mismas coordenadas que usa FilaColorTk.
 			EtiquetaTk titulo = new EtiquetaTk(
-				() => Idiomas.Texto("Personaje.Apariencia.CabeceraColores"),
-				0.8f, 700f, 22f);
+				() => Idiomas.Texto("Personaje.Apariencia.Colores"), 0.8f, 160f, 22f);
 			titulo.ColorTexto = EstiloTk.TextoSuave;
 			titulo.Left.Set(0f, 0f);
 			titulo.Top.Set(96f, 0f);
 			Append(titulo);
+
+			string[] canales = { "Rojo", "Verde", "Azul" };
+			for (int c = 0; c < canales.Length; c++) {
+				string clave = canales[c];
+				EtiquetaTk letra = new EtiquetaTk(
+					() => Idiomas.Texto("Personaje.Apariencia.Canal." + clave), 0.8f,
+					FilaColorTk.AnchoDeslizador, 22f);
+				letra.Centrado = true;
+				letra.ColorTexto = EstiloTk.TextoSuave;
+				letra.Left.Set(FilaColorTk.IzquierdaDeslizador(c), 0f);
+				letra.Top.Set(96f, 0f);
+				Append(letra);
+			}
 
 			float arriba = 122f;
 			float paso = 30f;

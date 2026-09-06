@@ -1,4 +1,6 @@
 using System.Collections.Generic;
+using Terraria;
+using TerrakeepMod.Common.Ajustes;
 
 namespace TerrakeepMod.Common.Builds
 {
@@ -33,9 +35,36 @@ namespace TerrakeepMod.Common.Builds
 		/// <summary>true si el pid se resolvio a un objeto real de esta partida.</summary>
 		public bool Resuelto => Tipo > 0;
 
-		/// <summary>Nombre para mostrar: el español del catalogo, con el ingles de respaldo.</summary>
-		public string Nombre => !string.IsNullOrEmpty(NombreEs) ? NombreEs
-			: (!string.IsNullOrEmpty(NombreEn) ? NombreEn : Pid);
+		/// <summary>
+		/// Nombre para mostrar.
+		/// <para />
+		/// Si el pid se resolvio a un objeto REAL de esta partida, se usa el nombre que le da el
+		/// propio juego (<c>Lang.GetItemNameValue</c>), que ya viene en el idioma activo y que
+		/// ademas es el bueno si un mod ha renombrado el objeto. Los nombres del catalogo son de
+		/// la app de escritorio, solo existen en español y en ingles, y con el juego en ingles se
+		/// veian los nombres en español dentro de un panel traducido - se vio en una captura real.
+		/// El del catalogo se queda como respaldo para los objetos que NO existen en esta partida
+		/// (tipicamente los de Calamity sin Calamity instalado), que es donde el juego no puede
+		/// decir nada.
+		/// </para>
+		/// </summary>
+		public string Nombre {
+			get {
+				if (Resuelto) {
+					string delJuego = Lang.GetItemNameValue(Tipo);
+					if (!string.IsNullOrEmpty(delJuego)) {
+						return delJuego;
+					}
+				}
+
+				string preferido = Idiomas.EnEspanol ? NombreEs : NombreEn;
+				string otro = Idiomas.EnEspanol ? NombreEn : NombreEs;
+				if (!string.IsNullOrEmpty(preferido)) {
+					return preferido;
+				}
+				return !string.IsNullOrEmpty(otro) ? otro : Pid;
+			}
+		}
 	}
 
 	/// <summary>Las tres listas de equipo de una clase concreta dentro de una etapa.</summary>
@@ -74,7 +103,30 @@ namespace TerrakeepMod.Common.Builds
 	public sealed class EtapaBuild
 	{
 		public string Clave;
-		public string Etiqueta;
+
+		/// <summary>Clave de la fuente a la que pertenece ("vanilla" / "calamity"). Hace falta
+		/// para la clave de localizacion: las dos fuentes usan las MISMAS claves de etapa
+		/// (prehardmode / earlyhardmode / endgame) con textos distintos.</summary>
+		public string ClaveFuente;
+
+		/// <summary>Etiqueta tal cual viene del JSON (solo existe en español). Es el respaldo.</summary>
+		public string EtiquetaDelJson;
+
+		/// <summary>
+		/// Nombre de la etapa, traducido. Las seis etiquetas de etapa de los dos archivos de datos
+		/// SI estan en los .hjson (son seis, no un catalogo entero); si algun dia el JSON trae una
+		/// etapa nueva sin clave de traduccion, se enseña su etiqueta del JSON tal cual en vez de
+		/// inventarse nada.
+		/// </summary>
+		public string Etiqueta {
+			get {
+				string clave = "Builds.Etapa." + ClaveFuente + "." + Clave;
+				string traducida = Idiomas.Texto(clave);
+				bool hayTraduccion = traducida != null && traducida.IndexOf(clave) < 0;
+				return hayTraduccion ? traducida : EtiquetaDelJson;
+			}
+		}
+
 		public readonly List<ClaseBuild> Clases = new List<ClaseBuild>();
 
 		public ClaseBuild BuscarClase(string clave)

@@ -20,10 +20,25 @@ namespace TerrakeepMod.UI
 		private readonly Item[] _inventario;
 		private readonly int _indice;
 		private readonly int _contexto;
-		private readonly float _escala;
+		private float _escala;
 
 		/// <summary>Acceso directo al objeto real que ocupa el slot ahora mismo.</summary>
 		public Item ObjetoActual => _inventario[_indice];
+
+		/// <summary>
+		/// Escala de dibujado. Se puede cambiar despues de crear el slot: hay pestañas que tienen
+		/// que encoger sus ranuras cuando la ventana del juego es baja y no caben todas las filas
+		/// (ver <c>PestanaEquipo</c>), y el alto real disponible no se conoce hasta que el motor ha
+		/// recalculado el arbol de la interfaz.
+		/// </summary>
+		public float Escala {
+			get { return _escala; }
+			set {
+				_escala = value;
+				Width.Set(52f * value, 0f);
+				Height.Set(52f * value, 0f);
+			}
+		}
 
 		/// <param name="inventario">Array vivo del juego (no una copia).</param>
 		/// <param name="indice">Posicion dentro de ese array.</param>

@@ -31,7 +31,10 @@ namespace TerrakeepMod.UI.Personaje
 			Append(titulo);
 
 			List<Desbloqueo> lista = Desbloqueos.Lista;
-			float anchoColumna = 500f;
+			// Dos columnas al 50% del ancho REAL, no de 500 px fijos: con 500 las dos columnas
+			// sumaban 980 px y en una ventana de 800 la de la derecha se salia por encima del borde
+			// del marco. Visto en una captura real del juego.
+			const float FraccionColumna = 0.5f;
 			float alto = 32f;
 			int porColumna = (lista.Count + 1) / 2;
 
@@ -43,9 +46,9 @@ namespace TerrakeepMod.UI.Personaje
 					valor => desbloqueo.Escribir(PersonajeVivo.Jugador, valor));
 
 				casilla.Ayuda = () => desbloqueo.CampoReal + ": " + desbloqueo.Descripcion;
-				casilla.Width.Set(anchoColumna - 20f, 0f);
+				casilla.Width.Set(-14f, FraccionColumna);
 				casilla.Height.Set(28f, 0f);
-				casilla.Left.Set((i / porColumna) * anchoColumna, 0f);
+				casilla.Left.Set(0f, (i / porColumna) * FraccionColumna);
 				casilla.Top.Set(30f + (i % porColumna) * alto, 0f);
 
 				casilla.AlCambiar += valor => {

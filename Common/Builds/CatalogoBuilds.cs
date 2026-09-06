@@ -159,7 +159,11 @@ namespace TerrakeepMod.Common.Builds
 			List<string> sinResolver = new List<string>();
 
 			foreach (BuildStage etapaCore in catalogo.Stages) {
-				EtapaBuild etapa = new EtapaBuild { Clave = etapaCore.Key, Etiqueta = etapaCore.Label };
+				EtapaBuild etapa = new EtapaBuild {
+					Clave = etapaCore.Key,
+					ClaveFuente = fuente.Clave,
+					EtiquetaDelJson = etapaCore.Label
+				};
 
 				foreach (KeyValuePair<string, BuildClassGear> par in etapaCore.Classes) {
 					ClaseBuild clase = new ClaseBuild { Clave = par.Key };

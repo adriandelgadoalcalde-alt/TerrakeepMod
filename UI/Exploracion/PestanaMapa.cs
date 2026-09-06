@@ -89,16 +89,21 @@ namespace TerrakeepMod.UI.Exploracion
 			verEnMapa.AlPulsar += SaltarAlMapaVanilla;
 			y += 50f;
 
+			// Se parte con el ancho REAL: los tres renglones con saltos escritos a mano estaban
+			// medidos para el texto en español y en ingles la tercera linea se salia del marco por la
+			// derecha (visto en una captura real del juego).
 			EtiquetaTk aviso = new EtiquetaTk(
-				() => Idiomas.Texto("Exploracion.Mapa.AvisoExclusivo"),
+				() => EtiquetaTk.PartirEnLineas(
+					Idiomas.Texto("Exploracion.Mapa.AvisoExclusivo"), AnchoLateral - 4f, 0.7f),
 				0.7f, AnchoLateral, 50f);
 			aviso.ColorTexto = EstiloTk.TextoSuave;
 			aviso.Top.Set(y, 0f);
 			lateral.Append(aviso);
-			// 74 y no 60: son TRES lineas y la fuente del juego a escala 0,7 gasta ~21 px por
-			// linea, o sea 63. Con 60 la tercera linea se comia el titulo "Marcadores" de debajo -
-			// se vio en una captura real, no leyendo el codigo.
-			y += 74f;
+			// 96 y no 74: la fuente del juego a escala 0,7 gasta ~21 px por linea, y este aviso se
+			// parte solo segun el ancho y el idioma. En español salen tres lineas y en ingles
+			// CUATRO, y con 74 la cuarta se comia el titulo "Marcadores" de debajo (las dos veces
+			// se vio en una captura real, no leyendo el codigo). Con 96 caben cuatro.
+			y += 96f;
 
 			EtiquetaTk leyenda = new EtiquetaTk(
 				() => Idiomas.Texto("Exploracion.Mapa.Marcadores"), 0.85f, AnchoLateral, 24f);

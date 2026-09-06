@@ -116,6 +116,7 @@ namespace TerrakeepMod.UI.Exploracion
 			izquierda.Append(soloExplorado);
 
 			BotonTk buscar = new BotonTk(Idiomas.Texto("Exploracion.Buscar"), 0.9f);
+			buscar.Ayuda = () => Idiomas.Texto("Exploracion.BuscarAyuda");
 			buscar.Width.Set(0f, 1f);
 			buscar.Height.Set(36f, 0f);
 			buscar.Top.Set(-36f, 1f);

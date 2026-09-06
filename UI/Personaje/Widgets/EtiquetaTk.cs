@@ -1,6 +1,8 @@
 using System;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Graphics;
 using Terraria;
 using Terraria.UI;
 
@@ -37,6 +39,62 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// idiomas para recoger TODO el texto visible de una pestaña sin tener que exponer cada
 		/// etiqueta una a una.</summary>
 		public string TextoActual => _texto != null ? (_texto() ?? "") : "";
+
+		/// <summary>
+		/// Parte un texto en las lineas que quepan en <paramref name="ancho"/> pixeles, midiendolas
+		/// con la fuente REAL con la que se van a dibujar.
+		/// <para />
+		/// Existe porque un salto de linea escrito a mano dentro de un texto solo vale para el
+		/// idioma con el que se escribio: los mismos tres renglones del aviso del mini-mapa se salian del marco
+		/// en ingles (visto en una captura real). Se llama en cada dibujado y no una vez porque el
+		/// ancho depende de la resolucion y de la escala de interfaz del jugador.
+		/// </summary>
+		public static string PartirEnLineas(string texto, float ancho, float escala)
+		{
+			if (string.IsNullOrEmpty(texto) || ancho <= 0f) {
+				return texto;
+			}
+
+			DynamicSpriteFont fuente = Terraria.GameContent.FontAssets.MouseText.Value;
+			if (fuente.MeasureString(texto).X * escala <= ancho && texto.IndexOf('\n') < 0) {
+				return texto;
+			}
+
+			// Los saltos que ya trajera el texto se respetan: se parte cada renglon por separado.
+			string[] renglones = texto.Split('\n');
+			StringBuilder salida = new StringBuilder();
+
+			for (int r = 0; r < renglones.Length; r++) {
+				string[] palabras = renglones[r].Split(' ');
+				StringBuilder linea = new StringBuilder();
+
+				for (int i = 0; i < palabras.Length; i++) {
+					string candidata = linea.Length == 0 ? palabras[i] : linea + " " + palabras[i];
+					if (linea.Length > 0 && fuente.MeasureString(candidata).X * escala > ancho) {
+						Anadir(salida, linea.ToString());
+						linea.Clear();
+						linea.Append(palabras[i]);
+						continue;
+					}
+					linea.Clear();
+					linea.Append(candidata);
+				}
+
+				if (linea.Length > 0) {
+					Anadir(salida, linea.ToString());
+				}
+			}
+
+			return salida.ToString();
+		}
+
+		private static void Anadir(StringBuilder salida, string linea)
+		{
+			if (salida.Length > 0) {
+				salida.Append('\n');
+			}
+			salida.Append(linea);
+		}
 
 		protected override void DrawSelf(SpriteBatch spriteBatch)
 		{

@@ -35,6 +35,18 @@ namespace TerrakeepMod.UI.Personaje
 		private const int SegundosPorDefecto = 600;
 		private const int MaximoResultados = 12;
 
+		/// <summary>
+		/// Reparto de las dos columnas, en PORCENTAJE del ancho real.
+		/// <para />
+		/// Antes eran pixeles fijos (cajas de 470 px y la columna derecha empezando en 490), o sea
+		/// 960 px de ancho total. En la ventana de 800 con la que se prueba el mod eso dejaba la
+		/// caja de resultados y la nota saliendose del marco por la derecha, y el campo "Segundos"
+		/// directamente FUERA de la pantalla: no se veia. Visto en una captura real del juego.
+		/// </summary>
+		private const float FraccionColumna = 0.5f;
+
+		private const float SeparacionColumnas = 10f;
+
 		private UIList _listaActivos;
 		private UIList _listaResultados;
 		private CampoTextoTk _campoBusqueda;
@@ -60,6 +72,11 @@ namespace TerrakeepMod.UI.Personaje
 
 		private void ConstruirActivos()
 		{
+			UIElement izquierda = new UIElement();
+			izquierda.Width.Set(-SeparacionColumnas, FraccionColumna);
+			izquierda.Height.Set(0f, 1f);
+			Append(izquierda);
+
 			EtiquetaTk titulo = new EtiquetaTk(
 				() => Idiomas.Texto("Personaje.Buffs.Activos",
 					PersonajeVivo.Jugador.CountBuffs(), PersonajeVivo.RanurasBuff),
@@ -67,14 +84,14 @@ namespace TerrakeepMod.UI.Personaje
 			titulo.ColorTexto = EstiloTk.TextoSuave;
 			titulo.Left.Set(0f, 0f);
 			titulo.Top.Set(0f, 0f);
-			Append(titulo);
+			izquierda.Append(titulo);
 
 			UIPanel caja = new UIPanel();
-			caja.Width.Set(470f, 0f);
+			caja.Width.Set(0f, 1f);
 			caja.Height.Set(-58f, 1f);
 			caja.Top.Set(26f, 0f);
 			caja.BackgroundColor = EstiloTk.FondoCaja;
-			Append(caja);
+			izquierda.Append(caja);
 
 			_listaActivos = new UIList();
 			_listaActivos.Width.Set(-24f, 1f);
@@ -96,7 +113,7 @@ namespace TerrakeepMod.UI.Personaje
 			quitarTodos.Left.Set(0f, 0f);
 			quitarTodos.VAlign = 1f;
 			quitarTodos.AlPulsar += QuitarTodos;
-			Append(quitarTodos);
+			izquierda.Append(quitarTodos);
 		}
 
 		private void ReconstruirActivos()
@@ -129,13 +146,14 @@ namespace TerrakeepMod.UI.Personaje
 
 			EtiquetaTk nombre = new EtiquetaTk(
 				() => Idiomas.Texto("Personaje.Buffs.NombreConId",
-					PersonajeVivo.NombreBuff(tipo), tipo), 0.8f, 240f, 20f);
+					PersonajeVivo.NombreBuff(tipo), tipo), 0.8f, 0f, 20f);
+			nombre.Width.Set(-186f, 1f);
 			nombre.Left.Set(40f, 0f);
 			nombre.Top.Set(8f, 0f);
 			fila.Append(nombre);
 
-			EtiquetaTk tiempo = new EtiquetaTk(() => TextoTiempo(tipo), 0.8f, 90f, 20f);
-			tiempo.Left.Set(280f, 0f);
+			EtiquetaTk tiempo = new EtiquetaTk(() => TextoTiempo(tipo), 0.8f, 70f, 20f);
+			tiempo.Left.Set(-146f, 1f);
 			tiempo.Top.Set(8f, 0f);
 			fila.Append(tiempo);
 
@@ -143,7 +161,7 @@ namespace TerrakeepMod.UI.Personaje
 			_botonesQuitar.Add(quitar);
 			quitar.Width.Set(70f, 0f);
 			quitar.Height.Set(26f, 0f);
-			quitar.Left.Set(370f, 0f);
+			quitar.Left.Set(-72f, 1f);
 			quitar.Top.Set(4f, 0f);
 			quitar.AlPulsar += () => QuitarBuff(tipo);
 			fila.Append(quitar);
@@ -202,53 +220,60 @@ namespace TerrakeepMod.UI.Personaje
 
 		private void ConstruirAnadir()
 		{
-			float izquierda = 490f;
+			UIElement derecha = new UIElement();
+			derecha.Width.Set(0f, 1f - FraccionColumna);
+			derecha.Height.Set(0f, 1f);
+			derecha.HAlign = 1f;
+			Append(derecha);
 
 			EtiquetaTk titulo = new EtiquetaTk(
 				() => Idiomas.Texto("Personaje.Buffs.Anadir"), 0.85f, 300f, 22f);
 			titulo.ColorTexto = EstiloTk.TextoSuave;
-			titulo.Left.Set(izquierda, 0f);
+			titulo.Left.Set(0f, 0f);
 			titulo.Top.Set(0f, 0f);
-			Append(titulo);
+			derecha.Append(titulo);
 
 			EtiquetaTk etiquetaBusqueda = new EtiquetaTk(
 				() => Idiomas.Texto("Personaje.Buffs.Buscar"), 0.8f, 70f, 20f);
 			etiquetaBusqueda.ColorTexto = EstiloTk.TextoSuave;
-			etiquetaBusqueda.Left.Set(izquierda, 0f);
+			etiquetaBusqueda.Left.Set(0f, 0f);
 			etiquetaBusqueda.Top.Set(32f, 0f);
-			Append(etiquetaBusqueda);
+			derecha.Append(etiquetaBusqueda);
 
 			_campoBusqueda = new CampoTextoTk(() => Idiomas.Texto("Personaje.Buffs.PistaBusqueda"), 30);
-			_campoBusqueda.Width.Set(230f, 0f);
+			_campoBusqueda.Width.Set(-72f, 1f);
 			_campoBusqueda.Height.Set(28f, 0f);
-			_campoBusqueda.Left.Set(izquierda + 66f, 0f);
+			_campoBusqueda.Left.Set(66f, 0f);
 			_campoBusqueda.Top.Set(26f, 0f);
 			_campoBusqueda.AlCambiar += ReconstruirResultados;
-			Append(_campoBusqueda);
+			derecha.Append(_campoBusqueda);
 
+			// La duracion va en su PROPIA fila, debajo del buscador: en la misma fila necesitaba
+			// 470 px de ancho y con media pantalla no cabia (el campo se quedaba fuera de la
+			// ventana, literalmente invisible).
 			EtiquetaTk etiquetaDuracion = new EtiquetaTk(
 				() => Idiomas.Texto("Personaje.Buffs.Segundos"), 0.8f, 90f, 20f);
 			etiquetaDuracion.ColorTexto = EstiloTk.TextoSuave;
-			etiquetaDuracion.Left.Set(izquierda + 306f, 0f);
-			etiquetaDuracion.Top.Set(32f, 0f);
-			Append(etiquetaDuracion);
+			etiquetaDuracion.Left.Set(0f, 0f);
+			etiquetaDuracion.Top.Set(66f, 0f);
+			derecha.Append(etiquetaDuracion);
 
 			_campoDuracion = new CampoTextoTk(() => SegundosPorDefecto.ToString(), 6);
 			_campoDuracion.SoloNumeros = true;
 			_campoDuracion.FijarTextoSilencioso(SegundosPorDefecto.ToString());
 			_campoDuracion.Width.Set(80f, 0f);
 			_campoDuracion.Height.Set(28f, 0f);
-			_campoDuracion.Left.Set(izquierda + 380f, 0f);
-			_campoDuracion.Top.Set(26f, 0f);
-			Append(_campoDuracion);
+			_campoDuracion.Left.Set(80f, 0f);
+			_campoDuracion.Top.Set(60f, 0f);
+			derecha.Append(_campoDuracion);
 
 			UIPanel caja = new UIPanel();
-			caja.Width.Set(470f, 0f);
-			caja.Height.Set(-92f, 1f);
-			caja.Left.Set(izquierda, 0f);
-			caja.Top.Set(60f, 0f);
+			caja.Width.Set(0f, 1f);
+			caja.Height.Set(-152f, 1f);
+			caja.Left.Set(0f, 0f);
+			caja.Top.Set(94f, 0f);
 			caja.BackgroundColor = EstiloTk.FondoCaja;
-			Append(caja);
+			derecha.Append(caja);
 
 			_listaResultados = new UIList();
 			_listaResultados.Width.Set(-24f, 1f);
@@ -264,12 +289,14 @@ namespace TerrakeepMod.UI.Personaje
 			_listaResultados.SetScrollbar(barra);
 
 			EtiquetaTk nota = new EtiquetaTk(
-				() => Idiomas.Texto("Personaje.Buffs.Nota"),
-				0.72f, 470f, 18f);
+				() => EtiquetaTk.PartirEnLineas(Idiomas.Texto("Personaje.Buffs.Nota"),
+					derecha.GetInnerDimensions().Width, 0.72f),
+				0.72f, 0f, 40f);
+			nota.Width.Set(0f, 1f);
 			nota.ColorTexto = EstiloTk.TextoSuave;
-			nota.Left.Set(izquierda, 0f);
-			nota.VAlign = 1f;
-			Append(nota);
+			nota.Left.Set(0f, 0f);
+			nota.Top.Set(-44f, 1f);
+			derecha.Append(nota);
 		}
 
 		private void ReconstruirResultados(string filtro)
@@ -320,7 +347,8 @@ namespace TerrakeepMod.UI.Personaje
 			fila.Append(icono);
 
 			EtiquetaTk etiqueta = new EtiquetaTk(
-				() => Idiomas.Texto("Personaje.Buffs.NombreConId", nombre, tipo), 0.8f, 290f, 20f);
+				() => Idiomas.Texto("Personaje.Buffs.NombreConId", nombre, tipo), 0.8f, 0f, 20f);
+			etiqueta.Width.Set(-128f, 1f);
 			etiqueta.Left.Set(40f, 0f);
 			etiqueta.Top.Set(8f, 0f);
 			fila.Append(etiqueta);
@@ -329,7 +357,7 @@ namespace TerrakeepMod.UI.Personaje
 			_botonesAplicar.Add(anadir);
 			anadir.Width.Set(80f, 0f);
 			anadir.Height.Set(26f, 0f);
-			anadir.Left.Set(350f, 0f);
+			anadir.Left.Set(-82f, 1f);
 			anadir.Top.Set(4f, 0f);
 			anadir.AlPulsar += () => AplicarBuff(tipo);
 			fila.Append(anadir);

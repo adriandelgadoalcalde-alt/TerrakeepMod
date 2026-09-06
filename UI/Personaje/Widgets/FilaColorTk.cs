@@ -37,15 +37,15 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			Width.Set(640f, 0f);
 			Height.Set(26f, 0f);
 
-			_rojo = CrearDeslizador(180f, new Color(220, 90, 90), valor => {
+			_rojo = CrearDeslizador(IzquierdaDeslizador(0), new Color(220, 90, 90), valor => {
 				Color color = _leer();
 				_escribir(new Color(ACanal(valor), color.G, color.B));
 			});
-			_verde = CrearDeslizador(300f, new Color(90, 220, 110), valor => {
+			_verde = CrearDeslizador(IzquierdaDeslizador(1), new Color(90, 220, 110), valor => {
 				Color color = _leer();
 				_escribir(new Color(color.R, ACanal(valor), color.B));
 			});
-			_azul = CrearDeslizador(420f, new Color(100, 130, 240), valor => {
+			_azul = CrearDeslizador(IzquierdaDeslizador(2), new Color(100, 130, 240), valor => {
 				Color color = _leer();
 				_escribir(new Color(color.R, color.G, ACanal(valor)));
 			});
@@ -55,10 +55,21 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// idiomas para recoger todo el texto visible de la pestaña.</summary>
 		public string EtiquetaActual => _etiqueta != null ? (_etiqueta() ?? "") : "";
 
+		/// <summary>Ancho de cada deslizador de canal. Publico para que la cabecera de la pestaña
+		/// de Apariencia pueda centrar la letra R/V/A EXACTAMENTE encima del suyo en vez de
+		/// colocarla a ojo con espacios.</summary>
+		public const float AnchoDeslizador = 110f;
+
+		/// <summary>Sitio donde empieza el deslizador del canal indicado (0 = rojo).</summary>
+		public static float IzquierdaDeslizador(int canal)
+		{
+			return 180f + canal * 120f;
+		}
+
 		private DeslizadorTk CrearDeslizador(float izquierda, Color relleno, Action<float> alCambiar)
 		{
 			DeslizadorTk deslizador = new DeslizadorTk();
-			deslizador.Width.Set(110f, 0f);
+			deslizador.Width.Set(AnchoDeslizador, 0f);
 			deslizador.Height.Set(20f, 0f);
 			deslizador.Left.Set(izquierda, 0f);
 			deslizador.Top.Set(3f, 0f);

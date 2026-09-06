@@ -27,7 +27,17 @@ namespace TerrakeepMod.UI.Personaje
 	/// </summary>
 	public class PestanaEquipo : UIElement
 	{
-		private const float Escala = 0.75f;
+		/// <summary>Escala de ranura ideal, la que se usa si la ventana da de si.</summary>
+		private const float EscalaMaxima = 0.75f;
+
+		/// <summary>Escala minima antes de que las ranuras dejen de leerse.</summary>
+		private const float EscalaMinima = 0.58f;
+
+		/// <summary>Alto de la zona de arriba (selector de conjunto + leyenda de columnas).</summary>
+		private const float ArribaRejilla = 68f;
+
+		/// <summary>Filas de la columna izquierda: 3 de armadura + 7 de accesorio.</summary>
+		private const int FilasEquipo = 10;
 
 		/// <summary>Rotulo de cada fila: las tres piezas de armadura por su clave propia y los
 		/// siete accesorios numerados con una sola clave con parametro.</summary>
@@ -56,6 +66,17 @@ namespace TerrakeepMod.UI.Personaje
 		};
 
 		private readonly List<BotonTk> _botonesLoadout = new List<BotonTk>();
+		private readonly List<FilaEquipo> _filasEquipo = new List<FilaEquipo>();
+		private readonly List<FilaMisc> _filasMisc = new List<FilaMisc>();
+
+		private EtiquetaTk _leyendaEquipo;
+		private EtiquetaTk _leyendaMisc;
+		private EtiquetaTk _tituloMisc;
+		private EtiquetaTk _resumenAccesorios;
+
+		/// <summary>Paso con el que estan colocadas las filas ahora mismo, para no recolocarlas en
+		/// cada fotograma.</summary>
+		private float _pasoColocado = -1f;
 
 		public PestanaEquipo()
 		{
@@ -90,13 +111,13 @@ namespace TerrakeepMod.UI.Personaje
 				Append(boton);
 			}
 
-			EtiquetaTk aviso = new EtiquetaTk(
-				() => Idiomas.Texto("Personaje.Equipo.Nota"),
-				0.72f, 900f, 18f);
-			aviso.ColorTexto = EstiloTk.TextoSuave;
-			aviso.Left.Set(0f, 0f);
-			aviso.Top.Set(30f, 0f);
-			Append(aviso);
+			// La nota tecnica larga se ha ido al TOOLTIP de los tres botones: como EtiquetaTk
+			// medía ~900 px, se salia del marco por la derecha y encima pisaba las cabeceras de la
+			// columna de equipo especial (se leia "PlayerSpe$ialTequipmentut"). Visto en una
+			// captura real del juego, no leyendo codigo.
+			for (int i = 0; i < _botonesLoadout.Count; i++) {
+				_botonesLoadout[i].Ayuda = () => Idiomas.Texto("Personaje.Equipo.Nota");
+			}
 
 			ActualizarBotonesLoadout();
 		}
@@ -128,16 +149,18 @@ namespace TerrakeepMod.UI.Personaje
 		private void ConstruirEquipo()
 		{
 			Player jugador = PersonajeVivo.Jugador;
-			float paso = RejillaSlots.Paso(Escala);
-			float arriba = 74f;
 
-			Cabecera("Personaje.Equipo.Equipado", 0f, arriba - 22f);
-			Cabecera("Personaje.Equipo.Vanidad", paso, arriba - 22f);
-			Cabecera("Personaje.Equipo.Tinte", paso * 2f, arriba - 22f);
+			// Una sola linea de leyenda en vez de tres cabeceras encima de cada columna: con el
+			// paso real entre ranuras (~35-41 px) las palabras "Equipado", "Vanidad" y "Tinte" se
+			// pisaban unas con otras y se leia "EquipaVanidaTinte". Visto en una captura real.
+			_leyendaEquipo = new EtiquetaTk(
+				() => Idiomas.Texto("Personaje.Equipo.Leyenda"), 0.72f, 340f, 20f);
+			_leyendaEquipo.ColorTexto = EstiloTk.TextoSuave;
+			_leyendaEquipo.Left.Set(0f, 0f);
+			_leyendaEquipo.Top.Set(ArribaRejilla - 20f, 0f);
+			Append(_leyendaEquipo);
 
 			for (int i = 0; i < PersonajeVivo.SlotsTinte; i++) {
-				float y = arriba + i * paso;
-
 				bool esArmadura = i < 3;
 				int contextoEquipo = esArmadura
 					? ItemSlot.Context.EquipArmor
@@ -146,15 +169,48 @@ namespace TerrakeepMod.UI.Personaje
 					? ItemSlot.Context.EquipArmorVanity
 					: ItemSlot.Context.EquipAccessoryVanity;
 
-				RejillaSlots.Uno(this, jugador.armor, i, contextoEquipo, Escala, 0f, y);
-				RejillaSlots.Uno(this, jugador.armor, 10 + i, contextoVanidad, Escala, paso, y);
-				RejillaSlots.Uno(this, jugador.dye, i, ItemSlot.Context.EquipDye, Escala, paso * 2f, y);
-
 				int indiceFila = i;
 				EtiquetaTk nombre = new EtiquetaTk(() => TextoFila(indiceFila), 0.78f, 240f, 20f);
-				nombre.Left.Set(paso * 3f + 6f, 0f);
-				nombre.Top.Set(y + 12f, 0f);
 				Append(nombre);
+
+				_filasEquipo.Add(new FilaEquipo(
+					RejillaSlots.Uno(this, jugador.armor, i, contextoEquipo, EscalaMaxima, 0f, 0f),
+					RejillaSlots.Uno(this, jugador.armor, 10 + i, contextoVanidad, EscalaMaxima, 0f, 0f),
+					RejillaSlots.Uno(this, jugador.dye, i, ItemSlot.Context.EquipDye, EscalaMaxima, 0f, 0f),
+					nombre));
+			}
+		}
+
+		/// <summary>Las tres ranuras de una fila de equipo mas su rotulo.</summary>
+		private sealed class FilaEquipo
+		{
+			public readonly SlotObjetoVanilla Equipado;
+			public readonly SlotObjetoVanilla Vanidad;
+			public readonly SlotObjetoVanilla Tinte;
+			public readonly EtiquetaTk Nombre;
+
+			public FilaEquipo(SlotObjetoVanilla equipado, SlotObjetoVanilla vanidad,
+				SlotObjetoVanilla tinte, EtiquetaTk nombre)
+			{
+				Equipado = equipado;
+				Vanidad = vanidad;
+				Tinte = tinte;
+				Nombre = nombre;
+			}
+		}
+
+		/// <summary>Las dos ranuras de una fila de equipo especial mas su rotulo.</summary>
+		private sealed class FilaMisc
+		{
+			public readonly SlotObjetoVanilla Puesto;
+			public readonly SlotObjetoVanilla Tinte;
+			public readonly EtiquetaTk Nombre;
+
+			public FilaMisc(SlotObjetoVanilla puesto, SlotObjetoVanilla tinte, EtiquetaTk nombre)
+			{
+				Puesto = puesto;
+				Tinte = tinte;
+				Nombre = nombre;
 			}
 		}
 
@@ -182,50 +238,116 @@ namespace TerrakeepMod.UI.Personaje
 		private void ConstruirMisc()
 		{
 			Player jugador = PersonajeVivo.Jugador;
-			float paso = RejillaSlots.Paso(Escala);
-			float izquierda = paso * 3f + 260f;
-			float arriba = 74f;
 
-			Cabecera("Personaje.Equipo.Especial", izquierda, arriba - 44f);
-			Cabecera("Personaje.Equipo.Puesto", izquierda, arriba - 22f);
-			Cabecera("Personaje.Equipo.Tinte", izquierda + paso, arriba - 22f);
+			_tituloMisc = new EtiquetaTk(
+				() => Idiomas.Texto("Personaje.Equipo.Especial"), 0.85f, 220f, 22f);
+			_tituloMisc.ColorTexto = EstiloTk.TextoSuave;
+			Append(_tituloMisc);
+
+			_leyendaMisc = new EtiquetaTk(
+				() => Idiomas.Texto("Personaje.Equipo.LeyendaMisc"), 0.72f, 260f, 20f);
+			_leyendaMisc.ColorTexto = EstiloTk.TextoSuave;
+			Append(_leyendaMisc);
 
 			for (int i = 0; i < PersonajeVivo.SlotsMisc; i++) {
-				float y = arriba + i * paso;
 				// La variable del for se comparte entre todas las iteraciones, asi que hay que
 				// copiarla antes de capturarla en la lambda de la etiqueta.
 				int indice = i;
 
-				RejillaSlots.Uno(this, jugador.miscEquips, i, ContextosMisc[i], Escala, izquierda, y);
-				RejillaSlots.Uno(this, jugador.miscDyes, i, ItemSlot.Context.EquipMiscDye, Escala,
-					izquierda + paso, y);
-
 				EtiquetaTk nombre = new EtiquetaTk(
 					() => Idiomas.Texto("Personaje.Equipo.Misc." + ClavesMisc[indice]), 0.78f, 200f, 20f);
-				nombre.Left.Set(izquierda + paso * 2f + 6f, 0f);
-				nombre.Top.Set(y + 12f, 0f);
 				Append(nombre);
+
+				_filasMisc.Add(new FilaMisc(
+					RejillaSlots.Uno(this, jugador.miscEquips, i, ContextosMisc[i], EscalaMaxima, 0f, 0f),
+					RejillaSlots.Uno(this, jugador.miscDyes, i, ItemSlot.Context.EquipMiscDye,
+						EscalaMaxima, 0f, 0f),
+					nombre));
 			}
 
-			EtiquetaTk resumen = new EtiquetaTk(
+			// Texto CORTO: el largo ("... (la 6ª exige el Corazon de Demonio y modo Experto)") medía
+			// ~520 px, empezaba pasada la mitad del panel y se salia por la derecha. Lo que explica
+			// la condicion se ha quedado en el tooltip de la propia fila, que ya dice "(no activa)".
+			_resumenAccesorios = new EtiquetaTk(
 				() => Idiomas.Texto("Personaje.Equipo.RanurasActivas",
 					5 + PersonajeVivo.Jugador.extraAccessorySlots),
-				0.75f, 520f, 20f);
-			resumen.ColorTexto = EstiloTk.TextoSuave;
-			resumen.Left.Set(izquierda, 0f);
-			resumen.Top.Set(arriba + 5f * paso + 16f, 0f);
-			Append(resumen);
+				0.75f, 300f, 20f);
+			_resumenAccesorios.ColorTexto = EstiloTk.TextoSuave;
+			Append(_resumenAccesorios);
 		}
 
-		/// <summary>Rotulo de columna. Recibe la CLAVE de localizacion, no el texto ya resuelto:
-		/// asi cambia con el idioma sin reabrir el panel.</summary>
-		private void Cabecera(string clave, float izquierda, float arriba)
+		/// <summary>
+		/// Coloca las dos columnas con el alto REAL que le haya tocado a la pestaña.
+		/// <para />
+		/// No se puede hacer con medidas fijas y es un fallo real, visto en una captura del juego a
+		/// 800x720: la columna izquierda tiene 10 filas (3 de armadura + 7 de accesorio) y, con la
+		/// escala 0,75 de siempre, la 7ª se salia POR ABAJO del marco y pintaba encima del pie y del
+		/// boton de cerrar. Como el alto disponible depende de la resolucion y de la escala de
+		/// interfaz del jugador, lo que se ajusta es la ESCALA de las ranuras, acotada entre 0,58 y
+		/// 0,75. Es la misma leccion que ya se aplico al espaciado de Builds.
+		/// </summary>
+		private void ColocarColumnas()
 		{
-			EtiquetaTk etiqueta = new EtiquetaTk(() => Idiomas.Texto(clave), 0.78f, 180f, 20f);
-			etiqueta.ColorTexto = EstiloTk.TextoSuave;
-			etiqueta.Left.Set(izquierda, 0f);
-			etiqueta.Top.Set(arriba, 0f);
-			Append(etiqueta);
+			float alto = GetDimensions().Height;
+			if (alto <= 0f) {
+				return;
+			}
+
+			float disponible = alto - ArribaRejilla - 4f;
+			float pasoCabe = disponible / FilasEquipo;
+			float escala = (pasoCabe - RejillaSlots.Separacion) / 52f;
+			if (escala > EscalaMaxima) {
+				escala = EscalaMaxima;
+			}
+			if (escala < EscalaMinima) {
+				escala = EscalaMinima;
+			}
+
+			float paso = RejillaSlots.Paso(escala);
+			if (System.Math.Abs(paso - _pasoColocado) < 0.5f) {
+				return;
+			}
+			_pasoColocado = paso;
+
+			float izquierdaMisc = paso * 3f + 250f;
+
+			for (int i = 0; i < _filasEquipo.Count; i++) {
+				FilaEquipo fila = _filasEquipo[i];
+				float y = ArribaRejilla + i * paso;
+				Colocar(fila.Equipado, escala, 0f, y);
+				Colocar(fila.Vanidad, escala, paso, y);
+				Colocar(fila.Tinte, escala, paso * 2f, y);
+				fila.Nombre.Left.Set(paso * 3f + 6f, 0f);
+				fila.Nombre.Top.Set(y + (paso - 22f) / 2f, 0f);
+			}
+
+			_leyendaEquipo.Top.Set(ArribaRejilla - 20f, 0f);
+
+			_tituloMisc.Left.Set(izquierdaMisc, 0f);
+			_tituloMisc.Top.Set(ArribaRejilla - 42f, 0f);
+			_leyendaMisc.Left.Set(izquierdaMisc, 0f);
+			_leyendaMisc.Top.Set(ArribaRejilla - 20f, 0f);
+
+			for (int i = 0; i < _filasMisc.Count; i++) {
+				FilaMisc fila = _filasMisc[i];
+				float y = ArribaRejilla + i * paso;
+				Colocar(fila.Puesto, escala, izquierdaMisc, y);
+				Colocar(fila.Tinte, escala, izquierdaMisc + paso, y);
+				fila.Nombre.Left.Set(izquierdaMisc + paso * 2f + 6f, 0f);
+				fila.Nombre.Top.Set(y + (paso - 22f) / 2f, 0f);
+			}
+
+			_resumenAccesorios.Left.Set(izquierdaMisc, 0f);
+			_resumenAccesorios.Top.Set(ArribaRejilla + PersonajeVivo.SlotsMisc * paso + 12f, 0f);
+
+			Recalculate();
+		}
+
+		private static void Colocar(SlotObjetoVanilla slot, float escala, float x, float y)
+		{
+			slot.Escala = escala;
+			slot.Left.Set(x, 0f);
+			slot.Top.Set(y, 0f);
 		}
 
 		public override void Update(Microsoft.Xna.Framework.GameTime gameTime)
@@ -239,6 +361,10 @@ namespace TerrakeepMod.UI.Personaje
 			for (int i = 0; i < _botonesLoadout.Count; i++) {
 				_botonesLoadout[i].FijarTexto(Idiomas.Texto("Personaje.Equipo.ConjuntoN", i + 1));
 			}
+
+			// El alto real de la pestaña no existe hasta que el motor ha recalculado el arbol, y
+			// cambia si el jugador redimensiona la ventana.
+			ColocarColumnas();
 		}
 	}
 }
