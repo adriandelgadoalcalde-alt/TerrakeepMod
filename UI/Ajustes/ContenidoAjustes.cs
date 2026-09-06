@@ -53,8 +53,13 @@ namespace TerrakeepMod.UI.Ajustes
 			RefrescarTextos();
 		}
 
-		/// <summary>Una caja con el mismo aspecto que las de las demas areas del panel.</summary>
-		private UIPanel NuevaCaja(float arriba, float alto, string titulo)
+		/// <summary>
+		/// Una caja con el mismo aspecto que las de las demas areas del panel. El titulo se pasa
+		/// como <c>Func&lt;string&gt;</c> y no como <c>string</c>: si se pasara ya resuelto, se
+		/// quedaria congelado en el idioma que hubiera al construir el area y no cambiaria con el
+		/// selector de idioma de esta misma pantalla.
+		/// </summary>
+		private UIPanel NuevaCaja(float arriba, float alto, System.Func<string> titulo)
 		{
 			UIPanel caja = new UIPanel();
 			caja.Width.Set(0f, 1f);
@@ -65,14 +70,14 @@ namespace TerrakeepMod.UI.Ajustes
 			caja.SetPadding(10f);
 			Append(caja);
 
-			EtiquetaTk cabecera = new EtiquetaTk(() => titulo, 0.9f, 400f, 26f);
+			EtiquetaTk cabecera = new EtiquetaTk(titulo, 0.9f, 400f, 26f);
 			caja.Append(cabecera);
 			return caja;
 		}
 
 		private void ConstruirCajaIdioma(float arriba)
 		{
-			UIPanel caja = NuevaCaja(arriba, AltoCaja, Idiomas.Texto("Ajustes.Idioma"));
+			UIPanel caja = NuevaCaja(arriba, AltoCaja, () => Idiomas.Texto("Ajustes.Idioma"));
 
 			_botonSeguirElJuego = CrearBoton(caja, 0f, 32f);
 			_botonSeguirElJuego.AlPulsar += () => Elegir(IdiomaDeTerrakeep.SeguirElJuego);
@@ -92,7 +97,7 @@ namespace TerrakeepMod.UI.Ajustes
 
 		private void ConstruirCajaHistorial(float arriba)
 		{
-			UIPanel caja = NuevaCaja(arriba, AltoCaja, Idiomas.Texto("Ajustes.Historial"));
+			UIPanel caja = NuevaCaja(arriba, AltoCaja, () => Idiomas.Texto("Ajustes.Historial"));
 
 			_estadoHistorial = new EtiquetaTk(TextoEstadoHistorial, 0.78f, 800f, 22f);
 			_estadoHistorial.ColorTexto = EstiloTk.TextoSuave;
@@ -116,11 +121,13 @@ namespace TerrakeepMod.UI.Ajustes
 		/// </summary>
 		private void ConstruirCajaAtajos(float arriba)
 		{
-			UIPanel caja = NuevaCaja(arriba, AltoCaja + 44f, "Atajos de teclado");
+			// Las cuatro lineas de esta caja iban FIJAS en español y se veian en español dentro de
+			// un panel que estaba en ingles: se vio en una captura real del juego. Ahora salen del
+			// mismo sistema de localizacion que el resto del area.
+			UIPanel caja = NuevaCaja(arriba, AltoCaja + 44f, () => Idiomas.Texto("Ajustes.Atajos"));
 
 			EtiquetaTk nota = new EtiquetaTk(
-				() => "Cada tecla abre Terrakeep directamente en su pestaña. Reasignables en " +
-					"Ajustes > Controles del juego.",
+				() => Idiomas.Texto("Ajustes.AtajosNota"),
 				0.72f, 900f, 20f);
 			nota.ColorTexto = EstiloTk.TextoSuave;
 			nota.Top.Set(26f, 0f);
@@ -131,15 +138,14 @@ namespace TerrakeepMod.UI.Ajustes
 			caja.Append(lista);
 
 			EtiquetaTk historial = new EtiquetaTk(
-				() => "Deshacer/Rehacer: " + TeclaDe("Deshacer") + " y " + TeclaDe("Rehacer") +
-					" (con Ctrl pulsado).",
+				() => Idiomas.Texto("Ajustes.AtajosHistorial", TeclaDe("Deshacer"), TeclaDe("Rehacer")),
 				0.75f, 900f, 24f);
 			historial.ColorTexto = EstiloTk.TextoSuave;
 			historial.Top.Set(76f, 0f);
 			caja.Append(historial);
 
 			EtiquetaTk icono = new EtiquetaTk(
-				() => "También se abre con el icono de Terrakeep del inventario, arriba a la izquierda.",
+				() => Idiomas.Texto("Ajustes.AtajosIcono"),
 				0.75f, 900f, 24f);
 			icono.ColorTexto = EstiloTk.TextoSuave;
 			icono.Top.Set(102f, 0f);

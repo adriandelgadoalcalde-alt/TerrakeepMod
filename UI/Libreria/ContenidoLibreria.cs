@@ -153,8 +153,9 @@ namespace TerrakeepMod.UI.Libreria
 			_botonLimpiar.AlPulsar += () => FijarBusqueda("");
 			fila.Append(_botonLimpiar);
 
-			_resumen = new EtiquetaTk(TextoResumen, 0.78f, 620f, 22f);
+			_resumen = new EtiquetaTk(TextoResumen, 0.75f, 0f, 22f);
 			_resumen.ColorTexto = EstiloTk.TextoSuave;
+			_resumen.Width.Set(-(AnchoColumnaCarpetas + 8f + 98f), 1f);
 			_resumen.Left.Set(AnchoColumnaCarpetas + 8f + 98f, 0f);
 			_resumen.Top.Set(7f, 0f);
 			fila.Append(_resumen);
@@ -248,13 +249,21 @@ namespace TerrakeepMod.UI.Libreria
 
 			_zonaDestino = caja;
 
-			float ancho = 118f;
+			// Ancho en PORCENTAJE, no en pixeles: con 118 px fijos, los siete destinos ocupaban
+			// 854 px y en una ventana de 800 se salian por la derecha del panel. Se vio en una
+			// captura real del juego, no leyendo el codigo.
+			float fraccion = 1f / Destinos.Length;
 			for (int i = 0; i < Destinos.Length; i++) {
 				int indice = i;
-				BotonTk boton = new BotonTk(Destinos[i].Nombre, 0.72f);
-				boton.Width.Set(ancho, 0f);
+				// Etiqueta CORTA en el boton y nombre completo en el tooltip: siete botones se
+				// reparten ~420 px en una ventana de 800, o sea 60 px cada uno, y "Monedas y
+				// municion" se salia por encima del de al lado (visto en una captura real).
+				BotonTk boton = new BotonTk(NombresCortosDestino[i], 0.7f);
+				boton.EsPestana = true;
+				boton.Width.Set(-4f, fraccion);
 				boton.Height.Set(28f, 0f);
-				boton.Left.Set(i * (ancho + 4f), 0f);
+				boton.Left.Set(0f, i * fraccion);
+				boton.Ayuda = Destinos[i].Nombre;
 				boton.AlPulsar += () => MostrarDestino(indice);
 				_botonesDestino.Add(boton);
 				_zonaDestino.Append(boton);
@@ -516,6 +525,15 @@ namespace TerrakeepMod.UI.Libreria
 
 		// El orden es el mismo que en el panel de Personaje (WS1): inventario, luego lo que cuelga
 		// de el, luego el equipo, luego los almacenes.
+		/// <summary>
+		/// Lo que se escribe DENTRO de cada boton de destino. El nombre largo (el de
+		/// <see cref="Destinos"/>) sigue siendo el de verdad: se usa en el tooltip, en el titulo de
+		/// la zona y en el log. En el mismo orden que <see cref="Destinos"/>.
+		/// </summary>
+		private static readonly string[] NombresCortosDestino = {
+			"Mochila", "Monedas", "Equipo", "Hucha", "Caja", "Forja", "Bóveda"
+		};
+
 		private static readonly DestinoLibreria[] Destinos = {
 			new DestinoLibreria("Inventario", () => Main.LocalPlayer.inventory, 0, 50,
 				i => ItemSlot.Context.InventoryItem),
@@ -593,9 +611,11 @@ namespace TerrakeepMod.UI.Libreria
 			string donde = CarpetaActual != null ? " en \"" + CarpetaActual.Name + "\"" : " en toda la Librería";
 
 			if (_mostrados == 0) {
+				// Texto corto a proposito: esta linea va en el hueco que queda a la derecha del
+				// buscador, que en una ventana de 800 px son ~340 px.
 				return _busqueda.Length > 0
 					? "Sin resultados" + donde + "."
-					: "Elige una carpeta o escribe en el buscador. " + CatalogoVivo.Objetos.Count + " objetos disponibles.";
+					: CatalogoVivo.Objetos.Count + " objetos. Elige una carpeta o busca.";
 			}
 
 			return _totalCasados > _mostrados
@@ -608,7 +628,7 @@ namespace TerrakeepMod.UI.Libreria
 			if (_ultimoAviso.Length > 0) {
 				return _ultimoAviso;
 			}
-			return "Clic en un objeto = 1 unidad al ratón; clic derecho = pila completa. Suéltalo aquí abajo.";
+			return "Clic = 1 unidad al ratón; clic derecho = pila completa. Suéltalo aquí abajo.";
 		}
 
 		private string RutaCorta()

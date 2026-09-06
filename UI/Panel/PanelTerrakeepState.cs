@@ -44,6 +44,23 @@ namespace TerrakeepMod.UI.Panel
 		private const float AltoMaximo = 700f;
 		private const float AltoPie = 44f;
 
+		/// <summary>
+		/// Alto de la fila del titulo, que ademas hace de <b>hueco para el HUD del juego</b>.
+		/// <para />
+		/// No es decoracion: con un panel de <c>IngameFancyUI</c> abierto, el juego <b>sigue
+		/// dibujando las barras de vida y mana ENCIMA</b>, y lo hace a proposito. El codigo real de
+		/// <c>IngameFancyUI.Draw</c> (tModLoader.dll instalado) llama a
+		/// <c>Main.instance.GUIBarsDraw()</c> despues de que <c>InGameUI.Draw</c> haya pintado el
+		/// panel del mod, asi que los corazones quedan por encima. Se vio en una captura real del
+		/// juego: la barra de pestañas estaba justo debajo de los corazones y estos tapaban el
+		/// texto de la pestaña "Exploración". Dejando esta fila arriba, las pestañas caen ya por
+		/// debajo del HUD, y el hueco se aprovecha para el titulo (que va a la IZQUIERDA, que es
+		/// donde el HUD no pinta nada).
+		/// </summary>
+		private const float AltoTitulo = 30f;
+
+		private const float AltoBarraPestanas = EstiloTk.AltoPestana;
+
 		private UIPanel _marco;
 		private UIElement _contenedor;
 		private readonly List<BotonTk> _botonesPestana = new List<BotonTk>();
@@ -87,17 +104,29 @@ namespace TerrakeepMod.UI.Panel
 			_marco.SetPadding(10f);
 			Append(_marco);
 
+			ConstruirTitulo();
 			ConstruirBarraPestanas();
 
+			float arribaContenido = AltoTitulo + AltoBarraPestanas + 8f;
 			_contenedor = new UIElement();
 			_contenedor.Width.Set(0f, 1f);
-			_contenedor.Top.Set(EstiloTk.AltoPestana + 8f, 0f);
-			_contenedor.Height.Set(-(EstiloTk.AltoPestana + 8f + AltoPie), 1f);
+			_contenedor.Top.Set(arribaContenido, 0f);
+			_contenedor.Height.Set(-(arribaContenido + AltoPie), 1f);
 			_marco.Append(_contenedor);
 
 			ConstruirPie();
 
 			CambiarArea(UltimaArea, "reapertura");
+		}
+
+		/// <summary>La fila del titulo. El texto va pegado a la izquierda a proposito: la derecha de
+		/// esa franja la ocupa el HUD de vida/mana del propio juego (ver <see cref="AltoTitulo"/>).</summary>
+		private void ConstruirTitulo()
+		{
+			EtiquetaTk titulo = new EtiquetaTk(() => "Terrakeep", 1.15f, 300f, AltoTitulo);
+			titulo.Left.Set(2f, 0f);
+			titulo.Top.Set(0f, 0f);
+			_marco.Append(titulo);
 		}
 
 		private void ConstruirBarraPestanas()
@@ -110,8 +139,9 @@ namespace TerrakeepMod.UI.Panel
 				BotonTk boton = new BotonTk(nombres[i], EstiloTk.EscalaPestana);
 				boton.EsPestana = true;
 				boton.Width.Set(-EstiloTk.SeparacionPestanas, fraccion);
-				boton.Height.Set(EstiloTk.AltoPestana, 0f);
+				boton.Height.Set(AltoBarraPestanas, 0f);
 				boton.Left.Set(0f, i * fraccion);
+				boton.Top.Set(AltoTitulo, 0f);
 				boton.Ayuda = AyudaDeArea(area) + "\nAtajo: " + PanelTerrakeepSystem.TeclaDe(area);
 				boton.AlPulsar += () => CambiarArea(area, "clic en la pestaña");
 				_botonesPestana.Add(boton);
@@ -121,7 +151,8 @@ namespace TerrakeepMod.UI.Panel
 
 		private void ConstruirPie()
 		{
-			EtiquetaTk ayuda = new EtiquetaTk(() => "Terrakeep  ·  " + AyudaDeArea(_area), 0.75f, 820f, 22f);
+			// Sin repetir "Terrakeep": ya esta arriba, en la fila del titulo.
+			EtiquetaTk ayuda = new EtiquetaTk(() => AyudaDeArea(_area), 0.75f, 820f, 22f);
 			ayuda.ColorTexto = EstiloTk.TextoSuave;
 			ayuda.Left.Set(2f, 0f);
 			ayuda.VAlign = 1f;

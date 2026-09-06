@@ -64,6 +64,10 @@ Ajustes: {
 	Rehacer: Redo (Ctrl+Y)
 	DeshacerAlgo: Undo: {0}
 	RehacerAlgo: Redo: {0}
+	Atajos: Keybinds
+	AtajosNota: Each key opens Terrakeep straight on its own tab. Rebindable in the game's Settings > Controls.
+	AtajosHistorial: Undo and redo: {0} and {1} (holding Ctrl).
+	AtajosIcono: It also opens from the Terrakeep icon next to the bestiary and emote buttons, while the inventory is open.
 }
 
 Historial: {

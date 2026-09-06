@@ -194,6 +194,26 @@ namespace TerrakeepMod.Common.Panel
 			RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL - pestaña \"" +
 				PanelTerrakeepState.NombresDeArea[(int)area] + "\" ya dibujada: " +
 				panel.InformeAreaActual());
+
+			// Imagen real de la pestaña, para poder mirar la estetica y no solo contar elementos.
+			RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL - " +
+				CapturaDePantalla.Guardar("pestana-" + (int)area + "-" +
+					Sanear(PanelTerrakeepState.NombresDeArea[(int)area])));
+		}
+
+		/// <summary>Nombre de archivo sin tildes ni espacios.</summary>
+		private static string Sanear(string texto)
+		{
+			string normal = texto.Normalize(System.Text.NormalizationForm.FormD);
+			System.Text.StringBuilder salida = new System.Text.StringBuilder();
+			foreach (char c in normal) {
+				if (System.Globalization.CharUnicodeInfo.GetUnicodeCategory(c) ==
+					System.Globalization.UnicodeCategory.NonSpacingMark) {
+					continue;
+				}
+				salida.Append(char.IsLetterOrDigit(c) ? char.ToLowerInvariant(c) : '-');
+			}
+			return salida.ToString();
 		}
 
 		// -------------------------------------------------------------------------------------
@@ -241,6 +261,11 @@ namespace TerrakeepMod.Common.Panel
 				(ahora > _escalaAntes
 					? "OK: la animacion ha CRECIDO (referencia real: Main.DrawSettingButton va de 0,80 a 0,96 a 0,02 por fotograma)."
 					: "NO HA CRECIDO."));
+
+			// Imagen del boton en su punto mas resaltado, para poder VER la animacion y no solo
+			// leer el numero: el marco crece y aparece el borde claro.
+			RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL/animacion - " +
+				CapturaDePantalla.Guardar("animacion-" + Sanear(donde)));
 		}
 
 		private static void TerminarHover(string donde)
@@ -349,6 +374,9 @@ namespace TerrakeepMod.Common.Panel
 				"). Para comparar, los iconos vanilla de esa misma fila: bestiario (498,278,30,30) y " +
 				"emotes (534,278,30,30). " +
 				(dibujados > 0 ? "OK: la capa del HUD corre de verdad." : "NO se ha llegado a dibujar."));
+
+			RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL/icono - " +
+				CapturaDePantalla.Guardar("icono-hud"));
 		}
 
 		private static void ClicEnElIcono()

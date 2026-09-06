@@ -166,7 +166,8 @@ namespace TerrakeepMod.UI.Builds
 				return;
 			}
 
-			_subtituloTexto = "Equipo recomendado para esta etapa y clase.";
+			// Valores de partida; RefrescarPosesion los deja con los numeros reales al final.
+			ActualizarResumen(0, 0);
 
 			// Fila 1: fuente de datos. Solo se enseña si hay mas de una (Calamity sin instalar
 			// deja una sola y la fila sobra).
@@ -322,7 +323,7 @@ namespace TerrakeepMod.UI.Builds
 					contenedor.Append(pie);
 				}
 
-				y += 52f;
+				y += 48f;
 			}
 
 			if (objetos.Count == 0) {
@@ -478,9 +479,22 @@ namespace TerrakeepMod.UI.Builds
 				}
 			}
 
-			_textoResumen = $"Verde = ya lo tienes · gris = no lo tienes (auto-equipar no lo crea) · " +
-				$"rojo = no existe en esta partida.   Tienes {tiene} de {resueltos} " +
-				$"(ranuras de accesorio disponibles: {EquipoJugador.SlotsAccesorioDisponibles(jugador)}).";
+			ActualizarResumen(tiene, resueltos);
+		}
+
+		/// <summary>
+		/// Las dos lineas de la cabecera. Van repartidas en dos a proposito: en una sola, con la
+		/// leyenda de colores y el recuento juntos, el texto se salia del marco por la derecha en
+		/// una ventana de 800 px (visto en una captura real del juego).
+		/// </summary>
+		private void ActualizarResumen(int tiene, int resueltos)
+		{
+			Player jugador = Main.LocalPlayer;
+			string ranuras = jugador == null
+				? ""
+				: "  ·  ranuras de accesorio disponibles: " + EquipoJugador.SlotsAccesorioDisponibles(jugador);
+			_subtituloTexto = "Tienes " + tiene + " de " + resueltos + " objetos de esta build" + ranuras + ".";
+			_textoResumen = "Verde = ya lo tienes  ·  gris = no lo tienes  ·  rojo = no existe aquí.";
 		}
 
 		/// <summary>Boton "Auto-equipar". Solo mueve objetos que el jugador ya tiene.</summary>

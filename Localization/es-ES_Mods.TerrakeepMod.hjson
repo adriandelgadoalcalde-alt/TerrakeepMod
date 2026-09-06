@@ -8,9 +8,9 @@ Keybinds: {
 	AbrirAjustes.DisplayName: Abrir los Ajustes de Terrakeep
 	Deshacer.DisplayName: Deshacer (con Ctrl)
 	Rehacer.DisplayName: Rehacer (con Ctrl)
-	# WS6 - exploracion del mundo y mapa.
+	# WS6 - world exploration and map.
 	AbrirExploracion.DisplayName: Abrir la Exploración de Terrakeep
-	# WS5 - investigacion (Modo Viaje).
+	# WS5 - research (Journey Mode).
 	AbrirInvestigacion.DisplayName: Abrir la Investigación de Terrakeep
 }
 
@@ -64,6 +64,10 @@ Ajustes: {
 	Rehacer: Rehacer (Ctrl+Y)
 	DeshacerAlgo: Deshacer: {0}
 	RehacerAlgo: Rehacer: {0}
+	Atajos: Atajos de teclado
+	AtajosNota: Cada tecla abre Terrakeep directamente en su pestaña. Reasignables en Ajustes > Controles del juego.
+	AtajosHistorial: Deshacer y rehacer: {0} y {1} (con Ctrl pulsado).
+	AtajosIcono: También se abre con el icono de Terrakeep, junto al bestiario y los emotes, cuando tienes el inventario abierto.
 }
 
 Historial: {

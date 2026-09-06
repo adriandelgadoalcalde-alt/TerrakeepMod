@@ -22,7 +22,7 @@ namespace TerrakeepMod.UI.Personaje
 	/// </remarks>
 	public class ContenidoPersonaje : UIElement
 	{
-		private const float AltoCabecera = 66f;
+		private const float AltoCabecera = 90f;
 		private const float AltoBarraPestanas = 30f;
 		private const float SeparacionPestanas = 6f;
 

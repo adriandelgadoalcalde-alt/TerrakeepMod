@@ -95,7 +95,10 @@ namespace TerrakeepMod.UI.Exploracion
 			aviso.ColorTexto = EstiloTk.TextoSuave;
 			aviso.Top.Set(y, 0f);
 			lateral.Append(aviso);
-			y += 60f;
+			// 74 y no 60: son TRES lineas y la fuente del juego a escala 0,7 gasta ~21 px por
+			// linea, o sea 63. Con 60 la tercera linea se comia el titulo "Marcadores" de debajo -
+			// se vio en una captura real, no leyendo el codigo.
+			y += 74f;
 
 			EtiquetaTk leyenda = new EtiquetaTk(() => "Marcadores", 0.85f, AnchoLateral, 24f);
 			leyenda.Top.Set(y, 0f);

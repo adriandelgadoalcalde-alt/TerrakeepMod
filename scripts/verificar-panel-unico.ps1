@@ -142,6 +142,15 @@ if (Test-Path $evidencia) {
 	New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destino) | Out-Null
 	Copy-Item $evidencia $destino -Force
 	Write-Host "(copia guardada en $destino)" -ForegroundColor DarkGray
+
+	# Las capturas reales del back buffer que ha dejado el propio mod. Se quedan FUERA del repo
+	# (son imagenes grandes y se regeneran con este mismo script); se copian a un sitio conocido
+	# para poder mirarlas.
+	$capturas = Join-Path $sandbox 'terrakeep-capturas'
+	if (Test-Path $capturas) {
+		Write-Host "Capturas reales del juego en: $capturas" -ForegroundColor DarkGray
+		Get-ChildItem $capturas -Filter *.png | ForEach-Object { Write-Host "  $($_.Name)  ($($_.Length) bytes)" -ForegroundColor DarkGray }
+	}
 } else {
 	Write-Host "(el mod no llego a escribir $evidencia)" -ForegroundColor Red
 	Write-Host 'Ultimas lineas del client.log del juego, por si dice algo:' -ForegroundColor DarkGray
