@@ -78,6 +78,13 @@ namespace TerrakeepMod.UI.Personaje
 		/// cada fotograma.</summary>
 		private float _pasoColocado = -1f;
 
+		/// <summary>Columnas en las que estan repartidas ahora mismo las 10 filas de equipo.</summary>
+		private int _columnasColocadas = -1;
+
+		/// <summary>Sitio que hay que dejarle al rotulo de cada fila ("Accesorio 7  (no activa)" es
+		/// lo mas largo que sale ahi).</summary>
+		private const float AnchoRotuloFila = 170f;
+
 		public PestanaEquipo()
 		{
 			Width.Set(0f, 1f);
@@ -288,14 +295,34 @@ namespace TerrakeepMod.UI.Personaje
 		/// </summary>
 		private void ColocarColumnas()
 		{
-			float alto = GetDimensions().Height;
+			CalculatedStyle propias = GetDimensions();
+			float alto = propias.Height;
 			if (alto <= 0f) {
 				return;
 			}
 
 			float disponible = alto - ArribaRejilla - 4f;
-			float pasoCabe = disponible / FilasEquipo;
-			float escala = (pasoCabe - RejillaSlots.Separacion) / 52f;
+
+			// Cuantas columnas hacen falta para que las 10 filas quepan sin bajar de la escala
+			// minima. A 800x720 sale 1; a 1600x900 el juego usa escala de interfaz 1,47 y la
+			// pantalla logica se queda en 1090x613, o sea MENOS alto util que a 720 y mas ancho -
+			// ahi salen 2 y las filas se reparten. Fallo real visto en una captura a esa
+			// resolucion: con una sola columna el accesorio 7 volvia a salirse por abajo.
+			int columnas = 1;
+			int filasPorColumna = FilasEquipo;
+			float escala = EscalaMinima;
+			while (columnas <= 2) {
+				filasPorColumna = (FilasEquipo + columnas - 1) / columnas;
+				escala = (disponible / filasPorColumna - RejillaSlots.Separacion) / 52f;
+				if (escala >= EscalaMinima) {
+					break;
+				}
+				columnas++;
+			}
+			if (columnas > 2) {
+				columnas = 2;
+				filasPorColumna = (FilasEquipo + 1) / 2;
+			}
 			if (escala > EscalaMaxima) {
 				escala = EscalaMaxima;
 			}
@@ -304,20 +331,23 @@ namespace TerrakeepMod.UI.Personaje
 			}
 
 			float paso = RejillaSlots.Paso(escala);
-			if (System.Math.Abs(paso - _pasoColocado) < 0.5f) {
+			if (columnas == _columnasColocadas && System.Math.Abs(paso - _pasoColocado) < 0.5f) {
 				return;
 			}
 			_pasoColocado = paso;
+			_columnasColocadas = columnas;
 
-			float izquierdaMisc = paso * 3f + 250f;
+			float anchoColumna = paso * 3f + AnchoRotuloFila;
+			float izquierdaMisc = columnas * anchoColumna + 20f;
 
 			for (int i = 0; i < _filasEquipo.Count; i++) {
 				FilaEquipo fila = _filasEquipo[i];
-				float y = ArribaRejilla + i * paso;
-				Colocar(fila.Equipado, escala, 0f, y);
-				Colocar(fila.Vanidad, escala, paso, y);
-				Colocar(fila.Tinte, escala, paso * 2f, y);
-				fila.Nombre.Left.Set(paso * 3f + 6f, 0f);
+				float x = (i / filasPorColumna) * anchoColumna;
+				float y = ArribaRejilla + (i % filasPorColumna) * paso;
+				Colocar(fila.Equipado, escala, x, y);
+				Colocar(fila.Vanidad, escala, x + paso, y);
+				Colocar(fila.Tinte, escala, x + paso * 2f, y);
+				fila.Nombre.Left.Set(x + paso * 3f + 6f, 0f);
 				fila.Nombre.Top.Set(y + (paso - 22f) / 2f, 0f);
 			}
 
