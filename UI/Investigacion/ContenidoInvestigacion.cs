@@ -97,7 +97,7 @@ namespace TerrakeepMod.UI.Investigacion
 
 		private void ConstruirCabecera()
 		{
-			_aviso = new EtiquetaTk(TextoAviso, 0.85f, 1040f, 22f);
+			_aviso = new EtiquetaTk(TextoAviso, 0.8f, 700f, 22f);
 			_aviso.ColorTexto = EstiloInvestigacion.Peligro;
 			_aviso.Top.Set(0f, 0f);
 			Append(_aviso);
@@ -163,24 +163,24 @@ namespace TerrakeepMod.UI.Investigacion
 			_cajaObjetos.SetPadding(6f);
 			Append(_cajaObjetos);
 
-			_tituloObjetos = new EtiquetaTk(TextoTituloCarpeta, 0.85f, 400f, 22f);
+			_tituloObjetos = new EtiquetaTk(TextoTituloCarpeta, 0.8f, 200f, 22f);
 			_tituloObjetos.Top.Set(2f, 0f);
 			_cajaObjetos.Append(_tituloObjetos);
 
 			_botonCarpeta = new BotonTk("Investigar carpeta", 0.75f);
-			_botonCarpeta.Width.Set(170f, 0f);
+			_botonCarpeta.Width.Set(-6f, 0.28f);
 			_botonCarpeta.Height.Set(28f, 0f);
 			_botonCarpeta.Top.Set(0f, 0f);
-			_botonCarpeta.Left.Set(-352f, 1f);
+			_botonCarpeta.Left.Set(0f, 0.44f);
 			_botonCarpeta.Ayuda = "Investiga del todo cada objeto de esta carpeta y de las que hay dentro";
 			_botonCarpeta.AlPulsar += InvestigarCarpeta;
 			_cajaObjetos.Append(_botonCarpeta);
 
 			_botonQuitarCarpeta = new BotonTk("Quitar carpeta", 0.75f);
-			_botonQuitarCarpeta.Width.Set(170f, 0f);
+			_botonQuitarCarpeta.Width.Set(-6f, 0.28f);
 			_botonQuitarCarpeta.Height.Set(28f, 0f);
 			_botonQuitarCarpeta.Top.Set(0f, 0f);
-			_botonQuitarCarpeta.Left.Set(-176f, 1f);
+			_botonQuitarCarpeta.Left.Set(0f, 0.72f);
 			_botonQuitarCarpeta.Ayuda = "Deja sin investigar todo lo de esta carpeta (Ctrl+Z lo devuelve)";
 			_botonQuitarCarpeta.AlPulsar += QuitarCarpeta;
 			_cajaObjetos.Append(_botonQuitarCarpeta);
@@ -238,10 +238,13 @@ namespace TerrakeepMod.UI.Investigacion
 			if (EstadoInvestigacion.ModoViaje) {
 				return "";
 			}
-			return "AVISO: este personaje NO es de Modo Viaje (dificultad " +
+			// Texto CORTO: el largo ocupaba ~1040 px y se salia del marco por la derecha en una
+			// ventana de 800, y partirlo en dos lineas tampoco valia porque la segunda se metia
+			// por encima de "Progreso global", que va a 30 px fijos. Las dos cosas se vieron en
+			// capturas reales del juego.
+			return "AVISO: no es un personaje de Modo Viaje (dificultad " +
 				(Main.LocalPlayer != null ? Main.LocalPlayer.difficulty.ToString() : "?") +
-				"). La investigacion se guarda igual en el personaje, pero el juego no la usa para " +
-				"nada fuera del Modo Viaje: no habra menu de duplicar objetos.";
+				"): se guarda, pero el juego no lo usa.";
 		}
 
 		private static string TextoProgreso()
@@ -257,8 +260,11 @@ namespace TerrakeepMod.UI.Investigacion
 			if (_seleccionada == null) {
 				return "Elige una carpeta";
 			}
-			return EstiloInvestigacion.Acortar(_seleccionada.Nombre, 34) +
-				"  -  " + _seleccionada.Hechos + "/" + _seleccionada.Total + " investigados";
+			// 22 caracteres y sin la palabra "investigados": el hueco que queda a la izquierda de
+			// los dos botones de la derecha son ~180 px, y con 34 el texto se metia por debajo de
+			// ellos (visto en una captura real).
+			return EstiloInvestigacion.Acortar(_seleccionada.Nombre, 22) +
+				"  " + _seleccionada.Hechos + "/" + _seleccionada.Total;
 		}
 
 		// ------------------------------------------------------------------ arbol
