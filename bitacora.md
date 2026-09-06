@@ -1554,3 +1554,17 @@ Las seis pestañas cambian con clic real, los seis atajos saltan a su pestaña, 
 en el mismo (570, 278, 30, 30) y la autoprueba termina sin excepciones. Se nota que Calamity está
 cargado: Builds pasa de 8 a 10 botones (la fila de fuentes) y la Librería y la Investigación
 crecen.
+
+### 12. Un tropiezo con el índice privado, para que no se repita
+
+WS3 dejó escrito que después de comitear con un índice privado hay que hacer `git reset` a secas
+para que el `.git/index` compartido no se quede obsoleto. Se hizo... pero **dentro del mismo
+comando en el que seguía exportada `GIT_INDEX_FILE`**, así que ese `reset` reseteaba el índice
+PRIVADO y no el compartido. Cinco commits después, `git status` marcaba con `D` (borrado
+preparado) unos 40 archivos que existen en disco y en `HEAD` — exactamente el estado peligroso que
+describía WS3.
+
+Arreglado con un `git reset` **sin** `GIT_INDEX_FILE` en el entorno, tras comprobar que no había
+ninguna entrada `A` (contenido que existiera solo en el índice). Árbol limpio y nada perdido. La
+regla completa es: `GIT_INDEX_FILE=<propio> git read-tree HEAD && git add ... && git commit`, y
+**después, en un comando aparte y sin esa variable, `git reset`**.
