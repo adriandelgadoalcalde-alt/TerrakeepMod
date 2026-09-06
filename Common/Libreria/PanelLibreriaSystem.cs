@@ -5,7 +5,9 @@ using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.UI;
+using TerrakeepMod.Common.Panel;
 using TerrakeepMod.UI.Libreria;
+using TerrakeepMod.UI.Panel;
 
 namespace TerrakeepMod.Common.Libreria
 {
@@ -31,20 +33,28 @@ namespace TerrakeepMod.Common.Libreria
 		public const string VariableAutoprueba = "TERRAKEEP_AUTOTEST_WS3";
 
 		private static ModKeybind _atajo;
-		private static PanelLibreriaState _panel;
-		private static uint _ultimoFotogramaAlternado;
 
 		private static bool _autopruebaHecha;
 		private static int _fotogramasEnMundo;
 
-		/// <summary>true si el panel de Libreria esta abierto ahora mismo.</summary>
-		public static bool PanelAbierto {
-			get { return Main.InGameUI != null && Main.InGameUI.CurrentState is PanelLibreriaState; }
+		/// <summary>El atajo de la Libreria. Lo registra este sistema y lo LEE
+		/// <c>PanelTerrakeepSystem</c>, que es quien abre el panel unico en esta pestaña.</summary>
+		public static ModKeybind Atajo {
+			get { return _atajo; }
 		}
 
-		/// <summary>Instancia abierta ahora mismo, o null. La usa el arnes de pruebas.</summary>
-		public static PanelLibreriaState PanelActual {
-			get { return _panel; }
+		/// <summary>true si el panel esta abierto Y en la pestaña de Libreria.</summary>
+		public static bool PanelAbierto {
+			get { return PanelTerrakeepSystem.AreaAbiertaEs(AreaTerrakeep.Libreria); }
+		}
+
+		/// <summary>El contenido de la Libreria montado ahora mismo, o null. Lo usa el arnes de
+		/// pruebas.</summary>
+		public static ContenidoLibreria PanelActual {
+			get {
+				PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
+				return panel != null ? panel.Libreria : null;
+			}
 		}
 
 		public override void Load()
@@ -67,7 +77,6 @@ namespace TerrakeepMod.Common.Libreria
 		public override void Unload()
 		{
 			_atajo = null;
-			_panel = null;
 			RegistroLibreria.Mod = null;
 			ArbolLibreria.Descargar();
 			CatalogoVivo.Invalidar();
@@ -90,85 +99,29 @@ namespace TerrakeepMod.Common.Libreria
 				return;
 			}
 
-			// Primero y sin condiciones, por el mismo motivo que documentaron WS0 y WS4:
-			// ModKeybind.JustPressed puede lanzar KeyNotFoundException durante los primeros
-			// fotogramas de una partida (PlayerInput.Triggers todavia no conoce los atajos de
-			// mods) y abortaria el resto del metodo antes de llegar a la autoprueba.
+			// Primero y sin condiciones, por el mismo motivo que documentaron WS0 y WS4: una
+			// excepcion aqui abortaria el resto del metodo antes de llegar a la autoprueba.
 			ActualizarAutoprueba();
 			AutopruebaLibreria.Actualizar();
-
-			if (PanelAbierto) {
-				// Se reafirma cada fotograma: si algo lo volviera a poner a false,
-				// Player.dropItemCheck vaciaria el objeto que se lleva cogido con el raton.
-				PanelLibreriaState.MantenerInventarioAbierto();
-			}
-
-			if (_atajo == null) {
-				return;
-			}
-
-			try {
-				if (_atajo.JustPressed) {
-					AlternarPanel("atajo de teclado (tecla O)");
-				}
-			}
-			catch (KeyNotFoundException) {
-				// Se autocorrige solo en cuanto el motor procesa el PlayerInput.reinitialize.
-			}
 		}
 
+		/// <summary>Abre el panel en la pestaña de Libreria, o lo cierra si ya estaba ahi.</summary>
 		public static void AlternarPanel(string origen)
 		{
-			if (_ultimoFotogramaAlternado == Main.GameUpdateCount) {
-				return;
-			}
-			_ultimoFotogramaAlternado = Main.GameUpdateCount;
-
-			if (PanelAbierto) {
-				CerrarPanel(origen);
-			}
-			else {
-				AbrirPanel(origen);
-			}
+			PanelTerrakeepSystem.AlternarArea(AreaTerrakeep.Libreria, origen);
 		}
 
 		public static void AbrirPanel(string origen)
 		{
-			if (Main.gameMenu || Main.LocalPlayer == null || !Main.LocalPlayer.active) {
-				return;
-			}
-
-			// El catalogo se construye la primera vez que hace falta de verdad, no al cargar el
-			// mod: quien no abra la Libreria no paga el recorrido de los ~8000 objetos.
-			ArbolLibreria.ConstruirSiHaceFalta();
-
-			// Instancia nueva cada vez, igual que los demas paneles del mod: OnInitialize solo
-			// corre una vez por instancia y las ranuras de destino capturan los arrays reales del
-			// jugador, que se reasignan al cargar otro personaje.
-			_panel = new PanelLibreriaState();
-			IngameFancyUI.OpenUIState(_panel);
-			PanelLibreriaState.MantenerInventarioAbierto();
-
 			RegistroLibreria.Linea(
-				$"{Terrakeep.LogTag} PANEL LIBRERIA ABIERTO via {origen}. " +
-				$"Jugador: \"{Main.LocalPlayer.name}\". Mundo: \"{Main.worldName}\". " +
-				$"Arbol: {ArbolLibreria.Resumen}. " +
-				$"Main.inFancyUI={Main.inFancyUI}, " +
-				$"InGameUI.CurrentState={Main.InGameUI.CurrentState?.GetType().FullName}");
+				$"{Terrakeep.LogTag} Libreria: se pide abrir el panel via {origen}. " +
+				$"Arbol: {ArbolLibreria.Resumen}.");
+			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Libreria, origen);
 		}
 
 		public static void CerrarPanel(string origen)
 		{
-			if (!PanelAbierto) {
-				return;
-			}
-
-			// Fuera del panel nadie dibuja el objeto que se lleva "cogido" con el raton.
-			PanelLibreriaState.DevolverObjetoDelRaton();
-
-			RegistroLibreria.Linea($"{Terrakeep.LogTag} PANEL LIBRERIA CERRADO via {origen}.");
-			IngameFancyUI.Close();
-			_panel = null;
+			PanelTerrakeepSystem.CerrarPanel(origen);
 		}
 
 		private static void ActualizarAutoprueba()

@@ -5,7 +5,9 @@ using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.UI;
+using TerrakeepMod.Common.Panel;
 using TerrakeepMod.UI.Exploracion;
+using TerrakeepMod.UI.Panel;
 
 namespace TerrakeepMod.Common.Exploracion
 {
@@ -40,8 +42,6 @@ namespace TerrakeepMod.Common.Exploracion
 		public const double PresupuestoBusquedaMs = 2.0;
 
 		private static ModKeybind _atajo;
-		private static PanelExploracionState _panel;
-		private static uint _ultimoFotogramaAlternado;
 
 		private static bool _autopruebaHecha;
 		private static int _fotogramasEnMundo;
@@ -54,11 +54,22 @@ namespace TerrakeepMod.Common.Exploracion
 		/// vuelve al panel en vez de dejar al jugador a medias.</summary>
 		private static bool _volverAlPanelAlCerrarMapa;
 
-		/// <summary>true si el panel de Exploracion esta abierto ahora mismo.</summary>
-		public static bool PanelAbierto =>
-			Main.InGameUI != null && Main.InGameUI.CurrentState is PanelExploracionState;
+		/// <summary>El atajo de Exploracion. Lo registra este sistema y lo LEE
+		/// <c>PanelTerrakeepSystem</c>, que es quien abre el panel unico en esta pestaña.</summary>
+		public static ModKeybind Atajo => _atajo;
 
-		public static PanelExploracionState Panel => _panel;
+		/// <summary>true si el panel esta abierto Y en la pestaña de Exploracion.</summary>
+		public static bool PanelAbierto => PanelTerrakeepSystem.AreaAbiertaEs(AreaTerrakeep.Exploracion);
+
+		/// <summary>El contenido de Exploracion montado ahora mismo, o null.</summary>
+		public static ContenidoExploracion Panel
+		{
+			get
+			{
+				PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
+				return panel != null ? panel.Exploracion : null;
+			}
+		}
 
 		public override void Load()
 		{
@@ -77,7 +88,6 @@ namespace TerrakeepMod.Common.Exploracion
 		public override void Unload()
 		{
 			_atajo = null;
-			_panel = null;
 			RegistroExploracion.Mod = null;
 			CatalogoObjetivos.Descargar();
 			MarcadoresExploracion.Limpiar();
@@ -116,34 +126,12 @@ namespace TerrakeepMod.Common.Exploracion
 			}
 
 			ComprobarVueltaDelMapa();
-
-			if (_atajo == null) {
-				return;
-			}
-
-			try {
-				if (_atajo.JustPressed) {
-					AlternarPanel("atajo de teclado (tecla P)");
-				}
-			}
-			catch (KeyNotFoundException) {
-				// Se autocorrige solo en cuanto el motor procesa el PlayerInput.reinitialize.
-			}
 		}
 
+		/// <summary>Abre el panel en la pestaña de Exploracion, o lo cierra si ya estaba ahi.</summary>
 		public static void AlternarPanel(string origen)
 		{
-			if (_ultimoFotogramaAlternado == Main.GameUpdateCount) {
-				return;
-			}
-			_ultimoFotogramaAlternado = Main.GameUpdateCount;
-
-			if (PanelAbierto) {
-				CerrarPanel(origen);
-			}
-			else {
-				AbrirPanel(origen);
-			}
+			PanelTerrakeepSystem.AlternarArea(AreaTerrakeep.Exploracion, origen);
 		}
 
 		public static void AbrirPanel(string origen)
@@ -152,36 +140,19 @@ namespace TerrakeepMod.Common.Exploracion
 				return;
 			}
 
-			// Con el mapa vanilla abierto no se dibuja ninguna interfaz de mod, asi que abrir el
-			// panel ahi seria abrirlo a ciegas: se cierra el mapa primero.
-			if (Main.mapFullscreen) {
-				Main.mapFullscreen = false;
-			}
-
-			// Instancia nueva en cada apertura, como los demas paneles del mod: OnInitialize solo
-			// corre una vez por instancia y lo que enseña depende de la partida actual.
-			_panel = new PanelExploracionState();
-			IngameFancyUI.OpenUIState(_panel);
-
 			RegistroExploracion.Linea(
-				Terrakeep.LogTag + " PANEL EXPLORACION ABIERTO via " + origen + ". " +
+				Terrakeep.LogTag + " Exploracion: se pide abrir el panel via " + origen + ". " +
 				"Mundo: \"" + MundoActual.Nombre + "\" " + MundoActual.TamanoLegible +
 				", modo " + MundoActual.ModoDeJuegoLegible + " (Main.GameMode=" + Main.GameMode + ")" +
 				", semilla " + MundoActual.Semilla +
-				". Main.mapReady=" + Main.mapReady + ", Main.mapEnabled=" + Main.mapEnabled +
-				", Main.inFancyUI=" + Main.inFancyUI +
-				", InGameUI.CurrentState=" + (Main.InGameUI.CurrentState != null ? Main.InGameUI.CurrentState.GetType().FullName : "(null)"));
+				". Main.mapReady=" + Main.mapReady + ", Main.mapEnabled=" + Main.mapEnabled + ".");
+
+			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Exploracion, origen);
 		}
 
 		public static void CerrarPanel(string origen)
 		{
-			if (!PanelAbierto) {
-				return;
-			}
-
-			RegistroExploracion.Linea(Terrakeep.LogTag + " PANEL EXPLORACION CERRADO via " + origen + ".");
-			IngameFancyUI.Close();
-			_panel = null;
+			PanelTerrakeepSystem.CerrarPanel(origen);
 		}
 
 		/// <summary>

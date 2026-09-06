@@ -5,7 +5,9 @@ using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.UI;
+using TerrakeepMod.Common.Panel;
 using TerrakeepMod.UI.Builds;
+using TerrakeepMod.UI.Panel;
 
 namespace TerrakeepMod.Common.Builds
 {
@@ -43,15 +45,26 @@ namespace TerrakeepMod.Common.Builds
 		public const string VariableFuente = "TERRAKEEP_BUILDS_FUENTE";
 
 		private static ModKeybind _atajo;
-		private static PanelBuildsState _panel;
-		private static uint _ultimoFotogramaAlternado;
 
 		private static bool _autopruebaHecha;
 		private static int _fotogramasEnMundo;
 
-		/// <summary>true si el panel de Builds esta abierto ahora mismo.</summary>
-		public static bool PanelAbierto =>
-			Main.InGameUI != null && Main.InGameUI.CurrentState is PanelBuildsState;
+		/// <summary>El atajo de Builds. Lo registra este sistema y lo LEE
+		/// <c>PanelTerrakeepSystem</c>, que es quien abre el panel unico en esta pestaña.</summary>
+		public static ModKeybind Atajo => _atajo;
+
+		/// <summary>true si el panel esta abierto Y en la pestaña de Builds.</summary>
+		public static bool PanelAbierto => PanelTerrakeepSystem.AreaAbiertaEs(AreaTerrakeep.Builds);
+
+		/// <summary>El contenido de Builds montado ahora mismo, o null.</summary>
+		public static ContenidoBuilds Contenido
+		{
+			get
+			{
+				PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
+				return panel != null ? panel.Builds : null;
+			}
+		}
 
 		public override void Load()
 		{
@@ -78,7 +91,6 @@ namespace TerrakeepMod.Common.Builds
 		public override void Unload()
 		{
 			_atajo = null;
-			_panel = null;
 			RegistroBuilds.Mod = null;
 			CatalogoBuilds.Descargar();
 		}
@@ -89,39 +101,13 @@ namespace TerrakeepMod.Common.Builds
 				return;
 			}
 
-			// Primero y sin condiciones, por el mismo motivo que en WS0: ModKeybind.JustPressed
-			// puede lanzar KeyNotFoundException durante los primeros fotogramas de una partida
-			// (PlayerInput.Triggers todavia no conoce los atajos de mods) y abortaria el resto
-			// del metodo.
 			ActualizarAutoprueba();
-
-			if (_atajo == null) {
-				return;
-			}
-
-			try {
-				if (_atajo.JustPressed) {
-					AlternarPanel("atajo de teclado (tecla L)");
-				}
-			}
-			catch (KeyNotFoundException) {
-				// Se autocorrige solo en cuanto el motor procesa el PlayerInput.reinitialize.
-			}
 		}
 
+		/// <summary>Abre el panel en la pestaña de Builds, o lo cierra si ya estaba ahi.</summary>
 		public static void AlternarPanel(string origen)
 		{
-			if (_ultimoFotogramaAlternado == Main.GameUpdateCount) {
-				return;
-			}
-			_ultimoFotogramaAlternado = Main.GameUpdateCount;
-
-			if (PanelAbierto) {
-				CerrarPanel(origen);
-			}
-			else {
-				AbrirPanel(origen);
-			}
+			PanelTerrakeepSystem.AlternarArea(AreaTerrakeep.Builds, origen);
 		}
 
 		public static void AbrirPanel(string origen)
@@ -136,35 +122,25 @@ namespace TerrakeepMod.Common.Builds
 				return;
 			}
 
-			// Instancia nueva cada vez, igual que el panel de WS0: OnInitialize solo corre una vez
-			// por instancia y el estado depende del jugador de la partida actual.
-			_panel = new PanelBuildsState();
-			IngameFancyUI.OpenUIState(_panel);
+			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Builds, origen);
 
-			RegistroBuilds.Linea(
-				$"{Terrakeep.LogTag} PANEL BUILDS ABIERTO via {origen}. " +
-				$"Jugador: \"{Main.LocalPlayer.name}\". Mundo: \"{Main.worldName}\". " +
-				$"Fuente=\"{_panel.FuenteActual?.Etiqueta}\" Etapa=\"{_panel.EtapaActual?.Etiqueta}\" " +
-				$"Clase=\"{_panel.ClaseActual?.Etiqueta}\". " +
-				$"Main.inFancyUI={Main.inFancyUI}, InGameUI.CurrentState={Main.InGameUI.CurrentState?.GetType().FullName}");
-
-			RegistrarEstadoBuild(_panel, "al abrir");
+			ContenidoBuilds contenido = Contenido;
+			if (contenido != null) {
+				RegistroBuilds.Linea(
+					$"{Terrakeep.LogTag} Builds: Fuente=\"{contenido.FuenteActual?.Etiqueta}\" " +
+					$"Etapa=\"{contenido.EtapaActual?.Etiqueta}\" Clase=\"{contenido.ClaseActual?.Etiqueta}\".");
+				RegistrarEstadoBuild(contenido, "al abrir");
+			}
 		}
 
 		public static void CerrarPanel(string origen)
 		{
-			if (!PanelAbierto) {
-				return;
-			}
-
-			RegistroBuilds.Linea($"{Terrakeep.LogTag} PANEL BUILDS CERRADO via {origen}.");
-			IngameFancyUI.Close();
-			_panel = null;
+			PanelTerrakeepSystem.CerrarPanel(origen);
 		}
 
 		/// <summary>Deja en el log, objeto a objeto, que tiene y que no tiene el jugador de la
 		/// build seleccionada. Es la evidencia real del "ya lo tienes".</summary>
-		private static void RegistrarEstadoBuild(PanelBuildsState panel, string momento)
+		private static void RegistrarEstadoBuild(ContenidoBuilds panel, string momento)
 		{
 			ClaseBuild clase = panel.ClaseActual;
 			if (clase == null) {
@@ -279,6 +255,10 @@ namespace TerrakeepMod.Common.Builds
 		/// </summary>
 		private static void ProbarPildorasDeClase(string claveFinal)
 		{
+			ContenidoBuilds _panel = Contenido;
+			if (_panel == null) {
+				return;
+			}
 			EtapaBuild etapa = _panel.EtapaActual;
 			if (etapa == null || etapa.Clases.Count < 2) {
 				return;
@@ -313,6 +293,7 @@ namespace TerrakeepMod.Common.Builds
 		private static void AutoEquiparDePrueba()
 		{
 			string clase = Environment.GetEnvironmentVariable(VariableAutoEquipar);
+			ContenidoBuilds _panel = Contenido;
 			if (string.IsNullOrEmpty(clase) || _panel == null) {
 				return;
 			}

@@ -14,17 +14,21 @@ namespace TerrakeepMod.UI.Investigacion
 	/// </summary>
 	public static class EstiloInvestigacion
 	{
+		// Los tres estados salen ya de la paleta comun (EstiloTk): antes estaban copiados a mano
+		// con los mismos valores que usaba Builds, o sea dos fuentes de verdad para el mismo tono.
+		// Se dejan como alias con nombre propio porque aqui se leen mejor asi.
+
 		/// <summary>Investigado del todo. Mismo verde que el "ya lo tienes" de Builds.</summary>
-		public static readonly Color Hecho = new Color(140, 235, 160);
+		public static readonly Color Hecho = EstiloTk.Correcto;
 
 		/// <summary>Empezado pero sin terminar. Mismo ambar que los avisos del mod.</summary>
 		public static readonly Color AMedias = EstiloTk.TextoAviso;
 
 		/// <summary>Sin empezar. Mismo gris que el "no lo tienes" de Builds.</summary>
-		public static readonly Color SinEmpezar = new Color(170, 170, 180);
+		public static readonly Color SinEmpezar = EstiloTk.Neutro;
 
 		/// <summary>Rojo de aviso serio (no estas en Modo Viaje, accion destructiva).</summary>
-		public static readonly Color Peligro = new Color(235, 130, 130);
+		public static readonly Color Peligro = EstiloTk.Peligro;
 
 		/// <summary>Fondo del canal vacio de una barra de progreso.</summary>
 		public static readonly Color CanalBarra = new Color(24, 30, 56);

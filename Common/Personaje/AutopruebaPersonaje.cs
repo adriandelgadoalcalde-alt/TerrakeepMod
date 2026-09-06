@@ -272,7 +272,7 @@ namespace TerrakeepMod.Common.Personaje
 			enElRaton.stack = 42;
 			Main.mouseItem = enElRaton;
 
-			PanelPersonajeState.FotogramasObjetoEnRaton = 0;
+			TerrakeepMod.UI.Panel.PanelTerrakeepState.FotogramasObjetoEnRaton = 0;
 
 			Registrar("Paso 4 - objeto puesto en el raton: "
 				+ PersonajeVivo.DescribirObjeto(Main.mouseItem)
@@ -284,7 +284,7 @@ namespace TerrakeepMod.Common.Personaje
 			Player jugador = Main.LocalPlayer;
 			const int Ranura = 10;
 
-			int dibujados = PanelPersonajeState.FotogramasObjetoEnRaton;
+			int dibujados = TerrakeepMod.UI.Panel.PanelTerrakeepState.FotogramasObjetoEnRaton;
 
 			string antesRanura = PersonajeVivo.DescribirObjeto(jugador.inventory[Ranura]);
 			string antesRaton = PersonajeVivo.DescribirObjeto(Main.mouseItem);
@@ -519,7 +519,7 @@ namespace TerrakeepMod.Common.Personaje
 
 		private static void AbrirPestana(int indice)
 		{
-			PanelPersonajeState panel = PanelPruebaSystem.PanelActual;
+			ContenidoPersonaje panel = PanelPruebaSystem.PanelActual;
 			if (panel == null) {
 				return;
 			}
@@ -536,7 +536,7 @@ namespace TerrakeepMod.Common.Personaje
 		/// </summary>
 		private static void MedirPestanaYAbrir(int medida, int siguiente)
 		{
-			PanelPersonajeState panel = PanelPruebaSystem.PanelActual;
+			ContenidoPersonaje panel = PanelPruebaSystem.PanelActual;
 			if (panel == null) {
 				return;
 			}
@@ -556,7 +556,7 @@ namespace TerrakeepMod.Common.Personaje
 		/// </summary>
 		private static void ComprobarDeslizadorColor()
 		{
-			PanelPersonajeState panel = PanelPruebaSystem.PanelActual;
+			ContenidoPersonaje panel = PanelPruebaSystem.PanelActual;
 			if (panel == null) {
 				return;
 			}
@@ -593,7 +593,7 @@ namespace TerrakeepMod.Common.Personaje
 
 		private static void EnfocarCampoDeTexto()
 		{
-			PanelPersonajeState panel = PanelPruebaSystem.PanelActual;
+			ContenidoPersonaje panel = PanelPruebaSystem.PanelActual;
 			if (panel == null) {
 				return;
 			}
@@ -617,7 +617,7 @@ namespace TerrakeepMod.Common.Personaje
 
 		private static void ComprobarCampoDeTexto()
 		{
-			PanelPersonajeState panel = PanelPruebaSystem.PanelActual;
+			ContenidoPersonaje panel = PanelPruebaSystem.PanelActual;
 			if (panel == null) {
 				return;
 			}

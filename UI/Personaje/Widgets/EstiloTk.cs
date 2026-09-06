@@ -29,6 +29,10 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// <summary>Fondo de un boton deshabilitado.</summary>
 		public static readonly Color BotonApagado = new Color(50, 55, 74) * 0.9f;
 
+		/// <summary>Borde que aparece al pasar el raton por un boton. Se dibuja con la textura
+		/// <c>Images/UI/PanelBorder</c> del propio juego, no con un rectangulo propio.</summary>
+		public static readonly Color BordeSobre = new Color(200, 220, 255);
+
 		/// <summary>Color del texto secundario (etiquetas, unidades, avisos suaves).</summary>
 		public static readonly Color TextoSuave = new Color(190, 200, 225);
 
@@ -37,5 +41,42 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 
 		/// <summary>Lado de un slot de objeto a escala 1 (el tamaño real de la textura vanilla).</summary>
 		public const float LadoSlot = 52f;
+
+		// -------------------------------------------------------------------------------------
+		// Acentos comunes a todas las areas del panel unico.
+		//
+		// Se centralizaron aqui al fusionar los seis paneles: hasta entonces el verde/gris/rojo
+		// del "ya lo tienes" de Builds y los de Investigacion estaban DUPLICADOS en dos archivos
+		// distintos con los mismos valores copiados a mano (EstiloInvestigacion los copio de
+		// PanelBuildsState). Con dos copias, cambiar un tono en un sitio y no en el otro solo era
+		// cuestion de tiempo.
+		// -------------------------------------------------------------------------------------
+
+		/// <summary>Verde de "hecho / ya lo tienes".</summary>
+		public static readonly Color Correcto = new Color(140, 235, 160);
+
+		/// <summary>Gris de "no lo tienes / sin empezar".</summary>
+		public static readonly Color Neutro = new Color(170, 170, 180);
+
+		/// <summary>Rojo de "no existe aqui / accion delicada".</summary>
+		public static readonly Color Peligro = new Color(235, 130, 130);
+
+		// -------------------------------------------------------------------------------------
+		// Medidas comunes de la barra de pestañas. Las tres areas con sub-pestañas (Personaje,
+		// Exploracion) y la barra principal del panel unico usan las mismas, para que las dos
+		// filas de pestañas se vean como una sola familia y no como dos barras distintas.
+		// -------------------------------------------------------------------------------------
+
+		/// <summary>Alto de un boton de pestaña.</summary>
+		public const float AltoPestana = 30f;
+
+		/// <summary>Separacion horizontal entre pestañas.</summary>
+		public const float SeparacionPestanas = 6f;
+
+		/// <summary>Escala de texto de un boton de pestaña.</summary>
+		public const float EscalaPestana = 0.8f;
+
+		/// <summary>Escala de texto de un boton normal.</summary>
+		public const float EscalaBoton = 0.8f;
 	}
 }

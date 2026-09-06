@@ -20,7 +20,7 @@ namespace TerrakeepMod.UI.Personaje
 		public CabeceraPersonaje()
 		{
 			Width.Set(0f, 1f);
-			Height.Set(88f, 0f);
+			Height.Set(66f, 0f);
 
 			ConstruirNombre();
 			ConstruirVidaYMana();
@@ -119,13 +119,10 @@ namespace TerrakeepMod.UI.Personaje
 			dinero.Top.Set(34f, 0f);
 			Append(dinero);
 
-			EtiquetaTk aviso = new EtiquetaTk(
-				() => "Todo lo de este panel se escribe directamente sobre el personaje cargado, al instante.",
-				0.75f, 900f, 20f);
-			aviso.ColorTexto = EstiloTk.TextoSuave;
-			aviso.Left.Set(0f, 0f);
-			aviso.Top.Set(62f, 0f);
-			Append(aviso);
+			// El aviso de "todo esto se escribe en vivo sobre el personaje cargado" ya NO va aqui:
+			// al fusionar los seis paneles en uno, ese texto pasó al pie comun del panel unico
+			// (PanelTerrakeepState), que es donde cada area deja su linea de ayuda. Tenerlo aqui
+			// ademas costaba 22 px de alto de cabecera que ahora usan las ranuras.
 		}
 
 		private static string TextoDinero()

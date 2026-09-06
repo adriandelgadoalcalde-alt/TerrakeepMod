@@ -28,8 +28,11 @@ namespace TerrakeepMod.UI.Exploracion
 			caja.SetPadding(10f);
 			Append(caja);
 
+			// Sin el prefijo "Terrakeep ·": el panel unico ya se identifica una sola vez en su pie,
+			// y repetir la marca en cada area era ruido (inconsistencia real detectada al ver las
+			// seis piezas juntas: solo Exploracion lo hacia).
 			EtiquetaTk titulo = new EtiquetaTk(
-				() => "Terrakeep · Exploración del mundo", 1.05f, 640f, 30f);
+				() => "Exploración del mundo", 1.05f, 640f, 30f);
 			titulo.Left.Set(2f, 0f);
 			titulo.Top.Set(0f, 0f);
 			caja.Append(titulo);

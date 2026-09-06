@@ -82,7 +82,7 @@ namespace TerrakeepMod.Common.Exploracion
 
 		private static void Ejecutar()
 		{
-			PanelExploracionState panel = PanelExploracionSystem.Panel;
+			ContenidoExploracion panel = PanelExploracionSystem.Panel;
 
 			switch (_paso) {
 				case 0:
@@ -246,7 +246,7 @@ namespace TerrakeepMod.Common.Exploracion
 			}
 		}
 
-		private static void BuscarPorEtiqueta(PanelExploracionState panel, string etiqueta)
+		private static void BuscarPorEtiqueta(ContenidoExploracion panel, string etiqueta)
 		{
 			panel.CambiarPestana(1);
 			if (!panel.Busqueda.SeleccionarPorEtiqueta(etiqueta)) {
@@ -261,7 +261,7 @@ namespace TerrakeepMod.Common.Exploracion
 		/// Prueba el cambio de dificultad de las dos formas que importan: una que TIENE que
 		/// funcionar y otra que TIENE que quedar bloqueada por la salvaguarda del modo Viaje.
 		/// </summary>
-		private static void ProbarDificultad(PanelExploracionState panel)
+		private static void ProbarDificultad(ContenidoExploracion panel)
 		{
 			panel.CambiarPestana(2);
 			PestanaMundo mundo = panel.Mundo;
@@ -431,7 +431,7 @@ namespace TerrakeepMod.Common.Exploracion
 		/// Acciona con un clic REAL la casilla "Solo en lo que ya he explorado" del panel, si esta
 		/// marcada, para que la busqueda recorra el mundo entero.
 		/// </summary>
-		private static string PulsarAlternador(PanelExploracionState panel)
+		private static string PulsarAlternador(ContenidoExploracion panel)
 		{
 			UI.Personaje.Widgets.AlternadorTk casilla =
 				panel.BuscarPrimero<UI.Personaje.Widgets.AlternadorTk>();

@@ -354,9 +354,9 @@ namespace TerrakeepMod.UI.Exploracion
 
 		private void IrAlResultado(ResultadoBusqueda resultado)
 		{
-			PanelExploracionState panel = Main.InGameUI != null
-				? Main.InGameUI.CurrentState as PanelExploracionState
-				: null;
+			// Con el panel unico, el area de Exploracion ya no es la UIState: se le pregunta al
+			// sistema del panel, que sabe que contenido tiene montado en la pestaña abierta.
+			ContenidoExploracion panel = PanelExploracionSystem.Panel;
 			if (panel == null) {
 				return;
 			}

@@ -1,45 +1,55 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
 using TerrakeepMod.Common.Builds;
+using TerrakeepMod.UI.Personaje.Widgets;
 
 namespace TerrakeepMod.UI.Builds
 {
 	/// <summary>
-	/// Panel "Builds" (WS4): equipo recomendado por etapa y clase, con marca de "ya lo tienes"
-	/// contra el inventario REAL del jugador y un boton de auto-equipar que <b>solo mueve</b>
-	/// objetos que ya posee.
+	/// <b>Contenido</b> del area de Builds (WS4): equipo recomendado por etapa y clase, con marca
+	/// de "ya lo tienes" contra el inventario REAL del jugador y un boton de auto-equipar que
+	/// <b>solo mueve</b> objetos que ya posee.
 	/// </summary>
 	/// <remarks>
-	/// Sigue el patron ya probado en WS0: se abre con <c>IngameFancyUI.OpenUIState</c> sobre una
-	/// instancia NUEVA cada vez (ver <see cref="Common.Builds.PanelBuildsSystem"/>), y todos los
-	/// slots se dibujan con el <c>ItemSlot</c> nativo de vanilla.
+	/// <para>
+	/// Sale de la antigua <c>PanelBuildsState</c> al fusionar los seis paneles en uno solo. Aparte
+	/// de bajar de <c>UIState</c> a <c>UIElement</c>, aqui se corrigio la inconsistencia estetica
+	/// mas gorda que aparecio al ver las seis piezas juntas: <b>Builds era el unico area que no
+	/// usaba los widgets compartidos</b>. Tenia su propio marco de 980x600 fijo (los demas se
+	/// estiran al 96%/94% con tope 1080x700), sus botones eran <c>UITextPanel</c> pelados sin
+	/// animacion ni sonido, y repetia a mano los colores de <see cref="EstiloTk"/> con literales
+	/// copiados. Ahora todo son <see cref="BotonTk"/> y la paleta comun, asi que hereda gratis la
+	/// animacion de hover del widget compartido.
+	/// </para>
+	/// <para>
+	/// Lo que NO ha cambiado es la logica: el catalogo, la resolucion de pid, "ya lo tienes" y el
+	/// auto-equipar siguen siendo exactamente los de WS4.
+	/// </para>
 	/// </remarks>
-	public class PanelBuildsState : UIState
+	public class ContenidoBuilds : UIElement
 	{
-		private const float AnchoMarco = 980f;
-		private const float AltoMarco = 600f;
 		private const int FotogramasEntreRefrescos = 15;
+		private const float AltoCabecera = 52f;
+		private const float AltoFila = EstiloTk.AltoPestana;
+		private const float SeparacionFilas = 4f;
+		private const float AltoPie = 40f;
 
-		private static readonly Color ColorTiene = new Color(140, 235, 160);
-		private static readonly Color ColorNoTiene = new Color(170, 170, 180);
-		private static readonly Color ColorAusente = new Color(210, 130, 130);
-		private static readonly Color PildoraActiva = new Color(70, 120, 200);
-		private static readonly Color PildoraInactiva = new Color(40, 50, 90);
-
-		private UIPanel _marco;
 		private UIElement _filaFuentes;
 		private UIElement _filaEtapas;
 		private UIElement _filaClases;
 		private UIElement _cuerpo;
-		private UIText _resumen;
-		private UIText _subtitulo;
+		private EtiquetaTk _resumen;
+		private EtiquetaTk _subtitulo;
+		private BotonTk _botonAutoEquipar;
 
 		private int _indiceFuente;
 		private int _indiceEtapa;
 		private string _claveClase = "melee";
+		private string _textoResumen = "";
 
 		private readonly List<SlotCatalogoBuild> _slots = new List<SlotCatalogoBuild>();
 		private readonly List<UIText> _etiquetasSlot = new List<UIText>();
@@ -80,68 +90,61 @@ namespace TerrakeepMod.UI.Builds
 			}
 		}
 
-		public override void OnInitialize()
+		public ContenidoBuilds()
 		{
-			_marco = new UIPanel();
-			_marco.Width.Set(AnchoMarco, 0f);
-			_marco.Height.Set(AltoMarco, 0f);
-			_marco.HAlign = 0.5f;
-			_marco.VAlign = 0.5f;
-			_marco.BackgroundColor = new Color(33, 43, 79) * 0.94f;
-			Append(_marco);
+			Width.Set(0f, 1f);
+			Height.Set(0f, 1f);
 
-			UIText titulo = new UIText("Terrakeep - Builds", 1f, true);
-			titulo.HAlign = 0.5f;
-			titulo.Top.Set(8f, 0f);
-			_marco.Append(titulo);
+			UIPanel cabecera = new UIPanel();
+			cabecera.Width.Set(0f, 1f);
+			cabecera.Height.Set(AltoCabecera, 0f);
+			cabecera.BackgroundColor = EstiloTk.FondoCaja;
+			cabecera.BorderColor = new Color(0, 0, 0, 0);
+			cabecera.SetPadding(8f);
+			Append(cabecera);
 
-			_subtitulo = new UIText("", 0.75f);
-			_subtitulo.HAlign = 0.5f;
-			_subtitulo.Top.Set(42f, 0f);
-			_marco.Append(_subtitulo);
+			_subtitulo = new EtiquetaTk(() => _subtituloTexto, 0.85f, 900f, 24f);
+			_subtitulo.Left.Set(0f, 0f);
+			_subtitulo.Top.Set(0f, 0f);
+			cabecera.Append(_subtitulo);
 
-			_filaFuentes = NuevaFila(70f);
-			_filaEtapas = NuevaFila(108f);
-			_filaClases = NuevaFila(146f);
+			_resumen = new EtiquetaTk(() => _textoResumen, 0.78f, 900f, 22f);
+			_resumen.ColorTexto = EstiloTk.TextoSuave;
+			_resumen.Left.Set(0f, 0f);
+			_resumen.Top.Set(20f, 0f);
+			cabecera.Append(_resumen);
+
+			_filaFuentes = NuevaFila();
+			_filaEtapas = NuevaFila();
+			_filaClases = NuevaFila();
 
 			_cuerpo = new UIElement();
 			_cuerpo.Width.Set(0f, 1f);
-			_cuerpo.Height.Set(330f, 0f);
-			_cuerpo.Top.Set(186f, 0f);
-			_marco.Append(_cuerpo);
+			// Sin esto, una clase con muchos objetos se sale del marco del panel y pinta por
+			// encima del pie. OverflowHidden recorta con el rectangulo de tijera del propio motor.
+			_cuerpo.OverflowHidden = true;
+			Append(_cuerpo);
 
-			_resumen = new UIText("", 0.8f);
-			_resumen.HAlign = 0.5f;
-			_resumen.Top.Set(524f, 0f);
-			_marco.Append(_resumen);
-
-			UITextPanel<string> autoEquipar = new UITextPanel<string>("Auto-equipar", 0.9f, false);
-			autoEquipar.Width.Set(210f, 0f);
-			autoEquipar.Height.Set(40f, 0f);
-			autoEquipar.Left.Set(-230f, 0.5f);
-			autoEquipar.Top.Set(548f, 0f);
-			autoEquipar.BackgroundColor = new Color(50, 110, 70);
-			autoEquipar.OnLeftClick += (evento, elemento) => EjecutarAutoEquipar();
-			_marco.Append(autoEquipar);
-
-			UITextPanel<string> cerrar = new UITextPanel<string>("Cerrar", 0.9f, false);
-			cerrar.Width.Set(210f, 0f);
-			cerrar.Height.Set(40f, 0f);
-			cerrar.Left.Set(20f, 0.5f);
-			cerrar.Top.Set(548f, 0f);
-			cerrar.OnLeftClick += (evento, elemento) => PanelBuildsSystem.CerrarPanel("boton Cerrar");
-			_marco.Append(cerrar);
+			_botonAutoEquipar = new BotonTk("Auto-equipar", EstiloTk.EscalaBoton);
+			_botonAutoEquipar.Width.Set(210f, 0f);
+			_botonAutoEquipar.Height.Set(34f, 0f);
+			_botonAutoEquipar.VAlign = 1f;
+			_botonAutoEquipar.Ayuda = "Coloca en su sitio el equipo de esta build que YA tengas. " +
+				"Nunca crea objetos: lo que no tengas se queda como esta.";
+			_botonAutoEquipar.AlPulsar += EjecutarAutoEquipar;
+			Append(_botonAutoEquipar);
 
 			Reconstruir();
 		}
 
-		private UIElement NuevaFila(float arriba)
+		private string _subtituloTexto = "";
+
+		private UIElement NuevaFila()
 		{
 			UIElement fila = new UIElement();
 			fila.Width.Set(0f, 1f);
-			fila.Height.Set(34f, 0f);
-			fila.Top.Set(arriba, 0f);
-			_marco.Append(fila);
+			fila.Height.Set(AltoFila, 0f);
+			Append(fila);
 			return fila;
 		}
 
@@ -157,22 +160,24 @@ namespace TerrakeepMod.UI.Builds
 
 			FuenteBuilds fuente = FuenteActual;
 			if (fuente == null) {
-				_subtitulo.SetText("No hay ningun catalogo de builds cargado.");
+				_subtituloTexto = "No hay ningún catálogo de builds cargado.";
+				ColocarFilas(false);
 				Recalculate();
 				return;
 			}
 
-			_subtitulo.SetText("Equipo recomendado. Verde = ya lo tienes; gris = no lo tienes (auto-equipar no lo crea).");
+			_subtituloTexto = "Equipo recomendado para esta etapa y clase.";
 
 			// Fila 1: fuente de datos. Solo se enseña si hay mas de una (Calamity sin instalar
 			// deja una sola y la fila sobra).
 			IReadOnlyList<FuenteBuilds> fuentes = CatalogoBuilds.Fuentes;
-			if (fuentes.Count > 1) {
+			bool hayFilaFuentes = fuentes.Count > 1;
+			if (hayFilaFuentes) {
 				List<string> etiquetas = new List<string>();
 				foreach (FuenteBuilds f in fuentes) {
 					etiquetas.Add(f.Etiqueta);
 				}
-				PintarPildoras(_filaFuentes, etiquetas, _indiceFuente, 170f, indice => {
+				PintarPildoras(_filaFuentes, etiquetas, _indiceFuente, indice => {
 					_indiceFuente = indice;
 					_indiceEtapa = 0;
 					Reconstruir();
@@ -184,7 +189,7 @@ namespace TerrakeepMod.UI.Builds
 			foreach (EtapaBuild e in fuente.Etapas) {
 				etapas.Add(e.Etiqueta);
 			}
-			PintarPildoras(_filaEtapas, etapas, _indiceEtapa, 300f, indice => {
+			PintarPildoras(_filaEtapas, etapas, _indiceEtapa, indice => {
 				_indiceEtapa = indice;
 				Reconstruir();
 			});
@@ -192,6 +197,7 @@ namespace TerrakeepMod.UI.Builds
 			// Fila 3: clase.
 			EtapaBuild etapa = EtapaActual;
 			if (etapa == null) {
+				ColocarFilas(hayFilaFuentes);
 				Recalculate();
 				return;
 			}
@@ -204,13 +210,14 @@ namespace TerrakeepMod.UI.Builds
 					indiceClase = i;
 				}
 			}
-			PintarPildoras(_filaClases, clases, indiceClase, 165f, indice => {
+			PintarPildoras(_filaClases, clases, indiceClase, indice => {
 				_claveClase = etapa.Clases[indice].Clave;
 				Reconstruir();
 			});
 
 			ClaseBuild clase = ClaseActual;
 			if (clase == null) {
+				ColocarFilas(hayFilaFuentes);
 				Recalculate();
 				return;
 			}
@@ -219,49 +226,78 @@ namespace TerrakeepMod.UI.Builds
 			PintarColumna(1, "Armas", clase.Armas);
 			PintarColumna(2, "Accesorios", clase.Accesorios);
 
+			ColocarFilas(hayFilaFuentes);
 			Recalculate();
 			RefrescarPosesion();
 		}
 
-		private void PintarPildoras(UIElement fila, List<string> etiquetas, int seleccionada, float ancho, System.Action<int> alPulsar)
+		/// <summary>
+		/// Coloca las tres filas de pildoras y el cuerpo. Se hace aqui y no en el constructor
+		/// porque la fila de fuentes puede no existir (sin Calamity), y dejar su hueco vacio era un
+		/// agujero de 34 px en mitad del panel.
+		/// </summary>
+		private void ColocarFilas(bool hayFilaFuentes)
+		{
+			float y = AltoCabecera + 6f;
+
+			_filaFuentes.Top.Set(y, 0f);
+			_filaFuentes.Height.Set(hayFilaFuentes ? AltoFila : 0f, 0f);
+			if (hayFilaFuentes) {
+				y += AltoFila + SeparacionFilas;
+			}
+
+			_filaEtapas.Top.Set(y, 0f);
+			y += AltoFila + SeparacionFilas;
+
+			_filaClases.Top.Set(y, 0f);
+			y += AltoFila + 8f;
+
+			_cuerpo.Top.Set(y, 0f);
+			_cuerpo.Height.Set(-(y + AltoPie), 1f);
+		}
+
+		/// <summary>
+		/// Una fila de pildoras. Son <see cref="BotonTk"/> normales (no <c>UITextPanel</c> pelados
+		/// como antes), asi que comparten animacion, sonido y paleta con todos los demas botones
+		/// del mod. El ancho se reparte en porcentaje para que la fila se estire con el panel.
+		/// </summary>
+		private void PintarPildoras(UIElement fila, List<string> etiquetas, int seleccionada, Action<int> alPulsar)
 		{
 			if (etiquetas.Count == 0) {
 				return;
 			}
 
-			const float separacion = 8f;
-			float total = etiquetas.Count * ancho + (etiquetas.Count - 1) * separacion;
-			float inicio = -total / 2f;
+			float fraccion = 1f / etiquetas.Count;
 
 			for (int i = 0; i < etiquetas.Count; i++) {
-				int indice = i; // copia local: sin esto todas las lambdas compartirian la variable
-				UITextPanel<string> pildora = new UITextPanel<string>(Acortar(etiquetas[i], 34), 0.72f, false);
-				pildora.Width.Set(ancho, 0f);
-				pildora.Height.Set(32f, 0f);
-				pildora.Left.Set(inicio + i * (ancho + separacion), 0.5f);
-				pildora.BackgroundColor = i == seleccionada ? PildoraActiva : PildoraInactiva;
-				pildora.OnLeftClick += (evento, elemento) => alPulsar(indice);
+				int indice = i;   // copia local: sin esto todas las lambdas compartirian la variable
+				BotonTk pildora = new BotonTk(EstiloInvestigacionAcortar(etiquetas[i], 34), 0.75f);
+				pildora.EsPestana = true;
+				pildora.Activo = i == seleccionada;
+				pildora.Width.Set(-EstiloTk.SeparacionPestanas, fraccion);
+				pildora.Height.Set(AltoFila, 0f);
+				pildora.Left.Set(0f, i * fraccion);
+				pildora.Ayuda = etiquetas[i];
+				pildora.AlPulsar += () => alPulsar(indice);
 				fila.Append(pildora);
 			}
 		}
 
 		private void PintarColumna(int columna, string titulo, List<ObjetoBuild> objetos)
 		{
-			const float anchoColumna = 300f;
 			const float separacion = 14f;
-			float izquierda = -(3f * anchoColumna + 2f * separacion) / 2f + columna * (anchoColumna + separacion);
+			float fraccion = 1f / 3f;
 
 			UIElement contenedor = new UIElement();
-			contenedor.Width.Set(anchoColumna, 0f);
+			contenedor.Width.Set(-separacion, fraccion);
 			contenedor.Height.Set(0f, 1f);
-			contenedor.Left.Set(izquierda, 0.5f);
+			contenedor.Left.Set(0f, columna * fraccion);
 			_cuerpo.Append(contenedor);
 
-			UIText cabecera = new UIText(titulo, 0.85f, true);
-			cabecera.HAlign = 0.5f;
+			EtiquetaTk cabecera = new EtiquetaTk(() => titulo, 0.85f, 200f, 24f);
 			contenedor.Append(cabecera);
 
-			float y = 34f;
+			float y = 28f;
 			foreach (ObjetoBuild objeto in objetos) {
 				SlotCatalogoBuild slot = new SlotCatalogoBuild(objeto);
 				slot.Top.Set(y, 0f);
@@ -269,7 +305,7 @@ namespace TerrakeepMod.UI.Builds
 				contenedor.Append(slot);
 				_slots.Add(slot);
 
-				UIText etiqueta = new UIText(Acortar(objeto.Nombre, 26), 0.72f);
+				UIText etiqueta = new UIText(EstiloInvestigacionAcortar(objeto.Nombre, 26), 0.72f);
 				etiqueta.Left.Set(54f, 0f);
 				etiqueta.Top.Set(y + 6f, 0f);
 				contenedor.Append(etiqueta);
@@ -279,37 +315,35 @@ namespace TerrakeepMod.UI.Builds
 					? (string.IsNullOrEmpty(objeto.PrefijoRecomendado) ? "" : "prefijo sugerido: " + objeto.PrefijoRecomendado)
 					: "no existe en esta partida";
 				if (!string.IsNullOrEmpty(extra)) {
-					UIText pie = new UIText(Acortar(extra, 34), 0.62f);
+					UIText pie = new UIText(EstiloInvestigacionAcortar(extra, 34), 0.62f);
 					pie.Left.Set(54f, 0f);
 					pie.Top.Set(y + 26f, 0f);
-					pie.TextColor = objeto.Resuelto ? ColorNoTiene : ColorAusente;
+					pie.TextColor = objeto.Resuelto ? EstiloTk.Neutro : EstiloTk.Peligro;
 					contenedor.Append(pie);
 				}
 
-				y += 54f;
+				y += 52f;
 			}
 
 			if (objetos.Count == 0) {
-				UIText vacio = new UIText("(nada)", 0.7f);
-				vacio.Top.Set(34f, 0f);
-				vacio.TextColor = ColorNoTiene;
+				EtiquetaTk vacio = new EtiquetaTk(() => "(nada)", 0.7f, 120f, 22f);
+				vacio.Top.Set(28f, 0f);
+				vacio.ColorTexto = EstiloTk.Neutro;
 				contenedor.Append(vacio);
 			}
 		}
 
 		// Se corta con "..." de tres puntos normales y no con el caracter "…": la fuente del juego
 		// solo tiene el juego de caracteres con el que se genero, y un caracter que no esta hace
-		// reventar a DynamicSpriteFont al medir el texto.
-		private static string Acortar(string texto, int maximo)
+		// reventar a DynamicSpriteFont al medir el texto. Es la misma funcion que ya tenia
+		// EstiloInvestigacion; se llama a esa para no tener dos copias.
+		private static string EstiloInvestigacionAcortar(string texto, int maximo)
 		{
-			if (string.IsNullOrEmpty(texto) || texto.Length <= maximo) {
-				return texto ?? "";
-			}
-			return texto.Substring(0, System.Math.Max(1, maximo - 3)) + "...";
+			return Investigacion.EstiloInvestigacion.Acortar(texto, maximo);
 		}
 
 		/// <summary>Selecciona una clase por su clave (melee/ranged/mage/summoner/rogue) y rehace
-		/// el panel. La usa el arnes de pruebas para fijar la clase sin simular clics.</summary>
+		/// el area. La usa el arnes de pruebas para fijar la clase sin simular clics.</summary>
 		public void SeleccionarClase(string clave)
 		{
 			if (string.IsNullOrEmpty(clave)) {
@@ -324,9 +358,6 @@ namespace TerrakeepMod.UI.Builds
 		/// <c>OnLeftClick</c> con <c>UIElement.LeftClick</c> (el mismo camino exacto que recorre
 		/// un clic de raton una vez resuelto sobre que elemento cae). Devuelve la etiqueta de la
 		/// pildora pulsada, o null si no hay ninguna en esa posicion.
-		/// <para />
-		/// La usa el arnes de pruebas para verificar el filtro por clase de punta a punta sin
-		/// depender de mover el raton.
 		/// </summary>
 		public string PulsarPildoraClase(int indice)
 		{
@@ -335,11 +366,11 @@ namespace TerrakeepMod.UI.Builds
 				if (i++ != indice) {
 					continue;
 				}
-				UITextPanel<string> pildora = hijo as UITextPanel<string>;
+				BotonTk pildora = hijo as BotonTk;
 				if (pildora == null) {
 					return null;
 				}
-				string etiqueta = pildora.Text;
+				string etiqueta = pildora.Texto;
 				pildora.LeftClick(new UIMouseEvent(pildora, pildora.GetDimensions().Center()));
 				return etiqueta;
 			}
@@ -393,7 +424,7 @@ namespace TerrakeepMod.UI.Builds
 				return;
 			}
 
-			CalculatedStyle marco = _marco.GetDimensions();
+			CalculatedStyle marco = GetDimensions();
 			if (marco.Width <= 0f) {
 				return;
 			}
@@ -406,7 +437,7 @@ namespace TerrakeepMod.UI.Builds
 			_coordenadasRegistradas = true;
 
 			System.Text.StringBuilder texto = new System.Text.StringBuilder();
-			texto.Append($"{Terrakeep.LogTag} Panel Builds dibujado. Marco: x={(int)marco.X} y={(int)marco.Y} " +
+			texto.Append($"{Terrakeep.LogTag} Area de Builds dibujada. Zona: x={(int)marco.X} y={(int)marco.Y} " +
 				$"w={(int)marco.Width} h={(int)marco.Height}. Resolucion actual: {Main.screenWidth}x{Main.screenHeight}. " +
 				$"{_slots.Count} slots de catalogo. Primeros: ");
 			for (int i = 0; i < _slots.Count && i < 4; i++) {
@@ -442,13 +473,14 @@ namespace TerrakeepMod.UI.Builds
 				}
 
 				if (i < _etiquetasSlot.Count) {
-					_etiquetasSlot[i].TextColor = !slot.Objeto.Resuelto ? ColorAusente
-						: (slot.LoTiene ? ColorTiene : ColorNoTiene);
+					_etiquetasSlot[i].TextColor = !slot.Objeto.Resuelto ? EstiloTk.Peligro
+						: (slot.LoTiene ? EstiloTk.Correcto : EstiloTk.Neutro);
 				}
 			}
 
-			_resumen?.SetText($"Tienes {tiene} de {resueltos} objetos de esta build " +
-				$"(slots de accesorio disponibles: {EquipoJugador.SlotsAccesorioDisponibles(jugador)}).");
+			_textoResumen = $"Verde = ya lo tienes · gris = no lo tienes (auto-equipar no lo crea) · " +
+				$"rojo = no existe en esta partida.   Tienes {tiene} de {resueltos} " +
+				$"(ranuras de accesorio disponibles: {EquipoJugador.SlotsAccesorioDisponibles(jugador)}).";
 		}
 
 		/// <summary>Boton "Auto-equipar". Solo mueve objetos que el jugador ya tiene.</summary>
@@ -466,7 +498,19 @@ namespace TerrakeepMod.UI.Builds
 				$"{fuente?.Etiqueta} / {etapa?.Etiqueta}");
 
 			RefrescarPosesion();
-			_resumen?.SetText($"Auto-equipar: {resultado.Resumen}");
+			_textoResumen = $"Auto-equipar: {resultado.Resumen}";
+		}
+
+		/// <summary>Primer elemento del tipo pedido dentro de este area. Lo usa la autoprueba.</summary>
+		public T BuscarPrimero<T>() where T : UIElement
+		{
+			T encontrado = null;
+			ExecuteRecursively(elemento => {
+				if (encontrado == null && elemento is T) {
+					encontrado = (T)elemento;
+				}
+			});
+			return encontrado;
 		}
 	}
 }

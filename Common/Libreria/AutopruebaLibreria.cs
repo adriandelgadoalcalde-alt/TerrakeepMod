@@ -57,8 +57,7 @@ namespace TerrakeepMod.Common.Libreria
 				return;
 			}
 
-			if (!PanelLibreriaSystem.PanelAbierto || PanelLibreriaSystem.PanelActual == null
-				|| PanelLibreriaSystem.PanelActual.Contenido == null) {
+			if (!PanelLibreriaSystem.PanelAbierto || PanelLibreriaSystem.PanelActual == null) {
 				return;
 			}
 
@@ -84,7 +83,7 @@ namespace TerrakeepMod.Common.Libreria
 		}
 
 		private static ContenidoLibreria Contenido {
-			get { return PanelLibreriaSystem.PanelActual.Contenido; }
+			get { return PanelLibreriaSystem.PanelActual; }
 		}
 
 		private static void EjecutarPaso(int paso)
@@ -371,7 +370,7 @@ namespace TerrakeepMod.Common.Libreria
 			}
 
 			Main.mouseItem = new Item();
-			PanelLibreriaState.FotogramasObjetoEnRaton = 0;
+			TerrakeepMod.UI.Panel.PanelTerrakeepState.FotogramasObjetoEnRaton = 0;
 
 			string antes = Describir(Main.mouseItem);
 			slots[0].PulsarComoUnClic();
@@ -387,7 +386,7 @@ namespace TerrakeepMod.Common.Libreria
 		private static void ColocarEnElInventario()
 		{
 			Player jugador = Main.LocalPlayer;
-			int dibujados = PanelLibreriaState.FotogramasObjetoEnRaton;
+			int dibujados = TerrakeepMod.UI.Panel.PanelTerrakeepState.FotogramasObjetoEnRaton;
 
 			// El destino se elige por su boton real, igual que lo haria el jugador.
 			Contenido.MostrarDestino(0);

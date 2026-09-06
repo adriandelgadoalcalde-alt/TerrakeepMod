@@ -5,7 +5,9 @@ using Terraria;
 using Terraria.GameInput;
 using Terraria.ModLoader;
 using Terraria.UI;
+using TerrakeepMod.Common.Panel;
 using TerrakeepMod.UI.Investigacion;
+using TerrakeepMod.UI.Panel;
 
 namespace TerrakeepMod.Common.Investigacion
 {
@@ -38,17 +40,26 @@ namespace TerrakeepMod.Common.Investigacion
 		public const string VariableAutoprueba = "TERRAKEEP_AUTOTEST_WS5";
 
 		private static ModKeybind _atajo;
-		private static PanelInvestigacionState _panel;
-		private static uint _ultimoFotogramaAlternado;
 
 		private static bool _arbolConstruido;
 
-		/// <summary>Panel abierto ahora mismo, o null. Lo usa la autoprueba.</summary>
-		public static PanelInvestigacionState PanelActual => _panel;
+		/// <summary>El atajo de Investigacion. Lo registra este sistema y lo LEE
+		/// <c>PanelTerrakeepSystem</c>, que es quien abre el panel unico en esta pestaña.</summary>
+		public static ModKeybind Atajo => _atajo;
 
-		/// <summary>true si el panel de Investigacion esta abierto ahora mismo.</summary>
-		public static bool PanelAbierto =>
-			Main.InGameUI != null && Main.InGameUI.CurrentState is PanelInvestigacionState;
+		/// <summary>El contenido de Investigacion montado ahora mismo, o null. Lo usa la
+		/// autoprueba.</summary>
+		public static ContenidoInvestigacion PanelActual
+		{
+			get
+			{
+				PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
+				return panel != null ? panel.Investigacion : null;
+			}
+		}
+
+		/// <summary>true si el panel esta abierto Y en la pestaña de Investigacion.</summary>
+		public static bool PanelAbierto => PanelTerrakeepSystem.AreaAbiertaEs(AreaTerrakeep.Investigacion);
 
 		public override void Load()
 		{
@@ -83,7 +94,6 @@ namespace TerrakeepMod.Common.Investigacion
 		public override void Unload()
 		{
 			_atajo = null;
-			_panel = null;
 			_arbolConstruido = false;
 			RegistroInvestigacion.Mod = null;
 			CatalogoInvestigacion.Descargar();
@@ -95,39 +105,13 @@ namespace TerrakeepMod.Common.Investigacion
 				return;
 			}
 
-			// Primero y sin condiciones, por el mismo motivo que documento WS0:
-			// ModKeybind.JustPressed puede lanzar KeyNotFoundException durante los primeros
-			// segundos de una partida (PlayerInput.Triggers todavia no conoce los atajos de mods)
-			// y abortaria el resto del metodo antes de llegar a la autoprueba.
 			AutopruebaInvestigacion.Actualizar();
-
-			if (_atajo == null) {
-				return;
-			}
-
-			try {
-				if (_atajo.JustPressed) {
-					AlternarPanel("atajo de teclado (tecla I)");
-				}
-			}
-			catch (KeyNotFoundException) {
-				// Se autocorrige solo en cuanto el motor procesa el PlayerInput.reinitialize.
-			}
 		}
 
+		/// <summary>Abre el panel en la pestaña de Investigacion, o lo cierra si ya estaba ahi.</summary>
 		public static void AlternarPanel(string origen)
 		{
-			if (_ultimoFotogramaAlternado == Main.GameUpdateCount) {
-				return;
-			}
-			_ultimoFotogramaAlternado = Main.GameUpdateCount;
-
-			if (PanelAbierto) {
-				CerrarPanel(origen);
-			}
-			else {
-				AbrirPanel(origen);
-			}
+			PanelTerrakeepSystem.AlternarArea(AreaTerrakeep.Investigacion, origen);
 		}
 
 		public static void AbrirPanel(string origen)
@@ -143,31 +127,19 @@ namespace TerrakeepMod.Common.Investigacion
 				_arbolConstruido = true;
 			}
 
-			// Instancia nueva en cada apertura, misma costumbre que los demas paneles del mod: el
-			// estado depende del personaje de la partida actual y OnInitialize solo corre una vez
-			// por instancia.
-			_panel = new PanelInvestigacionState();
-			IngameFancyUI.OpenUIState(_panel);
-
 			RegistroInvestigacion.Linea(
-				$"{Terrakeep.LogTag} PANEL INVESTIGACION ABIERTO via {origen}. " +
+				$"{Terrakeep.LogTag} Investigacion: se pide abrir el panel via {origen}. " +
 				$"Jugador: \"{Main.LocalPlayer.name}\" (dificultad={Main.LocalPlayer.difficulty}, " +
 				$"ModoViaje={EstadoInvestigacion.ModoViaje}). Mundo: \"{Main.worldName}\" " +
 				$"(GameMode={Main.GameMode}). " +
-				$"Progreso global: {EstadoInvestigacion.TotalCompletos}/{EstadoInvestigacion.TotalInvestigable}. " +
-				$"Main.inFancyUI={Main.inFancyUI}, " +
-				$"InGameUI.CurrentState={Main.InGameUI.CurrentState?.GetType().FullName}");
+				$"Progreso global: {EstadoInvestigacion.TotalCompletos}/{EstadoInvestigacion.TotalInvestigable}.");
+
+			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Investigacion, origen);
 		}
 
 		public static void CerrarPanel(string origen)
 		{
-			if (!PanelAbierto) {
-				return;
-			}
-
-			RegistroInvestigacion.Linea($"{Terrakeep.LogTag} PANEL INVESTIGACION CERRADO via {origen}.");
-			IngameFancyUI.Close();
-			_panel = null;
+			PanelTerrakeepSystem.CerrarPanel(origen);
 		}
 
 		/// <summary>

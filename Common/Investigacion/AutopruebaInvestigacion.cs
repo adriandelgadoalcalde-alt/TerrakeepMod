@@ -129,7 +129,7 @@ namespace TerrakeepMod.Common.Investigacion
 
 		private static void EjecutarPaso(int paso)
 		{
-			ContenidoInvestigacion contenido = PanelInvestigacionSystem.PanelActual?.Contenido;
+			ContenidoInvestigacion contenido = PanelInvestigacionSystem.PanelActual;
 
 			switch (paso) {
 				case 0:

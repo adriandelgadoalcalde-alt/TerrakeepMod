@@ -5,7 +5,9 @@ using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.ModLoader;
 using Terraria.UI;
+using TerrakeepMod.Common.Panel;
 using TerrakeepMod.UI.Ajustes;
+using TerrakeepMod.UI.Panel;
 
 namespace TerrakeepMod.Common.Ajustes
 {
@@ -29,16 +31,21 @@ namespace TerrakeepMod.Common.Ajustes
 		/// <summary>Atajo que abre y cierra el panel de Ajustes.</summary>
 		public static ModKeybind AbrirAjustesKeybind { get; private set; }
 
-		private static PanelAjustesState _panel;
-		private static uint _ultimoFotogramaAlternado;
-
 		private bool _idiomaArrancado;
 		private int _fotogramasEnMundo;
 		private bool _autopruebaHecha;
 
-		/// <summary>true si el panel de Ajustes esta abierto ahora mismo.</summary>
+		/// <summary>true si el panel esta abierto Y en la pestaña de Ajustes.</summary>
 		public static bool PanelAbierto {
-			get { return Main.InGameUI != null && Main.InGameUI.CurrentState is PanelAjustesState; }
+			get { return PanelTerrakeepSystem.AreaAbiertaEs(AreaTerrakeep.Ajustes); }
+		}
+
+		/// <summary>El contenido de Ajustes montado ahora mismo, o null.</summary>
+		public static ContenidoAjustes Contenido {
+			get {
+				PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
+				return panel != null ? panel.Ajustes : null;
+			}
 		}
 
 		public override void OnModLoad()
@@ -51,7 +58,6 @@ namespace TerrakeepMod.Common.Ajustes
 		public override void OnModUnload()
 		{
 			AbrirAjustesKeybind = null;
-			_panel = null;
 		}
 
 		/// <summary>
@@ -88,62 +94,27 @@ namespace TerrakeepMod.Common.Ajustes
 			// atajos del mod), la excepcion abortaria el resto del metodo y la autoprueba no
 			// llegaria a dispararse nunca.
 			ActualizarAutoprueba();
-
-			if (AbrirAjustesKeybind == null) {
-				return;
-			}
-
-			try {
-				if (AbrirAjustesKeybind.JustPressed && !Main.drawingPlayerChat) {
-					AlternarPanel("atajo de teclado (tecla J)");
-				}
-			}
-			catch (KeyNotFoundException) {
-				// Hueco conocido entre que el mod carga y que PlayerInput procesa su
-				// reinitialize pendiente. Se autocorrige solo al fotograma siguiente.
-			}
 		}
 
+		/// <summary>Abre el panel en la pestaña de Ajustes, o lo cierra si ya estaba ahi.</summary>
 		public static void AlternarPanel(string origen)
 		{
-			if (_ultimoFotogramaAlternado == Main.GameUpdateCount) {
-				return;
-			}
-			_ultimoFotogramaAlternado = Main.GameUpdateCount;
-
-			if (PanelAbierto) {
-				CerrarPanel(origen);
-			}
-			else {
-				AbrirPanel(origen);
-			}
+			PanelTerrakeepSystem.AlternarArea(AreaTerrakeep.Ajustes, origen);
 		}
 
 		public static void AbrirPanel(string origen)
 		{
-			if (Main.gameMenu || Main.LocalPlayer == null || !Main.LocalPlayer.active) {
-				return;
-			}
-
-			_panel = new PanelAjustesState();
-			IngameFancyUI.OpenUIState(_panel);
-
 			Terrakeep.Instance.Logger.Info(
-				Terrakeep.LogTag + " PANEL DE AJUSTES ABIERTO via " + origen +
+				Terrakeep.LogTag + " Ajustes: se pide abrir el panel via " + origen +
 				". Idioma configurado=" + Idiomas.IdiomaConfigurado +
-				", cultura activa del juego=" + Idiomas.CulturaActiva +
-				", InGameUI.CurrentState=" + (Main.InGameUI.CurrentState != null ? Main.InGameUI.CurrentState.GetType().FullName : "null"));
+				", cultura activa del juego=" + Idiomas.CulturaActiva + ".");
+
+			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Ajustes, origen);
 		}
 
 		public static void CerrarPanel(string origen)
 		{
-			if (!PanelAbierto) {
-				return;
-			}
-
-			Terrakeep.Instance.Logger.Info(Terrakeep.LogTag + " PANEL DE AJUSTES CERRADO via " + origen + ".");
-			IngameFancyUI.Close();
-			_panel = null;
+			PanelTerrakeepSystem.CerrarPanel(origen);
 		}
 
 		private void ActualizarAutoprueba()
