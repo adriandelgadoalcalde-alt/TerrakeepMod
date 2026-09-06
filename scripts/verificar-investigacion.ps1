@@ -35,6 +35,12 @@
 #  4. Al terminar solo se mata LO QUE HA LANZADO ESTE SCRIPT.
 
 param(
+	# OBSOLETO desde la migracion de idiomas: se conserva el parametro para no romper a quien lo
+	# escriba, pero ya no hace nada. La copia AISLADA (solo el nucleo y los archivos de este
+	# workstream) existia cuando cuatro agentes editaban el repositorio a la vez y se borraban
+	# archivos unos a otros en caliente. Hoy el mod es una sola pieza: todas las areas comparten
+	# los widgets, la paleta y el sistema de idiomas, asi que una copia parcial YA NO COMPILA
+	# (comprobado: "Fallo el -build de tModLoader"). Se compila siempre el proyecto entero.
 	[switch]$Completo,
 	[switch]$Calamity,
 	[switch]$SinPersistencia,
@@ -70,7 +76,7 @@ if (-not (Test-Path (Join-Path $sandbox "Worlds\$mundo.wld"))) {
 }
 
 # ---- 1. Proyecto que se va a compilar ------------------------------------------------------
-if ($Completo) {
+if ($true) {
 	$proyecto = $repo
 	Write-Host '== Compilando el PROYECTO ENTERO (todos los workstreams) ==' -ForegroundColor Cyan
 } else {
@@ -103,7 +109,13 @@ if ($Completo) {
 Remove-Item (Join-Path $sandbox 'Mods\TerrakeepMod.tmod') -Force -ErrorAction SilentlyContinue
 Push-Location $tmlDir
 try {
+	# El -build escribe algun aviso benigno a stderr ("WARN: Image loading failed: unknown image
+	# type", de icon_small.png). Con $ErrorActionPreference='Stop' PowerShell 5.1 lo trata como
+	# error terminante aunque el proceso acabe con exit code 0; se relaja aqui y se comprueba
+	# $LASTEXITCODE de verdad justo debajo. Mismo arreglo que ya lleva compilar.ps1.
+	$ErrorActionPreference = 'Continue'
 	& $tmlDotnet 'tModLoader.dll' '-server' '-build' $proyecto '-unsafe' 'false' '-tmlsavedirectory' $sandbox
+	$ErrorActionPreference = 'Stop'
 	if ($LASTEXITCODE -ne 0) { throw 'Fallo el -build de tModLoader' }
 }
 finally { Pop-Location }

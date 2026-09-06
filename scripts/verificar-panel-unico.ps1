@@ -46,7 +46,13 @@ Write-Host '== Compilando el proyecto entero ==' -ForegroundColor Cyan
 Remove-Item (Join-Path $sandbox 'Mods\TerrakeepMod.tmod') -Force -ErrorAction SilentlyContinue
 Push-Location $tmlDir
 try {
+	# El -build escribe algun aviso benigno a stderr ("WARN: Image loading failed: unknown image
+	# type", de icon_small.png). Con $ErrorActionPreference='Stop' PowerShell 5.1 lo trata como
+	# error terminante aunque el proceso acabe con exit code 0; se relaja aqui y se comprueba
+	# $LASTEXITCODE de verdad justo debajo. Mismo arreglo que ya lleva compilar.ps1.
+	$ErrorActionPreference = 'Continue'
 	& $tmlDotnet 'tModLoader.dll' '-server' '-build' $repo '-unsafe' 'false' '-tmlsavedirectory' $sandbox
+	$ErrorActionPreference = 'Stop'
 	if ($LASTEXITCODE -ne 0) { throw 'Fallo el -build de tModLoader' }
 }
 finally { Pop-Location }
