@@ -13,11 +13,23 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 	/// </summary>
 	public class SelectorTk : UIElement
 	{
-		private readonly string _etiqueta;
+		private readonly Func<string> _etiqueta;
 		private readonly Func<string> _textoValor;
 		private readonly float _anchoEtiqueta;
 
-		public SelectorTk(string etiqueta, Func<string> textoValor, Action<int> alPaso,
+		/// <summary>Rotulo que se esta enseñando ahora mismo. Lo lee la autoprueba de idiomas para
+		/// recoger todo el texto visible de una pestaña sin tener que exponer cada widget.</summary>
+		public string EtiquetaActual => _etiqueta != null ? _etiqueta() : "";
+
+		/// <summary>Valor que se esta enseñando ahora mismo.</summary>
+		public string ValorActual => _textoValor != null ? _textoValor() : "";
+
+		/// <summary>
+		/// El rotulo se pide con un <c>Func&lt;string&gt;</c> y no se guarda ya resuelto: si se
+		/// pasara como cadena se quedaria congelado en el idioma que hubiera al construir la
+		/// pestaña y no cambiaria con el selector del area de Ajustes.
+		/// </summary>
+		public SelectorTk(Func<string> etiqueta, Func<string> textoValor, Action<int> alPaso,
 			float anchoEtiqueta = 130f, int pasoGrande = 0, float ancho = 330f)
 		{
 			_etiqueta = etiqueta;
@@ -58,7 +70,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		{
 			CalculatedStyle dim = GetDimensions();
 
-			Utils.DrawBorderString(spriteBatch, _etiqueta,
+			Utils.DrawBorderString(spriteBatch, EtiquetaActual,
 				new Vector2(dim.X, dim.Y + 6f), EstiloTk.TextoSuave, 0.8f);
 
 			string valor = _textoValor();

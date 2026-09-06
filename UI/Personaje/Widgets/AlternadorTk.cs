@@ -14,17 +14,20 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 	/// </summary>
 	public class AlternadorTk : UIPanel
 	{
-		private readonly string _etiqueta;
+		private readonly Func<string> _etiqueta;
 		private readonly Func<bool> _leer;
 		private readonly Action<bool> _escribir;
 
-		/// <summary>Texto del tooltip al pasar el raton. null = ninguno.</summary>
-		public string Ayuda;
+		/// <summary>Texto del tooltip al pasar el raton. Se pide en cada dibujado (y no se guarda
+		/// ya resuelto) para que cambie con el idioma sin reconstruir la pestaña.</summary>
+		public Func<string> Ayuda;
 
 		/// <summary>Se dispara despues de cambiar el valor, con el valor nuevo.</summary>
 		public event Action<bool> AlCambiar;
 
-		public AlternadorTk(string etiqueta, Func<bool> leer, Action<bool> escribir)
+		/// <summary>El rotulo se pide con un <c>Func&lt;string&gt;</c>: guardado ya resuelto se
+		/// quedaria congelado en el idioma que hubiera al construir la casilla.</summary>
+		public AlternadorTk(Func<string> etiqueta, Func<bool> leer, Action<bool> escribir)
 		{
 			_etiqueta = etiqueta;
 			_leer = leer;
@@ -47,6 +50,9 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// <summary>Valor real ahora mismo, leido del jugador.</summary>
 		public bool Valor => _leer();
 
+		/// <summary>Rotulo que se esta enseñando ahora mismo, ya traducido.</summary>
+		public string EtiquetaActual => _etiqueta != null ? (_etiqueta() ?? "") : "";
+
 		protected override void DrawSelf(SpriteBatch spriteBatch)
 		{
 			bool marcado = _leer();
@@ -55,8 +61,9 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 
 			if (IsMouseHovering) {
 				Main.LocalPlayer.mouseInterface = true;
-				if (!string.IsNullOrEmpty(Ayuda)) {
-					Main.instance.MouseText(Ayuda);
+				string ayuda = Ayuda != null ? Ayuda() : null;
+				if (!string.IsNullOrEmpty(ayuda)) {
+					Main.instance.MouseText(ayuda);
 				}
 			}
 
@@ -66,7 +73,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 
 			Utils.DrawBorderString(spriteBatch, marca,
 				new Vector2(dim.X + 8f, dim.Y + 6f), colorMarca, 0.8f);
-			Utils.DrawBorderString(spriteBatch, _etiqueta,
+			Utils.DrawBorderString(spriteBatch, EtiquetaActual,
 				new Vector2(dim.X + 44f, dim.Y + 6f), Color.White, 0.8f);
 		}
 	}

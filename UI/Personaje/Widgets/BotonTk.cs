@@ -92,12 +92,23 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// <summary>Si es true el boton se pinta resaltado (pestaña seleccionada, opcion activa).</summary>
 		public bool Activo;
 
+		/// <summary>
+		/// Identificador interno opcional, para que quien mantenga un grupo de botones sepa cual
+		/// es cual sin compararlos por su TEXTO VISIBLE - que ahora cambia con el idioma y por
+		/// tanto ya no sirve como clave.
+		/// </summary>
+		public string Clave;
+
 		/// <summary>Si es false el boton se pinta apagado, no se anima y no dispara
 		/// <see cref="AlPulsar"/>.</summary>
 		public bool Habilitado = true;
 
-		/// <summary>Texto que se muestra en el tooltip del juego al pasar el raton. null = ninguno.</summary>
-		public string Ayuda;
+		/// <summary>Texto que se muestra en el tooltip del juego al pasar el raton. null = ninguno.
+		/// <para />
+		/// Es un <c>Func&lt;string&gt;</c> y no una cadena a proposito: se pide en cada dibujado,
+		/// asi que un tooltip sacado de la localizacion cambia con el idioma sin que haya que
+		/// reconstruir el boton.</summary>
+		public Func<string> Ayuda;
 
 		/// <summary>
 		/// true si el boton es una pestaña o una pildora de una fila apretada. Crece menos al
@@ -231,8 +242,9 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			if (IsMouseHovering) {
 				// Sin esto el clic atraviesa el panel y el jugador ataca o coloca bloques detras.
 				Main.LocalPlayer.mouseInterface = true;
-				if (!string.IsNullOrEmpty(Ayuda)) {
-					Main.instance.MouseText(Ayuda);
+				string ayuda = Ayuda != null ? Ayuda() : null;
+				if (!string.IsNullOrEmpty(ayuda)) {
+					Main.instance.MouseText(ayuda);
 				}
 			}
 

@@ -123,7 +123,7 @@ namespace TerrakeepMod.UI.Panel
 		/// esa franja la ocupa el HUD de vida/mana del propio juego (ver <see cref="AltoTitulo"/>).</summary>
 		private void ConstruirTitulo()
 		{
-			EtiquetaTk titulo = new EtiquetaTk(() => "Terrakeep", 1.15f, 300f, AltoTitulo);
+			EtiquetaTk titulo = new EtiquetaTk(() => Idiomas.Texto("Panel.Titulo"), 1.15f, 300f, AltoTitulo);
 			titulo.Left.Set(2f, 0f);
 			titulo.Top.Set(0f, 0f);
 			_marco.Append(titulo);
@@ -142,7 +142,8 @@ namespace TerrakeepMod.UI.Panel
 				boton.Height.Set(AltoBarraPestanas, 0f);
 				boton.Left.Set(0f, i * fraccion);
 				boton.Top.Set(AltoTitulo, 0f);
-				boton.Ayuda = AyudaDeArea(area) + "\nAtajo: " + PanelTerrakeepSystem.TeclaDe(area);
+				boton.Ayuda = () => AyudaDeArea(area) + "\n" +
+					Idiomas.Texto("Panel.Atajo", PanelTerrakeepSystem.TeclaDe(area));
 				boton.AlPulsar += () => CambiarArea(area, "clic en la pestaña");
 				_botonesPestana.Add(boton);
 				_marco.Append(boton);
@@ -167,31 +168,51 @@ namespace TerrakeepMod.UI.Panel
 			_marco.Append(_botonCerrar);
 		}
 
-		/// <summary>Nombres de las seis pestañas, en el orden de la aplicacion de escritorio.</summary>
-		public static readonly string[] NombresDeArea = {
-			"Personaje", "Librería", "Builds", "Investigación", "Exploración", "Ajustes"
+		/// <summary>Nombre interno (invariable) de cada area. Es la ULTIMA parte de su clave de
+		/// localizacion, no un texto que se enseñe: <c>Panel.Area.&lt;clave&gt;</c> y
+		/// <c>Panel.Ayuda.&lt;clave&gt;</c>.</summary>
+		public static readonly string[] ClavesDeArea = {
+			"Personaje", "Libreria", "Builds", "Investigacion", "Exploracion", "Ajustes"
 		};
+
+		/// <summary>
+		/// Nombres de las seis pestañas, ya traducidos al idioma activo, en el orden de la
+		/// aplicacion de escritorio.
+		/// <para />
+		/// Es una <b>propiedad</b> y no un array fijo a proposito: los nombres cambian con el
+		/// idioma, y un <c>static readonly string[]</c> se quedaria con los que hubiera al cargar
+		/// el mod. El coste son seis <c>Language.GetTextValue</c>, que es lo mismo que ya paga
+		/// cualquier <see cref="EtiquetaTk"/> del panel en cada fotograma.
+		/// </summary>
+		public static string[] NombresDeArea {
+			get {
+				string[] nombres = new string[ClavesDeArea.Length];
+				for (int i = 0; i < nombres.Length; i++) {
+					nombres[i] = NombreDeArea((AreaTerrakeep)i);
+				}
+				return nombres;
+			}
+		}
+
+		/// <summary>Nombre traducido de una pestaña.</summary>
+		public static string NombreDeArea(AreaTerrakeep area)
+		{
+			int indice = (int)area;
+			if (indice < 0 || indice >= ClavesDeArea.Length) {
+				return "";
+			}
+			return Idiomas.Texto("Panel.Area." + ClavesDeArea[indice]);
+		}
 
 		/// <summary>La linea de ayuda que se ve en el pie con cada area abierta. Es donde han ido a
 		/// parar las notas que antes repetia cada panel dentro de su propia cabecera.</summary>
 		public static string AyudaDeArea(AreaTerrakeep area)
 		{
-			switch (area) {
-				case AreaTerrakeep.Personaje:
-					return "Todo lo que toques aquí se escribe al instante sobre el personaje cargado.";
-				case AreaTerrakeep.Libreria:
-					return "Coge objetos del catálogo con el ratón y suéltalos en cualquier contenedor real.";
-				case AreaTerrakeep.Builds:
-					return "Auto-equipar solo MUEVE lo que ya tienes: nunca crea objetos.";
-				case AreaTerrakeep.Investigacion:
-					return "Se escribe por la vía oficial del Modo Viaje, así que el menú del juego refleja lo mismo.";
-				case AreaTerrakeep.Exploracion:
-					return "Arrastra el mini-mapa para moverte y usa la rueda para acercar.";
-				case AreaTerrakeep.Ajustes:
-					return "El idioma cambia en vivo. Ctrl+Z deshace cualquier acción de Terrakeep.";
-				default:
-					return "";
+			int indice = (int)area;
+			if (indice < 0 || indice >= ClavesDeArea.Length) {
+				return "";
 			}
+			return Idiomas.Texto("Panel.Ayuda." + ClavesDeArea[indice]);
 		}
 
 		/// <summary>Cambia de pestaña. Publico: lo usan la barra, los atajos directos y las
@@ -210,7 +231,7 @@ namespace TerrakeepMod.UI.Panel
 				_botonesPestana[i].Activo = i == indice;
 			}
 
-			_botonCerrar.FijarTexto("Cerrar (" + PanelTerrakeepSystem.TeclaDe(area) + ")");
+			RefrescarTextos();
 
 			if (_contenidoActual != null) {
 				_contenedor.RemoveChild(_contenidoActual);
@@ -231,7 +252,26 @@ namespace TerrakeepMod.UI.Panel
 			_contenedor.Recalculate();
 
 			PanelTerrakeepSystem.RegistrarEnArea(area,
-				Terrakeep.LogTag + " Pestaña activa: \"" + NombresDeArea[indice] + "\" (via " + origen + ").");
+				Terrakeep.LogTag + " Pestaña activa: \"" + NombreDeArea(area) + "\" (via " + origen + ").");
+		}
+
+		/// <summary>
+		/// Vuelve a pedir todos los textos propios del marco (las seis pestañas, sus tooltips y el
+		/// boton de cerrar). Se llama en cada <c>Update</c>, no al recibir el evento de cambio de
+		/// idioma: es el mismo criterio con el que se hicieron <see cref="EtiquetaTk"/> y el area
+		/// de Ajustes, y evita depender de que el enganche llegue a hacerse (WS6 documento que un
+		/// elemento colgado con el <c>UIState</c> ya activo se puede saltar
+		/// <c>OnInitialize</c>/<c>OnActivate</c>).
+		/// </summary>
+		private void RefrescarTextos()
+		{
+			for (int i = 0; i < _botonesPestana.Count; i++) {
+				_botonesPestana[i].FijarTexto(NombreDeArea((AreaTerrakeep)i));
+			}
+
+			if (_botonCerrar != null) {
+				_botonCerrar.FijarTexto(Idiomas.Texto("Panel.Cerrar", PanelTerrakeepSystem.TeclaDe(_area)));
+			}
 		}
 
 		private static UIElement CrearContenido(AreaTerrakeep area)
@@ -261,6 +301,8 @@ namespace TerrakeepMod.UI.Panel
 		{
 			base.Update(gameTime);
 
+			RefrescarTextos();
+			RehacerAreaSiCambioElIdioma();
 			MantenerInventarioAbierto();
 
 			// Si el personaje desaparece (muerte con partida en modo extremo, salir al menu...) el
@@ -269,6 +311,34 @@ namespace TerrakeepMod.UI.Panel
 				PanelTerrakeepSystem.CerrarPanel("el jugador ha dejado de estar disponible");
 			}
 		}
+
+		/// <summary>
+		/// Si el idioma ha cambiado desde que se monto la pestaña, se vuelve a montar entera.
+		/// <para />
+		/// Casi todo el texto del mod sale de una <see cref="EtiquetaTk"/> o se refresca en su
+		/// <c>Update</c>, asi que cambia solo. Pero hay cosas que se construyen UNA vez y no se
+		/// vuelven a tocar: las pildoras de Builds, las filas del arbol de la Libreria, la lista
+		/// de objetivos de Exploracion. Rehacer la pestaña es lo mismo que hace ya cualquier clic
+		/// en la barra, cuesta un fotograma, y solo pasa cuando alguien cambia de idioma de verdad.
+		/// Se hace <b>aqui</b>, en el marco, y no en cada area: asi las seis quedan cubiertas.
+		/// </summary>
+		private void RehacerAreaSiCambioElIdioma()
+		{
+			string cultura = Idiomas.CulturaActiva;
+			if (_culturaDelContenido == null) {
+				_culturaDelContenido = cultura;
+				return;
+			}
+			if (_culturaDelContenido == cultura) {
+				return;
+			}
+
+			_culturaDelContenido = cultura;
+			CambiarArea(_area, "cambio de idioma en vivo");
+		}
+
+		/// <summary>Cultura con la que se monto el contenido de la pestaña abierta.</summary>
+		private string _culturaDelContenido;
 
 		/// <summary>
 		/// Deja <c>Main.playerInventory</c> a true mientras el panel esta abierto.

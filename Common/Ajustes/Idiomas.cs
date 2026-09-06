@@ -56,6 +56,23 @@ namespace TerrakeepMod.Common.Ajustes
 			}
 		}
 
+		/// <summary>
+		/// true si el juego esta en español ahora mismo.
+		/// <para />
+		/// Lo necesitan las poquisimas piezas cuyo texto NO sale de los <c>.hjson</c> sino de una
+		/// tabla que solo existe en español (las 121 categorias de Calamity que trae
+		/// <c>TerrasavrNative.Core</c>): con esto pueden elegir su alternativa en ingles en vez de
+		/// enseñar español dentro de una interfaz en ingles. Para todo lo demas, la via es
+		/// <see cref="Texto"/>.
+		/// </summary>
+		public static bool EnEspanol {
+			get {
+				return Language.ActiveCulture != null &&
+					Language.ActiveCulture.Name != null &&
+					Language.ActiveCulture.Name.StartsWith("es");
+			}
+		}
+
 		/// <summary>Nombre de la cultura activa del juego ("es-ES", "en-US"...).</summary>
 		public static string CulturaActiva {
 			get {

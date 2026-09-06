@@ -18,7 +18,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 	/// </summary>
 	public class FilaColorTk : UIElement
 	{
-		private readonly string _etiqueta;
+		private readonly Func<string> _etiqueta;
 		private readonly Func<Color> _leer;
 		private readonly Action<Color> _escribir;
 
@@ -26,7 +26,9 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		private readonly DeslizadorTk _verde;
 		private readonly DeslizadorTk _azul;
 
-		public FilaColorTk(string etiqueta, Func<Color> leer, Action<Color> escribir)
+		/// <summary>El rotulo se pide con un <c>Func&lt;string&gt;</c>: guardado ya resuelto se
+		/// quedaria congelado en el idioma que hubiera al construir la fila.</summary>
+		public FilaColorTk(Func<string> etiqueta, Func<Color> leer, Action<Color> escribir)
 		{
 			_etiqueta = etiqueta;
 			_leer = leer;
@@ -48,6 +50,10 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 				_escribir(new Color(color.R, color.G, ACanal(valor)));
 			});
 		}
+
+		/// <summary>Rotulo que se esta enseñando ahora mismo, ya traducido. Lo lee la autoprueba de
+		/// idiomas para recoger todo el texto visible de la pestaña.</summary>
+		public string EtiquetaActual => _etiqueta != null ? (_etiqueta() ?? "") : "";
 
 		private DeslizadorTk CrearDeslizador(float izquierda, Color relleno, Action<float> alCambiar)
 		{
@@ -88,7 +94,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			CalculatedStyle dim = GetDimensions();
 			Color color = _leer();
 
-			Utils.DrawBorderString(spriteBatch, _etiqueta,
+			Utils.DrawBorderString(spriteBatch, EtiquetaActual,
 				new Vector2(dim.X, dim.Y + 4f), EstiloTk.TextoSuave, 0.78f);
 
 			// Muestra del color, con un borde negro para que se vea aunque el color sea claro.

@@ -69,6 +69,10 @@ namespace TerrakeepMod.Common.Ajustes
 		/// </summary>
 		public override void OnLocalizationsLoaded()
 		{
+			// Los catalogos que guardan NOMBRES ya resueltos hay que tirarlos al cambiar de idioma:
+			// los de Personaje son los tintes de pelo (el "Ninguno" de la posicion 0 es texto
+			// nuestro, y los demas son nombres de objeto, que tambien cambian).
+			Personaje.PersonajeVivo.Descargar();
 			Idiomas.Avisar();
 		}
 

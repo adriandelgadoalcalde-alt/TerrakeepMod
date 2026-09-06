@@ -1,78 +1,584 @@
-Keybinds: {
-	AbrirPanel.DisplayName: Open Terrakeep
-	# WS4 - builds and auto-equip.
-	AbrirBuilds.DisplayName: Open Terrakeep Builds
-	# WS3 - item library.
-	AbrirLibreria.DisplayName: Open Terrakeep Library
-	# WS7 - settings and undo/redo history.
-	AbrirAjustes.DisplayName: Open Terrakeep Settings
-	Deshacer.DisplayName: Undo (hold Ctrl)
-	Rehacer.DisplayName: Redo (hold Ctrl)
-	# WS6 - world exploration and map.
-	AbrirExploracion.DisplayName: Open Terrakeep Exploration
-	# WS5 - research (Journey Mode).
-	AbrirInvestigacion.DisplayName: Open Terrakeep Research
+Panel: {
+	Titulo: "Terrakeep"
+	Cerrar: "Close ({0})"
+	Atajo: "Shortcut: {0}"
+	Area: {
+		Personaje: "Character"
+		Libreria: "Library"
+		Builds: "Builds"
+		Investigacion: "Research"
+		Exploracion: "Exploration"
+		Ajustes: "Settings"
+	}
+	Ayuda: {
+		Personaje: "Everything you touch here is written straight to the loaded character."
+		Libreria: "Grab items from the catalogue with the mouse and drop them into any real container."
+		Builds: "Auto-equip only MOVES what you already have: it never creates items."
+		Investigacion: "It writes through Journey Mode's official API, so the game's own menu shows the same."
+		Exploracion: "Drag the mini-map to pan and use the wheel to zoom."
+		Ajustes: "The language changes live. Ctrl+Z undoes any Terrakeep action."
+	}
 }
-
+Personaje: {
+	Pestana: {
+		Inventario: "Inventory"
+		Almacenes: "Storage"
+		Equipo: "Equipment"
+		Buffs: "Buffs"
+		Apariencia: "Appearance"
+		Desbloqueos: "Unlocks"
+	}
+	Nombre: "Name"
+	SinNombre: "(no name)"
+	VidaMaxima: "Max health"
+	ManaMaximo: "Max mana"
+	VidaEfectiva: "{0} (effective {1})"
+	ManaEfectivo: "{0} (effective {1})"
+	Ahora: "Now: {0}/{1} health, {2}/{3} mana"
+	Llenar: "Refill health and mana"
+	Dinero: "Money: {0}  (inventory {1} | storage {2})"
+	Moneda: {
+		Platino: "plat"
+		Oro: "gold"
+		Plata: "silver"
+		Cobre: "copper"
+	}
+	Inventario: {
+		Mochila: "Backpack - 50 slots (Player.inventory[0..49])"
+		Monedas: "Coins (50-53)"
+		Municion: "Ammo (54-57)"
+		Nota: "Drag, stack and right-click exactly like in the game's inventory: it is vanilla's own ItemSlot."
+		Ocupacion: "Backpack: {0} of {1} slots in use."
+	}
+	Almacenes: {
+		Nombre: {
+			Hucha: "Piggy Bank"
+			Caja: "Safe"
+			Forja: "Defender's Forge"
+			Boveda: "Void Vault"
+		}
+		Titulo: "{0} - {1} slots (Player.{2}.item)"
+		Ocupacion: "{0}: {1} of {2} slots in use."
+	}
+	Equipo: {
+		Conjunto: "Equipment loadout"
+		ConjuntoN: "Loadout {0}"
+		Nota: "The active loadout lives in Player.armor/dye; switching uses Player.TrySwitchingLoadout (it does not work while dead or using an item)."
+		Equipado: "Worn"
+		Vanidad: "Vanity"
+		Tinte: "Dye"
+		Cabeza: "Head"
+		Pecho: "Chest"
+		Piernas: "Legs"
+		Accesorio: "Accessory {0}"
+		NoActiva: "  (inactive)"
+		Especial: "Special equipment"
+		Puesto: "Equipped"
+		Misc: {
+			Mascota: "Pet"
+			MascotaLuz: "Light pet"
+			Vagoneta: "Minecart"
+			Montura: "Mount"
+			Gancho: "Grappling hook"
+		}
+		RanurasActivas: "Active accessory slots: {0} of 7  (the 6th needs a Demon Heart and Expert mode)"
+	}
+	Buffs: {
+		Activos: "Active buffs: {0} of {1} slots"
+		QuitarTodos: "Remove all"
+		Quitar: "Remove"
+		NombreConId: "{0}  (id {1})"
+		Permanente: "permanent"
+		HorasMinutos: "{0} h {1} min"
+		Anadir: "Add a buff"
+		Buscar: "Search"
+		PistaBusqueda: "buff name or id"
+		Segundos: "Seconds"
+		Nota: "Applied with Player.AddBuff (the official API): it respects immunities and limits."
+		SinResultados: "No results."
+		Aplicar: "Apply"
+	}
+	Apariencia: {
+		Peinado: "Hairstyle"
+		PeinadoValor: "{0} of {1}"
+		VarianteEtiqueta: "Variant / gender"
+		Variante: "{0} - {1}"
+		VarianteDesconocida: "Variant {0}"
+		Genero: {
+			Hombre: "Male"
+			Mujer: "Female"
+		}
+		Atuendo: {
+			Inicial: "starter"
+			Pegatina: "sticker"
+			Gangster: "gangster"
+			Abrigo: "coat"
+			Vestido: "dress"
+			Maniqui: "display doll"
+		}
+		Tinte: "Hair dye"
+		SinTinte: "None"
+		TinteDesconocido: "shader {0} (unknown)"
+		NotaTintes: "Hair dyes found in the game (mods included): {0}, taken from Item.hairDye in ContentSamples."
+		CabeceraColores: "Colours          R                         G                         B"
+		Color: {
+			Pelo: "Hair"
+			Piel: "Skin"
+			Ojos: "Eyes"
+			Camisa: "Shirt"
+			CamisetaInterior: "Undershirt"
+			Pantalones: "Trousers"
+			Zapatos: "Shoes"
+		}
+		NotaColores: "Changes show on the character right away: the game draws it from these very fields."
+	}
+	Desbloqueos: {
+		Titulo: "{0} permanent unlocks. They are written straight to Main.LocalPlayer."
+		Nota: "Hover a checkbox to see the real Player field it writes and its conditions."
+		extraAccessory: {
+			Nombre: "6th accessory slot"
+			Descripcion: "Demon Heart. It only takes effect in Expert mode or above."
+		}
+		unlockedBiomeTorches: {
+			Nombre: "Biome torches unlocked"
+			Descripcion: "Torch God's Favor. Without it, the checkbox below does nothing."
+		}
+		UsingBiomeTorches: {
+			Nombre: "Biome torches turned on"
+			Descripcion: "A property: it stores into builderAccStatus[11] and needs the unlock above."
+		}
+		ateArtisanBread: {
+			Nombre: "Artisan Loaf eaten"
+			Descripcion: "Artisan Loaf: lets you craft near any station."
+		}
+		usedAegisCrystal: {
+			Nombre: "Aegis Crystal used"
+			Descripcion: "Aegis Crystal: permanent +defence."
+		}
+		usedAegisFruit: {
+			Nombre: "Aegis Fruit used"
+			Descripcion: "Aegis Fruit: permanent +life."
+		}
+		usedArcaneCrystal: {
+			Nombre: "Arcane Crystal used"
+			Descripcion: "Arcane Crystal: permanent +mana regeneration."
+		}
+		usedGalaxyPearl: {
+			Nombre: "Galaxy Pearl used"
+			Descripcion: "Galaxy Pearl: permanent +luck."
+		}
+		usedGummyWorm: {
+			Nombre: "Gummy Worm used"
+			Descripcion: "Gummy Worm: permanent +fishing."
+		}
+		usedAmbrosia: {
+			Nombre: "Ambrosia used"
+			Descripcion: "Ambrosia: permanent +mining and gathering speed."
+		}
+		downedDD2EventAnyDifficulty: {
+			Nombre: "DD2 event beaten"
+			Descripcion: "Old One's Army beaten at least once, at any difficulty."
+		}
+		unlockedSuperCart: {
+			Nombre: "Mechanical Cart unlocked"
+			Descripcion: "Mechanical Cart: a permanent minecart upgrade."
+		}
+		enabledSuperCart: {
+			Nombre: "Mechanical Cart turned on"
+			Descripcion: "Needs the unlock above (Player.UsingSuperCart checks both)."
+		}
+	}
+}
+Libreria: {
+	PistaBusqueda: "Search: comma = or, space = and, #id, .text"
+	Limpiar: "Clear"
+	LimpiarAyuda: "Empties the search box"
+	Inicio: "Home"
+	InicioAyuda: "Back to the top-level folders"
+	Subir: "< Up"
+	SubirAyuda: "Go up one folder"
+	SinSubcarpetas: "This folder has no subfolders.\nIts items are on the right."
+	CarpetaObjetos: "{0}\n{1} items"
+	CarpetaConSubcarpetas: "{0}\n{1} items, {2} subfolders"
+	CarpetaDeMod: "{0} (mod)"
+	Pagina: "Page {0}"
+	SinCatalogar: "Uncatalogued Terraria"
+	Cargando: "Loading the catalogue..."
+	EnCarpeta: " in \"{0}\""
+	EnTodo: " across the whole Library"
+	SinResultados: "No results{0}."
+	ElegirCarpeta: "{0} items. Pick a folder or search."
+	MostrandoParcial: "Showing {0} of {1}{2}."
+	MostrandoTodos: "{0} items{1}."
+	AyudaDestino: "Click = 1 unit to the mouse; right-click = a full stack. Drop it down here."
+	Aviso: {
+		Sumado: "+{0} \"{1}\" on the mouse (x{2})."
+		AlMaximo: "\"{0}\" is already at its max on the mouse."
+		NoCabe: "What you were carrying does not fit: drop it first."
+		Cogido: "\"{0}\" x{1} on the mouse: drop it in a slot below."
+	}
+	Destino: {
+		Inventario: {
+			Corto: "Backpack"
+			Largo: "Inventory"
+		}
+		Monedas: {
+			Corto: "Coins"
+			Largo: "Coins and ammo"
+		}
+		Equipo: {
+			Corto: "Equip"
+			Largo: "Equipment"
+		}
+		Hucha: {
+			Corto: "Piggy"
+			Largo: "Piggy Bank"
+		}
+		Caja: {
+			Corto: "Safe"
+			Largo: "Safe"
+		}
+		Forja: {
+			Corto: "Forge"
+			Largo: "Defender's Forge"
+		}
+		Boveda: {
+			Corto: "Vault"
+			Largo: "Void Vault"
+		}
+	}
+}
+Builds: {
+	AutoEquipar: "Auto-equip"
+	AutoEquiparAyuda: "Puts the gear from this build that you ALREADY own into place. It never creates items: what you lack stays as it is."
+	SinCatalogo: "No build catalogue is loaded."
+	Armadura: "Armour"
+	Armas: "Weapons"
+	Accesorios: "Accessories"
+	PrefijoSugerido: "suggested prefix: {0}"
+	NoExisteAqui: "does not exist in this game"
+	Nada: "(nothing)"
+	RanurasAccesorio: "  ·  accessory slots available: {0}"
+	Tienes: "You have {0} of {1} items from this build{2}."
+	Leyenda: "Green = you have it  ·  grey = you do not  ·  red = it does not exist here."
+	ResultadoAutoEquipar: "Auto-equip: {0}"
+	Resumen: "moved={0}, already in place={1}, not owned={2}, no room={3}, not in this game={4}"
+	Clase: {
+		Melee: "Melee"
+		Ranged: "Ranged"
+		Mage: "Mage"
+		Summoner: "Summoner"
+		Rogue: "Rogue"
+	}
+}
+Investigacion: {
+	ProgresoGlobal: "Overall progress"
+	Progreso: "{0} / {1} items ({2}%)"
+	AvisoNoViaje: "WARNING: this is not a Journey Mode character (difficulty {0}): it is saved, but the game ignores it."
+	EligeCarpeta: "Pick a folder"
+	InvestigarCarpeta: "Research folder"
+	InvestigarCarpetaAyuda: "Fully researches every item in this folder and the ones inside it"
+	QuitarCarpeta: "Clear folder"
+	QuitarCarpetaAyuda: "Un-researches everything in this folder (Ctrl+Z brings it back)"
+	SoloFalta: "Only what is missing"
+	SoloFaltaAyuda: "Hides items that are already fully researched"
+	InvestigarTodo: "Research EVERYTHING"
+	InvestigarTodoAyuda: "Fully researches EVERY researchable item in the game"
+	QuitarTodo: "Clear ALL research"
+	QuitarTodoAyuda: "Leaves the character with nothing researched (Ctrl+Z brings it back)"
+	Confirmar: "Are you sure? Click again"
+	Investigar: "Research"
+	InvestigarAyuda: "Marks this item as fully researched, through the game's official path"
+	Quitar: "Clear"
+	QuitarAyuda: "Leaves this item un-researched (Ctrl+Z brings it back)"
+	EstadoCompleto: "researched ({0})"
+	EstadoParcial: "{0} of {1} sacrificed"
+	MasObjetosDentro: "and {0} more items in the folders inside. The folder buttons do act on all of them."
+	NadaPendiente: "Nothing pending here: it is all researched."
+	SinInvestigables: "This folder has no researchable items."
+	OtrosObjetos: "Other items ({0})"
+	Chat: "Terrakeep: {0}"
+	AccionInvestigar: "Research {0}"
+	AccionQuitar: "Clear the research of {0}"
+	AccionInvestigarCarpeta: "Research the folder \"{0}\""
+	AccionQuitarCarpeta: "Clear the research of the folder \"{0}\""
+	AccionInvestigarTodo: "Research everything"
+	AccionQuitarTodo: "Clear all research"
+	MensajeInvestigado: "Researched: {0} -> {1}"
+	MensajeSinInvestigar: "Un-researched: {0} -> {1}"
+	MensajeCarpeta: "Folder \"{0}\": {1}"
+	MensajeCarpetaQuitada: "Folder \"{0}\" un-researched: {1}"
+	MensajeTodo: "Research everything: {0}"
+	MensajeTodoQuitado: "All research cleared: {0}"
+	Categoria: {
+		Armadura: "Armour"
+		ArmaduraCascos: "Helmets"
+		ArmaduraPetos: "Chestplates"
+		ArmaduraPerneras: "Leggings"
+		Accesorios: "Accessories"
+		Armas: "Weapons"
+		ArmasMelee: "Melee"
+		ArmasRanged: "Ranged"
+		ArmasMagic: "Magic"
+		ArmasSummon: "Summon"
+		ArmasOtras: "Other"
+		Herramientas: "Tools"
+		Bloques: "Blocks and furniture"
+		Paredes: "Walls"
+		Municion: "Ammo"
+		Consumibles: "Consumables"
+		Materiales: "Materials"
+		Otros: "Other"
+	}
+}
+Exploracion: {
+	Titulo: "World exploration"
+	LineaMundo: "\"{0}\"  ·  {1}  ·  {2}"
+	Hardmode: "Hardmode"
+	PreHardmode: "Pre-Hardmode"
+	Explorado: "Explored: {0} %"
+	EstasEn: "You are at tile {0}"
+	MapaListo: "Game map ready"
+	MapaSinGenerar: "The game map has not been generated yet"
+	Pestana: {
+		Mapa: "Map"
+		Busqueda: "Search"
+		Mundo: "This world"
+	}
+	Categoria: {
+		Minerales: "Ores"
+		Gemas: "Gems"
+		Tesoros: "Treasure"
+		Contenedores: "Containers"
+		Liquidos: "Liquids"
+		Paredes: "Walls"
+	}
+	Objetivo: {
+		CobreEstano: "Copper / Tin"
+		HierroPlomo: "Iron / Lead"
+		PlataTungsteno: "Silver / Tungsten"
+		OroPlatino: "Gold / Platinum"
+		DemonitaCarmesita: "Demonite / Crimtane"
+		Meteorito: "Meteorite"
+		Obsidiana: "Obsidian"
+		PiedraInfernal: "Hellstone"
+		CobaltoPaladio: "Cobalt / Palladium"
+		MithrilOricalco: "Mythril / Orichalcum"
+		AdamantitaTitanio: "Adamantite / Titanium"
+		Clorofita: "Chlorophyte"
+		Luminita: "Luminite"
+		FosilesDesierto: "Desert fossils"
+		Amatista: "Amethyst"
+		Topacio: "Topaz"
+		Zafiro: "Sapphire"
+		Esmeralda: "Emerald"
+		Rubi: "Ruby"
+		Diamante: "Diamond"
+		GemasIncrustadas: "Embedded gems"
+		CorazonesCristal: "Life Crystals"
+		FrutosVida: "Life Fruit"
+		OrbesSombra: "Shadow Orbs / Crimson Hearts"
+		AltaresDemoniacos: "Demon Altars"
+		AltarLihzahrd: "Lihzahrd Altar"
+		BulbosPlantera: "Plantera's Bulbs"
+		Colmenas: "Hives"
+		LarvasAbeja: "Queen Bee Larvae"
+		Cofres: "Chests and dressers"
+		Npcs: "NPCs alive right now"
+		Agua: "Water"
+		Lava: "Lava"
+		Miel: "Honey"
+		Fulgor: "Shimmer"
+		Mazmorra: "Dungeon"
+		TemploLihzahrd: "Lihzahrd Temple"
+		NidoArana: "Spider nest"
+	}
+	SoloExplorado: "Only where I have explored"
+	SoloExploradoAyuda: "With this on, the search only counts tiles you have already revealed on the map. Turn it off to search the WHOLE world, including what you have never seen."
+	Buscar: "Search the world"
+	Buscando: "Searching \"{0}\"...  {1} %"
+	ZonasCon: "{0} areas with \"{1}\""
+	EligeQueBuscar: "Pick what to look for and press \"Search the world\""
+	DetalleInicial: "The world has {0} tiles. The search is spread across frames: you can keep playing."
+	DetalleEnMarcha: "{0} found so far, {1} tiles checked."
+	DetalleTerminada: "{0} tiles found out of {1} checked, in {2} ms of CPU{3}"
+	AmbitoExplorado: " (explored area only)."
+	AmbitoTodo: " (across the whole world)."
+	CategoriaVacia: "Nothing from this category exists in this game."
+	AyudaCofres: "Walks Main.chest: every chest and dresser in the world, with what is inside."
+	AyudaNpcs: "Walks Main.npc: the NPCs alive right now, with their real health."
+	AyudaLiquido: "Looks for this liquid in each tile's liquid data."
+	AyudaPared: "Wall types: {0}"
+	AyudaTile: "Tile types: {0}"
+	SinResultados: "There is not a single one in the world (or not in what you have explored)."
+	AquiSaldran: "The places where what you look for is will show up here."
+	FilaResultado: "({0}, {1})  {2}  ·  {3} tiles away"
+	AyudaResultado: "Click to see it on the mini-map."
+	Mapa: {
+		Acercar: "Zoom in  +"
+		AcercarAyuda: "You can also use the mouse wheel over the map."
+		Alejar: "Zoom out  −"
+		Centrar: "Centre on me"
+		MundoEntero: "See the whole world"
+		VerEnMapa: "Open the game map"
+		VerEnMapaAyuda: "Closes Terrakeep and opens the game's full-screen map where you are looking, with the search markers on top. Closing it brings you back here."
+		AvisoExclusivo: "The game's full-screen map cannot\nlive alongside this panel: opening it\ncloses Terrakeep, which comes back on its own."
+		Marcadores: "Markers"
+		ZonasDe: "{0} areas of \"{1}\""
+		SinBusqueda: "No search yet: use the Search tab"
+		Zoom: "Zoom: {0} px per tile"
+		FueraDelMundo: "Outside the world"
+		TileExplorado: "Tile {0}, {1} (explored)"
+		TileSinExplorar: "Tile {0}, {1} (unexplored)"
+	}
+	Mundo: {
+		Ficha: "World sheet"
+		Dato: {
+			Nombre: "Name"
+			Semilla: "Seed"
+			Tamano: "Size"
+			Tiles: "Tiles"
+			Modo: "Game mode"
+			Progreso: "Progress"
+			MalDelMundo: "World evil"
+			SemillasSecretas: "Secret seeds"
+			Aparicion: "Spawn"
+			EstasEn: "You are at"
+			Explorado: "Explored"
+			Autoguardado: "Autosave"
+		}
+		ModoValor: "{0}  (Main.GameMode = {1})"
+		Tile: "tile {0}"
+		Porcentaje: "{0} %"
+		Activado: "on"
+		Desactivado: "off"
+		SinSemilla: "(this world stores no seed)"
+		Desconocido: "(unknown)"
+		NingunaSemilla: "(none)"
+		SinJugador: "(no player)"
+		Dificultad: "World difficulty, live"
+		AhoraMismo: "Right now: {0}"
+		AvisoDeshacer: "It goes into Terrakeep's history: Ctrl+Z undoes it as long as nothing has been saved."
+		EligeModo: "Pick a mode above"
+		Confirmar: "Confirm: switch to {0}"
+		NoSePuede: "Not possible: {0}"
+		NoSePudo: "It did not work: {0}"
+		VasAPasar: "You are about to go from {0} to {1}. Press the confirm button."
+		Hecho: "Done: the world is now in {0} mode. It will be written on the next save."
+		AyudaModoActual: "This is the mode the world is in right now."
+		AyudaElegirModo: "Click to pick it; you will have to confirm afterwards."
+	}
+	Modo: {
+		Clasico: "Classic"
+		Experto: "Expert"
+		Maestro: "Master"
+		Viaje: "Journey"
+		Desconocido: "Unknown ({0})"
+	}
+	Mal: {
+		Carmesi: "Crimson"
+		Corrupcion: "Corruption"
+	}
+	Semilla: {
+		Drunk: "Drunk world"
+		ForTheWorthy: "For the worthy"
+		Anniversary: "10th anniversary"
+		NotTheBees: "Not the bees!"
+		DontStarve: "Don't Starve"
+		Remix: "Remix"
+		NoTraps: "No traps"
+		Zenith: "Zenith"
+	}
+	Dificultad: {
+		SinMundo: "No world is loaded."
+		Multijugador: "You are in a multiplayer game: the world mode is up to the server."
+		YaEnEseModo: "The world is already in this mode."
+		ModoInexistente: "This game mode does not exist in this version of the game."
+		SinPersonaje: "No character is loaded."
+		SoloViaje: "Your character is a Journey one and can only enter Journey worlds: if you take Journey mode off this world, this character will be locked out."
+		NoViaje: "Your character is NOT a Journey one: if you put this world into Journey mode, this character will not be able to come back in."
+		PermanenteAutoguardado: "The change is PERMANENT: it is written to the world on the next autosave (which you have on)."
+		PermanenteAlGuardar: "The change is PERMANENT: it is written to the world as soon as it saves (autosave is off, but leaving to the menu saves anyway)."
+		Efecto: "Enemies that already spawned keep their health and damage until they respawn; loot does react right away."
+	}
+}
+Ajustes: {
+	Titulo: "Terrakeep - Settings"
+	Idioma: "Interface language"
+	IdiomaSeguirElJuego: "Follow the game"
+	IdiomaEspanol: "Spanish"
+	IdiomaIngles: "English"
+	CulturaActiva: "Game language in use right now: {0}"
+	Cerrar: "Close"
+	Historial: "Undo and redo"
+	HistorialVacio: "Nothing in this session's history yet."
+	HistorialEntradas: "Actions stored in the history: {0}"
+	Deshacer: "Undo (Ctrl+Z)"
+	Rehacer: "Redo (Ctrl+Y)"
+	DeshacerAlgo: "Undo: {0}"
+	RehacerAlgo: "Redo: {0}"
+	Atajos: "Keybinds"
+	AtajosNota: "Each key opens Terrakeep straight on its own tab. Rebindable in the game's Settings > Controls."
+	AtajosHistorial: "Undo and redo: {0} and {1} (holding Ctrl)."
+	AtajosIcono: "It also opens from the Terrakeep icon next to the bestiary and emote buttons, while the inventory is open."
+	SinTecla: "[no key]"
+}
+Historial: {
+	Deshecho: "Terrakeep undid: {0}"
+	Rehecho: "Terrakeep redid: {0}"
+	NadaQueDeshacer: "Terrakeep has nothing to undo."
+	NadaQueRehacer: "Terrakeep has nothing to redo."
+}
+Keybinds: {
+	AbrirPanel: {
+		DisplayName: "Open Terrakeep"
+	}
+	AbrirLibreria: {
+		DisplayName: "Open Terrakeep Library"
+	}
+	AbrirBuilds: {
+		DisplayName: "Open Terrakeep Builds"
+	}
+	AbrirInvestigacion: {
+		DisplayName: "Open Terrakeep Research"
+	}
+	AbrirExploracion: {
+		DisplayName: "Open Terrakeep Exploration"
+	}
+	AbrirAjustes: {
+		DisplayName: "Open Terrakeep Settings"
+	}
+	Deshacer: {
+		DisplayName: "Undo (hold Ctrl)"
+	}
+	Rehacer: {
+		DisplayName: "Redo (hold Ctrl)"
+	}
+}
 Configs: {
 	AjustesConfig: {
-		DisplayName: Terrakeep Settings
-
+		DisplayName: "Terrakeep Settings"
+		Headers: {
+			Interfaz: "Interface"
+		}
 		Idioma: {
-			Label: Interface language
-			Tooltip: Which language Terrakeep uses for its panels. Picking Spanish or English switches the whole game's language right away, because tModLoader only has one active language at a time.
-		}
-
-		AtajosYaSembrados: {
-			Label: Atajos Ya Sembrados
-			Tooltip: ""
+			Label: "Interface language"
+			Tooltip: "Which language Terrakeep uses for its panels. Picking Spanish or English switches the whole game's language right away, because tModLoader only has one active language at a time."
 		}
 	}
-
 	IdiomaDeTerrakeep: {
-		SeguirElJuego: {
-			Label: Follow the game
-			Tooltip: ""
-		}
-
-		Espanol: {
-			Label: Spanish
-			Tooltip: ""
-		}
-
-		English: {
-			Label: English
-			Tooltip: ""
-		}
-
 		Tooltip: ""
+		SeguirElJuego: {
+			Label: "Follow the game"
+			Tooltip: ""
+		}
+		Espanol: {
+			Label: "Spanish"
+			Tooltip: ""
+		}
+		English: {
+			Label: "English"
+			Tooltip: ""
+		}
 	}
-}
-
-Ajustes: {
-	Titulo: Terrakeep - Settings
-	Idioma: Interface language
-	IdiomaSeguirElJuego: Follow the game
-	IdiomaEspanol: Spanish
-	IdiomaIngles: English
-	CulturaActiva: Game language in use right now: {0}
-	Cerrar: Close
-	Historial: Undo and redo
-	HistorialVacio: Nothing in this session's history yet.
-	HistorialEntradas: Actions stored in the history: {0}
-	Deshacer: Undo (Ctrl+Z)
-	Rehacer: Redo (Ctrl+Y)
-	DeshacerAlgo: Undo: {0}
-	RehacerAlgo: Redo: {0}
-	Atajos: Keybinds
-	AtajosNota: Each key opens Terrakeep straight on its own tab. Rebindable in the game's Settings > Controls.
-	AtajosHistorial: Undo and redo: {0} and {1} (holding Ctrl).
-	AtajosIcono: It also opens from the Terrakeep icon next to the bestiary and emote buttons, while the inventory is open.
-}
-
-Historial: {
-	Deshecho: Terrakeep undid: {0}
-	Rehecho: Terrakeep redid: {0}
-	NadaQueDeshacer: Terrakeep has nothing to undo.
-	NadaQueRehacer: Terrakeep has nothing to redo.
 }

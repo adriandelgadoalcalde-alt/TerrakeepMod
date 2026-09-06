@@ -26,7 +26,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 	/// </summary>
 	public class CampoTextoTk : UIPanel
 	{
-		private readonly string _pista;
+		private readonly Func<string> _pista;
 		private readonly int _longitudMaxima;
 		private readonly float _escalaTexto;
 
@@ -49,9 +49,12 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// que por tanto escribir no dispara los atajos del juego).</summary>
 		public static int FotogramasCapturandoTeclado;
 
-		public CampoTextoTk(string pista, int longitudMaxima = 32, float escalaTexto = 0.85f)
+		/// <summary>La pista (el texto gris que se ve con el campo vacio) se pide con un
+		/// <c>Func&lt;string&gt;</c> y no se guarda ya resuelta: si se guardara, se quedaria
+		/// congelada en el idioma que hubiera al construir el campo.</summary>
+		public CampoTextoTk(Func<string> pista, int longitudMaxima = 32, float escalaTexto = 0.85f)
 		{
-			_pista = pista ?? "";
+			_pista = pista;
 			_longitudMaxima = longitudMaxima;
 			_escalaTexto = escalaTexto;
 
@@ -67,6 +70,9 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		}
 
 		public string Texto => _texto;
+
+		/// <summary>Pista que se esta enseñando ahora mismo, ya traducida.</summary>
+		public string Pista => _pista != null ? (_pista() ?? "") : "";
 
 		public bool Enfocado => _enfocado;
 
@@ -120,7 +126,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 
 			CalculatedStyle dim = GetDimensions();
 			bool vacio = _texto.Length == 0;
-			string mostrado = vacio && !_enfocado ? _pista : _texto;
+			string mostrado = vacio && !_enfocado ? Pista : _texto;
 			Color color = vacio && !_enfocado ? new Color(120, 128, 150) : Color.White;
 
 			if (_enfocado && _cursorVisible) {
