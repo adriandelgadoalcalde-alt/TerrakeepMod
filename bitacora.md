@@ -1944,3 +1944,29 @@ producción del atajo (`HistorialSystem.ComprobarAtajos`, `Main.keyState`/
 `PlayerInput.Triggers.JustPressed`, deshacer/rehacer, persistencia del idioma) sigue
 funcionando exactamente igual que en WS7 — la limitación es y sigue siendo solo el último eslabón
 físico (la tecla en sí), nunca el mod.
+
+### Cuarto intento (mismo día): AutoHotkey v2 en modo `SendPlay`
+
+Antes de valorar un driver de kernel (`Interception`), se investigó primero una vía sin driver:
+`SendMode "Play"` de AutoHotkey v2 usa `WH_JOURNALPLAYBACK` (una API de reproducción de macros
+de Windows, no `SendInput`/`keybd_event`), documentada por el propio proyecto como pensada
+exactamente para "juegos o aplicaciones con lectura de entrada poco habitual" donde los otros
+modos fallan. Instalado vía `winget install AutoHotkey.AutoHotkey` (v2.0.27).
+
+Prueba: script `.ahk` que activa la ventana del juego (`WinActivate "ahk_exe dotnet.exe"`) y
+envía `SendPlay("^z")`, lanzado justo tras `LISTO PARA ATAJOS` del mismo protocolo de
+`verificar-ws7-interactivo.ps1`. **Resultado idéntico a los tres intentos anteriores**: con
+`Main.hasFocus=True` confirmado, `Ctrl pulsado según Main.keyState` se queda en `False` todo el
+tiempo, nunca `True` en ningún fotograma.
+
+**Cuatro vías reales distintas, cuatro fallos idénticos**: sesión desconectada de RDP, nivel de
+integridad UIPI, scan code de hardware ausente, y ahora reproducción vía `WH_JOURNALPLAYBACK`.
+Las cuatro comparten que son formas de *inyectar en la cola de entrada de Windows a nivel de
+espacio de usuario* - la conclusión que queda en pie es que FNA/SDL2 en esta instalación de
+tModLoader lee el teclado por un camino (muy probablemente Raw Input filtrado por dispositivo
+HID real, o polling directo de controlador) que ninguna de las cuatro puede alcanzar. La única
+vía que quedaría es un dispositivo HID virtual real a nivel de controlador de kernel (que el
+sistema no puede distinguir de un teclado físico) - con el riesgo real ya evaluado y documentado
+en la conversación con el usuario (caso conocido de `Interception` dejando teclado+ratón
+inservibles tras reiniciar, sin garantía de compatibilidad con Windows 11). Decisión pendiente
+del usuario, no se instala nada de eso sin su confirmación explícita informada del riesgo.
