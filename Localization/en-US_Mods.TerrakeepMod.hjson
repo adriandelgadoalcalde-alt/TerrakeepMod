@@ -2,6 +2,8 @@ Keybinds: {
 	AbrirPanel.DisplayName: Open Terrakeep
 	# WS4 - builds and auto-equip.
 	AbrirBuilds.DisplayName: Open Terrakeep Builds
+	# WS3 - item library.
+	AbrirLibreria.DisplayName: Open Terrakeep Library
 	# WS7 - settings and undo/redo history.
 	AbrirAjustes.DisplayName: Open Terrakeep Settings
 	Deshacer.DisplayName: Undo (hold Ctrl)
