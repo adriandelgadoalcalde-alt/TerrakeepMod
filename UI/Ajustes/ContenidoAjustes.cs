@@ -6,6 +6,8 @@ using Terraria.GameInput;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Undo;
+using TerrakeepMod.Common.Panel;
+using TerrakeepMod.UI.Panel;
 using TerrakeepMod.UI.Personaje.Widgets;
 
 namespace TerrakeepMod.UI.Ajustes
@@ -152,14 +154,28 @@ namespace TerrakeepMod.UI.Ajustes
 			caja.Append(icono);
 		}
 
+		/// <summary>
+		/// "Personaje [K]  ·  Librería [O]  ·  ..." con los nombres de las seis areas TRADUCIDOS
+		/// (salen de la misma clave que la barra de pestañas, asi que no hay dos sitios donde
+		/// mantener los mismos seis nombres) y la tecla REAL que tenga cada atajo ahora mismo.
+		/// </summary>
 		private static string TextoAtajos()
 		{
-			return "Personaje " + TeclaDe("AbrirPanel") +
-				"  ·  Librería " + TeclaDe("AbrirLibreria") +
-				"  ·  Builds " + TeclaDe("AbrirBuilds") +
-				"  ·  Investigación " + TeclaDe("AbrirInvestigacion") +
-				"  ·  Exploración " + TeclaDe("AbrirExploracion") +
-				"  ·  Ajustes " + TeclaDe("AbrirAjustes");
+			string[] atajos = {
+				"AbrirPanel", "AbrirLibreria", "AbrirBuilds",
+				"AbrirInvestigacion", "AbrirExploracion", "AbrirAjustes"
+			};
+
+			System.Text.StringBuilder texto = new System.Text.StringBuilder();
+			for (int i = 0; i < atajos.Length; i++) {
+				if (i > 0) {
+					texto.Append("  ·  ");
+				}
+				texto.Append(PanelTerrakeepState.NombreDeArea((AreaTerrakeep)i))
+					.Append(' ')
+					.Append(TeclaDe(atajos[i]));
+			}
+			return texto.ToString();
 		}
 
 		/// <summary>Tecla real que tiene asignada un atajo del mod ahora mismo, leida del perfil de
@@ -178,7 +194,9 @@ namespace TerrakeepMod.UI.Ajustes
 			}
 
 			List<string> teclas = teclado.KeyStatus[clave];
-			return teclas == null || teclas.Count == 0 ? "[sin tecla]" : "[" + string.Join("+", teclas) + "]";
+			return teclas == null || teclas.Count == 0
+				? Idiomas.Texto("Ajustes.SinTecla")
+				: "[" + string.Join("+", teclas) + "]";
 		}
 
 		private BotonTk CrearBoton(UIElement padre, float izquierdaFraccion, float arriba, float fraccionAncho = 1f / 3f)
