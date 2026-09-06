@@ -1076,3 +1076,175 @@ funcionalidad del mod no revela mapa jamás.
 - **Marcadores que el jugador pueda poner a mano** (chinchetas). Lo que hay son los resultados de
   la búsqueda, el punto de aparición y el jugador.
 - **Textos localizados** (ver arriba: decisión, no olvido).
+
+---
+
+## 6-sep-2026 — WS5: Investigación (Modo Viaje)
+
+Quinto workstream de esta tanda, en paralelo con WS3 (Librería) y WS6 (Exploración). Panel propio
+con la tecla **I**: cuánto se lleva investigado de cada carpeta de la Librería, y cómo completarlo
+o quitarlo. Todo lo que escribe pasa por la **API oficial del juego**, que era el riesgo concreto
+que señalaba el plan: escribir el diccionario de investigación a pelo desincronizaría el menú de
+sacrificio/duplicación del Modo Viaje.
+
+### La API real, decompilada del `tModLoader.dll` INSTALADO
+
+Todo comprobado con `ilspycmd` sobre `C:\Program Files (x86)\Steam\steamapps\common\tModLoader\
+tModLoader.dll` (**v2026.7.3.0**), no sobre `tModLoader-Decompiled\` (v1.4.4.9): ya sabíamos desde
+WS0/WS1 que hay diferencias reales entre las dos.
+
+| Qué | Dónde, de verdad |
+|---|---|
+| Cuántas unidades hacen falta de cada objeto | `CreativeItemSacrificesCatalog.Instance.SacrificeCountNeededByItemId` (`Dictionary<int,int>` **público**), que `Initialize()` rellena leyendo el recurso incrustado `Terraria.GameContent.Creative.Content.Sacrifices.tsv` |
+| Cómo entran los objetos de MOD en esa tabla | el **setter** de `Item.ResearchUnlockCount` escribe literalmente en ese diccionario, y `ModItem.AutoStaticDefaults` pone 1 por defecto a todo objeto de mod |
+| Investigar del todo un objeto | `CreativeUI.ResearchItem(int type)` → `new Item(type, amountNeeded)` → `CreativeUI.SacrificeItem(ref item, ...)`, la MISMA ruta que la ranura de sacrificio del juego |
+| Leer x/N | `Main.LocalPlayerCreativeTracker.ItemSacrifices.TryGetSacrificeNumbers(type, out lleva, out hacenFalta)` |
+| Quitar investigación de un objeto | `ItemsSacrificedUnlocksTracker.SetSacrificeCountDirectly(idPersistente, 0)` (público; es lo que usa el propio juego al cargar el `.plr`) |
+| Quitarla toda | `ItemsSacrificedUnlocksTracker.Reset()` |
+| Enterarse de que algo cambió sin recontar cada fotograma | `ItemsSacrificedUnlocksTracker.LastEditId`, que sube en cada `MarkContentsDirty()` |
+| Comprobación independiente de que el juego lo ve | `FillListOfItemsThatCanBeObtainedInfinitely(List<int>)`, que es literalmente lo que alimenta el menú de duplicar del Modo Viaje |
+| Dónde vive el dato | `Player.creativeTracker` (`CreativeUnlocksTracker`), serializado dentro del propio `.plr` (`Player.SavePlayer` → `creativeTracker.Save`) |
+| La condición de Modo Viaje | `Main.LocalPlayer.difficulty == 3` (`PlayerDifficultyID.Creative`): es literalmente lo que hace `CreativeUI.Draw` (`if (Main.LocalPlayer.difficulty != 3) Enabled = false;`) |
+
+**Trampa real que hay que conocer**: `CreativeUI.GetSacrificeCount(type, out completo)` es público y
+parece el método natural para leer el progreso, pero **NO aplica**
+`ContentSamples.CreativeResearchItemPersistentIdOverride` (el diccionario de objetos que comparten
+investigación con otro): mira la caché con el tipo tal cual se le pasa.
+`ItemSacrifices.TryGetSacrificeNumbers` sí lo aplica. Por eso el panel lee siempre por el segundo, y
+canoniza el tipo antes de contar para no contar dos veces el mismo progreso. `GetSacrificeCount` se
+usa solo en la autoprueba, como segunda opinión.
+
+**Refresco del menú del juego**: `SacrificeItem` llama por dentro a
+`Main.CreativeMenu.RefreshAvailableInfiniteItemsList()`, así que investigar deja el menú al día
+solo. Al *quitar* investigación no hay refresco (ese método es privado), pero tampoco hace falta:
+`CreativeUI.ToggleMenu()` lo vuelve a llamar cada vez que el jugador abre el menú del Modo Viaje.
+
+### Qué quedó hecho
+
+- **Árbol de carpetas: el MISMO de la Librería, reutilizando `TerrasavrNative.Core`** (lo que WS2
+  movió allí), no una copia. Tres fuentes, en este orden:
+  1. `LibraryTreeBuilder.BuildItemTree(...)` sobre `Assets/vanilla_library_tree.json` +
+     `vanilla_library_labels_es.json` (los mismos archivos que usa WS3);
+  2. una raíz por MOD con `LiveItemTreeBuilder.BuildTree(...)` — mismo `BuildGroupedRoot` de Core
+     por dentro — descubriendo el contenido en vivo desde `ContentSamples.ItemsByType`, así que
+     Calamity o cualquier otro mod entran solos, sin catálogo estático;
+  3. una carpeta "Otros objetos" para lo investigable de vanilla que no esté en el árbol estático,
+     para que la suma de las carpetas sea EXACTAMENTE el total real del juego.
+- Cada carpeta enseña **x/N** con una barra fina, y el color dice el estado (verde = hecho, ámbar =
+  a medias, gris = sin empezar) con los mismos tonos que el "ya lo tienes" de WS4.
+- Lista de objetos de la carpeta abierta, cada uno con su `ItemSlot` **nativo de vanilla** (icono y
+  tooltip reales, sin `ItemSlot.Handle`: es una muestra, no una ranura del inventario) y un botón
+  que dice "Investigar" o "Quitar" según lo que le falte.
+- **Barra de progreso global** (investigado / investigable), dibujada con `TextureAssets.MagicPixel`,
+  el mismo pixel blanco con el que el propio Terraria pinta todas sus barras.
+- **Aviso claro si el personaje no es de Modo Viaje**, en rojo y arriba del todo, en vez de dejar
+  hacer clics que no sirven para nada.
+- **Acciones**: investigar un objeto, la carpeta entera (con todo lo que cuelgue de ella), o TODO; y
+  quitar la investigación de un objeto, de una carpeta o del personaje entero. **Investigar solo
+  sube**: lo que ya estaba se cuenta como "sin cambio". Bajar hay que pedirlo con las acciones de
+  quitar, que están separadas a propósito.
+- **Confirmación en dos pasos** en las dos acciones globales (el primer clic deja el botón en
+  "¿Seguro? Pulsa otra vez" durante 4 s), porque tocan miles de objetos de golpe.
+- **Todo es deshacible con Ctrl+Z**, con el modelo de snapshot de WS7
+  (`Historial.CambiarValor<SnapshotInvestigacion>`): se guarda el recuento de antes y el de después
+  de los tipos tocados, nunca una closure del tipo "súmale 25".
+- Filtro "Solo lo que falta", y nota en la cabecera con la tecla REAL del menú del Modo Viaje del
+  juego, leída del perfil de controles del jugador (`ToggleCreativeMenu`, de fábrica la C, pero
+  reasignable) — no dada por supuesta.
+
+### Contenido separado de la mecánica de apertura
+
+Pedido explícito para la fusión posterior de los seis paneles:
+
+- `UI/Investigacion/ContenidoInvestigacion.cs` es un **`UIElement` corriente**, sin marco, sin
+  título y sin botón de cerrar. Es TODO el panel de verdad y se puede colgar de cualquier sitio.
+- `UI/Investigacion/PanelInvestigacionState.cs` es solo el marco a pantalla completa (mismas
+  medidas y colores que el panel de Personaje de WS1) y el botón "Cerrar (I)".
+- `Common/Investigacion/PanelInvestigacionSystem.cs` es el `ModKeybind` +
+  `IngameFancyUI.OpenUIState`.
+
+Las dos últimas son las descartables: montar esto dentro de una pestaña es mover un `UIElement`.
+
+### La tecla
+
+**I**, confirmada mirando el código real: las teclas de fábrica de Terraria son W A S D E R H J B M
+C más las de la barra rápida (`PlayerInput`, `tModLoader.dll` instalado), y K/L/J/O ya las usaban
+WS0-WS1, WS4, WS7 y WS3. La asigna sola el `SembradorDeAtajos` de WS7, sin tocar nada.
+
+### El fallo real que apareció, y cómo se encontró
+
+Probando con **CalamityMod cargado** (no en teoría): un objeto de mod aparecía **dos veces** en el
+árbol. El catálogo de Librería de Terrasavr trae ids **por encima del `ItemID.Count` de esta versión
+del juego (5456)**, y dentro de la partida esos ids ya no son de vanilla: los ocupan los objetos que
+registran los mods. Resultado: `"Andromedon Body"` (type=5456, de tModLoader) salía colado dentro de
+la carpeta vanilla "Daño de Invocación" **y** otra vez en la carpeta de su mod. Corregido filtrando
+el árbol **estático** a ids `< ItemID.Count`; las raíces vivas por mod siguen aceptándolos todos.
+
+El primer intento del arreglo puso el filtro en la función `Convertir`, que **comparten** las dos
+fuentes, y se cargó las carpetas de mod enteras (`0 de mods`, `5391` en el árbol contra `8203` del
+juego). Lo cazó la propia línea de "cuadra / NO cuadra" del log, que se había puesto justo para eso.
+
+### Verificado de verdad en el juego
+
+`scripts\verificar-investigacion.ps1`, sandbox propio `tModLoader-TerrakeepWS5`, variable
+`TERRAKEEP_AUTOTEST_WS5`, evidencia en archivo propio `terrakeep-ws5-evidencia.log` dentro del
+sandbox (el `client.log` del juego es uno solo para todas las instancias — con tres agentes
+lanzando el juego a la vez, es inservible). Logs completos en `evidencia\ws5-investigacion.log.txt`
+y `evidencia\ws5-investigacion-calamity.log.txt`. **Cero excepciones.**
+
+| Qué | Evidencia real del log |
+|---|---|
+| El árbol cuadra con el juego, objeto a objeto | `Objetos investigables en el arbol: 5480; segun la tabla real del juego: 5480 (cuadra)` |
+| ...y con Calamity también | `8203; segun la tabla real del juego: 8203 (cuadra)`, 12 raíces: `"Objectos por ID" 0/5391` + `"Calamity Mod (2662)"` + `"Calamity Mod Music (61)"` + `"tModLoader (89)"` |
+| El aviso de "no es Modo Viaje" se pinta de verdad | `AVISO que se esta pintando: "AVISO: este personaje NO es de Modo Viaje (dificultad 0)..."` |
+| ...y desaparece solo al pasar a Modo Viaje | `Paso 4 - Con Modo Viaje, el aviso desaparece solo: "" (esperado vacio)` |
+| El panel está dibujado de verdad | `Marco ... x=16 y=21 w=768 h=676 ... 393 elementos, 12 filas de carpeta y 120 slots de objeto (el 1o en x=343 y=216 37x37)` |
+| Investigar un objeto con un **clic real** en su botón | `CLIC REAL en el boton "Investigar" ... ANTES: 0/100. DESPUES: "Dirt Block" (type=2, pid=DirtBlock) 100/100 INVESTIGADO` |
+| **El JUEGO lo ve**, preguntándoselo a él | `Segun el JUEGO (FillListOfItemsThatCanBeObtainedInfinitely): ... el de prueba esta en la lista: True` |
+| Ctrl+Z / Ctrl+Y sobre la investigación | `deshecho: "Investigar Dirt Block" ... 0/100` y `rehecho ... 100/100` |
+| Carpeta entera, ida y vuelta, con clics reales | `Carpeta "Alas (7)" ahora: 7/7` y luego `Quitar carpeta ... 0/7` |
+| Un objeto de MOD, también con clic real | `"Andromedon Legs" (type=5458, pid=ModLoader/Jofairden_Legs) 0/1` a `1/1 INVESTIGADO`, en `"tModLoader/Armadura/Perneras"` |
+| La confirmación global no borra con un solo clic | `el boton pasa a "Seguro? Pulsa otra vez" y NO se ha ejecutado nada`; 5 s después, `Esperando confirmacion: False`, `Estado intacto` |
+| **PERSISTENCIA**: sobrevive a guardar y volver a cargar | segunda ejecución del cliente: `PERSISTENCIA/1 - Personaje recien cargado del disco por el propio juego. Estado del objeto de prueba: "Dirt Block" ... 100/100 INVESTIGADO` |
+
+La fase de persistencia es la que de verdad cierra el workstream: la fase 1 investiga y llama a
+`Player.SavePlayer`, el script mata el cliente y **vuelve a lanzar el juego**, y la fase 2 solo lee.
+Que el objeto siga a 100/100 demuestra que lo que escribe el panel pasa por el serializador real del
+juego y acaba dentro del `.plr`, no que se quede en memoria.
+
+### Decisiones tomadas aquí
+
+- **El escenario de la prueba pone `Player.difficulty = 3`** desde dentro del juego (y lo devuelve a
+  su valor antes de guardar, para que la prueba siga siendo repetible contra el mundo clásico del
+  sandbox). Es escenario, no funcionalidad, y solo corre con la variable de entorno puesta —
+  exactamente igual que WS4 siembra objetos en el inventario antes de probar "ya lo tienes". Se hizo
+  así en vez de generar un personaje y un mundo de Modo Viaje porque `-skipselect` **valida** que
+  los dos coincidan (`UIWorldSelect.CanWorldBePlayed`: `player.difficulty == 3` tiene que ir con
+  `file.GameMode == 3`), y montar los dos habría metido dos lanzamientos más de preparación en cada
+  ejecución. Lo investigado no depende de la dificultad: vive en `Player.creativeTracker`.
+- **Textos fijos en español, no en `Localization/*.hjson`**, igual que WS1 y WS4. No es olvido:
+  `Localization/README.md` (entregable de WS7) deja la migración de todos los paneles para la pasada
+  de integración, y con tres agentes editando los mismos dos `.hjson` a la vez el riesgo de pisarse
+  no compensaba.
+- **La lectura de los dos `.json` del árbol se hace por separado de la Librería (WS3)**, con
+  tolerancia a que no estén (entonces el árbol se construye solo con lo vivo). Con WS3 escribiéndose
+  al mismo tiempo, depender de su código a medias habría bloqueado a los dos. En la fusión, esto se
+  sustituye por el catálogo compartido de la Librería sin tocar la interfaz de este panel.
+- **Los contadores se recalculan solo cuando el estado cambia de verdad** (`LastEditId` del tracker
+  oficial), no en cada fotograma: son 5.480 consultas en vanilla y 8.203 con Calamity. Y se mira el
+  contador del juego, no solo las acciones propias, para que el panel también se entere si el
+  jugador sacrifica objetos en el menú del propio juego con el panel abierto.
+
+### Obstáculos del entorno
+
+- **La primera ejecución no dejó ni una línea de evidencia.** Dos causas, las dos de convivir con
+  otros dos agentes lanzando el juego a la vez: el cliente arrancó y se quedó colgado cargando mods,
+  y además el script le daba el foco a la ventana **del otro agente** (filtraba por título de
+  ventana, y la suya también pone "Terraria: ..."), con lo que la partida propia se habría quedado
+  congelada (`Main.hasFocus` → `gamePaused`). Resuelto por los dos lados: el script busca su ventana
+  por la **línea de comandos** (`-tmlsavedirectory` con su sandbox) y espera a que no haya ningún
+  otro cliente de tModLoader abierto antes de lanzar el suyo.
+- **`git commit --only` no acepta archivos que git no conozca**: hay que hacer antes
+  `git add -N <rutas>` (intent-to-add) y entonces sí. Con eso, el commit lleva exactamente las rutas
+  nombradas y nada de lo que otros agentes tengan preparado en el índice compartido — que es el
+  problema que ya documentó WS1.
