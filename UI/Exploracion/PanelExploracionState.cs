@@ -232,6 +232,40 @@ namespace TerrakeepMod.UI.Exploracion
 			return encontrado;
 		}
 
+		/// <summary>
+		/// Pulsa DE VERDAD el boton cuyo texto empiece por <paramref name="texto"/>, disparando su
+		/// <c>OnLeftClick</c> con un <see cref="UIMouseEvent"/> colocado en su centro real de
+		/// pantalla. Devuelve la descripcion de lo pulsado, o null si no habia tal boton.
+		/// </summary>
+		/// <remarks>
+		/// Es el mismo camino que recorre un clic de raton una vez que <c>UserInterface</c> ha
+		/// resuelto sobre que elemento cae, y es la forma que uso WS4 para probar sus pildoras: la
+		/// alternativa (llamar al metodo que el boton llama) no demostraria que el boton este
+		/// realmente conectado ni que ocupe sitio en pantalla.
+		/// </remarks>
+		public string PulsarBoton(string texto)
+		{
+			BotonTk encontrado = null;
+			ExecuteRecursively(elemento => {
+				BotonTk boton = elemento as BotonTk;
+				if (encontrado == null && boton != null && boton.Texto != null && boton.Texto.StartsWith(texto)) {
+					encontrado = boton;
+				}
+			});
+
+			if (encontrado == null) {
+				return null;
+			}
+
+			CalculatedStyle dim = encontrado.GetDimensions();
+			Vector2 centro = new Vector2(dim.X + dim.Width / 2f, dim.Y + dim.Height / 2f);
+			encontrado.LeftClick(new UIMouseEvent(encontrado, centro));
+
+			return "\"" + encontrado.Texto + "\" (habilitado=" + encontrado.Habilitado +
+				", en x=" + (int)dim.X + " y=" + (int)dim.Y + " " + (int)dim.Width + "x" + (int)dim.Height +
+				", clic en " + (int)centro.X + "," + (int)centro.Y + ")";
+		}
+
 		/// <summary>Recuento y medidas reales de lo que hay puesto en la pestaña abierta.</summary>
 		public string InformePestanaActual()
 		{

@@ -892,3 +892,187 @@ en los 13 pasos, en las dos configuraciones.**
   árbol de trabajo. Comprobado antes de ejecutarlo que no había ninguna entrada `A` (contenido
   que existiera únicamente en el índice), o sea que no se perdía nada. **Conviene hacerlo
   siempre después de comitear con índice privado.**
+
+---
+
+## 6-sep-2026 — WS6: Exploración y mapa del mundo (tecla P)
+
+El workstream más grande y más nuevo del plan, y el único cuyas tres piezas dependían de cosas
+del motor que no se habían tocado nunca: las texturas del mapa, la capa de mapa de mods y el modo
+de juego en vivo. **Las tres quedaron cerradas y verificadas en el juego real.**
+
+### Lo que hay
+
+Panel propio (`IngameFancyUI`, tecla **P**), mismo marco, misma paleta (`EstiloTk`), misma barra
+de pestañas y mismo botón de cerrar que los paneles de Personaje (K) y Builds (L). Tres pestañas:
+
+| Pestaña | Qué hace |
+|---|---|
+| Mapa | Mini-mapa navegable con las texturas reales del juego + botón "Ver en el mapa del juego" |
+| Búsqueda | 38 objetivos (minerales, gemas, tesoros, contenedores, líquidos, paredes) sobre el mundo real |
+| Este mundo | Ficha del mundo y cambio de dificultad en vivo con salvaguardas |
+
+`Common/Exploracion/` (mecánica) y `UI/Exploracion/` (contenido) están separados a propósito, para
+que la fusión posterior de los seis paneles en uno solo con pestañas se lleve los `UIElement` y
+tire la mecánica de apertura entera.
+
+### Hallazgos reales del motor (todo comprobado con `ilspycmd` sobre el `tModLoader.dll` instalado)
+
+1. **La correspondencia tile ↔ píxel del mapa.** `Main.instance.mapTarget` es una rejilla pública
+   de `RenderTarget2D` (`mapTargetX=5`, `mapTargetY=2`) y cada casilla cubre
+   `Main.textureMaxWidth` × `Main.textureMaxHeight` = **2000 × 1800** tiles. El píxel `(px, py)`
+   de la casilla `[k, l]` es el tile `(k*2000 + px, l*1800 + py)`. No está documentado en ningún
+   sitio: se dedujo del bucle de dibujado real de `Main.DrawMap` (cómo calcula la posición de cada
+   trozo y su rectángulo de origen) y **se comprobó leyendo un píxel de verdad** con
+   `RenderTarget2D.GetData` en la posición del jugador, que sale opaco justo donde el juego dice
+   `Main.Map.IsRevealed(x, y) == true`.
+2. **La matemática del mapa a pantalla completa, simplificada.** En `DrawMap`, la posición en
+   pantalla de un tile es `num + (tile - 10) * escala` con
+   `num = -mapFullscreenPos * escala + anchoPantalla/2 + 10 * escala`, que es exactamente
+   `centro + (tile - posicionDelMapa) * escala`. El mini-mapa usa esa fórmula con el centro de su
+   propio elemento, así que se comporta igual que el mapa del juego.
+3. **El mapa se mantiene al día solo.** `DrawToMap` se llama desde el ciclo de dibujado de
+   `Main.DoDraw`, no solo cuando el mapa está a la vista, así que el mini-mapa no tiene que
+   refrescar nada. Lo que sí tarda es el repintado completo: tras marcar el mapa como sucio, el
+   motor lo redibuja **a trozos con un presupuesto de 5 ms por fotograma**
+   (`DrawToMap_Section` + `sectionManager`), no de golpe. La autoprueba espera 240 fotogramas por
+   eso.
+4. **Confirmado el bloqueo que condicionaba todo el diseño**: en `Main.DoDraw`, si
+   `mapFullscreen` es true el juego dibuja el mapa y hace `return` **antes** de la interfaz, así
+   que no se dibuja ninguna UI de mods. Panel propio y mapa grande son mutuamente excluyentes, tal
+   como decía el plan. De ahí el diseño híbrido, y de ahí que el botón "Ver en el mapa" cierre el
+   panel y lo vuelva a abrir solo cuando el mapa se cierra.
+5. **Recortar y filtrar el mini-mapa sin tocar el `SpriteBatch`.** `UIElement` ya trae las dos
+   piezas: `OverflowHidden` recorta a los hijos con el rectángulo de tijera, y
+   `OverrideSamplerState` hace que el motor reabra el lote de dibujado con el sampler que le
+   pidas. Con un contenedor `OverflowHidden` y un lienzo hijo con `PointClamp`, el mapa sale
+   nítido y recortado sin una sola llamada a `GraphicsDevice`.
+6. **Nombres de API que NO coinciden con la referencia decompilada vieja**
+   (`tModLoader-Decompiled\`, v1.4.4.9) ni con lo que suponía el plan:
+   - Los structs de datos de tile viven en el namespace **`Terraria`**, no en
+     `Terraria.DataStructures`: `Terraria.TileTypeData`, `Terraria.TileWallWireStateData`,
+     `Terraria.WallTypeData`, `Terraria.LiquidData`. Existe además un `WallTypeData` propio, que
+     el plan no mencionaba y que es lo que hace barata la búsqueda de paredes.
+   - `MapOverlayDrawContext` está en **`Terraria.Map`**, no en `Terraria.ModLoader`.
+   - `IngameFancyUI` está en **`Terraria.UI`**, no en `Terraria.GameContent.UI.States`.
+   - El índice del array plano de tiles es **`y + x * Height`** (código real de `Tilemap`), no
+     `x + y * Width`: por eso el barrido va por columnas, que así es lectura secuencial.
+7. **La regla real del modo Viaje**, que es lo que convierte la salvaguarda pedida en algo
+   concreto y no en un aviso genérico: `UIWorldSelect.CanWorldBePlayed` exige
+   `(jugador.difficulty == 3) == (mundo.GameMode == 3)`. O sea que poner en Viaje un mundo con un
+   personaje normal deja a ese personaje **sin poder volver a entrar**. Por eso ese cambio se
+   bloquea y se explica el motivo, en vez de pedir una confirmación más.
+8. **La tecla P está libre en vanilla**: el perfil de teclado por defecto (`PlayerInput.Reset`)
+   usa WASD, Espacio, Escape, E, H, **J**, B, Tab, M, C, F1-F4 y los números. De paso, un dato
+   para quien fusione los paneles: **la J que eligió WS7 sí choca con `QuickMana` de vanilla**
+   (el atajo del mod funciona igual, pero al pulsarla el jugador se bebe una poción de maná).
+   Ninguna otra del mod (K, L, O, I, P) pisa nada.
+
+### Decisiones que no estaban en el plan
+
+- **Troceado por fotogramas, no hilo aparte.** El plan admitía las dos. Se troceó porque el hilo
+  no aporta nada aquí y sí trae problemas: el juego muta esos mismos arrays mientras corre y los
+  reasigna al cambiar de mundo, así que leerlos desde fuera del hilo del juego daría lecturas a
+  medias sin ninguna garantía. Con 2 ms de presupuesto por fotograma, un mundo pequeño entero
+  (20.170.801 tiles) se termina en **16 fotogramas y ~34 ms de CPU total**. La medida está en el
+  log, no estimada.
+- **Los hallazgos se agrupan en zonas de 25×25 tiles** en vez de devolverse sueltos. Un mundo
+  pequeño tiene 13.718 tiles de cobre: una lista de 13.718 puntos no le sirve a nadie ni en el
+  mapa ni en la pantalla. Se devuelven las 150 zonas con más cantidad, ordenadas por cercanía al
+  jugador.
+- **Interruptor "Solo en lo que ya he explorado", activado por defecto.** Buscar en todo el mundo
+  es leer datos que el jugador no ha descubierto; que se pueda hacer está bien (esto es una
+  herramienta de edición), pero por defecto se respeta lo que el mapa ya enseña.
+- **Los objetivos se resuelven por NOMBRE** contra `TileID.Search` / `WallID.Search`, igual que
+  hizo WS4 con `ItemID.Search`, así que el catálogo admite tiles de mods
+  (`"CalamityMod/LoQueSea"`) sin cambiar nada y no revienta si el mod no está.
+- **Los iconos de marcador se generan por código** (dos rombos de 15×15 pintados píxel a píxel,
+  perezosamente en el primer dibujado) en vez de traer un `.png`: son 15×15, y así el color se
+  decide en tiempo de dibujado.
+- **El cambio de dificultad va en dos pasos** (elegir modo → confirmar) con el aviso de
+  permanencia SIEMPRE visible, no en un diálogo posterior. A diferencia de la app de escritorio,
+  aquí no hay ventana de "descartar": en cuanto el mundo se guarde, está escrito.
+- **Los textos van fijos en español**, como los de WS1 y WS4, no migrados a
+  `Localization\*.hjson`. No es un descuido: los `.hjson` son un archivo compartido que WS3 y WS5
+  estaban tocando a la vez, y la migración de los textos de todos los paneles es una pasada de
+  integración posterior (así lo dejó escrito WS7 en `Localization/README.md`).
+
+### Verificado de verdad en el juego
+
+`scripts\verificar-exploracion.ps1`, sandbox propio `tModLoader-TerrakeepWS6`, variable
+`TERRAKEEP_AUTOTEST_WS6`, evidencia en `evidencia\ws6-exploracion.log.txt`. **Cuatro ejecuciones
+reales**, la última con el proyecto ENTERO (los seis paneles dentro del mismo `.tmod`, 357.561
+bytes).
+
+| Qué | Evidencia real del log |
+|---|---|
+| El mini-mapa dibuja texturas reales del juego | `trozos de mapa dibujados el ultimo fotograma: 3` |
+| ...en las coordenadas correctas | `pixel ... mapTarget[1, 0] pixel (96, 268): RGBA(131, 164, 255, 255) -> OK: hay mapa dibujado ahi de verdad` |
+| Pan/zoom por su ruta real de clic | `clic real en el boton "Ver el mundo entero" (habilitado=True, en x=930 y=245 240x34, clic en 1050,262)`, escala `2,500` a `0,191 px/tile` |
+| Centrar en el jugador cuadra | `Jugador en el tile 2096, 268; en pantalla el jugador cae en (515, 406)`, que es el centro exacto del mini-mapa (`x=114 w=802`, `y=169 h=472`) |
+| Búsqueda real, con clic real | `clic real en el boton "Buscar en el mundo"`, luego `13718 tiles encontrados en 20170801 mirados, agrupados en 150 zonas, 33,7 ms de CPU` |
+| ...sin bloquear el juego | `busqueda terminada en 16 fotogramas` |
+| Resultados reales y localizados | `Cobre x42 en el tile (2182, 365), a 129 tiles del jugador` |
+| Cofres con su contenido | `171 encontrados` y `Cofre (12 objetos, Bumerán de madera...) en el tile (2042, 304)` |
+| NPC vivos con su vida real | `Zach (habitante) - 250/250 de vida en el tile (2109, 269)` |
+| "Ver en el mapa" salta de verdad | `Main.mapFullscreen=True, mapFullscreenPos=(2096, 268), mapFullscreenScale=2,5`, la misma vista que tenía el mini-mapa |
+| ...y la UI del mod desaparece, como tenía que pasar | `Main.InGameUI.CurrentState=(null)` |
+| Los marcadores se dibujan sobre el mapa vanilla | `La capa de mapa de Terrakeep ha dibujado marcadores en 451 fotogramas (ultimo: 150 marcadores)` |
+| ...y al cerrar el mapa se vuelve al panel | `panel abierto de nuevo=True, InGameUI.CurrentState=PanelExploracionState` |
+| El modo Viaje queda bloqueado, no aplicado | `Main.GameMode antes=0, ahora=0 -> OK, NO se ha tocado nada` |
+| Dificultad cambiada de verdad | `Main.GameMode=1 (esperado 1), Main.expertMode=True, Main.GameModeInfo.IsExpertMode=True, ActiveWorldFileData.GameMode=1 -> OK` |
+| ...y deshacible con el historial de WS7 | `deshacer -> Main.GameMode=0, expertMode=False -> OK` y `rehacer -> Main.GameMode=1` |
+| La tecla P está puesta de verdad | `TerrakeepMod/AbrirExploracion=[P]`, junto a `[K] [L] [J] [O] [I] [Z] [Y]`, comparado con `QuickHeal=[H]` |
+| Con el mod ENTERO (los 6 paneles) | `Compilation finished with 0 errors and 0 warnings`, `.tmod` de 357.561 bytes, autoprueba en verde igual |
+| **El mundo de prueba queda intacto** | `El mundo de prueba esta byte a byte como antes de la prueba` |
+
+Lo de la última fila no es un detalle: el cambio de dificultad se graba en el `.wld` al siguiente
+guardado. El script **desactiva el autoguardado** en el `config.json` del sandbox, guarda una copia
+del `.wld` antes, compara los hashes después y lo restaura si hiciera falta; y además la autoprueba
+devuelve el modo original antes de terminar. Sin eso, cada ejecución dejaría el mundo de prueba
+distinto para la siguiente.
+
+### Lo que costó, y los cuatro fallos reales que aparecieron
+
+Ninguno se dedujo leyendo código: los cuatro salieron de mirar el log de la primera ejecución real.
+
+1. **`OnInitialize` no siempre se llama.** El mini-mapa se dibujaba bien, pero sus contadores
+   salían a `-1` (o sea, la referencia interna estaba a null): el motor solo llama a
+   `OnInitialize` cuando el elemento pasa por `Activate`/`Initialize`, y un elemento añadido al
+   árbol después de que el `UIState` ya esté activo se lo puede saltar. Arreglado construyendo en
+   el constructor.
+2. **El mini-mapa "miraba" al tile (0, 0) hasta su primer `Update`**, porque la escala mínima
+   necesita medidas que todavía no existen. Se vio porque "Ver en el mapa" nada más abrir la
+   pestaña saltaba a la esquina del mundo (`mapFullscreenPos=(0,0)`) en vez de a donde estabas
+   mirando. Arreglado dando un centro y una escala razonables ya en el constructor.
+3. **El entorno de un proceso hijo lanzado desde PowerShell no viaja en UTF-8**:
+   `"Cobre / Estaño"` le llegaba al juego como `"Cobre / EstaÃ±o"` y no casaba con ningún
+   objetivo, así que la autoprueba buscaba lo que hubiera seleccionado por defecto en vez de lo
+   que se le pedía — un verde que no demostraba lo que parecía. Arreglado por los dos lados: la
+   comparación ignora mayúsculas y tildes y admite un prefijo, y el valor por defecto del script
+   es ASCII puro.
+4. **El resumen de una búsqueda de cofres/NPC arrastraba los números de la búsqueda anterior**
+   (decía "13718 tiles encontrados" en un barrido que no mira ni un tile), porque los contadores
+   solo se ponían a cero en la rama del barrido de tiles.
+
+También hubo que ajustar la autoprueba en varios sitios para que no diera verdes falsos: casi nada
+de lo que hay que comprobar aquí es cierto en el mismo fotograma en que se pide (el mini-mapa no ha
+dibujado un solo trozo hasta que pasa por `Draw`, el mapa del juego se repinta a 5 ms por
+fotograma, y la capa del mapa vanilla solo corre mientras el mapa está abierto de verdad). Por eso
+la autoprueba es una máquina de estados con esperas explícitas y no una función que lo hace todo de
+una.
+
+**El personaje de prueba es sintético y no ha explorado nada**, así que el mini-mapa no habría
+tenido nada real que dibujar. La autoprueba revela 320.000 tiles de mapa alrededor de la aparición
+con `Main.Map.Update` **solo cuando está puesta la variable de entorno**, exactamente igual que WS4
+siembra objetos en el inventario antes de probar "ya lo tienes". Es escenario de prueba: la
+funcionalidad del mod no revela mapa jamás.
+
+### Lo que NO se hizo
+
+- **Búsqueda por texto libre.** El catálogo son 38 objetivos curados en seis categorías. Buscar
+  cualquier tile por su nombre escrito a mano (con el `CampoTextoTk` de WS1, que ya existe) es la
+  ampliación natural, pero no entraba sin dejar el resto a medias.
+- **Marcadores que el jugador pueda poner a mano** (chinchetas). Lo que hay son los resultados de
+  la búsqueda, el punto de aparición y el jugador.
+- **Textos localizados** (ver arriba: decisión, no olvido).

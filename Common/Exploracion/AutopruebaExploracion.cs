@@ -106,15 +106,17 @@ namespace TerrakeepMod.Common.Exploracion
 					// dibujado trozos REALES de mapTarget o si no habia nada.
 					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/2 - " + panel.Mapa.Mapa.Informe());
 					ComprobarPixelDelMapa();
-					panel.Mapa.Mapa.EncuadrarMundo();
-					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/2 - tras \"Ver el mundo entero\": " +
-						panel.Mapa.Mapa.Informe());
+					ComprobarAtajo();
+					// Con un CLIC REAL sobre el boton, no llamando al metodo por detras.
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/2 - clic real en el boton " +
+						panel.PulsarBoton("Ver el mundo entero") + " -> " + panel.Mapa.Mapa.Informe());
 					Siguiente(10);
 					break;
 
 				case 3:
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/3 - clic real en " +
+						panel.PulsarBoton("Acercar") + " y en " + panel.PulsarBoton("Centrar en mí") + ".");
 					panel.Mapa.Mapa.Acercar(4f);
-					panel.Mapa.Mapa.CentrarEnJugador();
 					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/3 - tras acercar y centrar en el jugador: " +
 						panel.Mapa.Mapa.Informe() + ". Jugador en el tile " + MundoActual.PosicionDelJugador +
 						"; en pantalla el jugador cae en " + Redondear(panel.Mapa.Mapa.TileAPantalla(Main.LocalPlayer.Center / 16f)) +
@@ -135,8 +137,12 @@ namespace TerrakeepMod.Common.Exploracion
 						". Objetivo pedido \"" + pedido + "\" -> " +
 						(encontrado ? "seleccionado (\"" + panel.Busqueda.Seleccionado.EtiquetaLegible() + "\")" : "NO existe en esta partida"));
 					// Se busca en TODO el mundo, no solo en lo explorado: un personaje de prueba
-					// recien creado no ha explorado nada y la prueba no demostraria nada.
-					PanelExploracionSystem.Buscar(panel.Busqueda.Seleccionado, false, "autoprueba");
+					// recien creado no ha explorado nada y la prueba no demostraria nada. La casilla
+					// se acciona con un clic real sobre el alternador, no cambiando el campo.
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/4 - clic real en la casilla " +
+						"\"Solo en lo que ya he explorado\" para apagarla: " + PulsarAlternador(panel));
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/4 - clic real en el boton " +
+						panel.PulsarBoton("Buscar en el mundo"));
 					_fotogramasEsperandoBusqueda = 0;
 					Siguiente(1);
 					break;
@@ -418,6 +424,63 @@ namespace TerrakeepMod.Common.Exploracion
 			catch (Exception e) {
 				RegistroExploracion.Aviso(Terrakeep.LogTag + " AUTOPRUEBA WS6/2 - no se pudo leer el pixel del " +
 					"mapTarget: " + e.Message);
+			}
+		}
+
+		/// <summary>
+		/// Acciona con un clic REAL la casilla "Solo en lo que ya he explorado" del panel, si esta
+		/// marcada, para que la busqueda recorra el mundo entero.
+		/// </summary>
+		private static string PulsarAlternador(PanelExploracionState panel)
+		{
+			UI.Personaje.Widgets.AlternadorTk casilla =
+				panel.BuscarPrimero<UI.Personaje.Widgets.AlternadorTk>();
+			if (casilla == null) {
+				return "no se encontro la casilla";
+			}
+
+			bool antes = casilla.Valor;
+			if (antes) {
+				Terraria.UI.CalculatedStyle dim = casilla.GetDimensions();
+				Vector2 centro = new Vector2(dim.X + dim.Width / 2f, dim.Y + dim.Height / 2f);
+				casilla.LeftClick(new Terraria.UI.UIMouseEvent(casilla, centro));
+			}
+			return "estaba en " + antes + ", ahora " + casilla.Valor +
+				(antes ? " (clic dado)" : " (ya estaba apagada, no hacia falta)");
+		}
+
+		/// <summary>
+		/// Deja en el log la tecla que tiene asignada CADA atajo del mod, leida del perfil de
+		/// controles real del jugador.
+		/// </summary>
+		/// <remarks>
+		/// Es la unica forma de saber si la tecla P de este panel esta puesta de verdad: un
+		/// <c>ModKeybind</c> recien registrado nace SIN tecla y solo se la pone el
+		/// <c>SembradorDeAtajos</c> de WS7 (ver su documentacion y la bitacora). Se compara con un
+		/// atajo de vanilla para que se vea que se esta leyendo el sitio bueno.
+		/// </remarks>
+		private static void ComprobarAtajo()
+		{
+			try {
+				Terraria.GameInput.PlayerInputProfile perfil = Terraria.GameInput.PlayerInput.CurrentProfile;
+				if (perfil == null || !perfil.InputModes.ContainsKey(Terraria.GameInput.InputMode.Keyboard)) {
+					return;
+				}
+
+				Terraria.GameInput.KeyConfiguration teclado = perfil.InputModes[Terraria.GameInput.InputMode.Keyboard];
+				System.Collections.Generic.List<string> nuestros = new System.Collections.Generic.List<string>();
+				foreach (System.Collections.Generic.KeyValuePair<string, System.Collections.Generic.List<string>> par in teclado.KeyStatus) {
+					if (par.Key.StartsWith("TerrakeepMod/")) {
+						nuestros.Add(par.Key + "=[" + string.Join("+", par.Value) + "]");
+					}
+				}
+
+				RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/2 - teclas asignadas a los atajos del " +
+					"mod: " + string.Join(", ", nuestros) + ". Para comparar, un atajo VANILLA: QuickHeal=[" +
+					string.Join("+", teclado.KeyStatus["QuickHeal"]) + "].");
+			}
+			catch (Exception e) {
+				RegistroExploracion.Aviso(Terrakeep.LogTag + " AUTOPRUEBA WS6/2 - no se pudieron leer los atajos: " + e.Message);
 			}
 		}
 
