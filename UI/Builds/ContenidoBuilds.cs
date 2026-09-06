@@ -618,9 +618,12 @@ namespace TerrakeepMod.UI.Builds
 		private void ActualizarResumen(int tiene, int resueltos)
 		{
 			Player jugador = Main.LocalPlayer;
+			// El separador NO va dentro de la clave: ningun valor de los .hjson puede empezar o
+			// acabar con espacio (ver la nota de scripts/gen_hjson y la bitacora: tModLoader
+			// reescribe los archivos y se los come).
 			string ranuras = jugador == null
 				? ""
-				: Idiomas.Texto("Builds.RanurasAccesorio",
+				: "  ·  " + Idiomas.Texto("Builds.RanurasAccesorio",
 					EquipoJugador.SlotsAccesorioDisponibles(jugador));
 			_subtituloTexto = Idiomas.Texto("Builds.Tienes", tiene, resueltos, ranuras);
 			_textoResumen = Idiomas.Texto("Builds.Leyenda");

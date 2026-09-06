@@ -80,7 +80,7 @@ Personaje: {
 		Pecho: Pecho
 		Piernas: Piernas
 		Accesorio: Accesorio {0}
-		NoActiva: "  (no activa)"
+		NoActiva: "{0}  (no activa)"
 		Especial: Equipo especial
 		Puesto: Puesto
 
@@ -257,12 +257,12 @@ Libreria: {
 	Pagina: Página {0}
 	SinCatalogar: Terraria sin catalogar
 	Cargando: Cargando el catálogo...
-	EnCarpeta: ''' en "{0}"'''
-	EnTodo: " en toda la Librería"
-	SinResultados: Sin resultados{0}.
+	EnCarpeta: en "{0}"
+	EnTodo: en toda la Librería
+	SinResultados: Sin resultados {0}.
 	ElegirCarpeta: "{0} objetos. Elige una carpeta o busca."
-	MostrandoParcial: Mostrando {0} de {1}{2}.
-	MostrandoTodos: "{0} objetos{1}."
+	MostrandoParcial: Mostrando {0} de {1} {2}.
+	MostrandoTodos: "{0} objetos {1}."
 	AyudaDestino: Clic = 1 unidad al ratón; clic derecho = pila completa. Suéltalo aquí abajo.
 
 	Aviso: {
@@ -320,7 +320,7 @@ Builds: {
 	PrefijoSugerido: prefijo sugerido: {0}
 	NoExisteAqui: no existe en esta partida
 	Nada: (nada)
-	RanurasAccesorio: "  ·  ranuras de accesorio disponibles: {0}"
+	RanurasAccesorio: ranuras de accesorio disponibles: {0}
 	Tienes: Tienes {0} de {1} objetos de esta build{2}.
 	Leyenda: Verde = ya lo tienes  ·  gris = no lo tienes  ·  rojo = no existe aquí.
 	ResultadoAutoEquipar: Auto-equipar: {0}
@@ -486,9 +486,9 @@ Exploracion: {
 	DetalleInicial: El mundo tiene {0} tiles.
 	BuscarAyuda: La búsqueda se reparte entre fotogramas: puedes seguir jugando mientras corre.
 	DetalleEnMarcha: "{0} encontrados de momento, {1} tiles mirados."
-	DetalleTerminada: "{0} tiles encontrados en {1} mirados, en {2} ms de CPU{3}"
-	AmbitoExplorado: " (solo en lo explorado)."
-	AmbitoTodo: " (en todo el mundo)."
+	DetalleTerminada: "{0} tiles encontrados en {1} mirados, en {2} ms de CPU {3}"
+	AmbitoExplorado: (solo en lo explorado).
+	AmbitoTodo: (en todo el mundo).
 	CategoriaVacia: Nada de esta categoría existe en esta partida.
 	AyudaCofres: Recorre Main.chest: todos los cofres y cómodas del mundo, con lo que llevan dentro.
 	AyudaNpcs: Recorre Main.npc: los NPC vivos ahora mismo, con su vida real.

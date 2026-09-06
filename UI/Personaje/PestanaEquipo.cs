@@ -239,7 +239,7 @@ namespace TerrakeepMod.UI.Personaje
 
 			return numeroAccesorio <= accesoriosActivos
 				? NombreFila(fila)
-				: NombreFila(fila) + Idiomas.Texto("Personaje.Equipo.NoActiva");
+				: Idiomas.Texto("Personaje.Equipo.NoActiva", NombreFila(fila));
 		}
 
 		private void ConstruirMisc()

@@ -80,7 +80,7 @@ Personaje: {
 		Pecho: Chest
 		Piernas: Legs
 		Accesorio: Accessory {0}
-		NoActiva: "  (inactive)"
+		NoActiva: "{0}  (inactive)"
 		Especial: Special equipment
 		Puesto: Equipped
 
@@ -257,12 +257,12 @@ Libreria: {
 	Pagina: Page {0}
 	SinCatalogar: Uncatalogued Terraria
 	Cargando: Loading the catalogue...
-	EnCarpeta: ''' in "{0}"'''
-	EnTodo: " across the whole Library"
-	SinResultados: No results{0}.
+	EnCarpeta: in "{0}"
+	EnTodo: across the whole Library
+	SinResultados: No results {0}.
 	ElegirCarpeta: "{0} items. Pick a folder or search."
-	MostrandoParcial: Showing {0} of {1}{2}.
-	MostrandoTodos: "{0} items{1}."
+	MostrandoParcial: Showing {0} of {1} {2}.
+	MostrandoTodos: "{0} items {1}."
 	AyudaDestino: Click = 1 unit to the mouse; right-click = a full stack. Drop it down here.
 
 	Aviso: {
@@ -320,7 +320,7 @@ Builds: {
 	PrefijoSugerido: suggested prefix: {0}
 	NoExisteAqui: does not exist in this game
 	Nada: (nothing)
-	RanurasAccesorio: "  ·  accessory slots available: {0}"
+	RanurasAccesorio: accessory slots available: {0}
 	Tienes: You have {0} of {1} items from this build{2}.
 	Leyenda: Green = you have it  ·  grey = you do not  ·  red = it does not exist here.
 	ResultadoAutoEquipar: Auto-equip: {0}
@@ -486,9 +486,9 @@ Exploracion: {
 	DetalleInicial: The world has {0} tiles.
 	BuscarAyuda: The search is spread across frames: you can keep playing while it runs.
 	DetalleEnMarcha: "{0} found so far, {1} tiles checked."
-	DetalleTerminada: "{0} tiles found out of {1} checked, in {2} ms of CPU{3}"
-	AmbitoExplorado: " (explored area only)."
-	AmbitoTodo: " (across the whole world)."
+	DetalleTerminada: "{0} tiles found out of {1} checked, in {2} ms of CPU {3}"
+	AmbitoExplorado: (explored area only).
+	AmbitoTodo: (across the whole world).
 	CategoriaVacia: Nothing from this category exists in this game.
 	AyudaCofres: Walks Main.chest: every chest and dresser in the world, with what is inside.
 	AyudaNpcs: Walks Main.npc: the NPCs alive right now, with their real health.
