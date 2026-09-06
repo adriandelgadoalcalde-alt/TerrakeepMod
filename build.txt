@@ -21,4 +21,11 @@ dllReferences = TerrasavrNative.Core
 
 # El .csproj, los .md de documentacion y las carpetas de trabajo no pintan nada dentro del
 # .tmod. Los .cs ya los excluye tModLoader por su cuenta salvo includeSource = true.
-buildIgnore = *.csproj, *.user, *.md, .git\*, .vs\*, .idea\*, obj\*, bin\*, Properties\*
+#
+# scripts\* y evidencia\* son el ARNES DE PRUEBAS de este repositorio (los .ps1 de verificacion
+# y los logs reales de cada ejecucion). Estaban entrando dentro del .tmod publicado: se vio
+# listando el archivo con "node tmod-extract.js" y salian los 12 scripts y los 12 logs, ~180 KB
+# de cosas que a quien instale el mod no le sirven de nada. ModCompile.PackageMod empaqueta
+# TODO lo que no descarte IgnoreResource, asi que la unica forma de dejarlos fuera es nombrarlos
+# aqui.
+buildIgnore = *.csproj, *.user, *.md, .git\*, .vs\*, .idea\*, obj\*, bin\*, Properties\*, scripts\*, evidencia\*
