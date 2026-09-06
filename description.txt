@@ -1,32 +1,23 @@
-Terrakeep es un editor completo de personaje y mundo que funciona DENTRO de la partida, sobre lo
-que ya tienes cargado. No abre archivos ni toca los .plr/.wld: escribe en vivo sobre el personaje
-y el mundo de la sesion, y todo lo que hace se puede deshacer con Ctrl+Z.
+Terrakeep es un editor completo de personaje y mundo que funciona DENTRO de la partida, sobre lo que ya tienes cargado. No abre archivos ni toca los .plr/.wld: escribe en vivo sobre el personaje y el mundo de la sesion, y todo lo que hace se puede deshacer con Ctrl+Z.
 
 Un solo panel (tecla K) con seis pestañas, todas con la interfaz nativa de Terraria:
 
-- Personaje: inventario, hucha/caja fuerte/forja/boveda, los tres conjuntos de equipo, buffs,
-  apariencia (peinado, variante, tintes y los siete colores) y los 13 desbloqueos permanentes.
-- Libreria: catalogo navegable de TODOS los objetos de la partida, incluidos los de cualquier mod
-  instalado, con buscador (coma = o, espacio = y, #id, .texto). Coge un objeto del catalogo y
-  sueltalo en cualquier contenedor real.
-- Builds: equipo recomendado por etapa y clase, con "ya lo tienes" y auto-equipar. Solo mueve lo
-  que ya tienes: nunca crea objetos.
-- Investigacion: cuanto llevas investigado de cada carpeta en Modo Viaje, y como completarlo o
-  quitarlo. Pasa por la API oficial del juego, asi que el menu de duplicar refleja lo mismo.
-- Exploracion: mini-mapa navegable con las texturas reales del juego, busqueda de minerales,
-  gemas, tesoros, cofres, NPC, liquidos y paredes por todo el mundo, y cambio de dificultad en
-  vivo con salvaguardas.
-- Ajustes: idioma (Español / English) en vivo, historial de deshacer y rehacer, y la lista real de
-  atajos de teclado.
+- Personaje: inventario, hucha/caja fuerte/forja/boveda, los tres conjuntos de equipo, buffs, apariencia (peinado, variante, tintes y los siete colores) y los 13 desbloqueos permanentes.
 
-Es una herramienta local: no añade contenido al juego, no hace falta sincronizarla en multijugador
-y no cambia nada de la partida por su cuenta.
+- Libreria: catalogo navegable de TODOS los objetos de la partida, incluidos los de cualquier mod instalado, con buscador (coma = o, espacio = y, #id, .texto). Coge un objeto del catalogo y sueltalo en cualquier contenedor real.
+
+- Builds: equipo recomendado por etapa y clase, con "ya lo tienes" y auto-equipar. Solo mueve lo que ya tienes: nunca crea objetos.
+
+- Investigacion: cuanto llevas investigado de cada carpeta en Modo Viaje, y como completarlo o quitarlo. Pasa por la API oficial del juego, asi que el menu de duplicar del Modo Viaje refleja lo mismo.
+
+- Exploracion: mini-mapa navegable con las texturas reales del juego, busqueda de minerales, gemas, tesoros, cofres, NPC, liquidos y paredes por todo el mundo, y cambio de dificultad en vivo con salvaguardas.
+
+- Ajustes: idioma (Español / English) en vivo, historial de deshacer y rehacer, y la lista real de atajos de teclado.
+
+Es una herramienta local: no añade contenido al juego, no hace falta sincronizarla en multijugador y no cambia nada de la partida por su cuenta.
 
 ---
 
-Terrakeep is a full character and world editor that runs INSIDE the game, on whatever you already
-have loaded. It never opens files: it writes live to the session's player and world, and anything
-it does can be undone with Ctrl+Z.
+Terrakeep is a full character and world editor that runs INSIDE the game, on whatever you already have loaded. It never opens files: it writes live to the session's player and world, and anything it does can be undone with Ctrl+Z.
 
-One panel (K key) with six tabs, all built with Terraria's own native UI: Character, Library,
-Builds, Research, Exploration and Settings. Available in Spanish and English.
+One panel (K key) with six tabs, all built with Terraria's own native UI: Character, Library, Builds, Research, Exploration and Settings. Available in Spanish and English.

@@ -48,7 +48,8 @@ namespace TerrakeepMod.Common.Panel
 		private static bool Permitida {
 			get {
 				return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaPanelUnico.Variable))
-					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaIdiomas.Variable));
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaIdiomas.Variable))
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Menus.AutopruebaMenus.Variable));
 			}
 		}
 

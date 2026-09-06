@@ -80,6 +80,7 @@ namespace TerrakeepMod.Common.Panel
 				return;
 			}
 
+
 			// La autoprueba va PRIMERO y sin condiciones, por lo que ya documento WS0: una
 			// excepcion leyendo un atajo abortaria el resto del metodo y la autoprueba no llegaria
 			// a dispararse nunca.
@@ -93,6 +94,30 @@ namespace TerrakeepMod.Common.Panel
 				// Player.dropItemCheck vaciaria el objeto que se lleva cogido con el raton.
 				PanelTerrakeepState.MantenerInventarioAbierto();
 			}
+		}
+
+		/// <summary>
+		/// Unico hook del mod que corre TAMBIEN en los menus, y por eso vive aqui la llamada a la
+		/// autoprueba de menus.
+		/// <para />
+		/// <b>Dato del motor que hay que conocer</b> (codigo real del <c>tModLoader.dll</c>
+		/// instalado): <c>SystemLoader.UpdateUI</c> empieza con <c>if (!Main.gameMenu)</c>, o sea
+		/// que <c>ModSystem.UpdateUI</c> <b>no se llama en el menu principal</b>. La primera
+		/// version de la autoprueba de menus colgaba de ahi y no se ejecuto ni una vez.
+		/// <c>SystemLoader.PostUpdateInput</c> no tiene esa guarda y se llama desde
+		/// <c>Main.DoUpdate_HandleInput</c>, que sí corre en el menu.
+		/// <para />
+		/// Lo que si hace falta es que la VENTANA TENGA EL FOCO: sin foco, <c>Main.DoUpdate</c>
+		/// hace <c>UpdateMenu()</c> y <c>return</c> antes de llegar a la entrada. Es la misma
+		/// limitacion que ya documento WS1 para la partida, y los scripts de verificacion la
+		/// resuelven con <c>SetForegroundWindow</c>.
+		/// </summary>
+		public override void PostUpdateInput()
+		{
+			if (Main.dedServ) {
+				return;
+			}
+			Menus.AutopruebaMenus.Avanzar();
 		}
 
 		public override void Unload()

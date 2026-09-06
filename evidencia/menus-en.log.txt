@@ -1,0 +1,25 @@
+# Evidencia de los menus de tModLoader - 2026-09-06 14:51:41
+[14:51:41.880] [Terrakeep] AUTOPRUEBA MENUS: TERRAKEEP_AUTOTEST_MENUS detectada. Main.menuMode=0, mods cargados=2, resolucion 800x720, idioma del juego=en-US.
+[14:51:42.396] [Terrakeep] MENU/1 - pedido Main.menuMode=10000 (Interface.modsMenuID), que es lo que hace el boton "Administrar mods" del menu Taller.
+[14:51:42.912] [Terrakeep] MENU/2 - estado del menu: menuMode=888, MenuUI.CurrentState=Terraria.ModLoader.UI.UIMods
+[14:51:42.913] [Terrakeep] MENU/2 - ficha encontrada: Terraria.ModLoader.UI.UIModItem en x=112 y=270 551x92. Rotulo: "Terrakeep v0.1.0".
+[14:51:42.913] [Terrakeep] MENU/2 - ICONO: asset "icon", 80x80 px. OK: NO es Mod.PlaceholderModIcon, o sea que es el icon.png del propio mod. (no se pudo leer el placeholder para comparar)
+[14:51:42.914] [Terrakeep] MENU/2 - botones de la ficha: mas informacion=True, configuracion=True.
+[14:51:43.018] [Terrakeep] MENU/2 - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepMenus\terrakeep-capturas\menu-mods.png" (800x720)
+[14:51:43.512] [Terrakeep] MENU/3 - CLIC REAL en el boton de mas informacion (x=621 y=316 36x36).
+[14:51:44.027] [Terrakeep] MENU/4 - estado del menu: menuMode=888 (esperado 10008), MenuUI.CurrentState=Terraria.ModLoader.UI.UIModInfo
+[14:51:44.027] [Terrakeep] MENU/4 - description.txt: 1993 caracteres, 24 lineas. Primera: "Terrakeep es un editor completo de personaje y mundo que funciona DENTRO de la partida, sobre lo que ya tienes cargado. No abre archivos ni toca los .plr/.wld: escribe en vivo sobre el personaje y el mundo de la sesion, y todo lo que hace se puede deshacer con Ctrl+Z.".
+[14:51:44.028] [Terrakeep] MENU/4 - ¿sigue siendo la plantilla de WS0? NO: es texto real del mod.
+[14:51:44.154] [Terrakeep] MENU/4 - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepMenus\terrakeep-capturas\menu-info.png" (800x720)
+[14:51:44.638] [Terrakeep] MENU/5 - de vuelta a la lista de mods.
+[14:51:45.155] [Terrakeep] MENU/6 - CLIC REAL en el boton de configuracion (x=580 y=316 36x36).
+[14:51:45.671] [Terrakeep] MENU/7 - estado del menu: menuMode=888 (esperado 10027), MenuUI.CurrentState=Terraria.ModLoader.Config.UI.UIModConfigList
+[14:51:45.797] [Terrakeep] MENU/7 - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepMenus\terrakeep-capturas\menu-lista-configs.png" (800x720)
+[14:51:46.281] [Terrakeep] MENU/8 - CLIC REAL en el boton "Settings" (x=490 y=279 109x41).
+[14:51:46.798] [Terrakeep] MENU/9 - estado del menu: menuMode=888 (esperado 10024), MenuUI.CurrentState=Terraria.ModLoader.Config.UI.UIModConfig
+[14:51:46.798] [Terrakeep] MENU/9 - campos que ha generado tModLoader: Idioma
+[14:51:46.798] [Terrakeep] MENU/9 - rotulos que se estan enseñando: "Interface language"
+[14:51:46.799] [Terrakeep] MENU/9 - ¿sale el campo interno AtajosYaSembrados? NO -> OK: oculto con [JsonIgnore], y sigue guardandose por el campo privado con [JsonProperty].
+[14:51:46.799] [Terrakeep] MENU/9 - ¿sale el selector de idioma? SI -> OK.
+[14:51:46.944] [Terrakeep] MENU/9 - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepMenus\terrakeep-capturas\menu-config.png" (800x720)
+[14:51:47.427] [Terrakeep] AUTOPRUEBA MENUS COMPLETA.
