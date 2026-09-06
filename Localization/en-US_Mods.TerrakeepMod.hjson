@@ -8,6 +8,10 @@ Keybinds: {
 	AbrirAjustes.DisplayName: Open Terrakeep Settings
 	Deshacer.DisplayName: Undo (hold Ctrl)
 	Rehacer.DisplayName: Redo (hold Ctrl)
+	# WS6 - world exploration and map.
+	AbrirExploracion.DisplayName: Open Terrakeep Exploration
+	# WS5 - research (Journey Mode).
+	AbrirInvestigacion.DisplayName: Open Terrakeep Research
 }
 
 Configs: {

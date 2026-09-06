@@ -2,12 +2,16 @@ Keybinds: {
 	AbrirPanel.DisplayName: Abrir Terrakeep
 	# WS4 - builds and auto-equip.
 	AbrirBuilds.DisplayName: Abrir las Builds de Terrakeep
-	# WS3 - libreria de objetos.
+	# WS3 - item library.
 	AbrirLibreria.DisplayName: Abrir la Librería de Terrakeep
 	# WS7 - settings and undo/redo history.
 	AbrirAjustes.DisplayName: Abrir los Ajustes de Terrakeep
 	Deshacer.DisplayName: Deshacer (con Ctrl)
 	Rehacer.DisplayName: Rehacer (con Ctrl)
+	# WS6 - exploracion del mundo y mapa.
+	AbrirExploracion.DisplayName: Abrir la Exploración de Terrakeep
+	# WS5 - investigacion (Modo Viaje).
+	AbrirInvestigacion.DisplayName: Abrir la Investigación de Terrakeep
 }
 
 Configs: {
