@@ -4,6 +4,7 @@ using System.IO;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using TerrakeepMod.Common.Ajustes;
 using TerrasavrNative.Core.Data;
 
 namespace TerrakeepMod.Common.Investigacion
@@ -207,7 +208,8 @@ namespace TerrakeepMod.Common.Investigacion
 			sueltos.Sort();
 			if (sueltos.Count > 0) {
 				int[] tipos = sueltos.ToArray();
-				raices.Add(new CarpetaInvestigacion($"Otros objetos ({tipos.Length})", "Otros", 0, null, tipos, tipos));
+				raices.Add(new CarpetaInvestigacion(
+					Idiomas.Texto("Investigacion.OtrosObjetos", tipos.Length), "Otros", 0, null, tipos, tipos));
 			}
 
 			_raices = raices;
@@ -239,7 +241,11 @@ namespace TerrakeepMod.Common.Investigacion
 				}
 
 				LibraryLabelCatalog etiquetas;
-				if (_bytesEtiquetas != null) {
+				// El archivo de etiquetas solo existe en español. En cualquier otro idioma se usa
+				// un catalogo VACIO a proposito: los nombres del propio arbol ya vienen en ingles
+				// (son la clave con la que se busca la traduccion) y Translate devuelve la clave
+				// cuando no la encuentra. Misma decision que en ArbolLibreria.
+				if (_bytesEtiquetas != null && Idiomas.EnEspanol) {
 					using (MemoryStream memoria = new MemoryStream(_bytesEtiquetas)) {
 						etiquetas = LibraryLabelCatalog.LoadFromStream(memoria);
 					}
@@ -294,7 +300,8 @@ namespace TerrakeepMod.Common.Investigacion
 			// vanillaModName. Aqui no hay ni un objeto de vanilla (los filtra EsDeMod), asi que se
 			// le pasa un nombre que ningun mod puede tener y todas las raices quedan ordenadas por
 			// orden ordinal, sin ninguna privilegiada.
-			return LiveItemTreeBuilder.BuildTree(deMods, id => null, null, n => "Pagina " + n, NombreImposibleDeMod);
+			return LiveItemTreeBuilder.BuildTree(deMods, id => null, null,
+				n => Idiomas.Texto("Libreria.Pagina", n), NombreImposibleDeMod);
 		}
 
 		/// <summary>true si el tipo lo aporta un mod (no es contenido de Terraria).</summary>
@@ -321,54 +328,67 @@ namespace TerrakeepMod.Common.Investigacion
 		/// daño, herramienta, si coloca un bloque...), nunca con una lista de ids: asi funciona
 		/// igual con cualquier mod instalado, no solo con Calamity.
 		/// </summary>
+		/// <summary>
+		/// Rotulo de una categoria de objetos de mod, traducido al idioma activo. Con dos partes
+		/// devuelve "Padre/Hija", que es la forma con la que <c>LiveItemTreeBuilder</c> monta una
+		/// subcarpeta.
+		/// </summary>
+		private static string Categoria(string clave, string subclave = null)
+		{
+			string padre = Idiomas.Texto("Investigacion.Categoria." + clave);
+			return subclave == null
+				? padre
+				: padre + "/" + Idiomas.Texto("Investigacion.Categoria." + clave + subclave);
+		}
+
 		private static string Categoria(Item item)
 		{
 			if (item.headSlot > 0) {
-				return "Armadura/Cascos";
+				return Categoria("Armadura", "Cascos");
 			}
 			if (item.bodySlot > 0) {
-				return "Armadura/Petos";
+				return Categoria("Armadura", "Petos");
 			}
 			if (item.legSlot > 0) {
-				return "Armadura/Perneras";
+				return Categoria("Armadura", "Perneras");
 			}
 			if (item.accessory) {
-				return "Accesorios";
+				return Categoria("Accesorios");
 			}
 			if (item.damage > 0) {
 				if (item.CountsAsClass(DamageClass.Melee)) {
-					return "Armas/Cuerpo a cuerpo";
+					return Categoria("Armas", "Melee");
 				}
 				if (item.CountsAsClass(DamageClass.Ranged)) {
-					return "Armas/A distancia";
+					return Categoria("Armas", "Ranged");
 				}
 				if (item.CountsAsClass(DamageClass.Magic)) {
-					return "Armas/Magicas";
+					return Categoria("Armas", "Magic");
 				}
 				if (item.CountsAsClass(DamageClass.Summon)) {
-					return "Armas/De invocacion";
+					return Categoria("Armas", "Summon");
 				}
-				return "Armas/Otras";
+				return Categoria("Armas", "Otras");
 			}
 			if (item.pick > 0 || item.axe > 0 || item.hammer > 0) {
-				return "Herramientas";
+				return Categoria("Herramientas");
 			}
 			if (item.createTile >= 0) {
-				return "Bloques y muebles";
+				return Categoria("Bloques");
 			}
 			if (item.createWall >= 0) {
-				return "Paredes";
+				return Categoria("Paredes");
 			}
 			if (item.ammo > 0) {
-				return "Municion";
+				return Categoria("Municion");
 			}
 			if (item.consumable) {
-				return "Consumibles";
+				return Categoria("Consumibles");
 			}
 			if (item.material) {
-				return "Materiales";
+				return Categoria("Materiales");
 			}
-			return "Otros";
+			return Categoria("Otros");
 		}
 
 		/// <summary>

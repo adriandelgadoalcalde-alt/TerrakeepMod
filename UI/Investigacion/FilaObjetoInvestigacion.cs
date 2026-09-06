@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.UI;
+using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Investigacion;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -42,7 +43,7 @@ namespace TerrakeepMod.UI.Investigacion
 			slot.Top.Set(3f, 0f);
 			Append(slot);
 
-			_boton = new BotonTk("Investigar", 0.75f);
+			_boton = new BotonTk(Idiomas.Texto("Investigacion.Investigar"), 0.75f);
 			_boton.Width.Set(112f, 0f);
 			_boton.Height.Set(28f, 0f);
 			_boton.HAlign = 1f;
@@ -74,10 +75,12 @@ namespace TerrakeepMod.UI.Investigacion
 			base.Update(gameTime);
 
 			bool completo = EstadoInvestigacion.Completo(Tipo);
-			_boton.FijarTexto(completo ? "Quitar" : "Investigar");
-			_boton.Ayuda = completo
-				? "Deja este objeto sin investigar (Ctrl+Z lo devuelve)"
-				: "Marca este objeto como investigado del todo, por la via oficial del juego";
+			_boton.FijarTexto(Idiomas.Texto(completo
+				? "Investigacion.Quitar"
+				: "Investigacion.Investigar"));
+			_boton.Ayuda = () => Idiomas.Texto(EstadoInvestigacion.Completo(Tipo)
+				? "Investigacion.QuitarAyuda"
+				: "Investigacion.InvestigarAyuda");
 		}
 
 		protected override void DrawSelf(SpriteBatch spriteBatch)
@@ -97,8 +100,8 @@ namespace TerrakeepMod.UI.Investigacion
 				new Vector2(x, dim.Y + 3f), completo ? EstiloInvestigacion.Hecho : Color.White, 0.82f);
 
 			string estado = completo
-				? "investigado (" + necesarias + ")"
-				: hechas + " de " + necesarias + " sacrificados";
+				? Idiomas.Texto("Investigacion.EstadoCompleto", necesarias)
+				: Idiomas.Texto("Investigacion.EstadoParcial", hechas, necesarias);
 			Utils.DrawBorderString(spriteBatch, estado, new Vector2(x, dim.Y + 22f),
 				EstiloInvestigacion.ColorDeEstado(hechas, necesarias), 0.7f);
 		}

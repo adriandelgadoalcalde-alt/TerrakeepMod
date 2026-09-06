@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
+using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Investigacion;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -103,7 +104,7 @@ namespace TerrakeepMod.UI.Investigacion
 			Append(_aviso);
 
 			EtiquetaTk etiquetaProgreso = new EtiquetaTk(
-				() => "Progreso global", 0.85f, 160f, 22f);
+				() => Idiomas.Texto("Investigacion.ProgresoGlobal"), 0.85f, 160f, 22f);
 			etiquetaProgreso.ColorTexto = EstiloTk.TextoSuave;
 			etiquetaProgreso.Top.Set(30f, 0f);
 			Append(etiquetaProgreso);
@@ -167,21 +168,21 @@ namespace TerrakeepMod.UI.Investigacion
 			_tituloObjetos.Top.Set(2f, 0f);
 			_cajaObjetos.Append(_tituloObjetos);
 
-			_botonCarpeta = new BotonTk("Investigar carpeta", 0.75f);
+			_botonCarpeta = new BotonTk(Idiomas.Texto("Investigacion.InvestigarCarpeta"), 0.75f);
 			_botonCarpeta.Width.Set(-6f, 0.28f);
 			_botonCarpeta.Height.Set(28f, 0f);
 			_botonCarpeta.Top.Set(0f, 0f);
 			_botonCarpeta.Left.Set(0f, 0.44f);
-			_botonCarpeta.Ayuda = "Investiga del todo cada objeto de esta carpeta y de las que hay dentro";
+			_botonCarpeta.Ayuda = () => Idiomas.Texto("Investigacion.InvestigarCarpetaAyuda");
 			_botonCarpeta.AlPulsar += InvestigarCarpeta;
 			_cajaObjetos.Append(_botonCarpeta);
 
-			_botonQuitarCarpeta = new BotonTk("Quitar carpeta", 0.75f);
+			_botonQuitarCarpeta = new BotonTk(Idiomas.Texto("Investigacion.QuitarCarpeta"), 0.75f);
 			_botonQuitarCarpeta.Width.Set(-6f, 0.28f);
 			_botonQuitarCarpeta.Height.Set(28f, 0f);
 			_botonQuitarCarpeta.Top.Set(0f, 0f);
 			_botonQuitarCarpeta.Left.Set(0f, 0.72f);
-			_botonQuitarCarpeta.Ayuda = "Deja sin investigar todo lo de esta carpeta (Ctrl+Z lo devuelve)";
+			_botonQuitarCarpeta.Ayuda = () => Idiomas.Texto("Investigacion.QuitarCarpetaAyuda");
 			_botonQuitarCarpeta.AlPulsar += QuitarCarpeta;
 			_cajaObjetos.Append(_botonQuitarCarpeta);
 
@@ -203,31 +204,31 @@ namespace TerrakeepMod.UI.Investigacion
 
 		private void ConstruirPie()
 		{
-			_soloPendientes = new AlternadorTk("Solo lo que falta",
+			_soloPendientes = new AlternadorTk(() => Idiomas.Texto("Investigacion.SoloFalta"),
 				() => _soloFaltantes, valor => { _soloFaltantes = valor; ReconstruirObjetos(); });
 			_soloPendientes.Width.Set(220f, 0f);
 			_soloPendientes.Height.Set(28f, 0f);
 			_soloPendientes.VAlign = 1f;
 			_soloPendientes.Left.Set(0f, 0f);
-			_soloPendientes.Ayuda = "Esconde de la lista los objetos que ya estan investigados del todo";
+			_soloPendientes.Ayuda = () => Idiomas.Texto("Investigacion.SoloFaltaAyuda");
 			Append(_soloPendientes);
 
-			_botonTodo = new BotonTk("Investigar TODO", 0.8f);
+			_botonTodo = new BotonTk(Idiomas.Texto("Investigacion.InvestigarTodo"), 0.8f);
 			_botonTodo.Width.Set(200f, 0f);
 			_botonTodo.Height.Set(32f, 0f);
 			_botonTodo.VAlign = 1f;
 			_botonTodo.Left.Set(240f, 0f);
-			_botonTodo.Ayuda = "Investiga del todo TODOS los objetos investigables de la partida";
-			_botonTodo.AlPulsar += () => Confirmar(_botonTodo, "Investigar TODO", InvestigarTodo);
+			_botonTodo.Ayuda = () => Idiomas.Texto("Investigacion.InvestigarTodoAyuda");
+			_botonTodo.AlPulsar += () => Confirmar(_botonTodo, InvestigarTodo);
 			Append(_botonTodo);
 
-			_botonQuitarTodo = new BotonTk("Quitar TODA la investigacion", 0.8f);
+			_botonQuitarTodo = new BotonTk(Idiomas.Texto("Investigacion.QuitarTodo"), 0.8f);
 			_botonQuitarTodo.Width.Set(280f, 0f);
 			_botonQuitarTodo.Height.Set(32f, 0f);
 			_botonQuitarTodo.VAlign = 1f;
 			_botonQuitarTodo.Left.Set(452f, 0f);
-			_botonQuitarTodo.Ayuda = "Deja el personaje sin nada investigado (Ctrl+Z lo devuelve)";
-			_botonQuitarTodo.AlPulsar += () => Confirmar(_botonQuitarTodo, "Quitar TODA la investigacion", QuitarTodo);
+			_botonQuitarTodo.Ayuda = () => Idiomas.Texto("Investigacion.QuitarTodoAyuda");
+			_botonQuitarTodo.AlPulsar += () => Confirmar(_botonQuitarTodo, QuitarTodo);
 			Append(_botonQuitarTodo);
 		}
 
@@ -242,9 +243,8 @@ namespace TerrakeepMod.UI.Investigacion
 			// ventana de 800, y partirlo en dos lineas tampoco valia porque la segunda se metia
 			// por encima de "Progreso global", que va a 30 px fijos. Las dos cosas se vieron en
 			// capturas reales del juego.
-			return "AVISO: no es un personaje de Modo Viaje (dificultad " +
-				(Main.LocalPlayer != null ? Main.LocalPlayer.difficulty.ToString() : "?") +
-				"): se guarda, pero el juego no lo usa.";
+			return Idiomas.Texto("Investigacion.AvisoNoViaje",
+				Main.LocalPlayer != null ? Main.LocalPlayer.difficulty.ToString() : "?");
 		}
 
 		private static string TextoProgreso()
@@ -252,13 +252,13 @@ namespace TerrakeepMod.UI.Investigacion
 			int hechos = EstadoInvestigacion.TotalCompletos;
 			int total = EstadoInvestigacion.TotalInvestigable;
 			int porcentaje = total > 0 ? (int)Math.Round(hechos * 100.0 / total) : 0;
-			return hechos + " / " + total + " objetos (" + porcentaje + "%)";
+			return Idiomas.Texto("Investigacion.Progreso", hechos, total, porcentaje);
 		}
 
 		private string TextoTituloCarpeta()
 		{
 			if (_seleccionada == null) {
-				return "Elige una carpeta";
+				return Idiomas.Texto("Investigacion.EligeCarpeta");
 			}
 			// 22 caracteres y sin la palabra "investigados": el hueco que queda a la izquierda de
 			// los dos botones de la derecha son ~180 px, y con 34 el texto se metia por debajo de
@@ -381,16 +381,15 @@ namespace TerrakeepMod.UI.Investigacion
 			int sinListar = Math.Max(0, tipos.Length - escondidos - puestos);
 			if (sinListar > 0) {
 				EtiquetaTk pie = new EtiquetaTk(
-					() => "y " + sinListar + " objetos mas en las carpetas de dentro. Los botones de " +
-						"carpeta si actuan sobre todos.", 0.72f, 500f, 22f);
+					() => Idiomas.Texto("Investigacion.MasObjetosDentro", sinListar), 0.72f, 500f, 22f);
 				pie.ColorTexto = EstiloTk.TextoSuave;
 				_listaObjetos.Add(pie);
 			}
 			else if (puestos == 0) {
 				EtiquetaTk vacio = new EtiquetaTk(
 					() => _soloFaltantes
-						? "Nada pendiente aqui: todo esta investigado."
-						: "Esta carpeta no tiene objetos investigables.",
+						? Idiomas.Texto("Investigacion.NadaPendiente")
+						: Idiomas.Texto("Investigacion.SinInvestigables"),
 					0.8f, 500f, 22f);
 				vacio.ColorTexto = EstiloTk.TextoSuave;
 				_listaObjetos.Add(vacio);
@@ -403,11 +402,12 @@ namespace TerrakeepMod.UI.Investigacion
 			string nombre = EstadoInvestigacion.NombreObjeto(tipo);
 
 			ResultadoInvestigacion resultado = investigar
-				? EstadoInvestigacion.Investigar("Investigar " + nombre, uno)
-				: EstadoInvestigacion.Quitar("Quitar la investigacion de " + nombre, uno);
+				? EstadoInvestigacion.Investigar(Idiomas.Texto("Investigacion.AccionInvestigar", nombre), uno)
+				: EstadoInvestigacion.Quitar(Idiomas.Texto("Investigacion.AccionQuitar", nombre), uno);
 
-			Anunciar((investigar ? "Investigado: " : "Sin investigar: ") + nombre +
-				" -> " + EstadoInvestigacion.Describir(tipo), resultado);
+			Anunciar(Idiomas.Texto(
+				investigar ? "Investigacion.MensajeInvestigado" : "Investigacion.MensajeSinInvestigar",
+				nombre, EstadoInvestigacion.Describir(tipo)), resultado);
 		}
 
 		// ------------------------------------------------------------------ acciones
@@ -419,8 +419,10 @@ namespace TerrakeepMod.UI.Investigacion
 				return;
 			}
 			ResultadoInvestigacion resultado = EstadoInvestigacion.Investigar(
-				"Investigar la carpeta \"" + _seleccionada.Nombre + "\"", _seleccionada.Tipos);
-			Anunciar("Carpeta \"" + _seleccionada.Nombre + "\": " + resultado.Resumen, resultado);
+				Idiomas.Texto("Investigacion.AccionInvestigarCarpeta", _seleccionada.Nombre),
+				_seleccionada.Tipos);
+			Anunciar(Idiomas.Texto("Investigacion.MensajeCarpeta",
+				_seleccionada.Nombre, resultado.Resumen), resultado);
 		}
 
 		/// <summary>Quita la investigacion de toda la carpeta abierta.</summary>
@@ -430,23 +432,27 @@ namespace TerrakeepMod.UI.Investigacion
 				return;
 			}
 			ResultadoInvestigacion resultado = EstadoInvestigacion.Quitar(
-				"Quitar la investigacion de la carpeta \"" + _seleccionada.Nombre + "\"", _seleccionada.Tipos);
-			Anunciar("Carpeta \"" + _seleccionada.Nombre + "\" sin investigar: " + resultado.Resumen, resultado);
+				Idiomas.Texto("Investigacion.AccionQuitarCarpeta", _seleccionada.Nombre),
+				_seleccionada.Tipos);
+			Anunciar(Idiomas.Texto("Investigacion.MensajeCarpetaQuitada",
+				_seleccionada.Nombre, resultado.Resumen), resultado);
 		}
 
 		/// <summary>Investiga TODO lo investigable de la partida.</summary>
 		public void InvestigarTodo()
 		{
 			List<int> todos = new List<int>(EstadoInvestigacion.TiposInvestigables);
-			ResultadoInvestigacion resultado = EstadoInvestigacion.Investigar("Investigar todo", todos);
-			Anunciar("Investigar todo: " + resultado.Resumen, resultado);
+			ResultadoInvestigacion resultado = EstadoInvestigacion.Investigar(
+				Idiomas.Texto("Investigacion.AccionInvestigarTodo"), todos);
+			Anunciar(Idiomas.Texto("Investigacion.MensajeTodo", resultado.Resumen), resultado);
 		}
 
 		/// <summary>Deja el personaje sin nada investigado.</summary>
 		public void QuitarTodo()
 		{
-			ResultadoInvestigacion resultado = EstadoInvestigacion.QuitarTodo("Quitar toda la investigacion");
-			Anunciar("Quitada toda la investigacion: " + resultado.Resumen, resultado);
+			ResultadoInvestigacion resultado = EstadoInvestigacion.QuitarTodo(
+				Idiomas.Texto("Investigacion.AccionQuitarTodo"));
+			Anunciar(Idiomas.Texto("Investigacion.MensajeTodoQuitado", resultado.Resumen), resultado);
 		}
 
 		/// <summary>
@@ -454,11 +460,11 @@ namespace TerrakeepMod.UI.Investigacion
 		/// boton y espera; el segundo, dentro de unos segundos, ejecuta. Un solo clic no puede
 		/// rehacer miles de objetos de golpe, por muy deshacible que sea despues.
 		/// </summary>
-		private void Confirmar(BotonTk boton, string textoOriginal, Action accion)
+		private void Confirmar(BotonTk boton, Action accion)
 		{
 			if (_pendienteDeConfirmar == boton) {
 				_pendienteDeConfirmar = null;
-				boton.FijarTexto(textoOriginal);
+				boton.FijarTexto(TextoNormalDe(boton));
 				accion();
 				return;
 			}
@@ -466,8 +472,16 @@ namespace TerrakeepMod.UI.Investigacion
 			CancelarConfirmacion();
 			_pendienteDeConfirmar = boton;
 			_fotogramasConfirmacion = FotogramasDeConfirmacion;
-			boton.FijarTexto("Seguro? Pulsa otra vez");
+			boton.FijarTexto(Idiomas.Texto("Investigacion.Confirmar"));
 			boton.Activo = true;
+		}
+
+		/// <summary>Rotulo normal (sin confirmacion pendiente) de los dos botones globales.</summary>
+		private string TextoNormalDe(BotonTk boton)
+		{
+			return Idiomas.Texto(boton == _botonTodo
+				? "Investigacion.InvestigarTodo"
+				: "Investigacion.QuitarTodo");
 		}
 
 		private void CancelarConfirmacion()
@@ -476,9 +490,7 @@ namespace TerrakeepMod.UI.Investigacion
 				return;
 			}
 			_pendienteDeConfirmar.Activo = false;
-			_pendienteDeConfirmar.FijarTexto(_pendienteDeConfirmar == _botonTodo
-				? "Investigar TODO"
-				: "Quitar TODA la investigacion");
+			_pendienteDeConfirmar.FijarTexto(TextoNormalDe(_pendienteDeConfirmar));
 			_pendienteDeConfirmar = null;
 		}
 
@@ -494,7 +506,7 @@ namespace TerrakeepMod.UI.Investigacion
 
 			// Mismo canal de aviso que usa el deshacer/rehacer de WS7: el chat del juego.
 			if (!Main.dedServ) {
-				Main.NewText("Terrakeep: " + texto, EstiloInvestigacion.Hecho);
+				Main.NewText(Idiomas.Texto("Investigacion.Chat", texto), EstiloInvestigacion.Hecho);
 			}
 
 			CatalogoInvestigacion.RefrescarContadores();

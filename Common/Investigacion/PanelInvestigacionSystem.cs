@@ -99,6 +99,20 @@ namespace TerrakeepMod.Common.Investigacion
 			CatalogoInvestigacion.Descargar();
 		}
 
+		/// <summary>
+		/// El arbol de carpetas lleva DENTRO los nombres ya resueltos (los de las categorias de los
+		/// objetos de mod, el de "Otros objetos" y los de las carpetas del arbol curado), asi que
+		/// hay que reconstruirlo cuando cambian las traducciones. Mismo criterio que ya usaba la
+		/// Libreria en <c>PanelLibreriaSystem.OnLocalizationsLoaded</c>.
+		/// </summary>
+		public override void OnLocalizationsLoaded()
+		{
+			if (Main.dedServ || !_arbolConstruido) {
+				return;
+			}
+			CatalogoInvestigacion.Construir();
+		}
+
 		public override void UpdateUI(GameTime gameTime)
 		{
 			if (Main.dedServ) {
