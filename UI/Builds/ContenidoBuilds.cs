@@ -51,8 +51,15 @@ namespace TerrakeepMod.UI.Builds
 		private string _claveClase = "melee";
 		private string _textoResumen = "";
 
+		private const float ArribaPrimeraFila = 28f;
+		private const float PasoMinimo = 45f;
+		private const float PasoMaximo = 52f;
+
 		private readonly List<SlotCatalogoBuild> _slots = new List<SlotCatalogoBuild>();
 		private readonly List<UIText> _etiquetasSlot = new List<UIText>();
+		private readonly List<FilaObjeto> _filas = new List<FilaObjeto>();
+		private int _filasMaximas;
+		private float _altoColocado;
 		private int _contadorRefresco;
 		private bool _coordenadasRegistradas;
 
@@ -153,6 +160,9 @@ namespace TerrakeepMod.UI.Builds
 		{
 			_slots.Clear();
 			_etiquetasSlot.Clear();
+			_filas.Clear();
+			_filasMaximas = 0;
+			_altoColocado = 0f;
 			_filaFuentes.RemoveAllChildren();
 			_filaEtapas.RemoveAllChildren();
 			_filaClases.RemoveAllChildren();
@@ -229,6 +239,7 @@ namespace TerrakeepMod.UI.Builds
 
 			ColocarFilas(hayFilaFuentes);
 			Recalculate();
+			ColocarFilasDeObjetos();
 			RefrescarPosesion();
 		}
 
@@ -298,32 +309,34 @@ namespace TerrakeepMod.UI.Builds
 			EtiquetaTk cabecera = new EtiquetaTk(() => titulo, 0.85f, 200f, 24f);
 			contenedor.Append(cabecera);
 
-			float y = 28f;
+			int fila = 0;
 			foreach (ObjetoBuild objeto in objetos) {
 				SlotCatalogoBuild slot = new SlotCatalogoBuild(objeto);
-				slot.Top.Set(y, 0f);
 				slot.Left.Set(0f, 0f);
 				contenedor.Append(slot);
 				_slots.Add(slot);
 
 				UIText etiqueta = new UIText(EstiloInvestigacionAcortar(objeto.Nombre, 26), 0.72f);
 				etiqueta.Left.Set(54f, 0f);
-				etiqueta.Top.Set(y + 6f, 0f);
 				contenedor.Append(etiqueta);
 				_etiquetasSlot.Add(etiqueta);
 
 				string extra = objeto.Resuelto
 					? (string.IsNullOrEmpty(objeto.PrefijoRecomendado) ? "" : "prefijo sugerido: " + objeto.PrefijoRecomendado)
 					: "no existe en esta partida";
+				UIText pie = null;
 				if (!string.IsNullOrEmpty(extra)) {
-					UIText pie = new UIText(EstiloInvestigacionAcortar(extra, 34), 0.62f);
+					pie = new UIText(EstiloInvestigacionAcortar(extra, 34), 0.62f);
 					pie.Left.Set(54f, 0f);
-					pie.Top.Set(y + 26f, 0f);
 					pie.TextColor = objeto.Resuelto ? EstiloTk.Neutro : EstiloTk.Peligro;
 					contenedor.Append(pie);
 				}
 
-				y += 48f;
+				_filas.Add(new FilaObjeto(slot, etiqueta, pie, fila));
+				fila++;
+				if (fila > _filasMaximas) {
+					_filasMaximas = fila;
+				}
 			}
 
 			if (objetos.Count == 0) {
@@ -332,6 +345,66 @@ namespace TerrakeepMod.UI.Builds
 				vacio.ColorTexto = EstiloTk.Neutro;
 				contenedor.Append(vacio);
 			}
+		}
+
+		/// <summary>Una fila de objeto del catalogo: la ranura, su nombre y su pie, mas en que
+		/// posicion va dentro de su columna. Se guardan para poder recolocarlas cuando se sabe el
+		/// alto REAL del cuerpo, que en el constructor todavia no existe.</summary>
+		private class FilaObjeto
+		{
+			public readonly UIElement Slot;
+			public readonly UIElement Nombre;
+			public readonly UIElement Pie;
+			public readonly int Indice;
+
+			public FilaObjeto(UIElement slot, UIElement nombre, UIElement pie, int indice)
+			{
+				Slot = slot;
+				Nombre = nombre;
+				Pie = pie;
+				Indice = indice;
+			}
+		}
+
+		/// <summary>
+		/// Reparte las filas de objeto por el alto que de verdad tiene el cuerpo.
+		/// <para />
+		/// Con un paso fijo NO vale, y se vio en una captura real: la clase de accesorios mas larga
+		/// tiene 7 objetos, y en cuanto aparece la fila de fuentes (que solo sale con Calamity
+		/// instalado) se comen 34 px mas y el septimo quedaba cortado por abajo. Aqui el paso se
+		/// calcula con el hueco real y se acota entre <see cref="PasoMinimo"/> (el lado de la
+		/// ranura, 44, mas 1 px de aire) y <see cref="PasoMaximo"/>, para que con pocas filas no se
+		/// separen tanto que parezcan sueltas.
+		/// </summary>
+		private void ColocarFilasDeObjetos()
+		{
+			float alto = _cuerpo.GetDimensions().Height;
+			if (alto <= 0f || _filas.Count == 0) {
+				return;
+			}
+
+			float paso = PasoMaximo;
+			if (_filasMaximas > 0) {
+				paso = (alto - ArribaPrimeraFila) / _filasMaximas;
+			}
+			if (paso > PasoMaximo) {
+				paso = PasoMaximo;
+			}
+			if (paso < PasoMinimo) {
+				paso = PasoMinimo;
+			}
+
+			foreach (FilaObjeto f in _filas) {
+				float y = ArribaPrimeraFila + f.Indice * paso;
+				f.Slot.Top.Set(y, 0f);
+				f.Nombre.Top.Set(y + 6f, 0f);
+				if (f.Pie != null) {
+					f.Pie.Top.Set(y + 26f, 0f);
+				}
+			}
+
+			_altoColocado = alto;
+			_cuerpo.Recalculate();
 		}
 
 		// Se corta con "..." de tres puntos normales y no con el caracter "…": la fuente del juego
@@ -408,6 +481,12 @@ namespace TerrakeepMod.UI.Builds
 			if (++_contadorRefresco >= FotogramasEntreRefrescos) {
 				_contadorRefresco = 0;
 				RefrescarPosesion();
+			}
+
+			// El alto real del cuerpo no existe hasta que el motor ha recalculado el arbol, y cambia
+			// si el jugador redimensiona la ventana. Se recolocan las filas cuando cambia.
+			if (System.Math.Abs(_cuerpo.GetDimensions().Height - _altoColocado) > 1f) {
+				ColocarFilasDeObjetos();
 			}
 
 			RegistrarCoordenadasUnaVez();

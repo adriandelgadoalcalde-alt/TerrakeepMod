@@ -1533,3 +1533,24 @@ cinco puntos del apartado 6), y salió al mirar capturas, no al ejecutar las pru
   ("Pre-Hardmode (listo para el Mur..."). Tienen el nombre completo en el tooltip, pero en una
   ventana estrecha no caben enteros. Se deja así a propósito: la alternativa era bajar tanto la
   escala del texto que dejara de leerse.
+
+### 11. Añadido después: espaciado dinámico en Builds, y verificación con Calamity
+
+Probando el panel con **CalamityMod cargado** apareció el único fallo estético que no salía sin él:
+con Calamity, el área de Builds enseña una fila más (el selector de fuente Vanilla/Calamity), esos
+34 px de menos hacían que el **séptimo accesorio quedara cortado** por abajo. Un paso fijo entre
+filas no vale para las dos configuraciones.
+
+Resuelto calculando el paso con el alto REAL del cuerpo
+(`ContenidoBuilds.ColocarFilasDeObjetos`), acotado entre 45 px (el lado de la ranura más un píxel
+de aire) y 52. Como ese alto no existe hasta que el motor ha recalculado el árbol -y cambia si el
+jugador redimensiona la ventana-, las filas se recolocan también desde `Update` en cuanto cambia.
+Comprobado en el juego en las dos configuraciones: los 7 accesorios caben enteros con y sin
+Calamity.
+
+De paso queda cerrada la verificación con Calamity que faltaba:
+`verificar-panel-unico.ps1 -Calamity`, evidencia en `evidencia\panel-unico-calamity.log.txt`.
+Las seis pestañas cambian con clic real, los seis atajos saltan a su pestaña, el icono del HUD sale
+en el mismo (570, 278, 30, 30) y la autoprueba termina sin excepciones. Se nota que Calamity está
+cargado: Builds pasa de 8 a 10 botones (la fila de fuentes) y la Librería y la Investigación
+crecen.
