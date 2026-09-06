@@ -45,8 +45,11 @@ namespace TerrakeepMod.Common.Builds
 		/// Calamity).</summary>
 		public string Clave;
 
-		/// <summary>Nombre de la clase en español, para las pildoras de la interfaz.</summary>
-		public string Etiqueta;
+		/// <summary>Nombre de la clase traducido al idioma activo, para las pildoras de la
+		/// interfaz. Es una PROPIEDAD y no un campo: el catalogo se resuelve una sola vez, en
+		/// <c>PostSetupContent</c>, asi que un nombre guardado ahi se quedaria congelado en el
+		/// idioma que hubiera al cargar la partida.</summary>
+		public string Etiqueta => CatalogoBuilds.EtiquetaClase(Clave);
 
 		public readonly List<ObjetoBuild> Armadura = new List<ObjetoBuild>();
 		public readonly List<ObjetoBuild> Armas = new List<ObjetoBuild>();

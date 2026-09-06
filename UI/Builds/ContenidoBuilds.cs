@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
+using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Builds;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -132,12 +133,11 @@ namespace TerrakeepMod.UI.Builds
 			_cuerpo.OverflowHidden = true;
 			Append(_cuerpo);
 
-			_botonAutoEquipar = new BotonTk("Auto-equipar", EstiloTk.EscalaBoton);
+			_botonAutoEquipar = new BotonTk(Idiomas.Texto("Builds.AutoEquipar"), EstiloTk.EscalaBoton);
 			_botonAutoEquipar.Width.Set(210f, 0f);
 			_botonAutoEquipar.Height.Set(34f, 0f);
 			_botonAutoEquipar.VAlign = 1f;
-			_botonAutoEquipar.Ayuda = "Coloca en su sitio el equipo de esta build que YA tengas. " +
-				"Nunca crea objetos: lo que no tengas se queda como esta.";
+			_botonAutoEquipar.Ayuda = () => Idiomas.Texto("Builds.AutoEquiparAyuda");
 			_botonAutoEquipar.AlPulsar += EjecutarAutoEquipar;
 			Append(_botonAutoEquipar);
 
@@ -170,7 +170,7 @@ namespace TerrakeepMod.UI.Builds
 
 			FuenteBuilds fuente = FuenteActual;
 			if (fuente == null) {
-				_subtituloTexto = "No hay ningún catálogo de builds cargado.";
+				_subtituloTexto = Idiomas.Texto("Builds.SinCatalogo");
 				ColocarFilas(false);
 				Recalculate();
 				return;
@@ -233,9 +233,9 @@ namespace TerrakeepMod.UI.Builds
 				return;
 			}
 
-			PintarColumna(0, "Armadura", clase.Armadura);
-			PintarColumna(1, "Armas", clase.Armas);
-			PintarColumna(2, "Accesorios", clase.Accesorios);
+			PintarColumna(0, "Builds.Armadura", clase.Armadura);
+			PintarColumna(1, "Builds.Armas", clase.Armas);
+			PintarColumna(2, "Builds.Accesorios", clase.Accesorios);
 
 			ColocarFilas(hayFilaFuentes);
 			Recalculate();
@@ -289,13 +289,16 @@ namespace TerrakeepMod.UI.Builds
 				pildora.Width.Set(-EstiloTk.SeparacionPestanas, fraccion);
 				pildora.Height.Set(AltoFila, 0f);
 				pildora.Left.Set(0f, i * fraccion);
-				pildora.Ayuda = etiquetas[i];
+				string completa = etiquetas[i];
+				pildora.Ayuda = () => completa;
 				pildora.AlPulsar += () => alPulsar(indice);
 				fila.Append(pildora);
 			}
 		}
 
-		private void PintarColumna(int columna, string titulo, List<ObjetoBuild> objetos)
+		/// <summary>Una de las tres columnas. Recibe la CLAVE de localizacion del titulo, no el
+		/// texto ya resuelto, para que cambie con el idioma sin reabrir el panel.</summary>
+		private void PintarColumna(int columna, string claveTitulo, List<ObjetoBuild> objetos)
 		{
 			const float separacion = 14f;
 			float fraccion = 1f / 3f;
@@ -306,7 +309,7 @@ namespace TerrakeepMod.UI.Builds
 			contenedor.Left.Set(0f, columna * fraccion);
 			_cuerpo.Append(contenedor);
 
-			EtiquetaTk cabecera = new EtiquetaTk(() => titulo, 0.85f, 200f, 24f);
+			EtiquetaTk cabecera = new EtiquetaTk(() => Idiomas.Texto(claveTitulo), 0.85f, 200f, 24f);
 			contenedor.Append(cabecera);
 
 			int fila = 0;
@@ -322,8 +325,10 @@ namespace TerrakeepMod.UI.Builds
 				_etiquetasSlot.Add(etiqueta);
 
 				string extra = objeto.Resuelto
-					? (string.IsNullOrEmpty(objeto.PrefijoRecomendado) ? "" : "prefijo sugerido: " + objeto.PrefijoRecomendado)
-					: "no existe en esta partida";
+					? (string.IsNullOrEmpty(objeto.PrefijoRecomendado)
+						? ""
+						: Idiomas.Texto("Builds.PrefijoSugerido", objeto.PrefijoRecomendado))
+					: Idiomas.Texto("Builds.NoExisteAqui");
 				UIText pie = null;
 				if (!string.IsNullOrEmpty(extra)) {
 					pie = new UIText(EstiloInvestigacionAcortar(extra, 34), 0.62f);
@@ -340,7 +345,7 @@ namespace TerrakeepMod.UI.Builds
 			}
 
 			if (objetos.Count == 0) {
-				EtiquetaTk vacio = new EtiquetaTk(() => "(nada)", 0.7f, 120f, 22f);
+				EtiquetaTk vacio = new EtiquetaTk(() => Idiomas.Texto("Builds.Nada"), 0.7f, 120f, 22f);
 				vacio.Top.Set(28f, 0f);
 				vacio.ColorTexto = EstiloTk.Neutro;
 				contenedor.Append(vacio);
@@ -489,6 +494,12 @@ namespace TerrakeepMod.UI.Builds
 				ColocarFilasDeObjetos();
 			}
 
+			// El rotulo del boton se fija al construirlo, asi que se vuelve a poner cada fotograma
+			// para que cambie en vivo con el selector de idioma del area de Ajustes. Las pildoras no
+			// lo necesitan (se rehacen enteras con Reconstruir) ni las cabeceras de columna
+			// (son EtiquetaTk, que ya piden su texto en cada dibujado).
+			_botonAutoEquipar.FijarTexto(Idiomas.Texto("Builds.AutoEquipar"));
+
 			RegistrarCoordenadasUnaVez();
 		}
 
@@ -571,9 +582,10 @@ namespace TerrakeepMod.UI.Builds
 			Player jugador = Main.LocalPlayer;
 			string ranuras = jugador == null
 				? ""
-				: "  ·  ranuras de accesorio disponibles: " + EquipoJugador.SlotsAccesorioDisponibles(jugador);
-			_subtituloTexto = "Tienes " + tiene + " de " + resueltos + " objetos de esta build" + ranuras + ".";
-			_textoResumen = "Verde = ya lo tienes  ·  gris = no lo tienes  ·  rojo = no existe aquí.";
+				: Idiomas.Texto("Builds.RanurasAccesorio",
+					EquipoJugador.SlotsAccesorioDisponibles(jugador));
+			_subtituloTexto = Idiomas.Texto("Builds.Tienes", tiene, resueltos, ranuras);
+			_textoResumen = Idiomas.Texto("Builds.Leyenda");
 		}
 
 		/// <summary>Boton "Auto-equipar". Solo mueve objetos que el jugador ya tiene.</summary>
@@ -591,7 +603,7 @@ namespace TerrakeepMod.UI.Builds
 				$"{fuente?.Etiqueta} / {etapa?.Etiqueta}");
 
 			RefrescarPosesion();
-			_textoResumen = $"Auto-equipar: {resultado.Resumen}";
+			_textoResumen = Idiomas.Texto("Builds.ResultadoAutoEquipar", resultado.Resumen);
 		}
 
 		/// <summary>Primer elemento del tipo pedido dentro de este area. Lo usa la autoprueba.</summary>

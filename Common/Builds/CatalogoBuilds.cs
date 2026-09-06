@@ -4,6 +4,7 @@ using System.IO;
 using System.Text;
 using Terraria.ID;
 using Terraria.ModLoader;
+using TerrakeepMod.Common.Ajustes;
 using TerrasavrNative.Core.Data;
 
 namespace TerrakeepMod.Common.Builds
@@ -64,14 +65,22 @@ namespace TerrakeepMod.Common.Builds
 		/// <summary>true si ya se resolvio el catalogo contra el contenido de esta partida.</summary>
 		public static bool Listo { get; private set; }
 
-		/// <summary>Nombres en español de las clases, para las pildoras del panel.</summary>
-		private static readonly Dictionary<string, string> _etiquetasClase = new Dictionary<string, string> {
-			{ "melee", "Cuerpo a cuerpo" },
-			{ "ranged", "A distancia" },
-			{ "mage", "Mago" },
-			{ "summoner", "Invocador" },
-			{ "rogue", "Pícaro" },
-		};
+		/// <summary>
+		/// Nombre traducido de una clase, a partir de la clave del JSON. Las cinco claves son las
+		/// del archivo de datos (melee / ranged / mage / summoner / rogue, esta ultima solo en
+		/// Calamity); cualquier otra que apareciera se enseña tal cual en vez de inventarse nada.
+		/// </summary>
+		public static string EtiquetaClase(string clave)
+		{
+			switch (clave) {
+				case "melee": return Idiomas.Texto("Builds.Clase.Melee");
+				case "ranged": return Idiomas.Texto("Builds.Clase.Ranged");
+				case "mage": return Idiomas.Texto("Builds.Clase.Mage");
+				case "summoner": return Idiomas.Texto("Builds.Clase.Summoner");
+				case "rogue": return Idiomas.Texto("Builds.Clase.Rogue");
+				default: return clave;
+			}
+		}
 
 		/// <summary>
 		/// Lee los dos .json de dentro del .tmod. Hay que llamarlo mientras el archivo del mod
@@ -153,10 +162,7 @@ namespace TerrakeepMod.Common.Builds
 				EtapaBuild etapa = new EtapaBuild { Clave = etapaCore.Key, Etiqueta = etapaCore.Label };
 
 				foreach (KeyValuePair<string, BuildClassGear> par in etapaCore.Classes) {
-					ClaseBuild clase = new ClaseBuild {
-						Clave = par.Key,
-						Etiqueta = _etiquetasClase.TryGetValue(par.Key, out string nombre) ? nombre : par.Key,
-					};
+					ClaseBuild clase = new ClaseBuild { Clave = par.Key };
 
 					Convertir(par.Value.Armor, clase.Armadura, fuente, sinResolver);
 					Convertir(par.Value.Weapons, clase.Armas, fuente, sinResolver);

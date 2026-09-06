@@ -3,6 +3,7 @@ using System.Text;
 using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
+using TerrakeepMod.Common.Ajustes;
 
 namespace TerrakeepMod.Common.Builds
 {
@@ -30,8 +31,7 @@ namespace TerrakeepMod.Common.Builds
 		public readonly List<string> Detalle = new List<string>();
 
 		public string Resumen =>
-			$"movidos={Movidos}, ya colocados={YaColocados}, no los tienes={NoPoseidos}, " +
-			$"sin sitio={SinSitio}, no existen aqui={NoResueltos}";
+			Idiomas.Texto("Builds.Resumen", Movidos, YaColocados, NoPoseidos, SinSitio, NoResueltos);
 	}
 
 	/// <summary>
