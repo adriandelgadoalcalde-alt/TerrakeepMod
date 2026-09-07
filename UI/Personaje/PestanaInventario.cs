@@ -2,6 +2,7 @@ using Terraria;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Personaje;
+using TerrakeepMod.UI.Libreria.Widgets;
 using TerrakeepMod.UI.Personaje.Widgets;
 
 namespace TerrakeepMod.UI.Personaje
@@ -19,6 +20,18 @@ namespace TerrakeepMod.UI.Personaje
 	/// que acepta cada hueco, el clic derecho, el apilado y los tooltips son los de vanilla sin
 	/// reimplementar nada.
 	/// </summary>
+	/// <remarks>
+	/// <b>El mini-panel de edicion</b> (<see cref="PanelHerramientasLibreriaTk"/>, el mismo de
+	/// Libreria) va debajo de Monedas/Municion, en el hueco real que queda ahi - encargo explicito
+	/// del usuario tras probar el mod: "en la imagen 5 abajo a la derecha todavia hay sitio...
+	/// deberia estar el menu de edicion como en libreria... quitaria la papelera y lo de editar
+	/// stacks de la linea de arriba [de ContenidoPersonaje, compartida entre las seis pestañas] a
+	/// ponerlo todo junto abajo a la derecha". Se pone DEBAJO (no mas a la derecha de) la columna
+	/// de Monedas/Municion a proposito: la etiqueta "Ocupacion" ya ocupa esa franja horizontal con
+	/// texto real ("Mochila: N de 50 ranuras ocupadas.") que se saldria de su propio hueco si el
+	/// panel empezara justo a su derecha en una ventana normal - visto midiendo el texto real, no
+	/// solo suponiendolo.
+	/// </remarks>
 	public class PestanaInventario : UIElement
 	{
 		private const float Escala = 0.9f;
@@ -53,10 +66,16 @@ namespace TerrakeepMod.UI.Personaje
 			ayuda.Top.Set(24f + 5f * paso + 10f, 0f);
 			Append(ayuda);
 
+			float arribaOcupacion = 24f + 2f * paso + 46f;
 			EtiquetaTk ocupacion = new EtiquetaTk(TextoOcupacion, 0.8f, 400f, 20f);
 			ocupacion.Left.Set(derecha, 0f);
-			ocupacion.Top.Set(24f + 2f * paso + 46f, 0f);
+			ocupacion.Top.Set(arribaOcupacion, 0f);
 			Append(ocupacion);
+
+			PanelHerramientasLibreriaTk herramientas = new PanelHerramientasLibreriaTk();
+			herramientas.Left.Set(derecha, 0f);
+			herramientas.Top.Set(arribaOcupacion + 20f + 14f, 0f);
+			Append(herramientas);
 		}
 
 		/// <summary>Rotulo de una zona de la pestaña. Recibe la CLAVE de localizacion, no el texto:

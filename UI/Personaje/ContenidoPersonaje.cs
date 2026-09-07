@@ -28,18 +28,7 @@ namespace TerrakeepMod.UI.Personaje
 		private const float AltoBarraPestanas = 30f;
 		private const float SeparacionPestanas = 6f;
 
-		/// <summary>
-		/// Alto de la fila de herramientas (papelera + editor de cantidad), compartida por las
-		/// seis sub-pestañas aunque solo tenga sentido en las tres que enseñan objetos reales
-		/// (Inventario, Almacenes, Equipo) - igual que en vanilla, donde la fila de iconos del HUD
-		/// (bestiario, emotes, papelera) esta siempre puesta y no depende de que haya nada que
-		/// tirar en ese instante.
-		/// </summary>
-		private const float AltoHerramientas = 34f;
-
 		private UIElement _contenedor;
-		private SlotPapeleraTk _papelera;
-		private EditorCantidadTk _editorCantidad;
 		private readonly List<BotonTk> _botonesPestana = new List<BotonTk>();
 		private UIElement _pestanaActual;
 		private int _indicePestana;
@@ -70,9 +59,8 @@ namespace TerrakeepMod.UI.Personaje
 			Append(new CabeceraPersonaje());
 
 			ConstruirBarraPestanas();
-			ConstruirHerramientas();
 
-			float arribaContenido = AltoCabecera + AltoBarraPestanas + AltoHerramientas + 12f;
+			float arribaContenido = AltoCabecera + AltoBarraPestanas + 12f;
 			_contenedor = new UIElement();
 			_contenedor.Width.Set(0f, 1f);
 			_contenedor.Top.Set(arribaContenido, 0f);
@@ -80,38 +68,6 @@ namespace TerrakeepMod.UI.Personaje
 			Append(_contenedor);
 
 			CambiarPestana(PersonajeVivo.Acotar(UltimaPestana, 0, 5));
-		}
-
-		/// <summary>
-		/// La papelera REAL de vanilla (<see cref="SlotPapeleraTk"/>) y el editor de cantidad
-		/// (<see cref="EditorCantidadTk"/>), en una fila compartida por las seis sub-pestañas -
-		/// asi que sirven tanto si el objeto que se quiere borrar o redimensionar esta en el
-		/// Inventario como en un Almacen o en el Equipo, sin tener que repetir el control seis
-		/// veces. Va DEBAJO de la barra de pestañas y no dentro de <see cref="SlotObjetoVanilla"/>
-		/// a proposito: esa clase la esta tocando en paralelo otro agente (tooltip).
-		/// </summary>
-		private void ConstruirHerramientas()
-		{
-			float arriba = AltoCabecera + AltoBarraPestanas + 6f;
-
-			EtiquetaTk etiquetaPapelera = new EtiquetaTk(
-				() => Idiomas.Texto("Personaje.Herramientas.Papelera"), 0.75f, 90f, 24f);
-			etiquetaPapelera.ColorTexto = EstiloTk.TextoSuave;
-			etiquetaPapelera.Left.Set(0f, 0f);
-			etiquetaPapelera.Top.Set(arriba + 6f, 0f);
-			Append(etiquetaPapelera);
-
-			// Escala 0.55 (~29x29) para que quepa en el alto de la fila junto a los botones del
-			// editor de cantidad (26 px), sin dejar de leerse como el icono real del juego.
-			_papelera = new SlotPapeleraTk(0.55f);
-			_papelera.Left.Set(84f, 0f);
-			_papelera.Top.Set(arriba, 0f);
-			Append(_papelera);
-
-			_editorCantidad = new EditorCantidadTk(this);
-			_editorCantidad.Left.Set(130f, 0f);
-			_editorCantidad.Top.Set(arriba, 0f);
-			Append(_editorCantidad);
 		}
 
 		private void ConstruirBarraPestanas()

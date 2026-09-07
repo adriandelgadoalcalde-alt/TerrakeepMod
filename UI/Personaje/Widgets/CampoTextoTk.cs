@@ -1,7 +1,9 @@
 using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using ReLogic.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.GameContent.UI.Elements;
 using Terraria.GameInput;
 using Terraria.UI;
@@ -133,9 +135,31 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 				mostrado += "|";
 			}
 
-			Utils.DrawBorderString(spriteBatch, mostrado,
-				new Vector2(dim.X + 8f, dim.Y + (dim.Height - 20f * _escalaTexto) / 2f),
-				color, _escalaTexto);
+			// Medido con la fuente REAL del juego (mismo criterio que EditorCantidadTk.TextoEtiqueta
+			// - nunca suponer un ancho por caracter) y CENTRADO en las dos direcciones, no pegado al
+			// borde izquierdo: un campo compacto (el de cantidad de la Libreria, 60px) no cabe la
+			// pista larga ("cantidad"/"quantity" en ingles) al tamaño de letra pedido, y antes se
+			// salia del recuadro por encima del boton "+" de al lado (bug real reportado por el
+			// usuario: "la caja de texto no esta bien ajustada... el placeholder no parece estar
+			// centrado"). Se reduce la escala SOLO lo justo para que quepa, en vez de recortar el
+			// texto: son palabras cortas (pista o numero), truncarlas a medias se leeria peor que
+			// achicarlas un poco.
+			const float MargenLateral = 6f;
+			float disponible = Math.Max(0f, dim.Width - MargenLateral * 2f);
+
+			DynamicSpriteFont fuente = FontAssets.MouseText.Value;
+			float escala = _escalaTexto;
+			Vector2 tamano = fuente.MeasureString(mostrado) * escala;
+			if (disponible > 0f && tamano.X > disponible) {
+				escala *= disponible / tamano.X;
+				tamano = fuente.MeasureString(mostrado) * escala;
+			}
+
+			Vector2 posicion = new Vector2(
+				dim.X + (dim.Width - tamano.X) / 2f,
+				dim.Y + (dim.Height - tamano.Y) / 2f);
+
+			Utils.DrawBorderString(spriteBatch, mostrado, posicion, color, escala);
 		}
 
 		private void LeerTeclado()

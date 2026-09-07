@@ -3775,3 +3775,176 @@ secas en un comando aparte. Archivos de esta tarea: `Common/Builds/AutoEquipar.c
 `Localization/en-US_Mods.TerrakeepMod.hjson`, `evidencia/ws4-builds.log.txt`,
 `evidencia/ws4-builds-capturas/*.png`, `bitacora.md`. Nada de otros agentes en marcha a la vez
 (`UI/Personaje/PestanaBuffs.cs`, `Common/Panel/AutopruebaEspaciado.cs`, y sus propias evidencias).
+
+---
+
+## 7-sep-2026 — Cuatro bugs de Librería + rediseño de Personaje (el mismo mini-panel en las tres pestañas)
+
+Encargo con capturas reales del usuario, probando el mod en su partida: (1) el popup del editor
+de prefijo se abre hacia ARRIBA, pide que se abra a la DERECHA porque ahí sí hay hueco libre;
+(2) ese popup "no muestra ninguna opción de nada"; (3) mantener pulsado "-"/"+" del editor de
+cantidad no acelera, solo cambia de 1 en 1; (4) la caja de texto de cantidad "no está bien
+ajustada" (el placeholder "cantidad" no se ve centrado). Además, rediseño grande pedido para
+Personaje: sacar la papelera + editor de cantidad de la fila compartida de `ContenidoPersonaje`
+(debajo de la barra de pestañas) y poner en su lugar, en cada sub-pestaña que enseña objetos
+reales (Inventario/Almacenes/Equipo), el MISMO mini-panel consolidado que ya tiene Librería
+(recuadro de arrastre + cantidad + prefijo + papelera), en el hueco libre de abajo a la derecha.
+
+### Bug 3 (mantener pulsado): arreglo real + un hallazgo aparte sobre `Main.mouseLeft`
+
+`BotonTk` ganó `Manteniendo` (true mientras el ratón sigue pulsado desde que se apretó SOBRE el
+botón, hasta que se suelta - `LeftMouseDown` lo enciende, `Update` lo apaga en cuanto
+`Main.mouseLeft` es false) y `EditorCantidadTk.ActualizarRepeticion`: tras un retardo inicial de
+0,4s (para no disparar un segundo paso en un clic normal) empieza a repetir `Ajustar`, acortando
+el intervalo de 0,15s a 0,03s a lo largo de 1,5s de mantenerlo pulsado - patrón estándar de
+"hold to repeat" con aceleración real, medida en segundos reales, no en fotogramas supuestos.
+
+**El hallazgo real, verificando esto en el juego**: `Main.mouseLeft` NO es un flag que se pueda
+"dejar puesto" varios fotogramas reales desde una autoprueba sin hardware de por medio - el motor
+lo SOBREESCRIBE con el estado REAL del ratón físico en cada fotograma de entrada
+(`PlayerInput`/`Main.UpdateInput`). El primer intento de la autoprueba (`Main.mouseLeft = true`
+puesto una vez, dejando pasar 2,4s reales) dio **0 repeticiones**: el flag se perdía antes de que
+le diera tiempo a acelerar. `BotonTk.ForzarManteniendoParaAutoprueba(bool)` (SOLO autopruebas,
+nunca el juego real) resuelve esto con un segundo flag (`_pulsandoForzadoPorAutoprueba`) que hace
+que `Update` IGNORE `Main.mouseLeft` mientras dure - re-afirmado en CADA reentrada de la
+autoprueba (cada ~12 fotogramas reales), dejando que el motor siga corriendo fotogramas de verdad
+entre medias. Con el arreglo: **8 repeticiones en la primera mitad de la ventana (1,2s) contra 31
+en la segunda mitad** - aceleración real, medida con `DateTime.UtcNow`, no solo "repite".
+
+### Bug 4 (campo de texto): centrado + auto-ajuste de escala, nunca "..."
+
+`CampoTextoTk.DrawSelf` dibujaba el texto/pista SIEMPRE pegado 8px a la izquierda, sin medir si
+cabía - en el campo compacto de 60px de Librería, "cantidad"/"quantity" se salía del recuadro por
+encima del botón "+" de al lado. Arreglo: medir con la fuente REAL (mismo patrón que
+`EditorCantidadTk.MedirYRecortarObjetivo`) y, si no cabe, REDUCIR la escala justo lo necesario
+(nunca recortar con "..." - son palabras cortas, truncarlas a medias se leería peor que
+achicarlas un poco) + centrar en las dos direcciones en vez de anclar a la izquierda.
+
+De paso, `EditorCantidadTk.TextoEtiqueta` (el texto largo "Cantidad de X (n/m):") dejó de
+recortarse con "..." en el modo EXPLÍCITO (Libreria/mini-panel de Personaje): ahí ese texto SOLO
+se usa como tooltip de tres botones (`Main.instance.MouseText`, que no vive dentro de ninguna
+caja de ancho fijo - mide el texto y dibuja su fondo alrededor), así que el recorte de 360px que
+sí hace falta en el modo NO compacto de Personaje (ahí SÍ es una etiqueta real, dentro de un
+recuadro fijo) no pintaba nada ahí - un objeto con nombre largo (con prefijo) se veía truncado en
+el tooltip sin motivo real. Pedido explícito de esta tarea: el contenido tiene que leerse ENTERO,
+nunca recortado en silencio si de verdad no hace falta.
+
+### Bugs 1 y 2 (el popup de prefijo): la causa real no era la dirección, era `MaxWidth`/`MaxHeight`
+
+Investigación en dos capas. Primero, la posición: `EditorPrefijoTk.ConstruirPopup` medía
+`Main.screenWidth`/`Main.screenHeight` (mismo criterio que ya usa este mod para no fiarse de
+min()/max() en CSS: medir SIEMPRE lo real del motor) para decidir hacia dónde abrir - por defecto
+a la DERECHA con el borde superior alineado con el botón, cayendo a la izquierda o desplazándose
+verticalmente solo si de verdad no cabe.
+
+Con eso hecho, la primera captura real (800x720) mostró el mini-panel entero cortado por el borde
+de la ventana: la rejilla de destino de Librería tenía 10 columnas FIJAS que, sumadas al ancho
+fijo del mini-panel, se salían de la ventana en resoluciones normales - **bug real preexistente,
+nunca visto porque WS3 se cerró sin capturas** ("sin capturas de pantalla en esta tarea, a
+propósito", bitácora de esa sesión). Arreglado haciendo `ContenidoLibreria._columnasDestino`
+adaptativo (3 a 10 columnas, mismo patrón que ya usa `_columnasResultado` para la rejilla del
+catálogo): se recalcula en `Update()` con el ancho REAL de la zona, dejándole sitio real al
+mini-panel al lado siempre.
+
+Con el panel ya visible, una SEGUNDA captura (esta vez sí con el popup abierto) mostró el bug
+real de fondo: el popup se abría, pero solo se veían ~14px de la primera fila ("Ninguno"), nada
+más - exactamente lo que describía el encargo ("no muestra ninguna opción de nada"). Un método de
+diagnóstico temporal (`EditorPrefijoTk.DiagnosticoGeometria`, geometría YA calculada de
+boton/popup/lista) reveló la causa real: **`popup 176x26`** en vez de los `240x220` pedidos con
+`Width.Set`/`Height.Set` - pese a que esas dos líneas SÍ estaban puestas. La causa:
+`UIElement.MaxWidth`/`MaxHeight` valen `StyleDimension.Fill` (100% del padre) POR DEFECTO, y el
+padre real de este popup es el propio botón "Prefijo: X" (176x26px) - sin fijar
+`MaxWidth`/`MaxHeight` a mano, el motor RECORTA el popup a como mucho el tamaño de su padre, sin
+ningún aviso ni excepción. El popup SÍ tenía las 66 filas reales dentro (categorías legales de
+verdad, confirmado con el mismo diagnóstico: `filas internas=66, alturaInternaTotal=1602`) - el
+bug era puramente de RENDERIZADO, no de datos. Con `_popup.MaxWidth.Set(240f, 0f)` +
+`_popup.MaxHeight.Set(220f, 0f)`, el popup pasa a medir de verdad `240x220` y las filas se ven
+todas, con scroll real.
+
+**Un matiz que SÍ era real y se dejó como mejora aparte** (no la causa del bug, pero se investigó
+antes de descartarlo): objetos vanilla fuera de los 683 tabulados en `PrefixRulesCatalog` (una
+muestra curada, no exhaustiva - ver la cabecera de `CatalogoPrefijosLegales`) se quedaban
+literalmente sin ningún grupo legal que ofrecer, aunque `Item.CanHavePrefixes()` diera true.
+`CategoriasDe`/`GruposLegales` ganaron un *fallback* real: si el objeto vanilla no tiene fila en
+la tabla curada, se cae al mismo camino por CAMPOS REALES (`item.accessory`/`item.DamageType`)
+que ya usan los objetos de mod, en vez de dejar el picker vacío del todo.
+
+### El rediseño de Personaje: el mismo mini-panel, sin reinventar nada
+
+`PanelHerramientasLibreriaTk` (nacido en Librería) se reutiliza TAL CUAL en
+`PestanaInventario`/`PestanaAlmacenes`/`PestanaEquipo` (no se movió de carpeta ni se renombró: ya
+era genérico, no sabía nada de en qué pestaña vivía). `ContenidoPersonaje` perdió la fila
+compartida (papelera + editor de cantidad en modo hover) que vivía debajo de la barra de
+pestañas - encargo explícito: **"quitaría la papelera y lo de editar stacks de la línea de
+arriba... a ponerlo todo junto abajo a la derecha"**.
+
+Colocación por pestaña, cada una con su propio motivo real:
+- **Inventario**: DEBAJO de Monedas/Munición (no a su derecha): la etiqueta "Mochila: N de 50
+  ranuras ocupadas." vive en esa misma franja horizontal y su texto real se solapaba con el panel
+  si se ponía al lado - visto midiendo el texto real, no solo suponiéndolo.
+- **Almacenes**: a la derecha de la rejilla 10x4 (ahí sí sobra sitio real, sin ninguna otra
+  etiqueta que lo dispute).
+- **Equipo**: la más difícil, porque la columna de equipo YA usa TODO el alto disponible a
+  propósito (ver la cabecera de `PestanaEquipo.ColocarColumnas`, WS1). Colocación DINÁMICA nueva
+  (`ColocarHerramientas`, recalculada cada vez que cambian columnas/escala): a la derecha de la
+  columna de equipo especial si la ventana da de sí (midiendo el ancho REAL que ya reserva esa
+  columna para su fila más larga, `_resumenAccesorios`, 300px), o si no debajo de ella - esa
+  columna tiene solo 5 filas contra las 10 de la columna de equipo, así que ahí abajo también
+  queda hueco real. Verificado con captura real a 1280x720: se coloca a la derecha, sin pisar
+  nada.
+
+**Buffs/Apariencia/Desbloqueos: sin tocar, a propósito.** Buffs está fuera de alcance explícito
+(otro agente trabajando en paralelo en `UI/Personaje/PestanaBuffs.cs`); Apariencia/Desbloqueos no
+enseñan objetos reales (nada que seleccionar/editar con este mini-panel).
+
+**Un bug de espaciado nuevo, encontrado con las primeras capturas reales de este mismo mini-panel
+reutilizado** (nunca visto antes porque WS3 tampoco llevaba capturas): la pista "arrastra aquí"
+que dibuja `SlotSeleccionTk` DEBAJO del recuadro vacío (`rect.Bottom+2`) se solapaba con la fila
+de cantidad de justo abajo - el hueco de `PanelHerramientasLibreriaTk.filaDos` (34px) contaba el
+alto del recuadro pero no el de esa pista. Subido a 46px (+ `Alto` de 140 a 156 para que siga
+cabiendo todo). Y las etiquetas "Papelera"/"Seleccionar" quedaban casi tocándose (`Left=46` para
+la segunda, cuando "Papelera" a escala 0,62 ya ocupaba casi ese ancho) - subido a `Left=64`.
+
+**Autopruebas reescritas, no solo extendidas.** Los pasos 22/23 de WS1 (`AutopruebaPersonaje.cs`)
+enganchaban el editor de cantidad por HOVER (`SlotObjetoVanilla.MouseOver`) - ese modo ya NO
+existe en esta posición. Reescritos para arrastrar de verdad al recuadro de selección (mismo
+patrón que WS3), y se añadió un paso 24/25 nuevo que reutiliza el objeto de prueba con prefijo
+para demostrar que el mini-panel entero (arrastre + cantidad + prefijo + papelera) funciona igual
+en Personaje que en Librería. Se usa `inventory[2]` (no `inventory[1]`) para no interferir con el
+paso de papelera-desde-hueco (independiente, ya existía). `AutopruebaLibreria.cs` ganó un paso 17
+nuevo (aceleración real) y el paso de prefijo se partió en dos (18 abre el popup, 19 captura y
+pulsa) - necesario porque `CapturaDePantalla.Guardar` captura el fotograma YA PRESENTADO: capturar
+en el MISMO paso que abre el popup enseñaba el popup todavía CERRADO (mismo bug de raíz que la
+propia comprobación de "mantener pulsado", encontrado por separado).
+
+### Verificación obligatoria
+
+`CapturaDePantalla.Permitida` nunca había tenido las variables de WS1/WS3 en su lista blanca
+(ninguna de las dos pedía capturas hasta ahora) - añadidas. Seis rondas reales en sandbox propio
+(`tModLoader-TerrakeepWS3` para Librería a 800x720 y luego 1600x900; `tModLoader-TerrakeepWS1`
+para Personaje a 1280x720, compilando SIEMPRE directamente en el sandbox propio con
+`-tmlsavedirectory`, nunca la carpeta `Mods` compartida que el juego del usuario tenía abierta -
+`verificar-personaje.ps1` ganó el parámetro `-CompilarPropio` para esto). Capturas reales en
+`tModLoader-TerrakeepWS3/terrakeep-capturas/` y `tModLoader-TerrakeepWS1/terrakeep-capturas/`
+(no versionadas, son de un sandbox fuera del repo): el popup de prefijo abre con opciones reales
+visibles y sin solapar nada (ni el propio mini-panel, ni el pie del panel); mantener pulsado "+"
+aceleró de 8 repeticiones/1,2s a 31/1,2s en la misma prueba; el mini-panel funciona igual en las
+tres pestañas de Personaje que en Librería (arrastre selecciona, cantidad y prefijo editables,
+papelera vacía sin tirar nada al suelo - confirmado con `ReferenceEquals` y recuento de objetos
+activos en el mundo antes/después). Log completo en `evidencia/ws3-libreria.log.txt` y
+`evidencia/ws1-personaje-client.log.txt`.
+
+### Índice privado para comitear
+
+`GIT_INDEX_FILE=<propio> git read-tree HEAD && git add ... && git commit`, después `git reset` a
+secas en un comando aparte. Archivos de esta tarea: `Common/Libreria/AutopruebaLibreria.cs`,
+`Common/Panel/CapturaDePantalla.cs`, `Common/Personaje/AutopruebaPersonaje.cs`,
+`Common/Prefijos/CatalogoPrefijosLegales.cs`, `UI/Libreria/ContenidoLibreria.cs`,
+`UI/Libreria/Widgets/EditorPrefijoTk.cs`, `UI/Libreria/Widgets/PanelHerramientasLibreriaTk.cs`,
+`UI/Personaje/ContenidoPersonaje.cs`, `UI/Personaje/PestanaAlmacenes.cs`,
+`UI/Personaje/PestanaEquipo.cs`, `UI/Personaje/PestanaInventario.cs`,
+`UI/Personaje/Widgets/BotonTk.cs`, `UI/Personaje/Widgets/CampoTextoTk.cs`,
+`UI/Personaje/Widgets/EditorCantidadTk.cs`, `scripts/verificar-personaje.ps1`,
+`evidencia/ws3-libreria.log.txt`, `evidencia/ws1-personaje-client.log.txt`, `bitacora.md`. Nada de
+otros agentes en marcha a la vez (`evidencia/panel-unico.log.txt`, modificado por otro agente
+entre medias; `bin-checkDebug/`, `obj-verif-espaciado/`, carpetas de build sueltas).

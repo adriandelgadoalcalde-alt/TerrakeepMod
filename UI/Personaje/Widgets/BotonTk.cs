@@ -89,6 +89,19 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		private readonly float _escalaTexto;
 		private float _escalaAnimada = EscalaReposo;
 
+		/// <summary>true mientras el boton de raton izquierdo sigue pulsado desde que se apreto
+		/// SOBRE este boton (aunque el raton se haya movido fuera mientras tanto, igual que hace
+		/// cualquier boton nativo), hasta que se suelta - sea donde sea. Lo usan los controles que
+		/// necesitan repetir una accion al MANTENER pulsado (ver EditorCantidadTk, "+"/"-" de
+		/// cantidad con aceleracion): no se puede usar <c>IsMouseHovering &amp;&amp; Main.mouseLeft</c>
+		/// a pelo para eso, porque enganchar por hover permitiria empezar a "mantener" arrastrando
+		/// el raton YA pulsado desde otro sitio, cosa que ningun boton real hace.</summary>
+		private bool _pulsando;
+
+		/// <summary>true mientras <see cref="ForzarManteniendoParaAutoprueba"/> tiene el control:
+		/// mientras dure, <c>Update</c> ignora <c>Main.mouseLeft</c> del todo (ver esa nota).</summary>
+		private bool _pulsandoForzadoPorAutoprueba;
+
 		/// <summary>Si es true el boton se pinta resaltado (pestaña seleccionada, opcion activa).</summary>
 		public bool Activo;
 
@@ -159,6 +172,35 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// <summary>Cuantos pixeles se ha inflado el marco ahora mismo, ya redondeado.</summary>
 		public int CrecimientoActual => (int)Crecimiento();
 
+		/// <summary>true mientras el raton sigue pulsado desde que se apreto sobre este boton. Ver
+		/// la nota de cabecera del campo <c>_pulsando</c>.</summary>
+		public bool Manteniendo => _pulsando;
+
+		/// <summary>
+		/// SOLO PARA AUTOPRUEBAS: fuerza <see cref="Manteniendo"/> a un valor concreto sin pasar por
+		/// <c>Main.mouseLeft</c>. Hace falta un camino aparte porque <c>Main.mouseLeft</c> NO es un
+		/// flag que se pueda "dejar puesto" varios fotogramas reales sin hardware de por medio: el
+		/// motor lo sobreescribe con el estado REAL del boton fisico del raton en cada fotograma de
+		/// entrada (<c>PlayerInput</c>), asi que un <c>Main.mouseLeft = true</c> puesto una vez desde
+		/// una autoprueba se pierde antes de que pase el tiempo suficiente para que la aceleracion
+		/// llegue a dispararse - visto en el juego real verificando esta misma comprobacion (0
+		/// repeticiones en 2,6s manteniendo "pulsado"). El juego real NUNCA llama a esto.
+		/// </summary>
+		public void ForzarManteniendoParaAutoprueba(bool valor)
+		{
+			if (valor) {
+				_pulsandoForzadoPorAutoprueba = true;
+				_pulsando = Habilitado;
+			}
+			else {
+				// Se desactiva del todo, no solo se pone a false: asi el boton vuelve a responder a
+				// Main.mouseLeft normal despues (otros pasos de la misma autoprueba pulsan otros
+				// botones del mismo panel por su ruta real).
+				_pulsandoForzadoPorAutoprueba = false;
+				_pulsando = false;
+			}
+		}
+
 		/// <summary>
 		/// Suena al ENTRAR el raton, una sola vez, igual que hacen <c>UIImageButton.MouseOver</c> y
 		/// <c>Main.DrawSettingButton</c>. Un boton apagado no suena: no se puede pulsar.
@@ -171,9 +213,26 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			}
 		}
 
+		/// <summary>Marca el inicio de "mantener pulsado" (ver <see cref="Manteniendo"/>). Solo
+		/// cuenta si el boton estaba habilitado: uno apagado no debe engancharse a nada.</summary>
+		public override void LeftMouseDown(UIMouseEvent evt)
+		{
+			base.LeftMouseDown(evt);
+			if (Habilitado) {
+				_pulsando = true;
+			}
+		}
+
 		public override void Update(GameTime gameTime)
 		{
 			base.Update(gameTime);
+
+			// Se suelta en cuanto el boton fisico del raton sube, este el cursor donde este -
+			// igual que "Manteniendo" documenta. Mientras una autoprueba tenga el control
+			// (ForzarManteniendoParaAutoprueba), Main.mouseLeft se ignora del todo: ver esa nota.
+			if (!_pulsandoForzadoPorAutoprueba && !Main.mouseLeft) {
+				_pulsando = false;
+			}
 
 			// Exactamente la rampa de Main.DrawSettingButton: +-0.02 por fotograma entre 0.8 y 0.96.
 			if (IsMouseHovering && Habilitado) {

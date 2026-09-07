@@ -76,6 +76,26 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		private BotonTk _mas;
 		private BotonTk _aplicar;
 
+		// --- Mantener pulsado "-"/"+" para repetir con aceleracion --------------------------------
+		// Pedido explicito del usuario tras probarlo ("si mantienes apretado el boton de mas o
+		// menos no aceleran... deberia ir mas rapido para mayor comodidad"): patron estandar de
+		// "hold to repeat" - tras un primer retardo (para que un clic normal no dispare un segundo
+		// paso sin querer) empieza a repetir, cada vez mas rapido cuanto mas tiempo lleve pulsado,
+		// hasta un intervalo minimo. No hace falta que sea muy sofisticado, pero si perceptible -
+		// palabras del propio encargo.
+		private const float RetardoInicialS = 0.4f;
+		private const float IntervaloInicialS = 0.15f;
+		private const float IntervaloMinimoS = 0.03f;
+		private const float TiempoHastaMaximaAceleracionS = 1.5f;
+
+		private float _tiempoMenosPulsado;
+		private float _cuentaAtrasMenos;
+		private bool _repitiendoMenos;
+
+		private float _tiempoMasPulsado;
+		private float _cuentaAtrasMas;
+		private bool _repitiendoMas;
+
 		/// <summary>Objeto sobre el que actuaria ahora mismo un clic en "-"/"+"/Aplicar, o null si
 		/// no hay ninguno enganchado todavia (modo hover) o seleccionado (modo explicito). Lo lee
 		/// la autoprueba.</summary>
@@ -129,7 +149,10 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 				_menos.Width.Set(26f, 0f);
 				_menos.Height.Set(26f, 0f);
 				_menos.Left.Set(0f, 0f);
-				_menos.AlPulsar += () => Ajustar(-1);
+				// Si ya se ha repetido manteniendo pulsado, el propio clic de SOLTAR al final no
+				// vuelve a restar (si no, el ultimo paso quedaria contado dos veces - ver
+				// ActualizarRepeticion).
+				_menos.AlPulsar += () => { if (!_repitiendoMenos) Ajustar(-1); };
 				Append(_menos);
 
 				_campo = new CampoTextoTk(() => Idiomas.Texto("Personaje.Herramientas.CantidadPista"), 5, 0.8f);
@@ -144,7 +167,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 				_mas.Width.Set(26f, 0f);
 				_mas.Height.Set(26f, 0f);
 				_mas.Left.Set(98f, 0f);
-				_mas.AlPulsar += () => Ajustar(1);
+				_mas.AlPulsar += () => { if (!_repitiendoMas) Ajustar(1); };
 				Append(_mas);
 
 				_aplicar = new BotonTk("", 0.72f);
@@ -172,7 +195,10 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 				_menos.Width.Set(26f, 0f);
 				_menos.Height.Set(26f, 0f);
 				_menos.Left.Set(AnchoEtiqueta + 6f, 0f);
-				_menos.AlPulsar += () => Ajustar(-1);
+				// Si ya se ha repetido manteniendo pulsado, el propio clic de SOLTAR al final no
+				// vuelve a restar (si no, el ultimo paso quedaria contado dos veces - ver
+				// ActualizarRepeticion).
+				_menos.AlPulsar += () => { if (!_repitiendoMenos) Ajustar(-1); };
 				Append(_menos);
 
 				_campo = new CampoTextoTk(() => Idiomas.Texto("Personaje.Herramientas.CantidadPista"), 5, 0.8f);
@@ -187,7 +213,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 				_mas.Width.Set(26f, 0f);
 				_mas.Height.Set(26f, 0f);
 				_mas.Left.Set(AnchoEtiqueta + 100f, 0f);
-				_mas.AlPulsar += () => Ajustar(1);
+				_mas.AlPulsar += () => { if (!_repitiendoMas) Ajustar(1); };
 				Append(_mas);
 
 				_aplicar = new BotonTk("", 0.78f);
@@ -233,6 +259,69 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			else if (!hay) {
 				_campo.FijarTextoSilencioso("");
 			}
+
+			float dt = (float)gameTime.ElapsedGameTime.TotalSeconds;
+			ActualizarRepeticion(_menos, dt, ref _tiempoMenosPulsado, ref _cuentaAtrasMenos,
+				ref _repitiendoMenos, -1, ref _repeticionesMenos);
+			ActualizarRepeticion(_mas, dt, ref _tiempoMasPulsado, ref _cuentaAtrasMas,
+				ref _repitiendoMas, 1, ref _repeticionesMas);
+		}
+
+		/// <summary>Cuantas veces ha disparado <see cref="Ajustar"/> por "mantener pulsado" cada
+		/// boton desde el ultimo <see cref="ReiniciarContadoresDeRepeticion"/>. Lo lee la
+		/// autoprueba para demostrar que la aceleracion es real: mas repeticiones en la MISMA
+		/// ventana de tiempo real (medida con <c>DateTime.UtcNow</c>, no con fotogramas supuestos)
+		/// cuanto mas se lleva mantenido el boton.</summary>
+		public int RepeticionesMenos => _repeticionesMenos;
+		public int RepeticionesMas => _repeticionesMas;
+		private int _repeticionesMenos;
+		private int _repeticionesMas;
+
+		public void ReiniciarContadoresDeRepeticion()
+		{
+			_repeticionesMenos = 0;
+			_repeticionesMas = 0;
+		}
+
+		/// <summary>
+		/// "Mantener pulsado para repetir", con aceleracion real: mientras <paramref name="boton"/>
+		/// siga <see cref="BotonTk.Manteniendo"/>, tras <see cref="RetardoInicialS"/> segundos
+		/// empieza a repetir <see cref="Ajustar"/> cada <see cref="IntervaloInicialS"/> segundos,
+		/// acortando ese intervalo hasta <see cref="IntervaloMinimoS"/> a medida que pasa el tiempo
+		/// (hasta <see cref="TiempoHastaMaximaAceleracionS"/> sujeto). El retardo inicial es lo que
+		/// distingue un clic normal (que ya resta/suma UNA vez via <c>AlPulsar</c>) de un mantener
+		/// pulsado de verdad.
+		/// </summary>
+		private void ActualizarRepeticion(BotonTk boton, float dt, ref float tiempoPulsado,
+			ref float cuentaAtras, ref bool repitiendo, int delta, ref int contadorAutoprueba)
+		{
+			if (!boton.Habilitado || !boton.Manteniendo) {
+				tiempoPulsado = 0f;
+				cuentaAtras = 0f;
+				repitiendo = false;
+				return;
+			}
+
+			tiempoPulsado += dt;
+			if (tiempoPulsado < RetardoInicialS) {
+				return;
+			}
+
+			cuentaAtras -= dt;
+			if (cuentaAtras > 0f) {
+				return;
+			}
+
+			float progreso = MathHelper.Clamp(
+				(tiempoPulsado - RetardoInicialS) / TiempoHastaMaximaAceleracionS, 0f, 1f);
+			cuentaAtras = MathHelper.Lerp(IntervaloInicialS, IntervaloMinimoS, progreso);
+
+			Item objeto = ObjetivoActual;
+			if (objeto != null && !objeto.IsAir) {
+				contadorAutoprueba++;
+				repitiendo = true;
+				Ajustar(delta);
+			}
 		}
 
 		/// <summary>
@@ -264,35 +353,48 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		{
 			Item objeto = ObjetivoActual;
 
+			// El recorte a AnchoEtiqueta (360px) solo tiene sentido en modo NO compacto (Personaje):
+			// ahi el texto se dibuja de verdad dentro de un recuadro fijo (_etiqueta). En modo
+			// explicito (Libreria/mini-panel de Personaje) este texto SOLO se usa como TOOLTIP
+			// (Ayuda) de los tres botones - un tooltip flotante de Terraria no vive dentro de
+			// ninguna caja de ancho fijo (Main.instance.MouseText mide el texto y dibuja su propio
+			// fondo alrededor, no al reves), asi que recortarlo ahi era innecesario: un objeto con
+			// nombre largo (con prefijo) se veia truncado con "..." en el tooltip sin motivo real -
+			// pedido explicito del usuario: el contenido tiene que leerse ENTERO, nunca recortado en
+			// silencio si de verdad no hace falta.
+			bool limitarAncho = _proveedorExplicito == null;
+
 			if (_proveedorExplicito != null) {
-				// Modo explicito (Libreria): esto solo se usa como TOOLTIP (Ayuda) de los tres
-				// botones, nunca dibujado en pantalla, asi que el recorte a AnchoEtiqueta (360px)
-				// es generoso de sobra pese a que el control en si sea mucho mas estrecho.
 				if (objeto == null || objeto.IsAir) {
-					return RecortarAAncho(Idiomas.Texto("Libreria.EditorCantidad.SinSeleccion"));
+					return RecortarAAncho(Idiomas.Texto("Libreria.EditorCantidad.SinSeleccion"), limitarAncho);
 				}
 				if (objeto.maxStack <= 1) {
-					return RecortarAAncho(Idiomas.Texto("Libreria.EditorCantidad.NoApilable", objeto.Name ?? ""));
+					return RecortarAAncho(Idiomas.Texto("Libreria.EditorCantidad.NoApilable", objeto.Name ?? ""), limitarAncho);
 				}
-				return MedirYRecortarObjetivo(objeto);
+				return MedirYRecortarObjetivo(objeto, limitarAncho);
 			}
 
 			if (objeto == null || objeto.IsAir || objeto.stack <= 1) {
-				return RecortarAAncho(Idiomas.Texto("Personaje.Herramientas.CantidadSinObjetivo"));
+				return RecortarAAncho(Idiomas.Texto("Personaje.Herramientas.CantidadSinObjetivo"), limitarAncho);
 			}
 
-			return MedirYRecortarObjetivo(objeto);
+			return MedirYRecortarObjetivo(objeto, limitarAncho);
 		}
 
-		/// <summary>Compone "Cantidad de "&lt;nombre&gt;" (stack/max):" recortando el NOMBRE
+		/// <summary>Compone "Cantidad de "&lt;nombre&gt;" (stack/max):", recortando el NOMBRE
 		/// midiendo con la fuente real hasta que la linea entera quepa en <see cref="AnchoEtiqueta"/>
 		/// - no un numero fijo de caracteres: la plantilla cambia de largo con el idioma ("Cantidad
 		/// de..." vs "Quantity of...") y un objeto puede tener un nombre muy largo (con prefijo).
-		/// Se quita de 4 en 4 caracteres del nombre (dejando sitio para los "...").</summary>
-		private static string MedirYRecortarObjetivo(Item objeto)
+		/// Se quita de 4 en 4 caracteres del nombre (dejando sitio para los "..."). Si
+		/// <paramref name="limitarAncho"/> es false (modo tooltip, ver <see cref="TextoEtiqueta"/>)
+		/// se devuelve SIEMPRE el texto completo, sin recortar nada.</summary>
+		private static string MedirYRecortarObjetivo(Item objeto, bool limitarAncho)
 		{
 			string nombre = objeto.Name ?? "";
 			string texto = Idiomas.Texto("Personaje.Herramientas.CantidadObjetivo", nombre, objeto.stack, objeto.maxStack);
+			if (!limitarAncho) {
+				return texto;
+			}
 
 			DynamicSpriteFont fuente = FontAssets.MouseText.Value;
 			while (nombre.Length > 3 && fuente.MeasureString(texto).X * EscalaEtiqueta > AnchoEtiqueta) {
@@ -303,10 +405,14 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			return texto;
 		}
 
-		/// <summary>Recorta un texto SIN partes dinamicas al ancho real de la etiqueta, midiendo
-		/// con la fuente real del juego. Se usa para el aviso de "sin objetivo".</summary>
-		private static string RecortarAAncho(string texto)
+		/// <summary>Recorta un texto SIN partes dinamicas al ancho real de la etiqueta, midiendo con
+		/// la fuente real del juego. Se usa para el aviso de "sin objetivo". Ver
+		/// <paramref name="limitarAncho"/> en <see cref="MedirYRecortarObjetivo"/>.</summary>
+		private static string RecortarAAncho(string texto, bool limitarAncho)
 		{
+			if (!limitarAncho) {
+				return texto;
+			}
 			DynamicSpriteFont fuente = FontAssets.MouseText.Value;
 			while (texto.Length > 3 && fuente.MeasureString(texto).X * EscalaEtiqueta > AnchoEtiqueta) {
 				texto = texto.Substring(0, texto.Length - 4) + "...";

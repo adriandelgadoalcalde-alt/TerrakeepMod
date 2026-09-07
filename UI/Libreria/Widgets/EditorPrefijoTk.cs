@@ -122,6 +122,25 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 		/// <summary>true si el popup esta abierto ahora mismo. Lo lee la autoprueba.</summary>
 		public bool PopupAbierto => _abierto;
 
+		/// <summary>SOLO DIAGNOSTICO: geometria real YA CALCULADA del popup y su lista, para el log
+		/// de la autoprueba - demuestra si el popup ocupa el sitio real que deberia o si algo se ha
+		/// quedado con tamaño 0 sin que ningun recuento de botones lo delate.</summary>
+		public string DiagnosticoGeometria()
+		{
+			if (_popup == null) {
+				return "(popup null)";
+			}
+			CalculatedStyle p = _popup.GetDimensions();
+			CalculatedStyle l = _lista != null ? _lista.GetDimensions() : default;
+			CalculatedStyle b = _botonToggle.GetDimensions();
+			return "boton x=" + (int)b.X + " y=" + (int)b.Y + " " + (int)b.Width + "x" + (int)b.Height
+				+ "; popup x=" + (int)p.X + " y=" + (int)p.Y + " " + (int)p.Width + "x" + (int)p.Height
+				+ "; lista x=" + (int)l.X + " y=" + (int)l.Y + " " + (int)l.Width + "x" + (int)l.Height
+				+ "; filas internas=" + (_lista != null ? _lista.Count : 0)
+				+ "; alturaInternaTotal=" + (_lista != null ? _lista.GetTotalHeight() : 0f)
+				+ "; Main.screenWidth=" + Main.screenWidth + " Main.screenHeight=" + Main.screenHeight;
+		}
+
 		private void Alternar()
 		{
 			if (_abierto) {
@@ -160,17 +179,62 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 		/// dependen del objeto concreto, asi que no tiene sentido guardar un popup entre aperturas.</summary>
 		private void ConstruirPopup(Item objeto)
 		{
-			// Se abre HACIA ARRIBA y con el borde derecho alineado con el del boton: este control
-			// vive pegado al borde inferior derecho de la Libreria (hueco de herramientas junto al
-			// inventario), asi que abrir hacia abajo o hacia la izquierda se saldria de la ventana.
+			// Se abre hacia donde de verdad quede sitio en la VENTANA REAL, midiendo con
+			// Main.screenWidth/Height en vez de suponer un lado fijo - mismo criterio que ya usa
+			// este mod para no fiarse de min()/max() en CSS o de un ancho de fuente supuesto:
+			// medir lo real del motor, no adivinar. Encargo explicito del usuario tras probarlo
+			// ("el panel de prefijos se abre arriba, mejor seria a la derecha, que todavia hay
+			// espacio"): por defecto se abre a la DERECHA del boton, con el borde superior
+			// alineado - solo cae hacia la izquierda o se desplaza verticalmente si de verdad no
+			// cabe en la ventana actual (ventanas pequeñas, o la Libreria pegada al borde).
 			_popup = new UIPanel();
 			_popup.Width.Set(AnchoPopup, 0f);
 			_popup.Height.Set(AltoPopup, 0f);
-			_popup.Top.Set(-(AltoPopup + 4f), 0f);
-			_popup.Left.Set(_ancho - AnchoPopup, 0f);
+			// EL HALLAZGO REAL de este bug (el "no muestra ninguna opcion de nada" que reporto el
+			// usuario): UIElement.MaxWidth/MaxHeight valen StyleDimension.Fill POR DEFECTO (100% del
+			// padre) - y el padre de este popup es el propio boton "Prefijo: X" (176x26 px). Sin
+			// fijarlos aqui, el motor RECORTA el popup a como mucho 176x26 pese a pedirle
+			// Width/Height=240x220 explicitamente: el popup SI se abria y SI tenia filas reales
+			// dentro (confirmado con un diagnostico real: 66 filas internas, 1602px de alto interno
+			// acumulado), pero solo se veian ~14px de la primera ("Ninguno"), el resto quedaba
+			// recortado sin ningun aviso. Visto con un diagnostico de geometria real en el juego, no
+			// adivinado - el mismo motivo por el que este mod no se fia de min()/max() en CSS ni de
+			// un ancho de fuente supuesto: medir SIEMPRE lo real del motor.
+			_popup.MaxWidth.Set(AnchoPopup, 0f);
+			_popup.MaxHeight.Set(AltoPopup, 0f);
 			_popup.BackgroundColor = EstiloTk.FondoCaja;
 			_popup.BorderColor = new Color(0, 0, 0, 0);
 			_popup.SetPadding(6f);
+
+			CalculatedStyle boton = _botonToggle.GetDimensions();
+
+			float left = boton.Width + 4f;
+			if (boton.X + boton.Width + 4f + AnchoPopup > Main.screenWidth) {
+				left = -(AnchoPopup + 4f);
+				// Tampoco cabe a la izquierda (ventana muy estrecha): se deja pegado al borde
+				// izquierdo de la ventana en vez de salirse por fuera.
+				if (boton.X + left < 0f) {
+					left = -boton.X;
+				}
+			}
+
+			// Margen de sobra por abajo: el pie del marco (boton "Cerrar", AltoPie en
+			// PanelTerrakeepState) vive en la franja final de la ventana, y pegar el popup al borde
+			// EXACTO de Main.screenHeight se lo comia por encima en una captura real. No hace falta
+			// conocer el marco desde aqui (este widget no sabe nada de PanelTerrakeepState a
+			// proposito): un margen fijo de sobra alcanza para dejarlo siempre claramente encima.
+			const float MargenInferior = 66f;
+
+			float top = 0f;
+			if (boton.Y + AltoPopup > Main.screenHeight - MargenInferior) {
+				top = Main.screenHeight - MargenInferior - AltoPopup - boton.Y;
+			}
+			if (boton.Y + top < 0f) {
+				top = -boton.Y;
+			}
+
+			_popup.Left.Set(left, 0f);
+			_popup.Top.Set(top, 0f);
 			Append(_popup);
 
 			_lista = new UIList();

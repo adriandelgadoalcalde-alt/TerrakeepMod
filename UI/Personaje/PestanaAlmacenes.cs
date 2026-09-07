@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Personaje;
+using TerrakeepMod.UI.Libreria.Widgets;
 using TerrakeepMod.UI.Personaje.Widgets;
 
 namespace TerrakeepMod.UI.Personaje
@@ -18,12 +19,20 @@ namespace TerrakeepMod.UI.Personaje
 	/// La Boveda del Vacio usa el contexto <c>VoidItem</c> en vez de <c>BankItem</c>, que es lo
 	/// que hace el propio juego: tiene su propio fondo de ranura y sus propias reglas.
 	/// </summary>
+	/// <remarks>
+	/// <b>El mini-panel de edicion</b> (<see cref="PanelHerramientasLibreriaTk"/>, el mismo de
+	/// Libreria) va a la derecha de la rejilla de 10x4: con <c>Escala</c>=0.9 la rejilla mide
+	/// 10*48,8=488px, y el mismo hueco real que ya aprovecha <see cref="PestanaInventario"/> para
+	/// su version sigue libre aqui, sin ninguna otra etiqueta que lo dispute (a diferencia de
+	/// Inventario, donde la etiqueta de "Ocupacion" obligo a ponerlo DEBAJO en vez de al lado).
+	/// </remarks>
 	public class PestanaAlmacenes : UIElement
 	{
 		private const float Escala = 0.9f;
 
 		private readonly List<BotonTk> _botones = new List<BotonTk>();
 		private UIElement _rejilla;
+		private PanelHerramientasLibreriaTk _herramientas;
 		private int _almacenActual;
 
 		public PestanaAlmacenes()
@@ -54,6 +63,12 @@ namespace TerrakeepMod.UI.Personaje
 			resumen.Left.Set(0f, 0f);
 			resumen.Top.Set(40f + 24f + 4f * RejillaSlots.Paso(Escala) + 10f, 0f);
 			Append(resumen);
+
+			float derecha = 10f * RejillaSlots.Paso(Escala) + 30f;
+			_herramientas = new PanelHerramientasLibreriaTk();
+			_herramientas.Left.Set(derecha, 0f);
+			_herramientas.Top.Set(40f + 24f, 0f);
+			Append(_herramientas);
 
 			Mostrar(0);
 		}

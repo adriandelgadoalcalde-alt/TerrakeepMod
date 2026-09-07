@@ -44,19 +44,39 @@ namespace TerrakeepMod.UI.Libreria
 		private const float AnchoBarraScroll = 24f;
 		private const float EscalaSlotCatalogo = 0.85f;
 		private const float EscalaSlotDestino = 0.7f;
-		private const int ColumnasDestino = 10;
+		private const int ColumnasDestinoMaximo = 10;
 
-		/// <summary>Ancho REAL de la rejilla de destino a <see cref="ColumnasDestino"/> columnas
-		/// (52px de slot vanilla * <see cref="EscalaSlotDestino"/> + 2px de separacion, por
-		/// columna). Antes la rejilla se estiraba al 100% del ancho disponible aunque solo
-		/// colocara 10 columnas fijas de objetos: el resto quedaba vacio de verdad, sin ningun
-		/// elemento ahi ("el hueco que hay a la derecha abajo al lado de inventario" del encargo
-		/// del usuario). Fijar el ancho de la rejilla deja ese hueco como un elemento real y
-		/// predecible al lado, sea cual sea la resolucion de la ventana - ver
-		/// <see cref="PanelHerramientasLibreriaTk"/>.</summary>
-		private const float AnchoRejillaDestino = ColumnasDestino * (52f * EscalaSlotDestino + 2f);
+		/// <summary>Menos de esto ya no vale la pena: preferible que <see cref="PanelHerramientasLibreriaTk"/>
+		/// se solape un poco con la rejilla (nunca pasa: ver <see cref="AnchoMinimoZonaDestino"/>) a
+		/// dejar la rejilla de destino en una sola columna inutil.</summary>
+		private const int ColumnasDestinoMinimo = 3;
+
+		/// <summary>Paso REAL de un slot de destino (52px de slot vanilla * <see cref="EscalaSlotDestino"/>
+		/// + 2px de separacion).</summary>
+		private const float PasoSlotDestino = 52f * EscalaSlotDestino + 2f;
 
 		private const float SeparacionHerramientas = 14f;
+
+		/// <summary>
+		/// Cuantas columnas tiene la rejilla de destino AHORA MISMO. Antes era una constante fija a
+		/// 10: la rejilla se estiraba al 100% del ancho disponible aunque solo colocara 10 columnas
+		/// fijas de objetos, y el resto quedaba vacio de verdad, sin ningun elemento ahi ("el hueco
+		/// que hay a la derecha abajo al lado de inventario" del encargo del usuario) - de ahi que
+		/// se fijara <see cref="AnchoRejillaDestino"/>, para dejarle sitio real a
+		/// <see cref="PanelHerramientasLibreriaTk"/> al lado. Pero un ancho fijo de 10 columnas +
+		/// el mini-panel se sale por el borde derecho de la VENTANA REAL en resoluciones normales
+		/// (800x720, la de esta maquina de pruebas - visto en una captura real, no adivinado): el
+		/// mini-panel entero, y con el el popup del editor de prefijo, se dibujaban fuera del
+		/// backbuffer, invisibles del todo. Se recalcula en <see cref="Update"/> con el ancho REAL
+		/// que le haya tocado a la zona de destino (mismo patron que <see cref="_columnasResultado"/>
+		/// ya usa para la rejilla del catalogo), igual que <c>PestanaEquipo.ColocarColumnas</c>
+		/// ajusta su propia escala - medir lo real del motor, no suponer una resolucion.
+		/// </summary>
+		private int _columnasDestino = ColumnasDestinoMaximo;
+
+		/// <summary>Ancho REAL de la rejilla de destino con las columnas actuales. Ver
+		/// <see cref="_columnasDestino"/>.</summary>
+		private float AnchoRejillaDestino => _columnasDestino * PasoSlotDestino;
 
 		// --- Navegacion -----------------------------------------------------------------------
 		private readonly List<CategoryTreeNodeData> _ruta = new List<CategoryTreeNodeData>();
@@ -625,7 +645,6 @@ namespace TerrakeepMod.UI.Libreria
 				return;
 			}
 
-			float paso = 52f * EscalaSlotDestino + 2f;
 			for (int k = 0; k < destino.Cuantos; k++) {
 				int posicion = destino.Primero + k;
 				if (posicion >= array.Length) {
@@ -634,8 +653,8 @@ namespace TerrakeepMod.UI.Libreria
 
 				SlotObjetoVanilla slot = new SlotObjetoVanilla(array, posicion,
 					destino.Contexto(posicion), EscalaSlotDestino);
-				slot.Left.Set((k % ColumnasDestino) * paso, 0f);
-				slot.Top.Set((k / ColumnasDestino) * paso, 0f);
+				slot.Left.Set((k % _columnasDestino) * PasoSlotDestino, 0f);
+				slot.Top.Set((k / _columnasDestino) * PasoSlotDestino, 0f);
 				_rejillaDestino.Append(slot);
 			}
 
@@ -707,6 +726,17 @@ namespace TerrakeepMod.UI.Libreria
 				RellenarResultados();
 			}
 
+			// Mismo patron para la rejilla de DESTINO: cuantas columnas caben de verdad dejandole
+			// sitio real al mini-panel al lado (ver la cabecera de _columnasDestino).
+			int columnasDestino = CalcularColumnasDestino();
+			if (columnasDestino != _columnasDestino) {
+				_columnasDestino = columnasDestino;
+				_rejillaDestino.Width.Set(AnchoRejillaDestino, 0f);
+				_herramientas.Left.Set(AnchoRejillaDestino + SeparacionHerramientas, 0f);
+				MostrarDestino(_destinoActual);
+				_zonaDestino.Recalculate();
+			}
+
 			// Los rotulos de los botones se fijan al construirlos: se vuelven a pedir en cada
 			// fotograma para que cambien en vivo con el selector de idioma del area de Ajustes.
 			_botonLimpiar.FijarTexto(Idiomas.Texto("Libreria.Limpiar"));
@@ -726,6 +756,32 @@ namespace TerrakeepMod.UI.Libreria
 			}
 			int columnas = (int)(disponible / (52f * EscalaSlotCatalogo + 2f));
 			return columnas < 1 ? 1 : columnas;
+		}
+
+		/// <summary>
+		/// Cuantas columnas caben de verdad en la rejilla de destino dejandole sitio REAL al
+		/// mini-panel de herramientas al lado (ver la cabecera de <see cref="_columnasDestino"/>):
+		/// un ancho fijo de 10 columnas se salia por el borde derecho de la ventana en resoluciones
+		/// normales, dejando el mini-panel entero (y con el, el popup del editor de prefijo)
+		/// dibujados fuera del backbuffer, invisibles del todo - bug real, visto en una captura.
+		/// </summary>
+		private int CalcularColumnasDestino()
+		{
+			CalculatedStyle dim = GetDimensions();
+			float anchoZona = dim.Width - AnchoColumnaCarpetas - SeparacionColumnas;
+			// 16 = el padding de 8px por lado que lleva _zonaDestino (SetPadding(8f)).
+			float disponible = anchoZona - 16f - SeparacionHerramientas - PanelHerramientasLibreriaTk.Ancho;
+			if (disponible <= 0f) {
+				return ColumnasDestinoMinimo;
+			}
+			int columnas = (int)(disponible / PasoSlotDestino);
+			if (columnas > ColumnasDestinoMaximo) {
+				columnas = ColumnasDestinoMaximo;
+			}
+			if (columnas < ColumnasDestinoMinimo) {
+				columnas = ColumnasDestinoMinimo;
+			}
+			return columnas;
 		}
 
 		/// <summary>

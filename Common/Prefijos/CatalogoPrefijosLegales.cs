@@ -163,7 +163,18 @@ namespace TerrakeepMod.Common.Prefijos
 			}
 
 			if (item.type < ItemID.Count) {
-				return _reglas.VanillaCategories(item.type);
+				PrefixCategory tabuladas = _reglas.VanillaCategories(item.type);
+				if (tabuladas != PrefixCategory.None) {
+					return tabuladas;
+				}
+				// Objeto vanilla REAL pero fuera de los 683 tabulados (la tabla, ver la cabecera,
+				// es una muestra curada del catalogo hermano, no exhaustiva) - bug real reportado
+				// por el usuario tras probarlo ("el picker se abre pero no enseña ninguna
+				// opcion"): sin este fallback, cualquier objeto vanilla no tabulado se quedaba con
+				// PrefixCategory.None y el picker vacio del todo, aunque el objeto SI admitiera
+				// prefijo de verdad. Se cae al mismo camino por CAMPOS REALES que ya usan los
+				// objetos de mod (justo abajo): funcionan igual de bien aqui, son los mismos
+				// campos que resuelve el motor para CUALQUIER item, vanilla o no.
 			}
 
 			PrefixCategory categorias = PrefixCategory.None;
@@ -210,12 +221,17 @@ namespace TerrakeepMod.Common.Prefijos
 			}
 
 			PrefixCategory categorias = CategoriasDe(item);
-			bool esVanilla = item.type < ItemID.Count;
+			// OJO: no es "es vanilla" a secas, es "tiene fila REAL en la tabla curada de 683
+			// objetos" (ver CategoriasDe): un objeto vanilla FUERA de esa tabla no tiene pool de
+			// legalidad que consultar (estaria siempre vacio), asi que para esos se usa el mismo
+			// pool sin filtrar por categoria que ya usan los objetos de mod - mejor un pool algo
+			// mas amplio que el picker vacio del todo.
+			bool tieneTablaVanilla = item.type < ItemID.Count && _reglas.VanillaCategories(item.type) != PrefixCategory.None;
 
 			foreach (PrefixMeta meta in PrefixGroupCatalog.Metas) {
-				foreach (PrefixGroup grupo in PrefixGroupCatalog.GroupsFor(meta, categorias, !esVanilla, item.type, _reglas)) {
+				foreach (PrefixGroup grupo in PrefixGroupCatalog.GroupsFor(meta, categorias, !tieneTablaVanilla, item.type, _reglas)) {
 					List<int> ids = new List<int>();
-					foreach (int id in PrefixGroupCatalog.PrefixIdsFor(grupo, !esVanilla, item.type, _reglas)) {
+					foreach (int id in PrefixGroupCatalog.PrefixIdsFor(grupo, !tieneTablaVanilla, item.type, _reglas)) {
 						// Nunca un id sintetico de Calamity (necesitaria resolver un ModPrefix en
 						// tiempo de ejecucion, fuera de alcance aqui - ver la nota de cabecera) ni
 						// uno fuera del PrefixID.Count REAL de este tModLoader instalado (los

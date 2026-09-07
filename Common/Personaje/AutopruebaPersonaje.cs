@@ -1,12 +1,16 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
+using TerrakeepMod.Common.Panel;
+using TerrakeepMod.Common.Prefijos;
 using TerrakeepMod.Common.Undo;
 using TerrakeepMod.UI;
+using TerrakeepMod.UI.Libreria.Widgets;
 using TerrakeepMod.UI.Personaje;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -124,12 +128,29 @@ namespace TerrakeepMod.Common.Personaje
 				case 20: EnfocarCampoDeTexto(); break;
 				case 21: ComprobarCampoDeTexto(); break;
 				// El cierre con un objeto cogido en el raton (antiguo paso 22) pasa al FINAL: cierra
-				// el panel de verdad, y los tres pasos nuevos necesitan el panel abierto para
-				// navegar pestañas y encontrar sus propios controles.
-				case 22: PrepararHoverParaEditorCantidad(); break;
+				// el panel de verdad, y los pasos nuevos necesitan el panel abierto para navegar
+				// pestañas y encontrar sus propios controles.
+				//
+				// Rediseño de Personaje (encargo explicito del usuario, ver bitacora.md): la fila
+				// compartida de papelera + editor de cantidad que vivia debajo de la barra de
+				// pestañas de ContenidoPersonaje YA NO EXISTE - cada pestaña que enseña objetos
+				// reales (Inventario/Almacenes/Equipo) lleva ahora su PROPIO mini-panel completo
+				// (PanelHerramientasLibreriaTk, el MISMO de Libreria: recuadro de arrastre + cantidad
+				// + prefijo + papelera) en el hueco libre de abajo a la derecha. Los pasos 22/23, que
+				// antes enganchaban el editor de cantidad por HOVER (ya no existe ese modo aqui), se
+				// han reescrito para arrastrar de verdad al recuadro de seleccion - mismo patron que
+				// AutopruebaLibreria.ArrastrarAlRecuadroDeSeleccion. El paso 24 es nuevo: prefijo +
+				// papelera sobre ese mismo mini-panel, para demostrar que el conjunto entero funciona
+				// igual en Personaje que en Libreria (pedido explicito de la verificacion).
+				case 22: PrepararArrastreParaEditorCantidad(); break;
 				case 23: ComprobarEditorCantidad(); break;
-				case 24: ComprobarPapeleraQuitaDeUnHueco(); break;
-				case 25: ComprobarCierreConObjetoEnElRaton(); break;
+				case 24: IntercambiarYAbrirPrefijoEnPersonaje(); break;
+				// Separado del paso 24 a proposito (mismo motivo que AutopruebaLibreria, ver su
+				// comentario): CapturaDePantalla.Guardar captura el fotograma YA PRESENTADO, asi que
+				// capturar en el MISMO paso que abre el popup lo enseñaria todavia cerrado.
+				case 25: CapturarPulsarYPapeleraEnPersonaje(); break;
+				case 26: ComprobarPapeleraQuitaDeUnHueco(); break;
+				case 27: ComprobarCierreConObjetoEnElRaton(); break;
 				default:
 					Registrar("AUTOPRUEBA WS1 COMPLETA. Todos los pasos ejecutados sin excepciones.");
 					_terminada = true;
@@ -551,6 +572,18 @@ namespace TerrakeepMod.Common.Personaje
 
 			Registrar("Pestaña \"" + panel.NombrePestanaActual + "\" dibujada: " + panel.InformePestanaActual());
 
+			// Captura real de las tres pestañas rediseñadas (Inventario/Almacenes/Equipo, indices
+			// 0-2): el mini-panel de edicion nuevo (PanelHerramientasLibreriaTk) tiene que verse de
+			// verdad en el hueco de abajo a la derecha de cada una, sin pisar ninguna otra etiqueta -
+			// pedido explicito de la verificacion ("el mini-panel consolidado funciona igual en
+			// Personaje que en Libreria"). Las otras tres pestañas (Buffs/Apariencia/Desbloqueos) no
+			// se tocaron en esta tarea, no hace falta capturarlas aqui.
+			if (medida >= 0 && medida <= 2) {
+				string[] nombres = { "inventario", "almacenes", "equipo" };
+				Registrar("Pestaña \"" + panel.NombrePestanaActual + "\" - "
+					+ CapturaDePantalla.Guardar("ws1-personaje-" + nombres[medida]));
+			}
+
 			if (siguiente >= 0) {
 				panel.IrAPestana(siguiente);
 			}
@@ -655,25 +688,24 @@ namespace TerrakeepMod.Common.Personaje
 		}
 
 		/// <summary>
-		/// Engancha el editor de cantidad a <c>inventory[1]</c> (el "bloque" x250 que puso
-		/// <see cref="PoblarInventario"/>) por su ruta REAL de hover, no llamando a un metodo
-		/// interno del editor.
+		/// Arrastra <c>inventory[2]</c> (la pocion x15 que puso <see cref="PoblarInventario"/>) al
+		/// recuadro de seleccion del mini-panel NUEVO de la pestaña Inventario
+		/// (<see cref="PanelHerramientasLibreriaTk"/>, el mismo de Libreria), por la ruta REAL de
+		/// arrastre: <c>ItemSlot.LeftClick</c> para cogerlo del hueco (igual que un arrastre real) y
+		/// <c>SlotSeleccionTk.EjercitarHandle</c> para soltarlo en el recuadro (el MISMO
+		/// <c>ItemSlot.Handle</c> que dispara <c>DrawSelf</c> con el raton encima) - mismo patron
+		/// que <c>AutopruebaLibreria.ArrastrarAlRecuadroDeSeleccion</c>.
 		/// <para />
-		/// <b>Por que <c>MouseOver</c> directo y no solo mover <c>Main.InGameUI.MousePosition</c>.</b>
-		/// El primer intento de esta comprobacion solo movia la posicion y dejaba pasar fotogramas,
-		/// como hace <see cref="ComprobarDeslizadorColor"/> antes de su <c>LeftMouseDown</c> manual
-		/// - pero ahi el slider SIGUE llamando a su manejador a mano en la misma llamada; aqui no
-		/// hay ningun manejador que llamar, <c>IsMouseHovering</c> solo lo rellena el propio
-		/// <c>UserInterface.Update</c> cuando hace SU hit-test contra la posicion REAL del cursor
-		/// del sistema, y sobreescribe <c>MousePosition</c> con ese valor en cada fotograma - visto
-		/// en el juego real: el paso 23 leia siempre "ObjetivoActual=(vacio)". <c>UIElement.MouseOver</c>
-		/// es <c>public virtual</c> (la implementacion de vanilla pone <c>IsMouseHovering = true</c>
-		/// y dispara <c>OnMouseOver</c>) y es exactamente el mismo patron que ya usan
-		/// <c>LeftMouseDown</c>/<c>LeftClick</c> en el resto de esta autoprueba: llamar al
-		/// manejador REAL directamente en vez de intentar que el motor lo dispare el solo sin
-		/// hardware de por medio.
+		/// <b>Ya NO es por hover.</b> La fila compartida de papelera + editor de cantidad que vivia
+		/// debajo de la barra de pestañas (y que este paso enganchaba con <c>SlotObjetoVanilla
+		/// .MouseOver</c>) se ha quitado del todo: encargo explicito del usuario tras probar el mod
+		/// ("quitaria la papelera y lo de editar stacks de la linea de arriba... a ponerlo todo
+		/// junto abajo a la derecha", igual que en Libreria). Se usa <c>inventory[2]</c> y no
+		/// <c>inventory[1]</c> a proposito: <c>inventory[1]</c> lo necesita intacto el paso 25
+		/// (papelera quitando de un hueco), que es una comprobacion aparte, independiente de este
+		/// mini-panel.
 		/// </summary>
-		private static void PrepararHoverParaEditorCantidad()
+		private static void PrepararArrastreParaEditorCantidad()
 		{
 			ContenidoPersonaje panel = PanelPruebaSystem.PanelActual;
 			if (panel == null) {
@@ -683,27 +715,41 @@ namespace TerrakeepMod.Common.Personaje
 
 			panel.IrAPestana(0); // Inventario
 
-			SlotObjetoVanilla slot = BuscarSlotDe(panel, PersonajeVivo.Jugador.inventory, 1);
-			if (slot == null) {
-				Registrar("Paso 22 - no se encontro la ranura de inventory[1] en la pestaña Inventario.");
+			PanelHerramientasLibreriaTk herramientas = panel.BuscarPrimero<PanelHerramientasLibreriaTk>();
+			if (herramientas == null) {
+				Registrar("Paso 22 - no se encontro el mini-panel de edicion (PanelHerramientasLibreriaTk) "
+					+ "en la pestaña Inventario.");
 				return;
 			}
 
-			CalculatedStyle dim = slot.GetDimensions();
-			Vector2 centro = new Vector2(dim.X + dim.Width / 2f, dim.Y + dim.Height / 2f);
-			slot.MouseOver(new UIMouseEvent(slot, centro));
+			Item[] inventario = PersonajeVivo.Jugador.inventory;
+			string antes = PersonajeVivo.DescribirObjeto(inventario[2]);
 
-			Registrar("Paso 22 - MouseOver real disparado sobre la ranura de inventory[1] ("
-				+ PersonajeVivo.DescribirObjeto(PersonajeVivo.Jugador.inventory[1]) + ") en x="
-				+ (int)dim.X + " y=" + (int)dim.Y + " " + (int)dim.Width + "x" + (int)dim.Height
-				+ ". El editor de cantidad tiene que engancharse a este objeto en el paso siguiente.");
+			bool izquierdoPrevio = Main.mouseLeft;
+			bool sueltoPrevio = Main.mouseLeftRelease;
+			Main.mouseLeft = true;
+			Main.mouseLeftRelease = true;
+			try {
+				ItemSlot.LeftClick(inventario, ItemSlot.Context.InventoryItem, 2);
+				herramientas.Seleccion.EjercitarHandle();
+			}
+			finally {
+				Main.mouseLeft = izquierdoPrevio;
+				Main.mouseLeftRelease = sueltoPrevio;
+			}
+
+			Registrar("Paso 22 - arrastre real (no hover) al recuadro de seleccion del mini-panel de "
+				+ "Inventario. inventory[2] ANTES=" + antes + ". Tras ItemSlot.LeftClick + "
+				+ "SlotSeleccionTk.EjercitarHandle: hueco de origen=" + PersonajeVivo.DescribirObjeto(inventario[2])
+				+ ", recuadro=" + PersonajeVivo.DescribirObjeto(herramientas.Seleccion.ObjetoActual) + ", raton="
+				+ PersonajeVivo.DescribirObjeto(Main.mouseItem) + ".");
 		}
 
 		/// <summary>
-		/// Comprueba el editor de cantidad (<see cref="EditorCantidadTk"/>) sobre el objeto al que
-		/// se engancho en el paso anterior, pulsando sus botones REALES
-		/// (<c>BotonTk.LeftClick</c>, la misma ruta que <c>PanelTerrakeepState.PulsarBoton</c>) en
-		/// vez de llamar a un metodo interno.
+		/// Comprueba el editor de cantidad COMPACTO (modo explicito, enganchado al recuadro de
+		/// seleccion del paso anterior) pulsando sus botones REALES (<c>BotonTk.LeftClick</c>).
+		/// Mismas cuatro comprobaciones que hacia el modo hover antiguo, sobre el mismo mini-panel
+		/// que ya verifico a fondo <c>AutopruebaLibreria.ComprobarEditorCantidadCompacto</c>.
 		/// </summary>
 		private static void ComprobarEditorCantidad()
 		{
@@ -713,19 +759,15 @@ namespace TerrakeepMod.Common.Personaje
 				return;
 			}
 
-			EditorCantidadTk editor = panel.BuscarPrimero<EditorCantidadTk>();
-			if (editor == null) {
-				Registrar("Paso 23 - no se encontro ningun EditorCantidadTk en el panel.");
+			PanelHerramientasLibreriaTk herramientas = panel.BuscarPrimero<PanelHerramientasLibreriaTk>();
+			if (herramientas == null || herramientas.Seleccion.ObjetoActual.IsAir) {
+				Registrar("Paso 23 - no hay nada seleccionado en el recuadro (paso 22 fallo), se salta.");
 				return;
 			}
 
+			EditorCantidadTk editor = herramientas.EditorCantidad;
 			Item objetivo = editor.ObjetivoActual;
-			if (objetivo == null || objetivo.IsAir) {
-				Registrar("Paso 23 - el editor de cantidad no engancho ningun objetivo tras el hover "
-					+ "del paso anterior (ObjetivoActual=" + PersonajeVivo.DescribirObjeto(objetivo) + "). "
-					+ "Se aborta esta comprobacion.");
-				return;
-			}
+			bool mismaReferencia = ReferenceEquals(objetivo, herramientas.Seleccion.ObjetoActual);
 
 			int stackInicial = objetivo.stack;
 			int maxStack = objetivo.maxStack;
@@ -749,19 +791,181 @@ namespace TerrakeepMod.Common.Personaje
 			bool okSiete = trasAplicarSiete == 7;
 			bool okAcotado = trasPedirDeMas == maxStack;
 
-			Registrar("Paso 23 - editor de cantidad sobre \"" + objetivo.Name + "\" (maxStack=" + maxStack
-				+ "), pulsando los botones por su ruta REAL (BotonTk.LeftClick). "
-				+ "stack inicial=" + stackInicial + ". "
+			Registrar("Paso 23 - editor de cantidad COMPACTO (explicito, sin hover) sobre \"" + objetivo.Name
+				+ "\" (maxStack=" + maxStack + "). ObjetivoActual es "
+				+ (mismaReferencia ? "OK, la MISMA referencia que SlotSeleccionTk.ObjetoActual"
+					: "FALLO, referencia distinta") + ". stack inicial=" + stackInicial + ". "
 				+ "Tras pulsar \"+\": " + trasMas + " (" + (okMas ? "OK" : "FALLO") + "). "
 				+ "Tras pulsar \"-\": " + trasMenos + " (" + (okMenos ? "OK" : "FALLO") + "). "
 				+ "Tras escribir \"7\" y Aplicar: " + trasAplicarSiete + " (" + (okSiete ? "OK" : "FALLO") + "). "
 				+ "Tras pedir " + (maxStack + 500) + " (por encima del maximo real) y Aplicar: "
 				+ trasPedirDeMas + " (" + (okAcotado ? "OK, acotado al maximo real" : "FALLO") + "). "
 				+ "Historial tras los cambios: " + Historial.Pila.EtiquetaDeshacer + ".");
+		}
 
-			// Se deja el objeto con su cantidad original para no arrastrar estado a otros pasos ni
-			// a la comprobacion de la papelera de a continuacion (que SI necesita saber cuanto hay).
-			objetivo.stack = stackInicial;
+		/// <summary>
+		/// Cierra la verificacion del mini-panel de Personaje: cambia el prefijo de un segundo
+		/// objeto de prueba (arrastrado ENCIMA del recuadro ya ocupado, intercambio real de
+		/// <c>ItemSlot.Handle</c>) y termina soltandolo en la papelera del propio mini-panel - las
+		/// dos piezas que pedia la verificacion obligatoria ("cantidad y prefijo editables, papelera
+		/// vacia sin tirar nada al suelo") sobre el MISMO mini-panel ya reutilizado, esta vez en
+		/// Personaje en vez de en Libreria. La logica de "no acumula multiplicadores" del prefijo ya
+		/// esta verificada a fondo en <c>AutopruebaLibreria.ComprobarEditorPrefijo</c> (mismo
+		/// <see cref="EditorPrefijoTk"/> reutilizado tal cual); aqui basta con demostrar que abre con
+		/// opciones reales y que aplica el cambio, sin repetir esa prueba entera.
+		/// </summary>
+		private static void IntercambiarYAbrirPrefijoEnPersonaje()
+		{
+			ContenidoPersonaje panel = PanelPruebaSystem.PanelActual;
+			if (panel == null) {
+				Registrar("Paso 24 - no hay panel de Personaje montado.");
+				return;
+			}
+
+			PanelHerramientasLibreriaTk herramientas = panel.BuscarPrimero<PanelHerramientasLibreriaTk>();
+			if (herramientas == null) {
+				Registrar("Paso 24 - no se encontro el mini-panel de edicion.");
+				return;
+			}
+
+			int tipoPrefijo = BuscarObjeto(o => o.maxStack == 1 && CatalogoPrefijosLegales.GruposLegales(o).Any());
+			if (tipoPrefijo <= 0) {
+				Registrar("Paso 24 - no se encontro ningun objeto de prueba con prefijo legal, se salta.");
+				return;
+			}
+
+			Item[] inventario = PersonajeVivo.Jugador.inventory;
+			const int RanuraPrefijo = 3; // libre: PoblarInventario solo usa 0,1,2,50-53,54.
+			Item objetoPrefijo = new Item();
+			objetoPrefijo.SetDefaults(tipoPrefijo);
+			inventario[RanuraPrefijo] = objetoPrefijo;
+
+			string antesRecuadro = PersonajeVivo.DescribirObjeto(herramientas.Seleccion.ObjetoActual);
+
+			bool izquierdoPrevio = Main.mouseLeft;
+			bool sueltoPrevio = Main.mouseLeftRelease;
+			Main.mouseLeft = true;
+			Main.mouseLeftRelease = true;
+			try {
+				// Intercambio real: el objeto con prefijo se arrastra ENCIMA del recuadro ya
+				// ocupado por la pocion del paso 22 - ItemSlot.Handle intercambia de verdad, la
+				// pocion vuelve al raton.
+				ItemSlot.LeftClick(inventario, ItemSlot.Context.InventoryItem, RanuraPrefijo);
+				herramientas.Seleccion.EjercitarHandle();
+
+				bool esElDePrefijo = !herramientas.Seleccion.ObjetoActual.IsAir
+					&& herramientas.Seleccion.ObjetoActual.type == tipoPrefijo;
+
+				// La pocion desplazada se descarta en la papelera para dejar el raton limpio antes
+				// de seguir (ruta real del juego, no basura tirada al suelo).
+				string ratonTrasIntercambio = PersonajeVivo.DescribirObjeto(Main.mouseItem);
+				ItemSlot.Handle(ref PersonajeVivo.Jugador.trashItem, ItemSlot.Context.TrashItem);
+				PersonajeVivo.Jugador.trashItem = new Item();
+
+				Registrar("Paso 24 - intercambio real en el recuadro (mismo mini-panel que Libreria, ahora "
+					+ "en Personaje). ANTES=" + antesRecuadro + ". Objeto con prefijo arrastrado encima: "
+					+ "recuadro AHORA=" + PersonajeVivo.DescribirObjeto(herramientas.Seleccion.ObjetoActual)
+					+ " (" + (esElDePrefijo ? "OK" : "FALLO") + "), raton tras el intercambio="
+					+ ratonTrasIntercambio + " (la pocion desplazada, descartada en la papelera para seguir "
+					+ "limpio).");
+
+				if (!esElDePrefijo) {
+					return;
+				}
+
+				// El popup se ABRE aqui, pero la captura y los clics (paso 25) esperan a la SIGUIENTE
+				// reentrada de la autoprueba (~10 fotogramas reales despues): CapturaDePantalla
+				// captura el fotograma YA PRESENTADO, asi que capturar en el MISMO paso que abre el
+				// popup enseñaria el popup todavia CERRADO - mismo bug real que ya se encontro y
+				// arreglo en AutopruebaLibreria.ComprobarEditorPrefijo/CapturarYPulsarPrefijo.
+				herramientas.EditorPrefijo.AbrirParaAutoprueba();
+				Registrar("Paso 24 - popup de prefijo abierto sobre \"" + herramientas.Seleccion.ObjetoActual.Name
+					+ "\" (PopupAbierto=" + herramientas.EditorPrefijo.PopupAbierto + "). La captura y los "
+					+ "clics se hacen en el paso siguiente.");
+			}
+			finally {
+				Main.mouseLeft = izquierdoPrevio;
+				Main.mouseLeftRelease = sueltoPrevio;
+			}
+		}
+
+		private static void CapturarPulsarYPapeleraEnPersonaje()
+		{
+			ContenidoPersonaje panel = PanelPruebaSystem.PanelActual;
+			if (panel == null) {
+				Registrar("Paso 25 - no hay panel de Personaje montado.");
+				return;
+			}
+
+			PanelHerramientasLibreriaTk herramientas = panel.BuscarPrimero<PanelHerramientasLibreriaTk>();
+			if (herramientas == null || herramientas.Seleccion.ObjetoActual.IsAir) {
+				Registrar("Paso 25 - no hay nada seleccionado en el recuadro (paso 24 fallo), se salta.");
+				return;
+			}
+
+			EditorPrefijoTk editorPrefijo = herramientas.EditorPrefijo;
+			Item objetivo = herramientas.Seleccion.ObjetoActual;
+			int prefijoAntes = objetivo.prefix;
+			int objetosActivosAntes = ContarObjetosEnElMundo();
+
+			if (!editorPrefijo.PopupAbierto) {
+				editorPrefijo.AbrirParaAutoprueba();
+			}
+			List<BotonTk> botones = editorPrefijo.BotonesPopupParaAutoprueba();
+
+			Registrar("Paso 25 - " + CapturaDePantalla.Guardar("ws1-personaje-prefijo-abierto"));
+
+			if (botones.Count < 2) {
+				Registrar("Paso 25 - el popup de prefijo se abrio (" + editorPrefijo.PopupAbierto
+					+ ") pero solo trae " + botones.Count + " boton(es) (se esperaban al menos 2: "
+					+ "\"Ninguno\" + un prefijo real). Objeto=\"" + objetivo.Name + "\".");
+			}
+			else {
+				string nombrePedido = botones[1].Texto;
+				Clic(botones[1]);
+				int prefijoDespues = objetivo.prefix;
+
+				Registrar("Paso 25 - editor de prefijo (mismo EditorPrefijoTk que Libreria, popup "
+					+ "abierto con " + botones.Count + " botones reales incluido \"Ninguno\") sobre \""
+					+ objetivo.Name + "\". Boton pulsado: \"" + nombrePedido + "\". prefix ANTES="
+					+ prefijoAntes + ", DESPUES=" + prefijoDespues + " ("
+					+ (prefijoDespues != prefijoAntes ? "OK, cambio de verdad" : "FALLO, no cambio") + ").");
+			}
+
+			// Papelera del propio mini-panel: se coge del recuadro y se suelta en la papelera.
+			bool izquierdoPrevio = Main.mouseLeft;
+			bool sueltoPrevio = Main.mouseLeftRelease;
+			Main.mouseLeft = true;
+			Main.mouseLeftRelease = true;
+			try {
+				herramientas.Seleccion.EjercitarHandle();
+				string ratonTrasCoger = PersonajeVivo.DescribirObjeto(Main.mouseItem);
+
+				ItemSlot.Handle(ref PersonajeVivo.Jugador.trashItem, ItemSlot.Context.TrashItem);
+
+				int objetosActivosDespues = ContarObjetosEnElMundo();
+				bool recuadroVacio = herramientas.Seleccion.ObjetoActual.IsAir;
+				bool enPapelera = !PersonajeVivo.Jugador.trashItem.IsAir;
+				bool manoVacia = Main.mouseItem.IsAir;
+				bool nadaEnElSuelo = objetosActivosDespues == objetosActivosAntes;
+
+				Registrar("Paso 25 - papelera del mini-panel de Personaje (SlotPapeleraTk, misma clase que "
+					+ "Libreria). Tras cogerlo del recuadro: raton=" + ratonTrasCoger + ". Tras soltarlo en "
+					+ "la papelera: recuadro=" + PersonajeVivo.DescribirObjeto(herramientas.Seleccion.ObjetoActual)
+					+ " (" + (recuadroVacio ? "OK, vacio" : "FALLO") + "), papelera="
+					+ PersonajeVivo.DescribirObjeto(PersonajeVivo.Jugador.trashItem) + " ("
+					+ (enPapelera ? "OK" : "FALLO") + "), raton=" + PersonajeVivo.DescribirObjeto(Main.mouseItem)
+					+ " (" + (manoVacia ? "OK" : "FALLO") + "). Objetos activos en el mundo: antes="
+					+ objetosActivosAntes + ", despues=" + objetosActivosDespues + " ("
+					+ (nadaEnElSuelo ? "OK, no ha aparecido nada tirado en el suelo" : "FALLO") + ").");
+			}
+			finally {
+				Main.mouseLeft = izquierdoPrevio;
+				Main.mouseLeftRelease = sueltoPrevio;
+			}
+
+			// Se deja limpio para no dejar basura visible el resto de la prueba.
+			PersonajeVivo.Jugador.trashItem = new Item();
 		}
 
 		/// <summary>
@@ -802,7 +1006,7 @@ namespace TerrakeepMod.Common.Personaje
 				bool manoVacia = Main.mouseItem.IsAir;
 				bool nadaEnElSuelo = objetosActivosDespues == objetosActivosAntes;
 
-				Registrar("Paso 24 - papelera quitando un objeto REAL de un hueco (Player.inventory["
+				Registrar("Paso 26 - papelera quitando un objeto REAL de un hueco (Player.inventory["
 					+ Ranura + "]): ItemSlot.LeftClick para cogerlo + ItemSlot.Handle con "
 					+ "Context.TrashItem=6 sobre Player.trashItem para soltarlo (la misma ruta que "
 					+ "Main.DrawTrashItemSlot en el HUD de vanilla). "
@@ -827,20 +1031,6 @@ namespace TerrakeepMod.Common.Personaje
 
 			// Se deja vacia para no dejar basura visible en el panel el resto de la prueba.
 			jugador.trashItem = new Item();
-		}
-
-		/// <summary>Primer <see cref="SlotObjetoVanilla"/> de <paramref name="raiz"/> cuyo objeto
-		/// real (por REFERENCIA, no por valor) es <c>array[indice]</c>.</summary>
-		private static SlotObjetoVanilla BuscarSlotDe(UIElement raiz, Item[] array, int indice)
-		{
-			SlotObjetoVanilla encontrado = null;
-			raiz.ExecuteRecursively(elemento => {
-				SlotObjetoVanilla slot = elemento as SlotObjetoVanilla;
-				if (slot != null && encontrado == null && ReferenceEquals(slot.ObjetoActual, array[indice])) {
-					encontrado = slot;
-				}
-			});
-			return encontrado;
 		}
 
 		private static void Clic(BotonTk boton)
@@ -886,7 +1076,7 @@ namespace TerrakeepMod.Common.Personaje
 
 			long despues = Utils.CoinsCount(out desbordado, jugador.inventory);
 
-			Registrar("Paso 25 - cierre con un objeto cogido (3 monedas de oro = 30000 cobre). "
+			Registrar("Paso 27 - cierre con un objeto cogido (3 monedas de oro = 30000 cobre). "
 				+ "Monedas en el inventario antes=" + antes + ", despues=" + despues
 				+ " (diferencia " + (despues - antes) + "). "
 				+ "Objeto que queda en el raton: " + PersonajeVivo.DescribirObjeto(Main.mouseItem) + ". "

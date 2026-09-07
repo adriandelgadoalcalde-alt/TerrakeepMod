@@ -24,11 +24,19 @@
 
 param(
 	[switch]$Servidor,
+	# Compila la copia de trabajo ENTERA directamente en el sandbox de WS1 (mismo patron que
+	# scripts\verificar-libreria.ps1), en vez de copiar el .tmod ya compilado de la carpeta Mods
+	# compartida. Pedido real: esa carpeta compartida es la que tiene abierta el juego del
+	# usuario cuando esta jugando, y bloquearla con un -build a mitad de partida no es buena idea
+	# (ver el AVISO del encargo) - compilar aparte, en el sandbox propio, no toca ese archivo para
+	# nada.
+	[switch]$CompilarPropio,
 	[int]$SegundosEspera = 180
 )
 
 $ErrorActionPreference = 'Stop'
 
+$repo       = Split-Path -Parent $PSScriptRoot
 $tmlDir     = 'C:\Program Files (x86)\Steam\steamapps\common\tModLoader'
 $tmlDotnet  = Join-Path $tmlDir 'dotnet\dotnet.exe'
 $logDir     = Join-Path $tmlDir 'tModLoader-Logs'
@@ -47,8 +55,30 @@ if (-not (Test-Path (Join-Path $sandbox "Worlds\$mundo.wld"))) {
 }
 
 New-Item -ItemType Directory -Force -Path (Join-Path $sandbox 'Mods') | Out-Null
-Copy-Item (Join-Path $env:USERPROFILE 'Documents\My Games\Terraria\tModLoader\Mods\TerrakeepMod.tmod') `
-	(Join-Path $sandbox 'Mods\TerrakeepMod.tmod') -Force
+
+if ($CompilarPropio) {
+	Write-Host '== Compilando el proyecto ENTERO directamente en el sandbox de WS1 ==' -ForegroundColor Cyan
+	Remove-Item (Join-Path $sandbox 'Mods\TerrakeepMod.tmod') -Force -ErrorAction SilentlyContinue
+	Push-Location $tmlDir
+	try {
+		# Aviso benigno a stderr esperado (ver compilar.ps1): se relaja ErrorActionPreference
+		# alrededor de esta unica llamada nativa y se comprueba $LASTEXITCODE de verdad debajo.
+		$ErrorActionPreference = 'Continue'
+		& $tmlDotnet 'tModLoader.dll' '-server' '-build' $repo '-unsafe' 'false' '-tmlsavedirectory' $sandbox
+		$ErrorActionPreference = 'Stop'
+		if ($LASTEXITCODE -ne 0) { throw 'Fallo el -build de tModLoader' }
+	}
+	finally { Pop-Location }
+
+	$tmod = Join-Path $sandbox 'Mods\TerrakeepMod.tmod'
+	if (-not (Test-Path $tmod)) { throw "El -build termino sin error pero no aparecio $tmod" }
+	Write-Host "OK: $tmod ($((Get-Item $tmod).Length) bytes)" -ForegroundColor Green
+	'["TerrakeepMod"]' | Out-File (Join-Path $sandbox 'Mods\enabled.json') -Encoding utf8
+}
+else {
+	Copy-Item (Join-Path $env:USERPROFILE 'Documents\My Games\Terraria\tModLoader\Mods\TerrakeepMod.tmod') `
+		(Join-Path $sandbox 'Mods\TerrakeepMod.tmod') -Force
+}
 
 if ($Servidor) {
 	$log = Join-Path $logDir 'server.log'

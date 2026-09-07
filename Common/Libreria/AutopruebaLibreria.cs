@@ -8,6 +8,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
+using TerrakeepMod.Common.Panel;
 using TerrakeepMod.Common.Prefijos;
 using TerrakeepMod.Common.Undo;
 using TerrakeepMod.UI.Libreria;
@@ -52,6 +53,13 @@ namespace TerrakeepMod.Common.Libreria
 		private static bool _repetirPaso;
 		private static int _descensos;
 		private static string _colocadoAntes;
+
+		// --- Paso 17: mantener pulsado "+"/"-" con aceleracion real (mide tiempo real de verdad) --
+		private static bool _holdIniciado;
+		private static DateTime _holdInicio;
+		private static int _holdStackInicial;
+		private static int _holdRepeticionesEnVentana1;
+		private static bool _holdVentana1Cerrada;
 
 		public static void Actualizar()
 		{
@@ -117,8 +125,19 @@ namespace TerrakeepMod.Common.Libreria
 				case 14: PrepararObjetosDeHerramientas(); break;
 				case 15: ArrastrarAlRecuadroDeSeleccion(); break;
 				case 16: ComprobarEditorCantidadCompacto(); break;
-				case 17: ComprobarEditorPrefijo(); break;
-				case 18: ComprobarPapeleraDesdeLibreria(); break;
+				// Encargo directo del usuario tras probar el mod: "si mantienes apretado el boton de
+				// mas o menos no aceleran... deberia ir mas rapido". Va ANTES del intercambio de
+				// prefijo (paso 18): necesita que el recuadro siga con el objeto APILABLE del paso
+				// 15, no con el de prefijo (maxStack=1, sin margen para mantener pulsado "+" 2s).
+				case 17: ComprobarAceleracionMantenerPulsado(); break;
+				case 18: ComprobarEditorPrefijo(); break;
+				// Separado del paso 18 a proposito: CapturaDePantalla.Guardar captura el fotograma
+				// YA PRESENTADO (el anterior), asi que capturar en el MISMO paso que abre el popup
+				// enseñaba el popup todavia CERRADO - bug real visto en una captura ("Prefix: None"
+				// sin desplegar nada). Con un paso de por medio (~12 fotogramas reales) el popup ya
+				// esta dibujado de verdad para cuando se captura.
+				case 19: CapturarYPulsarPrefijo(); break;
+				case 20: ComprobarPapeleraDesdeLibreria(); break;
 				default:
 					Registrar("AUTOPRUEBA WS3 COMPLETA. Todos los pasos ejecutados sin excepciones.");
 					_terminada = true;
@@ -718,6 +737,110 @@ namespace TerrakeepMod.Common.Libreria
 		}
 
 		/// <summary>
+		/// Encargo directo del usuario tras probar el mod: "si mantienes apretado el boton de mas o
+		/// menos no aceleran... deberia ir mas rapido para mayor comodidad". Mantiene pulsado el
+		/// "+" del editor de cantidad DE VERDAD durante ~2,4 segundos REALES (<c>DateTime.UtcNow</c>,
+		/// no fotogramas contados a mano) dejando que el motor siga corriendo fotogramas de verdad
+		/// entre paso y paso (va troceada, igual que <c>ComprobarCaducidadBuffs</c> de WS1: no se
+		/// puede "avanzar el reloj" a la fuerza), y compara las repeticiones disparadas en la
+		/// PRIMERA mitad de la ventana con las de la SEGUNDA mitad (mismo intervalo real de tiempo
+		/// cada una) - si de verdad acelera, la segunda mitad tiene que traer mas repeticiones que
+		/// la primera.
+		/// <para />
+		/// <c>BotonTk.LeftMouseDown</c> se llama UNA vez para marcar el inicio de "mantener pulsado"
+		/// (ver <see cref="TerrakeepMod.UI.Personaje.Widgets.BotonTk.Manteniendo"/>) y
+		/// <c>Main.mouseLeft</c> se deja en <c>true</c> sin soltar durante toda la ventana - el mismo
+		/// patron que ya usa el resto de esta autoprueba para "clics reales", solo que sostenido en
+		/// vez de puntual. <c>Main.LocalPlayer.mouseInterface</c> se fuerza a <c>true</c> en cada
+		/// paso mientras dura, para que el "click" sostenido no se cuele hacia el mundo (usar un
+		/// objeto, atacar) si el cursor real no está encima de nada en ese instante.
+		/// </summary>
+		private static void ComprobarAceleracionMantenerPulsado()
+		{
+			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
+			if (herramientas == null || herramientas.Seleccion.ObjetoActual.IsAir) {
+				Registrar("Paso 17 - no hay nada seleccionado en el recuadro (paso 15 fallo), se salta.");
+				return;
+			}
+
+			EditorCantidadTk editor = herramientas.EditorCantidad;
+			Item objetivo = editor.ObjetivoActual;
+
+			const double DuracionTotalS = 2.4;
+			const double MitadS = DuracionTotalS / 2.0;
+
+			BotonTk boton = editor.BotonMas;
+
+			if (!_holdIniciado) {
+				if (objetivo == null || objetivo.IsAir || objetivo.maxStack < 500) {
+					Registrar("Paso 17 - el objeto seleccionado (maxStack=" + (objetivo?.maxStack ?? 0)
+						+ ") no tiene pila de sobra para mantener pulsado " + DuracionTotalS
+						+ "s sin toparse con el maximo real; se salta.");
+					return;
+				}
+
+				objetivo.stack = 1;
+				editor.ReiniciarContadoresDeRepeticion();
+				boton.ForzarManteniendoParaAutoprueba(true);
+
+				_holdStackInicial = objetivo.stack;
+				_holdRepeticionesEnVentana1 = 0;
+				_holdVentana1Cerrada = false;
+				_holdInicio = DateTime.UtcNow;
+				_holdIniciado = true;
+
+				Registrar("Paso 17 - empieza a MANTENER pulsado \"+\" de verdad (BotonTk"
+					+ ".ForzarManteniendoParaAutoprueba, sin soltar - Main.mouseLeft NO sirve aqui: el "
+					+ "motor lo sobreescribe con el raton fisico real en cada fotograma de entrada, asi "
+					+ "que no se puede \"dejar puesto\" varios fotogramas reales sin hardware de por "
+					+ "medio, visto en el juego real) sobre \"" + objetivo.Name + "\" (maxStack="
+					+ objetivo.maxStack + "). Midiendo " + DuracionTotalS + "s reales.");
+				_repetirPaso = true;
+				return;
+			}
+
+			// Se re-afirma en CADA reentrada (cada ~12 fotogramas reales, ver FotogramasEntrePasos):
+			// el motor no tiene forma de "recordar" el forzado el solo entre llamadas de esta
+			// autoprueba, asi que hay que mantenerlo puesto a mano mientras dure la ventana.
+			boton.ForzarManteniendoParaAutoprueba(true);
+
+			double transcurrido = (DateTime.UtcNow - _holdInicio).TotalSeconds;
+
+			if (!_holdVentana1Cerrada && transcurrido >= MitadS) {
+				_holdVentana1Cerrada = true;
+				_holdRepeticionesEnVentana1 = editor.RepeticionesMas;
+				Registrar("Paso 17 - mitad de la ventana (" + transcurrido.ToString("0.00")
+					+ "s reales): " + _holdRepeticionesEnVentana1 + " repeticiones disparadas hasta ahora.");
+			}
+
+			if (transcurrido < DuracionTotalS) {
+				_repetirPaso = true;
+				return;
+			}
+
+			boton.ForzarManteniendoParaAutoprueba(false);
+			int repeticionesTotales = editor.RepeticionesMas;
+			int repeticionesSegundaMitad = repeticionesTotales - _holdRepeticionesEnVentana1;
+			int stackFinal = objetivo != null && !objetivo.IsAir ? objetivo.stack : _holdStackInicial;
+
+			bool repiteDeVerdad = repeticionesTotales >= 6;
+			bool acelera = repeticionesSegundaMitad > _holdRepeticionesEnVentana1;
+
+			Registrar("Paso 17 - soltado tras " + transcurrido.ToString("0.00") + "s reales. stack "
+				+ _holdStackInicial + " -> " + stackFinal + " (+" + (stackFinal - _holdStackInicial) + "). "
+				+ "Repeticiones por mantener pulsado (sin contar el clic normal inicial): primera mitad ("
+				+ MitadS.ToString("0.0") + "s)=" + _holdRepeticionesEnVentana1 + ", segunda mitad="
+				+ repeticionesSegundaMitad + ", total=" + repeticionesTotales + ". "
+				+ (repiteDeVerdad ? "OK: repite de verdad manteniendo pulsado (no solo 1 por clic). "
+					: "FALLO: casi ninguna repeticion. ")
+				+ (acelera ? "OK: la segunda mitad trae MAS repeticiones que la primera, acelera de verdad."
+					: "FALLO: no acelera (segunda mitad <= primera).") + " "
+				+ CapturaDePantalla.Guardar("ws3-mantener-pulsado-acelera"));
+
+			_holdIniciado = false;
+		}
+
+		/// <summary>
 		/// Primero intercambia el objeto del recuadro: el de prefijo (inventory[26]) se coge con
 		/// <c>ItemSlot.LeftClick</c> y se arrastra sobre el recuadro YA OCUPADO (con el apilable
 		/// del paso 15 dentro) - <c>ItemSlot.Handle</c> hace el intercambio real de vanilla (el
@@ -732,7 +855,7 @@ namespace TerrakeepMod.Common.Libreria
 		{
 			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
 			if (herramientas == null || _tipoPrefijo <= 0) {
-				Registrar("Paso 17 - sin objeto de prueba con prefijo (paso 14 fallo), se salta.");
+				Registrar("Paso 18 - sin objeto de prueba con prefijo (paso 14 fallo), se salta.");
 				return;
 			}
 
@@ -751,7 +874,7 @@ namespace TerrakeepMod.Common.Libreria
 					&& herramientas.Seleccion.ObjetoActual.type == _tipoPrefijo;
 				bool volvioElApilable = !Main.mouseItem.IsAir && Main.mouseItem.type == _tipoStack;
 
-				Registrar("Paso 17 - intercambio real en el recuadro. ANTES=" + antesRecuadro
+				Registrar("Paso 18 - intercambio real en el recuadro. ANTES=" + antesRecuadro
 					+ ". Se arrastra el objeto CON PREFIJO encima (recuadro ya ocupado): recuadro AHORA="
 					+ Describir(herramientas.Seleccion.ObjetoActual) + " (" + (esElDePrefijo ? "OK" : "FALLO")
 					+ "), raton=" + Describir(Main.mouseItem) + " (" + (volvioElApilable
@@ -769,7 +892,27 @@ namespace TerrakeepMod.Common.Libreria
 			}
 
 			if (herramientas.Seleccion.ObjetoActual.IsAir || herramientas.Seleccion.ObjetoActual.type != _tipoPrefijo) {
-				Registrar("Paso 17 - el recuadro no tiene el objeto esperado tras el intercambio, se aborta.");
+				Registrar("Paso 18 - el recuadro no tiene el objeto esperado tras el intercambio, se aborta.");
+				return;
+			}
+
+			// El popup se ABRE aqui, pero la captura (paso 19) espera a la SIGUIENTE reentrada de la
+			// autoprueba (~12 fotogramas reales despues, ver FotogramasEntrePasos): CapturaDePantalla
+			// captura el fotograma YA PRESENTADO (ver su cabecera), asi que capturar en el MISMO
+			// fotograma en que se llama a AbrirParaAutoprueba() enseña el fotograma ANTERIOR, con el
+			// popup todavia cerrado - bug real de esta autoprueba, visto en una captura (salia el
+			// boton "Prefix: None" sin desplegar nada).
+			herramientas.EditorPrefijo.AbrirParaAutoprueba();
+			Registrar("Paso 18 - popup de prefijo abierto sobre \"" + herramientas.Seleccion.ObjetoActual.Name
+				+ "\" (PopupAbierto=" + herramientas.EditorPrefijo.PopupAbierto + "). La captura y los "
+				+ "clics se hacen en el paso siguiente, para darle al menos un fotograma real de sobra.");
+		}
+
+		private static void CapturarYPulsarPrefijo()
+		{
+			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
+			if (herramientas == null || herramientas.Seleccion.ObjetoActual.IsAir) {
+				Registrar("Paso 19 - no hay nada seleccionado en el recuadro (paso 18 fallo), se salta.");
 				return;
 			}
 
@@ -778,13 +921,25 @@ namespace TerrakeepMod.Common.Libreria
 			int prefijoAntes = objetivo.prefix;
 			int dañoAntes = objetivo.damage;
 
-			editor.AbrirParaAutoprueba();
+			if (!editor.PopupAbierto) {
+				// Por si el popup se hubiera cerrado solo entre paso y paso (no deberia: nada mas
+				// deberia tocarlo aqui), se reabre antes de la captura.
+				editor.AbrirParaAutoprueba();
+			}
 			List<BotonTk> botones = editor.BotonesPopupParaAutoprueba();
+
+			Registrar("Paso 19 - diagnostico de geometria real: " + editor.DiagnosticoGeometria());
+
+			// Captura real con el popup YA ABIERTO y YA DIBUJADO (fotograma de sobra desde el paso
+			// 18): pedido explicito del usuario ("el prefijo se abre a la derecha con opciones
+			// reales visibles") - la unica forma honesta de demostrarlo es una imagen real del back
+			// buffer, no solo el recuento de botones.
+			Registrar("Paso 19 - " + CapturaDePantalla.Guardar("ws3-prefijo-abierto-derecha"));
 
 			// El primero de la lista es siempre "Ninguno" (quitar prefijo); el primer prefijo real
 			// legal es el segundo, si lo hay.
 			if (botones.Count < 2) {
-				Registrar("Paso 17 - el popup se abrio (" + editor.PopupAbierto + ") pero solo trae "
+				Registrar("Paso 19 - el popup se abrio (" + editor.PopupAbierto + ") pero solo trae "
 					+ botones.Count + " boton(es) (se esperaban al menos 2: \"Ninguno\" + un prefijo "
 					+ "real). Objeto=\"" + objetivo.Name + "\". Se salta la comprobacion.");
 				return;
@@ -817,7 +972,7 @@ namespace TerrakeepMod.Common.Libreria
 			bool cambio = prefijoTrasPrimerClic != prefijoAntes;
 			bool sinAcumular = dañoTrasSegundoClic == dañoTrasPrimerClic && prefijoTrasSegundoClic == prefijoTrasPrimerClic;
 
-			Registrar("Paso 17 - editor de prefijo sobre \"" + objetivo.Name + "\". Boton pulsado: \""
+			Registrar("Paso 19 - editor de prefijo sobre \"" + objetivo.Name + "\". Boton pulsado: \""
 				+ nombrePedido + "\". prefix ANTES=" + prefijoAntes + " (daño=" + dañoAntes + "). "
 				+ "Tras el 1er clic: prefix=" + prefijoTrasPrimerClic + " (daño=" + dañoTrasPrimerClic + ") "
 				+ "(" + (cambio ? "OK, cambio de verdad" : "FALLO, no cambio") + "). "
@@ -839,7 +994,7 @@ namespace TerrakeepMod.Common.Libreria
 		{
 			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
 			if (herramientas == null || herramientas.Seleccion.ObjetoActual.IsAir) {
-				Registrar("Paso 18 - no hay nada seleccionado en el recuadro (paso 15 fallo), se salta.");
+				Registrar("Paso 20 - no hay nada seleccionado en el recuadro (paso 15 fallo), se salta.");
 				return;
 			}
 
@@ -865,7 +1020,7 @@ namespace TerrakeepMod.Common.Libreria
 				bool manoVacia = Main.mouseItem.IsAir;
 				bool nadaEnElSuelo = objetosActivosDespues == objetosActivosAntes;
 
-				Registrar("Paso 18 - papelera de Libreria (PanelHerramientasLibreriaTk.Papelera, "
+				Registrar("Paso 20 - papelera de Libreria (PanelHerramientasLibreriaTk.Papelera, "
 					+ "misma clase SlotPapeleraTk que Personaje). ANTES recuadro=" + antesRecuadro
 					+ ". Tras cogerlo del recuadro: raton=" + ratonTrasCoger + ". Tras soltarlo en la "
 					+ "papelera: recuadro=" + Describir(herramientas.Seleccion.ObjetoActual)

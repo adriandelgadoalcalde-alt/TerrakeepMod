@@ -3,6 +3,7 @@ using Terraria;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Personaje;
+using TerrakeepMod.UI.Libreria.Widgets;
 using TerrakeepMod.UI.Personaje.Widgets;
 
 namespace TerrakeepMod.UI.Personaje
@@ -73,6 +74,7 @@ namespace TerrakeepMod.UI.Personaje
 		private EtiquetaTk _leyendaMisc;
 		private EtiquetaTk _tituloMisc;
 		private EtiquetaTk _resumenAccesorios;
+		private PanelHerramientasLibreriaTk _herramientas;
 
 		/// <summary>Paso con el que estan colocadas las filas ahora mismo, para no recolocarlas en
 		/// cada fotograma.</summary>
@@ -93,6 +95,22 @@ namespace TerrakeepMod.UI.Personaje
 			ConstruirSelectorLoadout();
 			ConstruirEquipo();
 			ConstruirMisc();
+			ConstruirHerramientas();
+		}
+
+		/// <summary>
+		/// El mini-panel de edicion (<see cref="PanelHerramientasLibreriaTk"/>, el mismo de
+		/// Libreria e Inventario/Almacenes), en el hueco real que quede a la derecha o debajo de la
+		/// columna de equipo especial - encargo explicito del usuario, mismo criterio que las
+		/// demas pestañas. Se coloca de verdad en <see cref="ColocarColumnas"/>, que es donde ya se
+		/// calcula el resto del layout con el alto/ancho REAL de la ventana (ver su cabecera: la
+		/// columna de equipo usa TODO el alto disponible a proposito, asi que no hay un hueco fijo
+		/// que suponer de antemano).
+		/// </summary>
+		private void ConstruirHerramientas()
+		{
+			_herramientas = new PanelHerramientasLibreriaTk();
+			Append(_herramientas);
 		}
 
 		private void ConstruirSelectorLoadout()
@@ -370,7 +388,35 @@ namespace TerrakeepMod.UI.Personaje
 			_resumenAccesorios.Left.Set(izquierdaMisc, 0f);
 			_resumenAccesorios.Top.Set(ArribaRejilla + PersonajeVivo.SlotsMisc * paso + 12f, 0f);
 
+			ColocarHerramientas(propias.Width, izquierdaMisc, paso);
+
 			Recalculate();
+		}
+
+		/// <summary>
+		/// Coloca el mini-panel de edicion donde de verdad quede hueco: a la derecha de la columna
+		/// de equipo especial si la ventana da de si (mismo ancho REAL que ya reserva esa columna
+		/// para su fila mas larga, la etiqueta de <c>_resumenAccesorios</c>, 300px), o si no debajo
+		/// de ella (esa columna tiene <see cref="PersonajeVivo.SlotsMisc"/> filas, siempre menos que
+		/// las 10 de la columna de equipo - que es la que usa TODO el alto disponible a proposito -
+		/// asi que ahi debajo tambien queda hueco real). Se mide con el ancho REAL de la pestaña en
+		/// vez de suponer una resolucion fija - misma leccion que ya aplico este mod a min()/max()
+		/// en CSS: medir lo real del motor, no adivinar.
+		/// </summary>
+		private void ColocarHerramientas(float anchoTab, float izquierdaMisc, float paso)
+		{
+			const float Margen = 16f;
+			float anchoColumnaMisc = System.Math.Max(2f * paso + 6f + 200f, 300f);
+			float xDerechaMisc = izquierdaMisc + anchoColumnaMisc;
+
+			if (anchoTab - xDerechaMisc >= PanelHerramientasLibreriaTk.Ancho + Margen) {
+				_herramientas.Left.Set(xDerechaMisc + Margen, 0f);
+				_herramientas.Top.Set(ArribaRejilla, 0f);
+			}
+			else {
+				_herramientas.Left.Set(izquierdaMisc, 0f);
+				_herramientas.Top.Set(ArribaRejilla + PersonajeVivo.SlotsMisc * paso + 12f + 20f + Margen, 0f);
+			}
 		}
 
 		private static void Colocar(SlotObjetoVanilla slot, float escala, float x, float y)

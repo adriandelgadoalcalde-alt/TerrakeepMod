@@ -52,7 +52,17 @@ namespace TerrakeepMod.Common.Panel
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Menus.AutopruebaMenus.Variable))
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
 						Exploracion.PanelExploracionSystem.VariableAutoprueba))
-					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaEspaciado.Variable));
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaEspaciado.Variable))
+					// Añadidas para el arreglo de los 4 bugs de Libreria + rediseño de Personaje (ver
+					// bitacora.md): WS1 (Personaje.AutopruebaPersonaje) y WS3
+					// (Libreria.PanelLibreriaSystem.VariableAutoprueba, la que enciende
+					// AutopruebaLibreria) nunca habian pedido capturas hasta ahora - esta tarea SI las
+					// necesita para verificar visualmente el mini-panel reutilizado y el popup de
+					// prefijo abriendo a la derecha.
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
+						Personaje.AutopruebaPersonaje.Variable))
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
+						Libreria.PanelLibreriaSystem.VariableAutoprueba));
 			}
 		}
 
