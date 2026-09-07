@@ -31,11 +31,13 @@ namespace TerrakeepMod.UI.Panel
 	/// casi identicas del mismo codigo; ahora esta aqui una sola vez.
 	/// </para>
 	/// <para>
-	/// Los dos fallos reales del motor que encontro WS1 con <c>IngameFancyUI</c> siguen resueltos,
+	/// Los fallos reales del motor que encontro WS1 con <c>IngameFancyUI</c> siguen resueltos,
 	/// y ahora en un unico sitio: <see cref="MantenerInventarioAbierto"/> (si no,
-	/// <c>Player.dropItemCheck</c> vacia cada tick el objeto que se lleva cogido) y
+	/// <c>Player.dropItemCheck</c> vacia cada tick el objeto que se lleva cogido),
 	/// <see cref="DibujarObjetoEnRaton"/> (la capa 38 de vanilla nunca corre con un panel de
-	/// <c>IngameFancyUI</c> abierto).
+	/// <c>IngameFancyUI</c> abierto) y <see cref="DibujarTooltipDeObjeto"/> (la capa 33, la del
+	/// tooltip de objeto, tampoco corre - sin esto ninguna ranura de ninguna pestaña enseñaba
+	/// nombre/prefijo/stats al pasar el raton por encima, encontrado en el juego real).
 	/// </para>
 	/// </remarks>
 	public class PanelTerrakeepState : UIState
@@ -370,9 +372,19 @@ namespace TerrakeepMod.UI.Panel
 
 		public override void Draw(SpriteBatch spriteBatch)
 		{
+			// Mismo motivo que el reseteo real de Main.hoverItemName en DrawInterface_26_InterfaceLogic3
+			// (tambien detras de la capa 12 "Vanilla: Fancy UI", tambien saltado con el panel abierto):
+			// sin esto, el ultimo objeto sobre el que paso el raton se quedaria pegado en el tooltip
+			// para siempre en vez de desaparecer al apartar el raton de toda ranura. Va ANTES de
+			// base.Draw para que los SlotObjetoVanilla de este fotograma (que llaman a
+			// ItemSlot.Handle, y ese SI rellena Main.hoverItemName/Main.HoverItem con normalidad -
+			// vive en ItemSlot.cs, no en esa capa) puedan volver a rellenarlo si el raton esta encima.
+			Main.hoverItemName = "";
+
 			base.Draw(spriteBatch);
 
 			DibujarObjetoEnRaton(spriteBatch);
+			DibujarTooltipDeObjeto();
 			RegistrarMedidasUnaVez();
 		}
 
@@ -401,6 +413,67 @@ namespace TerrakeepMod.UI.Panel
 			Main.inventoryScale = escalaPrevia;
 
 			FotogramasObjetoEnRaton++;
+		}
+
+		/// <summary>
+		/// Dibuja el tooltip vainilla (nombre, prefijo, rareza, stats - todo lo que ya sabe pintar
+		/// el propio juego) del objeto que el raton tiene encima en cualquier ranura del panel.
+		/// <para />
+		/// El bug real, reportado probando el mod en el juego: ninguna ranura de ninguna pestaña
+		/// (Inventario, Almacenes, Equipo, Libreria) enseñaba tooltip al pasar el raton por encima,
+		/// pese a que <see cref="TerrakeepMod.UI.SlotObjetoVanilla"/> SI llama a
+		/// <c>ItemSlot.Handle</c> de verdad. La causa, confirmada decompilando el
+		/// <c>tModLoader.dll</c> instalado con <c>ilspycmd</c> (nunca la referencia vieja de
+		/// <c>tModLoader-Decompiled\</c>, es una version distinta): <c>ItemSlot.Handle</c> SI rellena
+		/// <c>Main.HoverItem</c>/<c>Main.hoverItemName</c> con toda normalidad - vive en
+		/// <c>ItemSlot.cs</c>, ajeno a la lista de capas - pero <b>nadie los pinta</b>. En vainilla
+		/// eso lo hace <c>DrawInterface_33_MouseText</c> (que ademas es quien resetea
+		/// <c>hoverItemName</c> cada fotograma desde <c>DrawInterface_26_InterfaceLogic3</c>, capa
+		/// 26), y las dos son capas MUY posteriores a la 12 ("Vanilla: Fancy UI"), que es donde el
+		/// recorrido de capas se corta en seco en cuanto hay un panel de <c>IngameFancyUI</c>
+		/// abierto - el mismo hueco exacto que ya obligo a reescribir <see cref="DibujarObjetoEnRaton"/>
+		/// para la capa 38 del objeto cogido con el raton.
+		/// <para />
+		/// <b>Ojo</b>: esto NO significa reimplementar el dibujado del tooltip. El propio
+		/// <c>tModLoader.dll</c> ya reparte esa capa 12
+		/// (<c>DrawInterface_12_IngameFancyUI</c>, real, decompilado) asi:
+		/// <code>
+		/// InGameUI.Draw(spriteBatch, gameTime);              // dibuja ESTE panel (aqui)
+		/// if (inFancyUI &amp;&amp; !IngameFancyUI.Draw(spriteBatch, gameTime)) {
+		///     DrawPendingMouseText();                        // pinta lo que haya en la cola
+		/// }
+		/// </code>
+		/// O sea que <c>DrawPendingMouseText()</c> (el que de verdad pone pixeles en pantalla) YA
+		/// se llama solo, cada fotograma, justo despues de que este <c>Draw</c> termine. Lo unico
+		/// que falta es meter algo en su cola, y eso es exactamente lo que hace
+		/// <c>Main.MouseText(...)</c> (publica, no dibuja nada por si sola: solo rellena
+		/// <c>_mouseTextCache</c>) - es la misma llamada, con los mismos argumentos, que hace el
+		/// propio <c>DrawInterface_33_MouseText</c> real. El parametro <c>rare</c> que se le pasa es
+		/// irrelevante para un tooltip de objeto: <c>MouseText_DrawItemTooltip</c> (tambien real, ya
+		/// decompilada) lo pisa enseguida con <c>HoverItem.rare</c>, asi que la rareza/el prefijo/las
+		/// stats que se ven son siempre los del objeto real, gratis, sin tocarlos a mano.
+		/// </summary>
+		private static void DibujarTooltipDeObjeto()
+		{
+			// Mismo saneo que hace el propio DrawInterface_33_MouseText antes de mirar hoverItemName.
+			if (Main.mouseItem.stack <= 0) {
+				Main.mouseItem.type = 0;
+			}
+
+			if (string.IsNullOrEmpty(Main.hoverItemName) || Main.mouseItem.type != 0) {
+				return;
+			}
+
+			Main.LocalPlayer.cursorItemIconEnabled = false;
+
+			if (Main.SettingsEnabled_OpaqueBoxBehindTooltips) {
+				Main.instance.MouseText(Main.hoverItemName, Main.rare, 0, Main.mouseX + 6, Main.mouseY + 6);
+			}
+			else {
+				Main.instance.MouseText(Main.hoverItemName, Main.rare, 0);
+			}
+
+			Main.mouseText = true;
 		}
 
 		/// <summary>Si al cerrar el panel queda un objeto cogido con el raton, se devuelve al

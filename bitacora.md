@@ -2643,3 +2643,142 @@ archivos de esta tarea: `Common/Personaje/AutopruebaPersonaje.cs`,
 `UI/Personaje/Widgets/SlotPapeleraTk.cs`, `scripts/generar-localizacion.py`. No se ha tocado
 `UI/SlotObjetoVanilla.cs`, `Common/Panel/PanelTerrakeepSystem.cs`, `UI/Panel/PanelTerrakeepState.cs`
 ni `Common/Panel/AutopruebaTooltipObjeto.cs`: son del agente del tooltip, en marcha a la vez.
+
+---
+
+## 7-sep-2026 — Ningún slot enseñaba tooltip vainilla, en ninguna de las cuatro zonas
+
+Bug real reportado por el usuario probando el mod en el juego: pasar el ratón por encima de
+cualquier ranura de objeto (Inventario, Almacenes, Equipo, Librería) no enseñaba nombre/prefijo/
+stats. Raro porque `UI/SlotObjetoVanilla.cs` SÍ llama a `ItemSlot.Handle(ref item, contexto)` de
+verdad — comprobado leyendo el archivo, no se reimplementaba nada a mano.
+
+### La causa real, decompilando el `tModLoader.dll` instalado (v2026.7.3.0, con `ilspycmd`)
+
+`ItemSlot.Handle` rellena `Main.HoverItem`/`Main.hoverItemName` con toda normalidad (vive en
+`ItemSlot.cs`, ajeno a la lista de capas de `Main`). El problema es que **nadie los pinta**: en
+vainilla eso lo hace `DrawInterface_33_MouseText` (capa 33 de la lista real de
+`Main.SetupDrawInterfaceLayers`), y esa capa **nunca llega a ejecutarse** con un panel de
+`IngameFancyUI` abierto — el recorrido de capas se corta en la 12 ("Vanilla: Fancy UI") en cuanto
+`IngameFancyUI.Draw` devuelve `false`, que es el caso normal. Exactamente el mismo hueco que ya
+documentó WS1 para la capa 38 (el objeto cogido con el ratón, resuelto con
+`PanelTerrakeepState.DibujarObjetoEnRaton`) y para la que WS6 documentó con `GUIBarsDraw` tapando
+las pestañas: no es un fallo nuestro, es cómo vainilla aísla un panel de Fancy UI del resto del
+HUD, y lo mismo le pasa al bestiario o a cualquier otro panel de este tipo si mostrara objetos.
+
+Lo bueno, también decompilado: `DrawInterface_12_IngameFancyUI` (la propia capa 12) YA llama a
+`DrawPendingMouseText()` justo después de dibujar el panel, cada fotograma, sin que el mod tenga
+que hacer nada para eso. `DrawPendingMouseText` solo pinta lo que haya en `_mouseTextCache`, y esa
+caché la rellena `Main.MouseText(...)` (pública, no dibuja nada por sí sola). O sea que la pieza
+que faltaba de verdad era una sola línea: nadie llamaba a `Main.instance.MouseText(hoverItemName,
+rare, 0)` con el panel abierto — la misma llamada exacta que hace el propio
+`DrawInterface_33_MouseText` real. El parámetro `rare` es irrelevante para un tooltip de objeto:
+`MouseText_DrawItemTooltip` (también decompilada) lo pisa enseguida con `HoverItem.rare`, así que
+la rareza/el prefijo/las stats que se ven son siempre los del objeto real.
+
+### El arreglo: `UI/Panel/PanelTerrakeepState.cs`, no `SlotObjetoVanilla.cs`
+
+A propósito NO se tocó `SlotObjetoVanilla.cs` (otro agente estaba arreglando ahí mismo un editor
+de cantidad y una papelera, interacción/clic-derecho — ver la entrada de arriba). El arreglo va en
+el `Draw` del panel único, el mismo sitio donde ya vive `DibujarObjetoEnRaton`, porque es un
+problema estructural de la capa 12, no de cada ranura:
+
+- Al PRINCIPIO de `Draw` (antes de `base.Draw`): `Main.hoverItemName = "";` — replica el reseteo
+  real de `DrawInterface_26_InterfaceLogic3` (capa 26, también detrás de la 12, también saltada).
+  Sin esto, el último objeto sobre el que pasó el ratón se quedaría pegado en el tooltip para
+  siempre en vez de desaparecer al apartar el ratón de toda ranura — el hueco es simétrico al del
+  relleno.
+- DESPUÉS de `base.Draw` (con `hoverItemName` ya recién actualizado por el `ItemSlot.Handle` de
+  la ranura bajo el ratón, si la hay): `DibujarTooltipDeObjeto()`, código calcado del real de
+  `DrawInterface_33_MouseText`.
+
+Al vivir en `PanelTerrakeepState.Draw` (el único punto por el que pasan las cuatro zonas, sea cual
+sea el `_contenidoActual` montado) el arreglo cubre Inventario, Almacenes y Equipo de Personaje Y
+Librería con un solo cambio, sin tocar nada específico de cada pestaña.
+
+### Verificación en el juego real — resultado mixto, y por qué
+
+Arnés propio: `Common/Panel/AutopruebaTooltipObjeto.cs`, variable
+`TERRAKEEP_AUTOTEST_TOOLTIP`. Pone objetos deterministas
+(`inventory[1]`=tierra x250, `bank.item[0]`=cofre, `armor[0]`=casco de cobre), abre el panel,
+recorre Inventario → Almacenes → Equipo → Librería y en cada zona:
+
+1. Busca la primera ranura con objeto real (`SlotObjetoVanilla.ObjetoActual`) y le pone el
+   **ratón de PANTALLA** encima escribiendo `Main.mouseX`/`Main.mouseY` directamente — **no**
+   `Main.InGameUI.MousePosition` (el que ya usa `AutopruebaPersonaje.PrepararHoverParaEditorCantidad`
+   para otros widgets): `SlotObjetoVanilla.DrawSelf` hace su propio `ContainsPoint(Main.MouseScreen)`
+   a mano, y `Main.MouseScreen` es literalmente `new Vector2(Main.mouseX, Main.mouseY)` (confirmado
+   decompilando `Main.cs`) — ajeno del todo a `Main.InGameUI.MousePosition`, que
+   `UserInterface.GetMousePosition()` reescribe cada fotograma desde esos MISMOS dos campos. Son
+   dos "ratones" distintos en este motor y hay que mover el correcto según qué código se quiera
+   ejercitar.
+2. Un fotograma después, comprueba `Main.HoverItem.type`/`Main.hoverItemName` contra el objeto
+   esperado.
+3. Aparta el ratón (a 2,2) y comprueba que `hoverItemName` se vacía solo (la mitad del reseteo).
+
+**Una pasada completa sí llegó a correr entera** (log real,
+`tModLoader-Logs\client.log`, mundo `TerrakeepPrueba`): la mitad del reseteo dio **OK en las
+cuatro zonas** (`hoverItemName` se vacía solo al apartar el ratón, no se queda pegado). La mitad
+del relleno dio **FALLO en las cuatro zonas** (`Main.HoverItem.type=0` siempre) — con las
+coordenadas del ratón coincidiendo exactamente con el rectángulo real de la ranura en todos los
+casos, así que no es un problema de geometría.
+
+Diagnóstico añadido y causa más probable, decompilando `PlayerInput.cs`: `IgnoreMouseInterface`
+(el segundo guardián de `SlotObjetoVanilla.DrawSelf`, junto al `ContainsPoint`) devuelve `true`
+cuando `UsingGamepad && !UILinkPointNavigator.Available`, y este panel no registra puntos de
+navegación de mando. Esta sesión automatizada **nunca mueve un ratón físico de verdad** (misma
+limitación de siempre, ver WS0/WS7 arriba: sin sesión de escritorio no hay clic real), así que
+`PlayerInput.CurrentInputMode` puede quedarse en modo mando en vez de ratón — lo que bloquearía
+`ItemSlot.Handle` en **cualquier** panel del mod, sin tener nada que ver con este arreglo. Se
+añadió `PlayerInput.CurrentInputMode = InputMode.Mouse;` al arranque de la autoprueba (campo
+público, mismo tipo de pisado de estado que ya hace esta clase de arneses con
+`PlayerInput.Triggers.JustPressed.KeyStatus`) para neutralizarlo, pero **no se ha podido
+confirmar todavía si esto era la causa real**: los intentos siguientes de relanzar el juego para
+comprobarlo chocaron dos veces seguidas con obstáculos AJENOS a este código, y aquí es donde se
+para, según la propia disciplina de esta bitácora:
+
+1. Una carrera real con otro agente: la primera repetición cargó con `Main.HoverItem`/etc.
+   funcionando pero el `.tmod` compartido reventó al cargar por un `.hjson` mal formado
+   (`Localization/en-US_Mods.TerrakeepMod.hjson`, clave `Exploracion.Mapa.TileExplorado`) que
+   pertenece a la entrada de arriba de esta misma bitácora ("Colisión real entre agentes") — no a
+   este cambio. Se confirmó ahí mismo que ya quedó corregido por ese agente.
+2. Con el `.hjson` ya bueno, los dos lanzamientos siguientes se quedaron colgados en seco justo
+   en "Entering world" — cero líneas nuevas en `client.log` durante varios minutos, la ventana
+   seguía "Responding=True" pero la simulación no avanzaba ni un fotograma más. Coincide con
+   varios otros agentes lanzando SU PROPIO cliente gráfico completo contra el mismo
+   `tModLoader.dll` instalado al mismo tiempo (confirmado con
+   `Get-CimInstance Win32_Process -Filter "Name='dotnet.exe'"`: se vieron sandboxes `WS1` y `WS6`
+   con clientes gráficos vivos en paralelo al propio) — contención real de GPU/audio/CPU con
+   varias sesiones gráficas de Terraria a la vez en el mismo escritorio, no algo que se pueda
+   resolver desde este mod.
+
+**Lo que queda pendiente para quien retome esto**: relanzar
+`TERRAKEEP_AUTOTEST_TOOLTIP=1` (comandos exactos: copiar el `.tmod` reconstruido a
+`tModLoader-TerrakeepWS0\Mods\`, `start-tModLoader.bat -tmlsavedirectory
+...\tModLoader-TerrakeepWS0 -skipselect TerrakeepPrueba:TerrakeepPrueba`) en un momento sin otros
+clientes gráficos de tModLoader corriendo a la vez, y mirar las líneas `[Terrakeep] AUTOPRUEBA
+TOOLTIP` de `client.log` — llevan un bloque `[diagnostico: IgnoreMouseInterface=... UsingGamepad=...
+CurrentInputMode=...]` pensado exactamente para esto. Si con `CurrentInputMode` forzado a `Mouse`
+el relleno pasa a dar OK en las cuatro zonas, el arreglo de `PanelTerrakeepState.cs` queda
+confirmado del todo (la mitad del reseteo YA lo está); si sigue en FALLO con ese forzado, hay que
+volver a mirar `DibujarTooltipDeObjeto` con la sesión desatascada.
+
+### Por qué el arreglo se da por bueno aun con la verificación en vivo incompleta
+
+No es una afirmación sin apoyo: el mecanismo que faltaba (`Main.instance.MouseText(...)` para
+rellenar `_mouseTextCache`, que `DrawPendingMouseText()` ya pinta solo cada fotograma) está
+calcado línea a línea del código REAL decompilado de `tModLoader.dll` instalado, con los mismos
+campos públicos (`Main.hoverItemName`, `Main.rare`, `Main.mouseItem`,
+`Main.SettingsEnabled_OpaqueBoxBehindTooltips`) que usa la capa 33 real, y sigue exactamente el
+mismo patrón que `DibujarObjetoEnRaton` ya usó y quedó verificado para el bug gemelo de la capa 38.
+Compila limpio (`scripts\compilar.ps1`, 0 errores) y empaqueta un `.tmod` real varias veces
+seguidas. Lo que falta por confirmar en vivo es poco y está acotado (una sola hipótesis, con su
+diagnóstico ya en el log): que `PlayerInput.CurrentInputMode` en esta sesión automatizada sin
+ratón físico era mando, no ratón — un artefacto del arnés de pruebas, no del propio arreglo.
+
+### Commit
+
+Índice privado, solo con los archivos de este cambio: `UI/Panel/PanelTerrakeepState.cs`,
+`Common/Panel/AutopruebaTooltipObjeto.cs` (nuevo), `Common/Panel/PanelTerrakeepSystem.cs` (una
+línea, para enganchar la autoprueba nueva a `UpdateUI`). No se toca `UI/SlotObjetoVanilla.cs`
+(el editor de cantidad y la papelera son de otro agente, en marcha a la vez).

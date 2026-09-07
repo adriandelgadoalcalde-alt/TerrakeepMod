@@ -86,6 +86,7 @@ namespace TerrakeepMod.Common.Panel
 			// a dispararse nunca.
 			AutopruebaPanelUnico.Avanzar();
 			AutopruebaIdiomas.Avanzar();
+			AutopruebaTooltipObjeto.Avanzar();
 
 			ComprobarAtajos();
 
