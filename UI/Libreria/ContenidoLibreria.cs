@@ -7,6 +7,7 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Libreria;
+using TerrakeepMod.Common.Prefijos;
 using TerrakeepMod.Common.Undo;
 using TerrakeepMod.UI.Personaje.Widgets;
 using TerrasavrNative.Core.Data;
@@ -407,6 +408,12 @@ namespace TerrakeepMod.UI.Libreria
 		/// <c>Player.GetItem</c> (la ruta oficial, la misma que usa el juego al recoger del
 		/// suelo): asi coger un segundo objeto nunca hace desaparecer el primero. Si llevaba el
 		/// MISMO objeto, se acumula hasta su pila maxima, que es lo que espera cualquiera.
+		/// <para />
+		/// <b>El objeto sale con su mejor prefijo real ya puesto</b> (si <see cref="CatalogoMejorPrefijo"/>
+		/// tiene entrada para su tipo), igual que hace la app de escritorio Terrasavr-Native al
+		/// colocar un objeto desde su Libreria: quien saca un objeto del catalogo no tiene que ir
+		/// luego a rerrolear nada a mano. Va DESPUES de <c>SetDefaults</c> y ANTES de que el
+		/// objeto se acumule o se dispare el aviso, para que el aviso pueda mencionarlo.
 		/// </summary>
 		public void PedirObjeto(int tipo, bool pilaCompleta)
 		{
@@ -416,6 +423,14 @@ namespace TerrakeepMod.UI.Libreria
 
 			Item nuevo = new Item();
 			nuevo.SetDefaults(tipo);
+
+			byte? mejorPrefijo = CatalogoMejorPrefijo.MejorPrefijo(tipo);
+			if (mejorPrefijo.HasValue) {
+				nuevo.Prefix(mejorPrefijo.Value);
+				RegistroLibreria.Linea($"{Terrakeep.LogTag} Libreria: prefijo automatico aplicado a " +
+					$"\"{nuevo.Name}\" (type={tipo}): item.prefix={nuevo.prefix} ({Lang.prefix[nuevo.prefix].Value}).");
+			}
+
 			int cantidad = pilaCompleta ? Math.Max(1, nuevo.maxStack) : 1;
 
 			if (Main.mouseItem != null && !Main.mouseItem.IsAir && Main.mouseItem.type == tipo) {

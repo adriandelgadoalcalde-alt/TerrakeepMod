@@ -1,0 +1,8 @@
+# Evidencia de la autoprueba de Prefijos - 2026-09-07 02:52:53
+[02:52:53.999] [Terrakeep] Paso 0 - CatalogoMejorPrefijo.Listo=True. OK.
+[02:52:54.181] [Terrakeep] Paso 1 - defensa de rango con PygmyStaff (invocacion, entrada bruta 85 Fabled, fuera de PrefixID.Count=85 real de este 1.4.4.9): MejorPrefijo devolvio null. OK: descartado como se esperaba.
+[02:52:54.371] [Terrakeep] Paso 2 - panel de Libreria abierto. PanelActual=listo.
+[02:52:54.548] [Terrakeep] Paso 3 - cogido "Copper Shortsword" (type=3507) del catalogo de la Libreria via ContenidoLibreria.PedirObjeto (la ruta REAL de produccion). Mejor prefijo esperado segun la tabla: 81 (Legendary). Item.prefix REAL tras cogerlo: 81 (Legendary). OK: el objeto salio del catalogo con su mejor prefijo real ya puesto.
+[02:52:54.789] [Terrakeep] Paso 4 - indicador con prefijo SUBOPTIMO a proposito: "Copper Shortsword" con item.prefix=5 (Sharp), mejor real=81 (Legendary). Linea de tooltip añadida: "Best possible prefix: Legendary" (color override={R:255 G:210 B:120 A:255}). OK: aparece el aviso con el prefijo real que le falta.
+[02:52:55.119] [Terrakeep] Paso 5 - indicador con el MEJOR prefijo ya puesto (81 Legendary): item.prefix quedo en 81. Linea de tooltip añadida: (ninguna). OK: sin aviso, el prefijo ya es el optimo.
+[02:52:55.300] [Terrakeep] AUTOPRUEBA PREFIJOS COMPLETA. Todos los pasos ejecutados sin excepciones.
