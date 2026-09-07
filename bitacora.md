@@ -1970,3 +1970,151 @@ sistema no puede distinguir de un teclado físico) - con el riesgo real ya evalu
 en la conversación con el usuario (caso conocido de `Interception` dejando teclado+ratón
 inservibles tras reiniciar, sin garantía de compatibilidad con Windows 11). Decisión pendiente
 del usuario, no se instala nada de eso sin su confirmación explícita informada del riesgo.
+
+---
+
+## 7-sep-2026 — Vista previa en vivo del muñeco en Apariencia (con armadura / sin armadura)
+
+Pedido del usuario probando el mod en el juego: en la sub-pestaña **Apariencia**
+(`UI/Personaje/PestanaApariencia.cs`) quedaba un hueco vacío grande a la derecha, debajo del
+logo decorativo de fondo. Pedía ver ahí, en vivo, cómo queda el personaje con los cambios de
+apariencia aplicados, con armadura puesta y sin ella - igual que hace la app de escritorio
+hermana.
+
+### Lo que se investigó antes de tocar nada
+
+No hizo falta mirar la app de escritorio (WPF/`WriteableBitmap`, un patrón que no sirve aquí de
+todas formas): el propio juego, corriendo en el mismo proceso que el mod, YA sabe dibujar un
+muñeco de personaje con dos piezas de código real, las dos comprobadas con `ilspycmd` sobre el
+`tModLoader.dll` instalado antes de escribir una sola línea:
+
+1. **`Terraria.GameContent.UI.Elements.UICharacter`** - la ficha de personaje de la pantalla de
+   selección. Dibuja con `Main.PlayerRenderer.DrawPlayer(Main.Camera, jugador, posicionDePantalla
+   + Main.screenPosition, 0f, Vector2.Zero, 0f, escala)` dentro de su propio `DrawSelf`, con
+   `UseImmediateMode = true` y `OverrideSamplerState = SamplerState.PointClamp`. Confirma que se
+   puede invocar el renderer real DESDE un `UIElement` corriente sumando `Main.screenPosition` a
+   una coordenada de pantalla (el truco que cancela la transformación de cámara).
+2. **`Terraria.GameContent.Tile_Entities.TEDisplayDoll`** - el Maniquí de vanilla, el ejemplo de
+   producción más parecido a lo que hacía falta aquí. Su `_dollPlayer` es un `Player` PROPIO
+   creado una única vez con `new Player()` a secas (nada de clonar ni serializar), con
+   `hair`/`skinColor`/`skinVariant` puestos a mano. En cada `Draw()` copia sus 8 `armor[]`/`dye[]`
+   guardados al `Player`, pone `isDisplayDollOrInanimate = true` y llama a
+   `ResetEffects()` → `ResetVisibleAccessories()` → `UpdateDyes()` → `DisplayDollUpdate()` →
+   `UpdateSocialShadow()` → `PlayerFrame()` antes de `DrawPlayer`. Ese campo
+   `isDisplayDollOrInanimate` importa de verdad: sin él, código de vanilla que compara
+   `whoAmI == Main.myPlayer` trataría al muñeco (cuyo `whoAmI` nunca se toca y vale 0) como si
+   fuera el jugador real en una partida de un jugador (`Main.myPlayer` también vale 0).
+
+Con esto se descartó clonar `Main.LocalPlayer` (ni una vez con `SerializedClone()`, que hace una
+serializacion/deserializacion completa - válido para construir UNA ficha estática, pero
+demasiado caro para repetirlo cada fotograma) y en su lugar se usó el patrón real del Maniquí:
+un `Player` propio, construido una sola vez, sincronizado cada fotograma solo con lo barato.
+
+### Lo que se ha hecho
+
+`UI/Personaje/Widgets/MunecoTk.cs` (nuevo): un `UIElement` con un `Player _muneco = new Player()`
+propio. En `Update()` copia de `Main.LocalPlayer` SOLO lo necesario para el dibujado - pelo,
+tinte, variante, los siete colores y, si `ConArmadura` está activo, las MISMAS referencias de
+`Item` de `armor[]`/`dye[]`/`hideVisibleAccessory` que ya lleva puestas el jugador real (compartir
+la referencia para leerla no la modifica; nunca se toca ni se clona `Main.LocalPlayer`). Si
+`ConArmadura` está desactivado, `armor[]`/`dye[]` se rellenan con arrays propios de `Item` vacíos
+(aire) precreados una vez. Después, los mismos cinco pasos que `TEDisplayDoll.Draw`:
+`isDisplayDollOrInanimate = true`, `ResetEffects()`, `ResetVisibleAccessories()`, `UpdateDyes()`,
+`DisplayDollUpdate()`, `UpdateSocialShadow()`, `PlayerFrame()`. En `DrawSelf` calcula una escala
+según el alto real disponible (acotada entre 0,6 y 2,2) y llama a
+`Main.PlayerRenderer.DrawPlayer` con el mismo truco de `Main.screenPosition` que usa
+`UICharacter`. Si el hueco es demasiado pequeño (ventana muy estrecha), no dibuja nada en vez de
+dibujar un muñeco recortado.
+
+`UI/Personaje/PestanaApariencia.cs`: una caja (`UIPanel`, estilo `EstiloTk.FondoCaja`) anclada a
+la derecha con `Left.Set(750f, 0f)` y `Width.Set(-(750+20), 1f)` - o sea "lo que sobre a la
+derecha del contenido fijo de la izquierda (que llega hasta ~740 px), con un margen de 20". En
+ventanas muy estrechas el ancho calculado sale negativo y `MunecoTk` deja de dibujarse solo, sin
+pisar nada ni lanzar ninguna excepción (nunca llegó a hacer falta esa rama en las pruebas: a
+1600x900 con escala de interfaz 1,47 sale con 241 px de ancho). Dentro: un título ("Vista
+previa"), el `MunecoTk` y, anclado abajo, un `AlternadorTk` reutilizado tal cual ya existía
+("Con armadura") que solo cambia la propiedad pública `MunecoTk.ConArmadura` - no guarda ningún
+estado propio, la propia casilla lee/escribe esa propiedad.
+
+Tres claves nuevas de idioma (`Personaje.Apariencia.Vista/VerConArmadura/VerConArmaduraAyuda`),
+añadidas en `scripts/generar-localizacion.py` (la tabla única de la que salen los dos `.hjson`,
+que resultó ser un generador nuevo de otro agente trabajando en paralelo en la migración de
+idiomas - ver más abajo) y regeneradas con él, no escritas a mano en los `.hjson`.
+
+### Verificación real, con el mismo arnés que ya usa el proyecto
+
+`scripts/verificar-panel-unico.ps1` (sandbox `tModLoader-TerrakeepPanel`, cliente gráfico real),
+con seis pasos nuevos añadidos a `Common/Panel/AutopruebaPanelUnico.cs` (31-37, después del icono
+del HUD, sin renumerar los que ya había):
+
+1. `PoblarAparienciaDePrueba` - el personaje sintético `TerrakeepPrueba` llega con los siete
+   colores a `(0,0,0)` y sin nada equipado (una silueta negra sería igual con y sin armadura, sin
+   demostrar nada). Se le ponen colores vivos y una armadura de cobre real (cabeza/cuerpo/piernas
+   buscados por propiedades - `headSlot`/`bodySlot`/`legSlot` + `defense > 0` - igual que ya hace
+   `AutopruebaPersonaje.PoblarEquipo`, nunca por id fijo).
+2. Abre Personaje → Apariencia (`ContenidoPersonaje.IrAPestana(4)`).
+3. Captura con armadura, pulsa el `AlternadorTk` con un clic REAL (`UIElement.LeftClick`, la
+   misma ruta que ya usó WS1 con el deslizador de color), captura sin armadura, lo pulsa otra
+   vez, captura con armadura de nuevo.
+
+Resultado real en `evidencia/panel-unico.log.txt`: `MunecoTk dibujado en x=789 y=296 241x192,
+ConArmadura=True` → clic real en "With armour", `Valor antes=True -> despues=False -> OK` →
+`ConArmadura=False` → clic real, `Valor antes=False -> despues=True -> OK` → `ConArmadura=True`.
+`AUTOPRUEBA PANEL COMPLETA`, cero excepciones.
+
+**Las tres capturas reales del back buffer** (`CapturaDePantalla.Guardar`, nunca
+`CopyFromScreen`/`PrintWindow` - prohibidas y documentadas más arriba) se miraron a ojo:
+`apariencia-muneco-con-armadura.png` enseña el casco/goggles, el peto de cadena de cobre y las
+grebas de cobre puestos; `apariencia-muneco-sin-armadura.png` enseña la piel/pelo/ropa con los
+siete colores EXACTOS de los deslizadores (pelo 210,60,40 rojizo; piel 255,200,150; ojos
+30,140,230 azules; camisa 40,170,80 verde; pantalón 70,90,200 azul); la casilla del alternador
+cambia de `[X]` a `[ ]` y vuelta a `[X]` en las tres capturas. Sin retraso perceptible: los
+colores y el equipo del muñeco están ya al día en el mismo fotograma en que se pide la captura.
+
+La resolución del sandbox (`tModLoader-TerrakeepPanel/config.json`) estaba en 800x480 (quedó así
+de alguna sesión anterior); se subió a 1600x900 -escala de interfaz 1,4666667 ya guardada, la
+misma proporción 1600x900 → 1090x613 que ya documentó la fusión de paneles- porque a 800x480 el
+contenido fijo de la izquierda de Apariencia (~740 px) ya deja casi nada para la vista previa.
+
+### El repositorio con varios agentes a la vez, en vivo
+
+Esta vez no fue solo la teoría de la sección de "índice privado": mientras se trabajaba en esto
+había, a la vez, otros tres agentes tocando `Common/Builds/*` (una nueva `loadoutObjetivo` en
+`AutoEquipar`), un árbol de carpetas nuevo para Buffs (`Common/Personaje/ArbolBuffs.cs`,
+`UI/Personaje/Widgets/FilaCarpetaBuffTk.cs`, editor de cantidad + papelera en el inventario) y una
+migración completa de idiomas (`scripts/generar-localizacion.py` como generador nuevo,
+reescribiendo los dos `.hjson` enteros). El build del proyecto entero (obligatorio: ya no hay
+compilación aislada por área) se rompió y se arregló varias veces en directo, nunca por algo
+mío:
+
+- `UI/Personaje/Widgets/FilaCarpetaBuffTk.cs`: faltaba `using Terraria.GameContent.UI.Elements;`
+  para `UIPanel`. Arreglo de una línea, obviamente correcto, sin inventar comportamiento -
+  aplicado para no bloquear el build de todo el mundo.
+- `Common/Personaje/ArbolBuffs.cs:221`: un `List<CategoryTreeNodeData>` no admitía asignar un
+  `IReadOnlyList<CategoryTreeNodeData>` (la rama `nodo.Children` de un operador ternario). Se
+  cambió el tipo de la variable local a `IReadOnlyList<...>` (el tipo real de la propiedad),
+  también mecánico, sin tocar la lógica.
+- Otros dos fallos en `Common/Personaje/AutopruebaPersonaje.cs` y
+  `UI/Personaje/Widgets/EditorCantidadTk.cs` se resolvieron SOLOS entre un intento y el
+  siguiente: ese agente seguía escribiendo esos métodos en directo. No se tocaron.
+- Mi propio error (`ContentSamples` sin el `using Terraria.ID;` que le hacía falta) apareció
+  entre medias y se corrigió igual.
+
+Se esperó con un bucle de reintento (`dotnet build` cada 15 s) en vez de tocar en bucle el mismo
+archivo ajeno dos veces seguidas por la misma causa. El commit final (`f1d970d`) se hizo con
+**índice privado** y solo lleva mis tres archivos (`MunecoTk.cs`, `PestanaApariencia.cs`,
+`AutopruebaPanelUnico.cs`); los `.hjson` y `generar-localizacion.py` sí llevan mis tres claves de
+idioma pero se han dejado SIN comitear por mi parte - añadirlos habría mezclado mis tres líneas
+con las ~1974 líneas de la migración de idiomas de otro agente bajo mi mensaje de commit. Quedan
+en el árbol de trabajo tal cual, listos para el commit de esa migración cuando la cierren.
+
+### Lo que queda fuera, dicho claro
+
+- No se ha probado el redimensionado de ventana en vivo con el panel ya abierto (cambiar el
+  ancho de la ventana mientras `MunecoTk` está dibujado, para ver la rama de "hueco demasiado
+  pequeño, no dibujar nada" en acción real). El cálculo se revisó a mano y `PestanaEquipo` ya usa
+  el mismo patrón de escala-según-alto-real sin problemas, pero no hay captura de esa rama
+  concreta.
+- No se ha probado con Calamity cargado (una armadura de Calamity con capas raras de dibujado
+  podría comportarse distinto). El renderer es el mismo para cualquier armadura real, así que no
+  hay motivo real para esperar un problema, pero queda sin comprobar.
