@@ -41,7 +41,15 @@ param(
 	[string]$Sembrar = 'MoltenHelmet,MoltenGreaves,NightsEdge,FeralClaws,ObsidianShield,BandofRegeneration',
 	[string]$Clase = 'melee',
 	# Fuente del catalogo a seleccionar antes de auto-equipar: 'vanilla' o 'calamity'.
-	[string]$Fuente = ''
+	[string]$Fuente = '',
+	# Conjunto de equipo de DESTINO (0/1/2) al que aplicar el auto-equipar, pulsando de verdad su
+	# pildora en el selector. Vacio = se deja el que el panel ya trae por defecto (el conjunto
+	# ACTIVO del personaje de prueba, que es el 0 recien creado).
+	[string]$LoadoutObjetivo = '',
+	# Si se indica (0/1/2), tras las dos pasadas de auto-equipar se simula que el jugador cambia
+	# de verdad de conjunto ACTIVO (Player.TrySwitchingLoadout) a este indice, para comprobar que
+	# lo aplicado a un conjunto que antes no era el activo se ve puesto en cuanto lo es.
+	[string]$CambiarLoadoutA = ''
 )
 
 $ErrorActionPreference = 'Stop'
@@ -133,6 +141,8 @@ $env:TERRAKEEP_AUTOTEST_BUILDS   = '1'
 $env:TERRAKEEP_BUILDS_SEMBRAR    = $Sembrar
 $env:TERRAKEEP_BUILDS_AUTOEQUIPAR = $Clase
 $env:TERRAKEEP_BUILDS_FUENTE     = $Fuente
+$env:TERRAKEEP_BUILDS_LOADOUT_OBJETIVO = $LoadoutObjetivo
+$env:TERRAKEEP_BUILDS_CAMBIAR_LOADOUT_A = $CambiarLoadoutA
 
 Write-Host '== Cliente grafico ==' -ForegroundColor Cyan
 $p = Start-Process -FilePath (Join-Path $tmlDir 'start-tModLoader.bat') -WorkingDirectory $tmlDir -PassThru `

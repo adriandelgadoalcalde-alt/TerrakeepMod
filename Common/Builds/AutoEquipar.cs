@@ -53,23 +53,29 @@ namespace TerrakeepMod.Common.Builds
 	/// prefijo que ya tuviera.
 	/// </para>
 	/// <para>
-	/// <b>Sobre el loadout</b>: se trabaja siempre sobre <c>Player.armor</c>, que ES el conjunto
-	/// ACTIVO. Los otros conjuntos viven aparte en <c>Player.Loadouts[i]</c> y solo se
-	/// intercambian con <c>Loadouts[i].Swap(player)</c> al cambiar de conjunto, asi que escribir
-	/// en <c>armor</c> afecta unicamente al que el jugador tiene puesto ahora mismo.
+	/// <b>Sobre el loadout</b>: se escribe sobre el conjunto de equipo que elige quien llama a
+	/// <see cref="Ejecutar"/> (<paramref name="loadoutObjetivo"/>, 0/1/2) usando
+	/// <see cref="EquipoJugador.ArmorDe"/>. Si es el conjunto ACTIVO eso significa escribir
+	/// directo en <c>Player.armor</c>, que el jugador lleva puesto ahora mismo y por tanto se ve
+	/// en el acto; si es otro, se escribe en <c>Player.Loadouts[n].Armor</c>, que solo se hace
+	/// visible cuando el jugador cambia a ese conjunto (<c>Player.TrySwitchingLoadout</c>). Ver la
+	/// pestaña Equipo del panel de Personaje (<c>PestanaEquipo</c>), que descubrio y dejo probado
+	/// este mismo comportamiento contra el <c>EquipmentLoadout.Swap</c> real del juego instalado.
 	/// </para>
 	/// </remarks>
 	public static class AutoEquipar
 	{
-		public static ResultadoAutoEquipar Ejecutar(Player jugador, ClaseBuild build)
+		public static ResultadoAutoEquipar Ejecutar(Player jugador, ClaseBuild build, int loadoutObjetivo)
 		{
 			ResultadoAutoEquipar resultado = new ResultadoAutoEquipar();
 			if (jugador == null || build == null) {
 				return resultado;
 			}
 
-			ColocarArmadura(jugador, build, resultado);
-			ColocarAccesorios(jugador, build, resultado);
+			Item[] destino = EquipoJugador.ArmorDe(jugador, loadoutObjetivo);
+
+			ColocarArmadura(jugador, destino, build, resultado);
+			ColocarAccesorios(jugador, destino, build, resultado);
 			ColocarArmas(jugador, build, resultado);
 
 			if (resultado.Movidos > 0) {
@@ -83,7 +89,7 @@ namespace TerrakeepMod.Common.Builds
 			return resultado;
 		}
 
-		private static void ColocarArmadura(Player jugador, ClaseBuild build, ResultadoAutoEquipar resultado)
+		private static void ColocarArmadura(Player jugador, Item[] destino, ClaseBuild build, ResultadoAutoEquipar resultado)
 		{
 			foreach (ObjetoBuild objeto in build.Armadura) {
 				if (!Comprobado(objeto, resultado)) {
@@ -103,7 +109,7 @@ namespace TerrakeepMod.Common.Builds
 					continue;
 				}
 
-				if (jugador.armor[slot].type == objeto.Tipo) {
+				if (destino[slot].type == objeto.Tipo) {
 					resultado.YaColocados++;
 					resultado.Detalle.Add($"{objeto.Nombre}: ya puesto en equipo[{slot}]");
 					continue;
@@ -116,20 +122,20 @@ namespace TerrakeepMod.Common.Builds
 				}
 
 				string origen = donde.ToString();
-				EquipoJugador.Intercambiar(donde.Contenedor, donde.Indice, jugador.armor, slot);
+				EquipoJugador.Intercambiar(donde.Contenedor, donde.Indice, destino, slot);
 				resultado.Movidos++;
 				resultado.Detalle.Add($"{objeto.Nombre}: {origen} -> equipo[{slot}]");
 			}
 		}
 
-		private static void ColocarAccesorios(Player jugador, ClaseBuild build, ResultadoAutoEquipar resultado)
+		private static void ColocarAccesorios(Player jugador, Item[] destino, ClaseBuild build, ResultadoAutoEquipar resultado)
 		{
 			foreach (ObjetoBuild objeto in build.Accesorios) {
 				if (!Comprobado(objeto, resultado)) {
 					continue;
 				}
 
-				if (EquipoJugador.AccesorioYaPuesto(jugador, objeto.Tipo)) {
+				if (EquipoJugador.AccesorioYaPuesto(jugador, destino, objeto.Tipo)) {
 					resultado.YaColocados++;
 					resultado.Detalle.Add($"{objeto.Nombre}: ya equipado");
 					continue;
@@ -143,7 +149,7 @@ namespace TerrakeepMod.Common.Builds
 				}
 
 				Item ejemplar = donde.Contenedor[donde.Indice];
-				int slot = EquipoJugador.PrimerSlotAccesorioLibre(jugador, ejemplar);
+				int slot = EquipoJugador.PrimerSlotAccesorioLibre(jugador, destino, ejemplar);
 				if (slot < 0) {
 					resultado.SinSitio++;
 					resultado.Detalle.Add($"{objeto.Nombre}: sin slot de accesorio libre " +
@@ -152,7 +158,7 @@ namespace TerrakeepMod.Common.Builds
 				}
 
 				string origen = donde.ToString();
-				EquipoJugador.Intercambiar(donde.Contenedor, donde.Indice, jugador.armor, slot);
+				EquipoJugador.Intercambiar(donde.Contenedor, donde.Indice, destino, slot);
 				resultado.Movidos++;
 				resultado.Detalle.Add($"{objeto.Nombre}: {origen} -> equipo[{slot}] (accesorio)");
 			}
@@ -212,11 +218,15 @@ namespace TerrakeepMod.Common.Builds
 
 		/// <summary>Vuelca el detalle completo en el log del juego, que es la evidencia real de
 		/// que auto-equipar hizo lo que dice haber hecho.</summary>
-		public static void Registrar(Player jugador, ClaseBuild build, ResultadoAutoEquipar resultado, string etiquetaBuild)
+		public static void Registrar(Player jugador, ClaseBuild build, ResultadoAutoEquipar resultado,
+			string etiquetaBuild, int loadoutObjetivo)
 		{
+			bool activo = EquipoJugador.EsLoadoutActivo(jugador, loadoutObjetivo);
 			StringBuilder texto = new StringBuilder();
 			texto.Append($"{Terrakeep.LogTag} AUTO-EQUIPAR \"{etiquetaBuild}\" / {build.Etiqueta}: {resultado.Resumen}. ");
-			texto.Append($"Conjunto activo (CurrentLoadoutIndex)={jugador.CurrentLoadoutIndex}, ");
+			texto.Append($"Conjunto de destino={loadoutObjetivo + 1}/{jugador.Loadouts.Length} " +
+				$"({(activo ? "ACTIVO ahora mismo, se ve al instante" : "no activo, se guarda en Player.Loadouts[" + loadoutObjetivo + "].Armor")}), ");
+			texto.Append($"Conjunto activo real (CurrentLoadoutIndex)={jugador.CurrentLoadoutIndex}, ");
 			texto.Append($"slots de accesorio disponibles={EquipoJugador.SlotsAccesorioDisponibles(jugador)}.");
 			RegistroBuilds.Linea(texto.ToString());
 
@@ -224,20 +234,22 @@ namespace TerrakeepMod.Common.Builds
 				RegistroBuilds.Linea($"{Terrakeep.LogTag}   - {linea}");
 			}
 
-			RegistroBuilds.Linea($"{Terrakeep.LogTag}   Equipo tras auto-equipar: {EstadoEquipo(jugador)}");
+			Item[] destino = EquipoJugador.ArmorDe(jugador, loadoutObjetivo);
+			RegistroBuilds.Linea(
+				$"{Terrakeep.LogTag}   Conjunto {loadoutObjetivo + 1} tras auto-equipar: {EstadoEquipo(jugador, destino)}");
 		}
 
-		/// <summary>Foto del equipo actual, en una linea, para el log.</summary>
-		public static string EstadoEquipo(Player jugador)
+		/// <summary>Foto de un conjunto de equipo concreto, en una linea, para el log.</summary>
+		public static string EstadoEquipo(Player jugador, Item[] destino)
 		{
 			StringBuilder texto = new StringBuilder();
 			string[] nombres = { "casco", "pechera", "grebas" };
 			for (int i = 0; i < 3; i++) {
-				texto.Append($"{nombres[i]}=\"{Describir(jugador.armor[i])}\" ");
+				texto.Append($"{nombres[i]}=\"{Describir(destino[i])}\" ");
 			}
 			int disponibles = EquipoJugador.SlotsAccesorioDisponibles(jugador);
 			for (int i = 0; i < disponibles; i++) {
-				texto.Append($"acc{i + 1}=\"{Describir(jugador.armor[EquipoJugador.PrimerSlotAccesorio + i])}\" ");
+				texto.Append($"acc{i + 1}=\"{Describir(destino[EquipoJugador.PrimerSlotAccesorio + i])}\" ");
 			}
 			return texto.ToString().TrimEnd();
 		}

@@ -44,6 +44,19 @@ namespace TerrakeepMod.Common.Builds
 		/// seleccionar antes de auto-equipar.</summary>
 		public const string VariableFuente = "TERRAKEEP_BUILDS_FUENTE";
 
+		/// <summary>SOLO ARNES DE PRUEBAS: conjunto de equipo (0/1/2) al que aplicar el
+		/// auto-equipar, pulsando de verdad su pildora en el selector de destino. Si no se define,
+		/// se queda con el que ya tuviera seleccionado el panel (el conjunto ACTIVO, por
+		/// defecto).</summary>
+		public const string VariableLoadoutObjetivo = "TERRAKEEP_BUILDS_LOADOUT_OBJETIVO";
+
+		/// <summary>SOLO ARNES DE PRUEBAS: si se define (0/1/2), tras las dos pasadas de
+		/// auto-equipar se llama a <c>Player.TrySwitchingLoadout</c> con este indice para simular
+		/// que el jugador cambia de verdad de conjunto ACTIVO, y se deja en el log el equipo que
+		/// queda puesto. Es la comprobacion de "si aplico a un conjunto que no era el activo, al
+		/// activarlo si lleva puesto lo aplicado".</summary>
+		public const string VariableCambiarLoadoutActivoA = "TERRAKEEP_BUILDS_CAMBIAR_LOADOUT_A";
+
 		private static ModKeybind _atajo;
 
 		private static bool _autopruebaHecha;
@@ -298,6 +311,8 @@ namespace TerrakeepMod.Common.Builds
 				return;
 			}
 
+			Player jugador = Main.LocalPlayer;
+
 			// Fuente opcional: sin esto el panel se queda en la primera (Vanilla), que no tiene
 			// clase "rogue" - hace falta para poder ejercitar de verdad la fuente de Calamity.
 			string fuente = Environment.GetEnvironmentVariable(VariableFuente);
@@ -319,13 +334,26 @@ namespace TerrakeepMod.Common.Builds
 			// que el panel cambia de clase, y luego se vuelve a la que pedia la prueba.
 			ProbarPildorasDeClase(clase.Trim());
 
+			// Conjunto de DESTINO (WS4 ampliado): a cual de los 3 conjuntos de equipo va a parar
+			// el auto-equipar. Se pulsa de verdad la pildora, el mismo camino que un clic real.
+			string loadoutObjetivo = Environment.GetEnvironmentVariable(VariableLoadoutObjetivo);
+			if (!string.IsNullOrEmpty(loadoutObjetivo) && int.TryParse(loadoutObjetivo.Trim(), out int indiceObjetivo)) {
+				bool pulsado = _panel.PulsarPildoraLoadoutObjetivo(indiceObjetivo);
+				RegistroBuilds.Linea($"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: conjunto de destino pedido={indiceObjetivo + 1} " +
+					$"(pildora pulsada de verdad={pulsado}) -> seleccionado ahora={_panel.LoadoutObjetivo + 1}. " +
+					$"Conjunto ACTIVO real ahora mismo={jugador.CurrentLoadoutIndex + 1}.");
+			}
+
 			RegistroBuilds.Linea(
-				$"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: equipo ANTES de auto-equipar: " +
-				AutoEquipar.EstadoEquipo(Main.LocalPlayer));
+				$"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: equipo ANTES de auto-equipar (los 3 conjuntos): " +
+				EstadoTresConjuntos(jugador));
 
 			_panel.EjecutarAutoEquipar();
 
 			RegistrarEstadoBuild(_panel, "despues de auto-equipar");
+			RegistroBuilds.Linea(
+				$"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: equipo DESPUES de auto-equipar (los 3 conjuntos): " +
+				EstadoTresConjuntos(jugador));
 
 			// Segunda pasada: comprueba que auto-equipar es IDEMPOTENTE. Si estuviera moviendo
 			// objetos a lo tonto (o creandolos), aqui volveria a contar movimientos; lo correcto
@@ -333,6 +361,36 @@ namespace TerrakeepMod.Common.Builds
 			RegistroBuilds.Linea(
 				$"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: segunda pasada de auto-equipar (prueba de idempotencia).");
 			_panel.EjecutarAutoEquipar();
+			RegistroBuilds.Linea(
+				$"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: equipo tras la segunda pasada (los 3 conjuntos): " +
+				EstadoTresConjuntos(jugador));
+
+			// Simular que el jugador cambia de verdad de conjunto ACTIVO (Player.TrySwitchingLoadout,
+			// la misma API oficial que ya usa la pestaña Equipo de WS1) para comprobar que lo
+			// aplicado a un conjunto que ANTES no era el activo, ahora que SI lo es, se ve puesto.
+			string cambiarA = Environment.GetEnvironmentVariable(VariableCambiarLoadoutActivoA);
+			if (!string.IsNullOrEmpty(cambiarA) && int.TryParse(cambiarA.Trim(), out int indiceCambiar)) {
+				int antes = jugador.CurrentLoadoutIndex;
+				jugador.TrySwitchingLoadout(indiceCambiar);
+				RegistroBuilds.Linea($"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: cambio de conjunto ACTIVO real pedido -> " +
+					$"{indiceCambiar + 1}. CurrentLoadoutIndex antes={antes + 1} ahora={jugador.CurrentLoadoutIndex + 1}. " +
+					$"Equipo puesto ahora (Player.armor, el que dibuja y usa el juego): " +
+					$"{AutoEquipar.EstadoEquipo(jugador, jugador.armor)}");
+			}
+		}
+
+		/// <summary>Foto de los 3 conjuntos de equipo a la vez, marcando cual es el ACTIVO ahora
+		/// mismo. Evidencia real de que auto-equipar escribio donde tenia que escribir y no
+		/// tambien (ni solo) en los otros dos.</summary>
+		private static string EstadoTresConjuntos(Player jugador)
+		{
+			System.Text.StringBuilder texto = new System.Text.StringBuilder();
+			for (int i = 0; i < jugador.Loadouts.Length; i++) {
+				bool activo = EquipoJugador.EsLoadoutActivo(jugador, i);
+				texto.Append($"[Conjunto {i + 1}{(activo ? " *ACTIVO*" : "")}: " +
+					$"{AutoEquipar.EstadoEquipo(jugador, EquipoJugador.ArmorDe(jugador, i))}] ");
+			}
+			return texto.ToString().TrimEnd();
 		}
 	}
 }

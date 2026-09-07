@@ -2118,3 +2118,110 @@ en el árbol de trabajo tal cual, listos para el commit de esa migración cuando
 - No se ha probado con Calamity cargado (una armadura de Calamity con capas raras de dibujado
   podría comportarse distinto). El renderer es el mismo para cualquier armadura real, así que no
   hay motivo real para esperar un problema, pero queda sin comprobar.
+
+---
+
+## 7-sep-2026 — WS4 ampliado: selector de conjunto de destino en Builds
+
+Se pidió arreglar dos quejas reales del usuario probando el mod: "aplicar una build no equipa de
+verdad" y "no se puede elegir a qué conjunto (1/2/3) va la armadura de una build". Los dos
+tocaban `Common/Builds/` y `UI/Builds/ContenidoBuilds.cs`.
+
+### Lo primero, investigado antes de tocar nada
+
+`AutoEquipar.Ejecutar` YA escribía en un array vivo de verdad (`jugador.armor`), exactamente
+igual que la pestaña Equipo de WS1 (que se apoya en el mismo hallazgo:
+`EquipmentLoadout.Swap` intercambia elemento a elemento contra `Player.armor`/`dye`, así que el
+conjunto ACTIVO vive suelto en esos campos y NO en `Player.Loadouts[]`). Eso significa que
+auto-equipar SIEMPRE ha equipado de verdad - pero solo sobre lo que fuera el conjunto ACTIVO en
+ese instante, sin ningún control sobre cuál. Con tres conjuntos y ningún selector, aplicar una
+build mientras el jugador no estaba mirando/pensando en el conjunto 1 (el único que se tocaba)
+podía parecer "no ha hecho nada": el efecto SÍ estaba ahí, solo que en un conjunto distinto al
+que el usuario tenía en mente. Ese es el problema real de fondo, no un fallo de escritura.
+
+Se comprobó contra el `tModLoader.dll` instalado (v2026.7.3.0) con `ilspycmd`, no contra el
+decompilado de referencia: `EquipmentLoadout` tiene `Armor[20]`, `Dye[10]`, `Hide[10]` (campos
+públicos, sin properties), `Player.Loadouts` es `EquipmentLoadout[3]`,
+`Player.TrySwitchingLoadout(i)` hace `Loadouts[CurrentLoadoutIndex].Swap(this)` +
+`Loadouts[i].Swap(this)` + `CurrentLoadoutIndex = i`. Coincide exactamente con el decompilado de
+referencia (`tModLoader-Decompiled\tModLoader\Terraria\EquipmentLoadout.cs`), así que esta vez sí
+valía sin volver a decompilar - pero se verificó igual, por norma.
+
+### Lo que se hizo
+
+- `EquipoJugador.ArmorDe(jugador, indiceLoadout)`: nuevo. Devuelve `jugador.armor` si el índice
+  pedido es el activo, o `jugador.Loadouts[i].Armor` si no. Es el mismo criterio que
+  `PestanaEquipo` ya tenía probado, expuesto como función reutilizable.
+- `EquipoJugador.Contenedores` ahora también recorre los DOS conjuntos inactivos
+  (`Player.Loadouts[i].Armor` para `i != CurrentLoadoutIndex`) como sitios donde "ya lo tienes"
+  puede encontrar un objeto. Antes solo miraba el conjunto activo; un objeto guardado en un
+  conjunto que no llevas puesto se contaba como "no lo tienes", que era falso.
+- `PrimerSlotAccesorioLibre` y `AccesorioYaPuesto` dejan de asumir `jugador.armor` y reciben el
+  array de destino como parámetro. `ItemSlot.AccCheck` se comprobó (decompilado) que opera solo
+  sobre el array que se le pasa, sin ningún estado global del jugador activo, así que llamarlo
+  contra `Loadouts[n].Armor` es igual de válido que contra `armor`.
+- `AutoEquipar.Ejecutar(jugador, build, loadoutObjetivo)`: nueva firma con el índice de destino.
+  Calcula `destino = EquipoJugador.ArmorDe(...)` una vez y lo usa para armadura y accesorios (las
+  armas siguen yendo siempre a la mochila: los loadouts de Terraria no incluyen armas).
+- `UI/Builds/ContenidoBuilds.cs`: nueva fila de pastillas "Aplicar al conjunto 1/2/3" (mismo
+  widget `PintarPildoras` que ya usan fuente/etapa/clase, mismo camino de clic real
+  `UIElement.LeftClick` que ya probó `PulsarPildoraClase`). Marca con "(activo)" la que coincide
+  con `Player.CurrentLoadoutIndex` en cada fotograma (el jugador puede cambiar de conjunto con las
+  teclas del propio juego mientras el panel sigue abierto). Por defecto, si el jugador no ha
+  tocado el selector, apunta al conjunto ACTIVO - así el botón "Auto-equipar" sigue haciendo
+  exactamente lo mismo que antes si nadie usa el selector nuevo.
+
+### Verificado de verdad en el juego (no solo "compila")
+
+`scripts\verificar-builds-en-juego.ps1` ampliado con `-LoadoutObjetivo` y `-CambiarLoadoutA`
+(pulsan la pastilla de verdad y llaman a `Player.TrySwitchingLoadout` de verdad). Dos ejecuciones
+reales sobre el sandbox `tModLoader-TerrakeepWS4`, evidencia completa en
+`evidencia\ws4-builds-conjunto-destino.log.txt` y `evidencia\ws4-builds.log.txt`:
+
+| Escenario | Resultado real |
+|---|---|
+| Aplicar al conjunto 2 (INACTIVO, activo=conjunto 1) | log dice `Conjunto de destino=2/3 (no activo, se guarda en Player.Loadouts[1].Armor)`; tras aplicar, `Conjunto 1 *ACTIVO*` sigue vacío y SOLO `Conjunto 2` lleva el equipo |
+| Cambiar el conjunto activo real al 2 (`TrySwitchingLoadout`) | `CurrentLoadoutIndex antes=1 ahora=2`. `Player.armor` (el que dibuja y usa el juego) pasa a llevar exactamente lo aplicado antes al conjunto 2 |
+| Aplicar al conjunto 1 (el que YA está activo) | log dice `Conjunto de destino=1/3 (ACTIVO ahora mismo, se ve al instante)`; el equipo aparece en `Conjunto 1 *ACTIVO*` en la misma pasada, sin cambiar de conjunto |
+| Segunda pasada (idempotencia) | `movidos=0, ya colocados=6` en los dos escenarios |
+| Selector con clic real | `PulsarPildoraLoadoutObjetivo` dispara `OnLeftClick` de verdad; el log confirma "pildora pulsada de verdad=True" |
+
+Con esto quedan cubiertos los tres pasos que pedía la verificación: build a un conjunto inactivo
+sin tocar el activo, cambio de conjunto activo que hace aparecer lo aplicado, y build al conjunto
+activo con efecto instantáneo.
+
+### Obstáculo real: los `.hjson` compartidos se pisan entre sesiones del juego a la vez
+
+Las tres claves nuevas de idioma (`Builds.ConjuntoDestinoPildora/Ayuda/ActivoMarca`) se
+añadieron a mano en los dos `.hjson` **tres veces**, y las tres veces desaparecieron o quedaron
+mal antes de poder comitear:
+
+1. Otra sesión del juego (de otro agente, en paralelo) volvió a guardar los `.hjson` con su
+   propio estado en memoria y se llevó por delante mis líneas nuevas sin más.
+2. Al añadirlas nuevamente y ejecutar `python scripts\generar-localizacion.py` para intentar
+   estabilizarlas (mis 3 claves SÍ están en la tabla `T` del script, se añadieron ahí para el
+   futuro), el script regeneró los dos archivos **enteros** desde la tabla y el resultado salió
+   más CORTO que el que había en disco (623 líneas contra 692): la tabla `T` no tiene todavía las
+   claves que otro agente ha ido añadiendo a mano a los `.hjson` en su propia migración de
+   idiomas en marcha (confirmado leyendo más abajo en esta misma bitácora, entrada anterior: ese
+   agente dejó explícitamente sin comitear sus cambios de `.hjson`/`generar-localizacion.py` "para
+   no mezclar mis tres líneas con las ~1974 líneas de la migración de idiomas de otro agente").
+   Se deshizo enseguida restaurando desde una copia hecha justo antes de ejecutar el generador
+   (nunca llegó a comitearse), así que no se perdió nada de nadie.
+3. Al restaurar esa copia aparecieron mis 3 claves **comentadas y en inglés** dentro del propio
+   `es-ES_Mods.TerrakeepMod.hjson` (`// ConjuntoDestinoPildora: Apply to set {0}` etc.): parece
+   ser el propio mecanismo de esa migración de idiomas en marcha, que deja como comentario el
+   texto en inglés cuando detecta una clave sin traducir todavía a español. Se resolvió
+   "traduciendo" el comentario (quitar `//` y poner el texto en español), que es justo el flujo
+   que ese mecanismo espera.
+
+**Decisión, siguiendo el precedente que ya dejó escrito el agente de la migración de idiomas
+justo arriba en esta bitácora**: `scripts\generar-localizacion.py` (mi adición a la tabla `T`) y
+los dos `.hjson` se dejan **sin comitear**, en el árbol de trabajo, listos para cuando se cierre
+esa migración. Solo se comitean con índice privado los archivos que son míos de verdad
+(`Common/Builds/*.cs`, `UI/Builds/ContenidoBuilds.cs`, el script de verificación y la evidencia).
+Si mis tres claves vuelven a desaparecer del `.hjson` antes de que eso pase, no es una regresión
+de esto: es la migración en marcha todavía sin cerrar. El código en sí no depende de que la
+traducción esté presente - `Idiomas.Texto` devuelve la clave completa tal cual si no encuentra
+traducción, así que en el peor caso el selector se ve con el texto de la clave en vez del rótulo
+bonito, nunca deja de funcionar.

@@ -42,15 +42,25 @@ namespace TerrakeepMod.UI.Builds
 		private UIElement _filaFuentes;
 		private UIElement _filaEtapas;
 		private UIElement _filaClases;
+		private UIElement _filaLoadout;
 		private UIElement _cuerpo;
 		private EtiquetaTk _resumen;
 		private EtiquetaTk _subtitulo;
 		private BotonTk _botonAutoEquipar;
+		private readonly List<BotonTk> _botonesLoadoutObjetivo = new List<BotonTk>();
 
 		private int _indiceFuente;
 		private int _indiceEtapa;
 		private string _claveClase = "melee";
 		private string _textoResumen = "";
+
+		/// <summary>
+		/// A cual de los tres conjuntos de equipo (0/1/2) va a parar el auto-equipar. -1 significa
+		/// "todavia sin fijar": se inicializa al conjunto ACTIVO del jugador la primera vez que
+		/// hace falta (ver <see cref="LoadoutObjetivoValido"/>), no antes, porque en el constructor
+		/// el jugador puede no estar listo del todo.
+		/// </summary>
+		private int _loadoutObjetivo = -1;
 
 		private const float ArribaPrimeraFila = 28f;
 
@@ -142,6 +152,7 @@ namespace TerrakeepMod.UI.Builds
 			_filaFuentes = NuevaFila();
 			_filaEtapas = NuevaFila();
 			_filaClases = NuevaFila();
+			_filaLoadout = NuevaFila();
 
 			_cuerpo = new UIElement();
 			_cuerpo.Width.Set(0f, 1f);
@@ -183,12 +194,13 @@ namespace TerrakeepMod.UI.Builds
 			_filaFuentes.RemoveAllChildren();
 			_filaEtapas.RemoveAllChildren();
 			_filaClases.RemoveAllChildren();
+			_filaLoadout.RemoveAllChildren();
 			_cuerpo.RemoveAllChildren();
 
 			FuenteBuilds fuente = FuenteActual;
 			if (fuente == null) {
 				_subtituloTexto = Idiomas.Texto("Builds.SinCatalogo");
-				ColocarFilas(false);
+				ColocarFilas(false, false);
 				Recalculate();
 				return;
 			}
@@ -212,6 +224,11 @@ namespace TerrakeepMod.UI.Builds
 				});
 			}
 
+			// Fila del conjunto de DESTINO (a cual de los 3 loadouts va el auto-equipar).
+			// Independiente de fuente/etapa/clase, asi que se pinta siempre que hay catalogo, sin
+			// esperar a que exista una clase seleccionable.
+			PintarSelectorLoadoutObjetivo();
+
 			// Fila 2: etapa de progresion.
 			List<string> etapas = new List<string>();
 			foreach (EtapaBuild e in fuente.Etapas) {
@@ -225,7 +242,7 @@ namespace TerrakeepMod.UI.Builds
 			// Fila 3: clase.
 			EtapaBuild etapa = EtapaActual;
 			if (etapa == null) {
-				ColocarFilas(hayFilaFuentes);
+				ColocarFilas(hayFilaFuentes, true);
 				Recalculate();
 				return;
 			}
@@ -245,7 +262,7 @@ namespace TerrakeepMod.UI.Builds
 
 			ClaseBuild clase = ClaseActual;
 			if (clase == null) {
-				ColocarFilas(hayFilaFuentes);
+				ColocarFilas(hayFilaFuentes, true);
 				Recalculate();
 				return;
 			}
@@ -254,18 +271,18 @@ namespace TerrakeepMod.UI.Builds
 			PintarColumna(1, "Builds.Armas", clase.Armas);
 			PintarColumna(2, "Builds.Accesorios", clase.Accesorios);
 
-			ColocarFilas(hayFilaFuentes);
+			ColocarFilas(hayFilaFuentes, true);
 			Recalculate();
 			ColocarFilasDeObjetos();
 			RefrescarPosesion();
 		}
 
 		/// <summary>
-		/// Coloca las tres filas de pildoras y el cuerpo. Se hace aqui y no en el constructor
-		/// porque la fila de fuentes puede no existir (sin Calamity), y dejar su hueco vacio era un
-		/// agujero de 34 px en mitad del panel.
+		/// Coloca las filas de pildoras y el cuerpo. Se hace aqui y no en el constructor porque la
+		/// fila de fuentes puede no existir (sin Calamity) y la de conjunto de destino tampoco sin
+		/// catalogo cargado, y dejar su hueco vacio era un agujero de 34 px en mitad del panel.
 		/// </summary>
-		private void ColocarFilas(bool hayFilaFuentes)
+		private void ColocarFilas(bool hayFilaFuentes, bool hayFilaLoadout)
 		{
 			float y = AltoCabecera + 6f;
 
@@ -279,7 +296,11 @@ namespace TerrakeepMod.UI.Builds
 			y += AltoFila + SeparacionFilas;
 
 			_filaClases.Top.Set(y, 0f);
-			y += AltoFila + 8f;
+			y += AltoFila + SeparacionFilas;
+
+			_filaLoadout.Top.Set(y, 0f);
+			_filaLoadout.Height.Set(hayFilaLoadout ? AltoFila : 0f, 0f);
+			y += (hayFilaLoadout ? AltoFila : 0f) + 8f;
 
 			_cuerpo.Top.Set(y, 0f);
 			_cuerpo.Height.Set(-(y + AltoPie), 1f);
@@ -514,6 +535,121 @@ namespace TerrakeepMod.UI.Builds
 			return false;
 		}
 
+		/// <summary>
+		/// Pinta las pildoras de "a que conjunto de equipo va el auto-equipar" (1/2/3). Es
+		/// independiente de fuente/etapa/clase: se rehace entera en cada <see cref="Reconstruir"/>,
+		/// igual que las demas filas, pero su seleccion (<see cref="_loadoutObjetivo"/>) sobrevive
+		/// a la reconstruccion porque es un campo aparte, no algo que se lea de la pildora.
+		/// </summary>
+		private void PintarSelectorLoadoutObjetivo()
+		{
+			_botonesLoadoutObjetivo.Clear();
+
+			Player jugador = Main.LocalPlayer;
+			if (jugador == null) {
+				return;
+			}
+
+			int total = jugador.Loadouts.Length;
+			int objetivo = LoadoutObjetivoValido(jugador);
+
+			List<string> etiquetas = new List<string>();
+			for (int i = 0; i < total; i++) {
+				etiquetas.Add(Idiomas.Texto("Builds.ConjuntoDestinoPildora", i + 1));
+			}
+
+			PintarPildoras(_filaLoadout, etiquetas, objetivo, indice => {
+				_loadoutObjetivo = indice;
+				ActualizarBotonesLoadoutObjetivo();
+			});
+
+			foreach (UIElement hijo in _filaLoadout.Children) {
+				BotonTk boton = hijo as BotonTk;
+				if (boton == null) {
+					continue;
+				}
+				boton.Ayuda = () => Idiomas.Texto("Builds.ConjuntoDestinoAyuda");
+				_botonesLoadoutObjetivo.Add(boton);
+			}
+
+			ActualizarBotonesLoadoutObjetivo();
+		}
+
+		/// <summary>
+		/// Refresca el rotulo (con la marca de "activo" si toca) y el resaltado de las pildoras de
+		/// conjunto de destino. Hace falta en cada Update y no solo al reconstruir: el jugador
+		/// puede cambiar de conjunto ACTIVO con las teclas del propio juego mientras el panel de
+		/// Builds sigue abierto, y la marca tiene que seguirlo (igual que ya hace
+		/// <c>PestanaEquipo.ActualizarBotonesLoadout</c> en el panel de Personaje).
+		/// </summary>
+		private void ActualizarBotonesLoadoutObjetivo()
+		{
+			Player jugador = Main.LocalPlayer;
+			if (jugador == null) {
+				return;
+			}
+
+			for (int i = 0; i < _botonesLoadoutObjetivo.Count; i++) {
+				bool esActivo = EquipoJugador.EsLoadoutActivo(jugador, i);
+				string etiqueta = Idiomas.Texto("Builds.ConjuntoDestinoPildora", i + 1);
+				if (esActivo) {
+					// El espacio va aqui y no dentro del .hjson: ningun valor de esos archivos
+					// puede empezar ni acabar con espacio (tModLoader los reescribe y se lo come).
+					etiqueta += " " + Idiomas.Texto("Builds.ConjuntoActivoMarca");
+				}
+				_botonesLoadoutObjetivo[i].FijarTexto(EstiloInvestigacionAcortar(etiqueta, 34));
+				_botonesLoadoutObjetivo[i].Activo = i == _loadoutObjetivo;
+			}
+		}
+
+		/// <summary>
+		/// El conjunto de destino elegido (0/1/2), ya dentro de rango. Si todavia no se ha tocado
+		/// el selector (<see cref="_loadoutObjetivo"/> == -1, recien abierto el panel), se fija al
+		/// conjunto ACTIVO del jugador ahora mismo: es el comportamiento mas util por defecto,
+		/// coincide con "se ve al instante" sin que el jugador tenga que tocar nada.
+		/// </summary>
+		private int LoadoutObjetivoValido(Player jugador)
+		{
+			int total = jugador.Loadouts.Length;
+			if (_loadoutObjetivo < 0 || _loadoutObjetivo >= total) {
+				_loadoutObjetivo = jugador.CurrentLoadoutIndex;
+			}
+			return _loadoutObjetivo;
+		}
+
+		/// <summary>El conjunto de destino elegido ahora mismo (0/1/2). Lo usa la autoprueba.</summary>
+		public int LoadoutObjetivo => _loadoutObjetivo;
+
+		/// <summary>Fija el conjunto de destino sin pulsar ninguna pildora. Lo usa la autoprueba
+		/// para preparar el escenario sin depender de coordenadas de clic.</summary>
+		public void SeleccionarLoadoutObjetivo(int indice)
+		{
+			_loadoutObjetivo = indice;
+			ActualizarBotonesLoadoutObjetivo();
+		}
+
+		/// <summary>
+		/// Pulsa de verdad la pildora de conjunto de destino en la posicion indicada, con
+		/// <c>UIElement.LeftClick</c> (el mismo camino que <see cref="PulsarPildoraClase"/> ya usa
+		/// para las pildoras de clase). Devuelve false si no hay ninguna en esa posicion.
+		/// </summary>
+		public bool PulsarPildoraLoadoutObjetivo(int indice)
+		{
+			int i = 0;
+			foreach (UIElement hijo in _filaLoadout.Children) {
+				if (i++ != indice) {
+					continue;
+				}
+				BotonTk pildora = hijo as BotonTk;
+				if (pildora == null) {
+					return false;
+				}
+				pildora.LeftClick(new UIMouseEvent(pildora, pildora.GetDimensions().Center()));
+				return true;
+			}
+			return false;
+		}
+
 		public override void Update(GameTime gameTime)
 		{
 			base.Update(gameTime);
@@ -537,6 +673,11 @@ namespace TerrakeepMod.UI.Builds
 			// lo necesitan (se rehacen enteras con Reconstruir) ni las cabeceras de columna
 			// (son EtiquetaTk, que ya piden su texto en cada dibujado).
 			_botonAutoEquipar.FijarTexto(Idiomas.Texto("Builds.AutoEquipar"));
+
+			// La marca de "conjunto activo" de las pildoras de destino puede cambiar sola: el
+			// jugador puede pulsar las teclas de conjunto de equipo del propio juego mientras el
+			// panel de Builds sigue abierto.
+			ActualizarBotonesLoadoutObjetivo();
 
 			RegistrarCoordenadasUnaVez();
 		}
@@ -629,19 +770,22 @@ namespace TerrakeepMod.UI.Builds
 			_textoResumen = Idiomas.Texto("Builds.Leyenda");
 		}
 
-		/// <summary>Boton "Auto-equipar". Solo mueve objetos que el jugador ya tiene.</summary>
+		/// <summary>Boton "Auto-equipar". Solo mueve objetos que el jugador ya tiene, al conjunto
+		/// de equipo elegido en el selector de destino (ver <see cref="PintarSelectorLoadoutObjetivo"/>).</summary>
 		public void EjecutarAutoEquipar()
 		{
 			ClaseBuild clase = ClaseActual;
 			EtapaBuild etapa = EtapaActual;
 			FuenteBuilds fuente = FuenteActual;
-			if (clase == null || Main.LocalPlayer == null) {
+			Player jugador = Main.LocalPlayer;
+			if (clase == null || jugador == null) {
 				return;
 			}
 
-			ResultadoAutoEquipar resultado = AutoEquipar.Ejecutar(Main.LocalPlayer, clase);
-			AutoEquipar.Registrar(Main.LocalPlayer, clase, resultado,
-				$"{fuente?.Etiqueta} / {etapa?.Etiqueta}");
+			int objetivo = LoadoutObjetivoValido(jugador);
+			ResultadoAutoEquipar resultado = AutoEquipar.Ejecutar(jugador, clase, objetivo);
+			AutoEquipar.Registrar(jugador, clase, resultado,
+				$"{fuente?.Etiqueta} / {etapa?.Etiqueta}", objetivo);
 
 			RefrescarPosesion();
 			_textoResumen = Idiomas.Texto("Builds.ResultadoAutoEquipar", resultado.Resumen);

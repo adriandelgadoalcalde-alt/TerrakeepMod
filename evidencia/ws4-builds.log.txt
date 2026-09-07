@@ -1,86 +1,89 @@
-# Evidencia de WS4 (Builds) - 2026-09-06 15:05:59
-[15:05:59.033] [Terrakeep] Builds: la fuente "Calamity" no es utilizable en esta partida (35/154 objetos resueltos, y 0/119 de los que vienen de un mod); no se enseñara en el panel.
-[15:05:59.033] [Terrakeep] Builds: catalogo resuelto. [Vanilla: 3 etapas, 156/156 objetos resueltos] 
-[15:06:02.940] [Terrakeep] AUTOPRUEBA BUILDS: TERRAKEEP_AUTOTEST_BUILDS detectada. Marca de ejecucion: WS4-150541-31764
-[15:06:02.941] [Terrakeep] AUTOPRUEBA BUILDS: objetos sembrados para la prueba: MoltenHelmet(type=231)->inventario[0], MoltenGreaves(type=233)->inventario[1], NightsEdge(type=273)->inventario[2], FeralClaws(type=211)->inventario[3], ObsidianShield(type=397)->inventario[4], BandofRegeneration(type=49)->inventario[5]
-[15:06:02.951] [Terrakeep] Pestaña activa: "Builds" (via reapertura).
-[15:06:02.951] [Terrakeep] PANEL ABIERTO via autoprueba (TERRAKEEP_AUTOTEST_BUILDS). Pestaña: "Builds". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPrueba". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
-[15:06:02.952] [Terrakeep] Builds: Fuente="Vanilla" Etapa="Pre-Hardmode (listo para el Muro de Carne)" Clase="Cuerpo a cuerpo".
-[15:06:02.952] [Terrakeep] Builds "ya lo tienes" (al abrir): 6 de 13 objetos de "Pre-Hardmode (listo para el Muro de Carne)" / Cuerpo a cuerpo.
-[15:06:02.952] [Terrakeep]   - Casco fundido [MoltenHelmet] type=231: LO TIENES en inventario[0]
-[15:06:02.952] [Terrakeep]   - Coraza fundida [MoltenBreastplate] type=232: no lo tienes
-[15:06:02.952] [Terrakeep]   - Grebas fundidas [MoltenGreaves] type=233: LO TIENES en inventario[1]
-[15:06:02.953] [Terrakeep]   - Filo de la noche [NightsEdge] type=273: LO TIENES en inventario[2]
-[15:06:02.953] [Terrakeep]   - Furia solar [Sunfury] type=220: no lo tienes
-[15:06:02.953] [Terrakeep]   - La Despedazadora [TheBreaker] type=104: no lo tienes
-[15:06:02.953] [Terrakeep]   - Garras de bestia [FeralClaws] type=211: LO TIENES en inventario[3]
-[15:06:02.954] [Terrakeep]   - Piedra filosofal [PhilosophersStone] type=535: no lo tienes
-[15:06:02.954] [Terrakeep]   - Collar con cruz [CrossNecklace] type=554: no lo tienes
-[15:06:02.954] [Terrakeep]   - Escudo de obsidiana [ObsidianShield] type=397: LO TIENES en inventario[4]
-[15:06:02.954] [Terrakeep]   - Banda de regeneración [BandofRegeneration] type=49: LO TIENES en inventario[5]
-[15:06:02.954] [Terrakeep]   - Mantra antimaldición [CountercurseMantra] type=904: no lo tienes
-[15:06:02.955] [Terrakeep]   - Bezoar [Bezoar] type=887: no lo tienes
-[15:06:02.955] [Terrakeep] AUTOPRUEBA BUILDS: filtro activo -> Fuente="Vanilla" Etapa="Pre-Hardmode (listo para el Muro de Carne)" Clase="Cuerpo a cuerpo" (clave pedida: "melee").
-[15:06:02.955] [Terrakeep] Builds "ya lo tienes" (con el filtro ya aplicado): 6 de 13 objetos de "Pre-Hardmode (listo para el Muro de Carne)" / Cuerpo a cuerpo.
-[15:06:02.956] [Terrakeep]   - Casco fundido [MoltenHelmet] type=231: LO TIENES en inventario[0]
-[15:06:02.956] [Terrakeep]   - Coraza fundida [MoltenBreastplate] type=232: no lo tienes
-[15:06:02.956] [Terrakeep]   - Grebas fundidas [MoltenGreaves] type=233: LO TIENES en inventario[1]
-[15:06:02.956] [Terrakeep]   - Filo de la noche [NightsEdge] type=273: LO TIENES en inventario[2]
-[15:06:02.956] [Terrakeep]   - Furia solar [Sunfury] type=220: no lo tienes
-[15:06:02.957] [Terrakeep]   - La Despedazadora [TheBreaker] type=104: no lo tienes
-[15:06:02.957] [Terrakeep]   - Garras de bestia [FeralClaws] type=211: LO TIENES en inventario[3]
-[15:06:02.957] [Terrakeep]   - Piedra filosofal [PhilosophersStone] type=535: no lo tienes
-[15:06:02.957] [Terrakeep]   - Collar con cruz [CrossNecklace] type=554: no lo tienes
-[15:06:02.957] [Terrakeep]   - Escudo de obsidiana [ObsidianShield] type=397: LO TIENES en inventario[4]
-[15:06:02.958] [Terrakeep]   - Banda de regeneración [BandofRegeneration] type=49: LO TIENES en inventario[5]
-[15:06:02.958] [Terrakeep]   - Mantra antimaldición [CountercurseMantra] type=904: no lo tienes
-[15:06:02.958] [Terrakeep]   - Bezoar [Bezoar] type=887: no lo tienes
-[15:06:02.959] [Terrakeep] AUTOPRUEBA BUILDS: filtro por clase con un clic real en la pildora 4 de 4 ("Invocador"): clase "Cuerpo a cuerpo" -> "Invocador". Objetos de la clase ahora: 13.
-[15:06:02.959] [Terrakeep] AUTOPRUEBA BUILDS: equipo ANTES de auto-equipar: casco="" pechera="" grebas="" acc1="" acc2="" acc3="" acc4="" acc5=""
-[15:06:02.960] [Terrakeep] AUTO-EQUIPAR "Vanilla / Pre-Hardmode (listo para el Muro de Carne)" / Cuerpo a cuerpo: movidos=5, ya colocados=1, no los tienes=7, sin sitio=0, no existen aquí=0. Conjunto activo (CurrentLoadoutIndex)=0, slots de accesorio disponibles=5.
-[15:06:02.960] [Terrakeep]   - Casco fundido: inventario[0] -> equipo[0]
-[15:06:02.960] [Terrakeep]   - Coraza fundida: no lo tienes
-[15:06:02.961] [Terrakeep]   - Grebas fundidas: inventario[1] -> equipo[2]
-[15:06:02.961] [Terrakeep]   - Garras de bestia: inventario[3] -> equipo[3] (accesorio)
-[15:06:02.961] [Terrakeep]   - Piedra filosofal: no lo tienes
-[15:06:02.961] [Terrakeep]   - Collar con cruz: no lo tienes
-[15:06:02.961] [Terrakeep]   - Escudo de obsidiana: inventario[4] -> equipo[4] (accesorio)
-[15:06:02.961] [Terrakeep]   - Banda de regeneración: inventario[5] -> equipo[5] (accesorio)
-[15:06:02.961] [Terrakeep]   - Mantra antimaldición: no lo tienes
-[15:06:02.962] [Terrakeep]   - Bezoar: no lo tienes
-[15:06:02.962] [Terrakeep]   - Filo de la noche: ya en la mochila
-[15:06:02.962] [Terrakeep]   - Furia solar: no lo tienes
-[15:06:02.962] [Terrakeep]   - La Despedazadora: no lo tienes
-[15:06:02.962] [Terrakeep]   Equipo tras auto-equipar: casco="Casco fundido#231" pechera="" grebas="Grebas fundidas#233" acc1="Garras de bestia#211" acc2="Escudo de obsidiana#397" acc3="Banda de regeneración#49" acc4="" acc5=""
-[15:06:02.963] [Terrakeep] Builds "ya lo tienes" (despues de auto-equipar): 6 de 13 objetos de "Pre-Hardmode (listo para el Muro de Carne)" / Cuerpo a cuerpo.
-[15:06:02.963] [Terrakeep]   - Casco fundido [MoltenHelmet] type=231: LO TIENES en equipo[0]
-[15:06:02.963] [Terrakeep]   - Coraza fundida [MoltenBreastplate] type=232: no lo tienes
-[15:06:02.963] [Terrakeep]   - Grebas fundidas [MoltenGreaves] type=233: LO TIENES en equipo[2]
-[15:06:02.963] [Terrakeep]   - Filo de la noche [NightsEdge] type=273: LO TIENES en inventario[2]
-[15:06:02.963] [Terrakeep]   - Furia solar [Sunfury] type=220: no lo tienes
-[15:06:02.963] [Terrakeep]   - La Despedazadora [TheBreaker] type=104: no lo tienes
-[15:06:02.964] [Terrakeep]   - Garras de bestia [FeralClaws] type=211: LO TIENES en equipo[3]
-[15:06:02.964] [Terrakeep]   - Piedra filosofal [PhilosophersStone] type=535: no lo tienes
-[15:06:02.964] [Terrakeep]   - Collar con cruz [CrossNecklace] type=554: no lo tienes
-[15:06:02.964] [Terrakeep]   - Escudo de obsidiana [ObsidianShield] type=397: LO TIENES en equipo[4]
-[15:06:02.964] [Terrakeep]   - Banda de regeneración [BandofRegeneration] type=49: LO TIENES en equipo[5]
-[15:06:02.965] [Terrakeep]   - Mantra antimaldición [CountercurseMantra] type=904: no lo tienes
-[15:06:02.965] [Terrakeep]   - Bezoar [Bezoar] type=887: no lo tienes
-[15:06:02.965] [Terrakeep] AUTOPRUEBA BUILDS: segunda pasada de auto-equipar (prueba de idempotencia).
-[15:06:02.965] [Terrakeep] AUTO-EQUIPAR "Vanilla / Pre-Hardmode (listo para el Muro de Carne)" / Cuerpo a cuerpo: movidos=0, ya colocados=6, no los tienes=7, sin sitio=0, no existen aquí=0. Conjunto activo (CurrentLoadoutIndex)=0, slots de accesorio disponibles=5.
-[15:06:02.965] [Terrakeep]   - Casco fundido: ya puesto en equipo[0]
-[15:06:02.966] [Terrakeep]   - Coraza fundida: no lo tienes
-[15:06:02.966] [Terrakeep]   - Grebas fundidas: ya puesto en equipo[2]
-[15:06:02.966] [Terrakeep]   - Garras de bestia: ya equipado
-[15:06:02.966] [Terrakeep]   - Piedra filosofal: no lo tienes
-[15:06:02.966] [Terrakeep]   - Collar con cruz: no lo tienes
-[15:06:02.966] [Terrakeep]   - Escudo de obsidiana: ya equipado
-[15:06:02.967] [Terrakeep]   - Banda de regeneración: ya equipado
-[15:06:02.967] [Terrakeep]   - Mantra antimaldición: no lo tienes
-[15:06:02.967] [Terrakeep]   - Bezoar: no lo tienes
-[15:06:02.967] [Terrakeep]   - Filo de la noche: ya en la mochila
-[15:06:02.967] [Terrakeep]   - Furia solar: no lo tienes
-[15:06:02.967] [Terrakeep]   - La Despedazadora: no lo tienes
-[15:06:02.968] [Terrakeep]   Equipo tras auto-equipar: casco="Casco fundido#231" pechera="" grebas="Grebas fundidas#233" acc1="Garras de bestia#211" acc2="Escudo de obsidiana#397" acc3="Banda de regeneración#49" acc4="" acc5=""
-[15:06:02.974] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=100 y=21 w=1080 h=676. Resolucion 1280x720, escala de interfaz 1. Pestaña abierta: "Builds". Barra de pestañas: ["Personaje" x=110 y=61 170x30] ["Librería" x=286 y=61 170x30] ["Builds" x=463 y=61 170x30 ACTIVA] ["Investigación" x=640 y=61 170x30] ["Exploración" x=816 y=61 170x30] ["Ajustes" x=993 y=61 170x30] 
-[15:06:02.975] [Terrakeep] Area de Builds dibujada. Zona: x=110 y=99 w=1060 h=544. Resolucion actual: 1280x720. 13 slots de catalogo. Primeros: ["Casco fundido" x=110 y=257 w=44 h=44 loTiene=True] ["Coraza fundida" x=110 y=307 w=44 h=44 loTiene=False] ["Grebas fundidas" x=110 y=356 w=44 h=44 loTiene=True] ["Filo de la noche" x=463 y=257 w=44 h=44 loTiene=True] 
+# Evidencia de WS4 (Builds) - 2026-09-07 02:48:21
+[02:48:21.975] [Terrakeep] Builds: la fuente "Calamity" no es utilizable en esta partida (35/154 objetos resueltos, y 0/119 de los que vienen de un mod); no se enseñara en el panel.
+[02:48:21.976] [Terrakeep] Builds: catalogo resuelto. [Vanilla: 3 etapas, 156/156 objetos resueltos] 
+[02:48:25.905] [Terrakeep] AUTOPRUEBA BUILDS: TERRAKEEP_AUTOTEST_BUILDS detectada. Marca de ejecucion: WS4-024804-83288
+[02:48:25.905] [Terrakeep] AUTOPRUEBA BUILDS: objetos sembrados para la prueba: MoltenHelmet(type=231)->inventario[0], MoltenGreaves(type=233)->inventario[1], NightsEdge(type=273)->inventario[2], FeralClaws(type=211)->inventario[3], ObsidianShield(type=397)->inventario[4], BandofRegeneration(type=49)->inventario[5]
+[02:48:25.916] [Terrakeep] Pestaña activa: "Builds" (via reapertura).
+[02:48:25.917] [Terrakeep] PANEL ABIERTO via autoprueba (TERRAKEEP_AUTOTEST_BUILDS). Pestaña: "Builds". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPrueba". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
+[02:48:25.917] [Terrakeep] Builds: Fuente="Vanilla" Etapa="Pre-Hardmode (listo para el Muro de Carne)" Clase="Cuerpo a cuerpo".
+[02:48:25.917] [Terrakeep] Builds "ya lo tienes" (al abrir): 6 de 13 objetos de "Pre-Hardmode (listo para el Muro de Carne)" / Cuerpo a cuerpo.
+[02:48:25.917] [Terrakeep]   - Casco fundido [MoltenHelmet] type=231: LO TIENES en inventario[0]
+[02:48:25.917] [Terrakeep]   - Coraza fundida [MoltenBreastplate] type=232: no lo tienes
+[02:48:25.918] [Terrakeep]   - Grebas fundidas [MoltenGreaves] type=233: LO TIENES en inventario[1]
+[02:48:25.918] [Terrakeep]   - Filo de la noche [NightsEdge] type=273: LO TIENES en inventario[2]
+[02:48:25.918] [Terrakeep]   - Furia solar [Sunfury] type=220: no lo tienes
+[02:48:25.919] [Terrakeep]   - La Despedazadora [TheBreaker] type=104: no lo tienes
+[02:48:25.919] [Terrakeep]   - Garras de bestia [FeralClaws] type=211: LO TIENES en inventario[3]
+[02:48:25.919] [Terrakeep]   - Piedra filosofal [PhilosophersStone] type=535: no lo tienes
+[02:48:25.919] [Terrakeep]   - Collar con cruz [CrossNecklace] type=554: no lo tienes
+[02:48:25.920] [Terrakeep]   - Escudo de obsidiana [ObsidianShield] type=397: LO TIENES en inventario[4]
+[02:48:25.920] [Terrakeep]   - Banda de regeneración [BandofRegeneration] type=49: LO TIENES en inventario[5]
+[02:48:25.920] [Terrakeep]   - Mantra antimaldición [CountercurseMantra] type=904: no lo tienes
+[02:48:25.920] [Terrakeep]   - Bezoar [Bezoar] type=887: no lo tienes
+[02:48:25.920] [Terrakeep] AUTOPRUEBA BUILDS: filtro activo -> Fuente="Vanilla" Etapa="Pre-Hardmode (listo para el Muro de Carne)" Clase="Cuerpo a cuerpo" (clave pedida: "melee").
+[02:48:25.920] [Terrakeep] Builds "ya lo tienes" (con el filtro ya aplicado): 6 de 13 objetos de "Pre-Hardmode (listo para el Muro de Carne)" / Cuerpo a cuerpo.
+[02:48:25.921] [Terrakeep]   - Casco fundido [MoltenHelmet] type=231: LO TIENES en inventario[0]
+[02:48:25.921] [Terrakeep]   - Coraza fundida [MoltenBreastplate] type=232: no lo tienes
+[02:48:25.921] [Terrakeep]   - Grebas fundidas [MoltenGreaves] type=233: LO TIENES en inventario[1]
+[02:48:25.921] [Terrakeep]   - Filo de la noche [NightsEdge] type=273: LO TIENES en inventario[2]
+[02:48:25.921] [Terrakeep]   - Furia solar [Sunfury] type=220: no lo tienes
+[02:48:25.921] [Terrakeep]   - La Despedazadora [TheBreaker] type=104: no lo tienes
+[02:48:25.922] [Terrakeep]   - Garras de bestia [FeralClaws] type=211: LO TIENES en inventario[3]
+[02:48:25.922] [Terrakeep]   - Piedra filosofal [PhilosophersStone] type=535: no lo tienes
+[02:48:25.922] [Terrakeep]   - Collar con cruz [CrossNecklace] type=554: no lo tienes
+[02:48:25.922] [Terrakeep]   - Escudo de obsidiana [ObsidianShield] type=397: LO TIENES en inventario[4]
+[02:48:25.923] [Terrakeep]   - Banda de regeneración [BandofRegeneration] type=49: LO TIENES en inventario[5]
+[02:48:25.923] [Terrakeep]   - Mantra antimaldición [CountercurseMantra] type=904: no lo tienes
+[02:48:25.923] [Terrakeep]   - Bezoar [Bezoar] type=887: no lo tienes
+[02:48:25.923] [Terrakeep] AUTOPRUEBA BUILDS: filtro por clase con un clic real en la pildora 4 de 4 ("Invocador"): clase "Cuerpo a cuerpo" -> "Invocador". Objetos de la clase ahora: 13.
+[02:48:25.924] [Terrakeep] AUTOPRUEBA BUILDS: conjunto de destino pedido=1 (pildora pulsada de verdad=True) -> seleccionado ahora=1. Conjunto ACTIVO real ahora mismo=1.
+[02:48:25.924] [Terrakeep] AUTOPRUEBA BUILDS: equipo ANTES de auto-equipar (los 3 conjuntos): [Conjunto 1 *ACTIVO*: casco="" pechera="" grebas="" acc1="" acc2="" acc3="" acc4="" acc5=""] [Conjunto 2: casco="" pechera="" grebas="" acc1="" acc2="" acc3="" acc4="" acc5=""] [Conjunto 3: casco="" pechera="" grebas="" acc1="" acc2="" acc3="" acc4="" acc5=""]
+[02:48:25.925] [Terrakeep] AUTO-EQUIPAR "Vanilla / Pre-Hardmode (listo para el Muro de Carne)" / Cuerpo a cuerpo: movidos=5, ya colocados=1, no los tienes=7, sin sitio=0, no existen aquí=0. Conjunto de destino=1/3 (ACTIVO ahora mismo, se ve al instante), Conjunto activo real (CurrentLoadoutIndex)=0, slots de accesorio disponibles=5.
+[02:48:25.926] [Terrakeep]   - Casco fundido: inventario[0] -> equipo[0]
+[02:48:25.926] [Terrakeep]   - Coraza fundida: no lo tienes
+[02:48:25.926] [Terrakeep]   - Grebas fundidas: inventario[1] -> equipo[2]
+[02:48:25.926] [Terrakeep]   - Garras de bestia: inventario[3] -> equipo[3] (accesorio)
+[02:48:25.927] [Terrakeep]   - Piedra filosofal: no lo tienes
+[02:48:25.927] [Terrakeep]   - Collar con cruz: no lo tienes
+[02:48:25.927] [Terrakeep]   - Escudo de obsidiana: inventario[4] -> equipo[4] (accesorio)
+[02:48:25.927] [Terrakeep]   - Banda de regeneración: inventario[5] -> equipo[5] (accesorio)
+[02:48:25.927] [Terrakeep]   - Mantra antimaldición: no lo tienes
+[02:48:25.928] [Terrakeep]   - Bezoar: no lo tienes
+[02:48:25.928] [Terrakeep]   - Filo de la noche: ya en la mochila
+[02:48:25.928] [Terrakeep]   - Furia solar: no lo tienes
+[02:48:25.928] [Terrakeep]   - La Despedazadora: no lo tienes
+[02:48:25.929] [Terrakeep]   Conjunto 1 tras auto-equipar: casco="Casco fundido#231" pechera="" grebas="Grebas fundidas#233" acc1="Garras de bestia#211" acc2="Escudo de obsidiana#397" acc3="Banda de regeneración#49" acc4="" acc5=""
+[02:48:25.929] [Terrakeep] Builds "ya lo tienes" (despues de auto-equipar): 6 de 13 objetos de "Pre-Hardmode (listo para el Muro de Carne)" / Cuerpo a cuerpo.
+[02:48:25.929] [Terrakeep]   - Casco fundido [MoltenHelmet] type=231: LO TIENES en equipo[0]
+[02:48:25.929] [Terrakeep]   - Coraza fundida [MoltenBreastplate] type=232: no lo tienes
+[02:48:25.930] [Terrakeep]   - Grebas fundidas [MoltenGreaves] type=233: LO TIENES en equipo[2]
+[02:48:25.930] [Terrakeep]   - Filo de la noche [NightsEdge] type=273: LO TIENES en inventario[2]
+[02:48:25.930] [Terrakeep]   - Furia solar [Sunfury] type=220: no lo tienes
+[02:48:25.930] [Terrakeep]   - La Despedazadora [TheBreaker] type=104: no lo tienes
+[02:48:25.930] [Terrakeep]   - Garras de bestia [FeralClaws] type=211: LO TIENES en equipo[3]
+[02:48:25.931] [Terrakeep]   - Piedra filosofal [PhilosophersStone] type=535: no lo tienes
+[02:48:25.931] [Terrakeep]   - Collar con cruz [CrossNecklace] type=554: no lo tienes
+[02:48:25.931] [Terrakeep]   - Escudo de obsidiana [ObsidianShield] type=397: LO TIENES en equipo[4]
+[02:48:25.931] [Terrakeep]   - Banda de regeneración [BandofRegeneration] type=49: LO TIENES en equipo[5]
+[02:48:25.931] [Terrakeep]   - Mantra antimaldición [CountercurseMantra] type=904: no lo tienes
+[02:48:25.931] [Terrakeep]   - Bezoar [Bezoar] type=887: no lo tienes
+[02:48:25.932] [Terrakeep] AUTOPRUEBA BUILDS: equipo DESPUES de auto-equipar (los 3 conjuntos): [Conjunto 1 *ACTIVO*: casco="Casco fundido#231" pechera="" grebas="Grebas fundidas#233" acc1="Garras de bestia#211" acc2="Escudo de obsidiana#397" acc3="Banda de regeneración#49" acc4="" acc5=""] [Conjunto 2: casco="" pechera="" grebas="" acc1="" acc2="" acc3="" acc4="" acc5=""] [Conjunto 3: casco="" pechera="" grebas="" acc1="" acc2="" acc3="" acc4="" acc5=""]
+[02:48:25.932] [Terrakeep] AUTOPRUEBA BUILDS: segunda pasada de auto-equipar (prueba de idempotencia).
+[02:48:25.932] [Terrakeep] AUTO-EQUIPAR "Vanilla / Pre-Hardmode (listo para el Muro de Carne)" / Cuerpo a cuerpo: movidos=0, ya colocados=6, no los tienes=7, sin sitio=0, no existen aquí=0. Conjunto de destino=1/3 (ACTIVO ahora mismo, se ve al instante), Conjunto activo real (CurrentLoadoutIndex)=0, slots de accesorio disponibles=5.
+[02:48:25.932] [Terrakeep]   - Casco fundido: ya puesto en equipo[0]
+[02:48:25.933] [Terrakeep]   - Coraza fundida: no lo tienes
+[02:48:25.933] [Terrakeep]   - Grebas fundidas: ya puesto en equipo[2]
+[02:48:25.933] [Terrakeep]   - Garras de bestia: ya equipado
+[02:48:25.933] [Terrakeep]   - Piedra filosofal: no lo tienes
+[02:48:25.934] [Terrakeep]   - Collar con cruz: no lo tienes
+[02:48:25.934] [Terrakeep]   - Escudo de obsidiana: ya equipado
+[02:48:25.934] [Terrakeep]   - Banda de regeneración: ya equipado
+[02:48:25.934] [Terrakeep]   - Mantra antimaldición: no lo tienes
+[02:48:25.935] [Terrakeep]   - Bezoar: no lo tienes
+[02:48:25.935] [Terrakeep]   - Filo de la noche: ya en la mochila
+[02:48:25.935] [Terrakeep]   - Furia solar: no lo tienes
+[02:48:25.935] [Terrakeep]   - La Despedazadora: no lo tienes
+[02:48:25.936] [Terrakeep]   Conjunto 1 tras auto-equipar: casco="Casco fundido#231" pechera="" grebas="Grebas fundidas#233" acc1="Garras de bestia#211" acc2="Escudo de obsidiana#397" acc3="Banda de regeneración#49" acc4="" acc5=""
+[02:48:25.936] [Terrakeep] AUTOPRUEBA BUILDS: equipo tras la segunda pasada (los 3 conjuntos): [Conjunto 1 *ACTIVO*: casco="Casco fundido#231" pechera="" grebas="Grebas fundidas#233" acc1="Garras de bestia#211" acc2="Escudo de obsidiana#397" acc3="Banda de regeneración#49" acc4="" acc5=""] [Conjunto 2: casco="" pechera="" grebas="" acc1="" acc2="" acc3="" acc4="" acc5=""] [Conjunto 3: casco="" pechera="" grebas="" acc1="" acc2="" acc3="" acc4="" acc5=""]
+[02:48:25.943] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=100 y=21 w=1080 h=676. Resolucion 1280x720, escala de interfaz 1. Pestaña abierta: "Builds". Barra de pestañas: ["Personaje" x=110 y=61 170x30] ["Librería" x=286 y=61 170x30] ["Builds" x=463 y=61 170x30 ACTIVA] ["Investigación" x=640 y=61 170x30] ["Exploración" x=816 y=61 170x30] ["Ajustes" x=993 y=61 170x30] 
+[02:48:25.944] [Terrakeep] Area de Builds dibujada. Zona: x=110 y=99 w=1060 h=544. Resolucion actual: 1280x720. 13 slots de catalogo. Primeros: ["Casco fundido" x=110 y=291 w=43 h=43 loTiene=True] ["Coraza fundida" x=110 y=336 w=43 h=43 loTiene=False] ["Grebas fundidas" x=110 y=380 w=43 h=43 loTiene=True] ["Filo de la noche" x=463 y=291 w=43 h=43 loTiene=True] 

@@ -48,14 +48,45 @@ namespace TerrakeepMod.Common.Builds
 		}
 
 		/// <summary>
+		/// El array de armadura/accesorios de UN conjunto de equipo concreto (0/1/2), sea cual sea
+		/// el que este activo ahora mismo.
+		/// <para />
+		/// Igual que descubrio WS1 para la pestaña de Equipo (ver <c>PestanaEquipo</c>) y esta
+		/// verificado contra <c>EquipmentLoadout.Swap</c> del tModLoader instalado: el conjunto
+		/// ACTIVO no vive en <c>Player.Loadouts[]</c>, vive "suelto" en <c>Player.armor</c>. Los
+		/// otros dos conjuntos SI viven en <c>Player.Loadouts[i].Armor</c> mientras no estan
+		/// activos. Escribir aqui es la unica forma de dejar equipo listo en un conjunto que el
+		/// jugador no lleva puesto ahora mismo, sin tener que cambiar de conjunto para hacerlo.
+		/// </summary>
+		public static Item[] ArmorDe(Player jugador, int indiceLoadout)
+		{
+			int total = jugador.Loadouts.Length;
+			int i = indiceLoadout < 0 ? 0 : (indiceLoadout >= total ? total - 1 : indiceLoadout);
+			return i == jugador.CurrentLoadoutIndex ? jugador.armor : jugador.Loadouts[i].Armor;
+		}
+
+		/// <summary>true si el indice de conjunto pedido es el que el jugador lleva puesto ahora
+		/// mismo (o sea, si escribir en el se ve al instante sobre el personaje).</summary>
+		public static bool EsLoadoutActivo(Player jugador, int indiceLoadout) =>
+			indiceLoadout == jugador.CurrentLoadoutIndex;
+
+		/// <summary>
 		/// Todos los contenedores donde se considera que el jugador "tiene" un objeto: inventario,
-		/// equipo (incluida la ropa social) y los cuatro almacenes portatiles - Hucha, Caja
-		/// fuerte, Forja del Defensor y Boveda del Vacio.
+		/// el equipo ACTIVO (incluida la ropa social), los otros dos conjuntos de equipo guardados
+		/// en <c>Player.Loadouts</c> (para no decir "no lo tienes" de un objeto que en realidad
+		/// esta en un conjunto que ahora mismo no lleva puesto) y los cuatro almacenes portatiles -
+		/// Hucha, Caja fuerte, Forja del Defensor y Boveda del Vacio.
 		/// </summary>
 		public static IEnumerable<KeyValuePair<string, Item[]>> Contenedores(Player jugador)
 		{
 			yield return new KeyValuePair<string, Item[]>("inventario", jugador.inventory);
 			yield return new KeyValuePair<string, Item[]>("equipo", jugador.armor);
+			for (int i = 0; i < jugador.Loadouts.Length; i++) {
+				if (i == jugador.CurrentLoadoutIndex) {
+					continue; // este es justo el que se acaba de dar arriba como "equipo"
+				}
+				yield return new KeyValuePair<string, Item[]>($"conjunto {i + 1}", jugador.Loadouts[i].Armor);
+			}
 			if (jugador.bank?.item != null) {
 				yield return new KeyValuePair<string, Item[]>("hucha", jugador.bank.item);
 			}
@@ -122,21 +153,24 @@ namespace TerrakeepMod.Common.Builds
 		}
 
 		/// <summary>
-		/// Primer slot de accesorio donde cabe <paramref name="objeto"/>, o -1 si no hay ninguno.
-		/// Solo considera slots VACIOS (auto-equipar no desaloja accesorios que ya llevas puestos)
-		/// y respeta las reglas del propio juego con <c>ItemSlot.AccCheck</c>, que es lo que
-		/// impide duplicados y dos pares de alas a la vez.
+		/// Primer slot de accesorio donde cabe <paramref name="objeto"/> dentro de
+		/// <paramref name="destino"/> (el conjunto de equipo elegido: <c>jugador.armor</c> si es el
+		/// activo, o <c>jugador.Loadouts[n].Armor</c> si no), o -1 si no hay ninguno. Solo
+		/// considera slots VACIOS (auto-equipar no desaloja accesorios que ya llevas puestos) y
+		/// respeta las reglas del propio juego con <c>ItemSlot.AccCheck</c> (comprobado que opera
+		/// solo sobre el array que se le pasa, sin depender de que sea el del jugador activo), que
+		/// es lo que impide duplicados y dos pares de alas a la vez.
 		/// </summary>
-		public static int PrimerSlotAccesorioLibre(Player jugador, Item objeto)
+		public static int PrimerSlotAccesorioLibre(Player jugador, Item[] destino, Item objeto)
 		{
 			int disponibles = SlotsAccesorioDisponibles(jugador);
 			for (int i = 0; i < disponibles; i++) {
 				int slot = PrimerSlotAccesorio + i;
-				if (!jugador.armor[slot].IsAir) {
+				if (!destino[slot].IsAir) {
 					continue;
 				}
 				// AccCheck devuelve TRUE cuando NO se puede equipar (ver su XMLdoc real).
-				if (ItemSlot.AccCheck(jugador.armor, objeto, slot)) {
+				if (ItemSlot.AccCheck(destino, objeto, slot)) {
 					continue;
 				}
 				return slot;
@@ -144,12 +178,13 @@ namespace TerrakeepMod.Common.Builds
 			return -1;
 		}
 
-		/// <summary>true si el objeto ya esta puesto en uno de los slots de accesorio activos.</summary>
-		public static bool AccesorioYaPuesto(Player jugador, int tipo)
+		/// <summary>true si el objeto ya esta puesto en uno de los slots de accesorio activos de
+		/// <paramref name="destino"/>.</summary>
+		public static bool AccesorioYaPuesto(Player jugador, Item[] destino, int tipo)
 		{
 			int disponibles = SlotsAccesorioDisponibles(jugador);
 			for (int i = 0; i < disponibles; i++) {
-				if (jugador.armor[PrimerSlotAccesorio + i].type == tipo) {
+				if (destino[PrimerSlotAccesorio + i].type == tipo) {
 					return true;
 				}
 			}
