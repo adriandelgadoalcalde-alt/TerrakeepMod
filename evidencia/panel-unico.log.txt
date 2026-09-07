@@ -1,44 +1,53 @@
-# Evidencia de la fusion de los seis paneles - 2026-09-06 15:01:31
-[15:01:31.916] [Terrakeep] AUTOPRUEBA PANEL: TERRAKEEP_AUTOTEST_PANEL detectada. Marca de ejecucion: PANEL-150111-49292. Jugador "TerrakeepPrueba", mundo "TerrakeepPrueba", resolucion 800x720, escala de interfaz 1.
-[15:01:31.916] [Terrakeep] AUTOPRUEBA PANEL/0 - teclas REALES de las seis pestañas, leidas del perfil de controles del juego: Character=[K], Library=[O], Builds=[L], Research=[I], Exploration=[P], Settings=[J]
-[15:01:31.917] [Terrakeep] AUTOPRUEBA PANEL/0 - panel abierto=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
-[15:01:32.133] [Terrakeep] AUTOPRUEBA PANEL - CLIC REAL en la pestaña "Character" (en x=26 y=61 118x30, clic en 85,76). Pestaña activa ahora: "Character" -> OK
-[15:01:32.349] [Terrakeep] AUTOPRUEBA PANEL - pestaña "Character" ya dibujada: ContenidoPersonaje: 88 elementos, 58 ranuras de objeto, 15 botones; area x=26 y=99 748x544
-[15:01:32.424] [Terrakeep] AUTOPRUEBA PANEL - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\pestana-0-character.png" (800x720)
-[15:01:32.616] [Terrakeep] AUTOPRUEBA PANEL - CLIC REAL en la pestaña "Library" (en x=150 y=61 118x30, clic en 210,76). Pestaña activa ahora: "Library" -> OK
-[15:01:32.826] [Terrakeep] AUTOPRUEBA PANEL - pestaña "Library" ya dibujada: ContenidoLibreria: 86 elementos, 50 ranuras de objeto, 10 botones; area x=26 y=99 748x544
-[15:01:32.893] [Terrakeep] AUTOPRUEBA PANEL - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\pestana-1-library.png" (800x720)
-[15:01:33.079] [Terrakeep] AUTOPRUEBA PANEL - CLIC REAL en la pestaña "Builds" (en x=275 y=61 118x30, clic en 334,76). Pestaña activa ahora: "Builds" -> OK
-[15:01:33.295] [Terrakeep] AUTOPRUEBA PANEL - pestaña "Builds" ya dibujada: ContenidoBuilds: 51 elementos, 0 ranuras de objeto, 8 botones; area x=26 y=99 748x544
-[15:01:33.374] [Terrakeep] AUTOPRUEBA PANEL - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\pestana-2-builds.png" (800x720)
-[15:01:33.561] [Terrakeep] AUTOPRUEBA PANEL - CLIC REAL en la pestaña "Research" (en x=400 y=61 118x30, clic en 459,76). Pestaña activa ahora: "Research" -> OK
-[15:01:33.775] [Terrakeep] AUTOPRUEBA PANEL - pestaña "Research" ya dibujada: ContenidoInvestigacion: 391 elementos, 0 ranuras de objeto, 124 botones; area x=26 y=99 748x544
-[15:01:33.862] [Terrakeep] AUTOPRUEBA PANEL - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\pestana-3-research.png" (800x720)
-[15:01:34.048] [Terrakeep] AUTOPRUEBA PANEL - CLIC REAL en la pestaña "Exploration" (en x=524 y=61 118x30, clic en 584,76). Pestaña activa ahora: "Exploration" -> OK
-[15:01:34.264] [Terrakeep] AUTOPRUEBA PANEL - pestaña "Exploration" ya dibujada: ContenidoExploracion: 27 elementos, 0 ranuras de objeto, 8 botones; area x=26 y=99 748x544
-[15:01:34.329] [Terrakeep] AUTOPRUEBA PANEL - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\pestana-4-exploration.png" (800x720)
-[15:01:34.514] [Terrakeep] AUTOPRUEBA PANEL - CLIC REAL en la pestaña "Settings" (en x=649 y=61 118x30, clic en 708,76). Pestaña activa ahora: "Settings" -> OK
-[15:01:34.731] [Terrakeep] AUTOPRUEBA PANEL - pestaña "Settings" ya dibujada: ContenidoAjustes: 18 elementos, 0 ranuras de objeto, 5 botones; area x=26 y=99 748x544
-[15:01:34.799] [Terrakeep] AUTOPRUEBA PANEL - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\pestana-5-settings.png" (800x720)
-[15:01:34.984] [Terrakeep] AUTOPRUEBA PANEL/animacion (Ajustes) - raton ENCIMA de "Character" (x=26 y=61 118x30). IsMouseHovering=True, escala antes=0.80.
-[15:01:35.200] [Terrakeep] AUTOPRUEBA PANEL/animacion (Ajustes) - tras 12 fotogramas con el raton encima: escala 0.80 -> 0.96, el marco se dibuja 2 px mas grande. OK: la animacion ha CRECIDO (referencia real: Main.DrawSettingButton va de 0,80 a 0,96 a 0,02 por fotograma).
-[15:01:35.269] [Terrakeep] AUTOPRUEBA PANEL/animacion - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\animacion-ajustes.png" (800x720)
-[15:01:35.454] [Terrakeep] AUTOPRUEBA PANEL/animacion (Ajustes) - raton FUERA. Escala en el momento de salir=0.96, IsMouseHovering=False. Se comprueba que vuelve sola en el paso siguiente.
-[15:01:35.671] [Terrakeep] AUTOPRUEBA PANEL - CLIC REAL en la pestaña "Character" (en x=26 y=61 118x30, clic en 85,76). Pestaña activa ahora: "Character" -> OK
-[15:01:35.887] [Terrakeep] AUTOPRUEBA PANEL/animacion (Personaje) - raton ENCIMA de "Character" (x=26 y=61 118x30). IsMouseHovering=True, escala antes=0.80.
-[15:01:36.104] [Terrakeep] AUTOPRUEBA PANEL/animacion (Personaje) - tras 12 fotogramas con el raton encima: escala 0.80 -> 0.96, el marco se dibuja 2 px mas grande. OK: la animacion ha CRECIDO (referencia real: Main.DrawSettingButton va de 0,80 a 0,96 a 0,02 por fotograma).
-[15:01:36.181] [Terrakeep] AUTOPRUEBA PANEL/animacion - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\animacion-personaje.png" (800x720)
-[15:01:36.366] [Terrakeep] AUTOPRUEBA PANEL/animacion (Personaje) - raton FUERA. Escala en el momento de salir=0.96, IsMouseHovering=False. Se comprueba que vuelve sola en el paso siguiente.
-[15:01:36.583] [Terrakeep] AUTOPRUEBA PANEL/atajos - tecla [O] (TerrakeepMod/AbrirLibreria): panel abierto antes=True en "Character" -> ahora abierto=True en "Library" -> OK: salta a SU pestaña sin cerrar el panel.
-[15:01:36.800] [Terrakeep] AUTOPRUEBA PANEL/atajos - tecla [P] (TerrakeepMod/AbrirExploracion): panel abierto antes=True en "Library" -> ahora abierto=True en "Exploration" -> OK: salta a SU pestaña sin cerrar el panel.
-[15:01:37.017] [Terrakeep] AUTOPRUEBA PANEL/atajos - tecla [I] (TerrakeepMod/AbrirInvestigacion): panel abierto antes=True en "Exploration" -> ahora abierto=True en "Research" -> OK: salta a SU pestaña sin cerrar el panel.
-[15:01:37.233] [Terrakeep] AUTOPRUEBA PANEL/atajos - tecla [L] (TerrakeepMod/AbrirBuilds): panel abierto antes=True en "Research" -> ahora abierto=True en "Builds" -> OK: salta a SU pestaña sin cerrar el panel.
-[15:01:37.449] [Terrakeep] AUTOPRUEBA PANEL/atajos - tecla [J] (TerrakeepMod/AbrirAjustes): panel abierto antes=True en "Builds" -> ahora abierto=True en "Settings" -> OK: salta a SU pestaña sin cerrar el panel.
-[15:01:37.666] [Terrakeep] AUTOPRUEBA PANEL/atajos - tecla [K] (TerrakeepMod/AbrirPanel): panel abierto antes=True en "Settings" -> ahora abierto=True en "Character" -> OK: salta a SU pestaña sin cerrar el panel.
-[15:01:37.883] [Terrakeep] AUTOPRUEBA PANEL/atajos - la tecla [K] pulsada estando YA en "Character": panel abierto ahora=False -> OK: lo cierra.
-[15:01:38.099] [Terrakeep] AUTOPRUEBA PANEL/icono - panel cerrado (abierto=False), inventario abierto=True. Fotogramas en los que el icono se habia dibujado hasta ahora: 13.
-[15:01:38.316] [Terrakeep] AUTOPRUEBA PANEL/icono - el icono se ha dibujado en 13 fotogramas con el panel cerrado. Rectangulo REAL en pantalla: x=570 y=278 30x30 (resolucion 800x720). Para comparar, los iconos vanilla de esa misma fila: bestiario (498,278,30,30) y emotes (534,278,30,30). OK: la capa del HUD corre de verdad.
-[15:01:38.380] [Terrakeep] AUTOPRUEBA PANEL/icono - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\icono-hud.png" (800x720)
-[15:01:38.566] [Terrakeep] AUTOPRUEBA PANEL/icono - clic en (585, 293) sobre el icono x=570 y=278 30x30 -> panel abierto=True, pestaña="Character"
-[15:01:38.782] [Terrakeep] AUTOPRUEBA PANEL/icono - un fotograma despues: panel abierto=True, pestaña="Character", veces pulsado el icono=1, InGameUI.CurrentState=PanelTerrakeepState. Con el panel abierto el icono deja de dibujarse a proposito (la capa "Vanilla: Fancy UI" corta el recorrido antes de llegar al inventario).
-[15:01:38.998] [Terrakeep] AUTOPRUEBA PANEL COMPLETA.
+# Evidencia de la fusion de los seis paneles - 2026-09-07 10:28:26
+[10:28:26.138] [Terrakeep] AUTOPRUEBA PANEL: TERRAKEEP_AUTOTEST_PANEL detectada. Marca de ejecucion: PANEL-102804-142004. Jugador "TerrakeepPrueba", mundo "TerrakeepPrueba", resolucion 1090x613, escala de interfaz 1.4666667.
+[10:28:26.145] [Terrakeep] AUTOPRUEBA PANEL/0 - teclas REALES de las seis pestañas, leidas del perfil de controles del juego: Character=[sin tecla], Library=[sin tecla], Builds=[sin tecla], Research=[sin tecla], Exploration=[sin tecla], Settings=[sin tecla]
+[10:28:26.147] [Terrakeep] AUTOPRUEBA PANEL/0 - panel abierto=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
+[10:28:26.364] [Terrakeep] AUTOPRUEBA PANEL - CLIC REAL en la pestaña "Character" (en x=31 y=58 165x30, clic en 114,73). Pestaña activa ahora: "Character" -> OK
+[10:28:26.580] [Terrakeep] AUTOPRUEBA PANEL - pestaña "Character" ya dibujada: ContenidoPersonaje: 96 elementos, 58 ranuras de objeto, 18 botones; area x=31 y=96 1027x444
+[10:28:26.873] [Terrakeep] AUTOPRUEBA PANEL - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\pestana-0-character.png" (1600x900)
+[10:28:26.898] [Terrakeep] AUTOPRUEBA PANEL - CLIC REAL en la pestaña "Library" (en x=203 y=58 165x30, clic en 285,73). Pestaña activa ahora: "Library" -> OK
+[10:28:27.004] [Terrakeep] AUTOPRUEBA PANEL - pestaña "Library" ya dibujada: ContenidoLibreria: 86 elementos, 50 ranuras de objeto, 10 botones; area x=31 y=96 1027x444
+[10:28:27.191] [Terrakeep] AUTOPRUEBA PANEL - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\pestana-1-library.png" (1600x900)
+[10:28:27.222] [Terrakeep] AUTOPRUEBA PANEL - CLIC REAL en la pestaña "Builds" (en x=374 y=58 165x30, clic en 456,73). Pestaña activa ahora: "Builds" -> OK
+[10:28:27.437] [Terrakeep] AUTOPRUEBA PANEL - pestaña "Builds" ya dibujada: ContenidoBuilds: 55 elementos, 0 ranuras de objeto, 11 botones; area x=31 y=96 1027x444
+[10:28:27.625] [Terrakeep] AUTOPRUEBA PANEL - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\pestana-2-builds.png" (1600x900)
+[10:28:27.658] [Terrakeep] AUTOPRUEBA PANEL - CLIC REAL en la pestaña "Research" (en x=545 y=58 165x30, clic en 628,73). Pestaña activa ahora: "Research" -> OK
+[10:28:27.871] [Terrakeep] AUTOPRUEBA PANEL - pestaña "Research" ya dibujada: ContenidoInvestigacion: 391 elementos, 0 ranuras de objeto, 124 botones; area x=31 y=96 1027x444
+[10:28:28.065] [Terrakeep] AUTOPRUEBA PANEL - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\pestana-3-research.png" (1600x900)
+[10:28:28.089] [Terrakeep] AUTOPRUEBA PANEL - CLIC REAL en la pestaña "Exploration" (en x=716 y=58 165x30, clic en 799,73). Pestaña activa ahora: "Exploration" -> OK
+[10:28:28.304] [Terrakeep] AUTOPRUEBA PANEL - pestaña "Exploration" ya dibujada: ContenidoExploracion: 27 elementos, 0 ranuras de objeto, 8 botones; area x=31 y=96 1027x444
+[10:28:28.464] [Terrakeep] AUTOPRUEBA PANEL - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\pestana-4-exploration.png" (1600x900)
+[10:28:28.522] [Terrakeep] AUTOPRUEBA PANEL - CLIC REAL en la pestaña "Settings" (en x=887 y=58 165x30, clic en 970,73). Pestaña activa ahora: "Settings" -> OK
+[10:28:28.737] [Terrakeep] AUTOPRUEBA PANEL - pestaña "Settings" ya dibujada: ContenidoAjustes: 18 elementos, 0 ranuras de objeto, 5 botones; area x=31 y=96 1027x444
+[10:28:28.897] [Terrakeep] AUTOPRUEBA PANEL - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\pestana-5-settings.png" (1600x900)
+[10:28:28.954] [Terrakeep] AUTOPRUEBA PANEL/animacion (Ajustes) - raton ENCIMA de "Character" (x=31 y=58 165x30). IsMouseHovering=True, escala antes=0.80.
+[10:28:29.171] [Terrakeep] AUTOPRUEBA PANEL/animacion (Ajustes) - tras 12 fotogramas con el raton encima: escala 0.80 -> 0.96, el marco se dibuja 2 px mas grande. OK: la animacion ha CRECIDO (referencia real: Main.DrawSettingButton va de 0,80 a 0,96 a 0,02 por fotograma).
+[10:28:29.328] [Terrakeep] AUTOPRUEBA PANEL/animacion - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\animacion-ajustes.png" (1600x900)
+[10:28:29.387] [Terrakeep] AUTOPRUEBA PANEL/animacion (Ajustes) - raton FUERA. Escala en el momento de salir=0.96, IsMouseHovering=False. Se comprueba que vuelve sola en el paso siguiente.
+[10:28:29.604] [Terrakeep] AUTOPRUEBA PANEL - CLIC REAL en la pestaña "Character" (en x=31 y=58 165x30, clic en 114,73). Pestaña activa ahora: "Character" -> OK
+[10:28:29.821] [Terrakeep] AUTOPRUEBA PANEL/animacion (Personaje) - raton ENCIMA de "Character" (x=31 y=58 165x30). IsMouseHovering=True, escala antes=0.80.
+[10:28:30.037] [Terrakeep] AUTOPRUEBA PANEL/animacion (Personaje) - tras 12 fotogramas con el raton encima: escala 0.80 -> 0.96, el marco se dibuja 2 px mas grande. OK: la animacion ha CRECIDO (referencia real: Main.DrawSettingButton va de 0,80 a 0,96 a 0,02 por fotograma).
+[10:28:30.214] [Terrakeep] AUTOPRUEBA PANEL/animacion - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\animacion-personaje.png" (1600x900)
+[10:28:30.254] [Terrakeep] AUTOPRUEBA PANEL/animacion (Personaje) - raton FUERA. Escala en el momento de salir=0.96, IsMouseHovering=False. Se comprueba que vuelve sola en el paso siguiente.
+[10:28:30.471] [Terrakeep] AUTOPRUEBA PANEL/atajos: PlayerInput todavia no conoce el atajo de "Library".
+[10:28:30.687] [Terrakeep] AUTOPRUEBA PANEL/atajos: PlayerInput todavia no conoce el atajo de "Exploration".
+[10:28:30.904] [Terrakeep] AUTOPRUEBA PANEL/atajos: PlayerInput todavia no conoce el atajo de "Research".
+[10:28:31.120] [Terrakeep] AUTOPRUEBA PANEL/atajos: PlayerInput todavia no conoce el atajo de "Builds".
+[10:28:31.337] [Terrakeep] AUTOPRUEBA PANEL/atajos: PlayerInput todavia no conoce el atajo de "Settings".
+[10:28:31.554] [Terrakeep] AUTOPRUEBA PANEL/atajos: PlayerInput todavia no conoce el atajo de "Character".
+[10:28:31.988] [Terrakeep] AUTOPRUEBA PANEL/icono - panel cerrado (abierto=False), inventario abierto=True. Fotogramas en los que el icono se habia dibujado hasta ahora: 0.
+[10:28:32.204] [Terrakeep] AUTOPRUEBA PANEL/icono - el icono se ha dibujado en 13 fotogramas con el panel cerrado. Rectangulo REAL en pantalla: x=570 y=278 30x30 (resolucion 1090x613). Para comparar, los iconos vanilla de esa misma fila: bestiario (498,278,30,30) y emotes (534,278,30,30). OK: la capa del HUD corre de verdad.
+[10:28:32.368] [Terrakeep] AUTOPRUEBA PANEL/icono - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\icono-hud.png" (1600x900)
+[10:28:32.420] [Terrakeep] AUTOPRUEBA PANEL/icono - clic en (585, 293) sobre el icono x=570 y=278 30x30 -> panel abierto=False, pestaña="Character"
+[10:28:32.637] [Terrakeep] AUTOPRUEBA PANEL/icono - un fotograma despues: panel abierto=False, pestaña="Character", veces pulsado el icono=1, InGameUI.CurrentState=(null). Con el panel abierto el icono deja de dibujarse a proposito (la capa "Vanilla: Fancy UI" corta el recorrido antes de llegar al inventario).
+[10:28:32.854] [Terrakeep] AUTOPRUEBA PANEL/muñeco - apariencia de prueba puesta en vivo: colores no nulos y armor[0..2]="Goggles" type=37 stack=1 prefix=0 / "Copper Chainmail" type=80 stack=1 prefix=0 / "Copper Greaves" type=76 stack=1 prefix=0.
+[10:28:33.073] [Terrakeep] AUTOPRUEBA PANEL/muñeco - abierta la sub-pestaña "Appearance".
+[10:28:33.482] [Terrakeep] AUTOPRUEBA PANEL/muñeco (con-armadura) - MunecoTk dibujado en x=789 y=296 241x192, ConArmadura=True. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\apariencia-muneco-con-armadura.png" (1600x900)
+[10:28:33.499] [Terrakeep] AUTOPRUEBA MUÑECO/luz - fotograma 25 tile=(2102,266) Lighting.GetColor real ahi={R:255 G:255 B:255 A:255} pixel renderizado del muñeco en pantalla={R:39 G:50 B:86 A:255}
+[10:28:33.504] [Terrakeep] AUTOPRUEBA PANEL/muñeco - clic REAL en "Mods.TerrakeepMod.Personaje.Apariencia.VerConArmadura". Valor antes=True -> despues=False -> OK: ha cambiado.
+[10:28:33.913] [Terrakeep] AUTOPRUEBA PANEL/muñeco (sin-armadura) - MunecoTk dibujado en x=789 y=296 241x192, ConArmadura=False. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\apariencia-muneco-sin-armadura.png" (1600x900)
+[10:28:33.939] [Terrakeep] AUTOPRUEBA PANEL/muñeco - clic REAL en "Mods.TerrakeepMod.Personaje.Apariencia.VerConArmadura". Valor antes=False -> despues=True -> OK: ha cambiado.
+[10:28:34.346] [Terrakeep] AUTOPRUEBA PANEL/muñeco (con-armadura-otra-vez) - MunecoTk dibujado en x=789 y=296 241x192, ConArmadura=True. captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepPanel\terrakeep-capturas\apariencia-muneco-con-armadura-otra-vez.png" (1600x900)
+[10:28:34.360] [Terrakeep] AUTOPRUEBA MUÑECO/luz - fotograma 70 tile=(2102,266) Lighting.GetColor real ahi={R:255 G:255 B:255 A:255} pixel renderizado del muñeco en pantalla={R:39 G:50 B:86 A:255}
+[10:28:34.360] [Terrakeep] AUTOPRUEBA MUÑECO/luz RESULTADO: OK - pixel sin la antorcha forzada={R:39 G:50 B:86 A:255}, pixel con la antorcha forzada en el mismo tile={R:39 G:50 B:86 A:255} (identicos pese a la luz real distinta: el muñeco es inmune)
+[10:28:34.375] [Terrakeep] AUTOPRUEBA PANEL COMPLETA.
