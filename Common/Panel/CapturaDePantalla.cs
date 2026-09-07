@@ -49,7 +49,9 @@ namespace TerrakeepMod.Common.Panel
 			get {
 				return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaPanelUnico.Variable))
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaIdiomas.Variable))
-					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Menus.AutopruebaMenus.Variable));
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Menus.AutopruebaMenus.Variable))
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
+						Exploracion.PanelExploracionSystem.VariableAutoprueba));
 			}
 		}
 

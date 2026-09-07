@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Terraria;
+using TerrakeepMod.Common.Panel;
 using TerrakeepMod.UI.Exploracion;
 
 namespace TerrakeepMod.Common.Exploracion
@@ -165,16 +166,73 @@ namespace TerrakeepMod.Common.Exploracion
 						RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/6 - mini-mapa centrado en el " +
 							"primer resultado (" + (int)primero.Tile.X + ", " + (int)primero.Tile.Y + "): " +
 							panel.Mapa.Mapa.Informe());
+
+						// Comprobacion REAL del nombre bajo el cursor (sprites/tarea 3). La
+						// coordenada del resultado es el CENTROIDE de su celda de 25x25 (media de
+						// todos los tiles del objetivo que hay dentro: ver Acumular en
+						// BuscadorMundo), y una veta tiene huecos de piedra/tierra entre medias, asi
+						// que el centroide en si puede no ser mena. Se prueba por eso sobre el
+						// PRIMER tile de la celda que SI es del objetivo buscado de verdad.
+						int tx = (int)primero.Tile.X;
+						int ty = (int)primero.Tile.Y;
+						Vector2? tileDeVerdad = PrimerTileDelObjetivo(tx, ty, PanelExploracionSystem.Buscador.Objetivo);
+						if (tileDeVerdad.HasValue) {
+							int vx = (int)tileDeVerdad.Value.X;
+							int vy = (int)tileDeVerdad.Value.Y;
+							RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/6 - nombre real bajo un " +
+								"tile CONFIRMADO del objetivo buscado, en (" + vx + ", " + vy + "): \"" +
+								PestanaMapa.NombreBajoElCursor(vx, vy) + "\".");
+						}
+						else {
+							RegistroExploracion.Aviso(Terrakeep.LogTag + " AUTOPRUEBA WS6/6 - no se encontro un tile " +
+								"del objetivo dentro de su propia celda (no deberia pasar).");
+						}
+
+						// Y sobre un NPC vivo conocido: tiene que devolver su nombre, no el del
+						// fondo que hubiera debajo.
+						if (Main.npc != null) {
+							for (int i = 0; i < Main.npc.Length; i++) {
+								NPC npc = Main.npc[i];
+								if (npc != null && npc.active && npc.townNPC) {
+									int nx = (int)(npc.Center.X / 16f);
+									int ny = (int)(npc.Center.Y / 16f);
+									RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/6 - nombre real " +
+										"bajo el tile del NPC \"" + npc.GivenOrTypeName + "\" (" + nx + ", " + ny +
+										"): \"" + PestanaMapa.NombreBajoElCursor(nx, ny) + "\".");
+									break;
+								}
+							}
+						}
 					}
 					else {
 						RegistroExploracion.Aviso(Terrakeep.LogTag + " AUTOPRUEBA WS6/6 - la busqueda no encontro nada, " +
 							"no hay resultado que enseñar en el mapa.");
 					}
-					Siguiente(20);
+					// El cambio de pestaña de arriba (CambiarPestana(0)) no se ve todavia: hace
+					// falta esperar un fotograma para que se dibuje y se presente de verdad antes
+					// de la captura del paso siguiente (CapturaDePantalla coge el fotograma YA
+					// presentado, no el que se acaba de pedir).
+					Siguiente(10);
 					break;
 
 				case 7:
-					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/7 - con los marcadores puestos: " +
+					// Captura real de lo que hay en pantalla (sprites de la tarea 2): el mini-mapa
+					// con los marcadores.
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/7 - " +
+						CapturaDePantalla.Guardar("ws6-minimapa-iconos"));
+					panel.CambiarPestana(1);
+					Siguiente(10);
+					break;
+
+				case 8:
+					// Y la lista de resultados, con sus iconos.
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/8 - " +
+						CapturaDePantalla.Guardar("ws6-resultados-iconos"));
+					Siguiente(5);
+					break;
+
+				case 9:
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/9 - con los marcadores puestos: " +
 						panel.Mapa.Mapa.Informe());
 					// Los dos barridos de entidades, que no recorren el mundo.
 					BuscarPorEtiqueta(panel, "Cofres y cómodas");
@@ -182,12 +240,12 @@ namespace TerrakeepMod.Common.Exploracion
 					Siguiente(5);
 					break;
 
-				case 8:
+				case 10:
 					ProbarDificultad(panel);
 					Siguiente(10);
 					break;
 
-				case 9:
+				case 11:
 					// Se rehace la busqueda de tiles para que lo que salte al mapa vanilla sean sus
 					// marcadores (decenas de zonas) y no los tres NPC del paso anterior.
 					BuscarPorEtiqueta(panel, _objetivoDeTiles);
@@ -198,28 +256,28 @@ namespace TerrakeepMod.Common.Exploracion
 					Siguiente(90);
 					break;
 
-				case 10:
-					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/10 - antes de saltar al mapa: " +
+				case 12:
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/12 - antes de saltar al mapa: " +
 						MarcadoresExploracion.Resultados.Count + " marcadores de \"" + MarcadoresExploracion.Titulo +
 						"\" puestos, y " + panel.Mapa.Mapa.Informe());
 					Siguiente(20);
 					break;
 
-				case 11:
-					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/11 - el mini-mapa mira al tile (" +
+				case 13:
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/13 - el mini-mapa mira al tile (" +
 						(int)panel.Mapa.Mapa.CentroTile.X + ", " + (int)panel.Mapa.Mapa.CentroTile.Y + ") con escala " +
 						panel.Mapa.Mapa.Escala.ToString("0.00") + "; se pulsa \"Ver en el mapa del juego\" para " +
 						"llevarse esa misma vista al mapa vanilla.");
 					panel.Mapa.PulsarVerEnElMapa();
-					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/11 - pulsado: " +
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/13 - pulsado: " +
 						"Main.mapFullscreen=" + Main.mapFullscreen +
 						", Main.InGameUI.CurrentState=" + (Main.InGameUI.CurrentState != null ? Main.InGameUI.CurrentState.GetType().Name : "(null)") +
 						" (tiene que ser null: con el mapa abierto el juego no dibuja interfaz de mods).");
 					Siguiente(90);
 					break;
 
-				case 12:
-					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/12 - con el mapa vanilla abierto: " +
+				case 14:
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/14 - con el mapa vanilla abierto: " +
 						"Main.mapFullscreen=" + Main.mapFullscreen +
 						", mapFullscreenPos=(" + (int)Main.mapFullscreenPos.X + ", " + (int)Main.mapFullscreenPos.Y + ")" +
 						", mapFullscreenScale=" + Main.mapFullscreenScale.ToString("0.00") +
@@ -231,19 +289,66 @@ namespace TerrakeepMod.Common.Exploracion
 					Siguiente(20);
 					break;
 
-				case 13:
-					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/13 - tras cerrar el mapa: " +
+				case 15:
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/15 - tras cerrar el mapa: " +
 						"panel abierto de nuevo=" + PanelExploracionSystem.PanelAbierto +
 						", InGameUI.CurrentState=" + (Main.InGameUI.CurrentState != null ? Main.InGameUI.CurrentState.GetType().Name : "(null)") + ".");
 					Siguiente(5);
 					break;
 
-				case 14:
+				case 16:
 					RestaurarDificultad();
 					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6 COMPLETA.");
 					_enMarcha = false;
 					break;
 			}
+		}
+
+		/// <summary>
+		/// Busca, dentro de la celda de <see cref="BuscadorMundo.LadoCelda"/> centrada en el
+		/// centroide que devuelve un resultado, el primer tile que SI es de verdad el objetivo:
+		/// el centroide es la MEDIA de las coordenadas de todos los tiles de la celda
+		/// (<c>BuscadorMundo.Acumular</c>), y una veta tiene huecos de piedra/tierra entre medias,
+		/// asi que el centroide en si puede no ser mena. null si no aparece ninguno (no deberia
+		/// pasar: el propio contador de la busqueda dice que ahi hay al menos uno).
+		/// </summary>
+		private static Vector2? PrimerTileDelObjetivo(int centroX, int centroY, ObjetivoBusqueda objetivo)
+		{
+			if (objetivo == null) {
+				return null;
+			}
+			// Cofres y NPC no son centroides: su Tile YA es la posicion real.
+			if (objetivo.Clase == ClaseDeObjetivo.Cofres || objetivo.Clase == ClaseDeObjetivo.Npcs) {
+				return new Vector2(centroX, centroY);
+			}
+
+			int radio = BuscadorMundo.LadoCelda;
+			for (int dx = -radio; dx <= radio; dx++) {
+				for (int dy = -radio; dy <= radio; dy++) {
+					int x = centroX + dx;
+					int y = centroY + dy;
+					if (x < 0 || y < 0 || x >= Main.maxTilesX || y >= Main.maxTilesY) {
+						continue;
+					}
+
+					Tile tile = Main.tile[x, y];
+					bool acierto;
+					if (objetivo.Clase == ClaseDeObjetivo.Liquido) {
+						acierto = tile.LiquidAmount > 0 && tile.LiquidType == objetivo.Liquido;
+					}
+					else if (objetivo.Clase == ClaseDeObjetivo.Pared) {
+						acierto = objetivo.Tipos.Contains(tile.WallType);
+					}
+					else {
+						acierto = tile.HasTile && objetivo.Tipos.Contains(tile.TileType);
+					}
+
+					if (acierto) {
+						return new Vector2(x, y);
+					}
+				}
+			}
+			return null;
 		}
 
 		private static void BuscarPorEtiqueta(ContenidoExploracion panel, string etiqueta)
@@ -316,14 +421,14 @@ namespace TerrakeepMod.Common.Exploracion
 		private static void RestaurarDificultad()
 		{
 			if (_modoOriginal < 0 || Main.GameMode == _modoOriginal) {
-				RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/14 - el mundo ya esta en su modo " +
+				RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/16 - el mundo ya esta en su modo " +
 					"original (" + MundoActual.ModoDeJuegoLegible + "), no hay nada que restaurar.");
 				return;
 			}
 
 			int antes = Main.GameMode;
 			Main.GameMode = _modoOriginal;
-			RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/14 - modo del mundo restaurado: " +
+			RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/16 - modo del mundo restaurado: " +
 				MundoActual.NombreDeModo(antes) + " -> " + MundoActual.ModoDeJuegoLegible +
 				" (Main.GameMode=" + Main.GameMode + ", expertMode=" + Main.expertMode +
 				", masterMode=" + Main.masterMode + ").");

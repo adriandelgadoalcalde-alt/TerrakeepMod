@@ -2337,3 +2337,158 @@ rótulo bonito, nunca deja de funcionar ni de cubrir el 100% de los buffs. Se co
 privado** solo lo que es mío de verdad: `Common/Personaje/ArbolBuffs.cs`,
 `Common/Personaje/VerificacionBuffsSystem.cs`, `UI/Personaje/Widgets/FilaCarpetaBuffTk.cs`,
 `UI/Personaje/PestanaBuffs.cs` y la evidencia.
+
+---
+
+## 7-sep-2026 — WS6: la búsqueda "no encontraba nada", sprites reales y nombre real al pasar el ratón
+
+Tres pedidos sobre el panel de Exploración (`Common/Exploracion/`, `UI/Exploracion/`), reportados
+por el usuario jugando de verdad: la búsqueda no encontraba nunca nada, ni la lista de resultados
+ni el mapa tenían sprites, y pasar el ratón por el mini-mapa no decía qué había en cada tile.
+
+### 1. La causa REAL de "no encuentra nada, da igual lo que busques"
+
+No estaba en `BuscadorMundo.cs` ni en `ObjetivosBusqueda.cs`: el barrido de tiles, el `_esObjetivo`
+indexado por tipo, el `HasTile` antes de comparar tipo, la agrupación en celdas de 25×25... todo
+correcto, y lo demuestra el propio log de verificación de WS6 de hace un día
+(`"13718 tiles encontrados en 20170801 mirados"`), que seguía dando el mismo número exacto tal
+cual, sin tocar una línea de esos dos archivos.
+
+La causa estaba en `UI/Exploracion/PestanaBusqueda.cs`: `_soloExplorado` nacía en `true`. Ese
+interruptor filtra por `Main.Map.IsRevealed(x, y)`, y es la MISMA comprobación para las cinco
+clases de objetivo (tiles, paredes, líquidos, cofres y NPC - se ve en `BuscadorMundo.Avanzar` y en
+`BuscarCofres`/`BuscarNpcs`). El problema es conceptual, no un bug de índices: **lo que casi
+cualquier búsqueda de esta herramienta quiere encontrar es precisamente lo que el jugador NO ha
+visto todavía** (una veta de mineral sin descubrir, un cofre en una zona sin explorar). Con el
+interruptor activado de fábrica, una búsqueda de algo que el jugador aún no ha encontrado se queda
+casi siempre en 0 resultados - que es exactamente "da igual lo que busques, no encuentra nada".
+Arreglado cambiando el valor de fábrica a `false` (buscar en TODO el mundo): esto es una
+herramienta de edición con el mismo espíritu que Terrasavr, no un asistente que respeta spoilers
+por defecto. El interruptor se conserva por si alguien sí quiere ceñirse a lo ya explorado.
+
+**Verificado aislando la variable**: se relanzó `scripts\verificar-exploracion.ps1` sin tocar
+`BuscadorMundo`/`ObjetivosBusqueda` ni una línea, primero reproduciendo el bug (interruptor en
+`true`, autoprueba forzándolo a apagarse a mano) y después con el valor de fábrica ya en `false` y
+la autoprueba dejándolo tal cual (`"estaba en False, ahora False (ya estaba apagada, no hacia
+falta)"`): mismo resultado exacto de siempre, `13718 tiles encontrados`, con un CLIC REAL sobre
+"Buscar en el mundo" sin tocar ningún otro control primero - que es justo el camino que sigue un
+jugador real la primera vez que abre la pestaña.
+
+### 2. Sprites reales en resultados y en el mini-mapa
+
+`Common/Exploracion/IconoResultado.cs` (nuevo): resuelve la textura REAL del juego para cada
+resultado y la dibuja escalada (sin deformar) dentro de un rectángulo. Nunca un icono inventado:
+
+| Clase | Textura real | Origen |
+|---|---|---|
+| Tile (minerales, gemas, tesoros) | `TextureAssets.Tile[tipo]` tras `Main.instance.LoadTiles(tipo)` | `(0, 0, 16, 16)` - primer frame de la rejilla de 16×16 con 2 px de separación, formato fijo de sprite-sheet de Terraria |
+| Pared | `TextureAssets.Wall[tipo]` tras `Main.instance.LoadWall(tipo)` | `(0, 0, 32, 32)` - confirmado leyendo `WallDrawing.cs` real (`new Rectangle(0, 0, 32, 32)`) |
+| Líquido | `TextureAssets.Liquid[tipo]` (siempre cargada, son 4) | `(0, 0, 16, 16)` |
+| Cofres | `TextureAssets.Item[ItemID.Chest]` (icono genérico de "Cofre") | textura entera |
+| NPC | `TextureAssets.Npc[tipo]` tras `Main.instance.LoadNPC(tipo)` | `NPC.frame` capturado en el instante de la búsqueda (el motor ya lo mantiene al día mientras el NPC vive; no hace falta calcular el frame a mano) |
+
+Para cofres se usa el icono genérico del objeto "Cofre" y no el frame exacto de
+`TileID.Containers`/`Dressers` de cada estilo real: cada familia de contenedor tiene su propia
+geometría de frame (comprobado en `Chest.cs` decompilado, `frameX / 36` para unos, otro ancho para
+las cómodas), y un frame mal calculado en un estilo concreto sería peor que un icono siempre
+correcto aunque genérico. Sigue siendo un sprite real del juego, no uno inventado.
+
+`ResultadoBusqueda` (en `BuscadorMundo.cs`) gana dos campos (`TipoNpc`, `FrameNpc`) que
+`BuscarNpcs()` rellena; los demás casos no necesitan datos por resultado porque todos los
+resultados de una misma búsqueda comparten el mismo objetivo
+(`PanelExploracionSystem.Buscador.Objetivo`).
+
+Dibujado en dos sitios, tal como pedía la tarea (`MarcadoresExploracion.cs` no necesitó tocarse: es
+solo el contenedor de resultados, no dibuja nada):
+- `UI/Exploracion/PestanaBusqueda.cs`: cada fila deja de ser un `BotonTk` con el texto centrado
+  (chocaría con un icono a la izquierda) y pasa a ser un `BotonTk` vacío con dos hijos encima
+  (`IgnoresMouseInteraction`): el icono nuevo (`IconoFilaResultado`) y una `EtiquetaTk` con el
+  texto de siempre, ahora alineado a la izquierda tras el icono.
+- `UI/Exploracion/MiniMapaTk.cs` (`LienzoMapaTk.DibujarMarcadores`): el rombo de color de siempre
+  se conserva como "pin" de fondo (visible contra cualquier color del mapa) y el sprite real se
+  dibuja encima, centrado, más pequeño.
+
+El mapa vanilla a pantalla completa (`CapaMapaExploracion.cs`) se deja tal cual a propósito: la
+tarea solo pedía los tres archivos de arriba, y esa capa usa `MapOverlayDrawContext.Draw`, que solo
+admite recortar por rejilla uniforme (`SpriteFrame`) - válido para tiles/paredes (rejilla fija de
+18/34 px) pero no para NPC (frames de tamaño variable sin ese mismo empaquetado), así que meterlo
+ahí también habría sido media función bien hecha y media a ciegas.
+
+**Verificado con captura real de pantalla** (`GraphicsDevice.GetBackBufferData`, la única vía que
+funciona en este motor - ver `Common/Panel/CapturaDePantalla.cs`), no solo con el log en verde:
+`ws6-resultados-iconos.png` enseña el icono real de cobre (textura naranja/marrón moteada,
+reconocible) a la izquierda de cada fila, y `ws6-minimapa-iconos.png` los marcadores del mapa con
+el mismo tinte. `CapturaDePantalla.Permitida` ganó una cuarta condición
+(`PanelExploracionSystem.VariableAutoprueba`) para poder pedir estas capturas desde la autoprueba
+de WS6: antes solo la habilitaban Panel Único/Idiomas/Menús.
+
+### 3. Nombre real al pasar el ratón por el mini-mapa
+
+`UI/Exploracion/PestanaMapa.cs` ya tenía el enganche (`TextoBajoElRaton`), pero solo decía
+"explorado/sin explorar" - nunca QUÉ había. Se investigaron las dos vías que pedía la tarea:
+
+- **Portar `tiles.json`/`walls.json` de TEdit** (lo que ya hace el proyecto hermano de escritorio):
+  exigiría traer ese catálogo entero al mod y mantenerlo aparte de lo que tModLoader ya sabe de sus
+  propios tiles (y de los de cualquier mod cargado).
+- **Preguntarle al motor en vivo, que YA sabe nombrar sus propios objetos del mapa**: gana, y con
+  bastante diferencia. `MapHelper.CreateMapTile(x, y, 255)` es la MISMA función que usa el motor
+  para decidir qué enseña el mapa de vanilla en cada casilla (prioridad tile > líquido > pared >
+  fondo según profundidad, con sus excepciones: bloques pintados invisibles, variantes de mineral
+  por bioma...), y `Lang.GetMapObjectName(casilla.Type)` es la MISMA función que usa el detector de
+  menas (`"GameUI.OreDetected"`, visto en `Main.cs` decompilado) para nombrar lo que encuentra. Un
+  `ModTile` de cualquier mod se registra solo en `MapHelper.tileLookup`, así que esto cubre
+  contenido de mods sin catálogo propio, y ya sale en el idioma activo sin mantener nada. Un NPC
+  vivo sobre el tile (por su hitbox real, no solo su centro) se comprueba primero y tapa lo que
+  hubiera debajo, igual que en la propia búsqueda de "NPC vivos ahora mismo".
+
+`PestanaMapa.NombreBajoElCursor(x, y)` queda pública a propósito, para que la autoprueba pueda
+comprobarla sobre una coordenada conocida sin depender de mover el ratón real (la interfaz de
+Terrakeep no expone `Main.mouseX/Y` a un script externo sin ventana con foco). Las claves de
+idioma `Exploracion.Mapa.TileExplorado`/`TileSinExplorar` ganan un tercer parámetro con ese
+nombre, y hay una clave nueva (`Exploracion.Mapa.Vacio`) para cuando de verdad no hay nada que
+nombrar (dirt liso, por ejemplo: ver más abajo).
+
+**Verificado con una coordenada de la que no quedaba duda** (`AutopruebaExploracion.
+PrimerTileDelObjetivo`): el primer resultado de la búsqueda de "Cobre" da un **centroide** (media
+de las coordenadas de los tiles de la celda de 25×25, `BuscadorMundo.Acumular`), no
+necesariamente un tile de mena en sí - una veta tiene huecos de piedra/tierra entre medias. La
+primera pasada probó el nombre justo sobre ese centroide y salió `"Nada"`; el diagnóstico
+(`Main.tile[x,y].TileType`) confirmó que esa celda concreta era tierra lisa (`TileType=0`), y
+`"Nada"` es exactamente lo que diría el propio mapa de vanilla ahí también (la tierra rasa no
+tiene nombre propio en el mapa - solo lo tienen los materiales especiales). Buscando dentro de la
+misma celda el primer tile que SÍ era mena de verdad (`TileType=166`, `TileID.Tin` - este mundo
+generó estaño y no cobre, el otro nombre del mismo objetivo `"CobreEstano"`), el nombre real que
+devolvió el juego fue `"Aluminio"`. No es un fallo de esta función: es la traducción oficial (con
+error incluido) que trae el propio `tModLoader.dll` para `TileID.Tin` en español - se comprobó
+que viene de la MISMA función (`Lang.GetMapObjectName`) que usa el detector de menas real, así que
+reproducirla tal cual, error de traducción incluido, es la prueba de que se está leyendo la fuente
+correcta y no una tabla propia. Sobre un NPC real (el habitante "Anciano") devolvió `"Anciano"`,
+tapando el fondo.
+
+### Obstáculo real durante la verificación (documentado por la regla de autonomía)
+
+Al compilar el proyecto ENTERO (obligatorio: ya no hay compilación aislada por área, ver el
+`README` de `verificar-exploracion.ps1`) apareció `error CS0117: 'ItemID' does not contain a
+definition for 'WoodenChest'` en `Common/Panel/AutopruebaTooltipObjeto.cs` - un archivo de OTRO
+agente trabajando en paralelo (no trackeado por git todavía en ese momento), que bloqueaba
+compilar y por tanto verificar cualquier cosa de este repo. Se esperó y se comprobó dos veces antes
+de tocarlo (bitácora/CLAUDE.md: "si algo falla dos veces, para"; aquí fue el archivo ajeno el que
+seguía roto, no un intento propio repetido), y al seguir roto se aplicó el arreglo mínimo y obvio
+(`ItemID.Chest`, la constante real: `Chest = 48`, comprobada con `ilspycmd`) para poder seguir.
+Ese archivo NO se comitea desde aquí (es de otro agente, con **índice privado** se deja fuera);
+el otro agente ya siguió trabajando sobre esa misma corrección en su siguiente pasada.
+
+### Índice privado para comitear
+
+Con otros agentes tocando `Common/Personaje/`, `UI/Personaje/`, `Common/Panel/PanelTerrakeepSystem.cs`,
+`UI/Panel/PanelTerrakeepState.cs` y `Common/Panel/AutopruebaTooltipObjeto.cs` a la vez, y con
+`scripts/generar-localizacion.py`/los dos `.hjson` llevando ya varias rondas de "se pisan las
+claves nuevas de todo el mundo si alguien relanza el generador entero" (visto en la entrada
+anterior de esta misma bitácora): los dos `.hjson` se revirtieron a `HEAD` y se les aplicaron A
+MANO solo las tres claves de esta tarea (mismo formato ya usado en el archivo), en vez de
+relanzar `generar-localizacion.py` sobre la tabla compartida completa. Se comitea con índice
+privado solo: `Common/Exploracion/AutopruebaExploracion.cs`, `Common/Exploracion/BuscadorMundo.cs`,
+`Common/Exploracion/IconoResultado.cs`, `Common/Panel/CapturaDePantalla.cs`,
+`Localization/es-ES_Mods.TerrakeepMod.hjson`, `Localization/en-US_Mods.TerrakeepMod.hjson`,
+`UI/Exploracion/MiniMapaTk.cs`, `UI/Exploracion/PestanaBusqueda.cs`, `UI/Exploracion/PestanaMapa.cs`,
+`scripts/generar-localizacion.py` y la evidencia.

@@ -1,6 +1,7 @@
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
+using Terraria.Map;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Exploracion;
@@ -154,7 +155,52 @@ namespace TerrakeepMod.UI.Exploracion
 			bool visto = Main.Map != null && Main.Map.IsRevealed(x, y);
 			return Idiomas.Texto(visto
 				? "Exploracion.Mapa.TileExplorado"
-				: "Exploracion.Mapa.TileSinExplorar", x, y);
+				: "Exploracion.Mapa.TileSinExplorar", x, y, NombreBajoElCursor(x, y));
+		}
+
+		/// <summary>
+		/// Que hay REALMENTE en ese tile, con el mismo nombre (y el mismo idioma) que enseñaria el
+		/// propio juego.
+		/// </summary>
+		/// <remarks>
+		/// Se probaron las dos vias que pedia la tarea. Portar <c>tiles.json</c>/<c>walls.json</c>
+		/// de TEdit (la que ya usa el proyecto hermano de escritorio) exigiria arrastrar ese
+		/// catalogo entero a este mod y mantenerlo aparte de lo que el propio tModLoader ya sabe de
+		/// sus tiles. La otra via GANA porque estamos DENTRO del juego en marcha, no leyendo un
+		/// <c>.wld</c> desde fuera: <c>MapHelper.CreateMapTile(x, y, 255)</c> es la MISMA funcion
+		/// que usa el motor para decidir que enseña el mapa de vanilla en cada casilla (prioridad
+		/// tile &gt; liquido &gt; pared &gt; fondo segun profundidad, con todas sus excepciones:
+		/// bloques pintados invisibles, variantes de mineral por bioma, etc.), y
+		/// <c>Lang.GetMapObjectName</c> es la MISMA funcion que usa el detector de menas
+		/// ("GameUI.OreDetected") para nombrar lo que encuentra. Cubre tiles/paredes/liquidos de
+		/// CUALQUIER mod sin catalogo propio (un <c>ModTile</c> se registra solo en
+		/// <c>MapHelper.tileLookup</c>), ya sale en el idioma activo, y no hay que mantener nada.
+		/// <para />
+		/// Publico porque lo usa tambien la autoprueba, para comprobar sobre una coordenada
+		/// CONOCIDA (una que la propia busqueda acaba de decir que tiene cobre) que el nombre que
+		/// sale es el correcto, sin depender de mover el raton real.
+		/// </remarks>
+		public static string NombreBajoElCursor(int x, int y)
+		{
+			// Un NPC vivo encima tapa lo que haya debajo: es lo mas especifico que puede haber ahi,
+			// igual que en la propia busqueda de "NPC vivos ahora mismo".
+			for (int i = 0; i < Main.npc.Length; i++) {
+				NPC npc = Main.npc[i];
+				if (npc == null || !npc.active || npc.type <= 0) {
+					continue;
+				}
+				int izquierda = (int)(npc.position.X / 16f);
+				int arriba = (int)(npc.position.Y / 16f);
+				int ancho = (int)System.Math.Ceiling(npc.width / 16f);
+				int alto = (int)System.Math.Ceiling(npc.height / 16f);
+				if (x >= izquierda && x < izquierda + ancho && y >= arriba && y < arriba + alto) {
+					return npc.GivenOrTypeName;
+				}
+			}
+
+			MapTile casilla = MapHelper.CreateMapTile(x, y, 255);
+			string nombre = casilla.Type > 0 ? Lang.GetMapObjectName(casilla.Type) : null;
+			return string.IsNullOrEmpty(nombre) ? Idiomas.Texto("Exploracion.Mapa.Vacio") : nombre;
 		}
 
 		private void SaltarAlMapaVanilla()

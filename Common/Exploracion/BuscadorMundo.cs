@@ -22,6 +22,15 @@ namespace TerrakeepMod.Common.Exploracion
 
 		/// <summary>Distancia al jugador en tiles, recalculada al ordenar la lista.</summary>
 		public float DistanciaAlJugador;
+
+		/// <summary>Para <see cref="ClaseDeObjetivo.Npcs"/>: tipo del NPC vivo, para pedir su
+		/// textura real (<see cref="IconoResultado"/>). -1 en cualquier otra clase de resultado.</summary>
+		public int TipoNpc = -1;
+
+		/// <summary>Recorte de animacion que tenia ese NPC en el instante de la busqueda, capturado
+		/// de <c>NPC.frame</c> (el motor ya lo mantiene al dia mientras el NPC esta vivo: no hace
+		/// falta calcularlo a mano).</summary>
+		public Rectangle FrameNpc;
 	}
 
 	/// <summary>
@@ -402,7 +411,9 @@ namespace TerrakeepMod.Common.Exploracion
 				lista.Add(new ResultadoBusqueda {
 					Tile = npc.Center / 16f,
 					Cantidad = 1,
-					Etiqueta = nombre + " - " + npc.life + "/" + npc.lifeMax + " de vida"
+					Etiqueta = nombre + " - " + npc.life + "/" + npc.lifeMax + " de vida",
+					TipoNpc = npc.type,
+					FrameNpc = npc.frame
 				});
 			}
 

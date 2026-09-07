@@ -24,7 +24,22 @@ namespace TerrakeepMod.UI.Exploracion
 
 		private string _categoria;
 		private ObjetivoBusqueda _seleccionado;
-		private bool _soloExplorado = true;
+
+		// LA CAUSA REAL de "la busqueda no encuentra nada, da igual lo que busques": este
+		// interruptor nacia en true, y el mundo revelado en el mapa (Main.Map.IsRevealed) es
+		// justo lo CONTRARIO de lo que casi cualquier busqueda quiere encontrar. Nadie busca una
+		// veta de cobre que ya ha visto: la busca porque no la ha encontrado todavia, y eso es
+		// tile sin revelar por definicion. Con el interruptor en true por defecto, BuscadorMundo
+		// funcionaba perfectamente (comprobado con el interruptor apagado: "13718 tiles
+		// encontrados" en el log de verificacion), pero la interfaz real, con el valor de fabrica,
+		// filtraba ese resultado entero antes de que el jugador llegara a verlo - cualquier objetivo
+		// que no estuviera literalmente a la vista del jugador ahora mismo daba "0 resultados", en
+		// TODAS las categorias (tiles, paredes, liquidos, cofres Y npcs: la comprobacion
+		// "_soloExplorado && !IsRevealed" es la misma para las cinco). Como esto es una herramienta
+		// de edicion (el mismo espiritu que Terrasavr, no un asistente que respeta spoilers), el
+		// valor de fabrica pasa a ser "buscar en TODO el mundo"; quien de verdad solo quiera lo que
+		// ya ha explorado puede activarlo a mano.
+		private bool _soloExplorado = false;
 
 		private UIList _listaObjetivos;
 		private UIList _listaResultados;
@@ -345,20 +360,44 @@ namespace TerrakeepMod.UI.Exploracion
 				return;
 			}
 
+			ObjetivoBusqueda objetivo = PanelExploracionSystem.Buscador.Objetivo;
+
 			foreach (ResultadoBusqueda resultado in resultados) {
 				ResultadoBusqueda actual = resultado;
-				BotonTk fila = new BotonTk(
-					Idiomas.Texto("Exploracion.FilaResultado",
-						(int)resultado.Tile.X, (int)resultado.Tile.Y,
-						resultado.Etiqueta, (int)resultado.DistanciaAlJugador),
-					0.75f);
+				string texto = Idiomas.Texto("Exploracion.FilaResultado",
+					(int)resultado.Tile.X, (int)resultado.Tile.Y,
+					resultado.Etiqueta, (int)resultado.DistanciaAlJugador);
+
+				// El boton se queda sin texto propio (que lo pinta CENTRADO en todo el ancho): el
+				// icono y la etiqueta van encima como hijos, y el icono se queda a la izquierda.
+				BotonTk fila = new BotonTk("", 0.75f);
 				fila.Width.Set(0f, 1f);
 				fila.Height.Set(26f, 0f);
 				fila.Ayuda = () => Idiomas.Texto("Exploracion.AyudaResultado");
 				fila.AlPulsar += () => IrAlResultado(actual);
+
+				IconoFilaResultado icono = new IconoFilaResultado(objetivo, actual);
+				icono.Left.Set(4f, 0f);
+				icono.Top.Set(3f, 0f);
+				icono.Width.Set(LadoIconoFila, 0f);
+				icono.Height.Set(LadoIconoFila, 0f);
+				icono.IgnoresMouseInteraction = true;
+				fila.Append(icono);
+
+				EtiquetaTk etiqueta = new EtiquetaTk(() => texto, 0.75f, 400f, 26f);
+				etiqueta.Left.Set(LadoIconoFila + 8f, 0f);
+				etiqueta.Width.Set(-(LadoIconoFila + 12f), 1f);
+				etiqueta.Top.Set(5f, 0f);
+				etiqueta.IgnoresMouseInteraction = true;
+				fila.Append(etiqueta);
+
 				_listaResultados.Add(fila);
 			}
 		}
+
+		/// <summary>Lado, en pixeles, del icono real que se enseña a la izquierda de cada fila de
+		/// resultado.</summary>
+		private const float LadoIconoFila = 20f;
 
 		private void IrAlResultado(ResultadoBusqueda resultado)
 		{
@@ -432,6 +471,30 @@ namespace TerrakeepMod.UI.Exploracion
 
 			Rectangle relleno = new Rectangle(fondo.X, fondo.Y, (int)(fondo.Width * valor), fondo.Height);
 			spriteBatch.Draw(Terraria.GameContent.TextureAssets.MagicPixel.Value, relleno, EstiloTk.BotonActivo);
+		}
+	}
+
+	/// <summary>Icono real (tile, pared, liquido, cofre o NPC) a la izquierda de una fila de
+	/// resultado. <see cref="IconoResultado"/> resuelve la textura; esto solo la coloca.</summary>
+	public class IconoFilaResultado : UIElement
+	{
+		private readonly ObjetivoBusqueda _objetivo;
+		private readonly ResultadoBusqueda _resultado;
+
+		public IconoFilaResultado(ObjetivoBusqueda objetivo, ResultadoBusqueda resultado)
+		{
+			_objetivo = objetivo;
+			_resultado = resultado;
+		}
+
+		protected override void DrawSelf(Microsoft.Xna.Framework.Graphics.SpriteBatch spriteBatch)
+		{
+			if (_objetivo == null) {
+				return;
+			}
+			CalculatedStyle dim = GetDimensions();
+			Rectangle destino = new Rectangle((int)dim.X, (int)dim.Y, (int)dim.Width, (int)dim.Height);
+			IconoResultado.Dibujar(spriteBatch, _objetivo, _resultado, destino, Color.White);
 		}
 	}
 }

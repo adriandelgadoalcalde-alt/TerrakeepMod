@@ -519,8 +519,9 @@ Exploracion: {
 		SinBusqueda: Sin búsqueda: usa la pestaña Búsqueda
 		Zoom: Zoom: {0} px por tile
 		FueraDelMundo: Fuera del mundo
-		TileExplorado: Tile {0}, {1} (explorado)
-		TileSinExplorar: Tile {0}, {1} (sin explorar)
+		TileExplorado: {2}  ·  tile {0}, {1} (explorado)
+		TileSinExplorar: {2}  ·  tile {0}, {1} (sin explorar)
+		Vacio: Nada
 	}
 
 	Mundo: {

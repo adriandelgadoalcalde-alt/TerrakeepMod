@@ -345,7 +345,13 @@ namespace TerrakeepMod.UI.Exploracion
 			Vector2 medio = new Vector2(rombo.Width / 2f, rombo.Height / 2f);
 
 			// Resultados de la ultima busqueda. Se dibujan a tamaño fijo (no escalados con el
-			// zoom): son señales, no cosas del mundo.
+			// zoom): son señales, no cosas del mundo. El rombo de color sigue de fondo (se ve
+			// desde lejos contra cualquier color del mapa); encima va el sprite REAL de lo
+			// encontrado (mismo objetivo para todos los resultados de esta busqueda: es el mismo
+			// mineral/pared/liquido, o el cofre/NPC concreto de cada resultado).
+			ObjetivoBusqueda objetivo = PanelExploracionSystem.Buscador.Objetivo;
+			const int LadoIcono = 12;
+
 			foreach (ResultadoBusqueda resultado in MarcadoresExploracion.Resultados) {
 				Vector2 posicion = _vista.TileAPantalla(resultado.Tile);
 				if (!marco.Contains((int)posicion.X, (int)posicion.Y)) {
@@ -353,6 +359,14 @@ namespace TerrakeepMod.UI.Exploracion
 				}
 				spriteBatch.Draw(rombo, posicion, null, MarcadoresExploracion.Color, 0f, medio, 0.75f,
 					SpriteEffects.None, 0f);
+
+				if (objetivo != null) {
+					Rectangle destinoIcono = new Rectangle(
+						(int)(posicion.X - LadoIcono / 2f), (int)(posicion.Y - LadoIcono / 2f),
+						LadoIcono, LadoIcono);
+					IconoResultado.Dibujar(spriteBatch, objetivo, resultado, destinoIcono, Color.White);
+				}
+
 				MarcadoresDibujados++;
 			}
 
