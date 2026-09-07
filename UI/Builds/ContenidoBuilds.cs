@@ -34,11 +34,18 @@ namespace TerrakeepMod.UI.Builds
 	public class ContenidoBuilds : UIElement
 	{
 		private const int FotogramasEntreRefrescos = 15;
-		private const float AltoCabecera = 52f;
+
+		/// <summary>Alto MINIMO de la cabecera (subtitulo + una sola linea de resumen). Ver
+		/// <see cref="RecalcularCabecera"/>: crece de verdad cuando el mensaje de resultado no
+		/// cabe en una linea, nunca se queda en un numero fijo que recorte texto.</summary>
+		private const float AltoCabeceraBase = 52f;
+		private const float TopResumen = 20f;
+		private const float EscalaResumen = 0.78f;
 		private const float AltoFila = EstiloTk.AltoPestana;
 		private const float SeparacionFilas = 4f;
 		private const float AltoPie = 40f;
 
+		private UIPanel _cabecera;
 		private UIElement _filaFuentes;
 		private UIElement _filaEtapas;
 		private UIElement _filaClases;
@@ -48,6 +55,22 @@ namespace TerrakeepMod.UI.Builds
 		private EtiquetaTk _subtitulo;
 		private BotonTk _botonAutoEquipar;
 		private readonly List<BotonTk> _botonesLoadoutObjetivo = new List<BotonTk>();
+
+		/// <summary>Alto REAL de la cabecera ahora mismo (>= <see cref="AltoCabeceraBase"/>).
+		/// Lo ajusta <see cref="RecalcularCabecera"/> a lo que el mensaje de resultado ocupe de
+		/// verdad, nunca al reves.</summary>
+		private float _altoCabecera = AltoCabeceraBase;
+
+		/// <summary>Texto de <see cref="_resumen"/> YA partido en las lineas que le tocan este
+		/// fotograma (ver <see cref="RecalcularCabecera"/>). Se recalcula cada fotograma porque el
+		/// mensaje, el idioma y el ancho real de la ventana pueden cambiar en cualquier momento.</summary>
+		private string _resumenPartido = "";
+
+		/// <summary>Parametros de la ULTIMA llamada real a <see cref="ColocarFilas"/>, para que
+		/// <see cref="RecalcularCabecera"/> pueda repetirla con los mismos datos cuando el alto de
+		/// la cabecera cambia, sin tener que rehacer todo <see cref="Reconstruir"/>.</summary>
+		private bool _hayFilaFuentes;
+		private bool _hayFilaLoadout;
 
 		private int _indiceFuente;
 		private int _indiceEtapa;
@@ -161,28 +184,36 @@ namespace TerrakeepMod.UI.Builds
 			Width.Set(0f, 1f);
 			Height.Set(0f, 1f);
 
-			UIPanel cabecera = new UIPanel();
-			cabecera.Width.Set(0f, 1f);
-			cabecera.Height.Set(AltoCabecera, 0f);
-			cabecera.BackgroundColor = EstiloTk.FondoCaja;
-			cabecera.BorderColor = new Color(0, 0, 0, 0);
-			cabecera.SetPadding(8f);
-			Append(cabecera);
+			_cabecera = new UIPanel();
+			_cabecera.Width.Set(0f, 1f);
+			_cabecera.Height.Set(_altoCabecera, 0f);
+			_cabecera.BackgroundColor = EstiloTk.FondoCaja;
+			_cabecera.BorderColor = new Color(0, 0, 0, 0);
+			_cabecera.SetPadding(8f);
+			Append(_cabecera);
 
 			_subtitulo = new EtiquetaTk(() => _subtituloTexto, 0.85f, 900f, 24f);
 			_subtitulo.Left.Set(0f, 0f);
 			_subtitulo.Top.Set(0f, 0f);
-			cabecera.Append(_subtitulo);
+			_cabecera.Append(_subtitulo);
 
 			// Mientras el mensaje de resultado del ultimo auto-equipar siga vivo
 			// (_fotogramasMensajeResultado > 0) se enseña el, no la leyenda de colores - ver el
 			// comentario de esos dos campos mas arriba para el porque.
-			_resumen = new EtiquetaTk(() => _fotogramasMensajeResultado > 0 ? _mensajeResultado : _textoResumen,
-				0.78f, 900f, 22f);
+			//
+			// El texto se PARTE en lineas (EtiquetaTk.PartirEnLineas, mismo patron real que
+			// PestanaMundo.RecalcularAviso) y la cabecera CRECE para que quepan enteras - nunca se
+			// recorta con "...". Con el detalle real de "sin sitio" (ver ConstruirDetalleSinSitio)
+			// el mensaje puede llegar a enumerar varios objetos y su motivo, mas largo que
+			// cualquier texto que enseñara este campo antes; un recorte con "..." (probado primero)
+			// dejaba el motivo real ilegible a media frase, que es justo el problema que este mismo
+			// mensaje queria arreglar. Ver <see cref="RecalcularCabecera"/>.
+			_resumen = new EtiquetaTk(() => _resumenPartido, EscalaResumen, 900f, 22f);
+			_resumen.Width.Set(0f, 1f);
 			_resumen.ColorTexto = EstiloTk.TextoSuave;
 			_resumen.Left.Set(0f, 0f);
-			_resumen.Top.Set(20f, 0f);
-			cabecera.Append(_resumen);
+			_resumen.Top.Set(TopResumen, 0f);
+			_cabecera.Append(_resumen);
 
 			_filaFuentes = NuevaFila();
 			_filaEtapas = NuevaFila();
@@ -319,7 +350,10 @@ namespace TerrakeepMod.UI.Builds
 		/// </summary>
 		private void ColocarFilas(bool hayFilaFuentes, bool hayFilaLoadout)
 		{
-			float y = AltoCabecera + 6f;
+			_hayFilaFuentes = hayFilaFuentes;
+			_hayFilaLoadout = hayFilaLoadout;
+
+			float y = _altoCabecera + 6f;
 
 			_filaFuentes.Top.Set(y, 0f);
 			_filaFuentes.Height.Set(hayFilaFuentes ? AltoFila : 0f, 0f);
@@ -698,6 +732,12 @@ namespace TerrakeepMod.UI.Builds
 		{
 			base.Update(gameTime);
 
+			// Antes que nada: el mensaje de resultado (o la leyenda) puede haber cambiado de largo
+			// este mismo fotograma (nuevo auto-equipar, cuenta atras que expira, cambio de idioma en
+			// vivo desde Ajustes, redimensionar la ventana...), asi que la cabecera se ajusta ANTES
+			// de que nada mas de este fotograma dependa de su alto real.
+			RecalcularCabecera();
+
 			// La posesion cambia mientras el panel esta abierto (el jugador puede mover cosas con
 			// los slots del propio juego), pero recorrer los ~200 slots de todos los contenedores
 			// 60 veces por segundo no aporta nada. Cada 15 fotogramas (4 veces/s) va sobrado.
@@ -848,40 +888,127 @@ namespace TerrakeepMod.UI.Builds
 
 		/// <summary>
 		/// Fija el mensaje y el color que se van a enseñar tras pulsar "Auto-equipar" (ver
-		/// <see cref="_mensajeResultado"/>), distinguiendo el caso que pidio arreglar el usuario:
-		/// "aplicar build no equipa de verdad" resulto ser, la mitad de las veces, que auto-equipar
-		/// SI habia movido objetos pero el aviso desaparecia demasiado rapido - y la otra mitad, que
-		/// el jugador probaba con una build de la que no poseia NINGUN objeto (auto-equipar solo
-		/// mueve lo que ya tienes, nunca crea nada), caso en el que un resumen generico con todo a
-		/// cero ("movidos=0, ya colocados=0...") se lee exactamente igual que un fallo silencioso.
+		/// <see cref="_mensajeResultado"/>).
+		/// <para />
+		/// Desde el cambio de diseño que trae el equipo que no tienes del catalogo (ver el XMLdoc
+		/// de <see cref="AutoEquipar"/>), "nada que aplicar" solo pasa de verdad si NINGUN objeto de
+		/// la build existe en esta partida (mod de origen no instalado): todo lo demas resuelto cae
+		/// en movido, ya colocado, creado o sin sitio.
+		/// </para>
+		/// <para>
+		/// <b>El caso que investigo esta sesion</b> (reportado por el usuario con capturas reales:
+		/// "Furia solar" salia "sin sitio" justo al lado de "ranuras de accesorio disponibles: 5",
+		/// que parecia una contradiccion): el comportamiento era correcto (el arma necesitaba hueco
+		/// en la MOCHILA, no en accesorios - dos recursos distintos; mochila llena de verdad,
+		/// verificado en el sandbox), pero el panel no decia POR QUE sin obligar a mirar el log. Por
+		/// eso, cuando hay algun "sin sitio", el mensaje ahora incluye el motivo real de cada uno
+		/// (<see cref="ResultadoAutoEquipar.DetalleSinSitio"/>), no solo el numero agregado.
+		/// </para>
 		/// </summary>
 		private void MostrarResultadoAutoEquipar(ResultadoAutoEquipar resultado)
 		{
-			bool nadaQuePoseia = resultado.Movidos == 0 && resultado.YaColocados == 0 && resultado.SinSitio == 0;
+			bool nada = resultado.Movidos == 0 && resultado.YaColocados == 0 &&
+				resultado.Creados == 0 && resultado.SinSitio == 0;
 
-			if (nadaQuePoseia) {
-				// No es un fallo de auto-equipar: es que el jugador no tenia ni un solo objeto de
-				// esta build para mover. Antes esto se enseñaba con el mismo resumen generico que un
-				// exito ("movidos=0, ya colocados=0, no los tienes=N..."), indistinguible a golpe de
-				// vista de que el boton no hubiera hecho nada.
+			if (nada) {
+				// Solo pasa si TODOS los objetos de la build son NoResueltos (mod no instalado): con
+				// el cambio de diseño, cualquier objeto resuelto acaba movido, ya colocado, creado o
+				// sin sitio - nunca "nada que hacer" de verdad.
 				_mensajeResultado = Idiomas.Texto("Builds.NadaQueMover");
 				_colorMensajeResultado = EstiloTk.TextoAviso;
 			}
-			else if (resultado.SinSitio > 0 && resultado.Movidos == 0) {
-				// Tenia objetos pero ninguno cupo (mochila llena / slots de accesorio ocupados por
-				// algo incompatible): a diferencia del caso de arriba, aqui SI habia algo que mover y
-				// no se movio - eso si es un aviso real, no solo informativo.
-				_mensajeResultado = Idiomas.Texto("Builds.ResultadoAutoEquipar", resultado.Resumen);
+			else if (resultado.SinSitio > 0) {
+				// Algo no cupo (mochila llena / slots de accesorio ocupados o incompatibles / dato
+				// de catalogo raro): aviso real, con el motivo de cada objeto para que no parezca un
+				// fallo silencioso ni una contradiccion con la cabecera de ranuras disponibles.
+				_mensajeResultado = Idiomas.Texto("Builds.ResultadoAutoEquipar", resultado.Resumen) +
+					" " + ConstruirDetalleSinSitio(resultado);
 				_colorMensajeResultado = EstiloTk.Peligro;
 			}
 			else {
-				// Caso normal: se movio algo, o ya estaba todo lo que el jugador tiene colocado en su
-				// sitio (aplicar dos veces seguidas la misma build es idempotente a proposito).
+				// Caso normal: se movio y/o creo algo, o ya estaba todo lo que el jugador tiene
+				// colocado en su sitio (aplicar dos veces seguidas la misma build es idempotente).
 				_mensajeResultado = Idiomas.Texto("Builds.ResultadoAutoEquipar", resultado.Resumen);
 				_colorMensajeResultado = EstiloTk.Correcto;
 			}
 
 			_fotogramasMensajeResultado = DuracionMensajeResultado;
+		}
+
+		/// <summary>Texto completo (sin partir) que le toca enseñar a <see cref="_resumen"/> ahora
+		/// mismo: el mensaje de resultado mientras siga vivo, o la leyenda de colores.</summary>
+		private string TextoResumenCompleto() =>
+			_fotogramasMensajeResultado > 0 ? _mensajeResultado : _textoResumen;
+
+		/// <summary>
+		/// Parte <see cref="TextoResumenCompleto"/> en las lineas que hagan falta para el ancho REAL
+		/// de <see cref="_resumen"/> (mismo <see cref="EtiquetaTk.PartirEnLineas"/> que ya usa
+		/// <c>PestanaMundo.RecalcularAviso</c>), mide su alto con la fuente real, y CRECE
+		/// <see cref="_cabecera"/> hasta ese alto en vez de recortar nada - el texto siempre se lee
+		/// entero, sea cual sea su longitud, el idioma activo o la resolucion de la ventana.
+		/// <para />
+		/// Se llama cada fotograma (ver <see cref="Update"/>) porque las tres cosas de las que
+		/// depende pueden cambiar en cualquier momento: el mensaje (nuevo auto-equipar, cuenta
+		/// atras que expira y vuelve a la leyenda corta), el idioma (Ajustes cambia en vivo) y el
+		/// ancho (el jugador redimensiona la ventana).
+		/// </summary>
+		private void RecalcularCabecera()
+		{
+			if (_cabecera == null || _resumen == null) {
+				return;
+			}
+
+			float anchoInterior = _resumen.GetDimensions().Width;
+			if (anchoInterior <= 0f) {
+				// Layout todavia no calculado (primerisimo fotograma): se reintenta solo, como en
+				// PestanaMundo.RecalcularAviso.
+				return;
+			}
+
+			string partido = EtiquetaTk.PartirEnLineas(TextoResumenCompleto(), anchoInterior, EscalaResumen);
+			_resumenPartido = partido;
+
+			float altoResumen = Terraria.GameContent.FontAssets.MouseText.Value.MeasureString(partido).Y * EscalaResumen;
+			float altoNecesario = TopResumen + altoResumen + 8f;
+			float altoNuevo = altoNecesario > AltoCabeceraBase ? altoNecesario : AltoCabeceraBase;
+
+			if (System.Math.Abs(altoNuevo - _altoCabecera) > 0.5f) {
+				_altoCabecera = altoNuevo;
+				_cabecera.Height.Set(_altoCabecera, 0f);
+				ColocarFilas(_hayFilaFuentes, _hayFilaLoadout);
+				Recalculate();
+			}
+		}
+
+		/// <summary>Une el motivo REAL de cada objeto "sin sitio" (ver <see cref="CausaSinSitio"/>)
+		/// en una sola frase localizada, en vez de dejar que el jugador tenga que ir al log a
+		/// averiguar por que.</summary>
+		private static string ConstruirDetalleSinSitio(ResultadoAutoEquipar resultado)
+		{
+			if (resultado.DetalleSinSitio.Count == 0) {
+				return "";
+			}
+
+			List<string> partes = new List<string>();
+			foreach (ItemSinSitio item in resultado.DetalleSinSitio) {
+				partes.Add(Idiomas.Texto("Builds.SinSitioItem", item.Nombre, TextoCausaSinSitio(item.Causa)));
+			}
+
+			return Idiomas.Texto("Builds.SinSitioDetalle", string.Join(", ", partes));
+		}
+
+		private static string TextoCausaSinSitio(CausaSinSitio causa)
+		{
+			switch (causa) {
+				case CausaSinSitio.MochilaLlena:
+					return Idiomas.Texto("Builds.CausaSinSitio.MochilaLlena");
+				case CausaSinSitio.SlotAccesorioOcupado:
+					return Idiomas.Texto("Builds.CausaSinSitio.SlotAccesorio");
+				case CausaSinSitio.NoEsPiezaDeArmadura:
+					return Idiomas.Texto("Builds.CausaSinSitio.NoArmadura");
+				default:
+					return "";
+			}
 		}
 
 		/// <summary>

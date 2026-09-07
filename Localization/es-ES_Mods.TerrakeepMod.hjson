@@ -1,673 +1,767 @@
 Panel: {
-	Titulo: "Terrakeep"
-	Cerrar: "Cerrar ({0})"
-	Atajo: "Atajo: {0}"
+	Titulo: Terrakeep
+	Cerrar: Cerrar ({0})
+	Atajo: Atajo: {0}
+
 	Area: {
-		Personaje: "Personaje"
-		Libreria: "Librería"
-		Builds: "Builds"
-		Investigacion: "Investigación"
-		Exploracion: "Exploración"
-		Ajustes: "Ajustes"
+		Personaje: Personaje
+		Libreria: Librería
+		Builds: Builds
+		Investigacion: Investigación
+		Exploracion: Exploración
+		Ajustes: Ajustes
 	}
+
 	Ayuda: {
-		Personaje: "Todo lo que toques aquí se escribe al instante sobre el personaje cargado."
-		Libreria: "Coge objetos del catálogo con el ratón y suéltalos en cualquier contenedor real."
-		Builds: "Auto-equipar solo MUEVE lo que ya tienes: nunca crea objetos."
-		Investigacion: "Se escribe por la vía oficial del Modo Viaje, así que el menú del juego refleja lo mismo."
-		Exploracion: "Arrastra el mini-mapa para moverte y usa la rueda para acercar."
-		Ajustes: "El idioma cambia en vivo. Ctrl+Z deshace cualquier acción de Terrakeep."
+		Personaje: Todo lo que toques aquí se escribe al instante sobre el personaje cargado.
+		Libreria: Coge objetos del catálogo con el ratón y suéltalos en cualquier contenedor real.
+		Builds: Lo que tengas se mueve; lo que no tengas se trae del catálogo y se coloca igual.
+		Investigacion: Se escribe por la vía oficial del Modo Viaje, así que el menú del juego refleja lo mismo.
+		Exploracion: Arrastra el mini-mapa para moverte y usa la rueda para acercar.
+		Ajustes: El idioma cambia en vivo. Ctrl+Z deshace cualquier acción de Terrakeep.
 	}
 }
+
 Personaje: {
 	Pestana: {
-		Inventario: "Inventario"
-		Almacenes: "Almacenes"
-		Equipo: "Equipo"
-		Buffs: "Buffs"
-		Apariencia: "Apariencia"
-		Desbloqueos: "Desbloqueos"
+		Inventario: Inventario
+		Almacenes: Almacenes
+		Equipo: Equipo
+		Buffs: Buffs
+		Apariencia: Apariencia
+		Desbloqueos: Desbloqueos
 	}
-	Nombre: "Nombre"
-	SinNombre: "(sin nombre)"
-	VidaMaxima: "Vida máxima"
-	ManaMaximo: "Maná máximo"
+
+	Nombre: Nombre
+	SinNombre: (sin nombre)
+	VidaMaxima: Vida máxima
+	ManaMaximo: Maná máximo
 	VidaEfectiva: "{0} (efectiva {1})"
 	ManaEfectivo: "{0} (efectivo {1})"
-	Ahora: "Ahora: {0}/{1} vida, {2}/{3} maná"
-	Llenar: "Llenar vida y maná"
-	Dinero: "Dinero: {0}  (inventario {1} | almacenes {2})"
+	Ahora: Ahora: {0}/{1} vida, {2}/{3} maná
+	Llenar: Llenar vida y maná
+	Dinero: Dinero: {0}  (inventario {1} | almacenes {2})
+
 	Moneda: {
-		Platino: "plat"
-		Oro: "oro"
-		Plata: "plata"
-		Cobre: "cobre"
+		Platino: plat
+		Oro: oro
+		Plata: plata
+		Cobre: cobre
 	}
+
 	Inventario: {
-		Mochila: "Mochila - 50 ranuras (Player.inventory[0..49])"
-		Monedas: "Monedas (50-53)"
-		Municion: "Munición (54-57)"
-		Nota: "Arrastra, apila y usa el clic derecho igual que en el inventario del juego: es el mismo ItemSlot de vanilla."
-		Ocupacion: "Mochila: {0} de {1} ranuras ocupadas."
+		Mochila: Mochila - 50 ranuras (Player.inventory[0..49])
+		Monedas: Monedas (50-53)
+		Municion: Munición (54-57)
+		Nota: Arrastra, apila y usa el clic derecho igual que en el inventario del juego: es el mismo ItemSlot de vanilla.
+		Ocupacion: Mochila: {0} de {1} ranuras ocupadas.
 	}
+
 	Almacenes: {
 		Nombre: {
-			Hucha: "Hucha"
-			Caja: "Caja fuerte"
-			Forja: "Forja del Defensor"
-			Boveda: "Bóveda del Vacío"
+			Hucha: Hucha
+			Caja: Caja fuerte
+			Forja: Forja del Defensor
+			Boveda: Bóveda del Vacío
 		}
+
 		Titulo: "{0} - {1} ranuras (Player.{2}.item)"
 		Ocupacion: "{0}: {1} de {2} ranuras ocupadas."
 	}
+
 	Equipo: {
-		Conjunto: "Conjunto de equipo"
-		ConjuntoN: "Conjunto {0}"
-		Nota: "El conjunto activo se edita en Player.armor/dye; cambiar de conjunto usa Player.TrySwitchingLoadout (no funciona muerto ni usando un objeto)."
-		Equipado: "Equipado"
-		Vanidad: "Vanidad"
-		Tinte: "Tinte"
-		Cabeza: "Cabeza"
-		Pecho: "Pecho"
-		Piernas: "Piernas"
-		Accesorio: "Accesorio {0}"
+		Conjunto: Conjunto de equipo
+		ConjuntoN: Conjunto {0}
+		Nota: El conjunto activo se edita en Player.armor/dye; cambiar de conjunto usa Player.TrySwitchingLoadout (no funciona muerto ni usando un objeto).
+		Equipado: Equipado
+		Vanidad: Vanidad
+		Tinte: Tinte
+		Cabeza: Cabeza
+		Pecho: Pecho
+		Piernas: Piernas
+		Accesorio: Accesorio {0}
 		NoActiva: "{0}  (no activa)"
-		Especial: "Equipo especial"
-		Puesto: "Puesto"
+		Especial: Equipo especial
+		Puesto: Puesto
+
 		Misc: {
-			Mascota: "Mascota"
-			MascotaLuz: "Mascota de luz"
-			Vagoneta: "Vagoneta"
-			Montura: "Montura"
-			Gancho: "Gancho"
+			Mascota: Mascota
+			MascotaLuz: Mascota de luz
+			Vagoneta: Vagoneta
+			Montura: Montura
+			Gancho: Gancho
 		}
-		RanurasActivas: "Ranuras de accesorio activas: {0} de 7"
-		Leyenda: "Columnas: equipado · vanidad · tinte"
-		LeyendaMisc: "Columnas: puesto · tinte"
+
+		RanurasActivas: Ranuras de accesorio activas: {0} de 7
+		Leyenda: Columnas: equipado · vanidad · tinte
+		LeyendaMisc: Columnas: puesto · tinte
 	}
+
 	Herramientas: {
-		Papelera: "Papelera"
-		CantidadObjetivo: "Cantidad de \"{0}\" ({1}/{2}):"
-		CantidadSinObjetivo: "Cantidad: pasa el ratón por un objeto con más de 1 unidad"
-		CantidadPista: "cantidad"
-		CantidadAplicar: "Aplicar"
-		CantidadAyuda: "Escribe un número y pulsa Aplicar (o Intro), o usa - / +. El límite es el máximo real del objeto."
-		CantidadHistorial: "Cantidad de \"{0}\": {1} -> {2}"
+		Papelera: Papelera
+		CantidadObjetivo: Cantidad de "{0}" ({1}/{2}):
+		CantidadSinObjetivo: Cantidad: pasa el ratón por un objeto con más de 1 unidad
+		CantidadPista: cantidad
+		CantidadAplicar: Aplicar
+		CantidadAyuda: Escribe un número y pulsa Aplicar (o Intro), o usa - / +. El límite es el máximo real del objeto.
+		CantidadHistorial: Cantidad de "{0}": {1} -> {2}
 	}
+
 	Buffs: {
-		Activos: "Buffs activos: {0} de {1} ranuras"
-		QuitarTodos: "Quitar todos"
-		Quitar: "Quitar"
+		Activos: Buffs activos: {0} de {1} ranuras
+		QuitarTodos: Quitar todos
+		Quitar: Quitar
 		NombreConId: "{0}  (id {1})"
-		Permanente: "permanente"
+		Permanente: permanente
 		HorasMinutos: "{0} h {1} min"
-		Anadir: "Añadir un buff"
-		Buscar: "Buscar"
-		PistaBusqueda: "nombre o id del buff"
-		Segundos: "Segundos"
-		Nota: "Se aplica con Player.AddBuff (API oficial): respeta inmunidades y límites."
-		SinResultados: "Sin resultados."
-		Aplicar: "Aplicar"
+		Anadir: Añadir un buff
+		Buscar: Buscar
+		PistaBusqueda: nombre o id del buff
+		Segundos: Segundos
+		Nota: Se aplica con Player.AddBuff (API oficial): respeta inmunidades y límites.
+		SinResultados: Sin resultados.
+		Aplicar: Aplicar
+
 		Arbol: {
-			Inicio: "Inicio"
-			InicioAyuda: "Vuelve a las carpetas de primer nivel"
-			Subir: "< Subir"
-			SubirAyuda: "Sube a la carpeta de arriba"
-			Raiz: "Buffs"
-			SinSubcarpetas: "Esta carpeta no tiene subcarpetas.\nSus buffs están a la derecha."
-			CarpetaBuffs: "{0}\n{1} buffs"
-			CarpetaConSubcarpetas: "{0}\n{1} buffs, {2} subcarpetas"
+			Inicio: Inicio
+			InicioAyuda: Vuelve a las carpetas de primer nivel
+			Subir: < Subir
+			SubirAyuda: Sube a la carpeta de arriba
+			Raiz: Buffs
+			SinSubcarpetas:
+				'''
+				Esta carpeta no tiene subcarpetas.
+				Sus buffs están a la derecha.
+				'''
+			CarpetaBuffs:
+				'''
+				{0}
+				{1} buffs
+				'''
+			CarpetaConSubcarpetas:
+				'''
+				{0}
+				{1} buffs, {2} subcarpetas
+				'''
 			CarpetaDeMod: "{0} (mod)"
-			Otros: "Otros"
-			Pagina: "Página {0}"
-			Cargando: "Cargando los buffs..."
-			EnCarpeta: "en \"{0}\""
-			EnTodo: "en todos los buffs aplicables"
+			Otros: Otros
+			Pagina: Página {0}
+			Cargando: Cargando los buffs...
+			EnCarpeta: en "{0}"
+			EnTodo: en todos los buffs aplicables
 			ElegirCarpeta: "{0} buffs aplicables. Elige una carpeta o busca."
-			MostrandoParcial: "Mostrando {0} de {1} {2}."
+			MostrandoParcial: Mostrando {0} de {1} {2}.
 			MostrandoTodos: "{0} buffs {1}."
 		}
 	}
+
 	Apariencia: {
-		Vista: "Vista previa"
-		VerConArmadura: "Con armadura"
-		VerConArmaduraAyuda: "Muestra la armadura y los accesorios que llevas puestos ahora mismo, o solo la ropa base."
-		Peinado: "Peinado"
+		Vista: Vista previa
+		VerConArmadura: Con armadura
+		VerConArmaduraAyuda: Muestra la armadura y los accesorios que llevas puestos ahora mismo, o solo la ropa base.
+		Peinado: Peinado
 		PeinadoValor: "{0} de {1}"
-		VarianteEtiqueta: "Variante / género"
+		VarianteEtiqueta: Variante / género
 		Variante: "{0} - {1}"
-		VarianteDesconocida: "Variante {0}"
+		VarianteDesconocida: Variante {0}
+
 		Genero: {
-			Hombre: "Hombre"
-			Mujer: "Mujer"
+			Hombre: Hombre
+			Mujer: Mujer
 		}
+
 		Atuendo: {
-			Inicial: "inicial"
-			Pegatina: "pegatina"
-			Gangster: "gánster"
-			Abrigo: "abrigo"
-			Vestido: "vestido"
-			Maniqui: "maniquí"
+			Inicial: inicial
+			Pegatina: pegatina
+			Gangster: gánster
+			Abrigo: abrigo
+			Vestido: vestido
+			Maniqui: maniquí
 		}
-		Tinte: "Tinte de pelo"
-		SinTinte: "Ninguno"
-		TinteDesconocido: "sombreador {0} (desconocido)"
-		NotaTintes: "Tintes de pelo encontrados en el juego (incluidos los de mods): {0}, sacados de Item.hairDye en ContentSamples."
-		Colores: "Colores"
+
+		Tinte: Tinte de pelo
+		SinTinte: Ninguno
+		TinteDesconocido: sombreador {0} (desconocido)
+		NotaTintes: Tintes de pelo encontrados en el juego (incluidos los de mods): {0}, sacados de Item.hairDye en ContentSamples.
+		Colores: Colores
+
 		Canal: {
-			Rojo: "R"
-			Verde: "V"
-			Azul: "A"
+			Rojo: R
+			Verde: V
+			Azul: A
 		}
+
 		Color: {
-			Pelo: "Pelo"
-			Piel: "Piel"
-			Ojos: "Ojos"
-			Camisa: "Camisa"
-			CamisetaInterior: "Camiseta interior"
-			Pantalones: "Pantalones"
-			Zapatos: "Zapatos"
+			Pelo: Pelo
+			Piel: Piel
+			Ojos: Ojos
+			Camisa: Camisa
+			CamisetaInterior: Camiseta interior
+			Pantalones: Pantalones
+			Zapatos: Zapatos
 		}
-		NotaColores: "Los cambios se ven al instante sobre el personaje: el juego lo dibuja leyendo estos mismos campos."
+
+		NotaColores: Los cambios se ven al instante sobre el personaje: el juego lo dibuja leyendo estos mismos campos.
 	}
+
 	Desbloqueos: {
 		Titulo: "{0} desbloqueos permanentes. Se escriben directamente en Main.LocalPlayer."
-		Nota: "Pasa el ratón por encima de una casilla para ver el campo real de Player que toca y sus condiciones."
+		Nota: Pasa el ratón por encima de una casilla para ver el campo real de Player que toca y sus condiciones.
+
 		extraAccessory: {
-			Nombre: "6ª ranura de accesorio"
-			Descripcion: "Corazón de Demonio. Solo surte efecto en modo Experto o superior."
+			Nombre: 6ª ranura de accesorio
+			Descripcion: Corazón de Demonio. Solo surte efecto en modo Experto o superior.
 		}
+
 		unlockedBiomeTorches: {
-			Nombre: "Antorchas de bioma desbloqueadas"
-			Descripcion: "Torch God's Favor. Sin esto, la casilla de abajo no hace nada."
+			Nombre: Antorchas de bioma desbloqueadas
+			Descripcion: Torch God's Favor. Sin esto, la casilla de abajo no hace nada.
 		}
+
 		UsingBiomeTorches: {
-			Nombre: "Antorchas de bioma activadas"
-			Descripcion: "Propiedad: guarda en builderAccStatus[11] y exige el desbloqueo de arriba."
+			Nombre: Antorchas de bioma activadas
+			Descripcion: Propiedad: guarda en builderAccStatus[11] y exige el desbloqueo de arriba.
 		}
+
 		ateArtisanBread: {
-			Nombre: "Pan de artesano comido"
-			Descripcion: "Artisan Loaf: permite crear cerca de cualquier estación."
+			Nombre: Pan de artesano comido
+			Descripcion: Artisan Loaf: permite crear cerca de cualquier estación.
 		}
+
 		usedAegisCrystal: {
-			Nombre: "Cristal de Égida usado"
-			Descripcion: "Aegis Crystal: +defensa permanente."
+			Nombre: Cristal de Égida usado
+			Descripcion: Aegis Crystal: +defensa permanente.
 		}
+
 		usedAegisFruit: {
-			Nombre: "Fruta de Égida usada"
-			Descripcion: "Aegis Fruit: +vida permanente."
+			Nombre: Fruta de Égida usada
+			Descripcion: Aegis Fruit: +vida permanente.
 		}
+
 		usedArcaneCrystal: {
-			Nombre: "Cristal arcano usado"
-			Descripcion: "Arcane Crystal: +regeneración de maná permanente."
+			Nombre: Cristal arcano usado
+			Descripcion: Arcane Crystal: +regeneración de maná permanente.
 		}
+
 		usedGalaxyPearl: {
-			Nombre: "Perla galáctica usada"
-			Descripcion: "Galaxy Pearl: +suerte permanente."
+			Nombre: Perla galáctica usada
+			Descripcion: Galaxy Pearl: +suerte permanente.
 		}
+
 		usedGummyWorm: {
-			Nombre: "Gusano de goma usado"
-			Descripcion: "Gummy Worm: +pesca permanente."
+			Nombre: Gusano de goma usado
+			Descripcion: Gummy Worm: +pesca permanente.
 		}
+
 		usedAmbrosia: {
-			Nombre: "Ambrosía usada"
-			Descripcion: "Ambrosia: +velocidad de minería y recolección permanente."
+			Nombre: Ambrosía usada
+			Descripcion: Ambrosia: +velocidad de minería y recolección permanente.
 		}
+
 		downedDD2EventAnyDifficulty: {
-			Nombre: "Evento DD2 superado"
-			Descripcion: "Ejército Antiguo derrotado alguna vez, en cualquier dificultad."
+			Nombre: Evento DD2 superado
+			Descripcion: Ejército Antiguo derrotado alguna vez, en cualquier dificultad.
 		}
+
 		unlockedSuperCart: {
-			Nombre: "Supercarrito desbloqueado"
-			Descripcion: "Mechanical Cart: mejora permanente de las vagonetas."
+			Nombre: Supercarrito desbloqueado
+			Descripcion: Mechanical Cart: mejora permanente de las vagonetas.
 		}
+
 		enabledSuperCart: {
-			Nombre: "Supercarrito activado"
-			Descripcion: "Exige el desbloqueo de arriba (Player.UsingSuperCart comprueba los dos)."
+			Nombre: Supercarrito activado
+			Descripcion: Exige el desbloqueo de arriba (Player.UsingSuperCart comprueba los dos).
 		}
 	}
 }
+
 Libreria: {
-	PistaBusqueda: "Buscar: coma = o, espacio = y, #id, .texto"
-	Limpiar: "Limpiar"
-	LimpiarAyuda: "Vacía el buscador"
-	Inicio: "Inicio"
-	InicioAyuda: "Vuelve a las carpetas de primer nivel"
-	Subir: "< Subir"
-	SubirAyuda: "Sube a la carpeta de arriba"
-	SinSubcarpetas: "Esta carpeta no tiene subcarpetas.\nSus objetos están a la derecha."
-	CarpetaObjetos: "{0}\n{1} objetos"
-	CarpetaConSubcarpetas: "{0}\n{1} objetos, {2} subcarpetas"
+	PistaBusqueda: Buscar: coma = o, espacio = y, #id, .texto
+	Limpiar: Limpiar
+	LimpiarAyuda: Vacía el buscador
+	Inicio: Inicio
+	InicioAyuda: Vuelve a las carpetas de primer nivel
+	Subir: < Subir
+	SubirAyuda: Sube a la carpeta de arriba
+	SinSubcarpetas:
+		'''
+		Esta carpeta no tiene subcarpetas.
+		Sus objetos están a la derecha.
+		'''
+	CarpetaObjetos:
+		'''
+		{0}
+		{1} objetos
+		'''
+	CarpetaConSubcarpetas:
+		'''
+		{0}
+		{1} objetos, {2} subcarpetas
+		'''
 	CarpetaDeMod: "{0} (mod)"
-	Pagina: "Página {0}"
-	SinCatalogar: "Terraria sin catalogar"
-	Cargando: "Cargando el catálogo..."
-	EnCarpeta: "en \"{0}\""
-	EnTodo: "en toda la Librería"
-	SinResultados: "Sin resultados {0}."
+	Pagina: Página {0}
+	SinCatalogar: Terraria sin catalogar
+	Cargando: Cargando el catálogo...
+	EnCarpeta: en "{0}"
+	EnTodo: en toda la Librería
+	SinResultados: Sin resultados {0}.
 	ElegirCarpeta: "{0} objetos. Elige una carpeta o busca."
-	MostrandoParcial: "Mostrando {0} de {1} {2}."
+	MostrandoParcial: Mostrando {0} de {1} {2}.
 	MostrandoTodos: "{0} objetos {1}."
-	AyudaDestino: "Clic = 1 unidad al ratón; clic derecho = pila completa. Suéltalo aquí abajo."
+	AyudaDestino: Clic = 1 unidad al ratón; clic derecho = pila completa. Suéltalo aquí abajo.
+
 	Aviso: {
-		Sumado: "+{0} \"{1}\" en el ratón (x{2})."
-		AlMaximo: "\"{0}\" ya está al máximo en el ratón."
-		NoCabe: "No cabe lo que llevabas en el ratón: suéltalo antes."
-		Cogido: "\"{0}\" x{1} en el ratón: suéltalo en una ranura de abajo."
+		Sumado: +{0} "{1}" en el ratón (x{2}).
+		AlMaximo: '''"{0}" ya está al máximo en el ratón.'''
+		NoCabe: No cabe lo que llevabas en el ratón: suéltalo antes.
+		Cogido: '''"{0}" x{1} en el ratón: suéltalo en una ranura de abajo.'''
 	}
+
 	Destino: {
 		Inventario: {
-			Corto: "Mochila"
-			Largo: "Inventario"
+			Corto: Mochila
+			Largo: Inventario
 		}
+
 		Monedas: {
-			Corto: "Monedas"
-			Largo: "Monedas y munición"
+			Corto: Monedas
+			Largo: Monedas y munición
 		}
+
 		Equipo: {
-			Corto: "Equipo"
-			Largo: "Equipo"
+			Corto: Equipo
+			Largo: Equipo
 		}
+
 		Hucha: {
-			Corto: "Hucha"
-			Largo: "Hucha"
+			Corto: Hucha
+			Largo: Hucha
 		}
+
 		Caja: {
-			Corto: "Caja"
-			Largo: "Caja fuerte"
+			Corto: Caja
+			Largo: Caja fuerte
 		}
+
 		Forja: {
-			Corto: "Forja"
-			Largo: "Forja del Defensor"
+			Corto: Forja
+			Largo: Forja del Defensor
 		}
+
 		Boveda: {
-			Corto: "Bóveda"
-			Largo: "Bóveda del Vacío"
+			Corto: Bóveda
+			Largo: Bóveda del Vacío
 		}
 	}
-	Herramientas: {
-		Titulo: "Editar objeto"
-	}
+
+	Herramientas.Titulo: Editar objeto
+
 	EditorPrefijo: {
-		RecuadroTitulo: "Seleccionar"
-		RecuadroPista: "arrastra aquí"
-		BotonSinObjetivo: "Prefijo: (nada seleccionado)"
-		Boton: "Prefijo: {0}"
-		Ayuda: "Elige un prefijo legal para el objeto del recuadro de selección."
-		Historial: "Prefijo de \"{0}\": {1} -> {2}"
+		RecuadroTitulo: Seleccionar
+		RecuadroPista: arrastra aquí
+		BotonSinObjetivo: Prefijo: (nada seleccionado)
+		Boton: Prefijo: {0}
+		Ayuda: Elige un prefijo legal para el objeto del recuadro de selección.
+		Historial: Prefijo de "{0}": {1} -> {2}
 	}
+
 	EditorCantidad: {
-		SinSeleccion: "Cantidad: arrastra un objeto al recuadro de arriba"
-		NoApilable: "\"{0}\" no admite pila (no se puede editar la cantidad)"
+		SinSeleccion: Cantidad: arrastra un objeto al recuadro de arriba
+		NoApilable: '''"{0}" no admite pila (no se puede editar la cantidad)'''
 	}
+
 	Prefijo: {
-		Ninguno: "Ninguno"
+		Ninguno: Ninguno
+
 		Stat: {
-			Damage: "de daño"
-			CritChance: "de probabilidad de golpe crítico"
-			Knockback: "de retroceso"
-			UseTime: "de tiempo de uso"
-			Size: "de tamaño"
-			ShootSpeed: "de velocidad de disparo"
-			ManaCost: "de coste de maná"
-			Defense: "de defensa"
-			MaxMana: "de maná máximo"
-			MoveSpeed: "de velocidad de movimiento"
-			MeleeSpeed: "de velocidad cuerpo a cuerpo"
+			Damage: de daño
+			CritChance: de probabilidad de golpe crítico
+			Knockback: de retroceso
+			UseTime: de tiempo de uso
+			Size: de tamaño
+			ShootSpeed: de velocidad de disparo
+			ManaCost: de coste de maná
+			Defense: de defensa
+			MaxMana: de maná máximo
+			MoveSpeed: de velocidad de movimiento
+			MeleeSpeed: de velocidad cuerpo a cuerpo
 		}
 	}
 }
+
 Builds: {
-	AutoEquipar: "Auto-equipar"
-	AutoEquiparAyuda: "Coloca en su sitio el equipo de esta build que YA tengas. Nunca crea objetos: lo que no tengas se queda como está."
-	SinCatalogo: "No hay ningún catálogo de builds cargado."
-	Armadura: "Armadura"
-	Armas: "Armas"
-	Accesorios: "Accesorios"
-	PrefijoSugerido: "prefijo sugerido: {0}"
-	NoExisteAqui: "no existe en esta partida"
-	Nada: "(nada)"
-	RanurasAccesorio: "ranuras de accesorio disponibles: {0}"
-	Tienes: "Tienes {0} de {1} objetos de esta build{2}."
-	Leyenda: "Verde = ya lo tienes  ·  gris = no lo tienes  ·  rojo = no existe aquí."
-	ResultadoAutoEquipar: "Auto-equipar: {0}"
-	NadaQueMover: "No tenías ningún objeto de esta build para mover. Auto-equipar solo mueve lo que ya posees, nunca crea nada."
-	Resumen: "movidos={0}, ya colocados={1}, no los tienes={2}, sin sitio={3}, no existen aquí={4}"
+	AutoEquipar: Auto-equipar
+	AutoEquiparAyuda: Coloca en su sitio el equipo de esta build. Lo que ya tengas se MUEVE; lo que no tengas se TRAE del catálogo (con su mejor prefijo) y se coloca igual.
+	SinCatalogo: No hay ningún catálogo de builds cargado.
+	Armadura: Armadura
+	Armas: Armas
+	Accesorios: Accesorios
+	PrefijoSugerido: prefijo sugerido: {0}
+	NoExisteAqui: no existe en esta partida
+	Nada: (nada)
+	RanurasAccesorio: ranuras de accesorio disponibles: {0}
+	Tienes: Tienes {0} de {1} objetos de esta build{2}.
+	Leyenda: Verde = ya lo tienes  ·  gris = no lo tienes  ·  rojo = no existe aquí.
+	ResultadoAutoEquipar: Auto-equipar: {0}
+	NadaQueMover: No se aplicó nada: ningún objeto de esta build existe en esta partida (el mod de origen no está instalado).
+	Resumen: movidos={0}, ya colocados={1}, creados={2}, sin sitio={3}, no existen aquí={4}
+	SinSitioDetalle: Sin sitio: {0}.
+	SinSitioItem: "{0}: {1}"
+
+	CausaSinSitio: {
+		MochilaLlena: la mochila está llena
+		SlotAccesorio: no hay ranura de accesorio libre para él (o es incompatible con lo que llevas puesto)
+		NoArmadura: no es una pieza de armadura reconocible
+	}
+
 	Etapa: {
 		vanilla: {
-			prehardmode: "Pre-Hardmode (listo para el Muro de Carne)"
-			earlyhardmode: "Hardmode temprano (antes de los jefes mecánicos)"
-			endgame: "Final del juego (post Lunatic Cultist / Moon Lord)"
+			prehardmode: Pre-Hardmode (listo para el Muro de Carne)
+			earlyhardmode: Hardmode temprano (antes de los jefes mecánicos)
+			endgame: Final del juego (post Lunatic Cultist / Moon Lord)
 		}
+
 		calamity: {
-			prehardmode: "Pre-Hardmode (listo para el Muro de Carne)"
-			earlyhardmode: "Hardmode (post-Plantera / pre-Golem, aprox.)"
-			endgame: "Final del juego (Auric Tesla, post-Yharon/Exo Mechs)"
+			prehardmode: Pre-Hardmode (listo para el Muro de Carne)
+			earlyhardmode: Hardmode (post-Plantera / pre-Golem, aprox.)
+			endgame: Final del juego (Auric Tesla, post-Yharon/Exo Mechs)
 		}
 	}
+
 	Clase: {
-		Melee: "Cuerpo a cuerpo"
-		Ranged: "A distancia"
-		Mage: "Mago"
-		Summoner: "Invocador"
-		Rogue: "Pícaro"
+		Melee: Cuerpo a cuerpo
+		Ranged: A distancia
+		Mage: Mago
+		Summoner: Invocador
+		Rogue: Pícaro
 	}
-	ConjuntoDestinoPildora: "Conjunto {0}"
-	ConjuntoDestinoAyuda: "A cuál de los tres conjuntos de equipo (1/2/3) va la armadura y los accesorios de esta build al auto-equipar."
-	ConjuntoActivoMarca: "(activo)"
+
+	ConjuntoDestinoPildora: Conjunto {0}
+	ConjuntoDestinoAyuda: A cuál de los tres conjuntos de equipo (1/2/3) va la armadura y los accesorios de esta build al auto-equipar.
+	ConjuntoActivoMarca: (activo)
 }
+
 Investigacion: {
-	ProgresoGlobal: "Progreso global"
+	ProgresoGlobal: Progreso global
 	Progreso: "{0} / {1} objetos ({2}%)"
-	AvisoNoViaje: "AVISO: no es un personaje de Modo Viaje (dificultad {0}): se guarda, pero el juego no lo usa."
-	EligeCarpeta: "Elige una carpeta"
-	InvestigarCarpeta: "Investigar carpeta"
-	InvestigarCarpetaAyuda: "Investiga del todo cada objeto de esta carpeta y de las que hay dentro"
-	QuitarCarpeta: "Quitar carpeta"
-	QuitarCarpetaAyuda: "Deja sin investigar todo lo de esta carpeta (Ctrl+Z lo devuelve)"
-	SoloFalta: "Solo lo que falta"
-	SoloFaltaAyuda: "Esconde de la lista los objetos que ya están investigados del todo"
-	InvestigarTodo: "Investigar TODO"
-	InvestigarTodoAyuda: "Investiga del todo TODOS los objetos investigables de la partida"
-	QuitarTodo: "Quitar TODA la investigación"
-	QuitarTodoAyuda: "Deja el personaje sin nada investigado (Ctrl+Z lo devuelve)"
-	Confirmar: "¿Seguro? Pulsa otra vez"
-	Investigar: "Investigar"
-	InvestigarAyuda: "Marca este objeto como investigado del todo, por la vía oficial del juego"
-	Quitar: "Quitar"
-	QuitarAyuda: "Deja este objeto sin investigar (Ctrl+Z lo devuelve)"
-	EstadoCompleto: "investigado ({0})"
+	AvisoNoViaje: AVISO: no es un personaje de Modo Viaje (dificultad {0}): se guarda, pero el juego no lo usa.
+	EligeCarpeta: Elige una carpeta
+	InvestigarCarpeta: Investigar carpeta
+	InvestigarCarpetaAyuda: Investiga del todo cada objeto de esta carpeta y de las que hay dentro
+	QuitarCarpeta: Quitar carpeta
+	QuitarCarpetaAyuda: Deja sin investigar todo lo de esta carpeta (Ctrl+Z lo devuelve)
+	SoloFalta: Solo lo que falta
+	SoloFaltaAyuda: Esconde de la lista los objetos que ya están investigados del todo
+	InvestigarTodo: Investigar TODO
+	InvestigarTodoAyuda: Investiga del todo TODOS los objetos investigables de la partida
+	QuitarTodo: Quitar TODA la investigación
+	QuitarTodoAyuda: Deja el personaje sin nada investigado (Ctrl+Z lo devuelve)
+	Confirmar: ¿Seguro? Pulsa otra vez
+	Investigar: Investigar
+	InvestigarAyuda: Marca este objeto como investigado del todo, por la vía oficial del juego
+	Quitar: Quitar
+	QuitarAyuda: Deja este objeto sin investigar (Ctrl+Z lo devuelve)
+	EstadoCompleto: investigado ({0})
 	EstadoParcial: "{0} de {1} sacrificados"
-	MasObjetosDentro: "y {0} objetos más en las carpetas de dentro. Los botones de carpeta sí actúan sobre todos."
-	NadaPendiente: "Nada pendiente aquí: todo está investigado."
-	SinInvestigables: "Esta carpeta no tiene objetos investigables."
-	OtrosObjetos: "Otros objetos ({0})"
-	Chat: "Terrakeep: {0}"
-	AccionInvestigar: "Investigar {0}"
-	AccionQuitar: "Quitar la investigación de {0}"
-	AccionInvestigarCarpeta: "Investigar la carpeta \"{0}\""
-	AccionQuitarCarpeta: "Quitar la investigación de la carpeta \"{0}\""
-	AccionInvestigarTodo: "Investigar todo"
-	AccionQuitarTodo: "Quitar toda la investigación"
-	MensajeInvestigado: "Investigado: {0} -> {1}"
-	MensajeSinInvestigar: "Sin investigar: {0} -> {1}"
-	MensajeCarpeta: "Carpeta \"{0}\": {1}"
-	MensajeCarpetaQuitada: "Carpeta \"{0}\" sin investigar: {1}"
-	MensajeTodo: "Investigar todo: {0}"
-	MensajeTodoQuitado: "Quitada toda la investigación: {0}"
+	MasObjetosDentro: y {0} objetos más en las carpetas de dentro. Los botones de carpeta sí actúan sobre todos.
+	NadaPendiente: Nada pendiente aquí: todo está investigado.
+	SinInvestigables: Esta carpeta no tiene objetos investigables.
+	OtrosObjetos: Otros objetos ({0})
+	Chat: Terrakeep: {0}
+	AccionInvestigar: Investigar {0}
+	AccionQuitar: Quitar la investigación de {0}
+	AccionInvestigarCarpeta: Investigar la carpeta "{0}"
+	AccionQuitarCarpeta: Quitar la investigación de la carpeta "{0}"
+	AccionInvestigarTodo: Investigar todo
+	AccionQuitarTodo: Quitar toda la investigación
+	MensajeInvestigado: Investigado: {0} -> {1}
+	MensajeSinInvestigar: Sin investigar: {0} -> {1}
+	MensajeCarpeta: Carpeta "{0}": {1}
+	MensajeCarpetaQuitada: Carpeta "{0}" sin investigar: {1}
+	MensajeTodo: Investigar todo: {0}
+	MensajeTodoQuitado: Quitada toda la investigación: {0}
+
 	Categoria: {
-		Armadura: "Armadura"
-		ArmaduraCascos: "Cascos"
-		ArmaduraPetos: "Petos"
-		ArmaduraPerneras: "Perneras"
-		Accesorios: "Accesorios"
-		Armas: "Armas"
-		ArmasMelee: "Cuerpo a cuerpo"
-		ArmasRanged: "A distancia"
-		ArmasMagic: "Mágicas"
-		ArmasSummon: "De invocación"
-		ArmasOtras: "Otras"
-		Herramientas: "Herramientas"
-		Bloques: "Bloques y muebles"
-		Paredes: "Paredes"
-		Municion: "Munición"
-		Consumibles: "Consumibles"
-		Materiales: "Materiales"
-		Otros: "Otros"
+		Armadura: Armadura
+		ArmaduraCascos: Cascos
+		ArmaduraPetos: Petos
+		ArmaduraPerneras: Perneras
+		Accesorios: Accesorios
+		Armas: Armas
+		ArmasMelee: Cuerpo a cuerpo
+		ArmasRanged: A distancia
+		ArmasMagic: Mágicas
+		ArmasSummon: De invocación
+		ArmasOtras: Otras
+		Herramientas: Herramientas
+		Bloques: Bloques y muebles
+		Paredes: Paredes
+		Municion: Munición
+		Consumibles: Consumibles
+		Materiales: Materiales
+		Otros: Otros
 	}
 }
+
 Exploracion: {
-	Titulo: "Exploración del mundo"
-	LineaMundo: "\"{0}\"  ·  {1}  ·  {2}"
-	Hardmode: "Hardmode"
-	PreHardmode: "Pre-Hardmode"
-	Explorado: "Explorado: {0} %"
-	EstasEn: "Estás en el tile {0}"
-	MapaListo: "Mapa del juego listo"
-	MapaSinGenerar: "El mapa del juego todavía no está generado"
+	Titulo: Exploración del mundo
+	LineaMundo: '''"{0}"  ·  {1}  ·  {2}'''
+	Hardmode: Hardmode
+	PreHardmode: Pre-Hardmode
+	Explorado: Explorado: {0} %
+	EstasEn: Estás en el tile {0}
+	MapaListo: Mapa del juego listo
+	MapaSinGenerar: El mapa del juego todavía no está generado
+
 	Pestana: {
-		Mapa: "Mapa"
-		Busqueda: "Búsqueda"
-		Mundo: "Este mundo"
+		Mapa: Mapa
+		Busqueda: Búsqueda
+		Mundo: Este mundo
 	}
+
 	Categoria: {
-		Minerales: "Minerales"
-		Gemas: "Gemas"
-		Tesoros: "Tesoros"
-		Contenedores: "Contenedores"
-		Liquidos: "Líquidos"
-		Paredes: "Paredes"
+		Minerales: Minerales
+		Gemas: Gemas
+		Tesoros: Tesoros
+		Contenedores: Contenedores
+		Liquidos: Líquidos
+		Paredes: Paredes
 	}
+
 	Objetivo: {
-		CobreEstano: "Cobre / Estaño"
-		HierroPlomo: "Hierro / Plomo"
-		PlataTungsteno: "Plata / Tungsteno"
-		OroPlatino: "Oro / Platino"
-		DemonitaCarmesita: "Demonita / Carmesita"
-		Meteorito: "Meteorito"
-		Obsidiana: "Obsidiana"
-		PiedraInfernal: "Piedra infernal"
-		CobaltoPaladio: "Cobalto / Paladio"
-		MithrilOricalco: "Mithril / Oricalco"
-		AdamantitaTitanio: "Adamantita / Titanio"
-		Clorofita: "Clorofita"
-		Luminita: "Luminita"
-		FosilesDesierto: "Fósiles del desierto"
-		Amatista: "Amatista"
-		Topacio: "Topacio"
-		Zafiro: "Zafiro"
-		Esmeralda: "Esmeralda"
-		Rubi: "Rubí"
-		Diamante: "Diamante"
-		GemasIncrustadas: "Gemas incrustadas"
-		CorazonesCristal: "Corazones de cristal"
-		FrutosVida: "Frutos de la vida"
-		OrbesSombra: "Orbes de sombra / Corazones"
-		AltaresDemoniacos: "Altares demoníacos"
-		AltarLihzahrd: "Altar lihzahrd"
-		BulbosPlantera: "Bulbos de Plantera"
-		Colmenas: "Colmenas"
-		LarvasAbeja: "Larvas de abeja reina"
-		Cofres: "Cofres y cómodas"
-		Npcs: "NPC vivos ahora mismo"
-		Agua: "Agua"
-		Lava: "Lava"
-		Miel: "Miel"
-		Fulgor: "Fulgor"
-		Mazmorra: "Mazmorra"
-		TemploLihzahrd: "Templo lihzahrd"
-		NidoArana: "Nido de araña"
+		CobreEstano: Cobre / Estaño
+		HierroPlomo: Hierro / Plomo
+		PlataTungsteno: Plata / Tungsteno
+		OroPlatino: Oro / Platino
+		DemonitaCarmesita: Demonita / Carmesita
+		Meteorito: Meteorito
+		Obsidiana: Obsidiana
+		PiedraInfernal: Piedra infernal
+		CobaltoPaladio: Cobalto / Paladio
+		MithrilOricalco: Mithril / Oricalco
+		AdamantitaTitanio: Adamantita / Titanio
+		Clorofita: Clorofita
+		Luminita: Luminita
+		FosilesDesierto: Fósiles del desierto
+		Amatista: Amatista
+		Topacio: Topacio
+		Zafiro: Zafiro
+		Esmeralda: Esmeralda
+		Rubi: Rubí
+		Diamante: Diamante
+		GemasIncrustadas: Gemas incrustadas
+		CorazonesCristal: Corazones de cristal
+		FrutosVida: Frutos de la vida
+		OrbesSombra: Orbes de sombra / Corazones
+		AltaresDemoniacos: Altares demoníacos
+		AltarLihzahrd: Altar lihzahrd
+		BulbosPlantera: Bulbos de Plantera
+		Colmenas: Colmenas
+		LarvasAbeja: Larvas de abeja reina
+		Cofres: Cofres y cómodas
+		Npcs: NPC vivos ahora mismo
+		Agua: Agua
+		Lava: Lava
+		Miel: Miel
+		Fulgor: Fulgor
+		Mazmorra: Mazmorra
+		TemploLihzahrd: Templo lihzahrd
+		NidoArana: Nido de araña
 	}
-	SoloExplorado: "Solo en lo que ya he explorado"
-	SoloExploradoAyuda: "Con esto activado, la búsqueda solo cuenta los tiles que ya has descubierto en el mapa. Desactívalo para buscar en TODO el mundo, incluido lo que no has visto nunca."
-	Buscar: "Buscar en el mundo"
-	Buscando: "Buscando \"{0}\"...  {1} %"
-	ZonasCon: "{0} zonas con \"{1}\""
-	EligeQueBuscar: "Elige qué buscar y pulsa \"Buscar en el mundo\""
-	DetalleInicial: "El mundo tiene {0} tiles."
-	BuscarAyuda: "La búsqueda se reparte entre fotogramas: puedes seguir jugando mientras corre."
+
+	SoloExplorado: Solo en lo que ya he explorado
+	SoloExploradoAyuda: Con esto activado, la búsqueda solo cuenta los tiles que ya has descubierto en el mapa. Desactívalo para buscar en TODO el mundo, incluido lo que no has visto nunca.
+	Buscar: Buscar en el mundo
+	Buscando: Buscando "{0}"...  {1} %
+	ZonasCon: '''{0} zonas con "{1}"'''
+	EligeQueBuscar: Elige qué buscar y pulsa "Buscar en el mundo"
+	DetalleInicial: El mundo tiene {0} tiles.
+	BuscarAyuda: La búsqueda se reparte entre fotogramas: puedes seguir jugando mientras corre.
 	DetalleEnMarcha: "{0} encontrados de momento, {1} tiles mirados."
 	DetalleTerminada: "{0} tiles encontrados en {1} mirados, en {2} ms de CPU {3}"
-	AmbitoExplorado: "(solo en lo explorado)."
-	AmbitoTodo: "(en todo el mundo)."
-	CategoriaVacia: "Nada de esta categoría existe en esta partida."
-	AyudaCofres: "Recorre Main.chest: todos los cofres y cómodas del mundo, con lo que llevan dentro."
-	AyudaNpcs: "Recorre Main.npc: los NPC vivos ahora mismo, con su vida real."
-	AyudaLiquido: "Busca este líquido en los datos de líquido de cada tile."
-	AyudaPared: "Tipos de pared: {0}"
-	AyudaTile: "Tipos de tile: {0}"
-	SinResultados: "No hay ni uno en el mundo (o no en lo que has explorado)."
-	AquiSaldran: "Aquí saldrán los sitios donde está lo que busques."
-	FilaResultado: "({0}, {1})  {2}  ·  a {3} tiles"
-	AyudaResultado: "Pulsa para verlo en el mini-mapa."
+	AmbitoExplorado: (solo en lo explorado).
+	AmbitoTodo: (en todo el mundo).
+	CategoriaVacia: Nada de esta categoría existe en esta partida.
+	AyudaCofres: Recorre Main.chest: todos los cofres y cómodas del mundo, con lo que llevan dentro.
+	AyudaNpcs: Recorre Main.npc: los NPC vivos ahora mismo, con su vida real.
+	AyudaLiquido: Busca este líquido en los datos de líquido de cada tile.
+	AyudaPared: Tipos de pared: {0}
+	AyudaTile: Tipos de tile: {0}
+	SinResultados: No hay ni uno en el mundo (o no en lo que has explorado).
+	AquiSaldran: Aquí saldrán los sitios donde está lo que busques.
+	FilaResultado: ({0}, {1})  {2}  ·  a {3} tiles
+	AyudaResultado: Pulsa para verlo en el mini-mapa.
+
 	Mapa: {
-		Acercar: "Acercar  +"
-		AcercarAyuda: "También puedes usar la rueda del ratón sobre el mapa."
-		Alejar: "Alejar  −"
-		Centrar: "Centrar en mí"
-		MundoEntero: "Ver el mundo entero"
-		VerEnMapa: "Ver en el mapa del juego"
-		VerEnMapaAyuda: "Cierra Terrakeep y abre el mapa grande del juego por donde estás mirando, con los marcadores de la búsqueda encima. Al cerrarlo se vuelve aquí."
-		AvisoExclusivo: "El mapa grande del juego no puede\nconvivir con este panel: al abrirlo,\nTerrakeep se cierra y vuelve solo."
-		Marcadores: "Marcadores"
-		ZonasDe: "{0} zonas de \"{1}\""
-		SinBusqueda: "Sin búsqueda: usa la pestaña Búsqueda"
-		Zoom: "Zoom: {0} px por tile"
-		FueraDelMundo: "Fuera del mundo"
+		Acercar: Acercar  +
+		AcercarAyuda: También puedes usar la rueda del ratón sobre el mapa.
+		Alejar: Alejar  −
+		Centrar: Centrar en mí
+		MundoEntero: Ver el mundo entero
+		VerEnMapa: Ver en el mapa del juego
+		VerEnMapaAyuda: Cierra Terrakeep y abre el mapa grande del juego por donde estás mirando, con los marcadores de la búsqueda encima. Al cerrarlo se vuelve aquí.
+		AvisoExclusivo:
+			'''
+			El mapa grande del juego no puede
+			convivir con este panel: al abrirlo,
+			Terrakeep se cierra y vuelve solo.
+			'''
+		Marcadores: Marcadores
+		ZonasDe: '''{0} zonas de "{1}"'''
+		SinBusqueda: Sin búsqueda: usa la pestaña Búsqueda
+		Zoom: Zoom: {0} px por tile
+		FueraDelMundo: Fuera del mundo
 		TileExplorado: "{2}  ·  tile {0}, {1} (explorado)"
 		TileSinExplorar: "{2}  ·  tile {0}, {1} (sin explorar)"
-		Vacio: "Nada"
+		Vacio: Nada
 	}
+
 	Mundo: {
-		Ficha: "Ficha del mundo"
+		Ficha: Ficha del mundo
+
 		Dato: {
-			Nombre: "Nombre"
-			Semilla: "Semilla"
-			Tamano: "Tamaño"
-			Tiles: "Tiles"
-			Modo: "Modo de juego"
-			Progreso: "Progreso"
-			MalDelMundo: "Mal del mundo"
-			SemillasSecretas: "Semillas secretas"
-			Aparicion: "Aparición"
-			EstasEn: "Estás en"
-			Explorado: "Explorado"
-			Autoguardado: "Autoguardado"
+			Nombre: Nombre
+			Semilla: Semilla
+			Tamano: Tamaño
+			Tiles: Tiles
+			Modo: Modo de juego
+			Progreso: Progreso
+			MalDelMundo: Mal del mundo
+			SemillasSecretas: Semillas secretas
+			Aparicion: Aparición
+			EstasEn: Estás en
+			Explorado: Explorado
+			Autoguardado: Autoguardado
 		}
+
 		ModoValor: "{0}  (Main.GameMode = {1})"
-		Tile: "tile {0}"
+		Tile: tile {0}
 		Porcentaje: "{0} %"
-		Activado: "activado"
-		Desactivado: "desactivado"
-		SinSemilla: "(el mundo no guarda semilla)"
-		Desconocido: "(desconocido)"
-		NingunaSemilla: "(ninguna)"
-		SinJugador: "(sin jugador)"
-		Dificultad: "Dificultad del mundo, en vivo"
-		AhoraMismo: "Ahora mismo: {0}"
-		AvisoDeshacer: "Queda en el historial de Terrakeep: se puede deshacer con Ctrl+Z mientras no se haya guardado."
-		EligeModo: "Elige un modo arriba"
-		Confirmar: "Confirmar: pasar a {0}"
-		NoSePuede: "No se puede: {0}"
-		NoSePudo: "No se pudo: {0}"
-		VasAPasar: "Vas a pasar de {0} a {1}. Pulsa el botón de confirmar."
-		Hecho: "Hecho: el mundo está en modo {0}. Se grabará en el siguiente guardado."
-		AyudaModoActual: "Es el modo que tiene el mundo ahora mismo."
-		AyudaElegirModo: "Pulsa para elegirlo; después habrá que confirmar."
+		Activado: activado
+		Desactivado: desactivado
+		SinSemilla: (el mundo no guarda semilla)
+		Desconocido: (desconocido)
+		NingunaSemilla: (ninguna)
+		SinJugador: (sin jugador)
+		Dificultad: Dificultad del mundo, en vivo
+		AhoraMismo: Ahora mismo: {0}
+		AvisoDeshacer: Queda en el historial de Terrakeep: se puede deshacer con Ctrl+Z mientras no se haya guardado.
+		EligeModo: Elige un modo arriba
+		Confirmar: Confirmar: pasar a {0}
+		NoSePuede: No se puede: {0}
+		NoSePudo: No se pudo: {0}
+		VasAPasar: Vas a pasar de {0} a {1}. Pulsa el botón de confirmar.
+		Hecho: Hecho: el mundo está en modo {0}. Se grabará en el siguiente guardado.
+		AyudaModoActual: Es el modo que tiene el mundo ahora mismo.
+		AyudaElegirModo: Pulsa para elegirlo; después habrá que confirmar.
 	}
+
 	Modo: {
-		Clasico: "Clásico"
-		Experto: "Experto"
-		Maestro: "Maestro"
-		Viaje: "Viaje"
-		Desconocido: "Desconocido ({0})"
+		Clasico: Clásico
+		Experto: Experto
+		Maestro: Maestro
+		Viaje: Viaje
+		Desconocido: Desconocido ({0})
 	}
+
 	Mal: {
-		Carmesi: "Carmesí"
-		Corrupcion: "Corrupción"
+		Carmesi: Carmesí
+		Corrupcion: Corrupción
 	}
+
 	Semilla: {
-		Drunk: "Mundo borracho"
-		ForTheWorthy: "Por los que lo valen"
-		Anniversary: "10º aniversario"
-		NotTheBees: "¡Las abejas no!"
-		DontStarve: "Don't Starve"
-		Remix: "Remix"
-		NoTraps: "Sin trampas"
-		Zenith: "Cénit"
+		Drunk: Mundo borracho
+		ForTheWorthy: Por los que lo valen
+		Anniversary: 10º aniversario
+		NotTheBees: ¡Las abejas no!
+		DontStarve: Don't Starve
+		Remix: Remix
+		NoTraps: Sin trampas
+		Zenith: Cénit
 	}
+
 	Dificultad: {
-		SinMundo: "No hay ningún mundo cargado."
-		Multijugador: "Estás en una partida multijugador: el modo del mundo lo decide el servidor."
-		YaEnEseModo: "El mundo ya está en este modo."
-		ModoInexistente: "Este modo de juego no existe en esta versión del juego."
-		SinPersonaje: "No hay ningún personaje cargado."
-		SoloViaje: "Tu personaje es de Viaje y solo puede entrar en mundos de Viaje: si quitas el modo Viaje de este mundo, este personaje se quedará fuera."
-		NoViaje: "Tu personaje NO es de Viaje: si pones este mundo en modo Viaje, este personaje ya no podrá volver a entrar en él."
-		PermanenteAutoguardado: "El cambio es PERMANENTE: se escribe en el mundo en el siguiente autoguardado (lo tienes activado)."
-		PermanenteAlGuardar: "El cambio es PERMANENTE: se escribe en el mundo en cuanto se guarde (tienes el autoguardado desactivado, pero salir al menú guarda igual)."
-		Efecto: "Los enemigos ya generados no cambian de vida ni de daño hasta que reaparezcan; el botín sí reacciona al instante."
+		SinMundo: No hay ningún mundo cargado.
+		Multijugador: Estás en una partida multijugador: el modo del mundo lo decide el servidor.
+		YaEnEseModo: El mundo ya está en este modo.
+		ModoInexistente: Este modo de juego no existe en esta versión del juego.
+		SinPersonaje: No hay ningún personaje cargado.
+		SoloViaje: Tu personaje es de Viaje y solo puede entrar en mundos de Viaje: si quitas el modo Viaje de este mundo, este personaje se quedará fuera.
+		NoViaje: Tu personaje NO es de Viaje: si pones este mundo en modo Viaje, este personaje ya no podrá volver a entrar en él.
+		PermanenteAutoguardado: El cambio es PERMANENTE: se escribe en el mundo en el siguiente autoguardado (lo tienes activado).
+		PermanenteAlGuardar: El cambio es PERMANENTE: se escribe en el mundo en cuanto se guarde (tienes el autoguardado desactivado, pero salir al menú guarda igual).
+		Efecto: Los enemigos ya generados no cambian de vida ni de daño hasta que reaparezcan; el botín sí reacciona al instante.
 	}
 }
+
 Ajustes: {
-	Titulo: "Terrakeep - Ajustes"
-	Idioma: "Idioma de la interfaz"
-	IdiomaSeguirElJuego: "El del juego"
-	IdiomaEspanol: "Español"
-	IdiomaIngles: "English"
-	CulturaActiva: "Idioma activo del juego ahora mismo: {0}"
-	Cerrar: "Cerrar"
-	Historial: "Deshacer y rehacer"
-	HistorialVacio: "No hay nada en el historial de esta sesión."
-	HistorialEntradas: "Acciones guardadas en el historial: {0}"
-	Deshacer: "Deshacer (Ctrl+Z)"
-	Rehacer: "Rehacer (Ctrl+Y)"
-	DeshacerAlgo: "Deshacer: {0}"
-	RehacerAlgo: "Rehacer: {0}"
-	Atajos: "Atajos de teclado"
-	AtajosNota: "Cada tecla abre Terrakeep directamente en su pestaña. Reasignables en Ajustes > Controles del juego."
-	AtajosHistorial: "Deshacer y rehacer: {0} y {1} (con Ctrl pulsado)."
-	AtajosIcono: "También se abre con el icono de Terrakeep, junto al bestiario y los emotes, cuando tienes el inventario abierto."
+	Titulo: Terrakeep - Ajustes
+	Idioma: Idioma de la interfaz
+	IdiomaSeguirElJuego: El del juego
+	IdiomaEspanol: Español
+	IdiomaIngles: English
+	CulturaActiva: Idioma activo del juego ahora mismo: {0}
+	Cerrar: Cerrar
+	Historial: Deshacer y rehacer
+	HistorialVacio: No hay nada en el historial de esta sesión.
+	HistorialEntradas: Acciones guardadas en el historial: {0}
+	Deshacer: Deshacer (Ctrl+Z)
+	Rehacer: Rehacer (Ctrl+Y)
+	DeshacerAlgo: Deshacer: {0}
+	RehacerAlgo: Rehacer: {0}
+	Atajos: Atajos de teclado
+	AtajosNota: Cada tecla abre Terrakeep directamente en su pestaña. Reasignables en Ajustes > Controles del juego.
+	AtajosHistorial: Deshacer y rehacer: {0} y {1} (con Ctrl pulsado).
+	AtajosIcono: También se abre con el icono de Terrakeep, junto al bestiario y los emotes, cuando tienes el inventario abierto.
 	SinTecla: "[sin tecla]"
 }
+
 Historial: {
-	Deshecho: "Terrakeep ha deshecho: {0}"
-	Rehecho: "Terrakeep ha rehecho: {0}"
-	NadaQueDeshacer: "Terrakeep no tiene nada que deshacer."
-	NadaQueRehacer: "Terrakeep no tiene nada que rehacer."
+	Deshecho: Terrakeep ha deshecho: {0}
+	Rehecho: Terrakeep ha rehecho: {0}
+	NadaQueDeshacer: Terrakeep no tiene nada que deshacer.
+	NadaQueRehacer: Terrakeep no tiene nada que rehacer.
 }
-Prefijos: {
-	MejorPrefijo: "Mejor prefijo posible: {0}"
-}
+
+Prefijos.MejorPrefijo: Mejor prefijo posible: {0}
+
 Keybinds: {
-	AbrirPanel: {
-		DisplayName: "Abrir Terrakeep"
-	}
-	AbrirLibreria: {
-		DisplayName: "Abrir la Librería de Terrakeep"
-	}
-	AbrirBuilds: {
-		DisplayName: "Abrir las Builds de Terrakeep"
-	}
-	AbrirInvestigacion: {
-		DisplayName: "Abrir la Investigación de Terrakeep"
-	}
-	AbrirExploracion: {
-		DisplayName: "Abrir la Exploración de Terrakeep"
-	}
-	AbrirAjustes: {
-		DisplayName: "Abrir los Ajustes de Terrakeep"
-	}
-	Deshacer: {
-		DisplayName: "Deshacer (con Ctrl)"
-	}
-	Rehacer: {
-		DisplayName: "Rehacer (con Ctrl)"
-	}
+	AbrirPanel.DisplayName: Abrir Terrakeep
+	AbrirLibreria.DisplayName: Abrir la Librería de Terrakeep
+	AbrirBuilds.DisplayName: Abrir las Builds de Terrakeep
+	AbrirInvestigacion.DisplayName: Abrir la Investigación de Terrakeep
+	AbrirExploracion.DisplayName: Abrir la Exploración de Terrakeep
+	AbrirAjustes.DisplayName: Abrir los Ajustes de Terrakeep
+	Deshacer.DisplayName: Deshacer (con Ctrl)
+	Rehacer.DisplayName: Rehacer (con Ctrl)
 }
+
 Configs: {
 	AjustesConfig: {
-		DisplayName: "Ajustes"
-		Headers: {
-			Interfaz: "Interfaz"
-		}
+		DisplayName: Ajustes
+		Headers.Interfaz: Interfaz
+
 		Idioma: {
-			Label: "Idioma de la interfaz"
-			Tooltip: "En qué idioma muestra Terrakeep sus paneles. Elegir Español o English cambia el idioma del juego entero en el acto, porque tModLoader tiene un único idioma activo para todo."
+			Label: Idioma de la interfaz
+			Tooltip: En qué idioma muestra Terrakeep sus paneles. Elegir Español o English cambia el idioma del juego entero en el acto, porque tModLoader tiene un único idioma activo para todo.
 		}
 	}
+
 	IdiomaDeTerrakeep: {
 		Tooltip: ""
+
 		SeguirElJuego: {
-			Label: "El del juego"
+			Label: El del juego
 			Tooltip: ""
 		}
+
 		Espanol: {
-			Label: "Español"
+			Label: Español
 			Tooltip: ""
 		}
+
 		English: {
-			Label: "English"
+			Label: English
 			Tooltip: ""
 		}
 	}

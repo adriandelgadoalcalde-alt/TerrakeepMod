@@ -42,6 +42,18 @@ namespace TerrakeepMod.Common.Builds
 		/// auto-equipar automaticamente tras abrir el panel.</summary>
 		public const string VariableAutoEquipar = "TERRAKEEP_BUILDS_AUTOEQUIPAR";
 
+		/// <summary>SOLO ARNES DE PRUEBAS: lista de pid separados por coma que se meten en la
+		/// HUCHA (<c>Player.bank.item</c>) en vez del inventario, para reproducir el escenario real
+		/// de un jugador que tiene un objeto de la build guardado en un banco en vez de en la
+		/// mochila (investigacion del caso "sin sitio" reportado por el usuario con la Furia
+		/// solar).</summary>
+		public const string VariableSembrarBanco = "TERRAKEEP_BUILDS_SEMBRAR_BANCO";
+
+		/// <summary>SOLO ARNES DE PRUEBAS: si se define (a cualquier valor no vacio), rellena los 50
+		/// huecos de la mochila (indices 0-49) con un objeto de relleno ANTES de abrir el panel, para
+		/// reproducir "la mochila esta llena" de verdad en vez de suponerlo.</summary>
+		public const string VariableLlenarMochila = "TERRAKEEP_BUILDS_LLENAR_MOCHILA";
+
 		/// <summary>SOLO ARNES DE PRUEBAS: clave de fuente ("vanilla" / "calamity") que
 		/// seleccionar antes de auto-equipar.</summary>
 		public const string VariableFuente = "TERRAKEEP_BUILDS_FUENTE";
@@ -328,6 +340,8 @@ namespace TerrakeepMod.Common.Builds
 				$"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: {VariableAutoprueba} detectada. Marca de ejecucion: {marca}");
 
 			SembrarObjetosDePrueba();
+			SembrarObjetosEnBancoDePrueba();
+			LlenarMochilaDePrueba();
 			AbrirPanel("autoprueba (" + VariableAutoprueba + ")");
 			AutoEquiparDePrueba();
 		}
@@ -374,6 +388,82 @@ namespace TerrakeepMod.Common.Builds
 
 			RegistroBuilds.Linea(
 				$"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: objetos sembrados para la prueba: {string.Join(", ", puestos)}");
+		}
+
+		/// <summary>
+		/// SOLO ARNES DE PRUEBAS: version de <see cref="SembrarObjetosDePrueba"/> que mete los pid de
+		/// <see cref="VariableSembrarBanco"/> en la HUCHA (<c>Player.bank.item</c>) en vez de en el
+		/// inventario. <see cref="EquipoJugador.Buscar"/> SI encuentra objetos ahi ("ya lo tienes"
+		/// cuenta la hucha), pero <see cref="EquipoJugador.EnMochila"/> NO (solo mira 0-49), asi que
+		/// auto-equipar sobre un arma sembrada aqui tiene que MOVERLA a la mochila para colocarla -
+		/// justo el camino de codigo que hace falta recorrer para reproducir "sin sitio" en un arma
+		/// de verdad (mochila llena) en vez de suponerlo.
+		/// </summary>
+		private static void SembrarObjetosEnBancoDePrueba()
+		{
+			string lista = Environment.GetEnvironmentVariable(VariableSembrarBanco);
+			if (string.IsNullOrEmpty(lista)) {
+				return;
+			}
+
+			Player jugador = Main.LocalPlayer;
+			List<string> puestos = new List<string>();
+			int siguiente = 0;
+
+			foreach (string bruto in lista.Split(',')) {
+				string pid = bruto.Trim();
+				if (pid.Length == 0) {
+					continue;
+				}
+
+				int tipo = CatalogoBuilds.ResolverPid(pid);
+				if (tipo <= 0) {
+					puestos.Add($"{pid}=NO RESUELTO");
+					continue;
+				}
+				if (jugador.bank?.item == null || siguiente >= jugador.bank.item.Length) {
+					puestos.Add($"{pid}=SIN HUECO EN LA HUCHA");
+					continue;
+				}
+
+				jugador.bank.item[siguiente] = new Item();
+				jugador.bank.item[siguiente].SetDefaults(tipo);
+				jugador.bank.item[siguiente].stack = 1;
+				puestos.Add($"{pid}(type={tipo})->hucha[{siguiente}]");
+				siguiente++;
+			}
+
+			RegistroBuilds.Linea(
+				$"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: objetos sembrados EN LA HUCHA para la prueba: {string.Join(", ", puestos)}");
+		}
+
+		/// <summary>
+		/// SOLO ARNES DE PRUEBAS: rellena los 50 huecos de la mochila (0-49) con Piedra para que
+		/// <see cref="EquipoJugador.PrimerHuecoMochila"/> devuelva -1 de verdad, reproduciendo "la
+		/// mochila esta llena" en vez de suponerlo. Se ejecuta DESPUES de sembrar (inventario y
+		/// hucha), asi que no pisa ningun objeto ya sembrado en el inventario.
+		/// </summary>
+		private static void LlenarMochilaDePrueba()
+		{
+			if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(VariableLlenarMochila))) {
+				return;
+			}
+
+			Player jugador = Main.LocalPlayer;
+			int rellenados = 0;
+			for (int i = 0; i <= EquipoJugador.UltimoSlotMochila; i++) {
+				if (!jugador.inventory[i].IsAir) {
+					continue;
+				}
+				jugador.inventory[i] = new Item();
+				jugador.inventory[i].SetDefaults(Terraria.ID.ItemID.StoneBlock);
+				jugador.inventory[i].stack = 1;
+				rellenados++;
+			}
+
+			RegistroBuilds.Linea(
+				$"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: mochila rellenada de piedra para la prueba " +
+				$"({rellenados} huecos rellenados, hueco libre ahora={EquipoJugador.PrimerHuecoMochila(jugador)}).");
 		}
 
 		/// <summary>

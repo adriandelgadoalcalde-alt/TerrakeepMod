@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.Audio;
 using Terraria.ID;
 using TerrakeepMod.Common.Ajustes;
+using TerrakeepMod.Common.Prefijos;
 
 namespace TerrakeepMod.Common.Builds
 {
@@ -16,12 +17,15 @@ namespace TerrakeepMod.Common.Builds
 		/// <summary>Objetos que ya estaban donde tenian que estar.</summary>
 		public int YaColocados;
 
-		/// <summary>Objetos de la build que el jugador NO tiene en ningun sitio. Auto-equipar no
-		/// los crea (ver el comentario de <see cref="AutoEquipar"/>).</summary>
-		public int NoPoseidos;
+		/// <summary>Objetos de la build que el jugador NO tenia en ningun sitio y que se han
+		/// CREADO del catalogo (misma ruta real que <c>ContenidoLibreria.PedirObjeto</c>: mejor
+		/// prefijo incluido) y colocado en el conjunto de destino. Ver el XMLdoc de
+		/// <see cref="AutoEquipar"/> para el porque de este cambio de diseño.</summary>
+		public int Creados;
 
-		/// <summary>Objetos que el jugador tiene pero que no cupieron (mochila llena, todos los
-		/// slots de accesorio ocupados, o conflicto de reglas del juego).</summary>
+		/// <summary>Objetos que el jugador ya tenia (o que se acaban de crear) pero que no
+		/// cupieron: mochila llena, todos los slots de accesorio ocupados/incompatibles, o
+		/// conflicto de reglas del juego. Auto-equipar nunca DESTRUYE nada para hacer sitio.</summary>
 		public int SinSitio;
 
 		/// <summary>Objetos del catalogo que no existen en esta partida (mod no instalado).</summary>
@@ -30,8 +34,44 @@ namespace TerrakeepMod.Common.Builds
 		/// <summary>Una linea por objeto, para dejar en el log lo que paso exactamente.</summary>
 		public readonly List<string> Detalle = new List<string>();
 
+		/// <summary>
+		/// Una entrada por objeto que acabo en <see cref="SinSitio"/>, con la causa REAL como valor
+		/// (no texto suelto) para que el panel pueda enseñar un motivo localizado sin tener que
+		/// analizar el texto de <see cref="Detalle"/> (que es solo para el log, en español fijo).
+		/// <para />
+		/// Nace de investigar un caso real reportado por el usuario: un arma que SI poseia salio
+		/// "sin sitio" justo al lado de la cabecera "ranuras de accesorio disponibles: 5", que se
+		/// leia como una contradiccion aunque no lo era (el arma necesita hueco en la MOCHILA, no
+		/// en accesorios - dos recursos distintos). El comportamiento era correcto (mochila llena
+		/// de verdad, comprobado en el sandbox); lo que estaba mal era que el panel no decia POR QUE
+		/// sin obligar a mirar el log.
+		/// </summary>
+		public readonly List<ItemSinSitio> DetalleSinSitio = new List<ItemSinSitio>();
+
 		public string Resumen =>
-			Idiomas.Texto("Builds.Resumen", Movidos, YaColocados, NoPoseidos, SinSitio, NoResueltos);
+			Idiomas.Texto("Builds.Resumen", Movidos, YaColocados, Creados, SinSitio, NoResueltos);
+	}
+
+	/// <summary>Motivo real por el que un objeto concreto no cupo (ver <see cref="ResultadoAutoEquipar.DetalleSinSitio"/>).</summary>
+	public enum CausaSinSitio
+	{
+		/// <summary>La mochila (0-49) esta llena: no habia hueco para moverlo o crearlo ahi.</summary>
+		MochilaLlena,
+
+		/// <summary>Todos los slots de accesorio activos estan ocupados, o el objeto es
+		/// incompatible con lo que ya llevas puesto (<c>ItemSlot.AccCheck</c>).</summary>
+		SlotAccesorioOcupado,
+
+		/// <summary>El objeto no tiene <c>headSlot</c>/<c>bodySlot</c>/<c>legSlot</c>: el catalogo
+		/// lo cataloga como armadura pero el objeto real no lo es. Caso de datos, no de recursos.</summary>
+		NoEsPiezaDeArmadura,
+	}
+
+	/// <summary>Un objeto concreto que acabo en <see cref="ResultadoAutoEquipar.SinSitio"/>.</summary>
+	public sealed class ItemSinSitio
+	{
+		public string Nombre;
+		public CausaSinSitio Causa;
 	}
 
 	/// <summary>
@@ -39,18 +79,34 @@ namespace TerrakeepMod.Common.Builds
 	/// </summary>
 	/// <remarks>
 	/// <para>
-	/// <b>Decision de diseño: solo MUEVE, nunca crea objetos.</b> Es lo mismo que hace el
-	/// "Auto-equipar" de la app de escritorio Terrakeep, y es lo unico honesto dentro de una
-	/// partida en curso: dar objetos de la nada convertiria una herramienta de organizacion en un
-	/// generador de trampas, y ademas arruinaria la progresion que este mismo catalogo describe.
-	/// Lo que el jugador no tenga se cuenta en <see cref="ResultadoAutoEquipar.NoPoseidos"/> y se
-	/// enseña en el panel como "no lo tienes", nada mas.
+	/// <b>Cambio de diseño (pedido explicito del usuario, tras probar el mod en su partida real):
+	/// "el tema de builds esta bien que te diga los objetos que tienes pero si no los tienes que
+	/// lo aplique directamente desde la libreria"</b>. La decision original era que auto-equipar
+	/// solo MOVIA objetos ya poseidos y nunca creaba nada (mismo criterio que la app de escritorio
+	/// Terrakeep, pensado para no convertir una herramienta de organizacion en un generador de
+	/// trampas). El usuario decidio explicitamente lo contrario para este panel: lo que NO tenga
+	/// se trae del CATALOGO, por la MISMA ruta real que ya usa
+	/// <c>ContenidoLibreria.PedirObjeto</c> (<c>Item.SetDefaults</c> + el mejor prefijo real de
+	/// <see cref="CatalogoMejorPrefijo"/>, nada reimplementado) y se coloca en el conjunto de
+	/// destino igual que un objeto que ya poseyera. Se cuenta aparte en
+	/// <see cref="ResultadoAutoEquipar.Creados"/> (nunca mezclado con <c>Movidos</c>) para que el
+	/// panel pueda seguir siendo transparente sobre que paso de verdad: el texto de ayuda del boton
+	/// (<c>Builds.AutoEquiparAyuda</c>) ya avisa de este comportamiento en vez de prometer lo
+	/// contrario, que es el aviso que pidio el propio usuario ("no lo dejes sin avisar de alguna
+	/// forma").
 	/// </para>
 	/// <para>
-	/// <b>Tampoco cambia prefijos.</b> El catalogo trae un prefijo recomendado para algunas armas
-	/// ("Legendary", "Godly"...), pero reforjar gratis seria otra vez crear valor de la nada. El
-	/// prefijo recomendado se enseña como texto informativo y el objeto real se mueve con el
-	/// prefijo que ya tuviera.
+	/// <b>Nunca DESTRUYE nada para hacer sitio.</b> Si crear un objeto exigiria desplazar del
+	/// conjunto de destino algo que no cupiera despues en la mochila (armadura ya puesta y mochila
+	/// llena a la vez), no se crea nada y se cuenta como <see cref="ResultadoAutoEquipar.SinSitio"/>
+	/// - la misma garantia que ya tenia mover objetos existentes.
+	/// </para>
+	/// <para>
+	/// <b>Prefijo</b>: los objetos MOVIDOS (ya poseidos) se mueven con el prefijo que ya tuvieran,
+	/// sin reforjar nada gratis. Los objetos CREADOS salen con el mismo "mejor prefijo" real que ya
+	/// aplica la Libreria al cogerlos del catalogo (<see cref="CatalogoMejorPrefijo"/>), no con el
+	/// prefijo "recomendado" informativo de <c>ObjetoBuild.PrefijoRecomendado</c> (ese sigue siendo
+	/// solo texto en el panel).
 	/// </para>
 	/// <para>
 	/// <b>Sobre el loadout</b>: se escribe sobre el conjunto de equipo que elige quien llama a
@@ -78,7 +134,7 @@ namespace TerrakeepMod.Common.Builds
 			ColocarAccesorios(jugador, destino, build, resultado);
 			ColocarArmas(jugador, build, resultado);
 
-			if (resultado.Movidos > 0) {
+			if (resultado.Movidos > 0 || resultado.Creados > 0) {
 				// Lo que hace el propio juego despues de tocar el inventario: recalcular que se
 				// puede fabricar. Sin esto la lista de crafteo se queda desfasada hasta el
 				// siguiente movimiento manual.
@@ -104,8 +160,8 @@ namespace TerrakeepMod.Common.Builds
 
 				int slot = EquipoJugador.SlotArmaduraDe(ejemplar);
 				if (slot < 0) {
-					resultado.SinSitio++;
-					resultado.Detalle.Add($"{objeto.Nombre}: no es una pieza de armadura (sin headSlot/bodySlot/legSlot)");
+					RegistrarSinSitio(resultado, objeto, CausaSinSitio.NoEsPiezaDeArmadura,
+						"no es una pieza de armadura (sin headSlot/bodySlot/legSlot)");
 					continue;
 				}
 
@@ -115,16 +171,32 @@ namespace TerrakeepMod.Common.Builds
 					continue;
 				}
 
-				if (donde == null) {
-					resultado.NoPoseidos++;
-					resultado.Detalle.Add($"{objeto.Nombre}: no lo tienes");
+				if (donde != null) {
+					string origen = donde.ToString();
+					EquipoJugador.Intercambiar(donde.Contenedor, donde.Indice, destino, slot);
+					resultado.Movidos++;
+					resultado.Detalle.Add($"{objeto.Nombre}: {origen} -> equipo[{slot}]");
 					continue;
 				}
 
-				string origen = donde.ToString();
-				EquipoJugador.Intercambiar(donde.Contenedor, donde.Indice, destino, slot);
-				resultado.Movidos++;
-				resultado.Detalle.Add($"{objeto.Nombre}: {origen} -> equipo[{slot}]");
+				// No lo tiene: se trae del catalogo (ver el XMLdoc de la clase). Si el slot de
+				// destino ya lleva puesta OTRA pieza (no el mismo tipo: eso ya lo descarto el "ya
+				// puesto" de arriba), esa otra pieza se desplaza a la mochila en vez de destruirse
+				// - igual que un Intercambiar normal, pero aqui no hay un "donde" real del que
+				// sacarlo.
+				if (!destino[slot].IsAir) {
+					int huecoDesplazado = EquipoJugador.PrimerHuecoMochila(jugador);
+					if (huecoDesplazado < 0) {
+						RegistrarSinSitio(resultado, objeto, CausaSinSitio.MochilaLlena,
+							$"se iba a crear, pero no habia hueco en la mochila para mover lo que ya llevabas en equipo[{slot}]");
+						continue;
+					}
+					jugador.inventory[huecoDesplazado] = destino[slot];
+				}
+
+				destino[slot] = CrearDesdeLibreria(objeto.Tipo);
+				resultado.Creados++;
+				resultado.Detalle.Add($"{objeto.Nombre}: creado del catalogo -> equipo[{slot}]");
 			}
 		}
 
@@ -142,25 +214,37 @@ namespace TerrakeepMod.Common.Builds
 				}
 
 				UbicacionObjeto donde = EquipoJugador.Buscar(jugador, objeto.Tipo);
-				if (donde == null) {
-					resultado.NoPoseidos++;
-					resultado.Detalle.Add($"{objeto.Nombre}: no lo tienes");
+				if (donde != null) {
+					Item ejemplar = donde.Contenedor[donde.Indice];
+					int slotPoseido = EquipoJugador.PrimerSlotAccesorioLibre(jugador, destino, ejemplar);
+					if (slotPoseido < 0) {
+						RegistrarSinSitio(resultado, objeto, CausaSinSitio.SlotAccesorioOcupado,
+							$"sin slot de accesorio libre ({EquipoJugador.SlotsAccesorioDisponibles(jugador)} disponibles) " +
+							"o incompatible con lo que ya llevas");
+						continue;
+					}
+
+					string origen = donde.ToString();
+					EquipoJugador.Intercambiar(donde.Contenedor, donde.Indice, destino, slotPoseido);
+					resultado.Movidos++;
+					resultado.Detalle.Add($"{objeto.Nombre}: {origen} -> equipo[{slotPoseido}] (accesorio)");
 					continue;
 				}
 
-				Item ejemplar = donde.Contenedor[donde.Indice];
-				int slot = EquipoJugador.PrimerSlotAccesorioLibre(jugador, destino, ejemplar);
+				// No lo tiene: se trae del catalogo. PrimerSlotAccesorioLibre solo devuelve slots
+				// VACIOS (ver su XMLdoc), asi que aqui nunca hace falta desplazar nada.
+				Item nuevo = CrearDesdeLibreria(objeto.Tipo);
+				int slot = EquipoJugador.PrimerSlotAccesorioLibre(jugador, destino, nuevo);
 				if (slot < 0) {
-					resultado.SinSitio++;
-					resultado.Detalle.Add($"{objeto.Nombre}: sin slot de accesorio libre " +
-						$"({EquipoJugador.SlotsAccesorioDisponibles(jugador)} disponibles) o incompatible con lo que ya llevas");
+					RegistrarSinSitio(resultado, objeto, CausaSinSitio.SlotAccesorioOcupado,
+						$"se iba a crear, pero no hay slot de accesorio libre ({EquipoJugador.SlotsAccesorioDisponibles(jugador)} " +
+						"disponibles) o es incompatible con lo que ya llevas");
 					continue;
 				}
 
-				string origen = donde.ToString();
-				EquipoJugador.Intercambiar(donde.Contenedor, donde.Indice, destino, slot);
-				resultado.Movidos++;
-				resultado.Detalle.Add($"{objeto.Nombre}: {origen} -> equipo[{slot}] (accesorio)");
+				destino[slot] = nuevo;
+				resultado.Creados++;
+				resultado.Detalle.Add($"{objeto.Nombre}: creado del catalogo -> equipo[{slot}] (accesorio)");
 			}
 		}
 
@@ -178,23 +262,24 @@ namespace TerrakeepMod.Common.Builds
 				}
 
 				UbicacionObjeto donde = EquipoJugador.Buscar(jugador, objeto.Tipo);
-				if (donde == null) {
-					resultado.NoPoseidos++;
-					resultado.Detalle.Add($"{objeto.Nombre}: no lo tienes");
-					continue;
-				}
-
 				int hueco = EquipoJugador.PrimerHuecoMochila(jugador);
 				if (hueco < 0) {
-					resultado.SinSitio++;
-					resultado.Detalle.Add($"{objeto.Nombre}: la mochila esta llena");
+					RegistrarSinSitio(resultado, objeto, CausaSinSitio.MochilaLlena,
+						donde != null ? "la mochila esta llena" : "se iba a crear, pero la mochila esta llena");
 					continue;
 				}
 
-				string origen = donde.ToString();
-				EquipoJugador.Intercambiar(donde.Contenedor, donde.Indice, jugador.inventory, hueco);
-				resultado.Movidos++;
-				resultado.Detalle.Add($"{objeto.Nombre}: {origen} -> inventario[{hueco}]");
+				if (donde != null) {
+					string origen = donde.ToString();
+					EquipoJugador.Intercambiar(donde.Contenedor, donde.Indice, jugador.inventory, hueco);
+					resultado.Movidos++;
+					resultado.Detalle.Add($"{objeto.Nombre}: {origen} -> inventario[{hueco}]");
+					continue;
+				}
+
+				jugador.inventory[hueco] = CrearDesdeLibreria(objeto.Tipo);
+				resultado.Creados++;
+				resultado.Detalle.Add($"{objeto.Nombre}: creado del catalogo -> inventario[{hueco}]");
 			}
 		}
 
@@ -206,6 +291,36 @@ namespace TerrakeepMod.Common.Builds
 			resultado.NoResueltos++;
 			resultado.Detalle.Add($"{objeto.Nombre}: el objeto \"{objeto.Pid}\" no existe en esta partida");
 			return false;
+		}
+
+		/// <summary>Cuenta un "sin sitio" a la vez en el log (texto libre en español, como el resto
+		/// de <see cref="ResultadoAutoEquipar.Detalle"/>) y en <see cref="ResultadoAutoEquipar.DetalleSinSitio"/>
+		/// (causa estructurada, para que el panel pueda enseñar un motivo localizado de verdad).</summary>
+		private static void RegistrarSinSitio(ResultadoAutoEquipar resultado, ObjetoBuild objeto, CausaSinSitio causa, string textoLog)
+		{
+			resultado.SinSitio++;
+			resultado.Detalle.Add($"{objeto.Nombre}: {textoLog}");
+			resultado.DetalleSinSitio.Add(new ItemSinSitio { Nombre = objeto.Nombre, Causa = causa });
+		}
+
+		/// <summary>
+		/// Crea un ejemplar nuevo de <paramref name="tipo"/> exactamente por la MISMA ruta real que
+		/// <c>ContenidoLibreria.PedirObjeto</c> usa para coger un objeto del catalogo de la
+		/// Libreria: <c>Item.SetDefaults</c> y, si el catalogo de mejor prefijo tiene entrada para
+		/// este tipo, <c>Item.Prefix</c> con el. Nada reimplementado a mano.
+		/// </summary>
+		private static Item CrearDesdeLibreria(int tipo)
+		{
+			Item nuevo = new Item();
+			nuevo.SetDefaults(tipo);
+
+			byte? mejorPrefijo = CatalogoMejorPrefijo.MejorPrefijo(tipo);
+			if (mejorPrefijo.HasValue) {
+				nuevo.Prefix(mejorPrefijo.Value);
+			}
+
+			nuevo.stack = 1;
+			return nuevo;
 		}
 
 		/// <summary>Ejemplar de solo lectura de un objeto, para consultar sus campos.</summary>

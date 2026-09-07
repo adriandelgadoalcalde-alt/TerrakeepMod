@@ -3522,3 +3522,135 @@ No se comitea nada de otros agentes en marcha a la vez (`Common/Exploracion/*`,
 `UI/Exploracion/MiniMapaTk.cs`, `Common/Panel/AutopruebaEspaciado.cs`,
 `evidencia/panel-unico.log.txt`, `evidencia/ws6-exploracion.log.txt`), ni las carpetas de build
 sueltas (`bin-checkDebug/`, `obj-verif-espaciado/`).
+
+## 7-sep-2026 — Builds: "sin sitio" en un arma que SÍ tenías, y el cambio real que pidió el usuario (auto-equipar ya trae del catálogo)
+
+Encargo: investigar un aviso rojo real de "Auto-equipar" con captura del usuario: build Vanilla /
+Pre-Hardmode / Cuerpo a cuerpo, poseía solo "Furia solar" (`Sunfury`, un ARMA), y salió
+`sin sitio=1` justo al lado de `ranuras de accesorio disponibles: 5` - lectura natural: contradicción.
+El usuario: **"lo de las builds sigue sin funcionar"**.
+
+### La causa real: comportamiento CORRECTO, mensaje engañoso
+
+Reproducido en sandbox propio (`tModLoader-TerrakeepWS4`, arnés nuevo: env vars
+`TERRAKEEP_BUILDS_SEMBRAR_BANCO` mete un pid en la hucha en vez del inventario, y
+`TERRAKEEP_BUILDS_LLENAR_MOCHILA` rellena los 50 huecos de la mochila con piedra -
+`Common/Builds/PanelBuildsSystem.cs`, `SembrarObjetosEnBancoDePrueba`/`LlenarMochilaDePrueba`):
+con Sunfury en la hucha y la mochila llena de verdad, el log reprodujo LITERALMENTE el mensaje del
+usuario: `"movidos=0, ya colocados=0, no los tienes=12, sin sitio=1, no existen aquí=0"`, con
+`Furia solar: la mochila esta llena` en el detalle. Las armas de una build van a la MOCHILA
+(`AutoEquipar.ColocarArmas`, `EquipoJugador.PrimerHuecoMochila`), no a un slot de accesorio - son
+dos recursos totalmente distintos que el panel mostraba uno al lado del otro sin decir cuál era
+el que faltaba. El comportamiento era correcto; lo que faltaba era la razón, visible solo en el
+log (`ResultadoAutoEquipar.Detalle`), nunca en el panel.
+
+**Arreglo real**: `CausaSinSitio` (enum: `MochilaLlena`/`SlotAccesorioOcupado`/`NoEsPiezaDeArmadura`)
++ `ResultadoAutoEquipar.DetalleSinSitio` (una entrada por objeto, causa estructurada en vez de
+texto suelto) en `Common/Builds/AutoEquipar.cs`. `UI/Builds/ContenidoBuilds.MostrarResultadoAutoEquipar`
+añade el motivo real de cada "sin sitio" al mensaje que se ve en el panel (`Builds.SinSitioDetalle`/
+`Builds.SinSitioItem`/`Builds.CausaSinSitio.*`, nuevas claves ES/EN).
+
+### El cambio de diseño real, pedido a mitad de la tarea
+
+Con el bug ya diagnosticado, el usuario aclaró que el problema de fondo era otro, cita literal:
+**"el tema de builds esta bien que te diga los objetos que tienes pero si no los tienes que lo
+aplique directamente desde la libreria"**. O sea: dejar de limitar "Auto-equipar" a mover solo lo
+YA poseído (la decisión original, documentada en el XMLdoc viejo de `AutoEquipar` como "nunca crea
+objetos, igual que la app de escritorio") y, para lo que NO tienes, traerlo del catálogo - la
+MISMA ruta real que ya usa `UI/Libreria/ContenidoLibreria.PedirObjeto` (`Item.SetDefaults` +
+`CatalogoMejorPrefijo.MejorPrefijo` para el mejor prefijo real, nada reimplementado).
+
+**Implementado en `Common/Builds/AutoEquipar.cs`**: cuando un objeto de la build no está en
+ningún contenedor del jugador (`EquipoJugador.Buscar` devuelve null), se crea con
+`CrearDesdeLibreria(tipo)` (mismo `SetDefaults` + mejor prefijo que la Librería) y se coloca:
+- Armadura: en su slot fijo (`SlotArmaduraDe`); si ese slot ya llevaba puesta OTRA pieza (no
+  destruirla nunca), se desplaza primero a la mochila y solo entonces se coloca la nueva.
+- Accesorios: en el primer slot LIBRE (`PrimerSlotAccesorioLibre` solo devuelve huecos vacíos, así
+  que aquí nunca hace falta desplazar nada).
+- Armas: en el primer hueco libre de la mochila.
+
+Nuevo contador `ResultadoAutoEquipar.Creados` (reemplaza a `NoPoseidos`, que ya no tenía sentido:
+con creación automática, todo objeto RESUELTO acaba movido, ya colocado, creado o sin sitio -
+"no lo tienes" ya no es un desenlace posible). `Builds.Resumen` pasa de "no los tienes={2}" a
+"creados={2}". Nunca se destruye nada para hacer sitio: si crear exigiría desplazar algo que no
+cupiera después en la mochila, no se crea nada y cuenta como `SinSitio` con su motivo real.
+
+**Aviso, no silencio**: el texto de ayuda del panel se actualizó para dejar de prometer lo
+contrario de lo que ahora hace (`Builds.AutoEquiparAyuda`, tooltip del botón, y `Panel.Ayuda.Builds`,
+la línea fija bajo la cabecera) - ya no dice "nunca crea objetos", explica que lo que falta se
+TRAE del catálogo. Se decidió NO añadir un diálogo de confirmación bloqueante: la Librería del
+propio mod ya crea objetos libremente sin confirmar nada (es la función central de ese panel), así
+que un aviso aparte solo en Auto-equipar habría sido inconsistente con el resto del mod - la
+transparencia real está en que el texto de ayuda ya no oculta el comportamiento, y en que el
+resultado siempre distingue "creados" de "movidos" en vez de mezclarlos.
+
+### Verificado en el sandbox (`tModLoader-TerrakeepWS4`), con Sunfury en la hucha + mochila llena
+
+```
+AUTO-EQUIPAR "Vanilla / Pre-Hardmode..." / Cuerpo a cuerpo: movidos=0, ya colocados=0, creados=8,
+sin sitio=5, no existen aquí=0. ...
+  - Casco fundido: creado del catalogo -> equipo[0]
+  ...
+  - Mantra antimaldición: se iba a crear, pero no hay slot de accesorio libre (5 disponibles)...
+  - Furia solar: la mochila esta llena
+mensaje inmediato="Auto-equipar: movidos=0, ya colocados=0, creados=8, sin sitio=5, no existen
+aquí=0 Sin sitio: Mantra antimaldición: no hay ranura de accesorio libre para él (...), Bezoar:
+no hay ranura de accesorio libre para él (...), Filo de la noche: la mochila está llena, Furia
+solar: la mochila está llena, La Despedazadora: la mochila está llena."
+```
+
+Y en el escenario por defecto del script (loadout activo, con parte del equipo ya en inventario):
+`movidos=5, ya colocados=1, creados=5, sin sitio=2` - mueve y crea en la MISMA pasada sin pisarse,
+y la segunda pasada (idempotencia) sale `movidos=0, creados=0, ya colocados=11, sin sitio=2`
+idéntica salvo por eso: nada se duplica ni se vuelve a crear. Capturas reales en
+`evidencia/ws4-builds-capturas/`.
+
+### El desbordamiento real que dejó el propio arreglo del mensaje (aviso del usuario, con captura)
+
+Con el mensaje de "sin sitio" más largo (hasta 5 objetos con su motivo), un primer intento usó
+`EtiquetaTk.Recortar` (recorte con "..." + texto completo en el tooltip al pasar el ratón) -
+funcionaba, pero el usuario pidió explícitamente no aceptar texto cortado en ningún sitio que
+se toque hoy, ni con "..." aunque "técnicamente quepa": la solución real tiene que ser que la
+caja/layout se adapte al contenido para que el texto se lea entero de un vistazo.
+
+**Arreglo real, mismo patrón que `PestanaMundo.RecalcularAviso`** (recuadro naranja de dificultad,
+arreglado hoy mismo por otro agente en paralelo - mismo problema, misma solución real, no
+inventada dos veces): `ContenidoBuilds.RecalcularCabecera` (nuevo, llamado desde `Update` cada
+fotograma) parte el mensaje con `EtiquetaTk.PartirEnLineas` al ancho REAL de la cabecera, mide su
+alto con la fuente real (`FontAssets.MouseText.Value.MeasureString`), y CRECE `_cabecera.Height` -
+antes fija a 52 px (`AltoCabecera`), ahora `_altoCabecera` dinámico con 52 px de mínimo - hasta lo
+que el texto necesite de verdad. `ColocarFilas` (pildoras de etapa/clase/loadout, cuerpo) se
+repite con el nuevo alto para que todo lo de abajo baje en el mismo fotograma, sin solape.
+Verificado con capturas reales: mensaje de 2 líneas y de 3 líneas, ambos completos, sin recortar,
+sin que ninguna fila de pildoras/columnas se solape con la cabecera crecida.
+
+**Lo que se deja SIN tocar, documentado en vez de callado**: las pastillas de etapa/clase/loadout
+de este mismo panel (`PintarPildoras`, `EstiloInvestigacionAcortar(etiquetas[i], 34)`) siguen
+recortando con "..." de verdad - se ve literalmente en las capturas de esta misma sesión
+("Pre-Hardmode (listo para el Mur...", "Final del juego (post Lunatic C..."). Es un patrón
+PREEXISTENTE (no tocado hoy, ya estaba así desde WS4) usado en CUATRO sitios de este archivo
+(pildoras de etapa/clase/loadout, nombre de objeto del catálogo, pie de arma). Arreglarlo de
+verdad exigiría rediseñar el widget de pastilla entera (más ancho, etiqueta a dos líneas con más
+alto de fila, o cambiar pastillas por otro control) con efecto en cascada sobre el resto del
+panel - fuera de alcance razonable de esta tarea (arreglar un bug de auto-equipar + el cambio de
+diseño pedido), y un cambio de esa envergadura en un widget compartido por 4 usos merece su propia
+tarea con su propia verificación, no un parche de última hora. Queda para una tarea aparte.
+
+### Verificación obligatoria
+
+Sandbox propio, tres escenarios reales con clic real en el botón (`PulsarBotonAutoEquipar`, no
+llamada directa): (1) el caso exacto reportado por el usuario (Sunfury en la hucha + mochila
+llena) con el mensaje ya corregido y sin recortar; (2) build entera sin poseer NADA (creados=11,
+2 sin sitio por falta de ranuras de accesorio, motivo real mostrado); (3) escenario mixto por
+defecto (mueve y crea a la vez, dos pasadas, idempotente). Capturas reales en
+`evidencia/ws4-builds-capturas/`, log completo en `evidencia/ws4-builds.log.txt`.
+
+### Índice privado para comitear
+
+`GIT_INDEX_FILE=<propio> git read-tree HEAD && git add ... && git commit`, después `git reset` a
+secas en un comando aparte. Archivos de esta tarea: `Common/Builds/AutoEquipar.cs`,
+`Common/Builds/PanelBuildsSystem.cs`, `UI/Builds/ContenidoBuilds.cs`,
+`scripts/generar-localizacion.py`, `Localization/es-ES_Mods.TerrakeepMod.hjson`,
+`Localization/en-US_Mods.TerrakeepMod.hjson`, `evidencia/ws4-builds.log.txt`,
+`evidencia/ws4-builds-capturas/*.png`, `bitacora.md`. Nada de otros agentes en marcha a la vez
+(`UI/Personaje/PestanaBuffs.cs`, `Common/Panel/AutopruebaEspaciado.cs`, y sus propias evidencias).
