@@ -2492,3 +2492,154 @@ privado solo: `Common/Exploracion/AutopruebaExploracion.cs`, `Common/Exploracion
 `Localization/es-ES_Mods.TerrakeepMod.hjson`, `Localization/en-US_Mods.TerrakeepMod.hjson`,
 `UI/Exploracion/MiniMapaTk.cs`, `UI/Exploracion/PestanaBusqueda.cs`, `UI/Exploracion/PestanaMapa.cs`,
 `scripts/generar-localizacion.py` y la evidencia.
+
+---
+
+## 7-sep-2026 — Editor de cantidad y papelera real en el panel de Personaje
+
+Encargo directo del usuario tras probar el mod: dos huecos reales en el panel de Personaje.
+**No hay forma de editar la CANTIDAD** de una pila de objeto (bajar 999 pociones a 50) y **no
+hay papelera** para quitar un objeto de un hueco sin soltarlo al suelo. Trabajo en paralelo con
+otro agente arreglando el tooltip de `SlotObjetoVanilla.cs` - esa clase no se ha tocado.
+
+### La papelera: no reinventarla, es literalmente la del juego
+
+Antes de diseñar nada se miró `Main.DrawTrashItemSlot` en el `tModLoader.dll` instalado
+(v2026.7.3.0): el icono de papelera que Terraria pone junto al bestiario y los emotes **no es un
+concepto de UI, es un slot real**. `Player.trashItem` es un campo (no un array) y
+`ItemSlot.Context.TrashItem = 6` es un contexto normal de `ItemSlot`. Arrastrar un objeto encima
+ejecuta el mismo `ItemSlot.Handle` que cualquier otra ranura: si el slot está vacío, intercambia
+el objeto de la mano con `trashItem` (`Utils.Swap`), dejando la mano vacía. `Player.trashItem`
+**no se serializa en el `.plr`** (comprobado: no aparece en ningún `Load`/`Save` de
+`PlayerFileData`), así que lo que cae ahí queda fuera de la partida guardada para siempre, y
+dentro de la sesión se ve en el icono hasta que se tira otra cosa encima - tal cual pasa en
+vanilla. Con esto, `SlotPapeleraTk` (`UI/Personaje/Widgets/`) es una clase de ~50 líneas: mismo
+patrón que `SlotObjetoVanilla` pero con las sobrecargas `ref Item` de `ItemSlot`
+(`Handle`/`Draw`/`MouseHover`) sobre `Main.LocalPlayer.trashItem` directamente, sin necesitar
+ningún array propio. Se colocó como clase separada, no dentro de `SlotObjetoVanilla`, para no
+chocar con el agente del tooltip.
+
+### El editor de cantidad: vanilla no tiene nada parecido
+
+Terraria no tiene ningún control para escribir un número de pila a mano (solo partir a la mitad
+o soltar de uno en uno con clic derecho), así que esto es control propio del mod, con los
+widgets ya establecidos (`BotonTk`, `CampoTextoTk`, `EtiquetaTk`). Lo interesante es cómo sabe
+sobre qué objeto actuar sin tocar `SlotObjetoVanilla`: `EditorCantidadTk.Update` recorre el
+árbol de `ContenidoPersonaje` (que no cambia, aunque la sub-pestaña activa sí) buscando un
+`SlotObjetoVanilla` con `IsMouseHovering == true` y pila > 1, y se "engancha" a él hasta que el
+ratón pase por OTRO slot apilable - pasar por hueco vacío de camino al propio editor no lo
+suelta, que es justo lo que hace falta para poder escribir el número sin perder de vista qué se
+edita. Como `SlotObjetoVanilla.ObjetoActual` devuelve el `Item` REAL (clase, no struct), escribir
+en `.stack` basta: no hace falta el array ni el índice de origen. El cambio queda deshacible con
+`Historial.CambiarValor<int>` (antes/después + closure que escribe en el mismo `Item` capturado
+por referencia), igual que el resto del panel.
+
+**Acotado siempre al `maxStack` REAL del objeto**, nunca a un tope fijo de 999 (hay objetos con
+`maxStack` más bajo, y mods con más alto) - verificado pidiendo 500 unidades por encima del
+máximo y comprobando que se queda exactamente en `maxStack`.
+
+**El recorte de texto MIDE con la fuente real en vez de fijar un número de caracteres.** La
+etiqueta compone `Cantidad de "<nombre>" (<stack>/<max>):`, y con nombres largos o la plantilla
+en inglés ("Quantity of...") un recorte por caracteres se sale del hueco igual - es exactamente
+el fallo que la "pasada de revisión visual" del cierre ya documentó varias veces en este mismo
+panel. Se mide con `FontAssets.MouseText.Value.MeasureString` y se va quitando el nombre de 4 en
+4 caracteres hasta que la línea entera quepa en el ancho real de la etiqueta.
+
+### Dónde vive en la interfaz
+
+Una fila de herramientas nueva en `ContenidoPersonaje` (no en `PanelTerrakeepState`), debajo de
+la barra de las seis sub-pestañas: papelera + editor, compartidos por Inventario/Almacenes/Equipo
+(las tres que tienen objetos reales), visible también en Buffs/Apariencia/Desbloqueos sin hacer
+nada raro ahí - igual que en vanilla, donde la fila de iconos del HUD está siempre puesta,
+independientemente de si hay algo que tirar en ese instante.
+
+### El fallo real de la autoprueba: `Main.InGameUI.MousePosition` NO es una entrada, es una salida
+
+Primer intento de probar el editor de cantidad: mover `Main.InGameUI.MousePosition` al centro de
+la ranura y dejar pasar 10 fotogramas para que `UserInterface.Update` hiciera su hit-test solo,
+como en teoría sugiere la nota ya escrita sobre `DeslizadorTk`. **No funcionó**: el paso siguiente
+leía siempre `ObjetivoActual=(vacío)`. La diferencia real con `ComprobarDeslizadorColor` es que
+ese paso mueve la posición Y llama a mano al manejador (`LeftMouseDown`) en la MISMA llamada,
+sin depender de que el motor dispare nada por su cuenta; aquí no hay ningún manejador que llamar,
+`IsMouseHovering` solo lo pone `UserInterface.Update` haciendo SU PROPIO hit-test contra la
+posición REAL del cursor del sistema - y la sobreescribe en cada fotograma. Un valor puesto a
+mano no sobrevive ni un tick. Arreglado llamando directamente a `UIElement.MouseOver` sobre el
+slot encontrado (`public virtual`, pone `IsMouseHovering = true` de verdad) - el mismo patrón de
+"llamar al manejador real a mano" que ya usan `LeftClick`/`LeftMouseDown` en el resto de esta
+autoprueba, solo que aquí el manejador es `MouseOver` en vez de un clic.
+
+### Verificado de verdad en el juego (pasos 22-25 de `AutopruebaPersonaje`)
+
+Sandbox `tModLoader-TerrakeepWS1`, `TERRAKEEP_AUTOTEST_WS1`. Evidencia real del `client.log`:
+
+```
+Paso 22 - MouseOver real disparado sobre la ranura de inventory[1] ("Bloque de tierra" x250).
+Paso 23 - editor de cantidad, maxStack=9999. stack inicial=250.
+          Tras pulsar "+": 251 (OK). Tras pulsar "-": 250 (OK).
+          Tras escribir "7" y Aplicar: 7 (OK).
+          Tras pedir 10499 (por encima del maximo) y Aplicar: 9999 (OK, acotado al maximo real).
+          Historial: Cantidad de "Bloque de tierra": 7 -> 9999.
+Paso 24 - papelera: ItemSlot.LeftClick para coger inventory[1] + ItemSlot.Handle(Context.TrashItem)
+          para soltarlo. ANTES inventory[1]="Bloque de tierra" x250.
+          DESPUES: inventory[1]=(vacio) [OK, hueco vacio en el Player REAL],
+          papelera="Bloque de tierra" x250 [OK], raton=(vacio) [OK].
+          Objetos activos en el mundo: antes=0, despues=0 [OK, nada tirado al suelo].
+AUTOPRUEBA WS1 COMPLETA. Todos los pasos ejecutados sin excepciones.
+```
+
+Los tres puntos que pedía explícitamente la verificación quedan cubiertos con datos reales, no
+supuestos: `inventory[n].stack` antes/después del editor, el hueco vacío en el `Player` real tras
+la papelera, y el recuento de objetos activos del mundo (`Main.item[].active`) igual antes y
+después, o sea nada tirado al suelo.
+
+### Colisión real entre agentes, dos veces, con dos causas distintas
+
+**1. El `.tmod` compartido (`Documents\...\tModLoader\Mods\TerrakeepMod.tmod`) se pisa entre
+agentes que compilan a la vez.** La primera verificación falló con una excepción de un `.hjson`
+mal formado en una clave `Exploracion.Mapa.*` que esta tarea ni toca - la causa real es que
+varios agentes compilan sobre el MISMO `.tmod` de la carpeta `Mods` compartida, así que el
+cliente que se lanza puede acabar cargando el build de OTRO agente, no el propio. Ya lo
+documentó WS4 y trae la solución escrita: `-build` acepta `-tmlsavedirectory`, que deja el
+`.tmod` dentro del sandbox de la propia prueba. Aplicado aquí (`scripts\compilar.ps1` no lo hace
+por defecto, así que se invocó la fase 2 a mano con ese flag) y la segunda verificación ya no
+tuvo ninguna interferencia.
+
+**2. `scripts/generar-localizacion.py` se pisa SOLO, sin ningún comando de git de por medio.**
+Con varios agentes editando el mismo archivo de texto a la vez, un `Write` completo de otro
+agente sobre su propia versión (sin las claves `Personaje.Herramientas.*` que se acababan de
+añadir aquí) las borró sin dejar ni rastro ni conflicto que avisara - simple carrera de
+escrituras en el mismo archivo, ni siquiera hace falta un `git reset` para que pase. Se detectó
+tarde (al ver `client.log` cargando un idioma roto de una clave ajena) y se corrigió
+reaplicando las siete claves y regenerando. La entrada anterior de esta misma bitácora (la de
+Exploración) ya había topado con la misma clase de problema y había optado por editar los
+`.hjson` a mano en vez de relanzar el generador entero; aquí se hizo lo contrario (relanzar el
+generador) porque en el momento de comprobarlo el archivo fuente SÍ tenía ya las claves
+propias intactas - el aviso para la próxima es que **eso puede dejar de ser cierto entre que se
+comprueba y que se ejecuta**, así que con tantos agentes tocando el mismo `.py` a la vez, comitear
+enseguida (como se ha hecho aquí, con índice privado) es más fiable que fiarse de que el archivo
+siga como se dejó.
+
+**3. Detalle suelto para quien lo vea después, no bloquea nada de esta tarea**: el `.hjson` que
+causó el primer fallo (`Exploracion.Mapa.TileExplorado`) tenía un valor que empieza por `{0}` SIN
+comillas - el generador SÍ lo escribe entre comillas (`json.dumps` cita cualquier cadena), así
+que lo más probable es que la propia reescritura de tModLoader al cargar el mod (que "quita las
+comillas que no hacen falta", como ya documentó la entrada de cierre) tenga un caso mal cubierto
+para valores que empiezan por `{` y se los quite cuando NO puede quitárselos sin romper el HJSON.
+No se ha investigado más porque no es de esta tarea, pero es un riesgo real para cualquier clave
+futura cuyo valor empiece por `{`.
+
+### Verificación de la disciplina de idioma
+
+`scripts/generar-localizacion.py` sigue validando que ninguna clave se repita y que ningún valor
+empiece o acabe con espacio; las siete claves nuevas (`Personaje.Herramientas.*`) pasaron las dos
+comprobaciones a la primera.
+
+### Commit
+
+Índice privado (ver la sección de arriba: la técnica ya la dejó escrita WS3), solo con los
+archivos de esta tarea: `Common/Personaje/AutopruebaPersonaje.cs`,
+`Localization/es-ES_Mods.TerrakeepMod.hjson`, `Localization/en-US_Mods.TerrakeepMod.hjson`,
+`UI/Personaje/ContenidoPersonaje.cs`, `UI/Personaje/Widgets/EditorCantidadTk.cs`,
+`UI/Personaje/Widgets/SlotPapeleraTk.cs`, `scripts/generar-localizacion.py`. No se ha tocado
+`UI/SlotObjetoVanilla.cs`, `Common/Panel/PanelTerrakeepSystem.cs`, `UI/Panel/PanelTerrakeepState.cs`
+ni `Common/Panel/AutopruebaTooltipObjeto.cs`: son del agente del tooltip, en marcha a la vez.
