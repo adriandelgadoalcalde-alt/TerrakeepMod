@@ -16,14 +16,19 @@ Terrakeep junto al bestiario y los emotes, con el inventario abierto.
 
 Seis pestañas, todas con la interfaz nativa de Terraria (sin ninguna ventana externa):
 
-- **Personaje** - inventario, hucha/caja fuerte/forja/bóveda, los tres conjuntos de equipo,
-  buffs, apariencia (peinado, variante, tintes y los siete colores) y los 13 desbloqueos
-  permanentes.
+- **Personaje** - inventario, hucha/caja fuerte/forja/bóveda, los tres conjuntos de equipo (con
+  editor de cantidad y papelera reales), buffs (con árbol de carpetas navegable), apariencia
+  (peinado, variante, tintes, los siete colores y una **vista previa en vivo** del personaje,
+  con o sin armadura puesta) y los 13 desbloqueos permanentes.
 - **Librería** - catálogo navegable de TODOS los objetos de la partida, incluidos los de
   cualquier mod instalado (no solo Calamity), con buscador (`coma` = o, `espacio` = y, `#id`,
-  `.texto` busca en el tooltip). Coge un objeto y suéltalo en cualquier contenedor real.
-- **Builds** - equipo recomendado por etapa y clase, con "ya lo tienes" y auto-equipar. Solo
-  mueve lo que ya tienes: nunca crea objetos de la nada.
+  `.texto` busca en el tooltip). Coge un objeto y suéltalo en cualquier contenedor real, o
+  arrástralo al recuadro de edición para cambiarle la cantidad o el prefijo, o para tirarlo a la
+  papelera.
+- **Builds** - equipo recomendado por etapa y clase, con "ya lo tienes" y auto-equipar a
+  cualquiera de los tres conjuntos. Coloca primero lo que ya tienes; lo que te falte lo trae
+  directamente del catálogo de la Librería (con su mejor prefijo real), sin tocar nunca nada
+  que ya tuvieras puesto en otro sitio.
 - **Investigación** - cuánto llevas investigado de cada carpeta en Modo Viaje, y cómo
   completarlo o quitarlo - pasa por la API oficial del juego, así que el menú de duplicar de
   Modo Viaje refleja exactamente lo mismo.
@@ -53,7 +58,7 @@ Librería y Builds detectan solos qué mods hay cargados.
 
 ## Arquitectura
 
-Reutiliza [`TerrasavrNative.Core`](https://github.com/adriandelgadoalcalde-alt/Terrakeep) (los
+Reutiliza [`Terrakeep.Core`](https://github.com/adriandelgadoalcalde-alt/Terrakeep) (los
 catálogos de datos del proyecto hermano de escritorio, ahora con doble destino `net10.0`/`net8.0`
 para poder cargar dentro del runtime de tModLoader) como dependencia real vía `dllReferences` -
 pero a diferencia de la app de escritorio, **nunca parsea ningún archivo**: todo se lee y se
