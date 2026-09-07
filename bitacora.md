@@ -3004,3 +3004,127 @@ en los arrays del jugador seguía funcionando desde ayer, y las dos pruebas de e
 `evidencia/ws4-builds-capturas/` (capturas reales nuevas), y esta entrada de `bitacora.md`. No se
 toca nada de `Common/Panel/`, `Common/Prefijos/`, `UI/Personaje/` ni `UI/Exploracion/` - son de
 otros agentes trabajando en paralelo ahora mismo.
+
+---
+
+## 7-sep-2026 — El muñeco de Apariencia parpadeaba y el pelo salía negro: dos bugs de luz, un solo arreglo
+
+El usuario probó el mod en el juego real (con captura) y reportó dos problemas del `MunecoTk` de
+la pestaña Personaje → Apariencia (ver la entrada de arriba, `f1d970d`/`9c019ea`): el muñeco
+parpadea, y el pelo sale negro en vez del color elegido en los deslizadores R/V/A. El propio
+usuario aportó la hipótesis correcta, citada tal cual porque acertó: "lo de que el personaje
+parpadea en apariencia es porque le afecta la iluminacion de el entorno... si mi personaje esta
+al lado de una antorcha... en el menu del mod tambien lo reflejara".
+
+### Investigación: dos causas reales distintas, no una sola
+
+Decompilado el `tModLoader.dll` REAL instalado (`ilspycmd`, nunca el de referencia) siguiendo la
+disciplina del repositorio: `Terraria.Graphics.Renderers.LegacyPlayerRenderer`,
+`Terraria.DataStructures.PlayerDrawSet`, `Terraria.DataStructures.PlayerDrawLayers`,
+`Terraria.Lighting`, `Terraria.Player.GetHairColor` y `Terraria.GameContent.UI.Elements.UICharacter`
+(la ficha de la pantalla de selección de personaje, el sitio donde vanilla SÍ necesita una vista
+previa siempre bien iluminada).
+
+**1) El parpadeo (piel/ojos/ropa/armadura).** `PlayerDrawSet.BoringSetup_2` guarda el parámetro
+`position` que se le pasa a `DrawPlayer` (en `MunecoTk` eso es
+`dim.Position() + Main.screenPosition` - la posición de pantalla del widget "desproyectada" a
+coordenadas de mundo, igual truco que usa `UICharacter`) en su campo `Position`, y con él
+muestrea `Lighting.GetColorClamped(...)` para cada color. O sea: ilumina el muñeco con la luz REAL
+del mundo en el tile que hay detrás del hueco de pantalla donde se dibuja - que al sumar
+`Main.screenPosition` (la cámara sigue al jugador real) es siempre el entorno inmediato del
+jugador de verdad. Antorchas, ciclo día/noche y bioma cambian ese color cada fotograma: de ahí el
+parpadeo. Confirma la hipótesis del usuario al pie de la letra.
+
+**2) El pelo negro (causa aparte, más grave, no depende de si hay poca luz cerca).**
+`PlayerDrawSet` no calcula `colorHair` con la misma fórmula: llama a
+`drawPlayer.GetHairColor()`, y esa función (decompilada aparte) muestrea la luz en
+`this.position` - el campo `.position` del propio `Player` que se está dibujando, NO el
+`Position` del punto 1. Y `_muneco` (el `Player` propio de `MunecoTk`, `new Player()` creado una
+sola vez) nunca ha tenido su `.position` puesto por nadie: `Sincronizar()` solo copia
+pelo/tinte/variante/colores/equipo, nunca posición. Se queda en `Vector2.Zero` de fábrica, tile
+`(0,0)`, la esquina del mapa - un tile que no está iluminado NUNCA por nada real. Por eso el pelo
+salía negro SIEMPRE, sin importar dónde estuviera el jugador real ni si el resto del muñeco
+parpadeaba: un bug independiente, con causa propia.
+
+**El punto en común, y la salida.** Las dos causas pasan por `Terraria.Lighting`. Comprobadas las
+CINCO sobrecargas de `GetColor`/`GetColorClamped` (las tres que usa el punto 1, y la de dos
+argumentos que usa `GetHairColor`), la primera línea de todas es idéntica:
+`if (Main.gameMenu) return oldColor;` (o `return Color.White;` en la de dos argumentos) - sale
+devolviendo el color de entrada tal cual, sin tocar el motor de luces real ni mirar el tile que se
+le pasó. Es exactamente por lo que `UICharacter` (que corre con `Main.gameMenu=true`, porque en la
+pantalla de selección de personaje ni siquiera hay mundo cargado) sale siempre a color pleno, pelo
+incluido - vanilla ya "resuelve" este mismo problema así, solo que porque nunca tuvo que dibujar
+un personaje en vivo durante la partida.
+
+### El arreglo: `UI/Personaje/Widgets/MunecoTk.cs`, nada más
+
+En `DrawSelf`, alrededor de la única llamada a `Main.PlayerRenderer.DrawPlayer`: guarda
+`Main.gameMenu`, lo pone a `true`, dibuja, y lo restaura en un `finally`. Arregla las DOS causas a
+la vez (las dos pasan por el mismo `if (Main.gameMenu)`), sin tener que además ponerle una
+`.position` de mentira a `_muneco` para el bug del pelo. Revisado también `PlayerDrawLayers`
+completo: el ÚNICO sitio que mira `Main.gameMenu` en todas las capas de dibujado es la pose de
+piernas (fuerza el fotograma "de pie" en vez del de andar/saltar), inofensivo y hasta deseable
+para una vista previa estática - no hay ningún otro efecto colateral real. El cambio es síncrono
+(sin ningún `await` de por medio) y se deshace en el mismo hilo antes de que ningún otro sistema
+del juego pueda leer `Main.gameMenu`, con `try`/`finally` por si algún mod (Calamity incluido)
+lanzara una excepción dibujando alguna de sus capas.
+
+No se ha tocado `PestanaApariencia.cs`: el bug entero vivía en cómo `MunecoTk` invoca al renderer,
+nada de lo que hace `PestanaApariencia` (deslizadores, alternador, layout) tenía que ver.
+
+### Verificación real, en el juego, de forma bloqueante
+
+Compilado el proyecto entero dos veces (`scripts/compilar.ps1`, 0 errores) hasta que dos colisiones
+reales y ajenas con otros agentes en marcha a la vez se resolvieron solas (`ContenidoBuilds.cs` con
+un campo duplicado, y `CatalogoPrefijosLegales.cs` con un `PrefixCategory` ambiguo entre
+`Terraria.ModLoader.PrefixCategory` y el de `TerrasavrNative.Core` - las dos en `Common/Builds/` y
+`Common/Prefijos/`, ninguna tocada desde aquí, esperadas con un bucle de reintento real hasta que
+el build volvió a estar en verde, nunca arregladas a mano).
+
+Se reutilizó SIN TOCARLO `scripts/verificar-panel-unico.ps1` (de otro agente, ya cubre
+Personaje → Apariencia con colores y armadura reales - ver la entrada de arriba), lanzado con la
+variable de entorno propia `TERRAKEEP_AUTOTEST_MUNECO_LUZ=1` puesta ADEMÁS de la suya
+(`TERRAKEEP_AUTOTEST_PANEL`), sin editar el script: las variables de entorno del proceso padre las
+hereda el cliente gráfico que lanza con `Start-Process`. Todo el lanzamiento se hizo de forma
+BLOQUEANTE (un bucle con timeout largo sobre el propio proceso, esperando a "AUTOPRUEBA PANEL
+COMPLETA" en el log) en vez de lanzarlo en segundo plano y volver más tarde.
+
+**Arnés propio, autocontenido en `MunecoTk.cs`** (variable `TERRAKEEP_AUTOTEST_MUNECO_LUZ`, no
+toca ningún otro archivo, no-op total sin la variable puesta): reproduce el escenario exacto que
+denunció el usuario ("mi personaje al lado de una antorcha") de forma controlada, sin depender de
+la geografía de ningún mundo de prueba - en vez de mover al jugador real hasta encontrar una
+antorcha, inyecta luz blanca muy fuerte con `Lighting.AddLight(tileX, tileY, 4f, 4f, 4f)` (la
+misma función que usa una antorcha real cada fotograma) durante 40 fotogramas seguidos,
+directamente en el mismo tile que `PlayerDrawSet.BoringSetup_2` muestrea para el muñeco (misma
+fórmula, decompilada y documentada en el propio comentario de `DrawSelf`). Lee el pixel real ya
+renderizado (`GraphicsDevice.GetBackBufferData` sobre un rectángulo de 1x1, llamado desde `Update`
+-fase de lógica- nunca desde dentro de un `Draw` en marcha, mismo criterio que ya usa y tiene
+verificado `CapturaDePantalla.Guardar`) antes y después de la inyección, y compara.
+
+**Resultado real, log en mano** (`evidencia/panel-unico.log.txt`, mundo `TerrakeepPrueba`,
+personaje `TerrakeepPrueba` con pelo (210,60,40), piel (255,200,150), ojos (30,140,230), camisa
+(40,170,80), pantalón (70,90,200), armadura de cobre real puesta): fotograma 25, tile (2102,266),
+luz real ahí RGB(255,255,255), pixel renderizado del muñeco RGB(39,50,86); fotograma 70, mismo
+tile, luz real ahí sigue RGB(255,255,255), pixel renderizado IDÉNTICO, RGB(39,50,86).
+`AUTOPRUEBA MUÑECO/luz RESULTADO: OK` - pixel idéntico byte a byte antes y después de forzar la
+"antorcha": el muñeco no reacciona en absoluto a `Lighting.AddLight`, confirmado en el juego real,
+no solo por análisis del código. `AUTOPRUEBA PANEL COMPLETA` con las seis pestañas, la animación
+de botones, los atajos y el icono del HUD, todo en verde - cero regresiones.
+
+**Las tres capturas reales del back buffer** (`apariencia-muneco-con-armadura.png`,
+`apariencia-muneco-sin-armadura.png`, `apariencia-muneco-con-armadura-otra-vez.png`, en
+`tModLoader-TerrakeepPanel\terrakeep-capturas\`, miradas a ojo) confirman visualmente lo mismo que
+el log: sin armadura, el pelo sale ROJIZO nítido (no negro), y los siete colores del muñeco
+coinciden a ojo con los valores exactos de los deslizadores; con armadura, el casco/goggles y la
+malla/grebas de cobre se ven en su tono natural, sin oscurecer ni saturar de más. El alternador
+"Con armadura" cambia de `[ ]` a `[X]` y vuelta en las tres capturas, sin fallos.
+
+### Commit
+
+Índice privado, solo `UI/Personaje/Widgets/MunecoTk.cs` (el único archivo tocado - no hizo falta
+cambiar `PestanaApariencia.cs`) y esta entrada de `bitacora.md`. No se comitea
+`evidencia/panel-unico.log.txt` (se sobrescribe en cada pasada del script compartido, con
+contenido del que otros agentes también dependen) ni ningún otro archivo modificado por otros
+agentes en marcha a la vez (`Common/Exploracion/*`, `Common/Panel/*`,
+`UI/Personaje/PestanaBuffs.cs`, `UI/Personaje/Widgets/EditorCantidadTk.cs`,
+`lib/TerrasavrNative.Core.dll`, `Common/Prefijos/*` nuevos, etc.).
