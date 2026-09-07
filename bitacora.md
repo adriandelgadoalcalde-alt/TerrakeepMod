@@ -3007,6 +3007,107 @@ otros agentes trabajando en paralelo ahora mismo.
 
 ---
 
+## 7-sep-2026 — WS6 otra vez: el usuario probó el `.tmod` real y los tres arreglos de ayer no bastaban
+
+El usuario reportó, jugando de verdad (con capturas) DESPUÉS del commit `1adcdde` de ayer ("arregla
+la búsqueda que no encontraba nada, sprites reales y nombre real al pasar el ratón"): la búsqueda
+seguía en blanco con la casilla "Solo en lo que ya he explorado" marcada `[X]`, los resultados
+seguían sin sprites visibles, y el mini-mapa no se podía mover arrastrando, solo con la rueda.
+
+### 1 y 2. Búsqueda e iconos: el código de `1adcdde` estaba bien - el `.tmod` que jugó el usuario no
+
+Antes de tocar nada se reprodujo el camino EXACTO del usuario con `verificar-exploracion.ps1`
+(sandbox propio, mundo de prueba real, clic real sobre "Buscar en el mundo" sin tocar la casilla):
+`_soloExplorado` seguía naciendo en `false` como dejó `1adcdde`, la casilla salió `[ ]` (sin marcar)
+en la captura real, y la búsqueda de "Cobre" dio los mismos `13718 tiles encontrados en 150 zonas`
+de siempre. Los iconos también salían: `ws6-resultados-iconos.png` enseña el sprite naranja/marrón
+del cobre a la izquierda de cada fila, y `ws6-minimapa-iconos.png` los marcadores con el mismo
+sprite encima del rombo. O sea que el código en `HEAD` de estas dos tareas estaba correcto, tal
+como lo dejó `1adcdde` - **el `.tmod` que probó el usuario no reflejaba ese commit** (lo más
+probable: siguió jugando con una build de antes de las 03:04 de esa madrugada, o una compilación
+que no llegó a completarse). No se tocó ni una línea de `PestanaBusqueda.cs`, `BuscadorMundo.cs` ni
+`IconoResultado.cs`: no había nada que arreglar ahí. Al final de esta sesión se dejó un `.tmod`
+recién compilado desde `HEAD` en la carpeta `Mods\` real del usuario (`scripts\compilar.ps1`), para
+que la próxima partida use de verdad el código verificado.
+
+### 3. El mini-mapa NO se podía arrastrar - causa real, no la que parecía a simple vista
+
+Este SÍ era un bug real y nuevo (no estaba en el alcance de `1adcdde`). `MiniMapaTk.AplicarArrastre`
+usaba el idiom habitual de vainilla para "clic recién pulsado": `Main.mouseLeft &&
+Main.mouseLeftRelease`. Decompilando el `tModLoader.dll` instalado (v2026.7.3.0) con `ilspycmd` se
+encontró que ese idiom es estructuralmente incapaz de cumplirse desde este punto del motor:
+
+- `Main.mouseLeft` solo se escribe una vez por fotograma, en `PlayerInput.UpdateInput()`
+  (`Main.DoUpdate_HandleInput`).
+- `Main.mouseLeftRelease` se recalcula, TAMBIÉN una vez por fotograma, de forma incondicional
+  mientras el mapa vainilla está cerrado (que es justo cuando este panel está abierto), al FINAL de
+  `Main.DoDraw`: `mouseLeftRelease = mouseLeft ? false : true;` - literalmente la negación de
+  `mouseLeft` de ESE MISMO fotograma.
+- Este panel se actualiza vía `Main.InGameUI.Update`, y `Main.DoUpdate` llama a eso DENTRO de
+  `UpdateUIStates`, que está ANTES de `DoUpdate_HandleInput` en el mismo fotograma.
+
+Combinando los tres puntos: cuando `MiniMapaTk.Update` se ejecuta, `Main.mouseLeftRelease` es
+SIEMPRE la negación de `Main.mouseLeft` (son los valores tal como quedaron al final del Draw
+anterior) - así que `mouseLeft && mouseLeftRelease` es SIEMPRE falso, con clic real o sin él. El
+zoom con la rueda no tiene este problema porque usa `PlayerInput.ScrollWheelDeltaForUI`, que se
+arrastra y se pone a cero sin mirar ningún otro campo (nunca se "invierte" solo) - por eso el
+usuario podía hacer zoom pero nunca arrastrar. Arreglado con detección de flanco PROPIA
+(`_botonAbajoAnterior`, un campo privado que recuerda si el botón estaba pulsado en el fotograma
+anterior de ESTE elemento) en vez de fiarse de `Main.mouseLeftRelease`.
+
+**Verificado con raton sintético inyectado desde el propio mod** (nada de SendInput/AutoHotkey: esa
+vía ya falló cuatro veces para el teclado, ver la entrada del 7-sep sobre `keybd_event`/`SendInput`
+- para el ratón se encontró un hueco real del motor en su lugar). Primer intento:
+`PanelExploracionSystem.PostUpdateInput` forzando `Main.mouseX/mouseY/mouseLeft` - `mouseLeft` sí se
+quedaba fijado (único sitio de escritura real, confirmado con contadores de invocación reales:
+844-953 llamadas por ejecución), pero `Main.mouseX/mouseY` volvían a leerse como `(0, 0)` pese a
+escribirlos también desde `PostDrawInterface` (con 840+ invocaciones confirmadas): `Main.DrawInterface`
+vuelve a escribir esas dos coordenadas desde el hardware real en más de un sitio del propio recorrido
+de capas de vainilla (incluida una restauración explícita alrededor del icono del mini-mapa de
+esquina, `mouseX = num18` con `num18` capturado de una copia previa), y no hay ningún hueco público
+de `ModSystem` que los intercepte TODOS. Con cero ratón físico en la máquina de pruebas, siempre
+acababa en `(0, 0)` por mucho que se reescribiera - y con el ratón en `(0, 0)` el mini-mapa nunca
+tenía `IsMouseHovering`, así que el arrastre no arrancaba nunca por una razón totalmente distinta a
+la que se pensaba al principio (se llegó a sospechar un problema de foco de ventana, luego que
+`PostDrawInterface` no se invocara - las dos hipótesis se descartaron con contadores reales antes de
+dar con la causa de verdad).
+
+Solución real: en vez de seguir peleando contra el motor por `Main.mouseX/mouseY`, `MiniMapaTk` gana
+una bandera de arnés de pruebas propia (`RatonSinteticoParaPrueba` / `PosicionSinteticaParaPrueba`)
+que solo bypasa la LECTURA de la posición del ratón (`RatonEnInterfaz()`) y el chequeo de
+`IsMouseHovering`, sin tocar ni una línea de la lógica de producción de `AplicarArrastre` (la
+detección de flanco con `_botonAbajoAnterior` es exactamente la misma que usaría un jugador real). El
+botón sigue viniendo de `Main.mouseLeft` sintético vía `PanelExploracionSystem.PostUpdateInput`, que
+sí es 100% fiable. Con esto, la autoprueba (`AutopruebaExploracion`, pasos 17-22) demuestra el
+arrastre de principio a fin: pulsar sobre el mini-mapa arranca `Arrastrando`, mover el ratón 130×70
+px desplaza el centro EXACTAMENTE lo esperado (`centro esperado (2044, 240), centro real (2044, 240),
+distancia 0,0 tiles`), y soltar el botón termina el arrastre - con captura real (`ws6-arrastre-
+minimapa.png`) mostrando el mapa ya desplazado a la superficie del mundo real.
+
+### Obstáculos reales durante la verificación (documentados por la regla de autonomía)
+
+Dos veces distintas, la compilación del proyecto ENTERO (obligatoria para poder verificar cualquier
+cosa) se rompió por archivos de OTROS agentes trabajando en paralelo, a medio escribir en ese
+instante (`Common/Prefijos/CatalogoPrefijosLegales.cs` con un `PrefixCategory` ambiguo entre
+`Terraria.ModLoader` y `TerrasavrNative.Core.Data`; `UI/Personaje/Widgets/MunecoTk.cs` con un
+`GetBackBufferData` con un argumento de más, y `UI/Personaje/Widgets/EditorCantidadTk.cs` con cinco
+campos `readonly` rellenados desde un método normal en vez del constructor). Cada vez se esperó a
+que el archivo dejara de cambiar (~60 s sin tocar su fecha de modificación) antes de aplicar el
+arreglo mínimo y obvio para poder seguir verificando (nunca comiteado desde aquí): los dos agentes
+ya subieron sus propias versiones reales más tarde en la sesión (`5d22d4b`, `1413796` y otros), que
+ya no tienen diff contra lo que se había parcheado aquí - no hizo falta limpiar nada al final.
+
+### Commit
+
+Índice privado, solo lo de esta tarea: `Common/Exploracion/AutopruebaExploracion.cs`,
+`Common/Exploracion/PanelExploracionSystem.cs`, `UI/Exploracion/MiniMapaTk.cs`,
+`evidencia/ws6-exploracion.log.txt` y esta entrada de `bitacora.md`. `PestanaBusqueda.cs`,
+`BuscadorMundo.cs` e `IconoResultado.cs` no se tocan: ya estaban bien. Se deja además un `.tmod`
+recién compilado en la carpeta `Mods\` real (fuera del repo, no se comitea) para que la próxima
+partida del usuario use el código ya verificado.
+
+---
+
 ## 7-sep-2026 — El muñeco de Apariencia parpadeaba y el pelo salía negro: dos bugs de luz, un solo arreglo
 
 El usuario probó el mod en el juego real (con captura) y reportó dos problemas del `MunecoTk` de

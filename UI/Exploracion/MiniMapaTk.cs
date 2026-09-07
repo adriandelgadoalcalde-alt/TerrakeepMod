@@ -49,6 +49,10 @@ namespace TerrakeepMod.UI.Exploracion
 		/// <summary>Tile que queda en el centro de la vista.</summary>
 		public Vector2 CentroTile { get; private set; }
 
+		/// <summary>true mientras se esta arrastrando el mapa con el boton izquierdo. Publico solo
+		/// para que la autoprueba pueda comprobar que el arrastre arranca y termina de verdad.</summary>
+		public bool Arrastrando => _arrastrando;
+
 		/// <summary>Escala maxima. Mas alla de esto el mapa del juego no tiene mas detalle que
 		/// enseñar: cada tile es un pixel en la textura.</summary>
 		public const float EscalaMaxima = 8f;
@@ -157,6 +161,32 @@ namespace TerrakeepMod.UI.Exploracion
 		}
 
 		/// <summary>
+		/// SOLO ARNES DE PRUEBAS. Cuando esta activo, <see cref="RatonEnInterfaz"/> devuelve
+		/// <see cref="PosicionSinteticaParaPrueba"/> en vez de la posicion real del raton.
+		/// </summary>
+		/// <remarks>
+		/// Hace falta porque <c>Main.mouseX</c>/<c>mouseY</c> NO se pueden fijar de forma fiable
+		/// desde un mod para simular un arrastre de varios fotogramas: se comprobo exhaustivamente
+		/// (con <c>ilspycmd</c> sobre el <c>tModLoader.dll</c> instalado y contadores reales de
+		/// invocacion en <c>PanelExploracionSystem.PostUpdateInput</c>/<c>PostDrawInterface</c>,
+		/// ver <c>AutopruebaExploracion</c> y `bitacora.md`) que el propio <c>Main.DrawInterface</c>
+		/// vuelve a escribir <c>Main.mouseX</c>/<c>mouseY</c> desde el hardware real varias veces
+		/// por fotograma en puntos que no se pueden interceptar todos con los ganchos publicos de
+		/// <c>ModSystem</c> - con cero raton fisico en la maquina de pruebas, siempre acaba en
+		/// (0, 0) por mucho que se reescriba desde los ganchos disponibles. <c>Main.mouseLeft</c> SI
+		/// se puede fijar con fiabilidad (un unico sitio de escritura,
+		/// <c>PlayerInput.UpdateInput()</c>), que es justo lo que demuestra que
+		/// <see cref="_botonAbajoAnterior"/> detecta bien el flanco; esta bandera cubre la otra
+		/// mitad (la posicion) sin depender de esa escritura inalcanzable, para poder probar de
+		/// verdad la aritmetica real del arrastre (<see cref="AplicarArrastre"/> sin cambiar ni una
+		/// linea de su logica de produccion.
+		/// </remarks>
+		public static bool RatonSinteticoParaPrueba;
+
+		/// <summary>SOLO ARNES DE PRUEBAS. Ver <see cref="RatonSinteticoParaPrueba"/>.</summary>
+		public static Vector2 PosicionSinteticaParaPrueba;
+
+		/// <summary>
 		/// Posicion del raton en coordenadas de INTERFAZ. Se toma de
 		/// <c>Main.InGameUI.MousePosition</c> y no de <c>Main.MouseScreen</c> por el mismo motivo
 		/// que documento WS1 en su deslizador: esta interfaz se dibuja con
@@ -165,6 +195,9 @@ namespace TerrakeepMod.UI.Exploracion
 		/// </summary>
 		private static Vector2 RatonEnInterfaz()
 		{
+			if (RatonSinteticoParaPrueba) {
+				return PosicionSinteticaParaPrueba;
+			}
 			return Main.InGameUI != null ? Main.InGameUI.MousePosition : Main.MouseScreen;
 		}
 
@@ -214,10 +247,58 @@ namespace TerrakeepMod.UI.Exploracion
 			Acotar();
 		}
 
+		/// <summary>Si el boton izquierdo estaba pulsado en el fotograma anterior. Deteccion de
+		/// flanco PROPIA: ver la nota de <see cref="AplicarArrastre"/> sobre por que no vale usar
+		/// <c>Main.mouseLeftRelease</c> aqui.</summary>
+		private bool _botonAbajoAnterior;
+
+		/// <summary>
+		/// LA CAUSA REAL de "no te puedes mover arrastrando, solo con el zoom" (reportado por el
+		/// usuario jugando de verdad): este metodo usaba el idiom habitual de vainilla para "clic
+		/// recien pulsado", <c>Main.mouseLeft &amp;&amp; Main.mouseLeftRelease</c>, pero ESE idiom
+		/// no sirve aqui. Comprobado con <c>ilspycmd</c> sobre el <c>tModLoader.dll</c> instalado
+		/// (v2026.7.3.0):
+		/// <list type="bullet">
+		/// <item><c>Main.mouseLeft</c> solo se actualiza una vez por fotograma, dentro de
+		/// <c>PlayerInput.UpdateInput()</c>, llamado desde <c>Main.DoUpdate_HandleInput()</c>.</item>
+		/// <item><c>Main.mouseLeftRelease</c> se recalcula, TAMBIEN una vez por fotograma y de
+		/// forma incondicional para la partida normal (con el mapa vainilla cerrado, que es
+		/// justo cuando este panel esta abierto), al FINAL de <c>Main.DoDraw</c>:
+		/// <c>mouseLeftRelease = mouseLeft ? false : true;</c> - literalmente la negacion de
+		/// <c>mouseLeft</c> de ESE MISMO fotograma.</item>
+		/// <item>Este panel se dibuja via <c>Main.InGameUI.Update</c>, que <c>Main.DoUpdate</c>
+		/// llama DENTRO de <c>UpdateUIStates</c>, y esa llamada esta ANTES de
+		/// <c>DoUpdate_HandleInput</c> en el mismo fotograma (comprobado leyendo el cuerpo real de
+		/// <c>DoUpdate</c>). O sea que este <c>Update</c> lee siempre los valores tal como quedaron
+		/// al FINAL del Draw del fotograma ANTERIOR - y en ese preciso momento
+		/// <c>mouseLeftRelease</c> YA es la negacion de <c>mouseLeft</c> por construccion.
+		/// </item>
+		/// </list>
+		/// Combinando los tres puntos: cuando este <c>Update</c> se ejecuta,
+		/// <c>Main.mouseLeftRelease</c> es SIEMPRE <c>!Main.mouseLeft</c>, asi que
+		/// <c>mouseLeft &amp;&amp; mouseLeftRelease</c> es SIEMPRE falso - estructuralmente
+		/// imposible de cumplir desde este punto del motor, con clic real o sin el (se
+		/// reprodujo exactamente asi con un raton sintetico inyectado en
+		/// <c>PanelExploracionSystem.PostUpdateInput</c>, ver <c>AutopruebaExploracion</c>: el
+		/// arrastre nunca arrancaba). El zoom con la rueda no tiene este problema porque
+		/// <see cref="AplicarRueda"/> usa <c>PlayerInput.ScrollWheelDeltaForUI</c>, que cada
+		/// fotograma se ARRASTRA un valor y se pone a CERO sin mirar ningun otro campo (nunca se
+		/// "invierte" solo), asi que un scroll real SI llega a verse aqui (con un fotograma de
+		/// retraso, imperceptible).
+		/// <para />
+		/// El arreglo: deteccion de flanco PROPIA con <see cref="_botonAbajoAnterior"/> en vez de
+		/// fiarse de <c>Main.mouseLeftRelease</c>. Solo necesita que <c>Main.mouseLeft</c> (que si
+		/// se actualiza con normalidad, solo con un fotograma de retraso) cambie de false a true
+		/// entre dos <c>Update</c> consecutivos de ESTE elemento - nunca lee <c>mouseLeftRelease</c>.
+		/// </summary>
 		private void AplicarArrastre()
 		{
+			bool boton = Main.mouseLeft;
+			bool pulsadoAhora = boton && !_botonAbajoAnterior;
+			_botonAbajoAnterior = boton;
+
 			if (_arrastrando) {
-				if (!Main.mouseLeft) {
+				if (!boton) {
 					_arrastrando = false;
 					return;
 				}
@@ -227,7 +308,9 @@ namespace TerrakeepMod.UI.Exploracion
 				return;
 			}
 
-			if (IsMouseHovering && Main.mouseLeft && Main.mouseLeftRelease) {
+			// El "o" con RatonSinteticoParaPrueba es SOLO arnes de pruebas: en juego normal esa
+			// bandera esta siempre a false y esto es exactamente IsMouseHovering de toda la vida.
+			if ((IsMouseHovering || RatonSinteticoParaPrueba) && pulsadoAhora) {
 				_arrastrando = true;
 				_ratonAlEmpezarArrastre = RatonEnInterfaz();
 				_centroAlEmpezarArrastre = CentroTile;

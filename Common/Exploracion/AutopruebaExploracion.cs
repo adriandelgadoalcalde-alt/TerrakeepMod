@@ -34,6 +34,12 @@ namespace TerrakeepMod.Common.Exploracion
 		/// vanilla para que lo que se dibuje alli sean sus marcadores.</summary>
 		private static string _objetivoDeTiles = "Cobre";
 
+		/// <summary>Estado del arrastre del mini-mapa con raton sintetico (pasos 17-22).</summary>
+		private static int _ratonX;
+		private static int _ratonY;
+		private static Vector2 _centroAntesDelArrastre;
+		private static float _escalaAlArrastrar;
+
 		public static void Arrancar()
 		{
 			if (_enMarcha) {
@@ -298,6 +304,101 @@ namespace TerrakeepMod.Common.Exploracion
 
 				case 16:
 					RestaurarDificultad();
+					Siguiente(5);
+					break;
+
+				// ---------------------------------------------------------------------------
+				// Arrastre del mini-mapa con RATON SINTETICO (PanelExploracionSystem.
+				// FijarRatonSintetico), no con un clic fisico real: se inyecta en
+				// PostUpdateInput, el UNICO sitio del motor que escribe Main.mouseLeft cada
+				// fotograma (comprobado con ilspycmd), asi que el propio juego calcula
+				// Main.mouseLeftRelease a partir de ese valor exactamente igual que con un
+				// clic de verdad. Reportado por el usuario jugando: "no te puedes mover por
+				// el mapa arrastrando, solo apuntando con el zoom".
+				// ---------------------------------------------------------------------------
+
+				case 17:
+					panel.CambiarPestana(0);
+					Siguiente(10);
+					break;
+
+				case 18: {
+					Terraria.UI.CalculatedStyle dim = panel.Mapa.Mapa.GetDimensions();
+					_ratonX = (int)(dim.X + dim.Width / 2f);
+					_ratonY = (int)(dim.Y + dim.Height / 2f);
+					_centroAntesDelArrastre = panel.Mapa.Mapa.CentroTile;
+					_escalaAlArrastrar = panel.Mapa.Mapa.Escala;
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/18 - preparando el arrastre: " +
+						"raton sintetico en (" + _ratonX + ", " + _ratonY + ") sin pulsar todavia, sobre el mini-mapa " +
+						"(area x=" + (int)dim.X + " y=" + (int)dim.Y + " " + (int)dim.Width + "x" + (int)dim.Height + "). " +
+						"Centro antes del arrastre: (" + (int)_centroAntesDelArrastre.X + ", " + (int)_centroAntesDelArrastre.Y +
+						"), escala " + _escalaAlArrastrar.ToString("0.000") + ".");
+					// La POSICION se fija en el propio MiniMapaTk (RatonSinteticoParaPrueba), no en
+					// Main.mouseX/mouseY: comprobado exhaustivamente (ver bitacora.md, entrada de
+					// hoy) que Main.DrawInterface reescribe Main.mouseX/mouseY desde el hardware
+					// real varias veces por fotograma en sitios que ningun gancho publico de
+					// ModSystem intercepta todos - con cero raton fisico en la maquina de pruebas
+					// siempre acababa en (0, 0) por mucho que se reescribiera desde
+					// PostUpdateInput/PostDrawInterface (con contadores reales: 953 y 840 llamadas
+					// respectivamente, o sea que SI se invocaban, y aun asi (0, 0)). El BOTON si se
+					// puede fijar con fiabilidad de esa forma (unico sitio de escritura real,
+					// PlayerInput.UpdateInput()), y es justo lo que prueba que la deteccion de
+					// flanco propia (_botonAbajoAnterior) funciona.
+					MiniMapaTk.RatonSinteticoParaPrueba = true;
+					MiniMapaTk.PosicionSinteticaParaPrueba = new Vector2(_ratonX, _ratonY);
+					PanelExploracionSystem.FijarRatonSintetico(_ratonX, _ratonY, false);
+					Siguiente(5);
+					break;
+				}
+
+				case 19:
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/19 - pulsando el boton izquierdo " +
+						"(sintetico) sobre el mini-mapa, sin mover el raton todavia.");
+					PanelExploracionSystem.FijarRatonSintetico(_ratonX, _ratonY, true);
+					Siguiente(5);
+					break;
+
+				case 20:
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/20 - tras pulsar: " +
+						"Main.mouseLeft=" + Main.mouseLeft + ", MiniMapaTk.Arrastrando=" + panel.Mapa.Mapa.Arrastrando +
+						" -> " + (panel.Mapa.Mapa.Arrastrando ? "OK, el arrastre ha arrancado." : "MAL: no ha arrancado.") +
+						". Centro todavia en (" + (int)panel.Mapa.Mapa.CentroTile.X + ", " + (int)panel.Mapa.Mapa.CentroTile.Y +
+						") (no se ha movido el raton todavia, tiene que seguir igual).");
+					// Se mueve el raton sintetico mantiendo el boton pulsado: esto es el ARRASTRE.
+					_ratonX += 130;
+					_ratonY += 70;
+					MiniMapaTk.PosicionSinteticaParaPrueba = new Vector2(_ratonX, _ratonY);
+					PanelExploracionSystem.FijarRatonSintetico(_ratonX, _ratonY, true);
+					Siguiente(8);
+					break;
+
+				case 21: {
+					Vector2 centroEsperado = _centroAntesDelArrastre - new Vector2(130, 70) / _escalaAlArrastrar;
+					Vector2 centroReal = panel.Mapa.Mapa.CentroTile;
+					float distancia = Vector2.Distance(centroEsperado, centroReal);
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/21 - tras mover el raton sintetico " +
+						"130x70 px con el boton pulsado: centro esperado (" + (int)centroEsperado.X + ", " + (int)centroEsperado.Y +
+						"), centro real (" + (int)centroReal.X + ", " + (int)centroReal.Y + "), distancia " +
+						distancia.ToString("0.0") + " tiles -> " +
+						(distancia < 2f ? "OK: el mapa se ha desplazado arrastrando." : "MAL: el mapa NO se ha movido como se esperaba."));
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/21 - " +
+						CapturaDePantalla.Guardar("ws6-arrastre-minimapa"));
+					// Se suelta el boton.
+					PanelExploracionSystem.FijarRatonSintetico(_ratonX, _ratonY, false);
+					Siguiente(5);
+					break;
+				}
+
+				case 22:
+					MiniMapaTk.RatonSinteticoParaPrueba = false;
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/22 - tras soltar: " +
+						"MiniMapaTk.Arrastrando=" + panel.Mapa.Mapa.Arrastrando +
+						" -> " + (!panel.Mapa.Mapa.Arrastrando ? "OK, el arrastre ha terminado." : "MAL: se ha quedado arrastrando."));
+					PanelExploracionSystem.ApagarRatonSintetico();
+					Siguiente(5);
+					break;
+
+				case 23:
 					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6 COMPLETA.");
 					_enMarcha = false;
 					break;

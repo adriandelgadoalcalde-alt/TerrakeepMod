@@ -93,6 +93,7 @@ namespace TerrakeepMod.Common.Exploracion
 			MarcadoresExploracion.Limpiar();
 			IconosExploracion.Descargar();
 			Buscador.Cancelar();
+			ApagarRatonSintetico();
 		}
 
 		public override void OnWorldUnload()
@@ -101,6 +102,54 @@ namespace TerrakeepMod.Common.Exploracion
 			Buscador.Cancelar();
 			MarcadoresExploracion.Limpiar();
 			_volverAlPanelAlCerrarMapa = false;
+		}
+
+		// ---------------------------------------------------------------------------------------
+		// SOLO ARNES DE PRUEBAS: raton sintetico para probar el arrastre del mini-mapa sin
+		// depender de simular un clic fisico real (los intentos con AutoHotkey SendPlay para el
+		// teclado ya fallaron cuatro veces, ver bitacora.md; el raton no hace falta arriesgarlo
+		// por la misma via porque el propio motor ya deja el hueco correcto para inyectar).
+		// ---------------------------------------------------------------------------------------
+
+		private static bool _ratonSinteticoActivo;
+		private static bool _ratonSinteticoBoton;
+
+		/// <summary>
+		/// SOLO ARNES DE PRUEBAS. Fuerza <c>Main.mouseLeft</c> en cada fotograma hasta que se llame
+		/// a <see cref="ApagarRatonSintetico"/>. Solo el BOTON: la POSICION del raton para el
+		/// arrastre del mini-mapa la fija por su cuenta <c>MiniMapaTk.RatonSinteticoParaPrueba</c>
+		/// (ver su comentario), no esto.
+		/// </summary>
+		/// <remarks>
+		/// Se inyecta en <see cref="PostUpdateInput"/>, justo despues de
+		/// <c>PlayerInput.UpdateInput()</c> - el UNICO sitio del motor real que escribe
+		/// <c>Main.mouseLeft</c> cada fotograma (comprobado con <c>ilspycmd</c> sobre el
+		/// <c>tModLoader.dll</c> instalado, v2026.7.3.0), asi que este gancho es fiable para el
+		/// boton. <c>Main.mouseX</c>/<c>mouseY</c> NO se tocan aqui a proposito: se investigo a
+		/// fondo (con contadores reales de invocacion) y <c>Main.DrawInterface</c> los vuelve a
+		/// escribir desde el hardware real varias veces por fotograma en sitios que ningun gancho
+		/// publico de <c>ModSystem</c> intercepta todos - con cero raton fisico en la maquina de
+		/// pruebas, siempre acababan en (0, 0) por mucho que se reescribieran desde aqui. Ver la
+		/// nota de <c>MiniMapaTk.RatonSinteticoParaPrueba</c> para la solucion real (bypass en el
+		/// propio widget, no una pelea perdida contra el motor).
+		/// </remarks>
+		public static void FijarRatonSintetico(int x, int y, bool boton)
+		{
+			_ratonSinteticoActivo = true;
+			_ratonSinteticoBoton = boton;
+		}
+
+		/// <summary>SOLO ARNES DE PRUEBAS. Devuelve el control del raton al hardware real.</summary>
+		public static void ApagarRatonSintetico()
+		{
+			_ratonSinteticoActivo = false;
+		}
+
+		public override void PostUpdateInput()
+		{
+			if (_ratonSinteticoActivo) {
+				Main.mouseLeft = _ratonSinteticoBoton;
+			}
 		}
 
 		public override void UpdateUI(GameTime gameTime)
