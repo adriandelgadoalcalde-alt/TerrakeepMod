@@ -141,28 +141,66 @@ namespace TerrakeepMod.Common.Panel
 					_acciones.Enqueue(() => AbrirMundo(res.Nombre, idi.Nombre));
 					_acciones.Enqueue(() => MedirYCapturarAviso(res.Nombre, idi.Nombre));
 					_acciones.Enqueue(() => AbrirBuffs(res.Nombre, idi.Nombre));
-					_acciones.Enqueue(() => CapturarBuffs(res.Nombre, idi.Nombre));
+					_acciones.Enqueue(() => MedirYCapturarBuffs(res.Nombre, idi.Nombre));
 				}
 			}
 		}
 
 		// -----------------------------------------------------------------------------------
 
+		/// <summary>
+		/// Ticks de "9255 h 40 min", el caso EXACTO que reporto el usuario con captura ("el boton
+		/// quitar se come parte de la caja de tiempo del buff"). Antes esta autoprueba solo ponia 6
+		/// buffs con la duracion por defecto (600 s = 10 min): nunca llegaba a ejercitar ni el
+		/// recorte de nombre largo ni el de tiempo largo de verdad, asi que nunca habria detectado
+		/// el bug real.
+		/// </summary>
+		private const int TicksTiempoLargo = 9255 * 3600 * 60 + 40 * 60 * 60;
+
 		private static void PoblarBuffsDePrueba()
 		{
 			Player jugador = Main.LocalPlayer;
 			int puestos = 0;
-			for (int tipo = 1; tipo < BuffLoader.BuffCount && puestos < 6; tipo++) {
+
+			// El nombre mas largo de verdad entre TODOS los buffs cargados (vanilla + cualquier
+			// mod), medido con la fuente real - no adivinado a mano - para forzar el caso mas
+			// exigente de recorte de nombre, ademas de MUCHOS buffs a la vez (fuerza scroll real).
+			var fuente = FontAssets.MouseText.Value;
+			string nombreMasLargo = null;
+			int tipoNombreMasLargo = -1;
+			float anchoMasLargo = -1f;
+
+			for (int tipo = 1; tipo < BuffLoader.BuffCount && puestos < 30; tipo++) {
 				string nombre = PersonajeVivo.NombreBuff(tipo);
 				if (string.IsNullOrEmpty(nombre)) {
 					continue;
 				}
 				jugador.AddBuff(tipo, 600 * 60);
 				puestos++;
+
+				float ancho = fuente.MeasureString(nombre).X;
+				if (ancho > anchoMasLargo) {
+					anchoMasLargo = ancho;
+					nombreMasLargo = nombre;
+					tipoNombreMasLargo = tipo;
+				}
 			}
+
+			// Al buff de nombre mas largo se le fuerza ademas el tiempo largo real del reporte:
+			// escribir buffTime directamente (no AddBuff, que no garantiza una duracion tan larga)
+			// es seguro aqui porque es SOLO este arnes de pruebas, detras de su variable de entorno.
+			if (tipoNombreMasLargo > 0) {
+				int indice = jugador.FindBuffIndex(tipoNombreMasLargo);
+				if (indice >= 0) {
+					jugador.buffTime[indice] = TicksTiempoLargo;
+				}
+			}
+
 			Registro.Linea("AUTOPRUEBA ESPACIADO - buffs de prueba puestos: " + puestos +
-				" (CountBuffs=" + jugador.CountBuffs() + "). Uno de ellos con nombre largo cuenta " +
-				"como el caso mas exigente para la fila de \"activos\".");
+				" (CountBuffs=" + jugador.CountBuffs() + "). Nombre mas largo real=\"" +
+				nombreMasLargo + "\" (id " + tipoNombreMasLargo + ", " + anchoMasLargo.ToString("0") +
+				"px sin escalar), forzado ademas a " + TicksTiempoLargo + " ticks (9255 h 40 min, " +
+				"el caso real del reporte del usuario) - el caso mas exigente para la fila.");
 		}
 
 		private static void CambiarResolucion(int ancho, int alto, string nombreRes)
@@ -255,15 +293,151 @@ namespace TerrakeepMod.Common.Panel
 			personaje?.IrAPestana(3);
 		}
 
-		private static void CapturarBuffs(string nombreRes, string nombreIdioma)
+		/// <summary>
+		/// Mide de verdad, con los datos REALES ya dibujados (no supuestos): (1) el nombre de cada
+		/// fila se lee ENTERO - nunca "..." - envuelto a tantas lineas como haga falta y sin que
+		/// ninguna linea mida mas que su caja; (2) la segunda linea (tiempo + boton "Quitar"/
+		/// "Aplicar") nunca invade la zona del nombre, ni tiempo se solapa con el boton; (3) la fila
+		/// entera es lo bastante alta para las dos lineas; (4) la columna "Activos" deja de verdad
+		/// mas hueco a "Añadir" cuando sobra sitio (<c>PestanaBuffs.RecalcularColumnas</c>); y (5) el
+		/// titulo "Buffs activos: X de Y" tampoco se recorta.
+		/// </summary>
+		private static void MedirYCapturarBuffs(string nombreRes, string nombreIdioma)
 		{
 			ContenidoPersonaje personaje = PanelTerrakeepSystem.Panel != null
 				? PanelTerrakeepSystem.Panel.Personaje : null;
 			PestanaBuffs buffs = personaje != null ? personaje.BuscarPrimero<PestanaBuffs>() : null;
 
+			if (buffs == null) {
+				Registro.Linea("AUTOPRUEBA ESPACIADO/buffs (" + nombreRes + "/" + nombreIdioma +
+					"): NO se encontro PestanaBuffs.");
+				return;
+			}
+
+			// Ademas de los buffs activos (puestos por PoblarBuffsDePrueba), se fuerza tambien una
+			// busqueda amplia en "Añadir un buff" para que la lista de RESULTADOS tenga filas reales
+			// que medir (por defecto, sin carpeta ni busqueda, esa lista solo enseña el aviso de
+			// "elige una carpeta" - vacia de filas de verdad).
+			buffs.BuscarParaPrueba("a");
+
+			var fuente = FontAssets.MouseText.Value;
+			int fallosActivos = MedirFilasActivas(buffs.FilasActivasParaPrueba, nombreRes, nombreIdioma, fuente);
+			int fallosResultados = MedirFilasResultado(buffs.FilasResultadoParaPrueba, nombreRes, nombreIdioma, fuente);
+
+			// El titulo "Buffs activos: X de Y ranuras" tampoco puede recortarse ni desbordar su
+			// propia caja: se mide igual que las filas, con el texto YA envuelto que devuelve
+			// TextoActual.
+			int fallosTitulo = 0;
+			if (buffs.TituloActivos != null) {
+				CalculatedStyle dimTitulo = buffs.TituloActivos.GetDimensions();
+				string textoTitulo = buffs.TituloActivos.TextoActual;
+				float anchoTitulo = fuente.MeasureString(textoTitulo).X * 0.85f;
+				if (dimTitulo.Width > 0f && anchoTitulo > dimTitulo.Width + 0.5f) {
+					fallosTitulo++;
+					Registro.Linea("AUTOPRUEBA ESPACIADO/buffs (" + nombreRes + "/" + nombreIdioma +
+						") - FALLO: titulo \"" + textoTitulo + "\" mide " + anchoTitulo.ToString("0.0") +
+						"px en caja de " + dimTitulo.Width.ToString("0.0") + "px.");
+				}
+			}
+
+			// Evidencia real de que la columna izquierda se acota cuando sobra sitio (punto 2 de
+			// la verificacion): ancho real ya recalculado vs el 50% "de toda la vida" sin tope.
+			float anchoIzquierda = buffs.ColumnaActivos != null ? buffs.ColumnaActivos.GetDimensions().Width : -1f;
+			float anchoAnadir = buffs.ColumnaAnadir != null ? buffs.ColumnaAnadir.GetDimensions().Width : -1f;
+			float anchoTotalTab = buffs.GetDimensions().Width;
+			float mitadSinTope = anchoTotalTab * 0.5f - 10f;
+
+			int totalFallos = fallosActivos + fallosResultados + fallosTitulo;
 			Registro.Linea("AUTOPRUEBA ESPACIADO/buffs (" + nombreRes + "/" + nombreIdioma + ") - " +
-				(buffs != null ? "pestaña Buffs dibujada." : "NO se encontro PestanaBuffs.") + " " +
+				buffs.FilasActivasParaPrueba.Count + " filas activas + " +
+				buffs.FilasResultadoParaPrueba.Count + " filas de resultados medidas -> " +
+				(totalFallos == 0 ? "OK, nada recortado ni solapado" : (totalFallos + " FALLO(S)")) + ". " +
+				"Columna Activos=" + anchoIzquierda.ToString("0") + "px (50% sin tope seria " +
+				mitadSinTope.ToString("0") + "px), Añadir=" + anchoAnadir.ToString("0") + "px, " +
+				"pestaña=" + anchoTotalTab.ToString("0") + "px.");
+
+			// La captura incluye ya la busqueda "a" aplicada (BuscarParaPrueba, mas arriba), asi que
+			// la columna de resultados de la derecha tambien queda documentada en imagen, no solo
+			// medida por codigo.
+			Registro.Linea("AUTOPRUEBA ESPACIADO/buffs (" + nombreRes + "/" + nombreIdioma + ") - " +
 				CapturaDePantalla.Guardar("buffs-" + nombreRes + "-" + nombreIdioma));
+		}
+
+		/// <summary>
+		/// Mide las filas de "Buffs activos" (nombre envuelto en la linea 1, tiempo + boton
+		/// "Quitar" en la linea 2): ninguna linea del nombre debe medir mas que su caja, el nombre
+		/// no debe invadir verticalmente la linea 2, tiempo no debe solaparse con el boton, y la
+		/// fila debe ser lo bastante alta para las dos lineas. Devuelve cuantas filas fallaron
+		/// (cada fallo se registra con su propia linea de log).
+		/// </summary>
+		private static int MedirFilasActivas(
+			System.Collections.Generic.List<(UIElement Fila, EtiquetaTk Nombre, EtiquetaTk Tiempo, BotonTk Quitar)> filas,
+			string nombreRes, string nombreIdioma, ReLogic.Graphics.DynamicSpriteFont fuente)
+		{
+			int fallos = 0;
+
+			for (int i = 0; i < filas.Count; i++) {
+				var f = filas[i];
+				CalculatedStyle dimFila = f.Fila.GetDimensions();
+				CalculatedStyle dimNombre = f.Nombre.GetDimensions();
+				CalculatedStyle dimTiempo = f.Tiempo.GetDimensions();
+				CalculatedStyle dimQuitar = f.Quitar.GetDimensions();
+
+				string textoNombre = f.Nombre.TextoActual;
+				Vector2 tamanoNombre = fuente.MeasureString(textoNombre) * 0.8f;
+
+				bool desbordeAncho = tamanoNombre.X > dimNombre.Width + 0.5f;
+				bool nombreInvadeLinea2 = (dimNombre.Y + tamanoNombre.Y) > dimQuitar.Y + 0.5f;
+				bool filaDemasiadoBaja = (dimQuitar.Y + dimQuitar.Height) > (dimFila.Y + dimFila.Height + 0.5f);
+				bool tiempoSolapaBoton = (dimTiempo.X + dimTiempo.Width) > dimQuitar.X + 0.5f;
+
+				if (desbordeAncho || nombreInvadeLinea2 || filaDemasiadoBaja || tiempoSolapaBoton) {
+					fallos++;
+					Registro.Linea("AUTOPRUEBA ESPACIADO/buffs (" + nombreRes + "/" + nombreIdioma +
+						") - ACTIVOS FILA " + i + ": FALLO. nombre=\"" + textoNombre.Replace("\n", " | ") +
+						"\" mide " + tamanoNombre.X.ToString("0.0") + "x" + tamanoNombre.Y.ToString("0.0") +
+						"px en caja " + dimNombre.Width.ToString("0.0") + "x" + dimNombre.Height.ToString("0.0") +
+						"px (desbordeAncho=" + desbordeAncho + ", invadeLinea2=" + nombreInvadeLinea2 +
+						", filaBaja=" + filaDemasiadoBaja + ", tiempoSolapaBoton=" + tiempoSolapaBoton + ").");
+				}
+			}
+
+			return fallos;
+		}
+
+		/// <summary>Igual que <see cref="MedirFilasActivas"/> pero para "Añadir un buff"
+		/// (nombre envuelto en la linea 1, solo el boton "Aplicar" en la linea 2, sin tiempo).</summary>
+		private static int MedirFilasResultado(
+			System.Collections.Generic.List<(UIElement Fila, EtiquetaTk Nombre, BotonTk Aplicar)> filas,
+			string nombreRes, string nombreIdioma, ReLogic.Graphics.DynamicSpriteFont fuente)
+		{
+			int fallos = 0;
+
+			for (int i = 0; i < filas.Count; i++) {
+				var f = filas[i];
+				CalculatedStyle dimFila = f.Fila.GetDimensions();
+				CalculatedStyle dimNombre = f.Nombre.GetDimensions();
+				CalculatedStyle dimAplicar = f.Aplicar.GetDimensions();
+
+				string textoNombre = f.Nombre.TextoActual;
+				Vector2 tamanoNombre = fuente.MeasureString(textoNombre) * 0.8f;
+
+				bool desbordeAncho = tamanoNombre.X > dimNombre.Width + 0.5f;
+				bool nombreInvadeLinea2 = (dimNombre.Y + tamanoNombre.Y) > dimAplicar.Y + 0.5f;
+				bool filaDemasiadoBaja = (dimAplicar.Y + dimAplicar.Height) > (dimFila.Y + dimFila.Height + 0.5f);
+
+				if (desbordeAncho || nombreInvadeLinea2 || filaDemasiadoBaja) {
+					fallos++;
+					Registro.Linea("AUTOPRUEBA ESPACIADO/buffs (" + nombreRes + "/" + nombreIdioma +
+						") - AÑADIR FILA " + i + ": FALLO. nombre=\"" + textoNombre.Replace("\n", " | ") +
+						"\" mide " + tamanoNombre.X.ToString("0.0") + "x" + tamanoNombre.Y.ToString("0.0") +
+						"px en caja " + dimNombre.Width.ToString("0.0") + "x" + dimNombre.Height.ToString("0.0") +
+						"px (desbordeAncho=" + desbordeAncho + ", invadeLinea2=" + nombreInvadeLinea2 +
+						", filaBaja=" + filaDemasiadoBaja + ").");
+				}
+			}
+
+			return fallos;
 		}
 
 		private static void Terminar()

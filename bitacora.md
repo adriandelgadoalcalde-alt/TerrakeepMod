@@ -3523,6 +3523,127 @@ No se comitea nada de otros agentes en marcha a la vez (`Common/Exploracion/*`,
 `evidencia/panel-unico.log.txt`, `evidencia/ws6-exploracion.log.txt`), ni las carpetas de build
 sueltas (`bin-checkDebug/`, `obj-verif-espaciado/`).
 
+---
+
+## 7-sep-2026 — Buffs activos: de "recortar con tooltip" a que el layout se adapte de verdad
+
+Encargo real, con captura del usuario tras la primera pasada de espaciado de hoy: **"buff sigue
+siendo ilegible mucho contenido ya que se lo come el espacio... en buff activos el botón quitar se
+come parte de la caja de tiempo del buff"**. Dos problemas reales en `CrearFilaBuff`
+(`UI/Personaje/PestanaBuffs.cs`):
+
+1. **La causa exacta del solape**: el nombre YA se recortaba con `EtiquetaTk.Recortar` (arreglo de
+   antes), pero **el tiempo NUNCA se recortaba** - `new EtiquetaTk(() => TextoTiempo(tipo), 0.8f,
+   anchoTiempo, 20f)` dibujaba el texto tal cual, sin mirar su caja de 70px fijos. Un tiempo largo
+   ("9255 h 40 min", el caso real del reporte) se dibujaba por FUERA de esa caja, y el boton
+   "Quitar" - que se pinta DESPUES en el mismo fotograma, o sea ENCIMA - le tapaba el trozo que se
+   salia. Confirmado con el arnes: a 70px fijos, "9255 h 40 min" no cabe ni de lejos.
+2. **Espacio real desaprovechado**: la columna "Activos" usaba siempre el 50% del ancho de la
+   pestaña, sin tope, aunque una fila de buff no necesite tanto - "en la izquierda se puede acotar
+   mas el espacio... para dar mas ancho a donde hace falta" (mismo reporte).
+
+### Primer intento (commit-de-trabajo, corregido despues): recortar + tooltip
+
+La primera pasada midio `anchoTiempo` con la fuente real (`AnchoTiempoReal`, cacheado: mide
+`"9999 h 59 min"` a escala 0.8) y envolvio nombre/tiempo/titulo con
+`EtiquetaTk.Recortar(..., out bool recortado)` + un tooltip (`EtiquetaTk.Ayuda`, nuevo) que
+enseñaba el texto completo al pasar el raton si de verdad se habia cortado. Arreglaba el solape,
+pero **el propio usuario lo corrigio antes de darlo por bueno**: un nombre mostrado como "Mana
+Regenerat..." no cumple "todo se ha de poder leer bien" aunque tecnicamente quepa en su caja y
+tenga un tooltip - el contenido tiene que leerse ENTERO de un vistazo, es el LAYOUT el que se
+adapta (mas ancho, mas alto, salto de linea), nunca el texto el que se sacrifica.
+
+### Arreglo real: dos lineas por fila, el nombre se ENVUELVE, nunca se recorta
+
+Rediseño completo de `CrearFilaBuff`/`CrearFilaResultado`:
+- **Linea 1**: el nombre, con TODO el ancho de la fila para el (nadie mas compite por ese
+  espacio), envuelto con `EtiquetaTk.PartirEnLineas` (la misma funcion que ya partia el aviso
+  naranja de Exploración/Mundo, la fuente real) a tantas lineas como haga falta.
+- **Linea 2**, debajo: tiempo + boton "Quitar" (o solo "Aplicar" en la lista de "Añadir"), con el
+  mismo anclaje relativo al borde derecho de siempre (`Left.Set(x, 1f)`) - estructuralmente
+  imposible que se solapen entre si, sea cual sea el ancho de la fila.
+- El alto de cada fila y la posicion Y de la linea 2 se recalculan **cada fotograma**
+  (`AjustarAltoFilasActivas`/`AjustarAltoFilasResultado`, llamados desde `Update`) a partir de la
+  altura REAL que ocupa el nombre ya envuelto (`FontAssets.MouseText.Value.MeasureString`) -
+  mismo patron que `PestanaMundo.RecalcularAviso` ya establecio hoy para el recuadro naranja, solo
+  que aplicado por fila. Se repite cada fotograma porque el ancho disponible cambia con la
+  resolucion/columna, y por tanto tambien cuantas lineas necesita el nombre.
+- El titulo "Buffs activos: X de Y ranuras" recibio el mismo tratamiento por si algun dia
+  necesitara mas de una linea (`AjustarAlturaTitulo`, baja la caja de la lista lo que haga falta) -
+  aunque en la practica nunca lo necesita (ver mas abajo).
+- La columna de tiempo SI sigue con un ancho fijo sin envolver, pero por una razon real y no
+  arbitraria: `Player.buffTime` es `int` (32 bits), y `int.MaxValue / 60 / 3600 ≈ 9942 horas` -
+  **"9999 h 59 min" no es un numero optimista, es una cota matematica**. No hace falta envolver ni
+  recortar algo que estructuralmente no puede desbordar.
+- `EtiquetaTk.Recortar` se mantiene (utilidad generica, usada ya por `FilaCarpetaBuffTk`/
+  `FilaCarpetaTk` con su propia copia privada) pero su comentario ahora dice explicitamente que es
+  **el ultimo recurso, no la solucion por defecto**: solo para una caja de una sola linea de altura
+  infranqueable, nunca para un texto que se pueda envolver o para el que se pueda agrandar la caja.
+  Se retiro el mecanismo de tooltip-al-recortar (`EtiquetaTk.Ayuda`) que se habia añadido en el
+  primer intento: sin ningun sitio que lo llame ya (nombre/tiempo/titulo ya no recortan), dejarlo
+  habria sido código muerto invitando a la próxima persona a "solucionar" un desbordamiento
+  recortando en vez de adaptar el layout - justo el patron que este mismo encargo vino a corregir.
+
+### El tope de la columna "Activos", recalculado sin la mediana de nombres
+
+Con el nombre ya en su propia linea, `AnchoMaximoActivos` (el tope real de `RecalcularColumnas`,
+ya existente de la pasada de espaciado de hoy) ya no necesita reservar sitio para el nombre
+COMPLETO compartiendo linea con el tiempo - una columna estrecha ahora solo hace la fila mas ALTA,
+nunca rompe nada. Simplificado a cubrir comodamente la linea 2 (tiempo + boton, ancho fijo) mas un
+colchon razonable (200px) para que un nombre corto/medio no se envuelva sin necesidad. Resultado
+real medido: el tope bajo de 397px (primera pasada) a **264px**, dandole a "Añadir" 786px en vez de
+653px a 1600x900 - mas hueco real aprovechado, justo lo que pedia el reporte.
+
+### Verificado en el juego real, con el arnes de hoy extendido (`AutopruebaEspaciado.cs`)
+
+`PoblarBuffsDePrueba` ahora pone **30 buffs a la vez** (antes 6) y fuerza el de nombre mas largo
+de verdad entre TODOS los cargados (medido con la fuente real, no adivinado) a
+**1999224000 ticks = 9255 h 40 min exactos**, el caso literal del reporte del usuario.
+`MedirYCapturarBuffs` mide, por cada fila de "Activos" Y de "Añadir" (esta ultima poblada de
+verdad con `PestanaBuffs.BuscarParaPrueba("a")`, nuevo metodo solo-autopruebas): que ninguna linea
+del nombre mida mas que su caja, que el nombre no invada verticalmente la linea 2, que tiempo no
+se solape con el boton, y que la fila sea lo bastante alta - ademas de que el titulo tampoco se
+recorte. Un primer intento de esta medicion dio 100 fallos falsos en "Añadir": el propio arnes
+media las filas de resultados en el MISMO fotograma en que `BuscarParaPrueba` las creaba, antes de
+que `AjustarAltoFilasResultado` (que solo corre desde `Update`) llegara a colocarlas - un bug del
+arnes, no del producto (las 27 filas de "Activos", que llevaban muchos fotogramas construidas,
+dieron 0 fallos en esa misma pasada). Arreglado haciendo que `BuscarParaPrueba` fuerce el ajuste
+ya mismo, sin esperar al fotograma siguiente.
+
+**Resultado final, las 3 resoluciones × 2 idiomas, las 6 combinaciones en verde**
+(`evidencia/espaciado.log.txt`):
+
+```
+(1600x900/es)          - 27 filas activas + 100 filas de resultados medidas -> OK, nada recortado
+                          ni solapado. Columna Activos=264px (50% sin tope seria 520px),
+                          Añadir=786px, pestaña=1060px.
+(1600x900/en)           - OK, mismas cifras.
+(1280x720/es), (en)     - OK, mismas cifras (el panel tiene su propio ancho maximo, no crece mas
+                          alla de 1060px de "pestaña" aunque la ventana sea mas ancha).
+(800x720-minimo/es),(en)- OK. Columna Activos=264px (50% sin tope seria 364px, aqui NO se activa
+                          el tope: a la resolucion minima real ya no sobraba espacio de verdad).
+```
+
+0 fallos en las 762 filas medidas en total (127 filas × 6 combinaciones). Capturas reales en
+`evidencia/espaciado-capturas/buffs-*.png` confirman a ojo el mismo resultado: nombres largos como
+"Cabeza de esqueletrón bebé (id 50)" (233,6px, el mas largo real de todo el juego cargado) se ven
+enteros en dos lineas, sin ninguna caja recortada con "...".
+
+### Índice privado para comitear
+
+`UI/Personaje/PestanaBuffs.cs`, `UI/Personaje/Widgets/EtiquetaTk.cs`,
+`Common/Panel/AutopruebaEspaciado.cs`, `evidencia/espaciado.log.txt`,
+`evidencia/espaciado-capturas/*.png` (12 archivos, evidencia propia sobreescrita con la pasada
+final), y esta entrada de `bitacora.md`. No se comitea nada de otros agentes en marcha a la vez
+(`Common/Libreria/AutopruebaLibreria.cs`, `Common/Panel/CapturaDePantalla.cs`,
+`Common/Personaje/AutopruebaPersonaje.cs`, `Common/Prefijos/*`, `UI/Libreria/Widgets/*`,
+`UI/Personaje/ContenidoPersonaje.cs`, `UI/Personaje/PestanaAlmacenes.cs`,
+`UI/Personaje/PestanaEquipo.cs`, `UI/Personaje/PestanaInventario.cs`,
+`UI/Personaje/Widgets/BotonTk.cs`, `UI/Personaje/Widgets/CampoTextoTk.cs`,
+`UI/Personaje/Widgets/EditorCantidadTk.cs`, `evidencia/panel-unico.log.txt`,
+`evidencia/ws3-libreria.log.txt`, `scripts/verificar-personaje.ps1`), ni las carpetas de build
+sueltas (`bin-checkDebug/`, `obj-verif-espaciado/`).
+
 ## 7-sep-2026 — Builds: "sin sitio" en un arma que SÍ tenías, y el cambio real que pidió el usuario (auto-equipar ya trae del catálogo)
 
 Encargo: investigar un aviso rojo real de "Auto-equipar" con captura del usuario: build Vanilla /

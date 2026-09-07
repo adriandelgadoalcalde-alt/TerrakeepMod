@@ -102,11 +102,13 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// falta cortar (nunca con "…": la fuente del juego no trae ese caracter, visto ya en
 		/// <c>FilaCarpetaBuffTk</c>/<c>FilaCarpetaTk</c>, de donde sale este mismo algoritmo).
 		/// <para />
-		/// Existe porque <see cref="EtiquetaTk"/> nunca recorta ni envuelve por su cuenta (
-		/// <see cref="DrawSelf"/> dibuja el texto tal cual, sin mirar <see cref="Width"/>): un
-		/// nombre de buff largo ("Mana Regeneration (id 6)") se solapaba de verdad con la columna
-		/// de tiempo de al lado en una ventana estrecha (800x720, captura real del juego) porque el
-		/// texto seguia dibujandose por fuera de su caja sin que nada lo impidiera.
+		/// <b>Ultimo recurso, no la solucion por defecto.</b> Pedido explicito del usuario: un
+		/// nombre mostrado como "Mana Regenerat..." no es aceptable aunque tecnicamente quepa en su
+		/// caja - el contenido tiene que leerse ENTERO, y es el layout el que se adapta (mas ancho,
+		/// mas alto, salto de linea - ver <see cref="PartirEnLineas"/>), no el texto el que se
+		/// sacrifica. Usar esto solo cuando de verdad no hay una forma razonable de envolver o
+		/// agrandar la caja (una sola linea de altura fija e infranqueable, como una fila del arbol
+		/// de carpetas), y dejar dicho por que en el sitio que lo use.
 		/// </para>
 		/// </summary>
 		public static string Recortar(string texto, float anchoMaximo, float escala)
