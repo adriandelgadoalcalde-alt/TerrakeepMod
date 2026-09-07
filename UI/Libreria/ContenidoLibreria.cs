@@ -9,6 +9,7 @@ using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Libreria;
 using TerrakeepMod.Common.Prefijos;
 using TerrakeepMod.Common.Undo;
+using TerrakeepMod.UI.Libreria.Widgets;
 using TerrakeepMod.UI.Personaje.Widgets;
 using TerrasavrNative.Core.Data;
 
@@ -45,6 +46,18 @@ namespace TerrakeepMod.UI.Libreria
 		private const float EscalaSlotDestino = 0.7f;
 		private const int ColumnasDestino = 10;
 
+		/// <summary>Ancho REAL de la rejilla de destino a <see cref="ColumnasDestino"/> columnas
+		/// (52px de slot vanilla * <see cref="EscalaSlotDestino"/> + 2px de separacion, por
+		/// columna). Antes la rejilla se estiraba al 100% del ancho disponible aunque solo
+		/// colocara 10 columnas fijas de objetos: el resto quedaba vacio de verdad, sin ningun
+		/// elemento ahi ("el hueco que hay a la derecha abajo al lado de inventario" del encargo
+		/// del usuario). Fijar el ancho de la rejilla deja ese hueco como un elemento real y
+		/// predecible al lado, sea cual sea la resolucion de la ventana - ver
+		/// <see cref="PanelHerramientasLibreriaTk"/>.</summary>
+		private const float AnchoRejillaDestino = ColumnasDestino * (52f * EscalaSlotDestino + 2f);
+
+		private const float SeparacionHerramientas = 14f;
+
 		// --- Navegacion -----------------------------------------------------------------------
 		private readonly List<CategoryTreeNodeData> _ruta = new List<CategoryTreeNodeData>();
 		private string _busqueda = "";
@@ -62,6 +75,7 @@ namespace TerrakeepMod.UI.Libreria
 		private UIScrollbar _scrollResultados;
 		private UIElement _zonaDestino;
 		private UIElement _rejillaDestino;
+		private PanelHerramientasLibreriaTk _herramientas;
 		private readonly List<BotonTk> _botonesDestino = new List<BotonTk>();
 
 		private readonly List<SlotCatalogoLibreria> _slotsResultado = new List<SlotCatalogoLibreria>();
@@ -110,6 +124,12 @@ namespace TerrakeepMod.UI.Libreria
 		/// <summary>Nombre del contenedor de destino seleccionado.</summary>
 		public string NombreDestino {
 			get { return Destinos[_destinoActual].Nombre; }
+		}
+
+		/// <summary>El mini-panel de edicion (papelera + seleccion por arrastre + cantidad +
+		/// prefijo), para que la autoprueba llegue a sus controles reales.</summary>
+		public PanelHerramientasLibreriaTk Herramientas {
+			get { return _herramientas; }
 		}
 
 		public ContenidoLibreria()
@@ -278,10 +298,18 @@ namespace TerrakeepMod.UI.Libreria
 			_zonaDestino.Append(ayuda);
 
 			_rejillaDestino = new UIElement();
-			_rejillaDestino.Width.Set(0f, 1f);
+			_rejillaDestino.Width.Set(AnchoRejillaDestino, 0f);
 			_rejillaDestino.Top.Set(54f, 0f);
 			_rejillaDestino.Height.Set(-54f, 1f);
 			_zonaDestino.Append(_rejillaDestino);
+
+			// El mini-panel de edicion (papelera + arrastrar para seleccionar + cantidad +
+			// prefijo), en el hueco real que deja la rejilla de ancho fijo de arriba - pedido
+			// explicito del usuario, ver PanelHerramientasLibreriaTk.
+			_herramientas = new PanelHerramientasLibreriaTk();
+			_herramientas.Left.Set(AnchoRejillaDestino + SeparacionHerramientas, 0f);
+			_herramientas.Top.Set(54f, 0f);
+			_zonaDestino.Append(_herramientas);
 		}
 
 		// =========================================================================================

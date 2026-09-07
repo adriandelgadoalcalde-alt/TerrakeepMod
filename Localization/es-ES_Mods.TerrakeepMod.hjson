@@ -350,6 +350,40 @@ Libreria: {
 			Largo: Bóveda del Vacío
 		}
 	}
+
+	Herramientas.Titulo: Editar objeto
+
+	EditorPrefijo: {
+		RecuadroTitulo: Seleccionar
+		RecuadroPista: arrastra aquí
+		BotonSinObjetivo: Prefijo: (nada seleccionado)
+		Boton: Prefijo: {0}
+		Ayuda: Elige un prefijo legal para el objeto del recuadro de selección.
+		Historial: Prefijo de "{0}": {1} -> {2}
+	}
+
+	EditorCantidad: {
+		SinSeleccion: Cantidad: arrastra un objeto al recuadro de arriba
+		NoApilable: '''"{0}" no admite pila (no se puede editar la cantidad)'''
+	}
+
+	Prefijo: {
+		Ninguno: Ninguno
+
+		Stat: {
+			Damage: de daño
+			CritChance: de probabilidad de golpe crítico
+			Knockback: de retroceso
+			UseTime: de tiempo de uso
+			Size: de tamaño
+			ShootSpeed: de velocidad de disparo
+			ManaCost: de coste de maná
+			Defense: de defensa
+			MaxMana: de maná máximo
+			MoveSpeed: de velocidad de movimiento
+			MeleeSpeed: de velocidad cuerpo a cuerpo
+		}
+	}
 }
 
 Builds: {

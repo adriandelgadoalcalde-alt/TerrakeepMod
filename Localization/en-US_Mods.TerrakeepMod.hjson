@@ -350,6 +350,40 @@ Libreria: {
 			Largo: Void Vault
 		}
 	}
+
+	Herramientas.Titulo: Edit item
+
+	EditorPrefijo: {
+		RecuadroTitulo: Select
+		RecuadroPista: drag here
+		BotonSinObjetivo: Prefix: (nothing selected)
+		Boton: Prefix: {0}
+		Ayuda: Pick a legal prefix for the item in the selection box.
+		Historial: Prefix of "{0}": {1} -> {2}
+	}
+
+	EditorCantidad: {
+		SinSeleccion: Quantity: drag an item into the box above
+		NoApilable: '''"{0}" does not stack (its quantity cannot be edited)'''
+	}
+
+	Prefijo: {
+		Ninguno: None
+
+		Stat: {
+			Damage: damage
+			CritChance: critical strike chance
+			Knockback: knockback
+			UseTime: use time
+			Size: size
+			ShootSpeed: shot speed
+			ManaCost: mana cost
+			Defense: defense
+			MaxMana: max mana
+			MoveSpeed: movement speed
+			MeleeSpeed: melee speed
+		}
+	}
 }
 
 Builds: {

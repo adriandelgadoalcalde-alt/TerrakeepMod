@@ -1,11 +1,18 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Text;
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.UI;
+using TerrakeepMod.Common.Ajustes;
+using TerrakeepMod.Common.Prefijos;
 using TerrakeepMod.Common.Undo;
 using TerrakeepMod.UI.Libreria;
+using TerrakeepMod.UI.Libreria.Widgets;
+using TerrakeepMod.UI.Personaje.Widgets;
 using TerrasavrNative.Core.Data;
 
 namespace TerrakeepMod.Common.Libreria
@@ -103,6 +110,15 @@ namespace TerrakeepMod.Common.Libreria
 				case 11: ExplorarCarpetaDeMod(); break;
 				case 12: PrepararInformeFinal(); break;
 				case 13: DescribirPanelDibujado(); break;
+				// Encargo directo del usuario tras probar el mod (ver bitacora.md): la papelera
+				// tambien en Libreria, y un mini-panel nuevo (arrastrar para seleccionar + editar
+				// cantidad + editar prefijo) en el hueco de abajo a la derecha, junto a la rejilla
+				// de destino.
+				case 14: PrepararObjetosDeHerramientas(); break;
+				case 15: ArrastrarAlRecuadroDeSeleccion(); break;
+				case 16: ComprobarEditorCantidadCompacto(); break;
+				case 17: ComprobarEditorPrefijo(); break;
+				case 18: ComprobarPapeleraDesdeLibreria(); break;
 				default:
 					Registrar("AUTOPRUEBA WS3 COMPLETA. Todos los pasos ejecutados sin excepciones.");
 					_terminada = true;
@@ -531,6 +547,345 @@ namespace TerrakeepMod.Common.Libreria
 		}
 
 		// =========================================================================================
+		// Mini-panel de herramientas (papelera + arrastrar para seleccionar + cantidad + prefijo)
+		// =========================================================================================
+
+		private const int RanuraStack = 25;
+		private const int RanuraPrefijo = 26;
+
+		/// <summary>Objeto APILABLE (maxStack &gt; 1) para el editor de cantidad. Se busca aparte
+		/// del de prefijo a proposito: <c>Item.CanHavePrefixes</c> (codigo real,
+		/// <c>Terraria\Item.cs:1300</c>) exige <c>maxStack == 1 || AllowReforgeForStackableItem</c>,
+		/// y NINGUN objeto vanilla real pone ese campo a true (comprobado en el decompilado
+		/// entero: 0 resultados - es un hueco pensado para mods, Calamity entre ellos, para sus
+		/// armas Picaro que SI apilan y SI llevan prefijo). O sea que en vanilla puro "apila" y
+		/// "admite prefijo" son mutuamente excluyentes de verdad, nunca el mismo objeto - probarlo
+		/// con un solo objeto (como se intento la primera vez, con Shuriken: apila, maxStack=9999,
+		/// pero SIN ninguna categoria de prefijo real) habria dejado sin probar de verdad uno de
+		/// los dos caminos.</summary>
+		private static int _tipoStack;
+
+		/// <summary>Objeto NO apilable (maxStack == 1) pero que SI admite prefijo, para el editor
+		/// de prefijo. Se arrastra encima del recuadro DESPUES del de arriba, lo que ademas
+		/// ejercita el intercambio real de <c>ItemSlot.Handle</c> cuando el recuadro ya tiene algo
+		/// dentro (recuadro ocupado + raton con otro objeto -&gt; se intercambian, ni se pierde ni
+		/// se duplica nada).</summary>
+		private static int _tipoPrefijo;
+
+		private static void PrepararObjetosDeHerramientas()
+		{
+			Player jugador = Main.LocalPlayer;
+
+			_tipoStack = BuscarObjeto(o => o.maxStack > 1 && o.damage <= 0 && o.createTile < 0
+				&& o.consumable);
+			_tipoPrefijo = BuscarObjeto(o => o.maxStack == 1
+				&& CatalogoPrefijosLegales.GruposLegales(o).Any());
+
+			if (_tipoStack <= 0 || _tipoPrefijo <= 0) {
+				Registrar("Paso 14 - FALLO buscando objetos de prueba: apilable(type=" + _tipoStack
+					+ "), con prefijo(type=" + _tipoPrefijo + "). Se saltan las comprobaciones del mini-panel.");
+				return;
+			}
+
+			Item objetoStack = new Item();
+			objetoStack.SetDefaults(_tipoStack);
+			objetoStack.stack = Math.Min(5, objetoStack.maxStack);
+			jugador.inventory[RanuraStack] = objetoStack;
+
+			Item objetoPrefijo = new Item();
+			objetoPrefijo.SetDefaults(_tipoPrefijo);
+			jugador.inventory[RanuraPrefijo] = objetoPrefijo;
+
+			Registrar("Paso 14 - dos objetos de prueba reales puestos en el inventario. "
+				+ "Apilable en inventory[" + RanuraStack + "]: " + Describir(jugador.inventory[RanuraStack])
+				+ " (maxStack=" + objetoStack.maxStack + ", CanHavePrefixes="
+				+ objetoStack.CanHavePrefixes() + ", se espera False: apila). "
+				+ "Con prefijo en inventory[" + RanuraPrefijo + "]: " + Describir(jugador.inventory[RanuraPrefijo])
+				+ " (maxStack=" + objetoPrefijo.maxStack + ", CanHavePrefixes=" + objetoPrefijo.CanHavePrefixes()
+				+ ", se espera True; categorias legales: " + string.Join(", ",
+					CatalogoPrefijosLegales.GruposLegales(objetoPrefijo)
+						.Select(g => (Idiomas.EnEspanol ? g.Grupo.NameEs : g.Grupo.NameEn) + "(" + g.Ids.Count + ")"))
+				+ ").");
+		}
+
+		/// <summary>
+		/// Simula el arrastre real pedido explicitamente por el usuario ("deberiamos poder
+		/// clicar/arrastrar y que quede seleccionado"): coge el objeto APILABLE del hueco de
+		/// origen con <c>ItemSlot.LeftClick</c> (la misma ruta que un arrastre real) y lo suelta
+		/// sobre <see cref="SlotSeleccionTk"/> con <c>SlotSeleccionTk.EjercitarHandle</c> (el
+		/// MISMO <c>ItemSlot.Handle</c> que dispara <c>DrawSelf</c> cuando el raton esta encima).
+		/// </summary>
+		private static void ArrastrarAlRecuadroDeSeleccion()
+		{
+			if (_tipoStack <= 0) {
+				Registrar("Paso 15 - sin objetos de prueba (paso 14 fallo), se salta.");
+				return;
+			}
+
+			Player jugador = Main.LocalPlayer;
+			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
+			if (herramientas == null) {
+				Registrar("Paso 15 - Contenido.Herramientas es null.");
+				return;
+			}
+
+			string antesRanura = Describir(jugador.inventory[RanuraStack]);
+
+			bool izquierdoPrevio = Main.mouseLeft;
+			bool sueltoPrevio = Main.mouseLeftRelease;
+			Main.mouseLeft = true;
+			Main.mouseLeftRelease = true;
+			try {
+				ItemSlot.LeftClick(jugador.inventory, ItemSlot.Context.InventoryItem, RanuraStack);
+				string trasCoger = Describir(jugador.inventory[RanuraStack]);
+				string ratonTrasCoger = Describir(Main.mouseItem);
+
+				herramientas.Seleccion.EjercitarHandle();
+
+				bool huecoVacio = jugador.inventory[RanuraStack].IsAir;
+				bool manoVacia = Main.mouseItem.IsAir;
+				bool seleccionado = !herramientas.Seleccion.ObjetoActual.IsAir
+					&& herramientas.Seleccion.ObjetoActual.type == _tipoStack;
+
+				Registrar("Paso 15 - arrastre real al recuadro de seleccion. ANTES inventory["
+					+ RanuraStack + "]=" + antesRanura + ". Tras cogerlo (ItemSlot.LeftClick): "
+					+ "inventory[" + RanuraStack + "]=" + trasCoger + ", raton=" + ratonTrasCoger
+					+ ". Tras soltarlo en el recuadro (SlotSeleccionTk.EjercitarHandle): hueco="
+					+ (huecoVacio ? "OK, vacio" : "FALLO") + ", raton=" + (manoVacia ? "OK, vacio" : "FALLO")
+					+ ", recuadro=" + Describir(herramientas.Seleccion.ObjetoActual)
+					+ " (" + (seleccionado ? "OK: es el objeto real, misma referencia que se arrastro"
+						: "FALLO: no es el objeto esperado") + ").");
+			}
+			finally {
+				Main.mouseLeft = izquierdoPrevio;
+				Main.mouseLeftRelease = sueltoPrevio;
+			}
+		}
+
+		/// <summary>Ejercita el editor de cantidad COMPACTO (modo explicito, enganchado al
+		/// recuadro de seleccion) pulsando sus botones reales, igual que ya hace WS1 con el de
+		/// Personaje - misma ruta (<c>BotonTk.LeftClick</c>), distinto binding.</summary>
+		private static void ComprobarEditorCantidadCompacto()
+		{
+			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
+			if (herramientas == null || herramientas.Seleccion.ObjetoActual.IsAir) {
+				Registrar("Paso 16 - no hay nada seleccionado en el recuadro (paso 15 fallo), se salta.");
+				return;
+			}
+
+			EditorCantidadTk editor = herramientas.EditorCantidad;
+			Item objetivo = editor.ObjetivoActual;
+			bool mismaReferencia = ReferenceEquals(objetivo, herramientas.Seleccion.ObjetoActual);
+
+			int stackInicial = objetivo.stack;
+			int maxStack = objetivo.maxStack;
+
+			Clic(editor.BotonMas);
+			int trasMas = objetivo.stack;
+
+			Clic(editor.BotonMenos);
+			int trasMenos = objetivo.stack;
+
+			editor.Campo.FijarTextoSilencioso("3");
+			Clic(editor.BotonAplicar);
+			int trasAplicarTres = objetivo.stack;
+
+			editor.Campo.FijarTextoSilencioso((maxStack + 500).ToString());
+			Clic(editor.BotonAplicar);
+			int trasPedirDeMas = objetivo.stack;
+
+			bool okMas = trasMas == stackInicial + 1;
+			bool okMenos = trasMenos == trasMas - 1;
+			bool okTres = trasAplicarTres == 3;
+			bool okAcotado = trasPedirDeMas == maxStack;
+
+			Registrar("Paso 16 - editor de cantidad COMPACTO (explicito, sin hover) sobre \""
+				+ objetivo.Name + "\" (maxStack=" + maxStack + "). ObjetivoActual es "
+				+ (mismaReferencia ? "OK, la MISMA referencia que SlotSeleccionTk.ObjetoActual"
+					: "FALLO, referencia distinta") + ". stack inicial=" + stackInicial + ". "
+				+ "Tras \"+\": " + trasMas + " (" + (okMas ? "OK" : "FALLO") + "). "
+				+ "Tras \"-\": " + trasMenos + " (" + (okMenos ? "OK" : "FALLO") + "). "
+				+ "Tras escribir \"3\" y Aplicar: " + trasAplicarTres + " (" + (okTres ? "OK" : "FALLO") + "). "
+				+ "Tras pedir " + (maxStack + 500) + " (por encima del maximo) y Aplicar: " + trasPedirDeMas
+				+ " (" + (okAcotado ? "OK, acotado al maximo real" : "FALLO") + "). "
+				+ "El objeto REAL del recuadro tiene ahora stack=" + herramientas.Seleccion.ObjetoActual.stack
+				+ " (" + (herramientas.Seleccion.ObjetoActual.stack == trasPedirDeMas
+					? "OK, es el mismo objeto" : "FALLO") + ").");
+
+			// Se deja en 5 para que el resto de pasos (prefijo, papelera) trabajen con un numero
+			// comodo de leer en el log.
+			objetivo.stack = Math.Min(5, maxStack);
+		}
+
+		/// <summary>
+		/// Primero intercambia el objeto del recuadro: el de prefijo (inventory[26]) se coge con
+		/// <c>ItemSlot.LeftClick</c> y se arrastra sobre el recuadro YA OCUPADO (con el apilable
+		/// del paso 15 dentro) - <c>ItemSlot.Handle</c> hace el intercambio real de vanilla (el
+		/// que estaba en el recuadro pasa al raton, el nuevo se queda), que se limpia soltandolo en
+		/// la papelera para no dejar nada perdido en el raton. Con el objeto correcto ya
+		/// seleccionado, abre el popup real y pulsa un boton de prefijo real DOS VECES SEGUIDAS con
+		/// el MISMO id - es la comprobacion explicita de que <c>ResetPrefix()+Prefix()</c> no
+		/// compone multiplicadores (ver la cabecera de <see cref="EditorPrefijoTk"/>): si
+		/// compusiera, el daño despues del segundo clic seria distinto del de despues del primero.
+		/// </summary>
+		private static void ComprobarEditorPrefijo()
+		{
+			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
+			if (herramientas == null || _tipoPrefijo <= 0) {
+				Registrar("Paso 17 - sin objeto de prueba con prefijo (paso 14 fallo), se salta.");
+				return;
+			}
+
+			Player jugador = Main.LocalPlayer;
+			string antesRecuadro = Describir(herramientas.Seleccion.ObjetoActual);
+
+			bool izquierdoPrevio = Main.mouseLeft;
+			bool sueltoPrevio = Main.mouseLeftRelease;
+			Main.mouseLeft = true;
+			Main.mouseLeftRelease = true;
+			try {
+				ItemSlot.LeftClick(jugador.inventory, ItemSlot.Context.InventoryItem, RanuraPrefijo);
+				herramientas.Seleccion.EjercitarHandle();   // intercambio: el apilable pasa al raton
+
+				bool esElDePrefijo = !herramientas.Seleccion.ObjetoActual.IsAir
+					&& herramientas.Seleccion.ObjetoActual.type == _tipoPrefijo;
+				bool volvioElApilable = !Main.mouseItem.IsAir && Main.mouseItem.type == _tipoStack;
+
+				Registrar("Paso 17 - intercambio real en el recuadro. ANTES=" + antesRecuadro
+					+ ". Se arrastra el objeto CON PREFIJO encima (recuadro ya ocupado): recuadro AHORA="
+					+ Describir(herramientas.Seleccion.ObjetoActual) + " (" + (esElDePrefijo ? "OK" : "FALLO")
+					+ "), raton=" + Describir(Main.mouseItem) + " (" + (volvioElApilable
+						? "OK: el apilable volvio al raton, ItemSlot.Handle intercambia de verdad"
+						: "FALLO") + ").");
+
+				// El apilable que volvio al raton se descarta en la papelera para dejar el raton
+				// limpio antes de seguir - no es basura tirada al suelo, es la ruta real del juego.
+				ItemSlot.Handle(ref jugador.trashItem, ItemSlot.Context.TrashItem);
+				jugador.trashItem = new Item();
+			}
+			finally {
+				Main.mouseLeft = izquierdoPrevio;
+				Main.mouseLeftRelease = sueltoPrevio;
+			}
+
+			if (herramientas.Seleccion.ObjetoActual.IsAir || herramientas.Seleccion.ObjetoActual.type != _tipoPrefijo) {
+				Registrar("Paso 17 - el recuadro no tiene el objeto esperado tras el intercambio, se aborta.");
+				return;
+			}
+
+			EditorPrefijoTk editor = herramientas.EditorPrefijo;
+			Item objetivo = herramientas.Seleccion.ObjetoActual;
+			int prefijoAntes = objetivo.prefix;
+			int dañoAntes = objetivo.damage;
+
+			editor.AbrirParaAutoprueba();
+			List<BotonTk> botones = editor.BotonesPopupParaAutoprueba();
+
+			// El primero de la lista es siempre "Ninguno" (quitar prefijo); el primer prefijo real
+			// legal es el segundo, si lo hay.
+			if (botones.Count < 2) {
+				Registrar("Paso 17 - el popup se abrio (" + editor.PopupAbierto + ") pero solo trae "
+					+ botones.Count + " boton(es) (se esperaban al menos 2: \"Ninguno\" + un prefijo "
+					+ "real). Objeto=\"" + objetivo.Name + "\". Se salta la comprobacion.");
+				return;
+			}
+
+			BotonTk botonPrefijo = botones[1];
+			string nombrePedido = botonPrefijo.Texto;
+
+			Clic(botonPrefijo);
+			int prefijoTrasPrimerClic = objetivo.prefix;
+			int dañoTrasPrimerClic = objetivo.damage;
+
+			// Segunda vuelta: se reabre el popup (el primer clic lo cierra solo) y se pulsa la
+			// fila del MISMO prefijo otra vez.
+			editor.AbrirParaAutoprueba();
+			List<BotonTk> botonesSegundaVez = editor.BotonesPopupParaAutoprueba();
+			BotonTk mismoBoton = null;
+			foreach (BotonTk b in botonesSegundaVez) {
+				if (b.Texto == nombrePedido) {
+					mismoBoton = b;
+					break;
+				}
+			}
+			if (mismoBoton != null) {
+				Clic(mismoBoton);
+			}
+			int prefijoTrasSegundoClic = objetivo.prefix;
+			int dañoTrasSegundoClic = objetivo.damage;
+
+			bool cambio = prefijoTrasPrimerClic != prefijoAntes;
+			bool sinAcumular = dañoTrasSegundoClic == dañoTrasPrimerClic && prefijoTrasSegundoClic == prefijoTrasPrimerClic;
+
+			Registrar("Paso 17 - editor de prefijo sobre \"" + objetivo.Name + "\". Boton pulsado: \""
+				+ nombrePedido + "\". prefix ANTES=" + prefijoAntes + " (daño=" + dañoAntes + "). "
+				+ "Tras el 1er clic: prefix=" + prefijoTrasPrimerClic + " (daño=" + dañoTrasPrimerClic + ") "
+				+ "(" + (cambio ? "OK, cambio de verdad" : "FALLO, no cambio") + "). "
+				+ "Tras pulsar el MISMO prefijo otra vez: prefix=" + prefijoTrasSegundoClic
+				+ " (daño=" + dañoTrasSegundoClic + ") "
+				+ "(" + (sinAcumular ? "OK: identico al primer clic, NO compone multiplicadores"
+					: "FALLO: distinto del primer clic, esta acumulando") + "). "
+				+ "Historial tras el cambio: " + Historial.Pila.EtiquetaDeshacer + ".");
+		}
+
+		/// <summary>
+		/// Cierra el ciclo completo del mini-panel: el objeto que se selecciono, se le edito la
+		/// cantidad y se le cambio el prefijo se arrastra ahora a la papelera REAL de Libreria
+		/// (pedido explicito del usuario: "la papelera tambien deberia salir en Libreria"),
+		/// exactamente por la misma ruta que ya verifico WS1 en Personaje
+		/// (<c>ItemSlot.Handle</c> con <c>Context.TrashItem</c> sobre <c>Player.trashItem</c>).
+		/// </summary>
+		private static void ComprobarPapeleraDesdeLibreria()
+		{
+			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
+			if (herramientas == null || herramientas.Seleccion.ObjetoActual.IsAir) {
+				Registrar("Paso 18 - no hay nada seleccionado en el recuadro (paso 15 fallo), se salta.");
+				return;
+			}
+
+			Player jugador = Main.LocalPlayer;
+			string antesRecuadro = Describir(herramientas.Seleccion.ObjetoActual);
+			int objetosActivosAntes = ContarObjetosEnElMundo();
+
+			bool izquierdoPrevio = Main.mouseLeft;
+			bool sueltoPrevio = Main.mouseLeftRelease;
+			Main.mouseLeft = true;
+			Main.mouseLeftRelease = true;
+			try {
+				// Coger del recuadro de seleccion: el MISMO ItemSlot.Handle que dispara DrawSelf.
+				herramientas.Seleccion.EjercitarHandle();
+				string ratonTrasCoger = Describir(Main.mouseItem);
+
+				// Soltar en la papelera de Libreria (SlotPapeleraTk, la misma clase que Personaje).
+				ItemSlot.Handle(ref jugador.trashItem, ItemSlot.Context.TrashItem);
+
+				int objetosActivosDespues = ContarObjetosEnElMundo();
+				bool recuadroVacio = herramientas.Seleccion.ObjetoActual.IsAir;
+				bool enPapelera = !jugador.trashItem.IsAir;
+				bool manoVacia = Main.mouseItem.IsAir;
+				bool nadaEnElSuelo = objetosActivosDespues == objetosActivosAntes;
+
+				Registrar("Paso 18 - papelera de Libreria (PanelHerramientasLibreriaTk.Papelera, "
+					+ "misma clase SlotPapeleraTk que Personaje). ANTES recuadro=" + antesRecuadro
+					+ ". Tras cogerlo del recuadro: raton=" + ratonTrasCoger + ". Tras soltarlo en la "
+					+ "papelera: recuadro=" + Describir(herramientas.Seleccion.ObjetoActual)
+					+ " (" + (recuadroVacio ? "OK, vacio" : "FALLO") + "), papelera="
+					+ Describir(jugador.trashItem) + " (" + (enPapelera ? "OK" : "FALLO") + "), raton="
+					+ Describir(Main.mouseItem) + " (" + (manoVacia ? "OK" : "FALLO") + "). "
+					+ "Objetos activos en el mundo: antes=" + objetosActivosAntes + ", despues="
+					+ objetosActivosDespues + " (" + (nadaEnElSuelo
+						? "OK, no ha aparecido nada tirado en el suelo" : "FALLO") + ").");
+			}
+			finally {
+				Main.mouseLeft = izquierdoPrevio;
+				Main.mouseLeftRelease = sueltoPrevio;
+			}
+
+			// Se deja limpio para no dejar basura visible el resto de la sesion.
+			jugador.trashItem = new Item();
+		}
+
+		// =========================================================================================
 		// Utilidades
 		// =========================================================================================
 
@@ -585,6 +940,50 @@ namespace TerrakeepMod.Common.Libreria
 			return objeto == null || objeto.IsAir
 				? "(vacio)"
 				: "\"" + objeto.Name + "\" x" + objeto.stack + " (type=" + objeto.type + ")";
+		}
+
+		/// <summary>Primer objeto del juego que cumple la condicion, usando las muestras que el
+		/// propio juego mantiene - mismo patron que <c>AutopruebaPersonaje.BuscarObjeto</c>, para
+		/// que esta prueba no dependa de ids concretos ni de que haya ningun mod cargado.</summary>
+		private static int BuscarObjeto(Func<Item, bool> condicion)
+		{
+			for (int tipo = 1; tipo < ItemLoader.ItemCount; tipo++) {
+				Item muestra;
+				if (!ContentSamples.ItemsByType.TryGetValue(tipo, out muestra) || muestra == null) {
+					continue;
+				}
+				if (muestra.type <= 0 || string.IsNullOrEmpty(muestra.Name)) {
+					continue;
+				}
+				if (condicion(muestra)) {
+					return tipo;
+				}
+			}
+			return 0;
+		}
+
+		private static void Clic(BotonTk boton)
+		{
+			if (boton == null) {
+				return;
+			}
+			Rectangle rect = boton.GetDimensions().ToRectangle();
+			Vector2 centro = new Vector2(rect.X + rect.Width / 2f, rect.Y + rect.Height / 2f);
+			boton.LeftClick(new UIMouseEvent(boton, centro));
+		}
+
+		/// <summary>Cuenta los objetos activos tirados en el mundo (<c>Main.item</c>). Se usa antes
+		/// y despues de la papelera para demostrar que nada acaba en el suelo - mismo patron que
+		/// <c>AutopruebaPersonaje.ContarObjetosEnElMundo</c>.</summary>
+		private static int ContarObjetosEnElMundo()
+		{
+			int cuenta = 0;
+			for (int i = 0; i < Main.item.Length; i++) {
+				if (Main.item[i] != null && Main.item[i].active) {
+					cuenta++;
+				}
+			}
+			return cuenta;
 		}
 
 		private static void Registrar(string linea)

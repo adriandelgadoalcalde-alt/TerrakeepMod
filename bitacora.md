@@ -3242,3 +3242,182 @@ ningún archivo modificado por otros agentes en marcha a la vez (`Common/Explora
 `scripts/generar-localizacion.py`, `Common/Prefijos/*`, `Assets/vanilla_prefix_*.json`,
 `UI/Libreria/Widgets/`, `evidencia/panel-unico.log.txt`, `evidencia/ws6-exploracion.log.txt`), ni
 las carpetas de build sueltas (`bin-checkDebug/`, `obj-verif-espaciado/`).
+
+---
+
+## 7-sep-2026 — Papelera + selección explícita por arrastre en Librería (cantidad y prefijo)
+
+Encargo directo del usuario tras probar el mod: la papelera también en Librería (hasta ahora
+solo en Personaje), y un rediseño del editor de cantidad de hoy mismo (commit `25221af`) porque
+enganchar el control al slot que el ratón sobrevuela "se puede equivocar mucho". Pide en su
+lugar selección EXPLÍCITA: un recuadro donde arrastrar el objeto real, y desde ahí poder editar
+su cantidad Y su prefijo.
+
+### Selección por arrastre, no por hover: `SlotSeleccionTk`
+
+`UI/Libreria/Widgets/SlotSeleccionTk.cs` es un `ItemSlot` real con su propio campo `Item`
+interno (nunca un array del jugador) - exactamente el mismo patrón que ya usa
+`SlotPapeleraTk` con `Player.trashItem`, solo que aquí el campo es propio del widget, no del
+`Player`. Arrastrar un objeto real encima lo MUEVE de verdad a este campo (mismo
+`ItemSlot.Handle`, mismo comportamiento que cualquier ranura de vanilla, intercambio incluido si
+el recuadro ya tenía algo dentro) - no hay ninguna copia ni ningún índice que recordar, así que
+editar `.stack`/`.prefix` sobre `SlotSeleccionTk.ObjetoActual` cambia el objeto real que luego se
+vuelve a arrastrar a donde corresponda.
+
+### El editor de cantidad se reutiliza tal cual, con un segundo modo
+
+`EditorCantidadTk` (Personaje, hoy) pasa a tener DOS modos, decididos por el constructor:
+- El de siempre, `EditorCantidadTk(UIElement raiz)`: engancha por HOVER a un
+  `SlotObjetoVanilla` bajo el ratón. **Sin cambios de comportamiento**, mismo layout de 580 px.
+- Uno nuevo, `EditorCantidadTk(Func<Item> proveedorExplicito, float ancho)`: el objetivo es
+  SIEMPRE el que devuelva el delegado (aquí, `() => slotSeleccion.ObjetoActual`), sin buscar
+  nada. Layout compacto (`-`/campo/`+`/Aplicar, sin la etiqueta larga: no cabe en el hueco
+  estrecho de la Librería) - el nombre/pila del objeto ya lo dibuja el propio `ItemSlot` del
+  recuadro de selección ("xN" sobre el icono), y la info completa se enseña igual por el tooltip
+  de los tres botones.
+
+Un matiz real que solo apareció al escribir la prueba: el modo hover exige `stack > 1` para
+engancharse (tiene sentido: pasar el ratón por encima no debería "activarse" sobre CUALQUIER
+objeto). El modo explícito usa `maxStack > 1` en su lugar - la selección ya es deliberada, así
+que tiene sentido poder subir una unidad suelta (stack=1) a una pila grande, que es justo el
+caso de uso real de coger un solo potingue del catálogo y querer 20.
+
+### El prefijo: cambiarlo SIN acumular multiplicadores (el hallazgo real de esta tarea)
+
+`Item.Prefix(int)` multiplica las estadísticas ACTUALES del objeto por las del prefijo pedido
+(`Terraria\Item.cs:1334`, decompilado) - llamarlo dos veces seguidas sobre el mismo objeto
+COMPONE los bonos. La forma real de vanilla de cambiar un prefijo ya puesto es la misma que usa
+el propio Puesto de Reforma (`Main.cs`, botón de reforjar):
+`reforgeItem.ResetPrefix(); reforgeItem.Prefix(-2);` - `ResetPrefix()` primero (vuelve las
+estadísticas a su base real, preservando tipo/pila/favorito) y solo entonces `Prefix(idExacto)`.
+`UI/Libreria/Widgets/EditorPrefijoTk.cs` sigue exactamente esa ruta. Verificado explícitamente
+en el juego real pulsando el MISMO prefijo dos veces seguidas: `item.damage` (y `item.prefix`)
+quedan idénticos tras el segundo clic, no compuestos.
+
+### La legalidad del prefijo: reutilizada de `TerrasavrNative.Core`, no reinventada
+
+Pedido explícito del usuario ("investiga la vía real... no reinventes las reglas de legalidad a
+mano si ya existen"). `Common/Prefijos/CatalogoPrefijosLegales.cs` reutiliza tal cual:
+- `PrefixRulesCatalog` (de `Assets/vanilla_prefix_rules.json`, copiado de
+  `TerrasavrNative.App/Assets/vanilla_prefix_rules.json`): la tabla REAL de qué prefijos son
+  legales para cada uno de los 683 objetos vanilla tabulados, extraída del código decompilado
+  real (`PrefixLegacy.cs`/`Item.cs`) - para objetos vanilla, `Item.type` YA ES el `ItemID` que
+  usa esta tabla, sin ningún id sintético de por medio.
+- `PrefixGroupCatalog` (código puro de Core, sin archivo): los mismos 8+6 grupos con nombre
+  ("Cuerpo a cuerpo +", "Accesorio"...) que ya usa el selector manual de prefijo de la app de
+  escritorio, con sus nombres ES/EN.
+- `PrefixEffectCatalog` (de `Assets/vanilla_prefix_effects.json`, mismo origen): el efecto real
+  de cada prefijo ("+15% de daño"...), como tooltip de cada botón del picker - un extra, nunca
+  decide legalidad.
+
+**Objetos de MOD (Calamity incluido): categoría detectada con los campos REALES del `Item`**
+(`item.accessory`, `item.DamageType`), NO con el `CalamityCatalog` de ids sintéticos de Core:
+ese catálogo está pensado para `catalog.json` offline y el `Item.type` de un objeto de mod en
+esta partida es un id asignado en caliente por el orden de carga, que no coincide con el
+esquema sintético - traerlo habría reintroducido justo el sistema de ids sintéticos que
+`CatalogoVivo` ya evitó a propósito (ver su cabecera). Detectar por campos reales es el mismo
+criterio que ya usa `CatalogoVivo.Categorizar` para las carpetas de la Librería, y sirve para
+CUALQUIER mod, no solo Calamity.
+
+**Alcance deliberadamente SIN los 21 `ModPrefix` reales de Calamity** (17 de arma Pícaro + 4 de
+accesorio, ids sintéticos de Core >= 10000): aplicarlos de verdad exigiría resolver su
+`Terraria.ModLoader.ModPrefix.Type` EN TIEMPO DE EJECUCIÓN de esta partida - `CatalogoMejorPrefijo`
+ya tomó la misma decisión para el prefijo automático, por el mismo motivo (ver su cabecera);
+aquí se documenta igual en vez de reabrir la decisión sin datos nuevos. Los grupos
+"Invocación +/-" tampoco se ofrecen: sus ids (85-97) son de `PrefixID` de TerrariaVanilla 1.4.5.8
+y no existen en el `PrefixID.Count`=85 real de la 1.4.4.9 instalada aquí - mismo hallazgo real
+que ya documentó `CatalogoMejorPrefijo`, defendido con la misma comprobación de rango.
+
+### El hueco real donde vive: la rejilla de destino pasa a ancho FIJO
+
+`ContenidoLibreria.ConstruirZonaDestino` estiraba `_rejillaDestino` al 100% del ancho disponible
+aunque solo coloca 10 columnas fijas de objetos - el resto quedaba vacío de verdad, sin ningún
+elemento ahí (literalmente "el hueco que hay a la derecha abajo al lado de inventario" del
+encargo). Fijar su ancho (`AnchoRejillaDestino`, calculado de las mismas constantes que ya
+decidían el tamaño de cada ranura) deja ese hueco como un elemento real y predecible al lado -
+`UI/Libreria/Widgets/PanelHerramientasLibreriaTk.cs` (papelera + `SlotSeleccionTk` + los dos
+editores, apilados en 176x140 px), sea cual sea la resolución de la ventana.
+
+### Un tropiezo real de la búsqueda del objeto de prueba: "apila" y "admite prefijo" son EXCLUYENTES en vanilla puro
+
+Primer intento del arnés: buscar UN objeto que apilara (`maxStack>1`, para probar cantidad) Y
+admitiera prefijo (para probar el prefijo). Encontró Shuriken (id 42): apila (9999) pero
+`CatalogoPrefijosLegales.GruposLegales` vacío de verdad. Investigado antes de asumir que era un
+bug: `Item.CanHavePrefixes()` (decompilado, `Item.cs:1300`) exige
+`maxStack == 1 || AllowReforgeForStackableItem`, y **ningún objeto vanilla real pone ese campo a
+true** (comprobado con `grep` sobre el decompilado entero: 0 resultados) - es un enganche pensado
+para mods (Calamity lo usa en sus armas Pícaro que sí apilan y sí llevan prefijo). O sea que en
+vanilla puro "apila" y "admite prefijo" son mutuamente excluyentes de verdad: ningún objeto vale
+para las dos pruebas a la vez. Arreglado usando DOS objetos de prueba (uno apilable sin prefijo,
+uno con prefijo sin apilar) y arrastrando el segundo ENCIMA del primero para la prueba de
+prefijo - lo que de paso ejercita el intercambio real de `ItemSlot.Handle` cuando el recuadro ya
+está ocupado (se comprobó explícitamente: el que estaba antes vuelve al ratón, no se pierde ni
+se duplica).
+
+### Verificado de verdad en el juego (`scripts\verificar-libreria.ps1`, pasos 14-18 nuevos de `AutopruebaLibreria`)
+
+Evidencia real de `evidencia/ws3-libreria.log.txt`, sandbox `tModLoader-TerrakeepWS3`:
+
+```
+Paso 14 - Apilable "Mushroom" x5 (maxStack=9999, CanHavePrefixes=False, se espera False: apila).
+          Con prefijo "Iron Pickaxe" x1 (maxStack=1, CanHavePrefixes=True; categorias legales:
+          Best(3), Damage(4), Critical(7), Universal+(9), Common+(6), Melee+(10), ...).
+Paso 15 - ItemSlot.LeftClick coge el Mushroom del inventario + SlotSeleccionTk.EjercitarHandle
+          (mismo ItemSlot.Handle que DrawSelf) lo suelta en el recuadro. Hueco de origen vacio,
+          raton vacio, recuadro = "Mushroom" x5, MISMA referencia que se arrastro. OK.
+Paso 16 - editor de cantidad COMPACTO: ObjetivoActual es la MISMA referencia que
+          SlotSeleccionTk.ObjetoActual. "+"/"-"/escribir "3"+Aplicar/pedir 10499 (por encima del
+          maximo, acotado a 9999): los 4 OK.
+Paso 17 - se arrastra el Iron Pickaxe SOBRE el recuadro ya ocupado: intercambio real, el
+          Mushroom vuelve al raton (OK, ItemSlot.Handle intercambia de verdad), se descarta en
+          la papelera. Popup de prefijo abierto, boton "Demonic" pulsado: prefix 0 -> 60, daño
+          5 -> 6. Pulsado el MISMO prefijo otra vez: prefix=60, daño=6 IDENTICO -> OK, no
+          compone multiplicadores.
+Paso 18 - papelera de Libreria: coge del recuadro + ItemSlot.Handle con Context.TrashItem sobre
+          Player.trashItem. Recuadro vacio, papelera con el objeto, raton vacio, 0 objetos
+          activos en el mundo antes y despues -> OK, nada tirado al suelo.
+AUTOPRUEBA WS3 COMPLETA. Todos los pasos ejecutados sin excepciones.
+```
+
+Los tres puntos que pedía explícitamente la verificación quedan cubiertos con datos reales:
+`item.stack`/`item.prefix` cambiando en el objeto REAL (mismas referencias comprobadas con
+`ReferenceEquals`, no copias), y la papelera vaciando el hueco de origen sin tirar nada al suelo.
+
+**Sin capturas de pantalla en esta tarea, a propósito.** `CapturaDePantalla.Permitida` solo
+enciende con una lista fija de variables de otras autopruebas (Panel único, Idiomas, Menús,
+Exploración, Espaciado) - la de WS3 (`TERRAKEEP_AUTOTEST_WS3`) nunca estuvo en esa lista, ni
+antes de esta tarea ni ahora. Añadirla exigía tocar `Common/Panel/CapturaDePantalla.cs`, fuera
+del alcance explícito de esta tarea (`UI/Libreria/`, `Common/Libreria/` y los tres archivos de
+Personaje). La evidencia en log, con `ReferenceEquals` y valores antes/después reales, ya cubre
+los tres puntos que pedía la verificación sin necesitar una imagen.
+
+### Sobre el editor de cantidad de Personaje: se deja el hover TAL CUAL, a propósito
+
+El encargo pedía decidir con criterio si aplicar selección explícita también en Personaje.
+Se deja el modo HOVER sin tocar ahí (cero cambio de comportamiento, mismo layout de 580 px,
+mismo constructor de siempre): en Personaje el usuario ya está mirando un slot concreto de SU
+propio inventario real (una rejilla de ~50 huecos ya conocidos), muy distinto del catálogo de la
+Librería (miles de objetos posibles, ninguno "suyo" hasta que se coge). El riesgo real que
+describía el encargo ("te puedes equivocar mucho") es mucho mayor en un catálogo grande que
+recorrer visualmente que en la propia mochila. Cambiarlo también ahí sería reescribir un control
+que ya se verificó a fondo hoy mismo (commit `25221af`) sin que el usuario lo haya pedido para
+ese sitio en concreto - la clase ya admite los dos modos si algún día hace falta.
+
+### Índice privado para comitear
+
+`GIT_INDEX_FILE=<propio> git read-tree HEAD && git add ... && git commit`, después `git reset` a
+secas en un comando aparte (sin la variable en el entorno - ver el tropiezo #12 ya documentado
+más arriba). Solo los archivos de esta tarea: `Assets/vanilla_prefix_rules.json`,
+`Assets/vanilla_prefix_effects.json`, `Common/Prefijos/CatalogoPrefijosLegales.cs`,
+`Common/Prefijos/SistemaPrefijosLegales.cs`, `Common/Libreria/AutopruebaLibreria.cs`,
+`UI/Libreria/ContenidoLibreria.cs`, `UI/Libreria/Widgets/EditorPrefijoTk.cs`,
+`UI/Libreria/Widgets/PanelHerramientasLibreriaTk.cs`, `UI/Libreria/Widgets/SlotSeleccionTk.cs`,
+`UI/Personaje/Widgets/EditorCantidadTk.cs`, `Localization/es-ES_Mods.TerrakeepMod.hjson`,
+`Localization/en-US_Mods.TerrakeepMod.hjson`, `scripts/generar-localizacion.py`,
+`lib/TerrasavrNative.Core.dll` (recompilado desde el repo hermano con
+`scripts/actualizar-core.ps1`: hacía falta para traer `PrefixRulesCatalog`/`PrefixGroupCatalog`/
+`PrefixEffectCatalog`, que no estaban en el DLL versionado hasta ahora), `evidencia/ws3-libreria.log.txt`.
+No se comitea nada de otros agentes en marcha a la vez (`Common/Exploracion/*`,
+`UI/Exploracion/MiniMapaTk.cs`, `Common/Panel/AutopruebaEspaciado.cs`,
+`evidencia/panel-unico.log.txt`, `evidencia/ws6-exploracion.log.txt`), ni las carpetas de build
+sueltas (`bin-checkDebug/`, `obj-verif-espaciado/`).

@@ -1,3 +1,4 @@
+using System;
 using Microsoft.Xna.Framework;
 using ReLogic.Graphics;
 using Terraria;
@@ -29,6 +30,16 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 	/// <see cref="SlotObjetoVanilla.ObjetoActual"/> devuelve el <see cref="Item"/> REAL que vive
 	/// en el array del jugador (es una clase, no una estructura): escribir en su <c>.stack</c> lo
 	/// cambia ahi mismo, sin necesitar el array ni el indice de origen.
+	/// <para />
+	/// <b>Segundo modo, EXPLICITO (Libreria):</b> el constructor
+	/// <see cref="EditorCantidadTk(Func{Item}, float)"/> no busca nada por hover: el objetivo es
+	/// SIEMPRE el que devuelva el <c>Func&lt;Item&gt;</c> que se le pase (pensado para
+	/// <c>SlotSeleccionTk</c>, donde la seleccion es explicita por arrastre, no por pasar el
+	/// raton por encima - pedido explicito del usuario: "te puedes equivocar mucho... deberiamos
+	/// poder clicar/arrastrar y que quede seleccionado"). Se dibuja tambien COMPACTO (sin la
+	/// etiqueta de texto larga, que no cabe en el hueco estrecho de la Libreria): el nombre/pila
+	/// del objeto ya se ve en el propio icono del slot (ItemSlot.Draw dibuja "xN" el solo), y la
+	/// info completa se enseña igual, por el tooltip (<c>BotonTk.Ayuda</c>) de los tres botones.
 	/// </summary>
 	public class EditorCantidadTk : UIElement
 	{
@@ -45,15 +56,31 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		private readonly UIElement _raiz;
 		private SlotObjetoVanilla _objetivo;
 
-		private readonly EtiquetaTk _etiqueta;
-		private readonly BotonTk _menos;
-		private readonly CampoTextoTk _campo;
-		private readonly BotonTk _mas;
-		private readonly BotonTk _aplicar;
+		/// <summary>Modo explicito (Libreria): si no es null, el objetivo es SIEMPRE el que
+		/// devuelva este delegado, sin buscar nada por hover. Ver el segundo constructor.</summary>
+		private readonly Func<Item> _proveedorExplicito;
+
+		/// <summary>true = layout estrecho sin la etiqueta de texto larga (Libreria); false =
+		/// layout ancho de siempre, con etiqueta (Personaje). Ver el segundo constructor.</summary>
+		private readonly bool _compacto;
+
+		// ARREGLO MINIMO AJENO (ver bitacora.md): estos cinco campos se rellenan en
+		// ConstruirControles(), un metodo normal llamado DESDE los dos constructores, no en el
+		// cuerpo del constructor en si - "readonly" solo permite asignar en el propio constructor
+		// (o en el inicializador de campo), asi que con "readonly" puesto ni siquiera compilaba
+		// (CS0191), bloqueando la compilacion del proyecto ENTERO para cualquiera. En la practica
+		// siguen escribiendose una sola vez, igual que antes.
+		private EtiquetaTk _etiqueta;
+		private BotonTk _menos;
+		private CampoTextoTk _campo;
+		private BotonTk _mas;
+		private BotonTk _aplicar;
 
 		/// <summary>Objeto sobre el que actuaria ahora mismo un clic en "-"/"+"/Aplicar, o null si
-		/// no hay ninguno enganchado todavia. Lo lee la autoprueba.</summary>
-		public Item ObjetivoActual => _objetivo != null ? _objetivo.ObjetoActual : null;
+		/// no hay ninguno enganchado todavia (modo hover) o seleccionado (modo explicito). Lo lee
+		/// la autoprueba.</summary>
+		public Item ObjetivoActual =>
+			_proveedorExplicito != null ? _proveedorExplicito() : (_objetivo != null ? _objetivo.ObjetoActual : null);
 
 		/// <summary>Los tres botones y el campo, expuestos para que la autoprueba los pulse por su
 		/// ruta REAL (<c>BotonTk.LeftClick</c>), igual que hace <c>PanelTerrakeepState.PulsarBoton</c>
@@ -70,51 +97,111 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		public EditorCantidadTk(UIElement raiz)
 		{
 			_raiz = raiz;
+			_compacto = false;
+			ConstruirControles();
+		}
 
-			// Ancho fijo, no en porcentaje: los hijos se colocan con desplazamientos en pixeles
-			// desde este mismo origen (igual que el resto de filas del panel), y un ancho al 100%
-			// del contenedor dejaria el rectangulo de este elemento mucho mas ancho que su
-			// contenido real cuando se coloca con un Left desplazado (ver ConstruirHerramientas).
-			Width.Set(580f, 0f);
-			Height.Set(26f, 0f);
+		/// <summary>Modo explicito y compacto (Libreria): ver la nota de cabecera de la clase.</summary>
+		/// <param name="proveedorExplicito">Devuelve el <see cref="Item"/> REAL sobre el que actuan
+		/// los botones ahora mismo (por ejemplo <c>() =&gt; slotSeleccion.ObjetoActual</c>), o un
+		/// objeto vacio/null si no hay ninguno seleccionado.</param>
+		/// <param name="ancho">Ancho total del control, en pixeles. 220 por defecto: cabe
+		/// "-"/campo/"+"/Aplicar sin ninguna etiqueta de texto.</param>
+		public EditorCantidadTk(Func<Item> proveedorExplicito, float ancho = 220f)
+		{
+			_proveedorExplicito = proveedorExplicito;
+			_compacto = true;
+			ConstruirControles(ancho);
+		}
 
-			_etiqueta = new EtiquetaTk(TextoEtiqueta, EscalaEtiqueta, AnchoEtiqueta, 24f);
-			_etiqueta.ColorTexto = EstiloTk.TextoSuave;
-			_etiqueta.Left.Set(0f, 0f);
-			_etiqueta.Top.Set(4f, 0f);
-			Append(_etiqueta);
+		private void ConstruirControles(float anchoCompacto = 0f)
+		{
+			if (_compacto) {
+				// Layout estrecho: "-" / campo / "+" / Aplicar en fila, SIN etiqueta de texto (no
+				// cabe en el hueco lateral de la Libreria - ver la nota de cabecera). El nombre y
+				// la pila del objeto seleccionado ya los dibuja el propio ItemSlot del slot de
+				// seleccion ("xN" sobre el icono); la info completa se enseña igual por el
+				// tooltip (Ayuda) de los tres botones, con RecortarAAncho/TextoEtiqueta.
+				Width.Set(anchoCompacto, 0f);
+				Height.Set(26f, 0f);
 
-			_menos = new BotonTk("-", 0.85f);
-			_menos.Width.Set(26f, 0f);
-			_menos.Height.Set(26f, 0f);
-			_menos.Left.Set(AnchoEtiqueta + 6f, 0f);
-			_menos.AlPulsar += () => Ajustar(-1);
-			Append(_menos);
+				_menos = new BotonTk("-", 0.85f);
+				_menos.Width.Set(26f, 0f);
+				_menos.Height.Set(26f, 0f);
+				_menos.Left.Set(0f, 0f);
+				_menos.AlPulsar += () => Ajustar(-1);
+				Append(_menos);
 
-			_campo = new CampoTextoTk(() => Idiomas.Texto("Personaje.Herramientas.CantidadPista"), 5, 0.8f);
-			_campo.SoloNumeros = true;
-			_campo.Width.Set(56f, 0f);
-			_campo.Height.Set(26f, 0f);
-			_campo.Left.Set(AnchoEtiqueta + 38f, 0f);
-			_campo.AlConfirmar += _ => Aplicar();
-			Append(_campo);
+				_campo = new CampoTextoTk(() => Idiomas.Texto("Personaje.Herramientas.CantidadPista"), 5, 0.8f);
+				_campo.SoloNumeros = true;
+				_campo.Width.Set(60f, 0f);
+				_campo.Height.Set(26f, 0f);
+				_campo.Left.Set(32f, 0f);
+				_campo.AlConfirmar += _ => Aplicar();
+				Append(_campo);
 
-			_mas = new BotonTk("+", 0.85f);
-			_mas.Width.Set(26f, 0f);
-			_mas.Height.Set(26f, 0f);
-			_mas.Left.Set(AnchoEtiqueta + 100f, 0f);
-			_mas.AlPulsar += () => Ajustar(1);
-			Append(_mas);
+				_mas = new BotonTk("+", 0.85f);
+				_mas.Width.Set(26f, 0f);
+				_mas.Height.Set(26f, 0f);
+				_mas.Left.Set(98f, 0f);
+				_mas.AlPulsar += () => Ajustar(1);
+				Append(_mas);
 
-			_aplicar = new BotonTk("", 0.78f);
-			_aplicar.Width.Set(80f, 0f);
-			_aplicar.Height.Set(26f, 0f);
-			_aplicar.Left.Set(AnchoEtiqueta + 132f, 0f);
-			_aplicar.AlPulsar += Aplicar;
-			Append(_aplicar);
+				_aplicar = new BotonTk("", 0.72f);
+				_aplicar.Width.Set(anchoCompacto - 130f, 0f);
+				_aplicar.Height.Set(26f, 0f);
+				_aplicar.Left.Set(130f, 0f);
+				_aplicar.AlPulsar += Aplicar;
+				Append(_aplicar);
+			}
+			else {
+				// Ancho fijo, no en porcentaje: los hijos se colocan con desplazamientos en pixeles
+				// desde este mismo origen (igual que el resto de filas del panel), y un ancho al
+				// 100% del contenedor dejaria el rectangulo de este elemento mucho mas ancho que su
+				// contenido real cuando se coloca con un Left desplazado (ver ConstruirHerramientas).
+				Width.Set(580f, 0f);
+				Height.Set(26f, 0f);
+
+				_etiqueta = new EtiquetaTk(TextoEtiqueta, EscalaEtiqueta, AnchoEtiqueta, 24f);
+				_etiqueta.ColorTexto = EstiloTk.TextoSuave;
+				_etiqueta.Left.Set(0f, 0f);
+				_etiqueta.Top.Set(4f, 0f);
+				Append(_etiqueta);
+
+				_menos = new BotonTk("-", 0.85f);
+				_menos.Width.Set(26f, 0f);
+				_menos.Height.Set(26f, 0f);
+				_menos.Left.Set(AnchoEtiqueta + 6f, 0f);
+				_menos.AlPulsar += () => Ajustar(-1);
+				Append(_menos);
+
+				_campo = new CampoTextoTk(() => Idiomas.Texto("Personaje.Herramientas.CantidadPista"), 5, 0.8f);
+				_campo.SoloNumeros = true;
+				_campo.Width.Set(56f, 0f);
+				_campo.Height.Set(26f, 0f);
+				_campo.Left.Set(AnchoEtiqueta + 38f, 0f);
+				_campo.AlConfirmar += _ => Aplicar();
+				Append(_campo);
+
+				_mas = new BotonTk("+", 0.85f);
+				_mas.Width.Set(26f, 0f);
+				_mas.Height.Set(26f, 0f);
+				_mas.Left.Set(AnchoEtiqueta + 100f, 0f);
+				_mas.AlPulsar += () => Ajustar(1);
+				Append(_mas);
+
+				_aplicar = new BotonTk("", 0.78f);
+				_aplicar.Width.Set(80f, 0f);
+				_aplicar.Height.Set(26f, 0f);
+				_aplicar.Left.Set(AnchoEtiqueta + 132f, 0f);
+				_aplicar.AlPulsar += Aplicar;
+				Append(_aplicar);
+			}
 
 			foreach (BotonTk boton in new[] { _menos, _mas, _aplicar }) {
-				boton.Ayuda = () => Idiomas.Texto("Personaje.Herramientas.CantidadAyuda");
+				boton.Ayuda = _compacto
+					? new Func<string>(() => TextoEtiqueta())
+					: new Func<string>(() => Idiomas.Texto("Personaje.Herramientas.CantidadAyuda"));
 			}
 		}
 
@@ -122,10 +209,17 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		{
 			base.Update(gameTime);
 
-			BuscarObjetivo();
+			if (_proveedorExplicito == null) {
+				BuscarObjetivo();
+			}
 
 			Item objeto = ObjetivoActual;
-			bool hay = objeto != null && !objeto.IsAir && objeto.stack > 1;
+			// Modo hover (Personaje): solo se engancha a pilas YA mayores que 1 (ver BuscarObjetivo,
+			// sin tocar). Modo explicito (Libreria): la seleccion es deliberada por arrastre, asi
+			// que basta con que el objeto ADMITA pila (maxStack > 1) aunque ahora mismo tenga 1 -
+			// es precisamente el caso de querer subir una unidad suelta a una pila grande.
+			bool hay = objeto != null && !objeto.IsAir
+				&& (_proveedorExplicito != null ? objeto.maxStack > 1 : objeto.stack > 1);
 
 			_menos.Habilitado = hay;
 			_mas.Habilitado = hay;
@@ -169,18 +263,37 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		private string TextoEtiqueta()
 		{
 			Item objeto = ObjetivoActual;
+
+			if (_proveedorExplicito != null) {
+				// Modo explicito (Libreria): esto solo se usa como TOOLTIP (Ayuda) de los tres
+				// botones, nunca dibujado en pantalla, asi que el recorte a AnchoEtiqueta (360px)
+				// es generoso de sobra pese a que el control en si sea mucho mas estrecho.
+				if (objeto == null || objeto.IsAir) {
+					return RecortarAAncho(Idiomas.Texto("Libreria.EditorCantidad.SinSeleccion"));
+				}
+				if (objeto.maxStack <= 1) {
+					return RecortarAAncho(Idiomas.Texto("Libreria.EditorCantidad.NoApilable", objeto.Name ?? ""));
+				}
+				return MedirYRecortarObjetivo(objeto);
+			}
+
 			if (objeto == null || objeto.IsAir || objeto.stack <= 1) {
 				return RecortarAAncho(Idiomas.Texto("Personaje.Herramientas.CantidadSinObjetivo"));
 			}
 
+			return MedirYRecortarObjetivo(objeto);
+		}
+
+		/// <summary>Compone "Cantidad de "&lt;nombre&gt;" (stack/max):" recortando el NOMBRE
+		/// midiendo con la fuente real hasta que la linea entera quepa en <see cref="AnchoEtiqueta"/>
+		/// - no un numero fijo de caracteres: la plantilla cambia de largo con el idioma ("Cantidad
+		/// de..." vs "Quantity of...") y un objeto puede tener un nombre muy largo (con prefijo).
+		/// Se quita de 4 en 4 caracteres del nombre (dejando sitio para los "...").</summary>
+		private static string MedirYRecortarObjetivo(Item objeto)
+		{
 			string nombre = objeto.Name ?? "";
 			string texto = Idiomas.Texto("Personaje.Herramientas.CantidadObjetivo", nombre, objeto.stack, objeto.maxStack);
 
-			// Recorte MIDIENDO con la fuente real, no un numero fijo de caracteres: la plantilla
-			// cambia de largo con el idioma ("Cantidad de..." vs "Quantity of...") y un objeto
-			// puede tener un nombre muy largo (con prefijo). Se quita de 4 en 4 caracteres del
-			// NOMBRE (dejando sitio para los "...") hasta que la linea entera quepa en el ancho
-			// real de la etiqueta - ver la nota de <see cref="AnchoEtiqueta"/>.
 			DynamicSpriteFont fuente = FontAssets.MouseText.Value;
 			while (nombre.Length > 3 && fuente.MeasureString(texto).X * EscalaEtiqueta > AnchoEtiqueta) {
 				nombre = nombre.Substring(0, nombre.Length - 4) + "...";
