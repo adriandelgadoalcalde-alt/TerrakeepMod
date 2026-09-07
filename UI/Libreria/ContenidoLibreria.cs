@@ -706,15 +706,72 @@ namespace TerrakeepMod.UI.Libreria
 			return Idiomas.Texto("Libreria.AyudaDestino");
 		}
 
+		/// <summary>Escala con la que se dibuja <see cref="_rutaTexto"/>. Se guarda aparte porque
+		/// <see cref="AjustarAlturaRuta"/> necesita medir el texto con la MISMA escala.</summary>
+		private const float EscalaRuta = 0.72f;
+
+		/// <summary>Alto REAL (con la fuente real) que ocupa la ruta ya envuelta ahora mismo. Lo
+		/// calcula <see cref="AjustarAlturaRuta"/> y lo usa tambien <see cref="RutaCorta"/> para
+		/// devolver el texto YA partido a ese mismo ancho - una sola fuente de verdad para el
+		/// envoltorio, nunca dos calculos que se puedan desincronizar.</summary>
+		private float _altoRuta = 20f;
+
+		/// <summary>
+		/// Ruta completa, ENVUELTA a tantas lineas como haga falta para caber en
+		/// <see cref="AnchoColumnaCarpetas"/> - nunca recortada por el PRINCIPIO con "..." como
+		/// antes ("...ombre a cuerpo &gt; Espadas", cortando literalmente a media palabra de una
+		/// carpeta real con una ruta profunda). El ancho de esta etiqueta es una CONSTANTE fija (no
+		/// depende de la resolucion de la ventana), asi que envolver aqui con el mismo ancho que
+		/// ya usa <see cref="AjustarAlturaRuta"/> es sencillo y estable.
+		/// </summary>
 		private string RutaCorta()
 		{
-			string ruta = RutaActual;
-			return ruta.Length <= 46 ? ruta : "..." + ruta.Substring(ruta.Length - 43);
+			return EtiquetaTk.PartirEnLineas(RutaActual, AnchoColumnaCarpetas, EscalaRuta);
+		}
+
+		/// <summary>
+		/// Mide el alto REAL de <see cref="RutaCorta"/> ya envuelta y empuja hacia abajo
+		/// <see cref="_listaCarpetas"/>/<see cref="_scrollCarpetas"/> lo que haga falta - mismo
+		/// patron que <c>ContenidoBuilds.RecalcularCabecera</c>: la caja crece, nunca se recorta el
+		/// texto. Se llama cada fotograma (ver <see cref="Update"/>) porque la ruta cambia de largo
+		/// cada vez que el jugador navega a otra carpeta.
+		/// </summary>
+		private void AjustarAlturaRuta()
+		{
+			string partida = RutaCorta();
+			float altoTexto = Terraria.GameContent.FontAssets.MouseText.Value.MeasureString(partida).Y * EscalaRuta;
+			float altoNuevo = altoTexto > 20f ? altoTexto : 20f;
+
+			if (Math.Abs(altoNuevo - _altoRuta) < 0.5f) {
+				return;
+			}
+			_altoRuta = altoNuevo;
+
+			const float topRuta = 32f;
+			const float separacionLista = 4f;
+			float topLista = topRuta + _altoRuta + separacionLista;
+
+			_rutaTexto.Height.Set(_altoRuta, 0f);
+			_listaCarpetas.Top.Set(topLista, 0f);
+			_listaCarpetas.Height.Set(-topLista, 1f);
+			_scrollCarpetas.Top.Set(topLista, 0f);
+			_scrollCarpetas.Height.Set(-topLista, 1f);
+
+			// Sin esto, GetDimensions() de _listaCarpetas/_scrollCarpetas seguiria devolviendo el
+			// valor CACHEADO del ultimo Recalculate (con el hueco viejo, mas pequeño) hasta que
+			// algo mas disparara uno por su cuenta - visto de verdad como bug real en las pildoras
+			// de Builds (ver el XMLdoc de ContenidoBuilds.RecalcularPildorasYFilas): un Top.Set()/
+			// Height.Set() por si solo no mueve nada visible.
+			Recalculate();
 		}
 
 		public override void Update(GameTime gameTime)
 		{
 			base.Update(gameTime);
+
+			// La ruta puede haber cambiado de largo este mismo fotograma (el jugador navego a otra
+			// carpeta): se ajusta ANTES de que nada mas dependa de donde empieza la lista de abajo.
+			AjustarAlturaRuta();
 
 			// El numero de columnas depende del ancho REAL que le haya tocado al panel (que cambia
 			// con la resolucion y con la escala de interfaz del jugador), y ese ancho no se conoce

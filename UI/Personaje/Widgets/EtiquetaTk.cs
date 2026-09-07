@@ -96,38 +96,15 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			salida.Append(linea);
 		}
 
-		/// <summary>
-		/// Recorta un texto de UNA sola linea a lo que quepa en <paramref name="anchoMaximo"/>
-		/// pixeles, midiendolo con la fuente REAL con la que se va a dibujar, y añade "..." si hizo
-		/// falta cortar (nunca con "…": la fuente del juego no trae ese caracter, visto ya en
-		/// <c>FilaCarpetaBuffTk</c>/<c>FilaCarpetaTk</c>, de donde sale este mismo algoritmo).
-		/// <para />
-		/// <b>Ultimo recurso, no la solucion por defecto.</b> Pedido explicito del usuario: un
-		/// nombre mostrado como "Mana Regenerat..." no es aceptable aunque tecnicamente quepa en su
-		/// caja - el contenido tiene que leerse ENTERO, y es el layout el que se adapta (mas ancho,
-		/// mas alto, salto de linea - ver <see cref="PartirEnLineas"/>), no el texto el que se
-		/// sacrifica. Usar esto solo cuando de verdad no hay una forma razonable de envolver o
-		/// agrandar la caja (una sola linea de altura fija e infranqueable, como una fila del arbol
-		/// de carpetas), y dejar dicho por que en el sitio que lo use.
-		/// </para>
-		/// </summary>
-		public static string Recortar(string texto, float anchoMaximo, float escala)
-		{
-			if (string.IsNullOrEmpty(texto) || anchoMaximo <= 0f) {
-				return texto ?? "";
-			}
-
-			DynamicSpriteFont fuente = Terraria.GameContent.FontAssets.MouseText.Value;
-			if (fuente.MeasureString(texto).X * escala <= anchoMaximo) {
-				return texto;
-			}
-
-			int n = texto.Length;
-			while (n > 1 && fuente.MeasureString(texto.Substring(0, n) + "...").X * escala > anchoMaximo) {
-				n--;
-			}
-			return texto.Substring(0, n) + "...";
-		}
+		// EtiquetaTk.Recortar (recorte de una linea con "...", "ultimo recurso") vivio aqui hasta
+		// que la pasada de "todo el texto se lee entero, nunca con puntos suspensivos" (ver
+		// bitacora.md) le quito su ULTIMO llamador real (FilaCarpetaBuffTk/FilaCarpetaTk, que
+		// ahora envuelven el nombre a varias lineas con PartirEnLineas en vez de recortarlo).
+		// Se borro en vez de dejarla como "utilidad generica sin usar": el propio criterio de esta
+		// tarea es que el recorte por caracteres/pixeles nunca es la solucion por defecto, y una
+		// funcion asi disponible sin ningun llamador es una invitacion a que la siguiente persona
+		// "resuelva" un desbordamiento recortando en vez de adaptar el layout - el mismo patron que
+		// esta tarea vino a corregir en primer lugar.
 
 		protected override void DrawSelf(SpriteBatch spriteBatch)
 		{

@@ -27,11 +27,23 @@ namespace TerrakeepMod.UI.Libreria
 	public class FilaCarpetaTk : UIPanel
 	{
 		private const float LadoIcono = 26f;
+		private const float EscalaTexto = 0.8f;
+		private const float AltoMinimo = 34f;
 
 		private readonly int _iconoTipo;
 		private readonly string _nombre;
 		private readonly bool _tieneHijas;
 		private readonly int _objetos;
+
+		/// <summary>Nombre YA envuelto (<see cref="EtiquetaTk.PartirEnLineas"/>) a tantas lineas como
+		/// haga falta para caber en el ancho real de esta fila. Se calcula UNA vez, en el
+		/// constructor, porque <paramref name="ancho"/> es fijo durante toda la vida de la fila (lo
+		/// decide <c>AnchoColumnaCarpetas</c>, una constante, no algo que cambie con la ventana).</summary>
+		private readonly string _nombrePartido;
+
+		/// <summary>Alto REAL (con la fuente real) del bloque de texto ya envuelto. Con esto la fila
+		/// crece lo que haga falta en vez de recortar el nombre - ver <see cref="AltoFila"/>.</summary>
+		private readonly float _altoTexto;
 
 		/// <summary>La carpeta que representa esta fila.</summary>
 		public readonly CategoryTreeNodeData Nodo;
@@ -50,9 +62,22 @@ namespace TerrakeepMod.UI.Libreria
 			_objetos = nodo.ItemIdsOrdered != null ? nodo.ItemIdsOrdered.Count : 0;
 			_iconoTipo = ArbolLibreria.IdDeIcono(nodo.IconPath);
 
+			// Nunca se recorta con "...": si el nombre no cabe en una linea se ENVUELVE a varias
+			// (mismo patron que ya uso PestanaBuffs con el nombre de un buff activo, commit cae61b5)
+			// y la fila crece lo que haga falta - esta lista es un UIList real (ver
+			// ContenidoLibreria.RellenarCarpetas), asi que una fila mas alta simplemente empuja a la
+			// siguiente hacia abajo, no rompe nada.
+			DynamicSpriteFont fuente = FontAssets.MouseText.Value;
+			float xTexto = _iconoTipo > 0 ? 6f + LadoIcono + 8f : 10f;
+			float anchoTexto = ancho - xTexto - (_tieneHijas ? 22f : 10f);
+			_nombrePartido = EtiquetaTk.PartirEnLineas(_nombre, anchoTexto > 10f ? anchoTexto : ancho, EscalaTexto);
+			_altoTexto = fuente.MeasureString(_nombrePartido).Y * EscalaTexto;
+			float altoUnaLinea = fuente.MeasureString("Ag").Y * EscalaTexto;
+			float relleno = AltoMinimo - altoUnaLinea;
+
 			SetPadding(0f);
 			Width.Set(ancho, 0f);
-			Height.Set(34f, 0f);
+			Height.Set(Math.Max(AltoMinimo, _altoTexto + relleno), 0f);
 			BorderColor = new Color(0, 0, 0, 0);
 
 			OnLeftClick += (evento, elemento) => {
@@ -81,12 +106,9 @@ namespace TerrakeepMod.UI.Libreria
 				new Vector2(dim.X + 6f + LadoIcono / 2f, dim.Y + dim.Height / 2f), LadoIcono, Color.White);
 
 			float xTexto = dim.X + (hayIcono ? 6f + LadoIcono + 8f : 10f);
-			// Se reserva sitio a la derecha para la flecha de "tiene subcarpetas".
-			float anchoTexto = dim.Width - (xTexto - dim.X) - (_tieneHijas ? 22f : 10f);
-
-			string texto = Recortar(_nombre, anchoTexto, 0.8f);
-			Utils.DrawBorderString(spriteBatch, texto,
-				new Vector2(xTexto, dim.Y + dim.Height / 2f - 10f), Color.White, 0.8f);
+			float yTexto = dim.Y + (dim.Height - _altoTexto) / 2f;
+			Utils.DrawBorderString(spriteBatch, _nombrePartido,
+				new Vector2(xTexto, yTexto), Color.White, EscalaTexto);
 
 			if (_tieneHijas) {
 				Utils.DrawBorderString(spriteBatch, ">",
@@ -99,30 +121,6 @@ namespace TerrakeepMod.UI.Libreria
 					? Idiomas.Texto("Libreria.CarpetaConSubcarpetas", _nombre, _objetos, Nodo.Children.Count)
 					: Idiomas.Texto("Libreria.CarpetaObjetos", _nombre, _objetos));
 			}
-		}
-
-		/// <summary>
-		/// Recorta el texto para que quepa, midiendolo con la fuente REAL con la que se va a
-		/// dibujar. Se corta con tres puntos normales y nunca con el caracter "…": la fuente del
-		/// juego solo trae el juego de caracteres con el que se genero, y uno que no este hace
-		/// reventar a <c>DynamicSpriteFont</c> al medir (hallazgo ya anotado por WS4).
-		/// </summary>
-		private static string Recortar(string texto, float anchoMaximo, float escala)
-		{
-			if (string.IsNullOrEmpty(texto) || anchoMaximo <= 0f) {
-				return texto ?? "";
-			}
-
-			DynamicSpriteFont fuente = FontAssets.MouseText.Value;
-			if (fuente.MeasureString(texto).X * escala <= anchoMaximo) {
-				return texto;
-			}
-
-			int n = texto.Length;
-			while (n > 1 && fuente.MeasureString(texto.Substring(0, n) + "...").X * escala > anchoMaximo) {
-				n--;
-			}
-			return texto.Substring(0, n) + "...";
 		}
 	}
 }

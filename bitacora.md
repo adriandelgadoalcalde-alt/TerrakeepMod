@@ -3948,3 +3948,183 @@ secas en un comando aparte. Archivos de esta tarea: `Common/Libreria/AutopruebaL
 `evidencia/ws3-libreria.log.txt`, `evidencia/ws1-personaje-client.log.txt`, `bitacora.md`. Nada de
 otros agentes en marcha a la vez (`evidencia/panel-unico.log.txt`, modificado por otro agente
 entre medias; `bin-checkDebug/`, `obj-verif-espaciado/`, carpetas de build sueltas).
+
+---
+
+## 7-sep-2026 — "Todo el texto se lee entero, nunca con ...": las 4 pastillas de Builds y barrido
+## por el resto del mod
+
+Encargo explícito, tras varias rondas insistiendo en el mismo criterio (ya aplicado a
+`PestanaBuffs.cs`, commit `cae61b5`, y al aviso de "sin sitio" de Builds, commit `1d230d0`):
+**ningún texto del mod se recorta con "...", ni siquiera cuando "técnicamente cabe"** - la caja se
+adapta al contenido real, medido con la fuente real del juego, nunca al revés. Quedaba pendiente,
+señalado explícitamente por un agente anterior como fuera de alcance, el caso confirmado de las 4
+filas de pastillas de `ContenidoBuilds.cs` (etapa/clase/fuente/conjunto de destino), más un barrido
+sistemático del resto del mod buscando cualquier otro recorte silencioso.
+
+### 1. Las pastillas de Builds: de "ancho fijo a partes iguales" a "cada una mide lo que su texto
+### necesita de verdad"
+
+La causa real del recorte (`EstiloInvestigacionAcortar(etiquetas[i], 34)`, visto literalmente en
+capturas reales del usuario: "Pre-Hardmode (listo para el Mur...") era el reparto: `PintarPildoras`
+dividía el ancho de la fila en fracciones iguales (`1f / etiquetas.Count`) sin mirar el texto real,
+así que una etiqueta larga como "Hardmode temprano (antes de los jefes mecánicos)" (49 caracteres)
+quedaba en una caja mucho más estrecha que su propio texto.
+
+**Arreglo real: `GrupoPildoras` (clase nueva, anidada en `ContenidoBuilds`), que sustituye por
+completo al reparto en fracciones.** Cada pastilla (`BotonTk`) se crea con su texto COMPLETO y sin
+posición fija; `GrupoPildoras.Reflow(anchoDisponible)`, llamado cada fotograma desde el nuevo
+`RecalcularPildorasYFilas` (mismo patrón que `RecalcularCabecera`: se llama cada fotograma porque
+el ancho depende de la resolución de la ventana, y el texto de la pastilla de conjunto de destino
+cambia solo con la marca "(activo)"), mide con la fuente real el ancho de cada pastilla y las
+coloca de izquierda a derecha, **saltando a una nueva fila VISUAL cuando la siguiente ya no cabe**
+en vez de recortar nada. Caso límite cubierto de verdad (aunque no llega a activarse con las
+etiquetas reales de este mod, máximo real medido 53 caracteres): si una sola etiqueta no cupiera
+ni ocupando la fila entera, esa pastilla concreta ENVUELVE su propio texto con
+`EtiquetaTk.PartirEnLineas` en vez de desbordar. El alto de cada una de las 4 filas
+(`_altoFilaFuentes/Etapas/Clases/Loadout`) ahora es dinámico, y `ColocarFilas` (que ya existía)
+reposiciona todo lo de abajo con esos altos reales en vez del `AltoFila` fijo de siempre.
+
+Efecto colateral bueno, no buscado a propósito: `ActualizarBotonesLoadoutObjetivo` (la marca
+"(activo)" de "Conjunto N") ya no necesita recortar tampoco - se limita a poner el texto completo
+y `Reflow` le da el ancho que le haga falta cada fotograma. Y el nombre/pie de cada objeto del
+catálogo de Builds (`PintarColumna`, líneas 429/441 del archivo original, mismo patrón de recorte
+por CARACTERES sin medir con la fuente real) se arregló con una vía distinta pero igual de real:
+`UIText.DynamicallyScaleDownToWidth`, una propiedad NATIVA de vanilla
+(`Terraria.GameContent.UI.Elements.UIText`, confirmado en el código decompilado) que reduce la
+escala del texto lo justo para que quepa entero en su caja - nunca lo corta, solo lo hace más
+pequeño. Hacía falta además `MinWidth.Set(0f, 0f)` explícito: por defecto `UIText` expande su
+propio `MinWidth` al ancho de su contenido en `InternalSetText`, lo que anulaba en la práctica
+cualquier ancho más estrecho que se le quisiera dar - sin quitar ese mínimo, `DynamicallyScaleDownToWidth`
+nunca llegaba a activarse.
+
+### 2. Un bug real de verdad, encontrado por la propia autoprueba (no visto a simple vista)
+
+La primera pasada de `GrupoPildoras` parecía correcta releyendo el código, pero la autoprueba en
+el juego real (ver más abajo) midió un fallo real: a 1600x900 y 1280x720, las 3 pastillas de etapa
+medían **120px de caja de fábrica** con un texto de hasta 305px - el mismo desbordamiento silencioso
+que esta tarea vino a arreglar, solo que invisible (no se recortaba con "...", pero el marco del
+botón quedaba más estrecho que su propio texto). La causa: `RecalcularPildorasYFilas` solo llamaba
+a `Recalculate()` cuando el ALTO total de alguna fila cambiaba, pero `Reflow` escribe un nuevo
+`Width`/`Left`/`Top` en cada pastilla EN CADA llamada, tanto si el alto total de la fila cambia
+como si no (con 3 pastillas de etapa que ya caben en una sola línea a 1600x900, el alto se queda en
+30px de siempre, pero el ANCHO de cada una sí cambiaba de 120 a ~300px). `UIElement.Width.Set(...)`
+por sí solo no actualiza nada visible - hace falta un `Recalculate()` real para que
+`GetDimensions()` deje de devolver el valor cacheado de la ÚLTIMA vez que se recalculó (el de
+`Reconstruir`, con las pastillas todavía a 120x32 de fábrica). Arreglado llamando a `Recalculate()`
+SIEMPRE al final de `RecalcularPildorasYFilas`, no solo cuando cambia el alto total (`ColocarFilas`,
+que sí es más caro y sí mueve cosas de verdad, se mantiene condicionado al cambio de alto).
+
+Con ese mismo patrón de bug ya identificado, se revisaron los otros tres sitios nuevos de esta
+tarea que también escriben `Top`/`Height` de otro elemento tras un cálculo condicionado
+(`ContenidoLibreria.AjustarAlturaRuta`, `PestanaBuffs.AjustarAlturaRutaCarpetas`,
+`ContenidoInvestigacion.AjustarAlturaTitulo`): a los tres les faltaba igual el `Recalculate()`
+final (a diferencia de las pastillas, aquí sí estaba bien condicionado a "cambió de verdad", pero
+faltaba directamente la llamada) - añadido en los tres antes de darlos por buenos, no solo en el
+que la autoprueba pilló por casualidad.
+
+### 3. Barrido del resto del mod: `Acortar`/`Recortar` en 13 archivos, revisados uno a uno
+
+- **`UI/Libreria/FilaCarpetaTk.cs` / `UI/Personaje/Widgets/FilaCarpetaBuffTk.cs`** (carpetas de la
+  Librería y de Buffs, calco literal una de otra): el nombre de la carpeta se recortaba con "..."
+  medido con la fuente real (mejor que el resto, pero recorte al fin). Arreglado con el mismo
+  patrón que ya estableció `PestanaBuffs` para el nombre de un buff: se ENVUELVE con
+  `EtiquetaTk.PartirEnLineas` a tantas líneas como haga falta y la fila CRECE lo que haga falta -
+  trivial aquí porque las dos son filas de un `UIList` real (`RellenarCarpetas`), que ya apila cada
+  fila por su alto real sin ayuda extra. El ancho de estas filas es una CONSTANTE fija
+  (`AnchoColumnaCarpetas`, 300px en Librería, 132px en Buffs, no depende de la resolución), así que
+  el cálculo se hace una sola vez en el constructor, sin necesitar recalculo por fotograma.
+- **Ruta/breadcrumb de la carpeta abierta**, en los dos mismos paneles (`ContenidoLibreria.RutaCorta`
+  / `PestanaBuffs.RutaCorta`): recortaba por el PRINCIPIO con "..." + los últimos N caracteres -
+  con una ruta profunda de verdad ("Librería > Mascotas, Monturas, Herramientas > Mascotas de
+  Jefes", 63 caracteres) esto llegaba a cortar literalmente a media palabra. Arreglado envolviendo
+  la ruta completa a varias líneas y empujando hacia abajo la lista de carpetas de debajo
+  (`AjustarAlturaRuta`/`AjustarAlturaRutaCarpetas`, nuevos, llamados cada fotograma desde `Update`)
+  lo que haga falta - mismo patrón que `ContenidoBuilds.RecalcularCabecera`. Hizo falta convertir
+  dos variables locales del constructor (`cajaCarpetas` en Buffs, la barra de scroll de objetos en
+  Investigación) en campos de la clase para poder tocarlas desde el nuevo método.
+- **Panel de Investigación** (`FilaCarpetaInvestigacion.cs`, `FilaObjetoInvestigacion.cs`,
+  `ContenidoInvestigacion.cs`, `EstiloInvestigacion.cs`): el peor recorte encontrado en todo el
+  barrido - `EstiloInvestigacion.Acortar` cortaba por NÚMERO DE CARACTERES a secas, sin medir con
+  la fuente real en ningún momento (los otros sitios al menos medían en píxeles). Los tres sitios
+  que lo usaban se rediseñaron: la fila de carpeta del árbol se envuelve y crece
+  (`FilaCarpetaInvestigacion.ActualizarLayout`, alto mínimo 26px); la fila de objeto pasa al mismo
+  patrón de DOS LÍNEAS que ya usa `PestanaBuffs.CrearFilaBuff` (línea 1 = nombre envuelto con TODO
+  el ancho de la fila, línea 2 = estado + botón "Investigar"/"Quitar"); y el título de la carpeta
+  seleccionada (`"Nombre  X/Y"`, antes recortado a 22 caracteres) se envuelve y empuja la lista de
+  objetos hacia abajo. Las tres necesitaron un método `Ajustar*` nuevo llamado cada fotograma desde
+  `ContenidoInvestigacion.Update` (mismas dos listas nuevas trackeadas, `_filasCarpeta` ya existía,
+  `_filasObjeto` es nueva) porque, a diferencia de las carpetas de Librería/Buffs, aquí el ancho
+  disponible SÍ depende de la resolución de la ventana (`Width.Set(0f, 1f)`, no un ancho fijo).
+  `EstiloInvestigacion.Acortar` se borró: sin ningún llamador que le quedara, dejarlo habría sido
+  código muerto invitando a "solucionar" el próximo desbordamiento recortando otra vez - el
+  criterio que ya dejó escrito `EtiquetaTk.cs` la vez anterior que se tocó este mismo problema.
+- **`EtiquetaTk.Recortar`** (la utilidad genérica "último recurso" que dejó la pasada anterior,
+  documentada explícitamente como tal): con el arreglo de las carpetas de Librería/Buffs, sus dos
+  ÚLTIMOS llamadores reales desaparecieron. Se borró por la misma razón que `EstiloInvestigacion.Acortar`
+  - una función de recorte sin ningún sitio que la use es una invitación, no una utilidad.
+
+### Dos sitios revisados y dejados EXPLÍCITAMENTE sin tocar, con su motivo real
+
+- **`UI/Personaje/Widgets/EditorCantidadTk.cs`**: el constructor NO explícito (modo "hover",
+  `EditorCantidadTk(UIElement raiz)`) sigue recortando con "..." la etiqueta larga "Cantidad de X
+  (n/m):" en su modo NO compacto. Comprobado con `grep` de verdad en todo el repo: **ese
+  constructor no lo llama nadie** - el único sitio que crea este control
+  (`PanelHerramientasLibreriaTk.cs`, reutilizado por Librería y por las tres pestañas de Personaje
+  desde el rediseño de la sesión anterior) usa siempre el otro constructor, el EXPLÍCITO/compacto,
+  que ya no recorta nada (arreglado en esa misma sesión anterior). Es código MUERTO, no un bug
+  activo - no se ve nunca en el juego real. Se deja documentado en vez de en silencio, y sin tocar:
+  borrar un constructor entero es un cambio de forma distinta (limpieza de código muerto, no un
+  arreglo de recorte) que merece su propia revisión, no un efecto colateral de esta tarea.
+- **`Common/Exploracion/BuscadorMundo.cs`** (`nombre + " (" + objetos + " objetos" + (primero + "...") + ")"`,
+  en `BuscarCofres`): revisado y NO es un recorte. El "..." va DESPUÉS del nombre COMPLETO del
+  primer objeto del cofre ("Cofre (5 objetos, Espada de hierro...)"), como indicador de "y más
+  objetos dentro" - ningún nombre se corta a media palabra. Distinto en naturaleza del patrón que
+  esta tarea corrige (texto que debería leerse entero y se corta), así que se deja tal cual.
+
+### Verificación obligatoria: en el juego real, autoprueba extendida (no una nueva)
+
+Se extendió `Common/Panel/AutopruebaEspaciado.cs` (el arnés que ya recorría 3 resoluciones
+- 1600x900, 1280x720, 800x720 mínimo real del motor - × 2 idiomas, en vez de crear uno nuevo
+duplicado) con 4 pasos nuevos por combinación: pastillas de Builds (forzando `SeleccionarEtapa(1)`,
+la etapa de la etiqueta más larga real), carpeta más profunda/de nombre más largo de Librería y de
+Buffs (`CaminoLargo`, elige en cada nivel el hijo de nombre más largo - sin adivinar a mano ningún
+nombre real del catálogo), y carpeta más profunda de Investigación (`CaminoLargoInvestigacion`,
+mismo criterio, más desplegar las carpetas del camino para que la fila objetivo se vea en el
+árbol). Hicieron falta 3 métodos nuevos SOLO-autoprueba en producción, mínimos y consistentes con
+los que ya existían (`ContenidoBuilds.SeleccionarEtapa`, `PestanaBuffs.AbrirCarpetaParaPrueba`,
+más 4 propiedades `FilaFuentesParaPrueba`/etc. para poder medir las pastillas desde fuera).
+
+Las pastillas de Builds se MIDEN de verdad (no solo se capturan): cada `BotonTk` real de las 4
+filas, `MeasureString(pildora.Texto) * 0.75f` contra su `GetDimensions().Width` real. **Primera
+pasada: 3 FALLOS reales por resolución en 1600x900/1280x720** (el bug de `Recalculate()` que se
+describe arriba, encontrado por esta misma autoprueba, no a simple vista) - **segunda pasada, tras
+el arreglo: 10 pildoras medidas × 6 combinaciones = 60 mediciones, 0 fallos**. El resto
+(carpetas/breadcrumb de Librería y Buffs, árbol + lista de Investigación) se verificó con capturas
+reales inspeccionadas visualmente: la ruta "Librería > Mascotas, Monturas, Herramientas > Mascotas
+de Jefes" se ve envuelta en 2 líneas completas sin recortar ni solapar la lista de carpetas de
+debajo; el árbol de Investigación envuelve "Mascotas, Monturas, Herramientas" a 3 líneas y
+"Pociones (regeneración)"/"Carritos de Mina" a 2, todas legibles, sin invadir la columna de
+recuento/barra de progreso de al lado. Las 26 filas de "Activos"/"Añadir" de Buffs y el recuadro
+naranja de Exploración (arreglos de sesiones anteriores) se remidieron en la misma pasada y siguen
+en 0 fallos - sin regresión. Log completo en `evidencia/espaciado.log.txt`, 36 capturas reales
+(6 combinaciones × 6 pantallas: aviso/buffs/buffs-carpetas/builds/libreria/investigacion) en
+`evidencia/espaciado-capturas/`.
+
+Compilado y desplegado el `.tmod` final de verdad a la carpeta `Mods` real del usuario
+(`Documents\My Games\Terraria\tModLoader\Mods\TerrakeepMod.tmod`, `scripts/compilar.ps1`) - el
+juego no estaba abierto en ningún momento de esta sesión, sin bloqueo que esperar.
+
+### Índice privado para comitear
+
+`GIT_INDEX_FILE=<propio> git read-tree HEAD && git add ... && git commit`, después `git reset` a
+secas en un comando aparte. Archivos de esta tarea: `Common/Panel/AutopruebaEspaciado.cs`,
+`UI/Builds/ContenidoBuilds.cs`, `UI/Investigacion/ContenidoInvestigacion.cs`,
+`UI/Investigacion/EstiloInvestigacion.cs`, `UI/Investigacion/FilaCarpetaInvestigacion.cs`,
+`UI/Investigacion/FilaObjetoInvestigacion.cs`, `UI/Libreria/ContenidoLibreria.cs`,
+`UI/Libreria/FilaCarpetaTk.cs`, `UI/Personaje/PestanaBuffs.cs`,
+`UI/Personaje/Widgets/EtiquetaTk.cs`, `UI/Personaje/Widgets/FilaCarpetaBuffTk.cs`,
+`evidencia/espaciado.log.txt`, `evidencia/espaciado-capturas/*.png` (36 archivos), `bitacora.md`.
+Nada de otros agentes (`evidencia/panel-unico.log.txt`, modificado por otro agente en una sesión
+anterior y todavía sin comitear; `bin-checkDebug/`, `obj-verif-espaciado/`, carpetas de build
+sueltas).

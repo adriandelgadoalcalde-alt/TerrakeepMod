@@ -176,6 +176,7 @@ namespace TerrakeepMod.UI.Personaje
 		// --- Arbol de carpetas de "Añadir" (ArbolBuffs) ----------------------------------------
 		private readonly List<CategoryTreeNodeData> _ruta = new List<CategoryTreeNodeData>();
 		private UIList _listaCarpetas;
+		private UIPanel _cajaCarpetas;
 		private BotonTk _botonInicio;
 		private BotonTk _botonSubirCarpeta;
 		private EtiquetaTk _rutaTexto;
@@ -552,24 +553,24 @@ namespace TerrakeepMod.UI.Personaje
 			_rutaTexto.Top.Set(32f, 0f);
 			columnaCarpetas.Append(_rutaTexto);
 
-			UIPanel cajaCarpetas = new UIPanel();
-			cajaCarpetas.Width.Set(0f, 1f);
-			cajaCarpetas.Top.Set(56f, 0f);
-			cajaCarpetas.Height.Set(-56f, 1f);
-			cajaCarpetas.BackgroundColor = EstiloTk.FondoCaja;
-			columnaCarpetas.Append(cajaCarpetas);
+			_cajaCarpetas = new UIPanel();
+			_cajaCarpetas.Width.Set(0f, 1f);
+			_cajaCarpetas.Top.Set(56f, 0f);
+			_cajaCarpetas.Height.Set(-56f, 1f);
+			_cajaCarpetas.BackgroundColor = EstiloTk.FondoCaja;
+			columnaCarpetas.Append(_cajaCarpetas);
 
 			_listaCarpetas = new UIList();
 			_listaCarpetas.Width.Set(-AnchoBarraScrollCarpetas, 1f);
 			_listaCarpetas.Height.Set(0f, 1f);
 			_listaCarpetas.ListPadding = 5f;
-			cajaCarpetas.Append(_listaCarpetas);
+			_cajaCarpetas.Append(_listaCarpetas);
 
 			UIScrollbar barraCarpetas = new UIScrollbar();
 			barraCarpetas.HAlign = 1f;
 			barraCarpetas.Height.Set(0f, 1f);
 			barraCarpetas.SetView(100f, 1000f);
-			cajaCarpetas.Append(barraCarpetas);
+			_cajaCarpetas.Append(barraCarpetas);
 			_listaCarpetas.SetScrollbar(barraCarpetas);
 
 			// --- Columna de busqueda + resultados, a la derecha de la de carpetas --------------
@@ -810,6 +811,14 @@ namespace TerrakeepMod.UI.Personaje
 			ReconstruirResultados(_busquedaActual);
 		}
 
+		/// <summary>Igual que <see cref="AbrirCarpeta"/> pero publico: lo usa el arnes de pruebas
+		/// para navegar el arbol de "Añadir un buff" a una carpeta concreta (por ejemplo, la de
+		/// nombre mas largo) sin tener que simular el clic real.</summary>
+		public void AbrirCarpetaParaPrueba(CategoryTreeNodeData nodo)
+		{
+			AbrirCarpeta(nodo);
+		}
+
 		private void SubirCarpeta()
 		{
 			if (_ruta.Count == 0) {
@@ -827,14 +836,62 @@ namespace TerrakeepMod.UI.Personaje
 			ReconstruirResultados(_busquedaActual);
 		}
 
+		/// <summary>Escala con la que se dibuja <see cref="_rutaTexto"/>. Se guarda aparte porque
+		/// <see cref="AjustarAlturaRutaCarpetas"/> necesita medir el texto con la MISMA escala.</summary>
+		private const float EscalaRutaCarpetas = 0.68f;
+
+		/// <summary>Alto REAL que ocupa la ruta ya envuelta ahora mismo. Ver
+		/// <see cref="AjustarAlturaRutaCarpetas"/>.</summary>
+		private float _altoRutaCarpetas = 18f;
+
+		/// <summary>
+		/// Ruta completa, ENVUELTA a tantas lineas como haga falta para caber en
+		/// <see cref="AnchoColumnaCarpetas"/> - nunca recortada por el PRINCIPIO con "..." como
+		/// antes (con solo 132 px de columna, una ruta de 3-4 niveles se cortaba a media palabra
+		/// del primer nombre visible). Mismo criterio que el resto del panel: la caja crece, el
+		/// texto se lee entero.
+		/// </summary>
 		private string RutaCorta()
 		{
 			StringBuilder sb = new StringBuilder(Idiomas.Texto("Personaje.Buffs.Arbol.Raiz"));
 			for (int i = 0; i < _ruta.Count; i++) {
 				sb.Append(" > ").Append(_ruta[i].Name);
 			}
-			string ruta = sb.ToString();
-			return ruta.Length <= 40 ? ruta : "..." + ruta.Substring(ruta.Length - 37);
+			return EtiquetaTk.PartirEnLineas(sb.ToString(), AnchoColumnaCarpetas, EscalaRutaCarpetas);
+		}
+
+		/// <summary>
+		/// Mide el alto REAL de <see cref="RutaCorta"/> ya envuelta y empuja hacia abajo
+		/// <see cref="_cajaCarpetas"/> (arbol + scrollbar) lo que haga falta - mismo patron que
+		/// <c>ContenidoBuilds.RecalcularCabecera</c>/<c>ContenidoLibreria.AjustarAlturaRuta</c>. Se
+		/// llama cada fotograma (ver <see cref="Update"/>) porque la ruta cambia de largo cada vez
+		/// que el jugador entra o sale de una carpeta.
+		/// </summary>
+		private void AjustarAlturaRutaCarpetas()
+		{
+			string partida = RutaCorta();
+			float altoTexto = Terraria.GameContent.FontAssets.MouseText.Value
+				.MeasureString(partida).Y * EscalaRutaCarpetas;
+			float altoNuevo = altoTexto > 18f ? altoTexto : 18f;
+
+			if (Math.Abs(altoNuevo - _altoRutaCarpetas) < 0.5f) {
+				return;
+			}
+			_altoRutaCarpetas = altoNuevo;
+
+			const float topRuta = 32f;
+			const float separacionCaja = 6f;
+			float topCaja = topRuta + _altoRutaCarpetas + separacionCaja;
+
+			_rutaTexto.Height.Set(_altoRutaCarpetas, 0f);
+			_cajaCarpetas.Top.Set(topCaja, 0f);
+			_cajaCarpetas.Height.Set(-topCaja, 1f);
+
+			// Sin esto, GetDimensions() de _cajaCarpetas seguiria devolviendo el hueco viejo hasta
+			// que algo mas disparara un Recalculate por su cuenta - mismo bug real que se encontro
+			// en ContenidoBuilds.RecalcularPildorasYFilas (ver su XMLdoc): Top.Set()/Height.Set()
+			// no mueve nada visible por si solo.
+			Recalculate();
 		}
 
 		// ---------------------------------------------------------------- resultados
@@ -1011,6 +1068,7 @@ namespace TerrakeepMod.UI.Personaje
 			// resolucion/UIScale): se recalcula cada fotograma, igual que PestanaMundo.RecalcularAviso.
 			RecalcularColumnas();
 			AjustarAlturaTitulo();
+			AjustarAlturaRutaCarpetas();
 
 			// Los buffs caducan solos: si el conjunto de tipos activos ha cambiado desde el
 			// ultimo fotograma, la lista de la izquierda se rehace sola.

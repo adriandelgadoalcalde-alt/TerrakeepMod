@@ -66,18 +66,5 @@ namespace TerrakeepMod.UI.Investigacion
 			return hechos > 0 ? AMedias : SinEmpezar;
 		}
 
-		/// <summary>
-		/// Corta un texto que no cabe. Con tres puntos NORMALES, nunca con el caracter "…": la
-		/// fuente del juego solo trae el juego de caracteres con el que se genero, y uno que no
-		/// este hace reventar a <c>DynamicSpriteFont</c> al medir la cadena (mismo cuidado que ya
-		/// documento WS4).
-		/// </summary>
-		public static string Acortar(string texto, int maximo)
-		{
-			if (string.IsNullOrEmpty(texto) || texto.Length <= maximo) {
-				return texto ?? "";
-			}
-			return texto.Substring(0, System.Math.Max(1, maximo - 3)) + "...";
-		}
 	}
 }

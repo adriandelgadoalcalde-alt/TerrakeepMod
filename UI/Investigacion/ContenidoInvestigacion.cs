@@ -48,6 +48,7 @@ namespace TerrakeepMod.UI.Investigacion
 		private UIPanel _cajaObjetos;
 		private UIList _listaCarpetas;
 		private UIList _listaObjetos;
+		private UIScrollbar _scrollObjetos;
 		private EtiquetaTk _tituloObjetos;
 		private EtiquetaTk _aviso;
 		private EtiquetaTk _mensaje;
@@ -59,6 +60,7 @@ namespace TerrakeepMod.UI.Investigacion
 		private AlternadorTk _soloPendientes;
 
 		private readonly List<FilaCarpetaInvestigacion> _filasCarpeta = new List<FilaCarpetaInvestigacion>();
+		private readonly List<FilaObjetoInvestigacion> _filasObjeto = new List<FilaObjetoInvestigacion>();
 
 		private CarpetaInvestigacion _seleccionada;
 		private bool _soloFaltantes;
@@ -193,13 +195,13 @@ namespace TerrakeepMod.UI.Investigacion
 			_listaObjetos.ListPadding = 2f;
 			_cajaObjetos.Append(_listaObjetos);
 
-			UIScrollbar barra = new UIScrollbar();
-			barra.HAlign = 1f;
-			barra.Top.Set(34f, 0f);
-			barra.Height.Set(-34f, 1f);
-			barra.SetView(100f, 1000f);
-			_cajaObjetos.Append(barra);
-			_listaObjetos.SetScrollbar(barra);
+			_scrollObjetos = new UIScrollbar();
+			_scrollObjetos.HAlign = 1f;
+			_scrollObjetos.Top.Set(34f, 0f);
+			_scrollObjetos.Height.Set(-34f, 1f);
+			_scrollObjetos.SetView(100f, 1000f);
+			_cajaObjetos.Append(_scrollObjetos);
+			_listaObjetos.SetScrollbar(_scrollObjetos);
 		}
 
 		private void ConstruirPie()
@@ -255,16 +257,69 @@ namespace TerrakeepMod.UI.Investigacion
 			return Idiomas.Texto("Investigacion.Progreso", hechos, total, porcentaje);
 		}
 
+		/// <summary>Ancho fijo (no depende de la resolucion) de <see cref="_tituloObjetos"/>: el
+		/// hueco que queda a la izquierda de los dos botones de la derecha. Se guarda aparte porque
+		/// <see cref="AjustarAlturaTitulo"/> necesita el mismo numero para medir el alto real.</summary>
+		private const float AnchoTitulo = 200f;
+		private const float EscalaTitulo = 0.8f;
+
+		/// <summary>Alto real de <see cref="_tituloObjetos"/> ahora mismo. Ver
+		/// <see cref="AjustarAlturaTitulo"/>.</summary>
+		private float _altoTitulo = 22f;
+
+		/// <summary>
+		/// Nombre de la carpeta ENVUELTO al ancho fijo de la etiqueta (nunca recortado con "..."
+		/// como antes - el codigo viejo cortaba a 22 CARACTERES exactos, sin medir con la fuente
+		/// real: una carpeta con un nombre normal en ingles ya se veia truncada). Ver
+		/// <see cref="AjustarAlturaTitulo"/> para el alto real que le hace falta.
+		/// </summary>
 		private string TextoTituloCarpeta()
 		{
 			if (_seleccionada == null) {
 				return Idiomas.Texto("Investigacion.EligeCarpeta");
 			}
-			// 22 caracteres y sin la palabra "investigados": el hueco que queda a la izquierda de
-			// los dos botones de la derecha son ~180 px, y con 34 el texto se metia por debajo de
-			// ellos (visto en una captura real).
-			return EstiloInvestigacion.Acortar(_seleccionada.Nombre, 22) +
-				"  " + _seleccionada.Hechos + "/" + _seleccionada.Total;
+			string texto = _seleccionada.Nombre + "  " + _seleccionada.Hechos + "/" + _seleccionada.Total;
+			return EtiquetaTk.PartirEnLineas(texto, AnchoTitulo, EscalaTitulo);
+		}
+
+		/// <summary>
+		/// Mide el alto REAL de <see cref="TextoTituloCarpeta"/> ya envuelto y empuja
+		/// <see cref="_listaObjetos"/>/<see cref="_scrollObjetos"/> hacia abajo lo que haga falta -
+		/// mismo patron que <c>ContenidoBuilds.RecalcularCabecera</c>. Se llama cada fotograma (ver
+		/// <see cref="Update"/>) porque el nombre de la carpeta seleccionada cambia con cada clic.
+		/// </summary>
+		private void AjustarAlturaTitulo()
+		{
+			string partido = TextoTituloCarpeta();
+			float altoTexto = Terraria.GameContent.FontAssets.MouseText.Value
+				.MeasureString(partido).Y * EscalaTitulo;
+			float altoNuevo = altoTexto > 22f ? altoTexto : 22f;
+
+			if (Math.Abs(altoNuevo - _altoTitulo) < 0.5f) {
+				return;
+			}
+			_altoTitulo = altoNuevo;
+
+			_tituloObjetos.Height.Set(_altoTitulo, 0f);
+
+			const float topBase = 34f;
+			const float topTitulo = 2f;
+			const float separacion = 4f;
+			float topLista = topTitulo + _altoTitulo + separacion;
+			if (topLista < topBase) {
+				topLista = topBase;
+			}
+
+			_listaObjetos.Top.Set(topLista, 0f);
+			_listaObjetos.Height.Set(-topLista, 1f);
+			_scrollObjetos.Top.Set(topLista, 0f);
+			_scrollObjetos.Height.Set(-topLista, 1f);
+
+			// Sin esto, GetDimensions() de _listaObjetos/_scrollObjetos seguiria devolviendo el
+			// hueco viejo hasta que algo mas disparara un Recalculate por su cuenta - mismo bug
+			// real que se encontro en ContenidoBuilds.RecalcularPildorasYFilas (ver su XMLdoc):
+			// Top.Set()/Height.Set() no mueve nada visible por si solo.
+			Recalculate();
 		}
 
 		// ------------------------------------------------------------------ arbol
@@ -292,6 +347,53 @@ namespace TerrakeepMod.UI.Investigacion
 				for (int i = 0; i < carpeta.Hijos.Count; i++) {
 					AnadirFila(carpeta.Hijos[i]);
 				}
+			}
+		}
+
+		/// <summary>
+		/// Mide cada fila del arbol de carpetas (<see cref="FilaCarpetaInvestigacion.ActualizarLayout"/>)
+		/// y ajusta su alto real - mismo patron que <c>PestanaBuffs.AjustarAltoFilasActivas</c>: la
+		/// fila crece cuando el nombre necesita envolverse, nunca se recorta. Solo se llama a
+		/// <c>Recalculate()</c> en la lista si de verdad cambio algo, para no rehacer el layout de
+		/// las 200+ filas que puede tener el arbol completo en cada fotograma sin necesidad.
+		/// </summary>
+		private void AjustarAltoFilasCarpeta()
+		{
+			bool cambio = false;
+			for (int i = 0; i < _filasCarpeta.Count; i++) {
+				FilaCarpetaInvestigacion fila = _filasCarpeta[i];
+				float altoNecesario = fila.ActualizarLayout();
+				if (Math.Abs(fila.Height.Pixels - altoNecesario) > 0.5f) {
+					fila.Height.Set(altoNecesario, 0f);
+					cambio = true;
+				}
+			}
+
+			if (cambio) {
+				_listaCarpetas.Recalculate();
+			}
+		}
+
+		/// <summary>
+		/// Mide cada fila de objeto (<see cref="FilaObjetoInvestigacion.ActualizarLayout"/>) y
+		/// ajusta su alto real - mismo patron que <see cref="AjustarAltoFilasCarpeta"/> y que
+		/// <c>PestanaBuffs.AjustarAltoFilasResultado</c>: el nombre se envuelve, la fila crece,
+		/// nunca se recorta.
+		/// </summary>
+		private void AjustarAltoFilasObjeto()
+		{
+			bool cambio = false;
+			for (int i = 0; i < _filasObjeto.Count; i++) {
+				FilaObjetoInvestigacion fila = _filasObjeto[i];
+				float altoNecesario = fila.ActualizarLayout();
+				if (Math.Abs(fila.Height.Pixels - altoNecesario) > 0.5f) {
+					fila.Height.Set(altoNecesario, 0f);
+					cambio = true;
+				}
+			}
+
+			if (cambio) {
+				_listaObjetos.Recalculate();
 			}
 		}
 
@@ -352,6 +454,7 @@ namespace TerrakeepMod.UI.Investigacion
 		public void ReconstruirObjetos()
 		{
 			_listaObjetos.Clear();
+			_filasObjeto.Clear();
 			if (_seleccionada == null) {
 				return;
 			}
@@ -375,6 +478,7 @@ namespace TerrakeepMod.UI.Investigacion
 				FilaObjetoInvestigacion fila = new FilaObjetoInvestigacion(tipos[i]);
 				fila.AlPulsar += PulsarObjeto;
 				_listaObjetos.Add(fila);
+				_filasObjeto.Add(fila);
 				puestos++;
 			}
 
@@ -518,6 +622,13 @@ namespace TerrakeepMod.UI.Investigacion
 		public override void Update(GameTime gameTime)
 		{
 			base.Update(gameTime);
+
+			// El nombre de cada carpeta se envuelve segun el ancho REAL disponible (nunca se
+			// recorta con "..."), que cambia con la resolucion de la ventana: se recalcula cada
+			// fotograma, mismo patron que PestanaMundo.RecalcularAviso.
+			AjustarAltoFilasCarpeta();
+			AjustarAltoFilasObjeto();
+			AjustarAlturaTitulo();
 
 			// Los contadores se recalculan solo cuando el estado de investigacion ha cambiado de
 			// verdad (LastEditId del tracker oficial), no en cada fotograma: son decenas de miles

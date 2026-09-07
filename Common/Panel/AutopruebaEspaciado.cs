@@ -8,11 +8,17 @@ using Terraria.GameContent.UI.Elements;
 using Terraria.ModLoader;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
+using TerrakeepMod.Common.Investigacion;
+using TerrakeepMod.Common.Libreria;
 using TerrakeepMod.Common.Personaje;
+using TerrakeepMod.UI.Builds;
 using TerrakeepMod.UI.Exploracion;
+using TerrakeepMod.UI.Investigacion;
+using TerrakeepMod.UI.Libreria;
 using TerrakeepMod.UI.Panel;
 using TerrakeepMod.UI.Personaje;
 using TerrakeepMod.UI.Personaje.Widgets;
+using TerrasavrNative.Core.Data;
 
 namespace TerrakeepMod.Common.Panel
 {
@@ -142,6 +148,16 @@ namespace TerrakeepMod.Common.Panel
 					_acciones.Enqueue(() => MedirYCapturarAviso(res.Nombre, idi.Nombre));
 					_acciones.Enqueue(() => AbrirBuffs(res.Nombre, idi.Nombre));
 					_acciones.Enqueue(() => MedirYCapturarBuffs(res.Nombre, idi.Nombre));
+
+					// --- Verificacion de "todo el texto se lee entero, nunca con ...", 7-sep-2026 ---
+					_acciones.Enqueue(() => AbrirCarpetaLargaBuffs(res.Nombre, idi.Nombre));
+					_acciones.Enqueue(() => MedirYCapturarCarpetasBuffs(res.Nombre, idi.Nombre));
+					_acciones.Enqueue(() => AbrirBuilds(res.Nombre, idi.Nombre));
+					_acciones.Enqueue(() => MedirYCapturarBuilds(res.Nombre, idi.Nombre));
+					_acciones.Enqueue(() => AbrirLibreria(res.Nombre, idi.Nombre));
+					_acciones.Enqueue(() => MedirYCapturarLibreria(res.Nombre, idi.Nombre));
+					_acciones.Enqueue(() => AbrirInvestigacion(res.Nombre, idi.Nombre));
+					_acciones.Enqueue(() => MedirYCapturarInvestigacion(res.Nombre, idi.Nombre));
 				}
 			}
 		}
@@ -438,6 +454,220 @@ namespace TerrakeepMod.Common.Panel
 			}
 
 			return fallos;
+		}
+
+		// ============================================================================================
+		// 7-sep-2026 - "todo el texto se lee entero, nunca con ...": pildoras de Builds, carpetas
+		// de Libreria/Buffs y su ruta, y el arbol + lista de Investigacion. Ver bitacora.md.
+		// ============================================================================================
+
+		/// <summary>
+		/// Camino descendiendo por el arbol de carpetas (Libreria/Buffs, mismo tipo de nodo
+		/// <c>CategoryTreeNodeData</c>), eligiendo en CADA nivel el hijo de nombre MAS LARGO -
+		/// fuerza tanto una ruta larga (para el envoltorio del breadcrumb) como nombres de fila
+		/// largos de verdad en el ultimo nivel (para el envoltorio de la fila), sin tener que
+		/// adivinar a mano ningun nombre real del catalogo.
+		/// </summary>
+		private static List<CategoryTreeNodeData> CaminoLargo(IReadOnlyList<CategoryTreeNodeData> raices, int nivelesMax)
+		{
+			List<CategoryTreeNodeData> camino = new List<CategoryTreeNodeData>();
+			IReadOnlyList<CategoryTreeNodeData> nivelActual = raices;
+
+			for (int nivel = 0; nivel < nivelesMax && nivelActual != null && nivelActual.Count > 0; nivel++) {
+				CategoryTreeNodeData mejor = null;
+				int mejorLargo = -1;
+				foreach (CategoryTreeNodeData n in nivelActual) {
+					int largo = (n.Name ?? "").Length;
+					if (largo > mejorLargo) {
+						mejorLargo = largo;
+						mejor = n;
+					}
+				}
+				if (mejor == null) {
+					break;
+				}
+				camino.Add(mejor);
+				nivelActual = mejor.Children;
+			}
+
+			return camino;
+		}
+
+		/// <summary>Igual que <see cref="CaminoLargo"/> pero para el arbol de Investigacion
+		/// (<c>CarpetaInvestigacion</c>, un tipo de nodo distinto), y de paso deja DESPLEGADAS
+		/// todas las carpetas del camino salvo la ultima - si no, la fila de la carpeta objetivo ni
+		/// siquiera se pintaria en el arbol (empieza colapsado).</summary>
+		private static List<CarpetaInvestigacion> CaminoLargoInvestigacion(IReadOnlyList<CarpetaInvestigacion> raices, int nivelesMax)
+		{
+			List<CarpetaInvestigacion> camino = new List<CarpetaInvestigacion>();
+			IReadOnlyList<CarpetaInvestigacion> nivelActual = raices;
+
+			for (int nivel = 0; nivel < nivelesMax && nivelActual != null && nivelActual.Count > 0; nivel++) {
+				CarpetaInvestigacion mejor = null;
+				int mejorLargo = -1;
+				foreach (CarpetaInvestigacion n in nivelActual) {
+					int largo = (n.Nombre ?? "").Length;
+					if (largo > mejorLargo) {
+						mejorLargo = largo;
+						mejor = n;
+					}
+				}
+				if (mejor == null) {
+					break;
+				}
+				if (camino.Count > 0) {
+					camino[camino.Count - 1].Desplegada = true;
+				}
+				camino.Add(mejor);
+				nivelActual = mejor.Hijos;
+			}
+
+			return camino;
+		}
+
+		private static void AbrirCarpetaLargaBuffs(string nombreRes, string nombreIdioma)
+		{
+			ContenidoPersonaje personaje = PanelTerrakeepSystem.Panel != null
+				? PanelTerrakeepSystem.Panel.Personaje : null;
+			PestanaBuffs buffs = personaje != null ? personaje.BuscarPrimero<PestanaBuffs>() : null;
+			if (buffs == null) {
+				Registro.Linea("AUTOPRUEBA ESPACIADO/carpetas-buffs (" + nombreRes + "/" + nombreIdioma +
+					"): no se encontro PestanaBuffs.");
+				return;
+			}
+
+			ArbolBuffs.ConstruirSiHaceFalta();
+			List<CategoryTreeNodeData> camino = CaminoLargo(ArbolBuffs.Raices, 3);
+			foreach (CategoryTreeNodeData nodo in camino) {
+				buffs.AbrirCarpetaParaPrueba(nodo);
+			}
+
+			Registro.Linea("AUTOPRUEBA ESPACIADO/carpetas-buffs (" + nombreRes + "/" + nombreIdioma +
+				") - camino abierto (" + camino.Count + " niveles): " +
+				string.Join(" > ", camino.ConvertAll(n => "\"" + n.Name + "\"")));
+		}
+
+		private static void MedirYCapturarCarpetasBuffs(string nombreRes, string nombreIdioma)
+		{
+			Registro.Linea("AUTOPRUEBA ESPACIADO/carpetas-buffs (" + nombreRes + "/" + nombreIdioma + ") - " +
+				CapturaDePantalla.Guardar("buffs-carpetas-" + nombreRes + "-" + nombreIdioma));
+		}
+
+		private static void AbrirBuilds(string nombreRes, string nombreIdioma)
+		{
+			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Builds,
+				"autoprueba de espaciado (" + nombreRes + "/" + nombreIdioma + ")");
+			ContenidoBuilds builds = PanelTerrakeepSystem.Panel != null ? PanelTerrakeepSystem.Panel.Builds : null;
+			if (builds == null) {
+				return;
+			}
+			// Indice 1 = etapa "temprana" (earlyhardmode): la de la etiqueta real mas larga del
+			// catalogo vanilla ("Hardmode temprano (antes de los jefes mecanicos)" / "Early
+			// Hardmode (before the mechanical bosses)"), el caso mas exigente para las pildoras.
+			builds.SeleccionarEtapa(1);
+		}
+
+		/// <summary>
+		/// Mide de verdad, con la geometria YA dibujada, que NINGUNA pildora de las 3 filas
+		/// (etapa/clase/conjunto de destino - la de fuente solo existe con Calamity instalado)
+		/// mide su texto mas ancho que la caja real que el <see cref="GrupoPildoras.Reflow"/> le
+		/// dio.
+		/// </summary>
+		private static void MedirYCapturarBuilds(string nombreRes, string nombreIdioma)
+		{
+			ContenidoBuilds builds = PanelTerrakeepSystem.Panel != null ? PanelTerrakeepSystem.Panel.Builds : null;
+			if (builds == null) {
+				Registro.Linea("AUTOPRUEBA ESPACIADO/builds (" + nombreRes + "/" + nombreIdioma +
+					"): no se encontro ContenidoBuilds.");
+				return;
+			}
+
+			var fuente = FontAssets.MouseText.Value;
+			int fallos = 0;
+			int pildoras = 0;
+
+			foreach (UIElement fila in new[] {
+				builds.FilaFuentesParaPrueba, builds.FilaEtapasParaPrueba,
+				builds.FilaClasesParaPrueba, builds.FilaLoadoutParaPrueba
+			}) {
+				if (fila == null) {
+					continue;
+				}
+				foreach (UIElement hijo in fila.Children) {
+					BotonTk pildora = hijo as BotonTk;
+					if (pildora == null) {
+						continue;
+					}
+					pildoras++;
+					CalculatedStyle dim = pildora.GetDimensions();
+					Vector2 medida = fuente.MeasureString(pildora.Texto) * 0.75f;
+					if (dim.Width > 0f && medida.X > dim.Width + 0.5f) {
+						fallos++;
+						Registro.Linea("AUTOPRUEBA ESPACIADO/builds (" + nombreRes + "/" + nombreIdioma +
+							") - FALLO: pildora \"" + pildora.Texto.Replace("\n", " | ") + "\" mide " +
+							medida.X.ToString("0.0") + "px en caja de " + dim.Width.ToString("0.0") + "px.");
+					}
+				}
+			}
+
+			Registro.Linea("AUTOPRUEBA ESPACIADO/builds (" + nombreRes + "/" + nombreIdioma + ") - " +
+				pildoras + " pildoras medidas -> " + (fallos == 0 ? "OK, ninguna recorta su texto" : (fallos + " FALLO(S)")) + ".");
+			Registro.Linea("AUTOPRUEBA ESPACIADO/builds (" + nombreRes + "/" + nombreIdioma + ") - " +
+				CapturaDePantalla.Guardar("builds-" + nombreRes + "-" + nombreIdioma));
+		}
+
+		private static void AbrirLibreria(string nombreRes, string nombreIdioma)
+		{
+			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Libreria,
+				"autoprueba de espaciado (" + nombreRes + "/" + nombreIdioma + ")");
+			ContenidoLibreria libreria = PanelTerrakeepSystem.Panel != null ? PanelTerrakeepSystem.Panel.Libreria : null;
+			if (libreria == null) {
+				return;
+			}
+
+			ArbolLibreria.ConstruirSiHaceFalta();
+			List<CategoryTreeNodeData> camino = CaminoLargo(ArbolLibreria.Raices, 3);
+			foreach (CategoryTreeNodeData nodo in camino) {
+				libreria.AbrirCarpeta(nodo);
+			}
+
+			Registro.Linea("AUTOPRUEBA ESPACIADO/libreria (" + nombreRes + "/" + nombreIdioma +
+				") - camino abierto (" + camino.Count + " niveles): " +
+				string.Join(" > ", camino.ConvertAll(n => "\"" + n.Name + "\"")) +
+				" -> RutaActual=\"" + libreria.RutaActual + "\" (" + libreria.RutaActual.Length + " caracteres).");
+		}
+
+		private static void MedirYCapturarLibreria(string nombreRes, string nombreIdioma)
+		{
+			Registro.Linea("AUTOPRUEBA ESPACIADO/libreria (" + nombreRes + "/" + nombreIdioma + ") - " +
+				CapturaDePantalla.Guardar("libreria-" + nombreRes + "-" + nombreIdioma));
+		}
+
+		private static void AbrirInvestigacion(string nombreRes, string nombreIdioma)
+		{
+			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Investigacion,
+				"autoprueba de espaciado (" + nombreRes + "/" + nombreIdioma + ")");
+			ContenidoInvestigacion investigacion = PanelTerrakeepSystem.Panel != null
+				? PanelTerrakeepSystem.Panel.Investigacion : null;
+			if (investigacion == null) {
+				return;
+			}
+
+			CatalogoInvestigacion.RefrescarContadores();
+			List<CarpetaInvestigacion> camino = CaminoLargoInvestigacion(CatalogoInvestigacion.Raices, 4);
+			if (camino.Count > 0) {
+				investigacion.Seleccionar(camino[camino.Count - 1], true);
+			}
+
+			Registro.Linea("AUTOPRUEBA ESPACIADO/investigacion (" + nombreRes + "/" + nombreIdioma +
+				") - camino abierto (" + camino.Count + " niveles): " +
+				string.Join(" > ", camino.ConvertAll(n => "\"" + n.Nombre + "\"")));
+		}
+
+		private static void MedirYCapturarInvestigacion(string nombreRes, string nombreIdioma)
+		{
+			Registro.Linea("AUTOPRUEBA ESPACIADO/investigacion (" + nombreRes + "/" + nombreIdioma + ") - " +
+				CapturaDePantalla.Guardar("investigacion-" + nombreRes + "-" + nombreIdioma));
 		}
 
 		private static void Terminar()

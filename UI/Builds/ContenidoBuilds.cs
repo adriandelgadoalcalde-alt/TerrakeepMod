@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+using ReLogic.Graphics;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
@@ -45,11 +46,48 @@ namespace TerrakeepMod.UI.Builds
 		private const float SeparacionFilas = 4f;
 		private const float AltoPie = 40f;
 
+		// --- Pildoras (fuente/etapa/clase/conjunto de destino): ver GrupoPildoras mas abajo -----
+		/// <summary>Escala de texto de las pildoras. Se guarda aparte (no solo en el <see cref="BotonTk"/>)
+		/// porque <see cref="GrupoPildoras.Reflow"/> necesita medir el texto con la MISMA escala con
+		/// la que se va a dibujar, antes de crear nada.</summary>
+		private const float EscalaPildora = 0.75f;
+		/// <summary>Relleno horizontal (los dos lados juntos) que se añade al ancho medido del texto
+		/// de cada pildora. 12 px a cada lado: el mismo aire visual que ya tenian las pildoras viejas
+		/// de ancho fijo, medido en una captura real.</summary>
+		private const float RellenoPildoraH = 24f;
+		/// <summary>Relleno vertical (arriba+abajo) para una pildora cuyo texto tuvo que ENVOLVERSE a
+		/// varias lineas (ver <see cref="GrupoPildoras.Reflow"/>) - caso raro, solo si una sola
+		/// etiqueta no cabe ni ocupando la fila entera.</summary>
+		private const float RellenoPildoraV = 10f;
+		/// <summary>Ancho minimo de una pildora, para que una etiqueta muy corta ("1", "Mago") no se
+		/// quede mas estrecha que el propio marco de nueve trozos del boton.</summary>
+		private const float AnchoPildoraMinimo = 60f;
+		/// <summary>Separacion horizontal entre pildoras de la misma fila visual. Mismo valor que ya
+		/// usa <see cref="EstiloTk.SeparacionPestanas"/> para las pestañas del panel.</summary>
+		private const float SeparacionPildoras = EstiloTk.SeparacionPestanas;
+		/// <summary>Separacion vertical entre dos filas VISUALES de pildoras dentro del mismo grupo,
+		/// cuando no caben todas en una sola linea (ver <see cref="GrupoPildoras.Reflow"/>).</summary>
+		private const float SeparacionPildorasV = 4f;
+
 		private UIPanel _cabecera;
 		private UIElement _filaFuentes;
 		private UIElement _filaEtapas;
 		private UIElement _filaClases;
 		private UIElement _filaLoadout;
+		private readonly GrupoPildoras _grupoFuentes;
+		private readonly GrupoPildoras _grupoEtapas;
+		private readonly GrupoPildoras _grupoClases;
+		private readonly GrupoPildoras _grupoLoadout;
+
+		/// <summary>Alto REAL de cada una de las 4 filas de pildoras ahora mismo (>= <see cref="AltoFila"/>).
+		/// Las ajusta <see cref="RecalcularPildorasYFilas"/> cada fotograma a lo que las pildoras
+		/// ocupen de verdad, nunca al reves - ver el XMLdoc de esa funcion y de
+		/// <see cref="GrupoPildoras"/> para el porque completo.</summary>
+		private float _altoFilaFuentes = AltoFila;
+		private float _altoFilaEtapas = AltoFila;
+		private float _altoFilaClases = AltoFila;
+		private float _altoFilaLoadout = AltoFila;
+
 		private UIElement _cuerpo;
 		private EtiquetaTk _resumen;
 		private EtiquetaTk _subtitulo;
@@ -167,6 +205,14 @@ namespace TerrakeepMod.UI.Builds
 			}
 		}
 
+		/// <summary>SOLO PARA AUTOPRUEBAS: los contenedores de las 4 filas de pildoras (fuente/
+		/// etapa/clase/conjunto de destino), para poder iterar sus <see cref="BotonTk"/> reales y
+		/// medir que ninguno recorta su texto. Ver <see cref="GrupoPildoras"/>.</summary>
+		public UIElement FilaFuentesParaPrueba => _filaFuentes;
+		public UIElement FilaEtapasParaPrueba => _filaEtapas;
+		public UIElement FilaClasesParaPrueba => _filaClases;
+		public UIElement FilaLoadoutParaPrueba => _filaLoadout;
+
 		public ClaseBuild ClaseActual
 		{
 			get
@@ -219,6 +265,10 @@ namespace TerrakeepMod.UI.Builds
 			_filaEtapas = NuevaFila();
 			_filaClases = NuevaFila();
 			_filaLoadout = NuevaFila();
+			_grupoFuentes = new GrupoPildoras(_filaFuentes);
+			_grupoEtapas = new GrupoPildoras(_filaEtapas);
+			_grupoClases = new GrupoPildoras(_filaClases);
+			_grupoLoadout = new GrupoPildoras(_filaLoadout);
 
 			_cuerpo = new UIElement();
 			_cuerpo.Width.Set(0f, 1f);
@@ -240,6 +290,9 @@ namespace TerrakeepMod.UI.Builds
 
 		private string _subtituloTexto = "";
 
+		/// <summary>Contenedor de una fila de pildoras. El alto NO se fija aqui (a diferencia de
+		/// antes): ahora depende de cuantas pildoras quepan por linea, y lo calcula
+		/// <see cref="RecalcularPildorasYFilas"/> en cuanto hay layout real.</summary>
 		private UIElement NuevaFila()
 		{
 			UIElement fila = new UIElement();
@@ -257,10 +310,14 @@ namespace TerrakeepMod.UI.Builds
 			_filas.Clear();
 			_filasMaximas = 0;
 			_altoColocado = 0f;
-			_filaFuentes.RemoveAllChildren();
-			_filaEtapas.RemoveAllChildren();
-			_filaClases.RemoveAllChildren();
-			_filaLoadout.RemoveAllChildren();
+			// Limpia tambien la lista interna de botones de cada GrupoPildoras (no solo los hijos del
+			// UIElement): si no, una fila que este Reconstruir NO vuelve a pintar (p.ej. fuentes con
+			// Calamity desinstalado a medio camino) dejaria botones fantasma en esa lista para
+			// siempre, que Reflow seguiria midiendo y posicionando sin que nadie los vuelva a anadir.
+			_grupoFuentes.Limpiar();
+			_grupoEtapas.Limpiar();
+			_grupoClases.Limpiar();
+			_grupoLoadout.Limpiar();
 			_cuerpo.RemoveAllChildren();
 
 			FuenteBuilds fuente = FuenteActual;
@@ -283,7 +340,7 @@ namespace TerrakeepMod.UI.Builds
 				foreach (FuenteBuilds f in fuentes) {
 					etiquetas.Add(f.Etiqueta);
 				}
-				PintarPildoras(_filaFuentes, etiquetas, _indiceFuente, indice => {
+				PintarPildoras(_grupoFuentes, etiquetas, _indiceFuente, indice => {
 					_indiceFuente = indice;
 					_indiceEtapa = 0;
 					Reconstruir();
@@ -300,7 +357,7 @@ namespace TerrakeepMod.UI.Builds
 			foreach (EtapaBuild e in fuente.Etapas) {
 				etapas.Add(e.Etiqueta);
 			}
-			PintarPildoras(_filaEtapas, etapas, _indiceEtapa, indice => {
+			PintarPildoras(_grupoEtapas, etapas, _indiceEtapa, indice => {
 				_indiceEtapa = indice;
 				Reconstruir();
 			});
@@ -321,7 +378,7 @@ namespace TerrakeepMod.UI.Builds
 					indiceClase = i;
 				}
 			}
-			PintarPildoras(_filaClases, clases, indiceClase, indice => {
+			PintarPildoras(_grupoClases, clases, indiceClase, indice => {
 				_claveClase = etapa.Clases[indice].Clave;
 				Reconstruir();
 			});
@@ -356,51 +413,245 @@ namespace TerrakeepMod.UI.Builds
 			float y = _altoCabecera + 6f;
 
 			_filaFuentes.Top.Set(y, 0f);
-			_filaFuentes.Height.Set(hayFilaFuentes ? AltoFila : 0f, 0f);
+			_filaFuentes.Height.Set(hayFilaFuentes ? _altoFilaFuentes : 0f, 0f);
 			if (hayFilaFuentes) {
-				y += AltoFila + SeparacionFilas;
+				y += _altoFilaFuentes + SeparacionFilas;
 			}
 
 			_filaEtapas.Top.Set(y, 0f);
-			y += AltoFila + SeparacionFilas;
+			_filaEtapas.Height.Set(_altoFilaEtapas, 0f);
+			y += _altoFilaEtapas + SeparacionFilas;
 
 			_filaClases.Top.Set(y, 0f);
-			y += AltoFila + SeparacionFilas;
+			_filaClases.Height.Set(_altoFilaClases, 0f);
+			y += _altoFilaClases + SeparacionFilas;
 
 			_filaLoadout.Top.Set(y, 0f);
-			_filaLoadout.Height.Set(hayFilaLoadout ? AltoFila : 0f, 0f);
-			y += (hayFilaLoadout ? AltoFila : 0f) + 8f;
+			_filaLoadout.Height.Set(hayFilaLoadout ? _altoFilaLoadout : 0f, 0f);
+			y += (hayFilaLoadout ? _altoFilaLoadout : 0f) + 8f;
 
 			_cuerpo.Top.Set(y, 0f);
 			_cuerpo.Height.Set(-(y + AltoPie), 1f);
 		}
 
 		/// <summary>
-		/// Una fila de pildoras. Son <see cref="BotonTk"/> normales (no <c>UITextPanel</c> pelados
-		/// como antes), asi que comparten animacion, sonido y paleta con todos los demas botones
-		/// del mod. El ancho se reparte en porcentaje para que la fila se estire con el panel.
+		/// Una fila de pildoras (fuente/etapa/clase/conjunto de destino). Son <see cref="BotonTk"/>
+		/// normales, asi que comparten animacion, sonido y paleta con todos los demas botones del
+		/// mod.
+		/// <para />
+		/// <b>Ya NO reparte un ancho fijo a partes iguales.</b> El reparto en fracciones (1/N del
+		/// ancho de la fila) es lo que obligaba a <c>EstiloInvestigacionAcortar</c> a cortar con
+		/// "..." etiquetas reales como "Pre-Hardmode (listo para el Muro de Carne)" o "Hardmode
+		/// (post-Plantera / pre-Golem, aprox.)" - visto literalmente en una captura del usuario
+		/// ("Pre-Hardmode (listo para el Mur..."). Aqui solo se crean los botones CON SU TEXTO
+		/// COMPLETO; el ancho real de cada uno (medido con la fuente real) y su posicion los decide
+		/// <see cref="GrupoPildoras.Reflow"/>, llamado cada fotograma desde
+		/// <see cref="RecalcularPildorasYFilas"/> - hace falta cada fotograma porque el ancho
+		/// disponible cambia con la resolucion de la ventana, y porque el texto de una pildora puede
+		/// cambiar solo (ver <see cref="ActualizarBotonesLoadoutObjetivo"/>, la marca "(activo)").
 		/// </summary>
-		private void PintarPildoras(UIElement fila, List<string> etiquetas, int seleccionada, Action<int> alPulsar)
+		private void PintarPildoras(GrupoPildoras grupo, List<string> etiquetas, int seleccionada, Action<int> alPulsar)
 		{
+			grupo.Limpiar();
 			if (etiquetas.Count == 0) {
 				return;
 			}
 
-			float fraccion = 1f / etiquetas.Count;
-
 			for (int i = 0; i < etiquetas.Count; i++) {
 				int indice = i;   // copia local: sin esto todas las lambdas compartirian la variable
-				BotonTk pildora = new BotonTk(EstiloInvestigacionAcortar(etiquetas[i], 34), 0.75f);
+				BotonTk pildora = new BotonTk(etiquetas[i], EscalaPildora);
 				pildora.EsPestana = true;
 				pildora.Activo = i == seleccionada;
-				pildora.Width.Set(-EstiloTk.SeparacionPestanas, fraccion);
-				pildora.Height.Set(AltoFila, 0f);
-				pildora.Left.Set(0f, i * fraccion);
-				string completa = etiquetas[i];
-				pildora.Ayuda = () => completa;
 				pildora.AlPulsar += () => alPulsar(indice);
-				fila.Append(pildora);
+				grupo.Anadir(pildora);
 			}
+		}
+
+		/// <summary>
+		/// Una fila de <see cref="BotonTk"/> en forma de "pildora" cuyo ancho se mide pildora a
+		/// pildora con el TEXTO REAL (nunca un reparto a partes iguales), y que se reparte en tantas
+		/// filas VISUALES como haga falta para no salirse del ancho disponible - la caja crece,
+		/// nunca el texto se recorta, mismo criterio que el resto del panel (ver
+		/// <see cref="RecalcularCabecera"/>).
+		/// <para />
+		/// <b>Caso limite cubierto de verdad:</b> si una sola etiqueta no cabe ni ocupando la fila
+		/// ENTERA ella sola (un mod de terceros con un nombre de etapa/clase absurdamente largo), esa
+		/// pildora concreta ENVUELVE su propio texto a varias lineas (mismo
+		/// <see cref="EtiquetaTk.PartirEnLineas"/> que usa toda la pestaña) en vez de desbordar o
+		/// recortar - con las etiquetas reales de este mod (maximo real medido: 53 caracteres, "Final
+		/// del juego (Auric Tesla, post-Yharon/Exo Mechs)") esto no llega a activarse nunca, pero deja
+		/// el widget a prueba de un catalogo futuro con nombres mas largos.
+		/// </summary>
+		private class GrupoPildoras
+		{
+			public readonly UIElement Contenedor;
+			private readonly List<BotonTk> _botones = new List<BotonTk>();
+
+			public GrupoPildoras(UIElement contenedor)
+			{
+				Contenedor = contenedor;
+			}
+
+			public void Limpiar()
+			{
+				_botones.Clear();
+				Contenedor.RemoveAllChildren();
+			}
+
+			public void Anadir(BotonTk boton)
+			{
+				_botones.Add(boton);
+				Contenedor.Append(boton);
+			}
+
+			/// <summary>
+			/// Coloca todas las pildoras y devuelve el alto TOTAL que ocupan (una o varias filas
+			/// visuales). Se mide y se coloca en la MISMA pasada porque el texto de cada boton (y por
+			/// tanto su ancho) puede haber cambiado desde la ultima llamada - no hay ningun estado
+			/// intermedio que se pueda quedar desfasado.
+			/// </summary>
+			public float Reflow(float anchoDisponible)
+			{
+				if (_botones.Count == 0) {
+					return AltoFila;
+				}
+				if (anchoDisponible <= 0f) {
+					// Layout todavia no calculado este fotograma: se reintenta solo, como en
+					// PestanaMundo.RecalcularAviso. No se toca ningun boton mientras tanto.
+					return AltoFila;
+				}
+
+				DynamicSpriteFont fuente = Terraria.GameContent.FontAssets.MouseText.Value;
+
+				// Primera pasada: para cada pildora, su TEXTO final (envuelto solo si de verdad no
+				// cabe ni sola en toda la fila) y el hueco (ancho x alto) que necesita.
+				var celdas = new (BotonTk boton, string texto, float ancho, float alto)[_botones.Count];
+				for (int i = 0; i < _botones.Count; i++) {
+					BotonTk boton = _botones[i];
+					// El texto ORIGINAL (sin envolver) es el propio texto actual del boton con los
+					// saltos de linea de una envoltura anterior deshechos: PartirEnLineas solo
+					// sustituye el espacio separador por un salto, nunca añade ni quita caracteres,
+					// asi que esto reconstruye la frase exacta de partida sin guardar una copia aparte.
+					string original = boton.Texto.Replace('\n', ' ');
+					float anchoNatural = fuente.MeasureString(original).X * EscalaPildora + RellenoPildoraH;
+
+					string texto = original;
+					float ancho = anchoNatural < AnchoPildoraMinimo ? AnchoPildoraMinimo : anchoNatural;
+					float alto = AltoFila;
+
+					if (anchoNatural > anchoDisponible) {
+						float anchoTexto = anchoDisponible - RellenoPildoraH;
+						texto = EtiquetaTk.PartirEnLineas(original, anchoTexto > 10f ? anchoTexto : anchoDisponible, EscalaPildora);
+						ancho = anchoDisponible;
+						float altoTexto = fuente.MeasureString(texto).Y * EscalaPildora + RellenoPildoraV;
+						alto = altoTexto > AltoFila ? altoTexto : AltoFila;
+					}
+
+					celdas[i] = (boton, texto, ancho, alto);
+				}
+
+				// Segunda pasada: coloca de izquierda a derecha, saltando de fila visual cuando la
+				// siguiente pildora no cabe ya en la actual.
+				float x = 0f, y = 0f, altoFilaActual = 0f;
+				bool filaVacia = true;
+
+				for (int i = 0; i < celdas.Length; i++) {
+					var celda = celdas[i];
+					if (!filaVacia && x + celda.ancho > anchoDisponible) {
+						y += altoFilaActual + SeparacionPildorasV;
+						x = 0f;
+						altoFilaActual = 0f;
+						filaVacia = true;
+					}
+
+					celda.boton.FijarTexto(celda.texto);
+					celda.boton.Left.Set(x, 0f);
+					celda.boton.Top.Set(y, 0f);
+					celda.boton.Width.Set(celda.ancho, 0f);
+					celda.boton.Height.Set(celda.alto, 0f);
+
+					x += celda.ancho + SeparacionPildoras;
+					if (celda.alto > altoFilaActual) {
+						altoFilaActual = celda.alto;
+					}
+					filaVacia = false;
+				}
+
+				return y + altoFilaActual;
+			}
+		}
+
+		/// <summary>
+		/// Reparte las pildoras de las 4 filas (fuente/etapa/clase/conjunto de destino) por el ancho
+		/// REAL del panel y ajusta el alto de cada fila (y por tanto la posicion de todo lo que va
+		/// debajo, via <see cref="ColocarFilas"/>) a lo que de verdad ocupen - mismo patron que
+		/// <see cref="RecalcularCabecera"/>.
+		/// <para />
+		/// Se llama cada fotograma (ver <see cref="Update"/>) por dos razones reales: el ancho
+		/// disponible cambia si el jugador redimensiona la ventana, y el texto de las pildoras de
+		/// conjunto de destino cambia SOLO cuando el jugador pulsa las teclas de conjunto del propio
+		/// juego (la marca "(activo)" aparece/desaparece, ver <see cref="ActualizarBotonesLoadoutObjetivo"/>)
+		/// sin pasar por <see cref="Reconstruir"/>.
+		/// </summary>
+		/// <remarks>
+		/// <b>Bug real encontrado y arreglado con la propia autoprueba de este mismo encargo</b>
+		/// (<c>AutopruebaEspaciado.MedirYCapturarBuilds</c>, ver bitacora.md): la primera version
+		/// solo llamaba a <see cref="Recalculate"/> cuando el ALTO total de alguna fila cambiaba
+		/// (<see cref="AjustarAltoGrupo"/>). Pero <see cref="GrupoPildoras.Reflow"/> escribe un
+		/// <c>Width</c>/<c>Left</c>/<c>Top</c> NUEVO en cada pildora en CADA llamada, tanto si el
+		/// alto total de la fila cambia como si no (p.ej. la fila de etapa, con 3 pildoras que ya
+		/// caben en una sola linea a 1600x900 - el alto se queda en 30px de siempre, pero el ANCHO
+		/// de cada pildora individual SI cambia de los 120px de fabrica a los ~300px que le hacen
+		/// falta). <c>UIElement.Width.Set(...)</c> por si solo no actualiza nada visible: hace falta
+		/// un <see cref="Recalculate"/> real para que <c>GetDimensions()</c> deje de devolver el
+		/// valor cacheado de la ULTIMA vez que se recalculo (el de <see cref="Reconstruir"/>, con
+		/// las pildoras todavia a 120x32 de fabrica). Verificado en el juego real: con el alto como
+		/// unica condicion, las pildoras de etapa median 120px de caja con un texto de hasta 305px -
+		/// exactamente el mismo recorte silencioso que esta tarea vino a arreglar, solo que ahora
+		/// invisible (el texto no se dibujaba cortado con "..." porque BotonTk ni siquiera llega a
+		/// recortar, pero el marco del boton quedaba mas estrecho que su propio texto, con el texto
+		/// desbordandolo por fuera). Por eso <see cref="Recalculate"/> se llama SIEMPRE, no solo
+		/// cuando cambia el alto total - solo <see cref="ColocarFilas"/> (que mueve LO DE ABAJO)
+		/// sigue condicionado a que el alto cambie de verdad, porque eso si es caro evitar sin
+		/// necesidad.
+		/// </remarks>
+		private void RecalcularPildorasYFilas()
+		{
+			float anchoDisponible = GetDimensions().Width;
+			if (anchoDisponible <= 0f) {
+				return;
+			}
+
+			bool cambioAlto = false;
+			if (AjustarAltoGrupo(_grupoFuentes, anchoDisponible, ref _altoFilaFuentes)) {
+				cambioAlto = true;
+			}
+			if (AjustarAltoGrupo(_grupoEtapas, anchoDisponible, ref _altoFilaEtapas)) {
+				cambioAlto = true;
+			}
+			if (AjustarAltoGrupo(_grupoClases, anchoDisponible, ref _altoFilaClases)) {
+				cambioAlto = true;
+			}
+			if (AjustarAltoGrupo(_grupoLoadout, anchoDisponible, ref _altoFilaLoadout)) {
+				cambioAlto = true;
+			}
+
+			if (cambioAlto) {
+				ColocarFilas(_hayFilaFuentes, _hayFilaLoadout);
+			}
+
+			// Siempre, no solo si cambioAlto - ver el "bug real" de arriba.
+			Recalculate();
+		}
+
+		private static bool AjustarAltoGrupo(GrupoPildoras grupo, float anchoDisponible, ref float altoActual)
+		{
+			float nuevo = grupo.Reflow(anchoDisponible);
+			if (Math.Abs(nuevo - altoActual) > 0.5f) {
+				altoActual = nuevo;
+				return true;
+			}
+			return false;
 		}
 
 		/// <summary>Una de las tres columnas. Recibe la CLAVE de localizacion del titulo, no el
@@ -426,8 +677,21 @@ namespace TerrakeepMod.UI.Builds
 				contenedor.Append(slot);
 				_slots.Add(slot);
 
-				UIText etiqueta = new UIText(EstiloInvestigacionAcortar(objeto.Nombre, 26), 0.72f);
+				// Nunca se recorta el nombre con "...": antes EstiloInvestigacionAcortar cortaba por
+				// NUMERO DE CARACTERES (ni siquiera medido con la fuente real), asi que un objeto con
+				// nombre largo (frecuente en Calamity) se veia truncado a media palabra. Se usa en su
+				// lugar DynamicallyScaleDownToWidth, la reduccion de escala NATIVA de UIText (vanilla,
+				// Terraria.GameContent.UI.Elements.UIText.DrawSelf): con el ancho de la caja anclado
+				// al ancho REAL de la columna (en vez de dejar que MinWidth lo expanda al del propio
+				// texto, su comportamiento por defecto) el motor reduce la escala el minimo necesario
+				// para que el nombre entero quepa, en vez de cortarlo - mismo criterio que ya aplico
+				// CampoTextoTk a la pista "cantidad" (ver bitacora.md).
+				UIText etiqueta = new UIText(objeto.Nombre, 0.72f);
 				etiqueta.Left.Set(54f, 0f);
+				etiqueta.Width.Set(-(54f + separacion), 1f);
+				etiqueta.MinWidth.Set(0f, 0f);
+				etiqueta.TextOriginX = 0f;
+				etiqueta.DynamicallyScaleDownToWidth = true;
 				contenedor.Append(etiqueta);
 				_etiquetasSlot.Add(etiqueta);
 
@@ -438,8 +702,12 @@ namespace TerrakeepMod.UI.Builds
 					: Idiomas.Texto("Builds.NoExisteAqui");
 				UIText pie = null;
 				if (!string.IsNullOrEmpty(extra)) {
-					pie = new UIText(EstiloInvestigacionAcortar(extra, 34), 0.62f);
+					pie = new UIText(extra, 0.62f);
 					pie.Left.Set(54f, 0f);
+					pie.Width.Set(-(54f + separacion), 1f);
+					pie.MinWidth.Set(0f, 0f);
+					pie.TextOriginX = 0f;
+					pie.DynamicallyScaleDownToWidth = true;
 					pie.TextColor = objeto.Resuelto ? EstiloTk.Neutro : EstiloTk.Peligro;
 					contenedor.Append(pie);
 				}
@@ -540,15 +808,6 @@ namespace TerrakeepMod.UI.Builds
 			_cuerpo.Recalculate();
 		}
 
-		// Se corta con "..." de tres puntos normales y no con el caracter "…": la fuente del juego
-		// solo tiene el juego de caracteres con el que se genero, y un caracter que no esta hace
-		// reventar a DynamicSpriteFont al medir el texto. Es la misma funcion que ya tenia
-		// EstiloInvestigacion; se llama a esa para no tener dos copias.
-		private static string EstiloInvestigacionAcortar(string texto, int maximo)
-		{
-			return Investigacion.EstiloInvestigacion.Acortar(texto, maximo);
-		}
-
 		/// <summary>Selecciona una clase por su clave (melee/ranged/mage/summoner/rogue) y rehace
 		/// el area. La usa el arnes de pruebas para fijar la clase sin simular clics.</summary>
 		public void SeleccionarClase(string clave)
@@ -557,6 +816,16 @@ namespace TerrakeepMod.UI.Builds
 				return;
 			}
 			_claveClase = clave;
+			Reconstruir();
+		}
+
+		/// <summary>Selecciona una etapa por su indice y rehace el area. La usa el arnes de pruebas
+		/// (verificacion de que las pildoras de etapa/clase/fuente/destino nunca recortan un nombre
+		/// largo, ver bitacora.md) para forzar la etapa con la etiqueta mas larga sin simular
+		/// clics.</summary>
+		public void SeleccionarEtapa(int indice)
+		{
+			_indiceEtapa = indice;
 			Reconstruir();
 		}
 
@@ -627,7 +896,7 @@ namespace TerrakeepMod.UI.Builds
 				etiquetas.Add(Idiomas.Texto("Builds.ConjuntoDestinoPildora", i + 1));
 			}
 
-			PintarPildoras(_filaLoadout, etiquetas, objetivo, indice => {
+			PintarPildoras(_grupoLoadout, etiquetas, objetivo, indice => {
 				_loadoutObjetivo = indice;
 				ActualizarBotonesLoadoutObjetivo();
 			});
@@ -650,6 +919,12 @@ namespace TerrakeepMod.UI.Builds
 		/// puede cambiar de conjunto ACTIVO con las teclas del propio juego mientras el panel de
 		/// Builds sigue abierto, y la marca tiene que seguirlo (igual que ya hace
 		/// <c>PestanaEquipo.ActualizarBotonesLoadout</c> en el panel de Personaje).
+		/// <para />
+		/// El texto ya NO se recorta aqui: se fija completo (con o sin la marca "(activo)") y es
+		/// <see cref="RecalcularPildorasYFilas"/>, llamado justo despues desde <see cref="Update"/>,
+		/// quien mide el ancho real que necesita CADA pildora con este texto ya puesto y ajusta la
+		/// fila entera - la pildora puede ensancharse o encogerse sola cuando la marca aparece o
+		/// desaparece, nunca corta el numero de conjunto.
 		/// </summary>
 		private void ActualizarBotonesLoadoutObjetivo()
 		{
@@ -666,7 +941,7 @@ namespace TerrakeepMod.UI.Builds
 					// puede empezar ni acabar con espacio (tModLoader los reescribe y se lo come).
 					etiqueta += " " + Idiomas.Texto("Builds.ConjuntoActivoMarca");
 				}
-				_botonesLoadoutObjetivo[i].FijarTexto(EstiloInvestigacionAcortar(etiqueta, 34));
+				_botonesLoadoutObjetivo[i].FijarTexto(etiqueta);
 				_botonesLoadoutObjetivo[i].Activo = i == _loadoutObjetivo;
 			}
 		}
@@ -762,6 +1037,12 @@ namespace TerrakeepMod.UI.Builds
 			// jugador puede pulsar las teclas de conjunto de equipo del propio juego mientras el
 			// panel de Builds sigue abierto.
 			ActualizarBotonesLoadoutObjetivo();
+
+			// DESPUES de fijar los rotulos de arriba (el de destino puede haber cambiado de largo
+			// este mismo fotograma con la marca "activo"): mide el ancho real de cada pildora con su
+			// texto YA puesto y reparte las 4 filas - crece la fila, nunca recorta el texto. Ver el
+			// XMLdoc de RecalcularPildorasYFilas para el porque de hacerlo cada fotograma.
+			RecalcularPildorasYFilas();
 
 			// Cuenta atras del mensaje de resultado de auto-equipar (ver el comentario de
 			// _mensajeResultado). El color se refuerza cada fotograma en vez de solo al fijar el

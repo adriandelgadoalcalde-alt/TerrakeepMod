@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.GameContent;
 using Terraria.UI;
 using TerrakeepMod.Common.Investigacion;
+using TerrakeepMod.UI.Personaje.Widgets;
 
 namespace TerrakeepMod.UI.Investigacion
 {
@@ -18,9 +19,12 @@ namespace TerrakeepMod.UI.Investigacion
 	/// </summary>
 	public class FilaCarpetaInvestigacion : UIElement
 	{
-		/// <summary>Alto de una fila. Fijo, para que la lista sea regular.</summary>
-		public const float Alto = 26f;
+		/// <summary>Alto MINIMO de una fila (una sola linea de nombre). Ver
+		/// <see cref="ActualizarLayout"/>: crece de verdad si el nombre no cabe en una linea, nunca
+		/// se queda en un numero fijo que recorte texto.</summary>
+		public const float AltoMinimo = 26f;
 
+		private const float EscalaNombre = 0.85f;
 		private const float SangriaPorNivel = 14f;
 		private const float AnchoBarra = 54f;
 		private const float AnchoRecuento = 68f;
@@ -33,17 +37,55 @@ namespace TerrakeepMod.UI.Investigacion
 		/// <summary>Clic izquierdo sobre la fila.</summary>
 		public event Action<CarpetaInvestigacion> AlPulsar;
 
+		/// <summary>Nombre YA envuelto (<see cref="EtiquetaTk.PartirEnLineas"/>) al ancho real de
+		/// esta fila. Lo calcula <see cref="ActualizarLayout"/>.</summary>
+		private string _nombrePartido;
+
+		/// <summary>Alto real (con la fuente real) que ocupa <see cref="_nombrePartido"/> ya
+		/// envuelto. Ver <see cref="ActualizarLayout"/>.</summary>
+		private float _altoTexto = AltoMinimo - 6f;
+
 		public FilaCarpetaInvestigacion(CarpetaInvestigacion carpeta)
 		{
 			Carpeta = carpeta;
+			_nombrePartido = carpeta.Nombre;
 			Width.Set(0f, 1f);
-			Height.Set(Alto, 0f);
+			Height.Set(AltoMinimo, 0f);
 
 			OnLeftClick += (evento, elemento) => {
 				if (AlPulsar != null) {
 					AlPulsar(Carpeta);
 				}
 			};
+		}
+
+		/// <summary>
+		/// Mide el nombre ENVUELTO (nunca recortado con "..." como antes - el codigo viejo cortaba
+		/// por NUMERO DE CARACTERES, ni siquiera medido con la fuente real) al ancho REAL de esta
+		/// fila, y devuelve el alto que necesita. Lo llama
+		/// <see cref="ContenidoInvestigacion.AjustarAltoFilasCarpeta"/> cada fotograma (el ancho
+		/// disponible cambia con la resolucion de la ventana), que es quien de verdad fija
+		/// <see cref="UIElement.Height"/> y recoloca la lista - esta fila solo mide.
+		/// </summary>
+		public float ActualizarLayout()
+		{
+			CalculatedStyle dim = GetDimensions();
+			if (dim.Width <= 0f) {
+				// Layout todavia no calculado este fotograma: se reintenta solo, sin tocar nada.
+				return Height.Pixels > 0f ? Height.Pixels : AltoMinimo;
+			}
+
+			float sangria = 4f + Carpeta.Profundidad * SangriaPorNivel;
+			float anchoTextoDisponible = dim.Width - sangria - 16f - AnchoRecuento - AnchoBarra - 12f;
+			if (anchoTextoDisponible < 20f) {
+				anchoTextoDisponible = 20f;
+			}
+
+			_nombrePartido = EtiquetaTk.PartirEnLineas(Carpeta.Nombre, anchoTextoDisponible, EscalaNombre);
+			_altoTexto = FontAssets.MouseText.Value.MeasureString(_nombrePartido).Y * EscalaNombre;
+
+			float altoNecesario = _altoTexto + 6f;
+			return altoNecesario > AltoMinimo ? altoNecesario : AltoMinimo;
 		}
 
 		protected override void DrawSelf(SpriteBatch spriteBatch)
@@ -73,25 +115,23 @@ namespace TerrakeepMod.UI.Investigacion
 			Utils.DrawBorderString(spriteBatch, marca,
 				new Vector2(dim.X + sangria, dim.Y + 3f), EstiloInvestigacion.SinEmpezar, 0.85f);
 
-			float anchoTextoDisponible = dim.Width - sangria - 16f - AnchoRecuento - AnchoBarra - 12f;
-			int caracteres = Math.Max(6, (int)(anchoTextoDisponible / 7.2f));
-			string nombre = EstiloInvestigacion.Acortar(Carpeta.Nombre, caracteres);
-
 			Color colorNombre = Carpeta.Hechos >= Carpeta.Total && Carpeta.Total > 0
 				? EstiloInvestigacion.Hecho
 				: Color.White;
-			Utils.DrawBorderString(spriteBatch, nombre,
-				new Vector2(dim.X + sangria + 16f, dim.Y + 3f), colorNombre, 0.85f);
+			Utils.DrawBorderString(spriteBatch, _nombrePartido,
+				new Vector2(dim.X + sangria + 16f, dim.Y + 3f), colorNombre, EscalaNombre);
 
-			// Recuento y barra, pegados al borde derecho.
+			// Recuento y barra, pegados al borde derecho y centrados verticalmente en el alto REAL
+			// de la fila (que puede ser mayor que AltoMinimo si el nombre se envolvio).
 			string recuento = Carpeta.Hechos + "/" + Carpeta.Total;
 			Vector2 tamano = FontAssets.MouseText.Value.MeasureString(recuento) * 0.75f;
 			float xBarra = dim.X + dim.Width - AnchoBarra - 4f;
+			float yCentro = dim.Y + dim.Height / 2f;
 			Utils.DrawBorderString(spriteBatch, recuento,
-				new Vector2(xBarra - 8f - tamano.X, dim.Y + 4f),
+				new Vector2(xBarra - 8f - tamano.X, yCentro - tamano.Y / 2f),
 				EstiloInvestigacion.ColorDeEstado(Carpeta.Hechos, Carpeta.Total), 0.75f);
 
-			Rectangle canal = new Rectangle((int)xBarra, (int)(dim.Y + 9f), (int)AnchoBarra, 8);
+			Rectangle canal = new Rectangle((int)xBarra, (int)(yCentro - 4f), (int)AnchoBarra, 8);
 			spriteBatch.Draw(pixel, canal, EstiloInvestigacion.CanalBarra);
 			if (Carpeta.Total > 0 && Carpeta.Hechos > 0) {
 				int relleno = (int)Math.Round(canal.Width * Math.Min(1f, Carpeta.Hechos / (float)Carpeta.Total));
