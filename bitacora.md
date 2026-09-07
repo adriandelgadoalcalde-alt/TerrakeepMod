@@ -2838,3 +2838,27 @@ sesión sin ratón físico.
 (el diagnóstico ampliado y `ReafirmarRaton`/su enganche en `Draw`). `bitacora.md` con esta entrada.
 `Common/Panel/PanelTerrakeepSystem.cs` quedó sin cambios netos (se probó y se revirtió un enganche
 en `PostUpdateInput` que no era la solución).
+
+---
+
+## 7-sep-2026 — Reconciliación de las claves de idioma pendientes de la oleada de 7 agentes
+
+Tras la oleada de 7 agentes en paralelo (vista previa de Apariencia, Buffs, Builds, papelera y
+cantidad, mejor prefijo, Exploración, tooltips), tres de ellos habían dejado a propósito sin
+comitear las claves de idioma nuevas que sus cambios necesitaban, para no chocar contra otro
+trabajo en marcha sobre los mismos `.hjson` compartidos (`generar-localizacion.py`). Con los 7
+ya cerrados, no quedaba nadie más tocando esos archivos, así que se reconcilió en un solo paso:
+
+- `Builds.ConjuntoDestinoPildora`/`ConjuntoDestinoAyuda`/`ConjuntoActivoMarca` (selector de
+  conjunto de destino 1/2/3 al auto-equipar una build).
+- 20 claves `Personaje.Buffs.Arbol.*` (navegación de carpetas del árbol de Buffs, calcadas del
+  mismo patrón ya usado por `Libreria.*` - mismo criterio de texto, cambiando "objetos" por
+  "buffs" donde corresponde).
+- `Prefijos.MejorPrefijo` (línea de aviso en el tooltip cuando el prefijo actual no es el mejor
+  posible).
+
+Añadidas a la tabla única de `scripts/generar-localizacion.py` (nunca a mano en los `.hjson`,
+por la regla ya establecida del propio script), regeneradas, compilado el mod (0 errores) y
+lanzado una vez en el sandbox `tModLoader-TerrakeepWS0` para confirmar `Mod cargado` sin
+excepciones. El `git diff` de los dos `.hjson` salió limpio - solo líneas añadidas, ninguna
+reescrita ni movida. Commit `db9631d`.
