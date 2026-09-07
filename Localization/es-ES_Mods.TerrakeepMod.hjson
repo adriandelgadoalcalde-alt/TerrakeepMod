@@ -366,6 +366,7 @@ Builds: {
 	Tienes: Tienes {0} de {1} objetos de esta build{2}.
 	Leyenda: Verde = ya lo tienes  ·  gris = no lo tienes  ·  rojo = no existe aquí.
 	ResultadoAutoEquipar: Auto-equipar: {0}
+	NadaQueMover: No tenías ningún objeto de esta build para mover. Auto-equipar solo mueve lo que ya posees, nunca crea nada.
 	Resumen: movidos={0}, ya colocados={1}, no los tienes={2}, sin sitio={3}, no existen aquí={4}
 
 	Etapa: {

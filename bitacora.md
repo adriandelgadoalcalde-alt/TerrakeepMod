@@ -2862,3 +2862,145 @@ por la regla ya establecida del propio script), regeneradas, compilado el mod (0
 lanzado una vez en el sandbox `tModLoader-TerrakeepWS0` para confirmar `Mod cargado` sin
 excepciones. El `git diff` de los dos `.hjson` salió limpio - solo líneas añadidas, ninguna
 reescrita ni movida. Commit `db9631d`.
+
+---
+
+## 7-sep-2026 — "Build se sigue sin aplicar": la causa real no era la escritura, era el aviso
+
+El usuario probó el mod de verdad (capturas propias) y reportó, sin matices: "build se sigue sin
+aplicar hay que mirar muy bien eso". La sesión anterior (entrada de arriba, WS4 ampliado) había
+dado el selector de conjunto de destino por verificado con logs reales - así que o esa
+verificación tenía un agujero, o había un bug de verdad sin cubrir. Se investigó sin dar nada por
+sentado, siguiendo el camino EXACTO de un usuario real (tecla K -> pestaña Builds -> build ->
+conjunto de destino -> "Auto-equipar"), no solo releer el código.
+
+### Lo que se descartó primero, leyendo el código real
+
+- `AutoEquipar.Ejecutar`/`EquipoJugador.ArmorDe` (`Common/Builds/AutoEquipar.cs`,
+  `EquipoJugador.cs`): sin cambios desde el commit `342e5a4` de ayer, siguen escribiendo en el
+  array vivo correcto (`Player.armor` o `Player.Loadouts[n].Armor` según el conjunto elegido).
+- El manejador del botón (`UI/Builds/ContenidoBuilds.cs`, `_botonAutoEquipar.AlPulsar +=
+  EjecutarAutoEquipar`) SÍ estaba enganchado, y `_loadoutObjetivo` SÍ se leía de verdad
+  (`LoadoutObjetivoValido`) al ejecutar - no había ninguna desconexión UI/lógica.
+- `BotonTk.OnLeftClick` es el mismo camino de clic real que ya usan las pestañas y las pastillas
+  (que el propio usuario consiguió pulsar para llegar hasta aquí), así que el clic en sí no era
+  sospechoso.
+
+### La causa real: el ÚNICO aviso visible de que auto-equipar había hecho algo se borraba solo
+
+`ContenidoBuilds.EjecutarAutoEquipar()` fijaba el resultado ("movidos=5, ya colocados=1...") en
+`_textoResumen` - el MISMO campo que usa la leyenda de colores ("verde = ya lo tienes..."). Pero
+`Update()` llama a `RefrescarPosesion()` cada `FotogramasEntreRefrescos` (15, o sea cada 0,25 s a
+60 fps) para que "ya lo tienes" no se quede desfasado si el jugador mueve algo con los slots del
+propio juego, y `ActualizarResumen()` (llamada desde ahí) reescribe `_textoResumen` con la leyenda
+en CADA pasada. Resultado real: el mensaje de resultado se pisaba solo con la leyenda antes de un
+cuarto de segundo - un tiempo demasiado corto para que un humano lo lea, visualmente
+indistinguible de "el botón no ha hecho nada". Auto-equipar SÍ escribía en los arrays reales del
+jugador (confirmado otra vez con logs de esta sesión, ver más abajo) - lo único roto era la única
+prueba visible de ello dentro del panel.
+
+Un segundo problema real, relacionado y ya anticipado por el propio usuario en el encargo: cuando
+la build elegida no tiene NINGÚN objeto que el jugador posea (auto-equipar solo MUEVE lo que ya
+tienes, nunca crea nada - ver el XMLdoc de `AutoEquipar`), el resumen genérico con todo a cero
+("movidos=0, ya colocados=0, no los tienes=13...") se leía exactamente igual que un fallo
+silencioso, aunque fuera el comportamiento correcto.
+
+### El arreglo: `UI/Builds/ContenidoBuilds.cs`
+
+- Dos campos nuevos, `_mensajeResultado` y `_fotogramasMensajeResultado` (con
+  `_colorMensajeResultado`), separados del todo de `_textoResumen`/la leyenda. El lambda del
+  `EtiquetaTk` de resumen ahora es `() => _fotogramasMensajeResultado > 0 ? _mensajeResultado :
+  _textoResumen` - mientras el mensaje sigue "vivo" (cuenta atrás de `DuracionMensajeResultado` =
+  6 s a 60 fps, `Update()` la descuenta cada fotograma), la leyenda no puede pisarlo aunque
+  `RefrescarPosesion()` se siga llamando igual por detrás.
+- `MostrarResultadoAutoEquipar(resultado)`, nuevo, distingue tres casos con color distinto
+  (`EstiloTk.Correcto` verde / `TextoAviso` ámbar / `Peligro` rojo):
+  - se movió algo, o ya estaba todo lo que el jugador tiene puesto (éxito, verde);
+  - `movidos=0 && yaColocados=0 && sinSitio=0` (el jugador no tenía NINGÚN objeto de la build
+    para mover): mensaje claro y distinto, clave nueva `Builds.NadaQueMover` ("No tenías ningún
+    objeto de esta build para mover. Auto-equipar solo mueve lo que ya posees, nunca crea
+    nada."), color ámbar - ya no se confunde con un resumen de éxito con todo a cero;
+  - tenía objetos pero ninguno cupo (mochila llena / accesorios ocupados, `sinSitio > 0`): rojo,
+    con el resumen completo (ese sí es un aviso real, no solo informativo).
+- `ContenidoBuilds.PulsarBotonAutoEquipar()`, nuevo: dispara el `OnLeftClick` real del botón
+  (`UIElement.LeftClick` en su centro de pantalla), el mismo camino que `PulsarPildoraClase`/
+  `PulsarPildoraLoadoutObjetivo` ya usaban - para que la autoprueba ejercite el clic de verdad y
+  no una llamada directa a `EjecutarAutoEquipar` que se salte el botón.
+
+### Verificación en el juego real - con capturas, no solo logs
+
+`Common/Builds/PanelBuildsSystem.cs` (arnés de pruebas): el primer intento de arreglo probó a
+enseñar el mensaje reutilizando `Common/Panel/CapturaDePantalla.cs`, pero esa clase compartida
+solo permite capturar con las variables de autoprueba de OTRAS áreas (panel único, idiomas, menús,
+exploración) - añadir la de Builds a su lista habría tocado un archivo fuera de
+`Common/Builds`/`UI/Builds` mientras otros agentes trabajaban en paralelo en el resto del mod. Se
+escribió una copia propia y autónoma, `GuardarCapturaBuilds` (misma técnica real:
+`GraphicsDevice.GetBackBufferData` + `Texture2D.SaveAsPng`, la única que funciona con FNA - ver el
+XMLdoc de la clase compartida para el porqué de `CopyFromScreen`/`PrintWindow`), y una secuencia
+escalonada de capturas (`IniciarSecuenciaDeCapturas`/`ActualizarCapturasProgramadas`, offsets 0,
+20, 90 y 200 fotogramas tras el clic real) para demostrar que el mensaje sigue en pantalla mucho
+más allá del cuarto de segundo que duraba antes del arreglo, no solo en el instante del clic.
+
+Dos ejecuciones reales sobre el sandbox `tModLoader-TerrakeepWS4` (mundo/personaje
+`TerrakeepPrueba`), con clic real en "Auto-equipar" (`PulsarBotonAutoEquipar`, no una llamada
+directa):
+
+**Escenario A - el jugador SÍ tiene objetos de la build** (`-LoadoutObjetivo 1`, sembrados a
+propósito 6 de los 13 objetos de la build Vanilla/Pre-Hardmode/Cuerpo a cuerpo, conjunto de
+destino = 2, INACTIVO): log real -
+`AUTO-EQUIPAR "Vanilla / Pre-Hardmode..." / Cuerpo a cuerpo: movidos=5, ya colocados=1, no los
+tienes=7, sin sitio=0, no existen aquí=0` - los 5 objetos aparecen de verdad en
+`Player.Loadouts[1].Armor` (`Conjunto 2 tras auto-equipar: casco="Casco fundido#231" ...`), el
+conjunto 1 (activo) se queda vacío como corresponde. El mensaje inmediato tras el clic:
+`fotogramasRestantes=360` (los 6 s completos). La secuencia de capturas confirma que sigue en
+pantalla, en verde, a +0/+20/+90/+200 fotogramas después de una segunda pasada de idempotencia
+(`movidos=0, ya colocados=6`) - captura real en
+`evidencia/ws4-builds-capturas/builds-persistencia-200f.png`: el panel abierto, pestaña Builds,
+"Conjunto 2" marcado como seleccionado, y la línea verde
+"Auto-equipar: movidos=0, ya colocados=6, no los tienes=7, sin sitio=0, no existen aquí=0" bien
+visible casi 3,3 s después del clic - muy por encima del cuarto de segundo que duraba antes.
+
+**Escenario B - el jugador NO tiene NINGÚN objeto de la build** (`-Sembrar '' -Clase ranged`,
+sin sembrar nada, clase "A distancia" de la que no se posee nada): log real -
+`AUTO-EQUIPAR "Vanilla / Pre-Hardmode..." / A distancia: movidos=0, ya colocados=0, no los
+tienes=13, sin sitio=0, no existen aquí=0`, y el mensaje mostrado es
+`"No tenías ningún objeto de esta build para mover. Auto-equipar solo mueve lo que ya posees,
+nunca crea nada."` en color ámbar (captura real,
+`evidencia/ws4-builds-capturas/builds-persistencia-090f.png` de la primera pasada con la versión
+larga del texto, que SÍ desbordaba el panel por la derecha - se acortó quitando el resumen entre
+paréntesis, redundante con lo que ya enseña el color de cada ranura). No se pudo repetir la
+captura con el texto ya acortado: el proyecto entero encadenó tres roturas de compilación
+seguidas por archivos AJENOS a este cambio (`Common/Prefijos/CatalogoPrefijosLegales.cs` primero,
+luego `UI/Personaje/Widgets/MunecoTk.cs`/`EditorCantidadTk.cs`), de otros agentes trabajando en
+paralelo en directo sobre el mismo repo - confirmado con `git status` (esos archivos aparecen como
+`??`/modificados, no tocados por esta sesión). Siguiendo la disciplina de parar tras fallos
+repetidos por la misma causa ajena en vez de insistir en bucle, se dejó así: el mecanismo completo
+(color, persistencia, contenido del mensaje) ya está verificado con captura real en el escenario A
+y con log real en el B, y el único punto sin re-capturar es puramente cosmético (si el texto más
+corto cabe) - por cuenta de caracteres (111 frente a los ~199 que sí desbordaban, y comparado con
+un mensaje de ~89 caracteres que sí quedó demostrado que cabe con holgura) no debería desbordar,
+pero queda como el único cabo suelto real de esta entrada para quien retome el trabajo en el área
+de Personaje/Prefijos: repetir
+`.\scripts\verificar-builds-en-juego.ps1 -Sembrar '' -Clase ranged` una vez esos archivos se
+estabilicen y mirar `evidencia/ws4-builds-capturas/builds-persistencia-090f.png`.
+
+### Qué es y qué no es este arreglo
+
+Auto-equipar YA equipaba de verdad desde el commit de ayer (`342e5a4`) - eso no era el bug. El bug
+real, la causa de que el usuario viera "no se aplica" con sus propios ojos, era de UX pura: la
+única confirmación visible dentro del panel de que algo había pasado desaparecía antes de que diera
+tiempo a leerla, y en el caso más probable de todos (probar con una build de la que no tienes casi
+nada al principio de una partida) el mensaje que sí se veía un instante era indistinguible de un
+fallo. Ninguno de los dos arreglos toca `AutoEquipar.cs` ni `EquipoJugador.cs`: la escritura real
+en los arrays del jugador seguía funcionando desde ayer, y las dos pruebas de esta sesión
+(escenario A y B) lo vuelven a confirmar de paso.
+
+### Commit
+
+Índice privado, solo los archivos de esta sesión: `Common/Builds/PanelBuildsSystem.cs`,
+`UI/Builds/ContenidoBuilds.cs`, `scripts/generar-localizacion.py`,
+`scripts/verificar-builds-en-juego.ps1`, los dos `.hjson` (una sola línea añadida cada uno,
+`git diff` comprobado limpio antes de comitear), `evidencia/ws4-builds.log.txt` y
+`evidencia/ws4-builds-capturas/` (capturas reales nuevas), y esta entrada de `bitacora.md`. No se
+toca nada de `Common/Panel/`, `Common/Prefijos/`, `UI/Personaje/` ni `UI/Exploracion/` - son de
+otros agentes trabajando en paralelo ahora mismo.

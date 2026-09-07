@@ -55,6 +55,37 @@ namespace TerrakeepMod.UI.Builds
 		private string _textoResumen = "";
 
 		/// <summary>
+		/// Mensaje de resultado de la ULTIMA pulsacion de "Auto-equipar", y cuantos fotogramas le
+		/// quedan en pantalla antes de volver a la leyenda de colores normal.
+		/// <para />
+		/// <b>El bug real que arreglan estos dos campos</b>: antes, el resultado se escribia en
+		/// <c>_textoResumen</c> (el mismo campo que la leyenda de colores), pero <see cref="Update"/>
+		/// llama a <see cref="RefrescarPosesion"/> cada <see cref="FotogramasEntreRefrescos"/>
+		/// fotogramas (15, o sea cada 0,25 s a 60 fps) para que "ya lo tienes" no se quede desfasado,
+		/// y <see cref="ActualizarResumen"/> reescribe <c>_textoResumen</c> con la leyenda en CADA
+		/// llamada. El resultado real: el mensaje de "movidos=X, ya colocados=Y..." se pisaba solo
+		/// con la leyenda antes de un cuarto de segundo, un tiempo demasiado corto para leerlo -
+		/// visualmente indistinguible de "el boton no ha hecho nada", que es justo lo que reporto el
+		/// usuario probando el mod de verdad ("build se sigue sin aplicar"). Auto-equipar SI escribia
+		/// en los arrays reales del jugador (ver <see cref="AutoEquipar"/>), pero la unica prueba
+		/// visible de ello dentro del panel desaparecia antes de que un humano pudiera leerla.
+		/// <para />
+		/// Con estos dos campos, aparte, el color y el texto (ver <see cref="MostrarResultadoAutoEquipar"/>)
+		/// dependen de que paso de verdad: si no se movio NADA porque el jugador no tiene ni un solo
+		/// objeto de la build (auto-equipar solo MUEVE lo que ya posees, nunca crea nada - ver el
+		/// XMLdoc de <see cref="AutoEquipar"/>), se enseña un aviso claro en vez de un resumen generico
+		/// con todo a cero que se leeria igual que un fallo silencioso.
+		/// </summary>
+		private string _mensajeResultado = "";
+		private int _fotogramasMensajeResultado;
+		private Color _colorMensajeResultado = EstiloTk.TextoSuave;
+
+		/// <summary>Cuanto tiempo se enseña el mensaje de resultado antes de volver a la leyenda:
+		/// 6 segundos a 60 fps. Mucho mas que el cuarto de segundo que duraba antes del arreglo, y de
+		/// sobra para leer una frase de una linea.</summary>
+		private const int DuracionMensajeResultado = 60 * 6;
+
+		/// <summary>
 		/// A cual de los tres conjuntos de equipo (0/1/2) va a parar el auto-equipar. -1 significa
 		/// "todavia sin fijar": se inicializa al conjunto ACTIVO del jugador la primera vez que
 		/// hace falta (ver <see cref="LoadoutObjetivoValido"/>), no antes, porque en el constructor
@@ -143,7 +174,11 @@ namespace TerrakeepMod.UI.Builds
 			_subtitulo.Top.Set(0f, 0f);
 			cabecera.Append(_subtitulo);
 
-			_resumen = new EtiquetaTk(() => _textoResumen, 0.78f, 900f, 22f);
+			// Mientras el mensaje de resultado del ultimo auto-equipar siga vivo
+			// (_fotogramasMensajeResultado > 0) se enseña el, no la leyenda de colores - ver el
+			// comentario de esos dos campos mas arriba para el porque.
+			_resumen = new EtiquetaTk(() => _fotogramasMensajeResultado > 0 ? _mensajeResultado : _textoResumen,
+				0.78f, 900f, 22f);
 			_resumen.ColorTexto = EstiloTk.TextoSuave;
 			_resumen.Left.Set(0f, 0f);
 			_resumen.Top.Set(20f, 0f);
@@ -620,6 +655,15 @@ namespace TerrakeepMod.UI.Builds
 		/// <summary>El conjunto de destino elegido ahora mismo (0/1/2). Lo usa la autoprueba.</summary>
 		public int LoadoutObjetivo => _loadoutObjetivo;
 
+		/// <summary>Texto del ultimo mensaje de resultado de auto-equipar (vacio si nunca se pulso
+		/// el boton en esta sesion del panel). Lo usa la autoprueba para confirmar SIN capturas que
+		/// el mensaje sigue vivo varios fotogramas despues del clic, no solo en el instante.</summary>
+		public string MensajeResultado => _mensajeResultado;
+
+		/// <summary>Fotogramas que le quedan al mensaje de resultado antes de volver a la leyenda de
+		/// colores. 0 = ya no se enseña (o nunca se pulso el boton).</summary>
+		public int FotogramasMensajeResultado => _fotogramasMensajeResultado;
+
 		/// <summary>Fija el conjunto de destino sin pulsar ninguna pildora. Lo usa la autoprueba
 		/// para preparar el escenario sin depender de coordenadas de clic.</summary>
 		public void SeleccionarLoadoutObjetivo(int indice)
@@ -678,6 +722,17 @@ namespace TerrakeepMod.UI.Builds
 			// jugador puede pulsar las teclas de conjunto de equipo del propio juego mientras el
 			// panel de Builds sigue abierto.
 			ActualizarBotonesLoadoutObjetivo();
+
+			// Cuenta atras del mensaje de resultado de auto-equipar (ver el comentario de
+			// _mensajeResultado). El color se refuerza cada fotograma en vez de solo al fijar el
+			// mensaje porque _resumen.ColorTexto es un campo mutable compartido con la leyenda.
+			if (_fotogramasMensajeResultado > 0) {
+				_fotogramasMensajeResultado--;
+				_resumen.ColorTexto = _colorMensajeResultado;
+			}
+			else {
+				_resumen.ColorTexto = EstiloTk.TextoSuave;
+			}
 
 			RegistrarCoordenadasUnaVez();
 		}
@@ -788,7 +843,60 @@ namespace TerrakeepMod.UI.Builds
 				$"{fuente?.Etiqueta} / {etapa?.Etiqueta}", objetivo);
 
 			RefrescarPosesion();
-			_textoResumen = Idiomas.Texto("Builds.ResultadoAutoEquipar", resultado.Resumen);
+			MostrarResultadoAutoEquipar(resultado);
+		}
+
+		/// <summary>
+		/// Fija el mensaje y el color que se van a enseñar tras pulsar "Auto-equipar" (ver
+		/// <see cref="_mensajeResultado"/>), distinguiendo el caso que pidio arreglar el usuario:
+		/// "aplicar build no equipa de verdad" resulto ser, la mitad de las veces, que auto-equipar
+		/// SI habia movido objetos pero el aviso desaparecia demasiado rapido - y la otra mitad, que
+		/// el jugador probaba con una build de la que no poseia NINGUN objeto (auto-equipar solo
+		/// mueve lo que ya tienes, nunca crea nada), caso en el que un resumen generico con todo a
+		/// cero ("movidos=0, ya colocados=0...") se lee exactamente igual que un fallo silencioso.
+		/// </summary>
+		private void MostrarResultadoAutoEquipar(ResultadoAutoEquipar resultado)
+		{
+			bool nadaQuePoseia = resultado.Movidos == 0 && resultado.YaColocados == 0 && resultado.SinSitio == 0;
+
+			if (nadaQuePoseia) {
+				// No es un fallo de auto-equipar: es que el jugador no tenia ni un solo objeto de
+				// esta build para mover. Antes esto se enseñaba con el mismo resumen generico que un
+				// exito ("movidos=0, ya colocados=0, no los tienes=N..."), indistinguible a golpe de
+				// vista de que el boton no hubiera hecho nada.
+				_mensajeResultado = Idiomas.Texto("Builds.NadaQueMover");
+				_colorMensajeResultado = EstiloTk.TextoAviso;
+			}
+			else if (resultado.SinSitio > 0 && resultado.Movidos == 0) {
+				// Tenia objetos pero ninguno cupo (mochila llena / slots de accesorio ocupados por
+				// algo incompatible): a diferencia del caso de arriba, aqui SI habia algo que mover y
+				// no se movio - eso si es un aviso real, no solo informativo.
+				_mensajeResultado = Idiomas.Texto("Builds.ResultadoAutoEquipar", resultado.Resumen);
+				_colorMensajeResultado = EstiloTk.Peligro;
+			}
+			else {
+				// Caso normal: se movio algo, o ya estaba todo lo que el jugador tiene colocado en su
+				// sitio (aplicar dos veces seguidas la misma build es idempotente a proposito).
+				_mensajeResultado = Idiomas.Texto("Builds.ResultadoAutoEquipar", resultado.Resumen);
+				_colorMensajeResultado = EstiloTk.Correcto;
+			}
+
+			_fotogramasMensajeResultado = DuracionMensajeResultado;
+		}
+
+		/// <summary>
+		/// Pulsa DE VERDAD el boton "Auto-equipar", disparando su <c>OnLeftClick</c> con
+		/// <c>UIElement.LeftClick</c> en su centro real de pantalla - el mismo camino exacto que
+		/// recorre un clic de raton real, y no una llamada directa a <see cref="EjecutarAutoEquipar"/>
+		/// que se salte el boton. Lo usa la autoprueba para reproducir el camino EXACTO de un usuario
+		/// real (abrir panel -> pestaña Builds -> elegir build -> elegir conjunto -> pulsar el boton),
+		/// en vez de invocar la logica por dentro y dar por hecho que el clic real llega igual.
+		/// </summary>
+		public void PulsarBotonAutoEquipar()
+		{
+			CalculatedStyle dim = _botonAutoEquipar.GetDimensions();
+			Vector2 centro = new Vector2(dim.X + dim.Width / 2f, dim.Y + dim.Height / 2f);
+			_botonAutoEquipar.LeftClick(new UIMouseEvent(_botonAutoEquipar, centro));
 		}
 
 		/// <summary>Primer elemento del tipo pedido dentro de este area. Lo usa la autoprueba.</summary>

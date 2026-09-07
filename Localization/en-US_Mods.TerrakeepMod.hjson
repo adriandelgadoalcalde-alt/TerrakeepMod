@@ -366,6 +366,7 @@ Builds: {
 	Tienes: You have {0} of {1} items from this build{2}.
 	Leyenda: Green = you have it  ·  grey = you do not  ·  red = it does not exist here.
 	ResultadoAutoEquipar: Auto-equip: {0}
+	NadaQueMover: You didn't own any item from this build to move. Auto-equip only moves what you already own, never creates anything.
 	Resumen: moved={0}, already in place={1}, not owned={2}, no room={3}, not in this game={4}
 
 	Etapa: {

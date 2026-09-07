@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.ModLoader;
@@ -62,6 +64,31 @@ namespace TerrakeepMod.Common.Builds
 		private static bool _autopruebaHecha;
 		private static int _fotogramasEnMundo;
 
+		/// <summary>
+		/// SOLO ARNES DE PRUEBAS: -1 = no hay ninguna secuencia de capturas en marcha. >= 0 = cuantos
+		/// fotogramas han pasado desde el ULTIMO clic real en "Auto-equipar" que se quiso comprobar.
+		/// <para />
+		/// Existe para reproducir de verdad el bug que se investigo esta sesion ("build se sigue sin
+		/// aplicar"): la mitad real de la causa era que el mensaje de resultado se pisaba solo con la
+		/// leyenda de colores antes de un cuarto de segundo (ver el comentario de
+		/// <c>ContenidoBuilds._mensajeResultado</c>). Una sola captura justo tras el clic no lo habria
+		/// demostrado - hacia falta comprobar que el mensaje SIGUE ahi varios fotogramas despues, que
+		/// es justo lo que hace esta cuenta atras escalonada.
+		/// </para>
+		/// </summary>
+		private static int _fotogramasTrasClicBoton = -1;
+
+		/// <summary>Instantes (en fotogramas desde el clic) en los que se toma una captura + se deja
+		/// en el log el mensaje/color/fotogramas-restantes reales de <c>ContenidoBuilds</c>. 0 = el
+		/// mismo fotograma del clic; el resto reparte la ventana de casi 6 s
+		/// (<c>ContenidoBuilds.FotogramasMensajeResultado</c>) para poder ver que el mensaje aguanta
+		/// mucho mas que el cuarto de segundo que duraba antes del arreglo, y que luego SI vuelve a
+		/// la leyenda (no se queda pegado para siempre).</summary>
+		private static readonly int[] OffsetsCaptura = { 0, 20, 90, 200 };
+
+		private static int _siguienteOffsetCaptura;
+		private static string _prefijoCapturaActual = "builds";
+
 		/// <summary>El atajo de Builds. Lo registra este sistema y lo LEE
 		/// <c>PanelTerrakeepSystem</c>, que es quien abre el panel unico en esta pestaña.</summary>
 		public static ModKeybind Atajo => _atajo;
@@ -115,6 +142,92 @@ namespace TerrakeepMod.Common.Builds
 			}
 
 			ActualizarAutoprueba();
+			ActualizarCapturasProgramadas();
+		}
+
+		/// <summary>
+		/// SOLO ARNES DE PRUEBAS: arranca una secuencia de capturas escalonadas tras un clic real en
+		/// "Auto-equipar" (ver <see cref="OffsetsCaptura"/> y <see cref="_fotogramasTrasClicBoton"/>).
+		/// </summary>
+		private static void IniciarSecuenciaDeCapturas(string prefijo)
+		{
+			_prefijoCapturaActual = prefijo;
+			_fotogramasTrasClicBoton = 0;
+			_siguienteOffsetCaptura = 0;
+		}
+
+		/// <summary>SOLO ARNES DE PRUEBAS: avanza la secuencia de capturas iniciada por
+		/// <see cref="IniciarSecuenciaDeCapturas"/>, tomando una en cada offset de
+		/// <see cref="OffsetsCaptura"/> y dejando en el log el estado REAL de
+		/// <c>ContenidoBuilds.MensajeResultado</c>/<c>FotogramasMensajeResultado</c> en ese instante -
+		/// la prueba de que el mensaje sigue vivo mucho mas alla del cuarto de segundo que duraba
+		/// antes del arreglo.</summary>
+		private static void ActualizarCapturasProgramadas()
+		{
+			if (_fotogramasTrasClicBoton < 0) {
+				return;
+			}
+
+			if (_siguienteOffsetCaptura < OffsetsCaptura.Length &&
+				_fotogramasTrasClicBoton == OffsetsCaptura[_siguienteOffsetCaptura]) {
+
+				ContenidoBuilds panel = Contenido;
+				string estado = panel != null
+					? $"mensaje=\"{panel.MensajeResultado}\" fotogramasRestantes={panel.FotogramasMensajeResultado}"
+					: "(sin panel montado)";
+				string nombre = $"{_prefijoCapturaActual}-{_fotogramasTrasClicBoton:D3}f";
+				RegistroBuilds.Linea($"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: captura +{_fotogramasTrasClicBoton} " +
+					$"fotogramas tras el clic real en Auto-equipar. {estado}. {GuardarCapturaBuilds(nombre)}");
+				_siguienteOffsetCaptura++;
+			}
+
+			if (_siguienteOffsetCaptura >= OffsetsCaptura.Length) {
+				_fotogramasTrasClicBoton = -1;
+				return;
+			}
+
+			_fotogramasTrasClicBoton++;
+		}
+
+		/// <summary>
+		/// SOLO ARNES DE PRUEBAS: version propia y autonoma de la tecnica real de
+		/// <c>Common/Panel/CapturaDePantalla.cs</c> (<c>GraphicsDevice.GetBackBufferData</c> +
+		/// <c>Texture2D.SaveAsPng</c>, la unica que de verdad funciona con FNA - ver el XMLdoc de esa
+		/// clase para el porque de <c>CopyFromScreen</c>/<c>PrintWindow</c> no sirven). Se duplica
+		/// aqui, en vez de añadir la variable de esta autoprueba a la lista <c>Permitida</c> de esa
+		/// clase compartida, para no tocar ni una linea fuera de <c>Common/Builds</c>/<c>UI/Builds</c>
+		/// mientras otros agentes trabajan en paralelo en el resto del mod.
+		/// </summary>
+		private static string GuardarCapturaBuilds(string nombre)
+		{
+			try {
+				GraphicsDevice dispositivo = Main.instance.GraphicsDevice;
+				PresentationParameters parametros = dispositivo.PresentationParameters;
+				int ancho = parametros.BackBufferWidth;
+				int alto = parametros.BackBufferHeight;
+				if (ancho <= 0 || alto <= 0) {
+					return "captura imposible: el back buffer mide " + ancho + "x" + alto;
+				}
+
+				Color[] pixeles = new Color[ancho * alto];
+				dispositivo.GetBackBufferData(pixeles);
+
+				string carpeta = Path.Combine(Main.SavePath, "terrakeep-capturas");
+				Directory.CreateDirectory(carpeta);
+				string ruta = Path.Combine(carpeta, nombre + ".png");
+
+				using (Texture2D textura = new Texture2D(dispositivo, ancho, alto)) {
+					textura.SetData(pixeles);
+					using (FileStream archivo = File.Create(ruta)) {
+						textura.SaveAsPng(archivo, ancho, alto);
+					}
+				}
+
+				return "captura guardada en \"" + ruta + "\" (" + ancho + "x" + alto + ")";
+			}
+			catch (Exception e) {
+				return "captura fallida: " + e.GetType().Name + ": " + e.Message;
+			}
 		}
 
 		/// <summary>Abre el panel en la pestaña de Builds, o lo cierra si ya estaba ahi.</summary>
@@ -347,8 +460,21 @@ namespace TerrakeepMod.Common.Builds
 			RegistroBuilds.Linea(
 				$"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: equipo ANTES de auto-equipar (los 3 conjuntos): " +
 				EstadoTresConjuntos(jugador));
+			RegistroBuilds.Linea($"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: {GuardarCapturaBuilds("builds-antes")}");
 
-			_panel.EjecutarAutoEquipar();
+			// Clic REAL sobre el boton "Auto-equipar" (UIElement.LeftClick en su centro real de
+			// pantalla, via ContenidoBuilds.PulsarBotonAutoEquipar), no una llamada directa a
+			// EjecutarAutoEquipar por dentro. El bug real que se investigo esta sesion
+			// ("build se sigue sin aplicar", reportado por el usuario probando el mod de verdad) NO
+			// estaba en que el clic no llegara al boton - estaba en que el UNICO aviso visible de que
+			// el clic habia hecho algo (el mensaje de resultado) se pisaba solo con la leyenda de
+			// colores antes de un cuarto de segundo. Reproducir el clic por el camino exacto del
+			// raton es lo que hace falta para que esta prueba hubiera detectado ese bug de haber
+			// estado ahi antes del arreglo.
+			_panel.PulsarBotonAutoEquipar();
+			RegistroBuilds.Linea($"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: clic real en \"Auto-equipar\" -> " +
+				$"mensaje inmediato=\"{_panel.MensajeResultado}\" fotogramasRestantes={_panel.FotogramasMensajeResultado}.");
+			RegistroBuilds.Linea($"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: {GuardarCapturaBuilds("builds-justo-tras-clic")}");
 
 			RegistrarEstadoBuild(_panel, "despues de auto-equipar");
 			RegistroBuilds.Linea(
@@ -357,10 +483,12 @@ namespace TerrakeepMod.Common.Builds
 
 			// Segunda pasada: comprueba que auto-equipar es IDEMPOTENTE. Si estuviera moviendo
 			// objetos a lo tonto (o creandolos), aqui volveria a contar movimientos; lo correcto
-			// es que salga movidos=0 y todo lo demas como "ya colocados".
+			// es que salga movidos=0 y todo lo demas como "ya colocados". Tambien por clic real, por
+			// la misma razon de arriba: un segundo clic del usuario tiene que comportarse igual de
+			// bien que el primero.
 			RegistroBuilds.Linea(
 				$"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: segunda pasada de auto-equipar (prueba de idempotencia).");
-			_panel.EjecutarAutoEquipar();
+			_panel.PulsarBotonAutoEquipar();
 			RegistroBuilds.Linea(
 				$"{Terrakeep.LogTag} AUTOPRUEBA BUILDS: equipo tras la segunda pasada (los 3 conjuntos): " +
 				EstadoTresConjuntos(jugador));
@@ -377,6 +505,12 @@ namespace TerrakeepMod.Common.Builds
 					$"Equipo puesto ahora (Player.armor, el que dibuja y usa el juego): " +
 					$"{AutoEquipar.EstadoEquipo(jugador, jugador.armor)}");
 			}
+
+			// Secuencia de capturas escalonadas (ver OffsetsCaptura): demuestra, con capturas reales
+			// del back buffer y no solo con logs, que el mensaje de resultado del ultimo clic SIGUE
+			// en pantalla mucho mas alla del cuarto de segundo que duraba antes del arreglo, y que
+			// pasados los 6 s vuelve solo a la leyenda de colores (no se queda pegado para siempre).
+			IniciarSecuenciaDeCapturas("builds-persistencia");
 		}
 
 		/// <summary>Foto de los 3 conjuntos de equipo a la vez, marcando cual es el ACTIVO ahora

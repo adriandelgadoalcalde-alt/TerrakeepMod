@@ -148,14 +148,19 @@ Write-Host '== Cliente grafico ==' -ForegroundColor Cyan
 $p = Start-Process -FilePath (Join-Path $tmlDir 'start-tModLoader.bat') -WorkingDirectory $tmlDir -PassThru `
 	-ArgumentList @('-tmlsavedirectory', "`"$sandbox`"", '-skipselect', "${personaje}:${mundo}")
 
+# El objetivo es la ULTIMA captura de la secuencia de persistencia (ver OffsetsCaptura en
+# PanelBuildsSystem.cs: +200 fotogramas tras el clic real en "Auto-equipar", ~3,3 s a 60 fps),
+# no "segunda pasada de auto-equipar" como antes. Esa frase se escribe ANTES de que arranque la
+# secuencia de capturas, asi que esperar solo a ella y dar 3 s de margen se comia la mitad de las
+# capturas la primera vez que se probo esto: el proceso se mataba con la secuencia a medias.
 Write-Host "Esperando evidencia en $evidencia (marca $marca, hasta $SegundosEspera s)..."
-$objetivo = 'segunda pasada de auto-equipar'
+$objetivo = 'captura \+200 fotogramas'
 $encontrado = $false
 for ($i = 0; $i -lt $SegundosEspera; $i++) {
 	Start-Sleep -Seconds 1
 	if ((Test-Path $evidencia) -and (Select-String -Path $evidencia -Pattern $objetivo -Quiet -ErrorAction SilentlyContinue)) {
 		$encontrado = $true
-		Start-Sleep -Seconds 3   # deja que termine de escribir la segunda pasada
+		Start-Sleep -Seconds 3   # deja que termine de escribir/copiar el fichero de captura
 		break
 	}
 }
@@ -170,6 +175,17 @@ if (Test-Path $evidencia) {
 	New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destino) | Out-Null
 	Copy-Item $evidencia $destino -Force
 	Write-Host "(copia guardada en $destino)" -ForegroundColor DarkGray
+
+	# Capturas reales del back buffer (ver PanelBuildsSystem.GuardarCapturaBuilds): antes del clic,
+	# justo despues, y la secuencia escalonada que demuestra que el mensaje de resultado sigue en
+	# pantalla mucho mas alla del cuarto de segundo que duraba antes del arreglo.
+	$capturasOrigen = Join-Path $sandbox 'terrakeep-capturas'
+	if (Test-Path $capturasOrigen) {
+		$capturasDestino = Join-Path $repo 'evidencia\ws4-builds-capturas'
+		New-Item -ItemType Directory -Force -Path $capturasDestino | Out-Null
+		Copy-Item (Join-Path $capturasOrigen '*.png') $capturasDestino -Force -ErrorAction SilentlyContinue
+		Write-Host "(capturas copiadas a $capturasDestino)" -ForegroundColor DarkGray
+	}
 } else {
 	Write-Host "(el mod no llego a escribir $evidencia)" -ForegroundColor Red
 	Write-Host 'Ultimas lineas del client.log del juego, por si dice algo:' -ForegroundColor DarkGray
