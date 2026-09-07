@@ -2119,121 +2119,221 @@ en el árbol de trabajo tal cual, listos para el commit de esa migración cuando
   podría comportarse distinto). El renderer es el mismo para cualquier armadura real, así que no
   hay motivo real para esperar un problema, pero queda sin comprobar.
 
-## 7-sep-2026 — Indicador de calidad de prefijo y auto-aplicar el mejor prefijo desde la Librería
+---
 
-Los dos problemas reales que reportó el usuario jugando: (1) al ver un objeto no había ninguna
-pista de si su prefijo era el mejor posible para ESE objeto en concreto (no todos admiten
-cualquier prefijo), y (2) sacar un objeto de la Librería al inventario no le ponía ningún
-prefijo, a diferencia de la app de escritorio Terrasavr-Native.
+## 7-sep-2026 — WS4 ampliado: selector de conjunto de destino en Builds
 
-### Reutilizado de TerrasavrNative.Core, no reinventado
+Se pidió arreglar dos quejas reales del usuario probando el mod: "aplicar una build no equipa de
+verdad" y "no se puede elegir a qué conjunto (1/2/3) va la armadura de una build". Los dos
+tocaban `Common/Builds/` y `UI/Builds/ContenidoBuilds.cs`.
 
-`BestPrefixCatalog` (`Assets/best_prefix.json`, copiado tal cual de
-`Terrasavr-Native/TerrasavrNative.App/Assets/calamity/best_prefix.json`) ya trae el mejor
-`Terraria.ID.PrefixID` real por objeto (948 vanilla + 1019 Calamity), calculado offline contra la
-fórmula real del juego (`Item.TryGetPrefixStatMultipliersForItem` / `BestPrefixValue`,
-`scripts/generar-mejor-prefijo.py` del repo hermano). `Common/Prefijos/CatalogoMejorPrefijo.cs` es
-el envoltorio en vivo, mismo patrón que `CatalogoBuilds` con `builds.json`: bytes leídos en
-`Load()` (con el `.tmod` todavía abierto) y parseados en `PostSetupContent()` con
-`BestPrefixCatalog.LoadFromStream`, sin reimplementar nada. Vanilla se busca por `Item.type`
-numérico; Calamity por el nombre interno real del `ModItem` (`ModItem.Name`, que coincide con la
-mitad derecha de "CalamityMod/NombreInterno").
+### Lo primero, investigado antes de tocar nada
 
-### Hallazgo real (regla del CLAUDE.md: mirar el código decompilado antes de suponer)
+`AutoEquipar.Ejecutar` YA escribía en un array vivo de verdad (`jugador.armor`), exactamente
+igual que la pestaña Equipo de WS1 (que se apoya en el mismo hallazgo:
+`EquipmentLoadout.Swap` intercambia elemento a elemento contra `Player.armor`/`dye`, así que el
+conjunto ACTIVO vive suelto en esos campos y NO en `Player.Loadouts[]`). Eso significa que
+auto-equipar SIEMPRE ha equipado de verdad - pero solo sobre lo que fuera el conjunto ACTIVO en
+ese instante, sin ningún control sobre cuál. Con tres conjuntos y ningún selector, aplicar una
+build mientras el jugador no estaba mirando/pensando en el conjunto 1 (el único que se tocaba)
+podía parecer "no ha hecho nada": el efecto SÍ estaba ahí, solo que en un conjunto distinto al
+que el usuario tenía en mente. Ese es el problema real de fondo, no un fallo de escritura.
 
-El generador de `best_prefix.json` usó `TerrariaVanilla` **1.4.5.8** a propósito (documentado en
-su propia cabecera), pero el tModLoader REAL instalado aquí es **1.4.4.9**, y difieren justo en
-los prefijos de invocación:
+Se comprobó contra el `tModLoader.dll` instalado (v2026.7.3.0) con `ilspycmd`, no contra el
+decompilado de referencia: `EquipmentLoadout` tiene `Armor[20]`, `Dye[10]`, `Hide[10]` (campos
+públicos, sin properties), `Player.Loadouts` es `EquipmentLoadout[3]`,
+`Player.TrySwitchingLoadout(i)` hace `Loadouts[CurrentLoadoutIndex].Swap(this)` +
+`Loadouts[i].Swap(this)` + `CurrentLoadoutIndex = i`. Coincide exactamente con el decompilado de
+referencia (`tModLoader-Decompiled\tModLoader\Terraria\EquipmentLoadout.cs`), así que esta vez sí
+valía sin volver a decompilar - pero se verificó igual, por norma.
 
-- `Terraria.ID.PrefixID.Count` es 98 en 1.4.5.8 (separó `PrefixesForSummons` de
-  `PrefixesForMagic` y añadió 85 Fabled..97 Scraggling, solo para invocación).
-- Es **85** en el `tModLoader.dll` REAL instalado (`Terraria\ID\PrefixID.cs` decompilado:
-  `public static readonly int Count = 85;`, ids válidos 0..84) - ahí Magia e Invocación siguen
-  compartiendo un único pool (`PrefixesForMagicAndSummons`, tope real 83 Mythical,
-  `PrefixLegacy.cs` decompilado).
+### Lo que se hizo
 
-Eso deja 149 entradas de `best_prefix.json` (todas armas de invocación: 46 vanilla + 103
-Calamity, más 1 caso vanilla en 95) con un valor que **no existe** en el `PrefixID` real de este
-juego: asignarlo reventaría `Lang.prefix[valor]` (`IndexOutOfRangeException`) y dejaría un
-`Item.prefix` inválido. `CatalogoMejorPrefijo.MejorPrefijo` las descarta con la misma
-comprobación de rango que usaría el motor real (`valor < PrefixID.Count`), en vez de inventar a
-qué prefijo de 1.4.4.9 equivaldrían: mejor sin sugerencia que una sugerencia rota o inventada.
-Verificado en el juego real con `PygmyStaff` (ver tabla de abajo).
-
-### Los dos problemas, resueltos
-
-1. **Indicador de calidad** (`Common/Prefijos/GlobalItemMejorPrefijo.cs`, un `GlobalItem` con
-   `ModifyTooltips`): añade una línea al tooltip REAL del juego ("Best possible prefix: X" /
-   "Mejor prefijo posible: X", con el color de aviso de `EstiloTk`) cuando el prefijo actual del
-   objeto NO es el mejor que ese objeto concreto puede llevar. Un único gancho cubre Librería (la
-   muestra del catálogo, que sale sin prefijo hasta que se coge) e Inventario (cualquier `Item`
-   real, en cualquier ranura vanilla del juego) sin construir ninguna ficha de objeto propia: es
-   el mismo tooltip real que ya usan las ranuras de este mod.
-2. **Auto-aplicar al coger de la Librería** (`UI/Libreria/ContenidoLibreria.PedirObjeto`): justo
-   después de `SetDefaults` y antes de que el objeto llegue a `Main.mouseItem`, se llama a
-   `Item.Prefix(mejorPrefijo)` - el método REAL del juego (recalcula daño/crítico/etc. igual que
-   un reforjado de verdad, no solo escribe el campo `prefix`), igual que hace la app de
-   escritorio.
+- `EquipoJugador.ArmorDe(jugador, indiceLoadout)`: nuevo. Devuelve `jugador.armor` si el índice
+  pedido es el activo, o `jugador.Loadouts[i].Armor` si no. Es el mismo criterio que
+  `PestanaEquipo` ya tenía probado, expuesto como función reutilizable.
+- `EquipoJugador.Contenedores` ahora también recorre los DOS conjuntos inactivos
+  (`Player.Loadouts[i].Armor` para `i != CurrentLoadoutIndex`) como sitios donde "ya lo tienes"
+  puede encontrar un objeto. Antes solo miraba el conjunto activo; un objeto guardado en un
+  conjunto que no llevas puesto se contaba como "no lo tienes", que era falso.
+- `PrimerSlotAccesorioLibre` y `AccesorioYaPuesto` dejan de asumir `jugador.armor` y reciben el
+  array de destino como parámetro. `ItemSlot.AccCheck` se comprobó (decompilado) que opera solo
+  sobre el array que se le pasa, sin ningún estado global del jugador activo, así que llamarlo
+  contra `Loadouts[n].Armor` es igual de válido que contra `armor`.
+- `AutoEquipar.Ejecutar(jugador, build, loadoutObjetivo)`: nueva firma con el índice de destino.
+  Calcula `destino = EquipoJugador.ArmorDe(...)` una vez y lo usa para armadura y accesorios (las
+  armas siguen yendo siempre a la mochila: los loadouts de Terraria no incluyen armas).
+- `UI/Builds/ContenidoBuilds.cs`: nueva fila de pastillas "Aplicar al conjunto 1/2/3" (mismo
+  widget `PintarPildoras` que ya usan fuente/etapa/clase, mismo camino de clic real
+  `UIElement.LeftClick` que ya probó `PulsarPildoraClase`). Marca con "(activo)" la que coincide
+  con `Player.CurrentLoadoutIndex` en cada fotograma (el jugador puede cambiar de conjunto con las
+  teclas del propio juego mientras el panel sigue abierto). Por defecto, si el jugador no ha
+  tocado el selector, apunta al conjunto ACTIVO - así el botón "Auto-equipar" sigue haciendo
+  exactamente lo mismo que antes si nadie usa el selector nuevo.
 
 ### Verificado de verdad en el juego (no solo "compila")
 
-Sandbox y variable de entorno propios (`tModLoader-TerrakeepPrefijos` /
-`TERRAKEEP_AUTOTEST_PREFIJOS`, ver `Common/Prefijos/AutopruebaPrefijos.cs` y
-`scripts/verificar-prefijos-en-juego.ps1`), para no pisar la autoprueba de WS3 (Librería) ni la
-de ningún otro workstream en marcha en paralelo sobre este mismo repositorio - había varios
-agentes editando a la vez `Common/Personaje`, `Common/Builds`, `Common/Exploracion`,
-`UI/Personaje`, `UI/Builds`, `UI/Exploracion`... mientras se hacía esto (ver más abajo). Evidencia
-real en `evidencia/prefijos.log.txt`:
+`scripts\verificar-builds-en-juego.ps1` ampliado con `-LoadoutObjetivo` y `-CambiarLoadoutA`
+(pulsan la pastilla de verdad y llaman a `Player.TrySwitchingLoadout` de verdad). Dos ejecuciones
+reales sobre el sandbox `tModLoader-TerrakeepWS4`, evidencia completa en
+`evidencia\ws4-builds-conjunto-destino.log.txt` y `evidencia\ws4-builds.log.txt`:
 
-| Paso | Resultado real |
+| Escenario | Resultado real |
 |---|---|
-| Tabla cargada | `CatalogoMejorPrefijo.Listo=True` |
-| Defensa de rango (`PygmyStaff`, entrada bruta 85 fuera de rango) | `MejorPrefijo devolvió null` - OK |
-| Coger `Copper Shortsword` del catálogo (ruta REAL, `ContenidoLibreria.PedirObjeto`) | `item.prefix=81 (Legendary)`, el valor real de la tabla - OK |
-| Indicador con prefijo subóptimo a propósito (5 Sharp) | tooltip añadido: `"Best possible prefix: Legendary"`, color `(255,210,120)` = `EstiloTk.TextoAviso` - OK |
-| Indicador con el mejor prefijo ya puesto (81 Legendary) | ninguna línea añadida - OK |
+| Aplicar al conjunto 2 (INACTIVO, activo=conjunto 1) | log dice `Conjunto de destino=2/3 (no activo, se guarda en Player.Loadouts[1].Armor)`; tras aplicar, `Conjunto 1 *ACTIVO*` sigue vacío y SOLO `Conjunto 2` lleva el equipo |
+| Cambiar el conjunto activo real al 2 (`TrySwitchingLoadout`) | `CurrentLoadoutIndex antes=1 ahora=2`. `Player.armor` (el que dibuja y usa el juego) pasa a llevar exactamente lo aplicado antes al conjunto 2 |
+| Aplicar al conjunto 1 (el que YA está activo) | log dice `Conjunto de destino=1/3 (ACTIVO ahora mismo, se ve al instante)`; el equipo aparece en `Conjunto 1 *ACTIVO*` en la misma pasada, sin cambiar de conjunto |
+| Segunda pasada (idempotencia) | `movidos=0, ya colocados=6` en los dos escenarios |
+| Selector con clic real | `PulsarPildoraLoadoutObjetivo` dispara `OnLeftClick` de verdad; el log confirma "pildora pulsada de verdad=True" |
 
-Las cuatro comprobaciones pasaron a la primera ejecución completa (una anterior expiró a los 180 s
-de espera sin fallar: con varias instancias de tModLoader de otros agentes corriendo a la vez en
-la misma máquina, el arranque tardó más de lo normal; subir el tiempo de espera a 360 s fue
-suficiente, sin tocar nada más).
+Con esto quedan cubiertos los tres pasos que pedía la verificación: build a un conjunto inactivo
+sin tocar el activo, cambio de conjunto activo que hace aparecer lo aplicado, y build al conjunto
+activo con efecto instantáneo.
 
-### Obstáculo real: compilar con el repositorio compartido a medias, y cómo se resolvió
+### Obstáculo real: los `.hjson` compartidos se pisan entre sesiones del juego a la vez
 
-En el momento de este cambio había varios agentes editando el repositorio EN PARALELO (confirmado
-con `git status`: `Common/Personaje`, `Common/Builds`, `Common/Exploracion`, `Common/Panel`,
-`UI/Personaje`, `UI/Builds`, `UI/Exploracion`, `UI/Panel` con cambios sin comitear, y varios
-`.hjson`/`generar-localizacion.py` también en marcha). Compilar el árbol de trabajo tal cual
-(`dotnet build` fase 1) falló con dos errores que no eran míos: `CS0103 LongitudMaximaObjetivo`
-en `EditorCantidadTk.cs` y `CS0234 ContentSamples` en `AutopruebaPanelUnico.cs` - código a medio
-escribir de otro agente. Insistir habría sido tocar en bucle el mismo problema ajeno dos veces
-seguidas por la misma causa (regla del CLAUDE.md), así que se cambió de estrategia: se exportó el
-último commit real (`git archive HEAD`, que sí compila) a una copia aislada en el directorio
-temporal, se superpusieron SOLO los archivos de este cambio (`Assets/best_prefix.json`,
-`Common/Prefijos/*.cs`, `UI/Libreria/ContenidoLibreria.cs`, y los dos `.hjson` con la clave nueva
-para poder ver el texto localizado de verdad), y se compiló y probó esa copia con el compilador
-real de tModLoader. El commit final (con **índice privado**) solo lleva los siete archivos de
-este cambio (`Assets/best_prefix.json`, los cuatro de `Common/Prefijos/`,
-`UI/Libreria/ContenidoLibreria.cs`, `scripts/verificar-prefijos-en-juego.ps1` y
-`evidencia/prefijos.log.txt`).
+Las tres claves nuevas de idioma (`Builds.ConjuntoDestinoPildora/Ayuda/ActivoMarca`) se
+añadieron a mano en los dos `.hjson` **tres veces**, y las tres veces desaparecieron o quedaron
+mal antes de poder comitear:
 
-`Localization/*.hjson` y `scripts/generar-localizacion.py` sí llevan mi clave nueva
-(`Prefijos.MejorPrefijo`, "Mejor prefijo posible: {0}" / "Best possible prefix: {0}") en el
-árbol de trabajo, y se usó esa versión para la copia aislada de la prueba, pero se han dejado SIN
-comitear por mi parte: añadirlos habría mezclado mi única línea con el resto de claves que otros
-agentes están migrando a la vez en esos mismos archivos compartidos. Quedan en el árbol de trabajo
-tal cual, listos para el commit de localización cuando se cierre esa migración - mismo criterio ya
-documentado más arriba para `MunecoTk`/`PestanaApariencia`.
+1. Otra sesión del juego (de otro agente, en paralelo) volvió a guardar los `.hjson` con su
+   propio estado en memoria y se llevó por delante mis líneas nuevas sin más.
+2. Al añadirlas nuevamente y ejecutar `python scripts\generar-localizacion.py` para intentar
+   estabilizarlas (mis 3 claves SÍ están en la tabla `T` del script, se añadieron ahí para el
+   futuro), el script regeneró los dos archivos **enteros** desde la tabla y el resultado salió
+   más CORTO que el que había en disco (623 líneas contra 692): la tabla `T` no tiene todavía las
+   claves que otro agente ha ido añadiendo a mano a los `.hjson` en su propia migración de
+   idiomas en marcha (confirmado leyendo más abajo en esta misma bitácora, entrada anterior: ese
+   agente dejó explícitamente sin comitear sus cambios de `.hjson`/`generar-localizacion.py` "para
+   no mezclar mis tres líneas con las ~1974 líneas de la migración de idiomas de otro agente").
+   Se deshizo enseguida restaurando desde una copia hecha justo antes de ejecutar el generador
+   (nunca llegó a comitearse), así que no se perdió nada de nadie.
+3. Al restaurar esa copia aparecieron mis 3 claves **comentadas y en inglés** dentro del propio
+   `es-ES_Mods.TerrakeepMod.hjson` (`// ConjuntoDestinoPildora: Apply to set {0}` etc.): parece
+   ser el propio mecanismo de esa migración de idiomas en marcha, que deja como comentario el
+   texto en inglés cuando detecta una clave sin traducir todavía a español. Se resolvió
+   "traduciendo" el comentario (quitar `//` y poner el texto en español), que es justo el flujo
+   que ese mecanismo espera.
 
-### Lo que queda fuera, dicho claro
+**Decisión, siguiendo el precedente que ya dejó escrito el agente de la migración de idiomas
+justo arriba en esta bitácora**: `scripts\generar-localizacion.py` (mi adición a la tabla `T`) y
+los dos `.hjson` se dejan **sin comitear**, en el árbol de trabajo, listos para cuando se cierre
+esa migración. Solo se comitean con índice privado los archivos que son míos de verdad
+(`Common/Builds/*.cs`, `UI/Builds/ContenidoBuilds.cs`, el script de verificación y la evidencia).
+Si mis tres claves vuelven a desaparecer del `.hjson` antes de que eso pase, no es una regresión
+de esto: es la migración en marcha todavía sin cerrar. El código en sí no depende de que la
+traducción esté presente - `Idiomas.Texto` devuelve la clave completa tal cual si no encuentra
+traducción, así que en el peor caso el selector se ve con el texto de la clave en vez del rótulo
+bonito, nunca deja de funcionar.
 
-- El indicador y el auto-aplicado se probaron con un objeto vanilla (`Copper Shortsword`, pool de
-  espadas). No se ha probado un objeto de Calamity con Calamity cargado en este sandbox (la
-  resolución por `ModItem.Name` se revisó contra el código, pero no hay captura de un caso
-  Calamity real end-to-end en esta pasada).
-- Los 21 prefijos REALES de Calamity para armas Pícaro (`RoguePrefixCatalog`, "Impecable" y
-  compañía) no se cubren a propósito: son `ModPrefix` con id asignado en tiempo de ejecución, no
-  un `PrefixID` plano como los de `best_prefix.json`, y el encargo pedía reutilizar
-  `best_prefix.json` en concreto. Un arma Pícaro de Calamity sencillamente no sale del catálogo
-  con ningún prefijo automático (se queda como estaba, igual que cualquier objeto sin entrada en
-  la tabla) ni se le enseña indicador.
+---
+
+## 7-sep-2026 — Bug real: la pestaña Buffs no enseñaba todos los buffs aplicables
+
+Pedido del usuario, probando el mod en el juego: en **Buffs > Añadir un buff**, "no salen todos
+los buffs que se pueden aplicar - como si faltaran entradas o el árbol/lista no estuviera bien
+ramificado/categorizado... igual que en terrakeep" (refiriéndose a un bug ya dado y corregido en
+la app de escritorio).
+
+### Investigación: es literalmente el MISMO bug, ya resuelto una vez en la app de escritorio
+
+`UI/Personaje/PestanaBuffs.cs` (`ReconstruirResultados`, antes de este arreglo) era un picker
+"buscar+aplicar" **plano, sin ninguna categoría**, con un tope de **12** resultados:
+
+```csharp
+for (int tipo = 1; tipo < BuffLoader.BuffCount && encontrados < MaximoResultados; tipo++) { ... }
+```
+
+Con el buscador vacío (que es como se abre el panel), eso enseñaba SIEMPRE los primeros 12 buffs
+por id (los de "Piel de obsidiana" para abajo) y escondía el resto salvo que se supiera
+EXACTAMENTE el nombre o el id a buscar. `PersonajeVivo.NombreBuff` nunca devuelve `""` dentro del
+rango válido (cae a `"Buff N"`), así que no era un problema de nombres faltantes: era el propio
+diseño del picker.
+
+Repasado el `git log` de `Terrasavr-Native` (repo hermano) por "buff", apareció el commit real
+que cerró exactamente este mismo problema en la app de escritorio, documentado en su propia
+bitácora bajo "Fase 2 (rework de Buffs)": antes de esa fase, "Añadir buff..." era un picker plano
+igual que el de aquí, y se sustituyó por una **Librería de buffs real** (árbol de carpetas +
+búsqueda), calco de la que ya tenían los objetos. El criterio real, portado tal cual desde
+`TerrasavrNative.Core.Data.BuffTreeBuilder` (ya incluido en el `lib/TerrasavrNative.Core.dll` que
+usa el mod, comprobado con `ilspycmd` sobre el DLL real, no solo sobre el código fuente del repo
+hermano):
+
+- **6 categorías curadas** con listas de ids literales reales de Terrasavr (Utilidad=17,
+  Offensivo=18, Defensivo=13, Special=10, Mascota=20, Negativo=26 - con pertenencia múltiple real,
+  ej. el buff 3 vive en Utilidad Y Special).
+- **"Índice"**: páginas de 33 en 33 sobre **TODOS** los buffs vanilla conocidos (`BuffID.Count`),
+  para que ningún buff vanilla pueda quedar fuera del árbol aunque no encaje en ninguna categoría
+  curada. Esto es lo que de verdad garantiza cobertura del 100%, no las 6 categorías.
+- **"Calamity (mod)"** (en la app de escritorio) agrupado por categoría real de
+  `calamity/buffs.json`.
+
+### La corrección real (no un parche del tope de 12)
+
+`Common/Personaje/ArbolBuffs.cs` (nuevo), híbrido igual que `ArbolLibreria` (WS3) para objetos:
+
+1. **El árbol curado + "Índice" real de Terrasavr**, llamando literalmente a
+   `BuffTreeBuilder.BuildBuffTree` de Core (nada reimplementado) con un `VanillaBuffCatalog`
+   montado **en memoria** (nunca desde un `.json` estático que se quedaría corto): sus únicas
+   1..`BuffID.Count`-1 entradas sirven solo para que `BuildIndex` sepa qué ids paginar, los
+   nombres que de verdad se enseñan salen en vivo de `PersonajeVivo.NombreBuff` en cada fila (así
+   respeta el idioma activo sin tener que reconstruir nada al cambiarlo).
+2. **Una carpeta madre por MOD instalado**, descubierta en vivo con `LiveItemTreeBuilder.BuildTree`
+   sobre los buffs con `tipo >= BuffID.Count` (el mismo corte real que usa internamente
+   `BuffLoader.GetBuff` para decidir si un buff es "de mod" - confirmado con `ilspycmd` sobre el
+   `tModLoader.dll` instalado: `GetBuff` devuelve null si `type < BuffID.Count || type >=
+   BuffCount`). Cubre **cualquier** mod con buffs propios, no solo Calamity, sin necesitar ningún
+   `calamity/buffs.json` portado ni ids sintéticos.
+
+Entre las dos partes cubren `BuffLoader.BuffCount - 1` exactos: a diferencia del árbol de objetos
+(que sí puede dejar vanilla fuera del árbol curado porque Terrasavr lo extrajo de una versión con
+menos contenido), aquí el "Índice" ya nace pensado para el 100% de lo vanilla, así que nunca hace
+falta una carpeta de "sobrantes".
+
+`UI/Personaje/PestanaBuffs.cs` se reescribió para navegar ese árbol (columna de carpetas con
+Inicio/Subir, calco reducido de `ContenidoLibreria`) en vez de un buscador plano: sin carpeta y
+sin texto no se enseña nada (pantalla de entrada, igual que la Librería real), con una carpeta
+abierta se buscan sus ids, y sin carpeta pero CON texto se busca en los `BuffLoader.BuffCount - 1`
+buffs aplicables enteros. El tope de resultados sube de 12 a 100 (`BusquedaLibreria.Maximo`) y,
+sobre todo, un recorte real ahora es **visible** (`"Mostrando 100 de 311 en ..."`) en vez de
+silencioso, que es la otra cara del mismo bug original. Fila de carpeta nueva,
+`UI/Personaje/Widgets/FilaCarpetaBuffTk.cs`: calco de `FilaCarpetaTk` (Librería) con el icono real
+de un BUFF (`TextureAssets.Buff`) en vez del de un objeto.
+
+### Verificado de verdad en el juego, cuadrando el número (mismo criterio que Investigación, 5480=5480)
+
+Arnés propio y aislado, `Common/Personaje/VerificacionBuffsSystem.cs` (variable de entorno
+`TERRAKEEP_AUTOTEST_BUFFS`), deliberadamente en su **propio** `ModSystem` sin tocar
+`PanelPruebaSystem.cs`/`AutopruebaPersonaje.cs`: en el momento de esta tanda había varios agentes
+trabajando en paralelo sobre esos mismos archivos compartidos y sobre sandboxes de juego reales ya
+abiertos (confirmado: dos procesos `dotnet` de tModLoader ya corriendo antes de empezar). tModLoader
+llama solo a `PostSetupContent`/`UpdateUI` de cualquier `ModSystem` cargado, así que no hace falta
+que nadie más lo invoque. Sandbox propio `tModLoader-TerrakeepBuffs` (copiado de `WS1`), `.tmod`
+compilado directamente ahí con `-tmlsavedirectory` (nunca en la carpeta `Mods` compartida). Solo se
+paró el PID propio en cada prueba, nunca un `Stop-Process` masivo por nombre - había procesos de
+otro agente en marcha y no se tocaron.
+
+| Qué | Evidencia real (`evidencia/buffs-arbol*.log.txt`) |
+|---|---|
+| Solo vanilla (servidor headless) | `Buffs aplicables segun el juego (BuffLoader.BuffCount-1): 354; cubiertos por el arbol: 354 (cuadra)` |
+| Con Calamity + CalamityModMusic | `... 665; cubiertos por el arbol: 665 (cuadra)` (354 vanilla + 311 de Calamity) |
+| Panel real abierto en la pestaña Buffs (cliente gráfico) | `Pestaña activa: "Buffs"` + `VERIFICACION-BUFFS-UI: ... 38 elementos ... area de la pestaña x=110 y=265 1060x378` |
+| Excepciones en el log completo | ninguna, en las tres ejecuciones |
+
+`354 = BuffID.Count - 1` (355 real, comprobado con `ilspycmd` sobre `tModLoader.dll`), y el salto a
+665 con Calamity cargado demuestra que la carpeta de mod descubierta en vivo también cubre el 100%
+- exactamente el escenario que reportó el usuario (con Calamity instalado).
+
+### Los dos `.hjson` (claves `Personaje.Buffs.Arbol.*`) se dejan SIN comitear
+
+Mismo motivo y misma decisión que ya dejó escrita la entrada anterior de esta bitácora ("Obstáculo
+real: los `.hjson` compartidos se pisan entre sesiones del juego a la vez"): hay una migración de
+idiomas en marcha de otro agente que regenera esos dos archivos enteros desde
+`scripts/generar-localizacion.py` y ya se ha comido claves nuevas de otros tres veces seguidas. Mis
+claves nuevas ya están escritas en el árbol de trabajo (español e inglés) y el código no depende de
+que sobrevivan: `Idiomas.Texto` cae a la clave completa si no encuentra traducción, así que en el
+peor caso el árbol de "Añadir" se ve con literales tipo `Personaje.Buffs.Arbol.Inicio` en vez del
+rótulo bonito, nunca deja de funcionar ni de cubrir el 100% de los buffs. Se comitea con **índice
+privado** solo lo que es mío de verdad: `Common/Personaje/ArbolBuffs.cs`,
+`Common/Personaje/VerificacionBuffsSystem.cs`, `UI/Personaje/Widgets/FilaCarpetaBuffTk.cs`,
+`UI/Personaje/PestanaBuffs.cs` y la evidencia.

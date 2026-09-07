@@ -1,0 +1,21 @@
+# Verificacion de cobertura del arbol de Buffs (ArbolBuffs) - con Calamity + CalamityModMusic
+# Sandbox: tModLoader-TerrakeepBuffs (cliente grafico real, panel de Personaje abierto en la
+# pestaña Buffs de verdad via VerificacionBuffsSystem.UpdateUI)
+# Mon Sep  7 02:56:32     2026
+
+[02:53:12.317] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Mod cargado. Prueba de humo de TerrasavrNative.Core: GameItem(Id=3389).IsEmpty=False, .IsCalamity=False, ensamblado real = TerrasavrNative.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[02:53:15.584] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Builds: catalogo resuelto. [Vanilla: 3 etapas, 156/156 objetos resueltos] [Calamity: 3 etapas, 154/154 objetos resueltos] 
+[02:53:15.621] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Investigacion: arbol construido. 12 carpetas raiz (9 del arbol vanilla de Terrasavr, 3 de mods, 0 de "Otros objetos" con 0). Objetos investigables en el arbol: 8203; segun la tabla real del juego: 8203 (cuadra)
+[02:53:15.621] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Investigacion: carpetas raiz -> "Materiales" 0/1583 | "Decoraciones" 0/784 | "Mascotas, Monturas, Herramientas" 0/141 | "Pociones (regeneracion)" 0/14 | "Pociones (efectos)" 0/44 | "Jefes & Eventos" 0/23 | "Mision de Pez" 0/40 | "Categorias" 0/4628 | "Objectos por ID" 0/5391 | "Calamity Mod (2662)" 0/2662 | "Calamity Mod Music (61)" 0/61 | "tModLoader (89)" 0/89
+[02:53:15.627] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] VERIFICACION-BUFFS: 8 carpetas raiz (7 del arbol curado+Indice de Terrasavr, 1 de mods instalados). Buffs aplicables segun el juego (BuffLoader.BuffCount-1): 665; cubiertos por el arbol: 665 (cuadra).
+[02:53:15.627] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] MejorPrefijo: tabla cargada desde Assets/best_prefix.json.
+[02:53:17.007] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Atajos: nada que sembrar (ya tenian tecla o ya se habian sembrado antes).
+[02:53:19.988] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Inventario".
+[02:53:19.988] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Personaje" (via reapertura).
+[02:53:19.988] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PANEL ABIERTO via autoprueba (TERRAKEEP_AUTOTEST_BUFFS). Pestaña: "Personaje". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPrueba". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
+[02:53:19.988] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Buffs: arbol de "Añadir" listo. 8 carpetas raiz (7 del arbol curado+Indice de Terrasavr, 1 de mods instalados). Buffs aplicables segun el juego (BuffLoader.BuffCount-1): 665; cubiertos por el arbol: 665 (cuadra).
+[02:53:19.989] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Buffs".
+[02:53:19.989] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] VERIFICACION-BUFFS-UI: pestaña activa="Buffs". 38 elementos, sin ranuras de objeto; area de la pestaña x=110 y=265 1060x378. Arbol: 8 carpetas raiz (7 del arbol curado+Indice de Terrasavr, 1 de mods instalados). Buffs aplicables segun el juego (BuffLoader.BuffCount-1): 665; cubiertos por el arbol: 665 (cuadra).
+[02:53:19.992] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=100 y=21 w=1080 h=676. Resolucion 1280x720, escala de interfaz 1. Pestaña abierta: "Personaje". Barra de pestañas: ["Personaje" x=110 y=61 170x30 ACTIVA] ["Librería" x=286 y=61 170x30] ["Builds" x=463 y=61 170x30] ["Investigación" x=640 y=61 170x30] ["Exploración" x=816 y=61 170x30] ["Ajustes" x=993 y=61 170x30] 
+
+# Excepciones en todo el log (debe estar vacio):

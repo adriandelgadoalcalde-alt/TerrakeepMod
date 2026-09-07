@@ -1,0 +1,11 @@
+# Verificacion de cobertura del arbol de Buffs (ArbolBuffs) - solo vanilla
+# Sandbox: tModLoader-TerrakeepBuffs (servidor dedicado headless, sin Calamity)
+# Mon Sep  7 02:56:32     2026
+
+[02:56:19.232] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Mod cargado. Prueba de humo de TerrasavrNative.Core: GameItem(Id=3389).IsEmpty=False, .IsCalamity=False, ensamblado real = TerrasavrNative.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[02:56:19.366] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Builds: la fuente "Calamity" no es utilizable en esta partida (35/154 objetos resueltos, y 0/119 de los que vienen de un mod); no se enseñara en el panel.
+[02:56:19.366] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Builds: catalogo resuelto. [Vanilla: 3 etapas, 156/156 objetos resueltos] 
+[02:56:19.383] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Investigacion: arbol construido. 10 carpetas raiz (9 del arbol vanilla de Terrasavr, 1 de mods, 0 de "Otros objetos" con 0). Objetos investigables en el arbol: 5480; segun la tabla real del juego: 5480 (cuadra)
+[02:56:19.383] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Investigacion: carpetas raiz -> "Materials" 0/1583 | "Decorative" 0/784 | "Pets, mounts, tools" 0/141 | "Potions (regeneration)" 0/14 | "Potions (effects)" 0/44 | "Bosses & events" 0/23 | "Quest fish" 0/40 | "Categories" 0/4628 | "Items by ID" 0/5391 | "tModLoader (89)" 0/89
+[02:56:19.387] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] VERIFICACION-BUFFS: 7 carpetas raiz (7 del arbol curado+Indice de Terrasavr, 0 de mods instalados). Buffs aplicables segun el juego (BuffLoader.BuffCount-1): 354; cubiertos por el arbol: 354 (cuadra).
+[02:56:19.389] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] MejorPrefijo: tabla cargada desde Assets/best_prefix.json.

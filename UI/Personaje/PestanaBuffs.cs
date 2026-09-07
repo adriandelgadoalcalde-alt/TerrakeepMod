@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Text;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
@@ -8,6 +9,7 @@ using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Personaje;
 using TerrakeepMod.UI.Personaje.Widgets;
+using TerrasavrNative.Core.Data;
 
 namespace TerrakeepMod.UI.Personaje
 {
@@ -33,7 +35,23 @@ namespace TerrakeepMod.UI.Personaje
 	public class PestanaBuffs : UIElement
 	{
 		private const int SegundosPorDefecto = 600;
-		private const int MaximoResultados = 12;
+
+		/// <summary>
+		/// Tope de resultados que se enseñan de una vez. Antes eran 12 y SIN ningun arbol de
+		/// carpetas detras: con el buscador vacio, eso enseñaba siempre los primeros 12 buffs por
+		/// id (los mas bajos de "Utilidad") y escondia el resto salvo que se supiera EXACTAMENTE
+		/// que buscar - el bug real reportado ("no salen todos los buffs... igual que en
+		/// Terrakeep"). Es el MISMO bug que ya se dio en la app de escritorio antes de su "Fase 2"
+		/// del rework de Buffs (ver <c>ArbolBuffs</c>), y la correccion real tampoco fue subir este
+		/// numero: fue añadir el arbol de <see cref="ArbolBuffs"/>. Se sube igualmente a 100 (mismo
+		/// tope real que usa la Libreria de objetos, <c>BusquedaLibreria.Maximo</c>) para que una
+		/// carpeta grande buscada a mano no se recorte de forma silenciosa.
+		/// </summary>
+		private const int MaximoResultados = 100;
+
+		private const float AnchoColumnaCarpetas = 132f;
+		private const float AnchoBarraScrollCarpetas = 20f;
+		private const float SeparacionSubcolumnas = 8f;
 
 		/// <summary>
 		/// Reparto de las dos columnas, en PORCENTAJE del ancho real.
@@ -56,15 +74,32 @@ namespace TerrakeepMod.UI.Personaje
 		private readonly List<BotonTk> _botonesAplicar = new List<BotonTk>();
 		private int _firmaActivos = -1;
 
+		// --- Arbol de carpetas de "Añadir" (ArbolBuffs) ----------------------------------------
+		private readonly List<CategoryTreeNodeData> _ruta = new List<CategoryTreeNodeData>();
+		private UIList _listaCarpetas;
+		private BotonTk _botonInicio;
+		private BotonTk _botonSubirCarpeta;
+		private EtiquetaTk _rutaTexto;
+		private EtiquetaTk _resumenAnadir;
+		private IReadOnlyList<CategoryTreeNodeData> _ultimasRaices;
+		private string _busquedaActual = "";
+		private int _totalCasados;
+		private int _mostrados;
+
 		public PestanaBuffs()
 		{
 			Width.Set(0f, 1f);
 			Height.Set(0f, 1f);
 
+			ArbolBuffs.ConstruirSiHaceFalta();
+			Terrakeep.Instance.Logger.Info($"{Terrakeep.LogTag} Buffs: arbol de \"Añadir\" listo. {ArbolBuffs.Resumen}");
+
 			ConstruirActivos();
 			ConstruirAnadir();
 
 			ReconstruirActivos();
+			_ultimasRaices = ArbolBuffs.Raices;
+			RellenarCarpetas();
 			ReconstruirResultados("");
 		}
 
@@ -233,20 +268,75 @@ namespace TerrakeepMod.UI.Personaje
 			titulo.Top.Set(0f, 0f);
 			derecha.Append(titulo);
 
+			// --- Columna de carpetas (ArbolBuffs), a la izquierda de "derecha" -----------------
+			UIElement columnaCarpetas = new UIElement();
+			columnaCarpetas.Width.Set(AnchoColumnaCarpetas, 0f);
+			columnaCarpetas.Top.Set(26f, 0f);
+			columnaCarpetas.Height.Set(-26f, 1f);
+			derecha.Append(columnaCarpetas);
+
+			_botonInicio = new BotonTk(Idiomas.Texto("Personaje.Buffs.Arbol.Inicio"), 0.72f);
+			_botonInicio.Width.Set(62f, 0f);
+			_botonInicio.Height.Set(24f, 0f);
+			_botonInicio.Ayuda = () => Idiomas.Texto("Personaje.Buffs.Arbol.InicioAyuda");
+			_botonInicio.AlPulsar += IrALaRaiz;
+			columnaCarpetas.Append(_botonInicio);
+
+			_botonSubirCarpeta = new BotonTk(Idiomas.Texto("Personaje.Buffs.Arbol.Subir"), 0.72f);
+			_botonSubirCarpeta.Width.Set(66f, 0f);
+			_botonSubirCarpeta.Height.Set(24f, 0f);
+			_botonSubirCarpeta.Left.Set(66f, 0f);
+			_botonSubirCarpeta.Ayuda = () => Idiomas.Texto("Personaje.Buffs.Arbol.SubirAyuda");
+			_botonSubirCarpeta.AlPulsar += SubirCarpeta;
+			columnaCarpetas.Append(_botonSubirCarpeta);
+
+			_rutaTexto = new EtiquetaTk(RutaCorta, 0.68f, AnchoColumnaCarpetas, 18f);
+			_rutaTexto.ColorTexto = EstiloTk.TextoSuave;
+			_rutaTexto.Top.Set(28f, 0f);
+			columnaCarpetas.Append(_rutaTexto);
+
+			UIPanel cajaCarpetas = new UIPanel();
+			cajaCarpetas.Width.Set(0f, 1f);
+			cajaCarpetas.Top.Set(50f, 0f);
+			cajaCarpetas.Height.Set(-50f, 1f);
+			cajaCarpetas.BackgroundColor = EstiloTk.FondoCaja;
+			columnaCarpetas.Append(cajaCarpetas);
+
+			_listaCarpetas = new UIList();
+			_listaCarpetas.Width.Set(-AnchoBarraScrollCarpetas, 1f);
+			_listaCarpetas.Height.Set(0f, 1f);
+			_listaCarpetas.ListPadding = 3f;
+			cajaCarpetas.Append(_listaCarpetas);
+
+			UIScrollbar barraCarpetas = new UIScrollbar();
+			barraCarpetas.HAlign = 1f;
+			barraCarpetas.Height.Set(0f, 1f);
+			barraCarpetas.SetView(100f, 1000f);
+			cajaCarpetas.Append(barraCarpetas);
+			_listaCarpetas.SetScrollbar(barraCarpetas);
+
+			// --- Columna de busqueda + resultados, a la derecha de la de carpetas --------------
+			UIElement columnaResultados = new UIElement();
+			columnaResultados.Left.Set(AnchoColumnaCarpetas + SeparacionSubcolumnas, 0f);
+			columnaResultados.Width.Set(-(AnchoColumnaCarpetas + SeparacionSubcolumnas), 1f);
+			columnaResultados.Top.Set(26f, 0f);
+			columnaResultados.Height.Set(-26f, 1f);
+			derecha.Append(columnaResultados);
+
 			EtiquetaTk etiquetaBusqueda = new EtiquetaTk(
 				() => Idiomas.Texto("Personaje.Buffs.Buscar"), 0.8f, 70f, 20f);
 			etiquetaBusqueda.ColorTexto = EstiloTk.TextoSuave;
 			etiquetaBusqueda.Left.Set(0f, 0f);
-			etiquetaBusqueda.Top.Set(32f, 0f);
-			derecha.Append(etiquetaBusqueda);
+			etiquetaBusqueda.Top.Set(6f, 0f);
+			columnaResultados.Append(etiquetaBusqueda);
 
 			_campoBusqueda = new CampoTextoTk(() => Idiomas.Texto("Personaje.Buffs.PistaBusqueda"), 30);
 			_campoBusqueda.Width.Set(-72f, 1f);
 			_campoBusqueda.Height.Set(28f, 0f);
 			_campoBusqueda.Left.Set(66f, 0f);
-			_campoBusqueda.Top.Set(26f, 0f);
+			_campoBusqueda.Top.Set(0f, 0f);
 			_campoBusqueda.AlCambiar += ReconstruirResultados;
-			derecha.Append(_campoBusqueda);
+			columnaResultados.Append(_campoBusqueda);
 
 			// La duracion va en su PROPIA fila, debajo del buscador: en la misma fila necesitaba
 			// 470 px de ancho y con media pantalla no cabia (el campo se quedaba fuera de la
@@ -255,8 +345,8 @@ namespace TerrakeepMod.UI.Personaje
 				() => Idiomas.Texto("Personaje.Buffs.Segundos"), 0.8f, 90f, 20f);
 			etiquetaDuracion.ColorTexto = EstiloTk.TextoSuave;
 			etiquetaDuracion.Left.Set(0f, 0f);
-			etiquetaDuracion.Top.Set(66f, 0f);
-			derecha.Append(etiquetaDuracion);
+			etiquetaDuracion.Top.Set(40f, 0f);
+			columnaResultados.Append(etiquetaDuracion);
 
 			_campoDuracion = new CampoTextoTk(() => SegundosPorDefecto.ToString(), 6);
 			_campoDuracion.SoloNumeros = true;
@@ -264,8 +354,15 @@ namespace TerrakeepMod.UI.Personaje
 			_campoDuracion.Width.Set(80f, 0f);
 			_campoDuracion.Height.Set(28f, 0f);
 			_campoDuracion.Left.Set(80f, 0f);
-			_campoDuracion.Top.Set(60f, 0f);
-			derecha.Append(_campoDuracion);
+			_campoDuracion.Top.Set(34f, 0f);
+			columnaResultados.Append(_campoDuracion);
+
+			_resumenAnadir = new EtiquetaTk(TextoResumenAnadir, 0.68f, 0f, 30f);
+			_resumenAnadir.Width.Set(0f, 1f);
+			_resumenAnadir.ColorTexto = EstiloTk.TextoSuave;
+			_resumenAnadir.Left.Set(0f, 0f);
+			_resumenAnadir.Top.Set(66f, 0f);
+			columnaResultados.Append(_resumenAnadir);
 
 			UIPanel caja = new UIPanel();
 			caja.Width.Set(0f, 1f);
@@ -273,7 +370,7 @@ namespace TerrakeepMod.UI.Personaje
 			caja.Left.Set(0f, 0f);
 			caja.Top.Set(94f, 0f);
 			caja.BackgroundColor = EstiloTk.FondoCaja;
-			derecha.Append(caja);
+			columnaResultados.Append(caja);
 
 			_listaResultados = new UIList();
 			_listaResultados.Width.Set(-24f, 1f);
@@ -290,49 +387,193 @@ namespace TerrakeepMod.UI.Personaje
 
 			EtiquetaTk nota = new EtiquetaTk(
 				() => EtiquetaTk.PartirEnLineas(Idiomas.Texto("Personaje.Buffs.Nota"),
-					derecha.GetInnerDimensions().Width, 0.72f),
+					columnaResultados.GetInnerDimensions().Width, 0.72f),
 				0.72f, 0f, 40f);
 			nota.Width.Set(0f, 1f);
 			nota.ColorTexto = EstiloTk.TextoSuave;
 			nota.Left.Set(0f, 0f);
 			nota.Top.Set(-44f, 1f);
-			derecha.Append(nota);
+			columnaResultados.Append(nota);
 		}
 
+		// ---------------------------------------------------------------- arbol de carpetas
+
+		/// <summary>Carpeta abierta ahora mismo en el arbol de "Añadir", o null si estamos en la
+		/// raiz (las 8 carpetas de primer nivel de <see cref="ArbolBuffs"/>).</summary>
+		private CategoryTreeNodeData CarpetaActual {
+			get { return _ruta.Count > 0 ? _ruta[_ruta.Count - 1] : null; }
+		}
+
+		private IReadOnlyList<CategoryTreeNodeData> CarpetasVisibles()
+		{
+			CategoryTreeNodeData actual = CarpetaActual;
+			if (actual == null) {
+				return ArbolBuffs.Raices;
+			}
+			return actual.Children ?? (IReadOnlyList<CategoryTreeNodeData>)new List<CategoryTreeNodeData>();
+		}
+
+		private void RellenarCarpetas()
+		{
+			_listaCarpetas.Clear();
+
+			IReadOnlyList<CategoryTreeNodeData> carpetas = CarpetasVisibles();
+			for (int i = 0; i < carpetas.Count; i++) {
+				CategoryTreeNodeData nodo = carpetas[i];
+				FilaCarpetaBuffTk fila = new FilaCarpetaBuffTk(nodo, AnchoColumnaCarpetas - AnchoBarraScrollCarpetas - 4f);
+				fila.AlPulsar += () => AbrirCarpeta(nodo);
+				_listaCarpetas.Add(fila);
+			}
+
+			if (carpetas.Count == 0) {
+				EtiquetaTk vacio = new EtiquetaTk(
+					() => Idiomas.Texto("Personaje.Buffs.Arbol.SinSubcarpetas"), 0.7f,
+					AnchoColumnaCarpetas - AnchoBarraScrollCarpetas - 4f, 40f);
+				vacio.ColorTexto = EstiloTk.TextoSuave;
+				_listaCarpetas.Add(vacio);
+			}
+
+			_botonSubirCarpeta.Habilitado = _ruta.Count > 0;
+			_botonInicio.Habilitado = _ruta.Count > 0;
+			_listaCarpetas.Recalculate();
+		}
+
+		private void AbrirCarpeta(CategoryTreeNodeData nodo)
+		{
+			if (nodo == null) {
+				return;
+			}
+			_ruta.Add(nodo);
+			RellenarCarpetas();
+			ReconstruirResultados(_busquedaActual);
+		}
+
+		private void SubirCarpeta()
+		{
+			if (_ruta.Count == 0) {
+				return;
+			}
+			_ruta.RemoveAt(_ruta.Count - 1);
+			RellenarCarpetas();
+			ReconstruirResultados(_busquedaActual);
+		}
+
+		private void IrALaRaiz()
+		{
+			_ruta.Clear();
+			RellenarCarpetas();
+			ReconstruirResultados(_busquedaActual);
+		}
+
+		private string RutaCorta()
+		{
+			StringBuilder sb = new StringBuilder(Idiomas.Texto("Personaje.Buffs.Arbol.Raiz"));
+			for (int i = 0; i < _ruta.Count; i++) {
+				sb.Append(" > ").Append(_ruta[i].Name);
+			}
+			string ruta = sb.ToString();
+			return ruta.Length <= 40 ? ruta : "..." + ruta.Substring(ruta.Length - 37);
+		}
+
+		// ---------------------------------------------------------------- resultados
+
+		/// <summary>
+		/// Reconstruye la rejilla de resultados de "Añadir". El AMBITO replica el de la Libreria
+		/// de objetos (<c>BusquedaLibreria.Buscar</c>): con una carpeta abierta se busca DENTRO de
+		/// ella; sin carpeta abierta, solo si hay texto en el buscador se recorren TODOS los buffs
+		/// aplicables del juego cargado (<c>BuffLoader.BuffCount</c>, vanilla + cualquier mod). Sin
+		/// carpeta y sin busqueda no se enseña nada: es la pantalla de entrada, las carpetas estan
+		/// a la izquierda.
+		/// </summary>
 		private void ReconstruirResultados(string filtro)
 		{
+			_busquedaActual = filtro ?? "";
 			_listaResultados.Clear();
 			_botonesAplicar.Clear();
 
-			string busqueda = (filtro ?? "").Trim();
+			string busqueda = _busquedaActual.Trim();
 			int idPedido;
 			bool esNumero = int.TryParse(busqueda, out idPedido);
-			int encontrados = 0;
+			bool hayBusqueda = busqueda.Length > 0;
+			CategoryTreeNodeData carpeta = CarpetaActual;
 
-			for (int tipo = 1; tipo < BuffLoader.BuffCount && encontrados < MaximoResultados; tipo++) {
-				string nombre = PersonajeVivo.NombreBuff(tipo);
-				if (string.IsNullOrEmpty(nombre)) {
-					continue;
-				}
+			_totalCasados = 0;
+			_mostrados = 0;
 
-				bool coincide = busqueda.Length == 0
-					|| (esNumero && tipo == idPedido)
-					|| nombre.IndexOf(busqueda, StringComparison.OrdinalIgnoreCase) >= 0;
-
-				if (!coincide) {
-					continue;
-				}
-
-				_listaResultados.Add(CrearFilaResultado(tipo, nombre));
-				encontrados++;
+			if (carpeta == null && !hayBusqueda) {
+				EtiquetaTk vacio = new EtiquetaTk(
+					() => Idiomas.Texto("Personaje.Buffs.Arbol.ElegirCarpeta", ArbolBuffs.TotalBuffsAplicables),
+					0.75f, 0f, 40f);
+				vacio.Width.Set(0f, 1f);
+				vacio.ColorTexto = EstiloTk.TextoSuave;
+				_listaResultados.Add(vacio);
+				return;
 			}
 
-			if (encontrados == 0) {
+			if (carpeta != null) {
+				IReadOnlyList<int> ids = carpeta.ItemIdsOrdered;
+				for (int i = 0; i < ids.Count; i++) {
+					AcumularSiCoincide(ids[i], busqueda, esNumero, idPedido);
+				}
+			}
+			else {
+				for (int tipo = 1; tipo < BuffLoader.BuffCount; tipo++) {
+					AcumularSiCoincide(tipo, busqueda, esNumero, idPedido);
+				}
+			}
+
+			if (_mostrados == 0) {
 				EtiquetaTk vacio = new EtiquetaTk(
 					() => Idiomas.Texto("Personaje.Buffs.SinResultados"), 0.8f, 300f, 24f);
 				vacio.ColorTexto = EstiloTk.TextoSuave;
 				_listaResultados.Add(vacio);
 			}
+		}
+
+		private void AcumularSiCoincide(int tipo, string busqueda, bool esNumero, int idPedido)
+		{
+			string nombre = PersonajeVivo.NombreBuff(tipo);
+			if (string.IsNullOrEmpty(nombre)) {
+				return;
+			}
+
+			bool coincide = busqueda.Length == 0
+				|| (esNumero && tipo == idPedido)
+				|| nombre.IndexOf(busqueda, StringComparison.OrdinalIgnoreCase) >= 0;
+			if (!coincide) {
+				return;
+			}
+
+			_totalCasados++;
+			if (_mostrados < MaximoResultados) {
+				_listaResultados.Add(CrearFilaResultado(tipo, nombre));
+				_mostrados++;
+			}
+		}
+
+		/// <summary>Texto sobre la rejilla de resultados: donde se busca y cuantos hay, para que un
+		/// recorte por <see cref="MaximoResultados"/> sea VISIBLE en vez de silencioso (el bug real
+		/// que se corrige aqui era precisamente eso: un recorte que no se notaba).</summary>
+		private string TextoResumenAnadir()
+		{
+			if (!ArbolBuffs.Listo) {
+				return Idiomas.Texto("Personaje.Buffs.Arbol.Cargando");
+			}
+
+			CategoryTreeNodeData carpeta = CarpetaActual;
+			string donde = carpeta != null
+				? Idiomas.Texto("Personaje.Buffs.Arbol.EnCarpeta", carpeta.Name)
+				: Idiomas.Texto("Personaje.Buffs.Arbol.EnTodo");
+
+			if (_mostrados == 0) {
+				return carpeta == null && _busquedaActual.Trim().Length == 0
+					? Idiomas.Texto("Personaje.Buffs.Arbol.ElegirCarpeta", ArbolBuffs.TotalBuffsAplicables)
+					: Idiomas.Texto("Personaje.Buffs.SinResultados");
+			}
+
+			return _totalCasados > _mostrados
+				? Idiomas.Texto("Personaje.Buffs.Arbol.MostrandoParcial", _mostrados, _totalCasados, donde)
+				: Idiomas.Texto("Personaje.Buffs.Arbol.MostrandoTodos", _mostrados, donde);
 		}
 
 		private UIElement CrearFilaResultado(int tipo, string nombre)
@@ -407,6 +648,21 @@ namespace TerrakeepMod.UI.Personaje
 			}
 			for (int i = 0; i < _botonesAplicar.Count; i++) {
 				_botonesAplicar[i].FijarTexto(Idiomas.Texto("Personaje.Buffs.Aplicar"));
+			}
+			if (_botonInicio != null) {
+				_botonInicio.FijarTexto(Idiomas.Texto("Personaje.Buffs.Arbol.Inicio"));
+				_botonSubirCarpeta.FijarTexto(Idiomas.Texto("Personaje.Buffs.Arbol.Subir"));
+			}
+
+			// El arbol de "Añadir" (ArbolBuffs) se reconstruye solo si el idioma activo cambio
+			// desde la ultima vez (ConstruirSiHaceFalta se lo salta si no hizo falta): se detecta
+			// comparando la REFERENCIA de la lista de raices, no releyendo el idioma aqui.
+			ArbolBuffs.ConstruirSiHaceFalta();
+			if (!ReferenceEquals(ArbolBuffs.Raices, _ultimasRaices)) {
+				_ultimasRaices = ArbolBuffs.Raices;
+				_ruta.Clear();
+				RellenarCarpetas();
+				ReconstruirResultados(_busquedaActual);
 			}
 		}
 
