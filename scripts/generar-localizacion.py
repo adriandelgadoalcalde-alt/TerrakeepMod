@@ -177,6 +177,11 @@ T = [
     ("Personaje.Buffs.Arbol.MostrandoParcial", "Mostrando {0} de {1} {2}.", "Showing {0} of {1} {2}."),
     ("Personaje.Buffs.Arbol.MostrandoTodos", "{0} buffs {1}.", "{0} buffs {1}."),
 
+    ("Personaje.Apariencia.Vista", "Vista previa", "Preview"),
+    ("Personaje.Apariencia.VerConArmadura", "Con armadura", "With armour"),
+    ("Personaje.Apariencia.VerConArmaduraAyuda",
+     "Muestra la armadura y los accesorios que llevas puestos ahora mismo, o solo la ropa base.",
+     "Shows the armour and accessories you have equipped right now, or just the base outfit."),
     ("Personaje.Apariencia.Peinado", "Peinado", "Hairstyle"),
     ("Personaje.Apariencia.PeinadoValor", "{0} de {1}", "{0} of {1}"),
     ("Personaje.Apariencia.VarianteEtiqueta", "Variante / género", "Variant / gender"),
