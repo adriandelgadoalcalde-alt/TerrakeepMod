@@ -8,7 +8,7 @@ using Terraria.ID;
 using Terraria.ModLoader;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Libreria;
-using TerrasavrNative.Core.Data;
+using Terrakeep.Core.Data;
 
 namespace TerrakeepMod.Common.Personaje
 {
@@ -26,7 +26,7 @@ namespace TerrakeepMod.Common.Personaje
 	/// Es un <b>hibrido</b>, exactamente igual que <see cref="ArbolLibreria"/> para objetos:
 	/// <list type="number">
 	/// <item>El arbol CURADO real de Terrasavr (<c>BuffTreeBuilder.BuildBuffTree</c> de
-	/// <c>TerrasavrNative.Core</c>, sin reimplementar nada): 6 categorias curadas (Utilidad,
+	/// <c>Terrakeep.Core</c>, sin reimplementar nada): 6 categorias curadas (Utilidad,
 	/// Offensivo, Defensivo, Special, Mascota, Negativo) mas un "Indice" paginado que cubre TODOS
 	/// los buffs VANILLA conocidos (1..<c>BuffID.Count</c>-1), asi que ningun buff vanilla puede
 	/// quedar fuera del arbol aunque no encaje en ninguna categoria curada.</item>

@@ -164,7 +164,7 @@ namespace TerrakeepMod.Common.Personaje
 		/// Llena el inventario del personaje de prueba con objetos REALES.
 		/// <para />
 		/// Se hace desde dentro del juego y no generando un <c>.plr</c> con
-		/// <c>TerrasavrNative.Core</c> a proposito: lo que WS1 tiene que demostrar es que se puede
+		/// <c>Terrakeep.Core</c> a proposito: lo que WS1 tiene que demostrar es que se puede
 		/// escribir en vivo sobre <c>Main.LocalPlayer</c>, asi que poblar el inventario ES YA una
 		/// de las cosas que se estan probando. Ademas los objetos se buscan por sus propiedades
 		/// (<c>headSlot</c>, <c>accessory</c>, <c>dye</c>...) en

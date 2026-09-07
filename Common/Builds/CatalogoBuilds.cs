@@ -5,7 +5,7 @@ using System.Text;
 using Terraria.ID;
 using Terraria.ModLoader;
 using TerrakeepMod.Common.Ajustes;
-using TerrasavrNative.Core.Data;
+using Terrakeep.Core.Data;
 
 namespace TerrakeepMod.Common.Builds
 {
@@ -142,7 +142,7 @@ namespace TerrakeepMod.Common.Builds
 
 			BuildsCatalog catalogo;
 			try {
-				// Codigo REAL de TerrasavrNative.Core (repo hermano) reutilizado tal cual: el
+				// Codigo REAL de Terrakeep.Core (repo hermano) reutilizado tal cual: el
 				// mismo parser que usa la app de escritorio para estos dos archivos. Es
 				// justamente el patron que preveia el plan (LoadFromStream encaja directo con
 				// los archivos de dentro del .tmod).

@@ -4128,3 +4128,50 @@ secas en un comando aparte. Archivos de esta tarea: `Common/Panel/AutopruebaEspa
 Nada de otros agentes (`evidencia/panel-unico.log.txt`, modificado por otro agente en una sesión
 anterior y todavía sin comitear; `bin-checkDebug/`, `obj-verif-espaciado/`, carpetas de build
 sueltas).
+
+---
+
+## 7-sep-2026 — Renombrado de la dependencia: TerrasavrNative.Core → Terrakeep.Core
+
+El repo hermano de escritorio (`Terrasavr-Native`) renombró hoy su código fuente de
+`TerrasavrNative.*` a `Terrakeep.*` (carpetas, `.csproj`, namespaces - ver su propia bitácora).
+Aquí se refleja el mismo cambio del lado del mod, que consume ese proyecto como dependencia real
+vía `dllReferences` (`lib/TerrasavrNative.Core.dll` → `lib/Terrakeep.Core.dll`).
+
+**Hecho**: recompilado `Terrakeep.Core` (repo hermano, ya renombrado) para `net8.0`, copiado a
+`lib/Terrakeep.Core.dll`, borrado el `.dll` viejo. Reemplazado `TerrasavrNative` → `Terrakeep` en
+los 21 `.cs` que lo mencionaban (todos referencias a `TerrasavrNative.Core`/`TerrasavrNative.App`
+en comentarios de documentación, ninguno cambia lógica), en `build.txt`
+(`dllReferences = Terrakeep.Core`), `.gitignore`, los 8 scripts de `scripts/*.ps1` que
+mencionaban la ruta/nombre viejos (en particular `scripts/actualizar-core.ps1`, que apuntaba a
+`...\Terrasavr-Native\TerrasavrNative.Core\TerrasavrNative.Core.csproj` - una ruta que dejó de
+existir con el renombrado del repo hermano y que habría fallado la próxima vez que alguien
+necesitara traer una versión nueva de Core).
+
+**Un sitio que el primer barrido (solo `.cs`) se dejó**: `TerrakeepMod.csproj` tiene su propio
+`<Reference Include="TerrasavrNative.Core"><HintPath>lib\TerrasavrNative.Core.dll</HintPath>`,
+que no es un `.cs` y por tanto no lo tocó el primer reemplazo - la fase 1 de
+`scripts\compilar.ps1` (validación con el SDK del sistema) falló con 64 errores `CS0246` (tipos
+de `CatalogoPrefijosLegales.cs` no encontrados) hasta corregirlo también.
+
+**Nota sobre `Terrasavr-Native` (con guion)**: varios comentarios mencionan el nombre real de la
+CARPETA del repo hermano en disco (`Downloads\Terrasavr-Win\Terrasavr-Native\`), que NO se ha
+renombrado (solo sus proyectos internos) - se dejaron esas menciones intactas a propósito, son
+correctas. El reemplazo de texto usado (`TerrasavrNative` sin guion) no las tocaba porque son
+cadenas distintas de verdad, no solo por casualidad.
+
+**No se tocan** los `evidencia/*.log.txt` que ya mencionaban "TerrasavrNative.Core" en su salida
+capturada de ejecuciones pasadas (son registro histórico real, no la fuente) - se refrescarán
+solos la próxima vez que se ejecute el script de verificación correspondiente.
+
+**Verificado en el juego real**: `scripts\compilar.ps1` completo (fase 1 y 2) en verde, `.tmod`
+desplegado en el sandbox `tModLoader-TerrakeepWS0`, mod cargado sin excepciones, y la propia
+línea de humo del log lo confirma: `"Prueba de humo de Terrakeep.Core: ...ensamblado real =
+Terrakeep.Core"` - ya no queda ningún residuo del nombre antiguo en lo que el mod imprime.
+
+**Tropiezo del entorno, anotado por si se repite**: `Remove-Item` sobre
+`tModLoader-Logs\client.log` (dentro de `C:\Program Files (x86)\...`) fue bloqueado por el propio
+sandbox de la herramienta con "system path... is protected from removal", pese a haber
+funcionado sin problema muchas veces antes en esta misma sesión sobre la misma ruta exacta.
+`Clear-Content` sobre el mismo archivo sí funcionó como alternativa. No se investigó más a fondo
+por no ser bloqueante.

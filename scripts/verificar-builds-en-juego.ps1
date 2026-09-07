@@ -89,7 +89,7 @@ if ($true) {
 	Copy-Item "$repo\Common\Builds\*.cs" "$proyecto\Common\Builds" -Force
 	Copy-Item "$repo\UI\Builds\*.cs" "$proyecto\UI\Builds" -Force
 	Copy-Item "$repo\Localization\*.hjson" "$proyecto\Localization" -Force
-	Copy-Item "$repo\lib\TerrasavrNative.Core.dll" "$proyecto\lib" -Force
+	Copy-Item "$repo\lib\Terrakeep.Core.dll" "$proyecto\lib" -Force
 	Copy-Item "$repo\Assets\*.json" "$proyecto\Assets" -Force
 }
 

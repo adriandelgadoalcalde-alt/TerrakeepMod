@@ -3,6 +3,6 @@ obj/
 *.user
 *.csproj.bak
 
-# lib/TerrasavrNative.Core.dll SI se versiona a proposito: es lo que hace que este repo se
+# lib/Terrakeep.Core.dll SI se versiona a proposito: es lo que hace que este repo se
 # pueda compilar por si solo sin tener al lado el repo hermano Terrasavr-Native. Se regenera
 # con scripts/actualizar-core.ps1 cuando Core cambie.

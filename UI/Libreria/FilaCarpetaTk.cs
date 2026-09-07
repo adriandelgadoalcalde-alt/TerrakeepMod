@@ -10,7 +10,7 @@ using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Libreria;
 using TerrakeepMod.UI.Personaje.Widgets;
-using TerrasavrNative.Core.Data;
+using Terrakeep.Core.Data;
 
 namespace TerrakeepMod.UI.Libreria
 {

@@ -17,7 +17,7 @@
 #      falla.
 #   2. El dotnet de tModLoader ejecuta el -build de verdad, que compila con el Roslyn interno
 #      de tModLoader (el mismo que usa el boton "Compilar" del menu Fuentes de mods del juego)
-#      y empaqueta el .tmod, metiendo dentro lib\TerrasavrNative.Core.dll por el
+#      y empaqueta el .tmod, metiendo dentro lib\Terrakeep.Core.dll por el
 #      "dllReferences" de build.txt.
 #
 # Nota: NO se pasa -eac. Con -eac, tModLoader reutiliza el DLL ya compilado por MSBuild

@@ -10,7 +10,7 @@
 #      autopruebas abren un panel a pantalla completa y se pelearian por la interfaz.
 #
 # El sandbox se crea solo la primera vez a partir del de WS0 (personaje sintetico TerrakeepPrueba
-# generado con TerrasavrNative.Core + mundo pequeño de pruebas). NUNCA se tocan los personajes ni
+# generado con Terrakeep.Core + mundo pequeño de pruebas). NUNCA se tocan los personajes ni
 # los mundos reales del usuario.
 #
 #   .\verificar-ws7.ps1              -> cliente grafico. Requiere sesion de Windows desbloqueada

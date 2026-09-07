@@ -5,14 +5,14 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using TerrakeepMod.Common.Ajustes;
-using TerrasavrNative.Core.Calamity;
-using TerrasavrNative.Core.Data;
+using Terrakeep.Core.Calamity;
+using Terrakeep.Core.Data;
 // ARREGLO MINIMO AJENO (ver bitacora.md): 'PrefixCategory' existe TAMBIEN en Terraria.ModLoader
 // (usado via el "using" de arriba) y eso volvia ambigua toda referencia sin calificar en este
 // archivo, bloqueando la compilacion del proyecto ENTERO para cualquiera. Este archivo usa el
 // tipo de Core (categorias con flags propias del catalogo real de prefijos), no el de
 // Terraria.ModLoader.
-using PrefixCategory = TerrasavrNative.Core.Data.PrefixCategory;
+using PrefixCategory = Terrakeep.Core.Data.PrefixCategory;
 
 namespace TerrakeepMod.Common.Prefijos
 {
@@ -23,12 +23,12 @@ namespace TerrakeepMod.Common.Prefijos
 	/// las reglas de legalidad a mano si ya existen" - la lógica es la MISMA que ya resolvió la
 	/// app de escritorio hermana <c>Terrasavr-Native</c> (<see cref="PrefixRulesCatalog"/>,
 	/// extraída del código decompilado real de <c>PrefixLegacy.cs</c>/<c>Item.cs</c>, ver su
-	/// cabecera), reutilizada aquí tal cual vía <c>TerrasavrNative.Core</c> - nada reimplementado.
+	/// cabecera), reutilizada aquí tal cual vía <c>Terrakeep.Core</c> - nada reimplementado.
 	/// </summary>
 	/// <remarks>
 	/// <b>Dos archivos copiados TAL CUAL</b> del repo hermano (mismo patrón que
 	/// <see cref="CatalogoMejorPrefijo"/> con <c>best_prefix.json</c>):
-	/// <c>Assets/vanilla_prefix_rules.json</c> (de <c>TerrasavrNative.App/Assets/
+	/// <c>Assets/vanilla_prefix_rules.json</c> (de <c>Terrakeep.App/Assets/
 	/// vanilla_prefix_rules.json</c>) y <c>Assets/vanilla_prefix_effects.json</c> (mismo origen,
 	/// mismo nombre) - el segundo es opcional, solo enriquece el tooltip de cada prefijo con su
 	/// efecto real ("+15% de daño"...), nunca decide legalidad.

@@ -5,7 +5,7 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
-using TerrasavrNative.Core.Data;
+using Terrakeep.Core.Data;
 
 namespace TerrakeepMod.Common.Libreria
 {
@@ -15,7 +15,7 @@ namespace TerrakeepMod.Common.Libreria
 	/// que el propio juego ya tiene cargada en memoria.
 	/// <para />
 	/// <b>Esta es la pieza que WS2 dejo a proposito sin hacer</b> (ver el comentario de cabecera
-	/// de <c>LiveItemTreeBuilder.cs</c> en <c>TerrasavrNative.Core</c>): Core no puede depender
+	/// de <c>LiveItemTreeBuilder.cs</c> en <c>Terrakeep.Core</c>): Core no puede depender
 	/// de Terraria/tModLoader (dejaria de compilar para net10.0, que es lo que consume la app de
 	/// escritorio), asi que la extraccion tiene que vivir forzosamente en el lado del mod. Lo que
 	/// sale de aqui son <see cref="LiveItemInfo"/>, el DTO neutral que Core entiende.

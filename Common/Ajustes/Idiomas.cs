@@ -61,7 +61,7 @@ namespace TerrakeepMod.Common.Ajustes
 		/// <para />
 		/// Lo necesitan las poquisimas piezas cuyo texto NO sale de los <c>.hjson</c> sino de una
 		/// tabla que solo existe en español (las 121 categorias de Calamity que trae
-		/// <c>TerrasavrNative.Core</c>): con esto pueden elegir su alternativa en ingles en vez de
+		/// <c>Terrakeep.Core</c>): con esto pueden elegir su alternativa en ingles en vez de
 		/// enseñar español dentro de una interfaz en ingles. Para todo lo demas, la via es
 		/// <see cref="Texto"/>.
 		/// </summary>

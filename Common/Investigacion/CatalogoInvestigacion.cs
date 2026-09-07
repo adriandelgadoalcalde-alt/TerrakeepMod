@@ -5,13 +5,13 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using TerrakeepMod.Common.Ajustes;
-using TerrasavrNative.Core.Data;
+using Terrakeep.Core.Data;
 
 namespace TerrakeepMod.Common.Investigacion
 {
 	/// <summary>
 	/// Una carpeta del arbol de Investigacion: el nodo de datos que viene de
-	/// <c>TerrasavrNative.Core</c> mas lo que hace falta para pintarlo y contarlo aqui.
+	/// <c>Terrakeep.Core</c> mas lo que hace falta para pintarlo y contarlo aqui.
 	/// </summary>
 	public sealed class CarpetaInvestigacion
 	{
@@ -65,7 +65,7 @@ namespace TerrakeepMod.Common.Investigacion
 	/// Construye el arbol de carpetas del panel de Investigacion.
 	/// <para />
 	/// <b>Reutiliza el MISMO arbol de la Libreria, no una copia</b>: el algoritmo real vive en
-	/// <c>TerrasavrNative.Core.Data.LibraryTreeBuilder</c> / <c>LiveItemTreeBuilder</c> (movido a
+	/// <c>Terrakeep.Core.Data.LibraryTreeBuilder</c> / <c>LiveItemTreeBuilder</c> (movido a
 	/// Core por WS2 justamente para esto), y los datos son los mismos archivos
 	/// <c>Assets/vanilla_library_tree.json</c> + <c>Assets/vanilla_library_labels_es.json</c> que
 	/// consume la Libreria del mod (WS3) y que la app de escritorio Terrakeep. Aqui no se

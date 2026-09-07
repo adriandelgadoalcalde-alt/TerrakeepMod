@@ -4,7 +4,7 @@ using System.Globalization;
 using System.IO;
 using Terraria.ModLoader;
 using TerrakeepMod.Common.Ajustes;
-using TerrasavrNative.Core.Data;
+using Terrakeep.Core.Data;
 
 namespace TerrakeepMod.Common.Libreria
 {
@@ -17,7 +17,7 @@ namespace TerrakeepMod.Common.Libreria
 	/// con su orden real hecho a mano - eso no se puede deducir de los campos de un
 	/// <c>Item</c>, hay que traerlo. Sale de <c>Assets/vanilla_library_tree.json</c> +
 	/// <c>Assets/vanilla_library_labels_es.json</c>, empaquetados en el <c>.tmod</c>, y lo monta
-	/// <c>LibraryTreeBuilder.BuildItemTree</c> de <c>TerrasavrNative.Core</c> (portado por WS2),
+	/// <c>LibraryTreeBuilder.BuildItemTree</c> de <c>Terrakeep.Core</c> (portado por WS2),
 	/// sin reimplementar nada.</item>
 	/// <item><b>Una carpeta madre por MOD instalado</b> ("CalamityMod (N)"), construida EN VIVO
 	/// con <c>LiveItemTreeBuilder.BuildTree</c> sobre lo que descubre
@@ -280,7 +280,7 @@ namespace TerrakeepMod.Common.Libreria
 		/// "Accessories/Wings"...) al rotulo que se ve en el arbol.
 		/// <para />
 		/// En español se usa <c>LibraryTreeBuilder.CalamityCategoryLabel</c> de
-		/// <c>TerrasavrNative.Core</c>, que trae las 121 categorias traducidas a mano. Esa tabla
+		/// <c>Terrakeep.Core</c>, que trae las 121 categorias traducidas a mano. Esa tabla
 		/// <b>solo existe en español</b> y vive en el repositorio hermano, asi que en cualquier otro
 		/// idioma se usa la clave en ingles separando su CamelCase, que es exactamente lo que hace
 		/// esa misma funcion de Core con una categoria que no conoce (y lo que hacen los propios

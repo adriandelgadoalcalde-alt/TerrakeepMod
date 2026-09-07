@@ -16,7 +16,7 @@
 		     para validar el C# sin lanzar el empaquetado del .tmod) el proyecto se quedaba sin
 		     TargetFramework y el SDK abortaba con NETSDK1013. Si algun dia tModLoader cambia de
 		     runtime, estos dos valores hay que actualizarlos junto con el TargetFrameworks de
-		     TerrasavrNative.Core. -->
+		     Terrakeep.Core. -->
 		<TargetFramework>net8.0</TargetFramework>
 		<LangVersion>12.0</LangVersion>
 		<!-- A proposito NO se activan ImplicitUsings ni Nullable: tModLoader NO compila el mod
@@ -29,12 +29,12 @@
 	</PropertyGroup>
 
 	<ItemGroup>
-		<!-- TerrasavrNative.Core compilado para net8.0 (repo hermano Terrasavr-Native). Esta
+		<!-- Terrakeep.Core compilado para net8.0 (repo hermano Terrasavr-Native). Esta
 		     referencia es solo para que compile MSBuild / el IDE; el compilador propio de
 		     tModLoader resuelve el mismo DLL por su cuenta a partir de "dllReferences" en
 		     build.txt. Private=false para no copiarlo a bin\ (el que cuenta es el de lib\). -->
-		<Reference Include="TerrasavrNative.Core">
-			<HintPath>lib\TerrasavrNative.Core.dll</HintPath>
+		<Reference Include="Terrakeep.Core">
+			<HintPath>lib\Terrakeep.Core.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
 	</ItemGroup>

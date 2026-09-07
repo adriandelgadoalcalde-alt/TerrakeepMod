@@ -18,7 +18,7 @@ using TerrakeepMod.UI.Libreria;
 using TerrakeepMod.UI.Panel;
 using TerrakeepMod.UI.Personaje;
 using TerrakeepMod.UI.Personaje.Widgets;
-using TerrasavrNative.Core.Data;
+using Terrakeep.Core.Data;
 
 namespace TerrakeepMod.Common.Panel
 {

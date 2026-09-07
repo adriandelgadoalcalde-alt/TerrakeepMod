@@ -101,7 +101,7 @@ if ($true) {
 		Copy-Item "$repo\UI\Personaje\Widgets\$w.cs" "$proyecto\UI\Personaje\Widgets" -Force
 	}
 	Copy-Item "$repo\Localization\*.hjson" "$proyecto\Localization" -Force
-	Copy-Item "$repo\lib\TerrasavrNative.Core.dll" "$proyecto\lib" -Force
+	Copy-Item "$repo\lib\Terrakeep.Core.dll" "$proyecto\lib" -Force
 	Copy-Item "$repo\Assets\*.json" "$proyecto\Assets" -Force
 }
 

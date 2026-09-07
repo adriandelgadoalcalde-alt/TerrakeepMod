@@ -2,18 +2,18 @@ using System;
 using System.IO;
 using Terraria.ID;
 using Terraria.ModLoader;
-using TerrasavrNative.Core.Data;
+using Terrakeep.Core.Data;
 
 namespace TerrakeepMod.Common.Prefijos
 {
 	/// <summary>
 	/// Envoltorio en vivo de <c>Assets/best_prefix.json</c> (copiado tal cual del repo hermano
-	/// <c>Terrasavr-Native</c>, <c>TerrasavrNative.App/Assets/calamity/best_prefix.json</c>) - la
+	/// <c>Terrasavr-Native</c>, <c>Terrakeep.App/Assets/calamity/best_prefix.json</c>) - la
 	/// tabla real de "mejor prefijo posible" por objeto que ya usaba la app de escritorio para el
 	/// boton "Mejor prefijo" (la estrella) y para el prefijo automatico al colocar un objeto.
 	/// </summary>
 	/// <remarks>
-	/// <b>Se parsea con <see cref="BestPrefixCatalog"/> de <c>TerrasavrNative.Core</c> tal cual</b>,
+	/// <b>Se parsea con <see cref="BestPrefixCatalog"/> de <c>Terrakeep.Core</c> tal cual</b>,
 	/// el mismo codigo que usa la app de escritorio (<c>BestPrefixCatalog.LoadFromStream</c>): nada
 	/// reimplementado, mismo patron que ya siguio WS4 con <c>builds.json</c>/<c>CatalogoBuilds</c>.
 	/// <para />

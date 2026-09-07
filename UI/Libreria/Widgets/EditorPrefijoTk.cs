@@ -8,7 +8,7 @@ using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Prefijos;
 using TerrakeepMod.Common.Undo;
 using TerrakeepMod.UI.Personaje.Widgets;
-using TerrasavrNative.Core.Data;
+using Terrakeep.Core.Data;
 
 namespace TerrakeepMod.UI.Libreria.Widgets
 {
@@ -16,7 +16,7 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 	/// Cambia el PREFIJO (<c>Item.prefix</c>) del objeto seleccionado en <see cref="SlotSeleccionTk"/>.
 	/// Un boton pequeño ("Prefijo: X") que al pulsarlo despliega una lista de los prefijos
 	/// LEGALES para ESE objeto en concreto, agrupados igual que en la app de escritorio hermana
-	/// (<see cref="CatalogoPrefijosLegales"/>, que reutiliza <c>TerrasavrNative.Core</c> tal cual
+	/// (<see cref="CatalogoPrefijosLegales"/>, que reutiliza <c>Terrakeep.Core</c> tal cual
 	/// - ver su cabecera para de donde sale la legalidad real).
 	/// </summary>
 	/// <remarks>

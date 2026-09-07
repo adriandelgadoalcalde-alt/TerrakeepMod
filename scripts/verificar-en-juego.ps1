@@ -4,7 +4,7 @@
 #
 #   .\verificar-en-juego.ps1 -Servidor    ->  servidor dedicado, sin ventana y sin audio.
 #                                             Comprueba que el .tmod carga y que
-#                                             lib\TerrasavrNative.Core.dll (net8) se resuelve y
+#                                             lib\Terrakeep.Core.dll (net8) se resuelve y
 #                                             EJECUTA dentro del runtime .NET 8 de tModLoader.
 #                                             Funciona siempre, tambien sin sesion de escritorio.
 #
@@ -37,7 +37,7 @@ $mundo     = 'TerrakeepPrueba'
 # diff byte a byte) - hacia petar tModLoader entero al hacer spawn (NullReferenceException en
 # GodmodePower.ApplyLoadedDataToOutOfPlayerFields via CreativePowerManager), nada que ver con
 # TerrakeepMod. Sustituido por un personaje sintetico limpio (PlrFile.Write de
-# TerrasavrNative.Core), nunca derivado de ningun archivo real del usuario.
+# Terrakeep.Core), nunca derivado de ningun archivo real del usuario.
 $personaje = 'TerrakeepPrueba'
 
 if (-not (Test-Path (Join-Path $sandbox "Worlds\$mundo.wld"))) {

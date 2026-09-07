@@ -21,16 +21,16 @@ namespace TerrakeepMod.Common.Libreria
 	/// </list>
 	/// </summary>
 	/// <remarks>
-	/// <b>Por que esta copiado aqui y no se reutiliza desde <c>TerrasavrNative.Core</c>.</b> La
+	/// <b>Por que esta copiado aqui y no se reutiliza desde <c>Terrakeep.Core</c>.</b> La
 	/// logica SI es pura (solo <c>System.Globalization</c>/<c>System.Text</c>, ni una linea de
-	/// WPF), pero el archivo original vive en <c>TerrasavrNative.App/ViewModels/
+	/// WPF), pero el archivo original vive en <c>Terrakeep.App/ViewModels/
 	/// LibrarySearchGrammar.cs</c>, o sea <b>dentro del ensamblado WPF</b> de la app de
 	/// escritorio, que solo compila para <c>net10.0-windows</c>. El mod solo referencia
-	/// <c>TerrasavrNative.Core</c> (build net8.0), asi que desde aqui ese tipo es inalcanzable.
+	/// <c>Terrakeep.Core</c> (build net8.0), asi que desde aqui ese tipo es inalcanzable.
 	/// <para />
 	/// Las dos salidas eran mover el archivo a Core o copiarlo. Se ha copiado, a proposito:
 	/// moverlo obliga a tocar el repo hermano, a recompilar y re-empaquetar
-	/// <c>lib\TerrasavrNative.Core.dll</c> (archivo compartido por todos los workstreams) y a
+	/// <c>lib\Terrakeep.Core.dll</c> (archivo compartido por todos los workstreams) y a
 	/// arreglar los <c>using</c> de la app y de sus pruebas, todo ello mientras hay otros
 	/// agentes trabajando en paralelo sobre los dos repositorios. Son 40 lineas de logica
 	/// cerrada, con pruebas propias en el repo hermano

@@ -13,7 +13,7 @@ namespace TerrakeepMod.UI.Investigacion
 	/// Una fila del arbol de carpetas: sangria por nivel, marca de desplegado, nombre, el "x/N"
 	/// de lo investigado y una barra fina con el mismo progreso.
 	/// <para />
-	/// El arbol es el de la Libreria (construido con <c>TerrasavrNative.Core</c>, ver
+	/// El arbol es el de la Libreria (construido con <c>Terrakeep.Core</c>, ver
 	/// <see cref="CatalogoInvestigacion"/>), asi que las carpetas se llaman igual aqui, en la
 	/// Libreria del mod y en la app de escritorio.
 	/// </summary>

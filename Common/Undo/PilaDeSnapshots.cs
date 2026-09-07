@@ -25,7 +25,7 @@ namespace TerrakeepMod.Common.Undo
 	/// reales.
 	/// <para />
 	/// <b>Por que dos fotos y no una operacion inversa.</b> El modelo de la app de escritorio
-	/// (<c>TerrasavrNative.App/Services/UndoStack.cs</c>) guarda dos closures <c>Undo</c>/
+	/// (<c>Terrakeep.App/Services/UndoStack.cs</c>) guarda dos closures <c>Undo</c>/
 	/// <c>Redo</c> encadenadas. Eso funciona alli porque el editor es el UNICO que toca el
 	/// personaje: entre pulsar "deshacer" y "rehacer" no puede haber pasado nada mas. Dentro de
 	/// una partida en marcha esa suposicion es falsa - el jugador recoge objetos, los NPCs
@@ -84,12 +84,12 @@ namespace TerrakeepMod.Common.Undo
 	/// </summary>
 	/// <remarks>
 	/// <b>Donde vive esta clase y por que.</b> No depende de Terraria ni de nada: seria
-	/// perfectamente portable a <c>TerrasavrNative.Core</c>. Se ha dejado en el mod a proposito
+	/// perfectamente portable a <c>Terrakeep.Core</c>. Se ha dejado en el mod a proposito
 	/// (ver README de <c>Common/Undo/</c>): lo unico realmente reutilizable serian estas ~100
 	/// lineas, mientras que TODO lo que las hace utiles aqui (clonar <c>Item</c>, saber que un
 	/// array es <c>Player.inventory</c>, limpiar el historial al cambiar de mundo) necesita
 	/// tipos de Terraria y no podria acompañarlas. A cambio, meterlas en Core obligaria a
-	/// regenerar y re-empaquetar <c>lib\TerrasavrNative.Core.dll</c> con
+	/// regenerar y re-empaquetar <c>lib\Terrakeep.Core.dll</c> con
 	/// <c>scripts\actualizar-core.ps1</c> en cada retoque del historial.
 	/// </remarks>
 	public sealed class PilaDeSnapshots

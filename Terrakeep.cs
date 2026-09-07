@@ -1,14 +1,14 @@
 using Microsoft.Xna.Framework.Input;
 using Terraria;
 using Terraria.ModLoader;
-using TerrasavrNative.Core.Model;
+using Terrakeep.Core.Model;
 
 namespace TerrakeepMod
 {
 	/// <summary>
 	/// Clase raiz del mod. WS0 (cimientos): lo unico que hace todavia es registrar el atajo de
 	/// teclado que abre el panel de prueba y dejar constancia en el log de que la cadena entera
-	/// esta montada (mod cargado + TerrasavrNative.Core cargado y ejecutandose de verdad dentro
+	/// esta montada (mod cargado + Terrakeep.Core cargado y ejecutandose de verdad dentro
 	/// del runtime .NET 8 de tModLoader).
 	/// <para />
 	/// Las funcionalidades reales de Terrakeep (inventario, librería, mapa, etc.) son los
@@ -45,11 +45,11 @@ namespace TerrakeepMod
 			}
 
 			// Prueba de humo REAL del dllReferences: se instancia un tipo de
-			// TerrasavrNative.Core y se llama a un miembro calculado suyo. Tiene que ser una
+			// Terrakeep.Core y se llama a un miembro calculado suyo. Tiene que ser una
 			// llamada de verdad, no leer una constante: las const de C# se copian en tiempo de
 			// compilacion y no demostrarian que el DLL llega a cargarse en runtime.
 			GameItem sonda = new GameItem { Id = 3389, Count = 1 };
-			Logger.Info($"{LogTag} Mod cargado. Prueba de humo de TerrasavrNative.Core: " +
+			Logger.Info($"{LogTag} Mod cargado. Prueba de humo de Terrakeep.Core: " +
 				$"GameItem(Id={sonda.Id}).IsEmpty={sonda.IsEmpty}, .IsCalamity={sonda.IsCalamity}, " +
 				$"ensamblado real = {typeof(GameItem).Assembly.FullName}");
 		}

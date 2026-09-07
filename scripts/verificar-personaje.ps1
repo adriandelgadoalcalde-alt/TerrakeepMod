@@ -12,7 +12,7 @@
 #      comprobaciones una vez el panel ya esta abierto.
 #
 # El sandbox se crea solo la primera vez a partir del de WS0 (personaje sintetico
-# TerrakeepPrueba generado con TerrasavrNative.Core + mundo pequeño de pruebas). NUNCA se tocan
+# TerrakeepPrueba generado con Terrakeep.Core + mundo pequeño de pruebas). NUNCA se tocan
 # los personajes ni los mundos reales del usuario.
 #
 #   .\verificar-personaje.ps1            -> cliente grafico. Requiere sesion de Windows

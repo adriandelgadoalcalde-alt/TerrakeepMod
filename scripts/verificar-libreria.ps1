@@ -94,7 +94,7 @@ if ($true) {
 		"$repo\UI\Personaje\Widgets\EtiquetaTk.cs","$repo\UI\Personaje\Widgets\CampoTextoTk.cs" `
 		"$proyecto\UI\Personaje\Widgets" -Force
 	Copy-Item "$repo\Localization\*.hjson" "$proyecto\Localization" -Force
-	Copy-Item "$repo\lib\TerrasavrNative.Core.dll" "$proyecto\lib" -Force
+	Copy-Item "$repo\lib\Terrakeep.Core.dll" "$proyecto\lib" -Force
 	Copy-Item "$repo\Assets\vanilla_library_tree.json","$repo\Assets\vanilla_library_labels_es.json" "$proyecto\Assets" -Force
 }
 
