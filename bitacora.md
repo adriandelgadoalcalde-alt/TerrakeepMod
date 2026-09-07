@@ -2782,3 +2782,59 @@ ratón físico era mando, no ratón — un artefacto del arnés de pruebas, no d
 `Common/Panel/AutopruebaTooltipObjeto.cs` (nuevo), `Common/Panel/PanelTerrakeepSystem.cs` (una
 línea, para enganchar la autoprueba nueva a `UpdateUI`). No se toca `UI/SlotObjetoVanilla.cs`
 (el editor de cantidad y la papelera son de otro agente, en marcha a la vez).
+
+### Cierre real: pasada limpia en las cuatro zonas, dos causas ajenas al arreglo encontradas y resueltas
+
+Con los demás agentes ya terminados (sin contención de `.tmod`/`.hjson`/GPU compartidos), se
+repitió `TERRAKEEP_AUTOTEST_TOOLTIP=1` hasta conseguir una pasada de verdad. Dos obstáculos reales
+más, ninguno del arreglo en sí, encontrados con log en mano y no supuestos:
+
+**1. `Mods\enabled.json` del sandbox `tModLoader-TerrakeepWS0` estaba vacío (`[]`).** Por eso el
+juego entraba al mundo y corría con total normalidad (incluso con NPCs/slimes/día-noche
+avanzando) pero **ni una sola línea `[TerrakeepMod]` aparecía en el log, ni el propio smoke test
+de `Terrakeep.Load()`** - el mod nunca llegaba a cargar de verdad, así que la autoprueba tampoco.
+`verificar-panel-unico.ps1` ya dejaba escrito el patrón correcto (fijar `enabled.json` a mano
+antes de cada lanzamiento, `["TerrakeepMod"]`) en vez de confiar en lo que hubiera quedado de una
+sesión anterior; aplicado igual aquí. Sin este archivo en su sitio, ninguna cantidad de reintentos
+con foco/reenfoque iba a arreglar nada - por eso los intentos anteriores (documentados arriba,
+enfoque, `CurrentInputMode`, esperar más) fallaban todos por la misma razón real de fondo sin que
+se viera.
+
+**2. `Main.mouseX`/`Main.mouseY` puestos a mano NO sobrevivían hasta el `Draw` real**, ni fijándolos
+una vez en `UpdateUI` ni reafirmándolos cada fotograma desde ahí, ni moviéndolos a
+`PostUpdateInput` (que en teoría corre después del sondeo real del ratón - por eso ya se usaba
+aquí mismo para los atajos de teclado). El diagnóstico ampliado (`slot.ContainsPoint(MouseScreen)`
+llamado a mano) lo dejó claro: en las tres ubicaciones el valor que se leía en el propio
+diagnóstico parecía correcto un instante, pero `Main.HoverItem`/`mouseInterface` seguían sin
+reflejar el hover real - algo entre esos hooks y el `Draw` de ese mismo fotograma volvía a sondear
+el ratón físico (0,0 sin ratón físico de verdad sobre la ventana) y lo pisaba. La única llamada
+que sobrevive de verdad es la que va DENTRO de `PanelTerrakeepState.Draw`, justo antes de
+`base.Draw` - la misma llamada síncrona en la que dibuja `SlotObjetoVanilla.DrawSelf`, sin que
+nada de producción pueda colarse en medio. Se añadió `AutopruebaTooltipObjeto.ReafirmarRaton()`
+ahí (ver el método, con las tres rondas de hallazgo documentadas en su propio comentario) - es un
+no-op total con la autoprueba apagada.
+
+**Resultado final, log real (`tModLoader-Logs\client.log`, mundo `TerrakeepPrueba`,
+`AUTOPRUEBA TOOLTIP COMPLETA` alcanzada):** las cuatro zonas en **OK** de verdad, las dos mitades
+del arreglo:
+
+| Zona | `Main.HoverItem.type` | `Main.hoverItemName` | Tras apartar el ratón |
+|---|---|---|---|
+| Personaje/Inventario | 2 (Bloque de tierra) | "Bloque de tierra (250)" | se vacía solo |
+| Personaje/Almacenes | 48 (Cofre) | "Cofre" | se vacía solo |
+| Personaje/Equipo | 89 (Casco de cobre) | "Casco de cobre" | se vacía solo |
+| Librería | 2 (Bloque de tierra) | "Bloque de tierra (250)" | se vacía solo |
+
+El arreglo real de producción (`PanelTerrakeepState.cs`: reseteo de `hoverItemName` +
+`DibujarTooltipDeObjeto`) queda **verificado en el juego real, las cuatro zonas, confirmado con
+log**, no solo por análisis del código decompilado. La hipótesis del modo mando
+(`PlayerInput.CurrentInputMode`) del intento anterior no era la causa real - se deja el forzado a
+`Mouse` en la autoprueba de todos modos, es inofensivo y documenta la limitación real de esta
+sesión sin ratón físico.
+
+### Commit final
+
+Índice privado, solo `Common/Panel/AutopruebaTooltipObjeto.cs` y `UI/Panel/PanelTerrakeepState.cs`
+(el diagnóstico ampliado y `ReafirmarRaton`/su enganche en `Draw`). `bitacora.md` con esta entrada.
+`Common/Panel/PanelTerrakeepSystem.cs` quedó sin cambios netos (se probó y se revirtió un enganche
+en `PostUpdateInput` que no era la solución).

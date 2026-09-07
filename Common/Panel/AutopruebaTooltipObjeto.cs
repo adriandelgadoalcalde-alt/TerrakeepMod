@@ -54,6 +54,47 @@ namespace TerrakeepMod.Common.Panel
 
 		private static Item _objetoEsperado;
 		private static string _zonaEnPrueba;
+		private static SlotObjetoVanilla _slotEnPrueba;
+
+		/// <summary>true mientras se este comprobando un hover: <see cref="ReafirmarRaton"/> pisa
+		/// <see cref="_mouseObjetivoX"/>/<see cref="_mouseObjetivoY"/> sobre Main.mouseX/Main.mouseY
+		/// en CADA fotograma mientras dura. Ver la nota larga en <see cref="ReafirmarRaton"/>.</summary>
+		private static bool _forzandoRaton;
+		private static int _mouseObjetivoX;
+		private static int _mouseObjetivoY;
+
+		/// <summary>
+		/// Pisa Main.mouseX/Main.mouseY con el objetivo actual, si lo hay. Se llama desde
+		/// <see cref="TerrakeepMod.UI.Panel.PanelTerrakeepState.Draw"/>, justo ANTES de
+		/// <c>base.Draw</c> - ni desde <see cref="Avanzar"/> ni desde <c>PostUpdateInput</c>.
+		/// <para />
+		/// Hallazgo real, con TRES rondas de log en la mano, no un supuesto:
+		/// <list type="number">
+		/// <item>Fijarlos UNA VEZ dentro de <see cref="PonerRatonSobre"/> (que corre desde
+		/// <c>UpdateUI</c>) no sobrevivia ni a un fotograma - <see cref="ComprobarHover"/> seguia
+		/// viendo <c>mouseX=0 mouseY=0</c>.</item>
+		/// <item>Reafirmarlos TAMBIEN dentro de <c>UpdateUI</c> en cada fotograma tampoco bastaba:
+		/// el diagnostico SI enseñaba el valor correcto (se leia justo despues de escribirlo, en la
+		/// misma llamada) pero <c>mouseInterface</c> seguia en <c>False</c> y <c>HoverItem.type</c>
+		/// en 0 - o sea que algo lo pisaba ANTES del <c>Draw</c> real de ese fotograma.</item>
+		/// <item>Moverlo a <c>PostUpdateInput</c> (que en teoria corre despues del sondeo real del
+		/// raton, por eso ya se usaba aqui mismo para atajos de teclado) lo empeoro: el propio
+		/// diagnostico volvio a enseñar <c>mouseX=0</c>, o sea que el sondeo real corre DESPUES de
+		/// <c>PostUpdateInput</c> tambien.</item>
+		/// </list>
+		/// La unica llamada que sobrevive de verdad hasta que <c>SlotObjetoVanilla.DrawSelf</c> lee
+		/// <c>Main.MouseScreen</c> es la que va dentro del propio <c>Draw</c> del panel, justo antes
+		/// de <c>base.Draw</c>: nada de produccion puede colarse entre medias porque es la misma
+		/// llamada sincrona. Con la autopreuba apagada esta funcion es un no-op (<c>_forzandoRaton</c>
+		/// nace a <c>false</c>).
+		/// </summary>
+		public static void ReafirmarRaton()
+		{
+			if (_forzandoRaton) {
+				Main.mouseX = _mouseObjetivoX;
+				Main.mouseY = _mouseObjetivoY;
+			}
+		}
 
 		public static void Avanzar()
 		{
@@ -222,10 +263,14 @@ namespace TerrakeepMod.Common.Panel
 			}
 
 			_objetoEsperado = encontrado.ObjetoActual;
+			_slotEnPrueba = encontrado;
 
 			CalculatedStyle dim = encontrado.GetDimensions();
 			int x = (int)(dim.X + dim.Width / 2f);
 			int y = (int)(dim.Y + dim.Height / 2f);
+			_mouseObjetivoX = x;
+			_mouseObjetivoY = y;
+			_forzandoRaton = true;
 			Main.mouseX = x;
 			Main.mouseY = y;
 
@@ -250,6 +295,20 @@ namespace TerrakeepMod.Common.Panel
 			bool nombreOk = !string.IsNullOrEmpty(Main.hoverItemName) &&
 				Main.hoverItemName.StartsWith(_objetoEsperado.Name);
 
+			// Diagnostico de segunda ronda: llamar a ContainsPoint nosotros mismos, con el MISMO
+			// Main.MouseScreen que usaria SlotObjetoVanilla.DrawSelf ahora mismo, para saber si el
+			// geometrico es el problema o si el fallo esta en otro sitio (IgnoreMouseInterface,
+			// que la ranura ya no sea la misma tras el cambio de pestaña, etc.).
+			string contains = "sin ranura guardada";
+			string dimActual = "";
+			if (_slotEnPrueba != null) {
+				bool dentro = _slotEnPrueba.ContainsPoint(Main.MouseScreen);
+				CalculatedStyle dim = _slotEnPrueba.GetDimensions();
+				contains = dentro.ToString();
+				dimActual = " dimActual=x=" + (int)dim.X + " y=" + (int)dim.Y + " " +
+					(int)dim.Width + "x" + (int)dim.Height + ",";
+			}
+
 			RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA TOOLTIP (" + _zonaEnPrueba +
 				") - tras el fotograma con el raton encima: Main.HoverItem.type=" +
 				(Main.HoverItem != null ? Main.HoverItem.type.ToString() : "null") +
@@ -264,13 +323,17 @@ namespace TerrakeepMod.Common.Panel
 				", itemAnimation=" + Main.LocalPlayer.itemAnimation +
 				", mouseInterface=" + Main.LocalPlayer.mouseInterface +
 				", mouseX=" + Main.mouseX + " mouseY=" + Main.mouseY +
-				", hasFocus=" + Main.hasFocus + "]");
+				", hasFocus=" + Main.hasFocus +
+				", slot.ContainsPoint(MouseScreen)=" + contains + "," + dimActual +
+				" playerInventory=" + Main.playerInventory +
+				", inFancyUI=" + Main.inFancyUI + "]");
 		}
 
 		/// <summary>Aparta el raton de pantalla de cualquier ranura del panel (una esquina fuera del
 		/// marco), dejando el fotograma para que se procese.</summary>
 		private static void QuitarRaton()
 		{
+			_forzandoRaton = false;
 			Main.mouseX = 2;
 			Main.mouseY = 2;
 		}

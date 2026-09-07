@@ -381,6 +381,16 @@ namespace TerrakeepMod.UI.Panel
 			// vive en ItemSlot.cs, no en esa capa) puedan volver a rellenarlo si el raton esta encima.
 			Main.hoverItemName = "";
 
+			// SOLO arnes de pruebas: sin esto, Main.mouseX/Main.mouseY que fija
+			// AutopruebaTooltipObjeto no sobrevivian ni a un fotograma - confirmado con dos rondas
+			// de log real, no un supuesto. Ni UpdateUI ni PostUpdateInput (los dos probados antes)
+			// bastaban: algo entre esos hooks y este Draw vuelve a sondear el raton real (0,0 sin
+			// sesion de escritorio con raton fisico) y lo pisa. Aqui, ENCIMA del propio Draw y antes
+			// de que los SlotObjetoVanilla del fotograma lean Main.MouseScreen, es el unico punto
+			// que garantiza que nada se cuela en medio. Con la autopreuba apagada (variable de
+			// entorno sin poner) esta llamada no hace nada.
+			AutopruebaTooltipObjeto.ReafirmarRaton();
+
 			base.Draw(spriteBatch);
 
 			DibujarObjetoEnRaton(spriteBatch);
