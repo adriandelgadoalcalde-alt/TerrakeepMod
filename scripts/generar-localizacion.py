@@ -154,6 +154,29 @@ T = [
     ("Personaje.Buffs.SinResultados", "Sin resultados.", "No results."),
     ("Personaje.Buffs.Aplicar", "Aplicar", "Apply"),
 
+    ("Personaje.Buffs.Arbol.Inicio", "Inicio", "Home"),
+    ("Personaje.Buffs.Arbol.InicioAyuda", "Vuelve a las carpetas de primer nivel",
+     "Back to the top-level folders"),
+    ("Personaje.Buffs.Arbol.Subir", "< Subir", "< Up"),
+    ("Personaje.Buffs.Arbol.SubirAyuda", "Sube a la carpeta de arriba", "Go up one folder"),
+    ("Personaje.Buffs.Arbol.Raiz", "Buffs", "Buffs"),
+    ("Personaje.Buffs.Arbol.SinSubcarpetas",
+     "Esta carpeta no tiene subcarpetas.\nSus buffs están a la derecha.",
+     "This folder has no subfolders.\nIts buffs are on the right."),
+    ("Personaje.Buffs.Arbol.CarpetaBuffs", "{0}\n{1} buffs", "{0}\n{1} buffs"),
+    ("Personaje.Buffs.Arbol.CarpetaConSubcarpetas", "{0}\n{1} buffs, {2} subcarpetas",
+     "{0}\n{1} buffs, {2} subfolders"),
+    ("Personaje.Buffs.Arbol.CarpetaDeMod", "{0} (mod)", "{0} (mod)"),
+    ("Personaje.Buffs.Arbol.Otros", "Otros", "Other"),
+    ("Personaje.Buffs.Arbol.Pagina", "Página {0}", "Page {0}"),
+    ("Personaje.Buffs.Arbol.Cargando", "Cargando los buffs...", "Loading the buffs..."),
+    ("Personaje.Buffs.Arbol.EnCarpeta", "en \"{0}\"", "in \"{0}\""),
+    ("Personaje.Buffs.Arbol.EnTodo", "en todos los buffs aplicables", "across all applicable buffs"),
+    ("Personaje.Buffs.Arbol.ElegirCarpeta", "{0} buffs aplicables. Elige una carpeta o busca.",
+     "{0} applicable buffs. Pick a folder or search."),
+    ("Personaje.Buffs.Arbol.MostrandoParcial", "Mostrando {0} de {1} {2}.", "Showing {0} of {1} {2}."),
+    ("Personaje.Buffs.Arbol.MostrandoTodos", "{0} buffs {1}.", "{0} buffs {1}."),
+
     ("Personaje.Apariencia.Peinado", "Peinado", "Hairstyle"),
     ("Personaje.Apariencia.PeinadoValor", "{0} de {1}", "{0} of {1}"),
     ("Personaje.Apariencia.VarianteEtiqueta", "Variante / género", "Variant / gender"),
@@ -331,6 +354,11 @@ T += [
     ("Builds.Clase.Mage", "Mago", "Mage"),
     ("Builds.Clase.Summoner", "Invocador", "Summoner"),
     ("Builds.Clase.Rogue", "Pícaro", "Rogue"),
+    ("Builds.ConjuntoDestinoPildora", "Conjunto {0}", "Set {0}"),
+    ("Builds.ConjuntoDestinoAyuda",
+     "A cuál de los tres conjuntos de equipo (1/2/3) va la armadura y los accesorios de esta build al auto-equipar.",
+     "Which of the three equipment sets (1/2/3) this build's armour and accessories go to on auto-equip."),
+    ("Builds.ConjuntoActivoMarca", "(activo)", "(active)"),
 
     # ---------------------------------------------------------------- investigacion
     ("Investigacion.ProgresoGlobal", "Progreso global", "Overall progress"),
@@ -659,6 +687,9 @@ T += [
      "Terrakeep has nothing to undo."),
     ("Historial.NadaQueRehacer", "Terrakeep no tiene nada que rehacer.",
      "Terrakeep has nothing to redo."),
+
+    # ---------------------------------------------------------------- prefijos
+    ("Prefijos.MejorPrefijo", "Mejor prefijo posible: {0}", "Best possible prefix: {0}"),
 ]
 
 KEYBINDS = [

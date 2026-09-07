@@ -121,6 +121,38 @@ Personaje: {
 		Nota: Applied with Player.AddBuff (the official API): it respects immunities and limits.
 		SinResultados: No results.
 		Aplicar: Apply
+
+		Arbol: {
+			Inicio: Home
+			InicioAyuda: Back to the top-level folders
+			Subir: < Up
+			SubirAyuda: Go up one folder
+			Raiz: Buffs
+			SinSubcarpetas:
+				'''
+				This folder has no subfolders.
+				Its buffs are on the right.
+				'''
+			CarpetaBuffs:
+				'''
+				{0}
+				{1} buffs
+				'''
+			CarpetaConSubcarpetas:
+				'''
+				{0}
+				{1} buffs, {2} subfolders
+				'''
+			CarpetaDeMod: "{0} (mod)"
+			Otros: Other
+			Pagina: Page {0}
+			Cargando: Loading the buffs...
+			EnCarpeta: in "{0}"
+			EnTodo: across all applicable buffs
+			ElegirCarpeta: "{0} applicable buffs. Pick a folder or search."
+			MostrandoParcial: Showing {0} of {1} {2}.
+			MostrandoTodos: "{0} buffs {1}."
+		}
 	}
 
 	Apariencia: {
@@ -357,6 +389,10 @@ Builds: {
 		Summoner: Summoner
 		Rogue: Rogue
 	}
+
+	ConjuntoDestinoPildora: Set {0}
+	ConjuntoDestinoAyuda: Which of the three equipment sets (1/2/3) this build's armour and accessories go to on auto-equip.
+	ConjuntoActivoMarca: (active)
 }
 
 Investigacion: {
@@ -640,6 +676,8 @@ Historial: {
 	NadaQueDeshacer: Terrakeep has nothing to undo.
 	NadaQueRehacer: Terrakeep has nothing to redo.
 }
+
+Prefijos.MejorPrefijo: Best possible prefix: {0}
 
 Keybinds: {
 	AbrirPanel.DisplayName: Open Terrakeep

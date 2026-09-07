@@ -121,6 +121,38 @@ Personaje: {
 		Nota: Se aplica con Player.AddBuff (API oficial): respeta inmunidades y límites.
 		SinResultados: Sin resultados.
 		Aplicar: Aplicar
+
+		Arbol: {
+			Inicio: Inicio
+			InicioAyuda: Vuelve a las carpetas de primer nivel
+			Subir: < Subir
+			SubirAyuda: Sube a la carpeta de arriba
+			Raiz: Buffs
+			SinSubcarpetas:
+				'''
+				Esta carpeta no tiene subcarpetas.
+				Sus buffs están a la derecha.
+				'''
+			CarpetaBuffs:
+				'''
+				{0}
+				{1} buffs
+				'''
+			CarpetaConSubcarpetas:
+				'''
+				{0}
+				{1} buffs, {2} subcarpetas
+				'''
+			CarpetaDeMod: "{0} (mod)"
+			Otros: Otros
+			Pagina: Página {0}
+			Cargando: Cargando los buffs...
+			EnCarpeta: en "{0}"
+			EnTodo: en todos los buffs aplicables
+			ElegirCarpeta: "{0} buffs aplicables. Elige una carpeta o busca."
+			MostrandoParcial: Mostrando {0} de {1} {2}.
+			MostrandoTodos: "{0} buffs {1}."
+		}
 	}
 
 	Apariencia: {
@@ -357,6 +389,10 @@ Builds: {
 		Summoner: Invocador
 		Rogue: Pícaro
 	}
+
+	ConjuntoDestinoPildora: Conjunto {0}
+	ConjuntoDestinoAyuda: A cuál de los tres conjuntos de equipo (1/2/3) va la armadura y los accesorios de esta build al auto-equipar.
+	ConjuntoActivoMarca: (activo)
 }
 
 Investigacion: {
@@ -640,6 +676,8 @@ Historial: {
 	NadaQueDeshacer: Terrakeep no tiene nada que deshacer.
 	NadaQueRehacer: Terrakeep no tiene nada que rehacer.
 }
+
+Prefijos.MejorPrefijo: Mejor prefijo posible: {0}
 
 Keybinds: {
 	AbrirPanel.DisplayName: Abrir Terrakeep
