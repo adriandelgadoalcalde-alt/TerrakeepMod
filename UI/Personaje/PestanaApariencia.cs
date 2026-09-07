@@ -1,6 +1,7 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
@@ -24,8 +25,16 @@ namespace TerrakeepMod.UI.Personaje
 	/// </summary>
 	public class PestanaApariencia : UIElement
 	{
+		/// <summary>Donde empieza la columna del muñeco: justo a la derecha del ancho fijo real
+		/// que usan los selectores y <see cref="FilaColorTk"/> (que llegan hasta ~740 px). En una
+		/// ventana muy estrecha (por debajo de esto no cabe ni el contenido de la izquierda) la
+		/// columna sale con ancho negativo y <see cref="MunecoTk"/> deja de dibujarse sola, sin
+		/// pisar nada.</summary>
+		private const float IzquierdaVista = 750f;
+
 		private List<int> _sombreadoresTinte;
 		private List<string> _nombresTinte;
+		private MunecoTk _muneco;
 
 		public PestanaApariencia()
 		{
@@ -36,6 +45,7 @@ namespace TerrakeepMod.UI.Personaje
 
 			ConstruirSelectores();
 			ConstruirColores();
+			ConstruirVistaPrevia();
 		}
 
 		private void ConstruirSelectores()
@@ -165,6 +175,48 @@ namespace TerrakeepMod.UI.Personaje
 			fila.Left.Set(0f, 0f);
 			fila.Top.Set(arriba, 0f);
 			Append(fila);
+		}
+
+		/// <summary>
+		/// El hueco que quedaba vacio a la derecha (bajo el logo decorativo de fondo del panel):
+		/// un muñeco en vivo, dibujado con el renderer REAL del juego
+		/// (<see cref="MunecoTk"/> -> <c>Main.PlayerRenderer</c>, el mismo que usa la pantalla
+		/// de seleccion de personaje y el Maniqui de vanilla), con un alternador para verlo con
+		/// o sin la armadura puesta. Se actualiza solo -no hay que pulsar nada- porque
+		/// <see cref="MunecoTk"/> relee <c>Main.LocalPlayer</c> en cada fotograma.
+		/// </summary>
+		private void ConstruirVistaPrevia()
+		{
+			UIPanel caja = new UIPanel();
+			caja.Left.Set(IzquierdaVista, 0f);
+			caja.Width.Set(-(IzquierdaVista + 20f), 1f);
+			caja.Top.Set(0f, 0f);
+			caja.Height.Set(-10f, 1f);
+			caja.BackgroundColor = EstiloTk.FondoCaja;
+			caja.SetPadding(8f);
+			Append(caja);
+
+			EtiquetaTk titulo = new EtiquetaTk(
+				() => Idiomas.Texto("Personaje.Apariencia.Vista"), 0.8f, 300f, 22f);
+			titulo.ColorTexto = EstiloTk.TextoSuave;
+			titulo.Left.Set(0f, 0f);
+			titulo.Top.Set(0f, 0f);
+			caja.Append(titulo);
+
+			_muneco = new MunecoTk();
+			_muneco.Width.Set(0f, 1f);
+			_muneco.Top.Set(26f, 0f);
+			_muneco.Height.Set(-(26f + 34f), 1f);
+			caja.Append(_muneco);
+
+			AlternadorTk alternador = new AlternadorTk(
+				() => Idiomas.Texto("Personaje.Apariencia.VerConArmadura"),
+				() => _muneco.ConArmadura,
+				valor => _muneco.ConArmadura = valor);
+			alternador.Ayuda = () => Idiomas.Texto("Personaje.Apariencia.VerConArmaduraAyuda");
+			alternador.Width.Set(0f, 1f);
+			alternador.Top.Set(-30f, 1f);
+			caja.Append(alternador);
 		}
 	}
 }

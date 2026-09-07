@@ -3,9 +3,12 @@ using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameInput;
+using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
+using TerrakeepMod.Common.Personaje;
 using TerrakeepMod.UI.Panel;
+using TerrakeepMod.UI.Personaje;
 using TerrakeepMod.UI.Personaje.Widgets;
 
 namespace TerrakeepMod.Common.Panel
@@ -132,6 +135,15 @@ namespace TerrakeepMod.Common.Panel
 				case 28: MedirIcono(); break;
 				case 29: ClicEnElIcono(); break;
 				case 30: ComprobarPanelTrasElIcono(); break;
+
+				// --- La vista previa del muñeco en Apariencia (con armadura / sin armadura) -----
+				case 31: PoblarAparienciaDePrueba(); break;
+				case 32: AbrirApariencia(); break;
+				case 33: MedirYCapturarMuneco("con-armadura"); break;
+				case 34: PulsarAlternadorArmadura(); break;
+				case 35: MedirYCapturarMuneco("sin-armadura"); break;
+				case 36: PulsarAlternadorArmadura(); break;
+				case 37: MedirYCapturarMuneco("con-armadura-otra-vez"); break;
 
 				default: Terminar(); break;
 			}
@@ -405,6 +417,137 @@ namespace TerrakeepMod.Common.Panel
 		{
 			_terminada = true;
 			RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL COMPLETA.");
+		}
+
+		// -------------------------------------------------------------------------------------
+		// Vista previa del muñeco en Apariencia
+		// -------------------------------------------------------------------------------------
+
+		/// <summary>
+		/// El personaje sintetico de pruebas (<c>TerrakeepPrueba</c>) llega con los siete colores
+		/// a <c>(0,0,0)</c> y sin nada equipado: la vista previa saldria una silueta negra igual
+		/// con y sin armadura, sin demostrar nada. Se le ponen colores vivos y una pieza real de
+		/// cabeza y de cuerpo (buscadas por propiedades, no por id fijo, igual que
+		/// <c>AutopruebaPersonaje.PoblarEquipo</c>) para que la diferencia SE VEA en las capturas.
+		/// </summary>
+		private static void PoblarAparienciaDePrueba()
+		{
+			Player jugador = Main.LocalPlayer;
+
+			jugador.hairColor = new Color(210, 60, 40);
+			jugador.skinColor = new Color(255, 200, 150);
+			jugador.eyeColor = new Color(30, 140, 230);
+			jugador.shirtColor = new Color(40, 170, 80);
+			jugador.underShirtColor = new Color(230, 210, 60);
+			jugador.pantsColor = new Color(70, 90, 200);
+			jugador.shoeColor = new Color(120, 70, 30);
+
+			int cabeza = BuscarObjeto(o => o.headSlot >= 0 && o.defense > 0);
+			int cuerpo = BuscarObjeto(o => o.bodySlot >= 0 && o.defense > 0);
+			int piernas = BuscarObjeto(o => o.legSlot >= 0 && o.defense > 0);
+			PonerObjeto(jugador.armor, 0, cabeza);
+			PonerObjeto(jugador.armor, 1, cuerpo);
+			PonerObjeto(jugador.armor, 2, piernas);
+
+			RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL/muñeco - apariencia de prueba " +
+				"puesta en vivo: colores no nulos y armor[0..2]=" +
+				PersonajeVivo.DescribirObjeto(jugador.armor[0]) + " / " +
+				PersonajeVivo.DescribirObjeto(jugador.armor[1]) + " / " +
+				PersonajeVivo.DescribirObjeto(jugador.armor[2]) + ".");
+		}
+
+		private static int BuscarObjeto(Func<Item, bool> condicion)
+		{
+			for (int tipo = 1; tipo < Terraria.ModLoader.ItemLoader.ItemCount; tipo++) {
+				Item muestra;
+				if (!ContentSamples.ItemsByType.TryGetValue(tipo, out muestra) || muestra == null) {
+					continue;
+				}
+				if (muestra.type <= 0 || string.IsNullOrEmpty(muestra.Name)) {
+					continue;
+				}
+				if (condicion(muestra)) {
+					return tipo;
+				}
+			}
+			return 0;
+		}
+
+		private static void PonerObjeto(Item[] equipo, int indice, int tipo)
+		{
+			if (tipo <= 0 || indice < 0 || indice >= equipo.Length) {
+				return;
+			}
+			Item objeto = new Item();
+			objeto.SetDefaults(tipo);
+			equipo[indice] = objeto;
+		}
+
+		/// <summary>Abre el panel directamente en Personaje -> Apariencia, sin depender de en
+		/// que pestaña lo hayan dejado los pasos anteriores.</summary>
+		private static void AbrirApariencia()
+		{
+			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Personaje,
+				"autoprueba del panel unico: vista previa de Apariencia");
+
+			ContenidoPersonaje personaje = PanelTerrakeepSystem.Panel != null
+				? PanelTerrakeepSystem.Panel.Personaje : null;
+			if (personaje == null) {
+				RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL/muñeco: no se encontro " +
+					"ContenidoPersonaje tras abrir el area.");
+				return;
+			}
+
+			// Indice 4 = Apariencia, mismo orden que ContenidoPersonaje.ClavesPestana.
+			personaje.IrAPestana(4);
+			RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL/muñeco - abierta la sub-pestaña \"" +
+				personaje.NombrePestanaActual + "\".");
+		}
+
+		/// <summary>Mide el <see cref="MunecoTk"/> ya dibujado (geometria real, no recien
+		/// construida) y deja una captura real del back buffer con el nombre indicado.</summary>
+		private static void MedirYCapturarMuneco(string sufijo)
+		{
+			ContenidoPersonaje personaje = PanelTerrakeepSystem.Panel != null
+				? PanelTerrakeepSystem.Panel.Personaje : null;
+			MunecoTk muneco = personaje != null ? personaje.BuscarPrimero<MunecoTk>() : null;
+
+			if (muneco == null) {
+				RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL/muñeco: no se encontro " +
+					"ningun MunecoTk en la pestaña abierta.");
+				return;
+			}
+
+			CalculatedStyle dim = muneco.GetDimensions();
+			RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL/muñeco (" + sufijo + ") - " +
+				"MunecoTk dibujado en x=" + (int)dim.X + " y=" + (int)dim.Y + " " +
+				(int)dim.Width + "x" + (int)dim.Height + ", ConArmadura=" + muneco.ConArmadura + ". " +
+				CapturaDePantalla.Guardar("apariencia-muneco-" + sufijo));
+		}
+
+		/// <summary>Pulsa de verdad el <see cref="AlternadorTk"/> de "con armadura" con su ruta
+		/// real (<c>UIElement.LeftClick</c>, la misma que dispara un clic de raton de verdad),
+		/// igual que WS1 ya hizo con el deslizador de color.</summary>
+		private static void PulsarAlternadorArmadura()
+		{
+			ContenidoPersonaje personaje = PanelTerrakeepSystem.Panel != null
+				? PanelTerrakeepSystem.Panel.Personaje : null;
+			AlternadorTk alternador = personaje != null ? personaje.BuscarPrimero<AlternadorTk>() : null;
+
+			if (alternador == null) {
+				RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL/muñeco: no se encontro " +
+					"ningun AlternadorTk en la pestaña abierta.");
+				return;
+			}
+
+			bool antes = alternador.Valor;
+			CalculatedStyle dim = alternador.GetDimensions();
+			alternador.LeftClick(new UIMouseEvent(alternador,
+				new Vector2(dim.X + dim.Width * 0.5f, dim.Y + dim.Height * 0.5f)));
+
+			RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL/muñeco - clic REAL en \"" +
+				alternador.EtiquetaActual + "\". Valor antes=" + antes + " -> despues=" + alternador.Valor +
+				" " + (antes != alternador.Valor ? "-> OK: ha cambiado." : "-> NO HA CAMBIADO."));
 		}
 	}
 }
