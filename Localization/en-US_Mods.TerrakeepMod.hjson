@@ -97,6 +97,16 @@ Personaje: {
 		LeyendaMisc: Columns: equipped · dye
 	}
 
+	Herramientas: {
+		Papelera: Trash
+		CantidadObjetivo: Quantity of "{0}" ({1}/{2}):
+		CantidadSinObjetivo: Quantity: hover an item with more than 1 unit
+		CantidadPista: quantity
+		CantidadAplicar: Apply
+		CantidadAyuda: Type a number and press Apply (or Enter), or use - / +. The limit is the item's real maximum.
+		CantidadHistorial: Quantity of "{0}": {1} -> {2}
+	}
+
 	Buffs: {
 		Activos: Active buffs: {0} of {1} slots
 		QuitarTodos: Remove all
@@ -519,8 +529,8 @@ Exploracion: {
 		SinBusqueda: No search yet: use the Search tab
 		Zoom: Zoom: {0} px per tile
 		FueraDelMundo: Outside the world
-		TileExplorado: {2}  ·  tile {0}, {1} (explored)
-		TileSinExplorar: {2}  ·  tile {0}, {1} (unexplored)
+		TileExplorado: "{2}  ·  tile {0}, {1} (explored)"
+		TileSinExplorar: "{2}  ·  tile {0}, {1} (unexplored)"
 		Vacio: Nothing
 	}
 

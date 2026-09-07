@@ -121,6 +121,22 @@ T = [
      "Columns: worn · vanity · dye"),
     ("Personaje.Equipo.LeyendaMisc", "Columnas: puesto · tinte", "Columns: equipped · dye"),
 
+    # Fila de herramientas (papelera + editor de cantidad), compartida por Inventario, Almacenes
+    # y Equipo.
+    ("Personaje.Herramientas.Papelera", "Papelera", "Trash"),
+    ("Personaje.Herramientas.CantidadObjetivo", "Cantidad de \"{0}\" ({1}/{2}):",
+     "Quantity of \"{0}\" ({1}/{2}):"),
+    ("Personaje.Herramientas.CantidadSinObjetivo",
+     "Cantidad: pasa el ratón por un objeto con más de 1 unidad",
+     "Quantity: hover an item with more than 1 unit"),
+    ("Personaje.Herramientas.CantidadPista", "cantidad", "quantity"),
+    ("Personaje.Herramientas.CantidadAplicar", "Aplicar", "Apply"),
+    ("Personaje.Herramientas.CantidadAyuda",
+     "Escribe un número y pulsa Aplicar (o Intro), o usa - / +. El límite es el máximo real del objeto.",
+     "Type a number and press Apply (or Enter), or use - / +. The limit is the item's real maximum."),
+    ("Personaje.Herramientas.CantidadHistorial", "Cantidad de \"{0}\": {1} -> {2}",
+     "Quantity of \"{0}\": {1} -> {2}"),
+
     ("Personaje.Buffs.Activos", "Buffs activos: {0} de {1} ranuras",
      "Active buffs: {0} of {1} slots"),
     ("Personaje.Buffs.QuitarTodos", "Quitar todos", "Remove all"),

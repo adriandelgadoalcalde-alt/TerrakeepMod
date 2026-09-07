@@ -97,6 +97,16 @@ Personaje: {
 		LeyendaMisc: Columnas: puesto · tinte
 	}
 
+	Herramientas: {
+		Papelera: Papelera
+		CantidadObjetivo: Cantidad de "{0}" ({1}/{2}):
+		CantidadSinObjetivo: Cantidad: pasa el ratón por un objeto con más de 1 unidad
+		CantidadPista: cantidad
+		CantidadAplicar: Aplicar
+		CantidadAyuda: Escribe un número y pulsa Aplicar (o Intro), o usa - / +. El límite es el máximo real del objeto.
+		CantidadHistorial: Cantidad de "{0}": {1} -> {2}
+	}
+
 	Buffs: {
 		Activos: Buffs activos: {0} de {1} ranuras
 		QuitarTodos: Quitar todos
@@ -519,8 +529,8 @@ Exploracion: {
 		SinBusqueda: Sin búsqueda: usa la pestaña Búsqueda
 		Zoom: Zoom: {0} px por tile
 		FueraDelMundo: Fuera del mundo
-		TileExplorado: {2}  ·  tile {0}, {1} (explorado)
-		TileSinExplorar: {2}  ·  tile {0}, {1} (sin explorar)
+		TileExplorado: "{2}  ·  tile {0}, {1} (explorado)"
+		TileSinExplorar: "{2}  ·  tile {0}, {1} (sin explorar)"
 		Vacio: Nada
 	}
 

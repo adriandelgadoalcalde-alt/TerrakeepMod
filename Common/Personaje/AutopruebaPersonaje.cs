@@ -5,6 +5,8 @@ using Terraria;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
+using TerrakeepMod.Common.Undo;
+using TerrakeepMod.UI;
 using TerrakeepMod.UI.Personaje;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -121,7 +123,13 @@ namespace TerrakeepMod.Common.Personaje
 				case 19: ComprobarDeslizadorColor(); break;
 				case 20: EnfocarCampoDeTexto(); break;
 				case 21: ComprobarCampoDeTexto(); break;
-				case 22: ComprobarCierreConObjetoEnElRaton(); break;
+				// El cierre con un objeto cogido en el raton (antiguo paso 22) pasa al FINAL: cierra
+				// el panel de verdad, y los tres pasos nuevos necesitan el panel abierto para
+				// navegar pestañas y encontrar sus propios controles.
+				case 22: PrepararHoverParaEditorCantidad(); break;
+				case 23: ComprobarEditorCantidad(); break;
+				case 24: ComprobarPapeleraQuitaDeUnHueco(); break;
+				case 25: ComprobarCierreConObjetoEnElRaton(); break;
 				default:
 					Registrar("AUTOPRUEBA WS1 COMPLETA. Todos los pasos ejecutados sin excepciones.");
 					_terminada = true;
@@ -647,6 +655,218 @@ namespace TerrakeepMod.Common.Personaje
 		}
 
 		/// <summary>
+		/// Engancha el editor de cantidad a <c>inventory[1]</c> (el "bloque" x250 que puso
+		/// <see cref="PoblarInventario"/>) por su ruta REAL de hover, no llamando a un metodo
+		/// interno del editor.
+		/// <para />
+		/// <b>Por que <c>MouseOver</c> directo y no solo mover <c>Main.InGameUI.MousePosition</c>.</b>
+		/// El primer intento de esta comprobacion solo movia la posicion y dejaba pasar fotogramas,
+		/// como hace <see cref="ComprobarDeslizadorColor"/> antes de su <c>LeftMouseDown</c> manual
+		/// - pero ahi el slider SIGUE llamando a su manejador a mano en la misma llamada; aqui no
+		/// hay ningun manejador que llamar, <c>IsMouseHovering</c> solo lo rellena el propio
+		/// <c>UserInterface.Update</c> cuando hace SU hit-test contra la posicion REAL del cursor
+		/// del sistema, y sobreescribe <c>MousePosition</c> con ese valor en cada fotograma - visto
+		/// en el juego real: el paso 23 leia siempre "ObjetivoActual=(vacio)". <c>UIElement.MouseOver</c>
+		/// es <c>public virtual</c> (la implementacion de vanilla pone <c>IsMouseHovering = true</c>
+		/// y dispara <c>OnMouseOver</c>) y es exactamente el mismo patron que ya usan
+		/// <c>LeftMouseDown</c>/<c>LeftClick</c> en el resto de esta autoprueba: llamar al
+		/// manejador REAL directamente en vez de intentar que el motor lo dispare el solo sin
+		/// hardware de por medio.
+		/// </summary>
+		private static void PrepararHoverParaEditorCantidad()
+		{
+			ContenidoPersonaje panel = PanelPruebaSystem.PanelActual;
+			if (panel == null) {
+				Registrar("Paso 22 - no hay panel de Personaje montado.");
+				return;
+			}
+
+			panel.IrAPestana(0); // Inventario
+
+			SlotObjetoVanilla slot = BuscarSlotDe(panel, PersonajeVivo.Jugador.inventory, 1);
+			if (slot == null) {
+				Registrar("Paso 22 - no se encontro la ranura de inventory[1] en la pestaña Inventario.");
+				return;
+			}
+
+			CalculatedStyle dim = slot.GetDimensions();
+			Vector2 centro = new Vector2(dim.X + dim.Width / 2f, dim.Y + dim.Height / 2f);
+			slot.MouseOver(new UIMouseEvent(slot, centro));
+
+			Registrar("Paso 22 - MouseOver real disparado sobre la ranura de inventory[1] ("
+				+ PersonajeVivo.DescribirObjeto(PersonajeVivo.Jugador.inventory[1]) + ") en x="
+				+ (int)dim.X + " y=" + (int)dim.Y + " " + (int)dim.Width + "x" + (int)dim.Height
+				+ ". El editor de cantidad tiene que engancharse a este objeto en el paso siguiente.");
+		}
+
+		/// <summary>
+		/// Comprueba el editor de cantidad (<see cref="EditorCantidadTk"/>) sobre el objeto al que
+		/// se engancho en el paso anterior, pulsando sus botones REALES
+		/// (<c>BotonTk.LeftClick</c>, la misma ruta que <c>PanelTerrakeepState.PulsarBoton</c>) en
+		/// vez de llamar a un metodo interno.
+		/// </summary>
+		private static void ComprobarEditorCantidad()
+		{
+			ContenidoPersonaje panel = PanelPruebaSystem.PanelActual;
+			if (panel == null) {
+				Registrar("Paso 23 - no hay panel de Personaje montado.");
+				return;
+			}
+
+			EditorCantidadTk editor = panel.BuscarPrimero<EditorCantidadTk>();
+			if (editor == null) {
+				Registrar("Paso 23 - no se encontro ningun EditorCantidadTk en el panel.");
+				return;
+			}
+
+			Item objetivo = editor.ObjetivoActual;
+			if (objetivo == null || objetivo.IsAir) {
+				Registrar("Paso 23 - el editor de cantidad no engancho ningun objetivo tras el hover "
+					+ "del paso anterior (ObjetivoActual=" + PersonajeVivo.DescribirObjeto(objetivo) + "). "
+					+ "Se aborta esta comprobacion.");
+				return;
+			}
+
+			int stackInicial = objetivo.stack;
+			int maxStack = objetivo.maxStack;
+
+			Clic(editor.BotonMas);
+			int trasMas = objetivo.stack;
+
+			Clic(editor.BotonMenos);
+			int trasMenos = objetivo.stack;
+
+			editor.Campo.FijarTextoSilencioso("7");
+			Clic(editor.BotonAplicar);
+			int trasAplicarSiete = objetivo.stack;
+
+			editor.Campo.FijarTextoSilencioso((maxStack + 500).ToString());
+			Clic(editor.BotonAplicar);
+			int trasPedirDeMas = objetivo.stack;
+
+			bool okMas = trasMas == stackInicial + 1;
+			bool okMenos = trasMenos == trasMas - 1;
+			bool okSiete = trasAplicarSiete == 7;
+			bool okAcotado = trasPedirDeMas == maxStack;
+
+			Registrar("Paso 23 - editor de cantidad sobre \"" + objetivo.Name + "\" (maxStack=" + maxStack
+				+ "), pulsando los botones por su ruta REAL (BotonTk.LeftClick). "
+				+ "stack inicial=" + stackInicial + ". "
+				+ "Tras pulsar \"+\": " + trasMas + " (" + (okMas ? "OK" : "FALLO") + "). "
+				+ "Tras pulsar \"-\": " + trasMenos + " (" + (okMenos ? "OK" : "FALLO") + "). "
+				+ "Tras escribir \"7\" y Aplicar: " + trasAplicarSiete + " (" + (okSiete ? "OK" : "FALLO") + "). "
+				+ "Tras pedir " + (maxStack + 500) + " (por encima del maximo real) y Aplicar: "
+				+ trasPedirDeMas + " (" + (okAcotado ? "OK, acotado al maximo real" : "FALLO") + "). "
+				+ "Historial tras los cambios: " + Historial.Pila.EtiquetaDeshacer + ".");
+
+			// Se deja el objeto con su cantidad original para no arrastrar estado a otros pasos ni
+			// a la comprobacion de la papelera de a continuacion (que SI necesita saber cuanto hay).
+			objetivo.stack = stackInicial;
+		}
+
+		/// <summary>
+		/// Verificacion de la papelera pedida explicitamente por el usuario: coge un objeto de un
+		/// hueco REAL (<c>Player.inventory[1]</c>) por la ruta real de vanilla
+		/// (<c>ItemSlot.LeftClick</c>, la misma que ejecuta cualquier arrastre) y lo suelta sobre
+		/// la papelera (<c>ItemSlot.Handle</c> con <c>Context.TrashItem</c> = 6 sobre
+		/// <c>Player.trashItem</c>, la MISMA ruta que ejecuta <see cref="SlotPapeleraTk.DrawSelf"/>
+		/// al arrastrar un objeto encima). Comprueba las tres cosas que pedia el encargo: el hueco
+		/// de origen queda vacio en el <see cref="Player"/> REAL, el objeto no se queda "perdido"
+		/// en el raton, y sobre todo que NO aparece nada tirado en el suelo del mundo.
+		/// </summary>
+		private static void ComprobarPapeleraQuitaDeUnHueco()
+		{
+			Player jugador = Main.LocalPlayer;
+			const int Ranura = 1;
+
+			string antesRanura = PersonajeVivo.DescribirObjeto(jugador.inventory[Ranura]);
+			int objetosActivosAntes = ContarObjetosEnElMundo();
+
+			bool izquierdoPrevio = Main.mouseLeft;
+			bool sueltoPrevio = Main.mouseLeftRelease;
+			Main.mouseLeft = true;
+			Main.mouseLeftRelease = true;
+			try {
+				// 1) Coger el objeto del hueco con la ruta REAL de vanilla (lo mismo que arrastrarlo).
+				ItemSlot.LeftClick(jugador.inventory, ItemSlot.Context.InventoryItem, Ranura);
+				string trasCoger = PersonajeVivo.DescribirObjeto(jugador.inventory[Ranura]);
+				string ratonTrasCoger = PersonajeVivo.DescribirObjeto(Main.mouseItem);
+
+				// 2) Soltarlo sobre la papelera REAL del juego (Player.trashItem, Context.TrashItem).
+				ItemSlot.Handle(ref jugador.trashItem, ItemSlot.Context.TrashItem);
+
+				int objetosActivosDespues = ContarObjetosEnElMundo();
+
+				bool huecoVacio = jugador.inventory[Ranura].IsAir;
+				bool enPapelera = !jugador.trashItem.IsAir;
+				bool manoVacia = Main.mouseItem.IsAir;
+				bool nadaEnElSuelo = objetosActivosDespues == objetosActivosAntes;
+
+				Registrar("Paso 24 - papelera quitando un objeto REAL de un hueco (Player.inventory["
+					+ Ranura + "]): ItemSlot.LeftClick para cogerlo + ItemSlot.Handle con "
+					+ "Context.TrashItem=6 sobre Player.trashItem para soltarlo (la misma ruta que "
+					+ "Main.DrawTrashItemSlot en el HUD de vanilla). "
+					+ "ANTES: inventory[" + Ranura + "]=" + antesRanura + ". "
+					+ "Tras cogerlo: inventory[" + Ranura + "]=" + trasCoger + ", raton=" + ratonTrasCoger + ". "
+					+ "Tras soltarlo en la papelera: inventory[" + Ranura + "]="
+					+ PersonajeVivo.DescribirObjeto(jugador.inventory[Ranura])
+					+ " (" + (huecoVacio ? "OK, hueco vacio en el Player real" : "FALLO") + "), "
+					+ "papelera=" + PersonajeVivo.DescribirObjeto(jugador.trashItem)
+					+ " (" + (enPapelera ? "OK" : "FALLO") + "), "
+					+ "raton=" + PersonajeVivo.DescribirObjeto(Main.mouseItem)
+					+ " (" + (manoVacia ? "OK" : "FALLO") + "). "
+					+ "Objetos activos en el mundo: antes=" + objetosActivosAntes + ", despues="
+					+ objetosActivosDespues + " (" + (nadaEnElSuelo
+						? "OK, no ha aparecido nada tirado en el suelo"
+						: "FALLO: ha aparecido algo en el mundo") + ").");
+			}
+			finally {
+				Main.mouseLeft = izquierdoPrevio;
+				Main.mouseLeftRelease = sueltoPrevio;
+			}
+
+			// Se deja vacia para no dejar basura visible en el panel el resto de la prueba.
+			jugador.trashItem = new Item();
+		}
+
+		/// <summary>Primer <see cref="SlotObjetoVanilla"/> de <paramref name="raiz"/> cuyo objeto
+		/// real (por REFERENCIA, no por valor) es <c>array[indice]</c>.</summary>
+		private static SlotObjetoVanilla BuscarSlotDe(UIElement raiz, Item[] array, int indice)
+		{
+			SlotObjetoVanilla encontrado = null;
+			raiz.ExecuteRecursively(elemento => {
+				SlotObjetoVanilla slot = elemento as SlotObjetoVanilla;
+				if (slot != null && encontrado == null && ReferenceEquals(slot.ObjetoActual, array[indice])) {
+					encontrado = slot;
+				}
+			});
+			return encontrado;
+		}
+
+		private static void Clic(BotonTk boton)
+		{
+			if (boton == null) {
+				return;
+			}
+			CalculatedStyle dim = boton.GetDimensions();
+			Vector2 centro = new Vector2(dim.X + dim.Width / 2f, dim.Y + dim.Height / 2f);
+			boton.LeftClick(new UIMouseEvent(boton, centro));
+		}
+
+		/// <summary>Cuenta los objetos activos tirados en el mundo (<c>Main.item</c>). Se usa antes
+		/// y despues de la papelera para demostrar que nada acaba en el suelo.</summary>
+		private static int ContarObjetosEnElMundo()
+		{
+			int cuenta = 0;
+			for (int i = 0; i < Main.item.Length; i++) {
+				if (Main.item[i] != null && Main.item[i].active) {
+					cuenta++;
+				}
+			}
+			return cuenta;
+		}
+
+		/// <summary>
 		/// Ultimo paso: cierra el panel con un objeto todavia cogido con el raton y comprueba que
 		/// se devuelve al inventario en vez de quedarse invisible fuera del panel.
 		/// </summary>
@@ -666,7 +886,7 @@ namespace TerrakeepMod.Common.Personaje
 
 			long despues = Utils.CoinsCount(out desbordado, jugador.inventory);
 
-			Registrar("Paso 22 - cierre con un objeto cogido (3 monedas de oro = 30000 cobre). "
+			Registrar("Paso 25 - cierre con un objeto cogido (3 monedas de oro = 30000 cobre). "
 				+ "Monedas en el inventario antes=" + antes + ", despues=" + despues
 				+ " (diferencia " + (despues - antes) + "). "
 				+ "Objeto que queda en el raton: " + PersonajeVivo.DescribirObjeto(Main.mouseItem) + ". "
