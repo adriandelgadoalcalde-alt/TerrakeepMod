@@ -51,7 +51,8 @@ namespace TerrakeepMod.Common.Panel
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaIdiomas.Variable))
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Menus.AutopruebaMenus.Variable))
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
-						Exploracion.PanelExploracionSystem.VariableAutoprueba));
+						Exploracion.PanelExploracionSystem.VariableAutoprueba))
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaEspaciado.Variable));
 			}
 		}
 

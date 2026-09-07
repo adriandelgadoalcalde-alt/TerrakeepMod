@@ -54,6 +54,27 @@ namespace TerrakeepMod.UI.Personaje
 		private const float SeparacionSubcolumnas = 8f;
 
 		/// <summary>
+		/// Alto de fila de "buff activo"/"resultado de añadir", en pixeles. Antes eran 36 con el
+		/// icono, el nombre y el boton practicamente pegados unos a otros (0-4 px de hueco real
+		/// entre cajas, sin margen visible) - "esta todo super apretado en buff" (reporte real del
+		/// usuario probando el mod, con captura). Subido a 40 para que quepa un margen vertical de
+		/// verdad alrededor del icono/texto/boton.
+		/// </summary>
+		private const float AltoFilaBuff = 40f;
+
+		/// <summary>Hueco horizontal real entre el nombre y el tiempo, y entre el tiempo y el boton
+		/// de "Quitar"/"Aplicar", en la fila de un buff. Antes 0 y 4 px respectivamente.</summary>
+		private const float SeparacionEnFila = 10f;
+
+		/// <summary>Margen entre el borde derecho de la fila y el boton "Quitar"/"Aplicar". Antes
+		/// 2 px (practicamente pegado al borde).</summary>
+		private const float MargenDerechoFila = 4f;
+
+		/// <summary>Hueco entre la caja de la lista de "buffs activos" y el boton "Quitar todos" de
+		/// debajo. Antes 4 px.</summary>
+		private const float SeparacionListaActivosBoton = 16f;
+
+		/// <summary>
 		/// Reparto de las dos columnas, en PORCENTAJE del ancho real.
 		/// <para />
 		/// Antes eran pixeles fijos (cajas de 470 px y la columna derecha empezando en 490), o sea
@@ -123,7 +144,9 @@ namespace TerrakeepMod.UI.Personaje
 
 			UIPanel caja = new UIPanel();
 			caja.Width.Set(0f, 1f);
-			caja.Height.Set(-58f, 1f);
+			// -70 = -(26 de Top + 28 del boton de debajo + SeparacionListaActivosBoton): deja un
+			// hueco real de verdad antes del boton "Quitar todos" en vez de los 4 px de antes.
+			caja.Height.Set(-(26f + 28f + SeparacionListaActivosBoton), 1f);
 			caja.Top.Set(26f, 0f);
 			caja.BackgroundColor = EstiloTk.FondoCaja;
 			izquierda.Append(caja);
@@ -131,7 +154,7 @@ namespace TerrakeepMod.UI.Personaje
 			_listaActivos = new UIList();
 			_listaActivos.Width.Set(-24f, 1f);
 			_listaActivos.Height.Set(0f, 1f);
-			_listaActivos.ListPadding = 4f;
+			_listaActivos.ListPadding = 6f;
 			caja.Append(_listaActivos);
 
 			UIScrollbar barra = new UIScrollbar();
@@ -170,34 +193,51 @@ namespace TerrakeepMod.UI.Personaje
 
 		private UIElement CrearFilaBuff(int tipo)
 		{
+			// Reparto horizontal con huecos reales (ver AltoFilaBuff/SeparacionEnFila): boton
+			// "Quitar" pegado al borde derecho (con su margen), el tiempo a su izquierda con hueco,
+			// y el nombre ocupando todo lo que sobra a la izquierda del tiempo, tambien con hueco.
+			const float anchoTiempo = 70f;
+			const float anchoBotonQuitar = 70f;
+			float leftQuitar = -(anchoBotonQuitar + MargenDerechoFila);
+			float leftTiempo = leftQuitar - SeparacionEnFila - anchoTiempo;
+			float anchoNombre = leftTiempo - SeparacionEnFila - 40f;
+
 			UIElement fila = new UIElement();
 			fila.Width.Set(0f, 1f);
-			fila.Height.Set(36f, 0f);
+			fila.Height.Set(AltoFilaBuff, 0f);
 
 			IconoBuffTk icono = new IconoBuffTk(() => tipo, 32f);
 			icono.Left.Set(2f, 0f);
-			icono.Top.Set(2f, 0f);
+			icono.Top.Set(4f, 0f);
 			fila.Append(icono);
 
-			EtiquetaTk nombre = new EtiquetaTk(
-				() => Idiomas.Texto("Personaje.Buffs.NombreConId",
-					PersonajeVivo.NombreBuff(tipo), tipo), 0.8f, 0f, 20f);
-			nombre.Width.Set(-186f, 1f);
+			// Recortado con el ancho REAL de la etiqueta (no con anchoNombre a mano): un nombre de
+			// buff largo ("Mana Regeneration (id 6)") se solapaba de verdad con la columna de
+			// tiempo en una ventana estrecha porque EtiquetaTk nunca recorta por su cuenta -
+			// captura real a 800x720, ver EtiquetaTk.Recortar.
+			EtiquetaTk nombre = null;
+			nombre = new EtiquetaTk(() => {
+				string texto = Idiomas.Texto("Personaje.Buffs.NombreConId",
+					PersonajeVivo.NombreBuff(tipo), tipo);
+				float ancho = nombre.GetDimensions().Width;
+				return ancho > 0f ? EtiquetaTk.Recortar(texto, ancho, 0.8f) : texto;
+			}, 0.8f, 0f, 20f);
+			nombre.Width.Set(anchoNombre, 1f);
 			nombre.Left.Set(40f, 0f);
-			nombre.Top.Set(8f, 0f);
+			nombre.Top.Set(10f, 0f);
 			fila.Append(nombre);
 
-			EtiquetaTk tiempo = new EtiquetaTk(() => TextoTiempo(tipo), 0.8f, 70f, 20f);
-			tiempo.Left.Set(-146f, 1f);
-			tiempo.Top.Set(8f, 0f);
+			EtiquetaTk tiempo = new EtiquetaTk(() => TextoTiempo(tipo), 0.8f, anchoTiempo, 20f);
+			tiempo.Left.Set(leftTiempo, 1f);
+			tiempo.Top.Set(10f, 0f);
 			fila.Append(tiempo);
 
 			BotonTk quitar = new BotonTk(Idiomas.Texto("Personaje.Buffs.Quitar"), 0.75f);
 			_botonesQuitar.Add(quitar);
-			quitar.Width.Set(70f, 0f);
+			quitar.Width.Set(anchoBotonQuitar, 0f);
 			quitar.Height.Set(26f, 0f);
-			quitar.Left.Set(-72f, 1f);
-			quitar.Top.Set(4f, 0f);
+			quitar.Left.Set(leftQuitar, 1f);
+			quitar.Top.Set(7f, 0f);
 			quitar.AlPulsar += () => QuitarBuff(tipo);
 			fila.Append(quitar);
 
@@ -276,36 +316,38 @@ namespace TerrakeepMod.UI.Personaje
 			derecha.Append(columnaCarpetas);
 
 			_botonInicio = new BotonTk(Idiomas.Texto("Personaje.Buffs.Arbol.Inicio"), 0.72f);
-			_botonInicio.Width.Set(62f, 0f);
+			_botonInicio.Width.Set(60f, 0f);
 			_botonInicio.Height.Set(24f, 0f);
 			_botonInicio.Ayuda = () => Idiomas.Texto("Personaje.Buffs.Arbol.InicioAyuda");
 			_botonInicio.AlPulsar += IrALaRaiz;
 			columnaCarpetas.Append(_botonInicio);
 
+			// Left=68 en vez de 66: con el boton de arriba en 60 px de ancho, deja un hueco real de
+			// 8 px entre los dos botones en vez de los 4 px de antes.
 			_botonSubirCarpeta = new BotonTk(Idiomas.Texto("Personaje.Buffs.Arbol.Subir"), 0.72f);
-			_botonSubirCarpeta.Width.Set(66f, 0f);
+			_botonSubirCarpeta.Width.Set(64f, 0f);
 			_botonSubirCarpeta.Height.Set(24f, 0f);
-			_botonSubirCarpeta.Left.Set(66f, 0f);
+			_botonSubirCarpeta.Left.Set(68f, 0f);
 			_botonSubirCarpeta.Ayuda = () => Idiomas.Texto("Personaje.Buffs.Arbol.SubirAyuda");
 			_botonSubirCarpeta.AlPulsar += SubirCarpeta;
 			columnaCarpetas.Append(_botonSubirCarpeta);
 
 			_rutaTexto = new EtiquetaTk(RutaCorta, 0.68f, AnchoColumnaCarpetas, 18f);
 			_rutaTexto.ColorTexto = EstiloTk.TextoSuave;
-			_rutaTexto.Top.Set(28f, 0f);
+			_rutaTexto.Top.Set(32f, 0f);
 			columnaCarpetas.Append(_rutaTexto);
 
 			UIPanel cajaCarpetas = new UIPanel();
 			cajaCarpetas.Width.Set(0f, 1f);
-			cajaCarpetas.Top.Set(50f, 0f);
-			cajaCarpetas.Height.Set(-50f, 1f);
+			cajaCarpetas.Top.Set(56f, 0f);
+			cajaCarpetas.Height.Set(-56f, 1f);
 			cajaCarpetas.BackgroundColor = EstiloTk.FondoCaja;
 			columnaCarpetas.Append(cajaCarpetas);
 
 			_listaCarpetas = new UIList();
 			_listaCarpetas.Width.Set(-AnchoBarraScrollCarpetas, 1f);
 			_listaCarpetas.Height.Set(0f, 1f);
-			_listaCarpetas.ListPadding = 3f;
+			_listaCarpetas.ListPadding = 5f;
 			cajaCarpetas.Append(_listaCarpetas);
 
 			UIScrollbar barraCarpetas = new UIScrollbar();
@@ -340,12 +382,13 @@ namespace TerrakeepMod.UI.Personaje
 
 			// La duracion va en su PROPIA fila, debajo del buscador: en la misma fila necesitaba
 			// 470 px de ancho y con media pantalla no cabia (el campo se quedaba fuera de la
-			// ventana, literalmente invisible).
+			// ventana, literalmente invisible). El campo de busqueda ocupa hasta y=28: se deja un
+			// hueco real de 10 px antes de esta fila (antes 6 px) para que respire.
 			EtiquetaTk etiquetaDuracion = new EtiquetaTk(
 				() => Idiomas.Texto("Personaje.Buffs.Segundos"), 0.8f, 90f, 20f);
 			etiquetaDuracion.ColorTexto = EstiloTk.TextoSuave;
 			etiquetaDuracion.Left.Set(0f, 0f);
-			etiquetaDuracion.Top.Set(40f, 0f);
+			etiquetaDuracion.Top.Set(44f, 0f);
 			columnaResultados.Append(etiquetaDuracion);
 
 			_campoDuracion = new CampoTextoTk(() => SegundosPorDefecto.ToString(), 6);
@@ -354,28 +397,31 @@ namespace TerrakeepMod.UI.Personaje
 			_campoDuracion.Width.Set(80f, 0f);
 			_campoDuracion.Height.Set(28f, 0f);
 			_campoDuracion.Left.Set(80f, 0f);
-			_campoDuracion.Top.Set(34f, 0f);
+			_campoDuracion.Top.Set(38f, 0f);
 			columnaResultados.Append(_campoDuracion);
 
+			// El campo de duracion ocupa hasta y=66: 10 px de hueco antes del resumen (antes 4 px).
 			_resumenAnadir = new EtiquetaTk(TextoResumenAnadir, 0.68f, 0f, 30f);
 			_resumenAnadir.Width.Set(0f, 1f);
 			_resumenAnadir.ColorTexto = EstiloTk.TextoSuave;
 			_resumenAnadir.Left.Set(0f, 0f);
-			_resumenAnadir.Top.Set(66f, 0f);
+			_resumenAnadir.Top.Set(76f, 0f);
 			columnaResultados.Append(_resumenAnadir);
 
+			// El resumen ocupa hasta y=106: 6 px de hueco antes de la caja de resultados (antes 0,
+			// el resumen y la caja quedaban pegados borde con borde).
 			UIPanel caja = new UIPanel();
 			caja.Width.Set(0f, 1f);
-			caja.Height.Set(-152f, 1f);
+			caja.Height.Set(-170f, 1f);
 			caja.Left.Set(0f, 0f);
-			caja.Top.Set(94f, 0f);
+			caja.Top.Set(112f, 0f);
 			caja.BackgroundColor = EstiloTk.FondoCaja;
 			columnaResultados.Append(caja);
 
 			_listaResultados = new UIList();
 			_listaResultados.Width.Set(-24f, 1f);
 			_listaResultados.Height.Set(0f, 1f);
-			_listaResultados.ListPadding = 4f;
+			_listaResultados.ListPadding = 6f;
 			caja.Append(_listaResultados);
 
 			UIScrollbar barra = new UIScrollbar();
@@ -578,28 +624,39 @@ namespace TerrakeepMod.UI.Personaje
 
 		private UIElement CrearFilaResultado(int tipo, string nombre)
 		{
+			// Mismo criterio de huecos reales que CrearFilaBuff, sin la columna de tiempo.
+			const float anchoBotonAplicar = 80f;
+			float leftAplicar = -(anchoBotonAplicar + MargenDerechoFila);
+			float anchoEtiqueta = leftAplicar - SeparacionEnFila - 40f;
+
 			UIElement fila = new UIElement();
 			fila.Width.Set(0f, 1f);
-			fila.Height.Set(36f, 0f);
+			fila.Height.Set(AltoFilaBuff, 0f);
 
 			IconoBuffTk icono = new IconoBuffTk(() => tipo, 32f);
 			icono.Left.Set(2f, 0f);
-			icono.Top.Set(2f, 0f);
+			icono.Top.Set(4f, 0f);
 			fila.Append(icono);
 
-			EtiquetaTk etiqueta = new EtiquetaTk(
-				() => Idiomas.Texto("Personaje.Buffs.NombreConId", nombre, tipo), 0.8f, 0f, 20f);
-			etiqueta.Width.Set(-128f, 1f);
+			// Mismo recorte por ancho REAL que CrearFilaBuff, y por la misma razon: un nombre de
+			// buff largo no puede solaparse con el boton "Aplicar" de al lado.
+			EtiquetaTk etiqueta = null;
+			etiqueta = new EtiquetaTk(() => {
+				string texto = Idiomas.Texto("Personaje.Buffs.NombreConId", nombre, tipo);
+				float ancho = etiqueta.GetDimensions().Width;
+				return ancho > 0f ? EtiquetaTk.Recortar(texto, ancho, 0.8f) : texto;
+			}, 0.8f, 0f, 20f);
+			etiqueta.Width.Set(anchoEtiqueta, 1f);
 			etiqueta.Left.Set(40f, 0f);
-			etiqueta.Top.Set(8f, 0f);
+			etiqueta.Top.Set(10f, 0f);
 			fila.Append(etiqueta);
 
 			BotonTk anadir = new BotonTk(Idiomas.Texto("Personaje.Buffs.Aplicar"), 0.75f);
 			_botonesAplicar.Add(anadir);
-			anadir.Width.Set(80f, 0f);
+			anadir.Width.Set(anchoBotonAplicar, 0f);
 			anadir.Height.Set(26f, 0f);
-			anadir.Left.Set(-82f, 1f);
-			anadir.Top.Set(4f, 0f);
+			anadir.Left.Set(leftAplicar, 1f);
+			anadir.Top.Set(7f, 0f);
 			anadir.AlPulsar += () => AplicarBuff(tipo);
 			fila.Append(anadir);
 

@@ -3128,3 +3128,117 @@ contenido del que otros agentes también dependen) ni ningún otro archivo modif
 agentes en marcha a la vez (`Common/Exploracion/*`, `Common/Panel/*`,
 `UI/Personaje/PestanaBuffs.cs`, `UI/Personaje/Widgets/EditorCantidadTk.cs`,
 `lib/TerrasavrNative.Core.dll`, `Common/Prefijos/*` nuevos, etc.).
+
+---
+
+## 7-sep-2026 — Espaciado: el recuadro naranja de dificultad y la pestaña Buffs, apretados de verdad
+
+Reporte real del usuario probando el mod, con capturas propias: **"hay que reajustar las frases se
+salen del recuadro... si hace falta que todo los elementos del mod se hagan un poquito mas pequeño
+para que todo cuadre"**, y sobre Buffs en concreto: **"esta todo super apretado en buff... hacer
+todo algo mas pequeño para que todo respire mejor"**.
+
+### 1. El recuadro naranja (`UI/Exploracion/PestanaMundo.cs`, `ConstruirDificultad`)
+
+La causa real, mirando el código: la caja de aviso de permanencia (`cajaAviso`) tenía
+**`Height` fijo a 120 px**, pero las tres frases que lleva dentro (permanencia, efecto, deshacer de
+Ctrl+Z) se parten en las líneas que hagan falta según el ancho REAL y el idioma activo -
+`EtiquetaTk.PartirEnLineas`, ya existía y funcionaba bien para el ANCHO. Para el ALTO no había
+nada: con autoguardado desactivado la frase de permanencia es más larga (`PermanenteAlGuardar` en
+vez de `PermanenteAutoguardado`) y en inglés las tres frases ocupan más ancho por palabra, así que
+el número de líneas variaba y una caja de 120 px fijos se quedaba corta - el texto seguía
+dibujándose (`EtiquetaTk.DrawSelf` no recorta nunca, solo `Utils.DrawBorderString` tal cual) pero
+por FUERA del rectángulo naranja, exactamente lo que se veía en la captura del usuario.
+
+**Arreglo real, no un número más grande a ojo**: `RecalcularAviso()` (nuevo, llamado desde
+`Update` y una vez al final del constructor) mide con la fuente REAL
+(`FontAssets.MouseText.Value.MeasureString`) el texto YA partido de las tres frases con el ancho
+interior real de la caja (`GetInnerDimensions().Width`), calcula la altura que ocupan de verdad, y
+ajusta `_cajaAviso.Height` a esa cifra - nunca una constante. El botón "Confirmar" y el mensaje de
+resultado, que van debajo, se recolocan en el mismo método a partir de la altura real de la caja en
+ese fotograma. `_derecha.Recalculate()` al final para que el mismo fotograma ya dibuje con la
+geometría nueva.
+
+### 2. La pestaña Buffs (`UI/Personaje/PestanaBuffs.cs`)
+
+Huecos reales medidos a mano en el código antes de tocar nada: la caja de "buffs activos" y el
+botón "Quitar todos" de debajo tenían 4 px de margen; dentro de cada fila de buff, el nombre y la
+columna de tiempo estaban **pegados con 0 px** y el tiempo con el botón "Quitar" con 4 px; la
+columna de carpetas del árbol de "Añadir" tenía 4 px entre sus dos botones y otros 4 px entre la
+ruta y la caja de carpetas; el campo "Segundos" tenía 6 px respecto al buscador y el resumen 4 px
+respecto al campo. Subidos todos a huecos reales (10-16 px según el sitio, ver las constantes
+nuevas `AltoFilaBuff`/`SeparacionEnFila`/`MargenDerechoFila`/`SeparacionListaActivosBoton` al
+principio de la clase), fila de buff subida de 36 a 40 px de alto, `ListPadding` de las tres listas
+subido de 3-4 a 5-6 px.
+
+### 3. Un solapamiento real que solo salió probando la resolución mínima (800x720)
+
+La primera pasada de verificación (ver más abajo) confirmó el recuadro naranja y el aspecto general
+de Buffs a 1600x900 y 1280x720, pero a **800x720 con nombres largos en inglés** apareció un
+solapamiento real: `"Mana Regeneration (id 6)9:52l 6)"` - el nombre del buff se dibujaba por encima
+de la columna de tiempo. Causa: igual que el recuadro naranja, `EtiquetaTk` nunca recorta ni envuelve
+por su cuenta, y el presupuesto de ancho para el nombre (`anchoNombre`, calculado a mano en
+`CrearFilaBuff`/`CrearFilaResultado`) es más estrecho en una ventana angosta que el texto real de un
+nombre largo. Arreglado añadiendo `EtiquetaTk.Recortar` (nuevo, mismo algoritmo ya usado en
+`FilaCarpetaBuffTk`/`FilaCarpetaTk`: mide con la fuente real y corta con "..." literal, nunca "…") y
+aplicándolo en el `Func` de las dos etiquetas de nombre, con el ANCHO REAL de la propia etiqueta
+(`GetDimensions().Width`, no la constante calculada a mano) para que siga siendo correcto si la
+ventana cambia de tamaño sin reconstruir la fila.
+
+### Verificación real en el juego (arnés nuevo: `Common/Panel/AutopruebaEspaciado.cs`)
+
+Nueva autoprueba (`TERRAKEEP_AUTOTEST_ESPACIADO=1`, lanzada por `scripts/verificar-espaciado.ps1`
+sobre su propio sandbox `tModLoader-TerrakeepEspaciado`, clonado de WS0): recorre las **3
+resoluciones × 2 idiomas** (1600x900 y 1280x720 pedidas por el usuario, y 800x720 porque es el
+mínimo real que admite el motor - `Main.minScreenW`/`minScreenH` en el `Main.cs` decompilado -,
+cambiadas EN VIVO con `Main.SetDisplayMode`, el mismo método público que usa el menú de resolución
+de vanilla), pone 6 buffs de prueba reales (incluido uno con nombre largo, el caso más exigente),
+abre Exploración > Este mundo y Personaje > Buffs en cada combinación, y para el recuadro naranja
+mide de forma INDEPENDIENTE (no solo confía en `RecalcularAviso`) el borde inferior real del texto
+ya partido contra el borde inferior real de la caja (`GetDimensions()`/`GetInnerDimensions()` ya
+dibujados), más una captura real del back buffer en cada caso.
+
+**Resultado, log real (`evidencia/espaciado.log.txt`), las 6 combinaciones en verde**: el texto
+del recuadro naranja cabe dentro de la caja con margen real (ej. a 800x720/en: borde inferior del
+texto en 533, borde inferior de la caja en 541, 8 px de margen; a 1600x900/es: 590 vs 598) y el
+botón "Confirmar" nunca se solapa con la caja. Las 12 capturas reales
+(`evidencia/espaciado-capturas/`) confirman a ojo lo mismo: el recuadro naranja contiene sus tres
+líneas con aire real en los seis casos, y la pestaña Buffs respira (huecos visibles entre fila y
+fila, entre columnas, entre la lista y "Quitar todos") - incluida la fila con el nombre de buff más
+largo, que ahora se recorta con "..." en vez de solaparse, visto en
+`buffs-800x720-minimo-en.png` antes y después del arreglo del punto 3.
+
+### 4. Pasada rápida por el resto de pestañas (sin tocar nada fuera de mi zona)
+
+Revisadas por el mismo patrón (texto que se sale de su caja, huecos a 0-4 px) sin encontrar
+regresiones nuevas que arreglar:
+
+- **`PestanaEquipo.cs`, `ContenidoInvestigacion.cs`, `PestanaMapa.cs` (Exploración) y
+  `ContenidoAjustes.cs` ya tenían este mismo tipo de arreglo hecho en una pasada anterior**, con
+  comentarios propios citando capturas reales a 800x720 y/o 1600x900 (escala de ranura dinámica en
+  Equipo, texto acortado en Investigación, cuatro líneas de aviso previstas en el mini-mapa). Nada
+  que hacer ahí.
+- **`PestanaInventario.cs` y `PestanaAlmacenes.cs` usan una escala de ranura FIJA (0,9)**, a
+  diferencia de la escala dinámica que ya tiene `PestanaEquipo.cs` para su columna de 10 filas. No
+  se ha visto un caso real roto (Almacenes solo tiene 4 filas de slots, Inventario reparte en dos
+  bloques cortos), así que se deja anotado para quien lo retome en vez de tocarlo sin evidencia de
+  un fallo real.
+- **`UI/Exploracion/PestanaMapa.cs` y `MiniMapaTk.cs` NO se han tocado a propósito**: otro agente
+  los está editando en paralelo ahora mismo (Exploración/búsqueda-mapa).
+
+### Commit
+
+Índice privado: `UI/Exploracion/PestanaMundo.cs`, `UI/Personaje/PestanaBuffs.cs`,
+`UI/Personaje/Widgets/EtiquetaTk.cs` (arreglos reales), `Common/Panel/AutopruebaEspaciado.cs`
+(nuevo, arnés de prueba), `scripts/verificar-espaciado.ps1` (nuevo), una línea de enganche en
+`Common/Panel/PanelTerrakeepSystem.cs` (`AutopruebaEspaciado.Avanzar()`, mismo patrón que las
+otras autopruebas ya enganchadas ahí) y otra en `Common/Panel/CapturaDePantalla.cs` (añadir la
+variable de esta autoprueba a la lista de las que permiten capturas), `evidencia/espaciado.log.txt`
+y `evidencia/espaciado-capturas/*.png` (evidencia propia, en mi propio sandbox y mi propio nombre
+de archivo, sin colisión con la de otros agentes), y esta entrada de `bitacora.md`. No se comitea
+ningún archivo modificado por otros agentes en marcha a la vez (`Common/Exploracion/*`,
+`UI/Exploracion/MiniMapaTk.cs`, `UI/Libreria/ContenidoLibreria.cs`,
+`UI/Personaje/Widgets/EditorCantidadTk.cs`, `lib/TerrasavrNative.Core.dll`,
+`scripts/generar-localizacion.py`, `Common/Prefijos/*`, `Assets/vanilla_prefix_*.json`,
+`UI/Libreria/Widgets/`, `evidencia/panel-unico.log.txt`, `evidencia/ws6-exploracion.log.txt`), ni
+las carpetas de build sueltas (`bin-checkDebug/`, `obj-verif-espaciado/`).

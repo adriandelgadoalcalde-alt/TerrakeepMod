@@ -96,6 +96,37 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			salida.Append(linea);
 		}
 
+		/// <summary>
+		/// Recorta un texto de UNA sola linea a lo que quepa en <paramref name="anchoMaximo"/>
+		/// pixeles, midiendolo con la fuente REAL con la que se va a dibujar, y añade "..." si hizo
+		/// falta cortar (nunca con "…": la fuente del juego no trae ese caracter, visto ya en
+		/// <c>FilaCarpetaBuffTk</c>/<c>FilaCarpetaTk</c>, de donde sale este mismo algoritmo).
+		/// <para />
+		/// Existe porque <see cref="EtiquetaTk"/> nunca recorta ni envuelve por su cuenta (
+		/// <see cref="DrawSelf"/> dibuja el texto tal cual, sin mirar <see cref="Width"/>): un
+		/// nombre de buff largo ("Mana Regeneration (id 6)") se solapaba de verdad con la columna
+		/// de tiempo de al lado en una ventana estrecha (800x720, captura real del juego) porque el
+		/// texto seguia dibujandose por fuera de su caja sin que nada lo impidiera.
+		/// </para>
+		/// </summary>
+		public static string Recortar(string texto, float anchoMaximo, float escala)
+		{
+			if (string.IsNullOrEmpty(texto) || anchoMaximo <= 0f) {
+				return texto ?? "";
+			}
+
+			DynamicSpriteFont fuente = Terraria.GameContent.FontAssets.MouseText.Value;
+			if (fuente.MeasureString(texto).X * escala <= anchoMaximo) {
+				return texto;
+			}
+
+			int n = texto.Length;
+			while (n > 1 && fuente.MeasureString(texto.Substring(0, n) + "...").X * escala > anchoMaximo) {
+				n--;
+			}
+			return texto.Substring(0, n) + "...";
+		}
+
 		protected override void DrawSelf(SpriteBatch spriteBatch)
 		{
 			string cadena = _texto();

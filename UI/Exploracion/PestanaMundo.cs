@@ -34,13 +34,46 @@ namespace TerrakeepMod.UI.Exploracion
 		/// <summary>Separacion entre las dos columnas.</summary>
 		private const float SeparacionColumnas = 12f;
 
+		/// <summary>Publicas para que la autoprueba de espaciado pueda repetir la MISMA medicion de
+		/// texto real que usa <see cref="RecalcularAviso"/>, de forma independiente (a partir del
+		/// texto sin partir y del ancho interior real de la caja), sin duplicar el numero a mano.</summary>
+		public const float EscalaAviso = 0.72f;
+		public const float EscalaAvisoSecundario = 0.68f;
+		private const float PaddingCajaAviso = 8f;
+		private const float SeparacionEntreAvisos = 6f;
+		private const float SeparacionTrasCajaAviso = 10f;
+		private const float AltoBotonConfirmar = 38f;
+		private const float SeparacionTrasConfirmar = 8f;
+
 		private int _modoElegido = -1;
 		private readonly List<KeyValuePair<int, BotonTk>> _botonesModo = new List<KeyValuePair<int, BotonTk>>();
 		private BotonTk _confirmar;
 		private string _ultimoMensaje = "";
 
+		private UIElement _derecha;
+		private UIPanel _cajaAviso;
+		private EtiquetaTk _etiquetaAviso;
+		private EtiquetaTk _etiquetaEfecto;
+		private EtiquetaTk _etiquetaDeshacer;
+		private EtiquetaTk _mensaje;
+		private float _yAntesDeAviso;
+
 		/// <summary>Modo que esta elegido (pendiente de confirmar), o -1 si ninguno.</summary>
 		public int ModoElegido => _modoElegido;
+
+		/// <summary>El rectangulo naranja de aviso de permanencia, para que la autoprueba de
+		/// espaciado pueda medir su geometria REAL (<c>GetDimensions</c>/<c>GetInnerDimensions</c>)
+		/// y comprobar que el texto de verdad cabe dentro, no solo confiar en el propio calculo que
+		/// ya lo coloca.</summary>
+		public UIPanel CajaAviso => _cajaAviso;
+
+		/// <summary>La ultima de las tres etiquetas del aviso (la que marca el borde inferior real
+		/// del contenido), para la misma comprobacion.</summary>
+		public EtiquetaTk EtiquetaDeshacer => _etiquetaDeshacer;
+
+		/// <summary>El boton de confirmar, para comprobar que tampoco se solapa con la caja de
+		/// aviso de encima.</summary>
+		public BotonTk BotonConfirmar => _confirmar;
 
 		public PestanaMundo()
 		{
@@ -49,6 +82,7 @@ namespace TerrakeepMod.UI.Exploracion
 
 			ConstruirFicha();
 			ConstruirDificultad();
+			RecalcularAviso();
 		}
 
 		private void ConstruirFicha()
@@ -114,6 +148,7 @@ namespace TerrakeepMod.UI.Exploracion
 			derecha.Height.Set(0f, 1f);
 			derecha.HAlign = 1f;
 			Append(derecha);
+			_derecha = derecha;
 
 			EtiquetaTk titulo = new EtiquetaTk(
 				() => Idiomas.Texto("Exploracion.Mundo.Dificultad"), 0.95f, 500f, 26f);
@@ -143,57 +178,113 @@ namespace TerrakeepMod.UI.Exploracion
 				i++;
 			}
 			y += ((i + 1) / 2) * 40f + 8f;
+			_yAntesDeAviso = y;
 
-			// El aviso de permanencia va SIEMPRE visible, antes de tocar nada.
-			UIPanel cajaAviso = new UIPanel();
-			cajaAviso.Width.Set(0f, 1f);
-			cajaAviso.Top.Set(y, 0f);
-			cajaAviso.Height.Set(120f, 0f);
-			cajaAviso.BackgroundColor = new Color(92, 60, 30) * 0.92f;
-			cajaAviso.BorderColor = new Color(0, 0, 0, 0);
-			cajaAviso.SetPadding(8f);
-			derecha.Append(cajaAviso);
+			// El aviso de permanencia va SIEMPRE visible, antes de tocar nada. Su altura NO es fija:
+			// las tres frases se parten en las lineas que quepan en el ancho real de la caja (en una
+			// sola linea median ~460 px y se salian por la derecha del marco, captura real del juego),
+			// y el numero de lineas cambia con el idioma y con el estado del autoguardado (la frase
+			// de permanencia es mas larga con el autoguardado apagado). Con una altura fija de 120 px
+			// el texto se salia igualmente por ABAJO del propio rectangulo (visto en captura real):
+			// aqui se mide el texto YA partido con la fuente real y se ajusta la caja entera (y lo
+			// que va debajo, el boton de confirmar y el mensaje) a la altura que de verdad hace falta,
+			// recalculado cada fotograma en <see cref="RecalcularAviso"/>.
+			_cajaAviso = new UIPanel();
+			_cajaAviso.Width.Set(0f, 1f);
+			_cajaAviso.Top.Set(y, 0f);
+			_cajaAviso.Height.Set(120f, 0f);
+			_cajaAviso.BackgroundColor = new Color(92, 60, 30) * 0.92f;
+			_cajaAviso.BorderColor = new Color(0, 0, 0, 0);
+			_cajaAviso.SetPadding(PaddingCajaAviso);
+			derecha.Append(_cajaAviso);
 
-			// Los tres avisos se parten en varias lineas con el ancho REAL de la caja: en una sola
-			// linea median ~460 px y se salian por la derecha del marco (captura real del juego).
-			EtiquetaTk aviso = new EtiquetaTk(
-				() => TextoEnLineas("⚠  " + DificultadMundo.AvisoDePermanencia(), cajaAviso, 0.72f),
-				0.72f, 0f, 22f);
-			aviso.Width.Set(0f, 1f);
-			aviso.ColorTexto = EstiloTk.TextoAviso;
-			cajaAviso.Append(aviso);
+			_etiquetaAviso = new EtiquetaTk(
+				() => TextoEnLineas("⚠  " + DificultadMundo.AvisoDePermanencia(), _cajaAviso, EscalaAviso),
+				EscalaAviso, 0f, 22f);
+			_etiquetaAviso.Width.Set(0f, 1f);
+			_etiquetaAviso.ColorTexto = EstiloTk.TextoAviso;
+			_cajaAviso.Append(_etiquetaAviso);
 
-			EtiquetaTk efecto = new EtiquetaTk(
-				() => TextoEnLineas(DificultadMundo.AvisoDeEfecto(), cajaAviso, 0.68f),
-				0.68f, 0f, 22f);
-			efecto.Width.Set(0f, 1f);
-			efecto.ColorTexto = new Color(235, 220, 200);
-			efecto.Top.Set(46f, 0f);
-			cajaAviso.Append(efecto);
+			_etiquetaEfecto = new EtiquetaTk(
+				() => TextoEnLineas(DificultadMundo.AvisoDeEfecto(), _cajaAviso, EscalaAvisoSecundario),
+				EscalaAvisoSecundario, 0f, 22f);
+			_etiquetaEfecto.Width.Set(0f, 1f);
+			_etiquetaEfecto.ColorTexto = new Color(235, 220, 200);
+			_cajaAviso.Append(_etiquetaEfecto);
 
-			EtiquetaTk deshacer = new EtiquetaTk(
-				() => TextoEnLineas(Idiomas.Texto("Exploracion.Mundo.AvisoDeshacer"), cajaAviso, 0.68f),
-				0.68f, 0f, 22f);
-			deshacer.ColorTexto = new Color(235, 220, 200);
-			deshacer.Width.Set(0f, 1f);
-			deshacer.Top.Set(86f, 0f);
-			cajaAviso.Append(deshacer);
-
-			y += 130f;
+			_etiquetaDeshacer = new EtiquetaTk(
+				() => TextoEnLineas(Idiomas.Texto("Exploracion.Mundo.AvisoDeshacer"), _cajaAviso, EscalaAvisoSecundario),
+				EscalaAvisoSecundario, 0f, 22f);
+			_etiquetaDeshacer.ColorTexto = new Color(235, 220, 200);
+			_etiquetaDeshacer.Width.Set(0f, 1f);
+			_cajaAviso.Append(_etiquetaDeshacer);
 
 			_confirmar = new BotonTk(Idiomas.Texto("Exploracion.Mundo.EligeModo"), 0.85f);
 			_confirmar.Width.Set(0f, 1f);
-			_confirmar.Height.Set(38f, 0f);
-			_confirmar.Top.Set(y, 0f);
+			_confirmar.Height.Set(AltoBotonConfirmar, 0f);
 			_confirmar.Habilitado = false;
 			_confirmar.AlPulsar += Confirmar;
 			derecha.Append(_confirmar);
-			y += 46f;
 
-			EtiquetaTk mensaje = new EtiquetaTk(() => _ultimoMensaje, 0.75f, 500f, 44f);
-			mensaje.ColorTexto = EstiloTk.TextoAviso;
-			mensaje.Top.Set(y, 0f);
-			derecha.Append(mensaje);
+			_mensaje = new EtiquetaTk(() => _ultimoMensaje, 0.75f, 500f, 44f);
+			_mensaje.ColorTexto = EstiloTk.TextoAviso;
+			derecha.Append(_mensaje);
+
+			// Con la altura real de la caja de aviso todavia sin calcular (depende de
+			// GetInnerDimensions, que solo existe tras el primer Recalculate del arbol), se deja el
+			// primer ajuste de verdad para el primer Update: RecalcularAviso() se reintenta sola cada
+			// fotograma hasta que el ancho interior deja de ser cero.
+		}
+
+		/// <summary>
+		/// Mide con la fuente REAL el texto ya partido de los tres avisos, ajusta la altura de
+		/// <see cref="_cajaAviso"/> a lo que de verdad ocupan (nunca una cifra fija), y recoloca el
+		/// boton de confirmar y el mensaje de resultado justo debajo. Se llama cada fotograma porque
+		/// el texto puede cambiar (idioma, autoguardado) y el ancho de la caja tambien (redimensionar
+		/// la ventana).
+		/// </summary>
+		private void RecalcularAviso()
+		{
+			if (_cajaAviso == null) {
+				return;
+			}
+
+			float anchoInterior = _cajaAviso.GetInnerDimensions().Width;
+			if (anchoInterior <= 0f) {
+				// El layout todavia no se ha calculado (primerisimo fotograma): se reintenta solo en
+				// el Update siguiente, sin tocar nada mientras tanto.
+				return;
+			}
+
+			string avisoPartido = EtiquetaTk.PartirEnLineas(
+				"⚠  " + DificultadMundo.AvisoDePermanencia(), anchoInterior, EscalaAviso);
+			string efectoPartido = EtiquetaTk.PartirEnLineas(
+				DificultadMundo.AvisoDeEfecto(), anchoInterior, EscalaAvisoSecundario);
+			string deshacerPartido = EtiquetaTk.PartirEnLineas(
+				Idiomas.Texto("Exploracion.Mundo.AvisoDeshacer"), anchoInterior, EscalaAvisoSecundario);
+
+			var fuente = Terraria.GameContent.FontAssets.MouseText.Value;
+			float altoAviso = fuente.MeasureString(avisoPartido).Y * EscalaAviso;
+			float altoEfecto = fuente.MeasureString(efectoPartido).Y * EscalaAvisoSecundario;
+			float altoDeshacer = fuente.MeasureString(deshacerPartido).Y * EscalaAvisoSecundario;
+
+			float yEfecto = altoAviso + SeparacionEntreAvisos;
+			float yDeshacer = yEfecto + altoEfecto + SeparacionEntreAvisos;
+			float alturaInterior = yDeshacer + altoDeshacer;
+			float alturaCaja = alturaInterior + PaddingCajaAviso * 2f;
+
+			_etiquetaAviso.Top.Set(0f, 0f);
+			_etiquetaEfecto.Top.Set(yEfecto, 0f);
+			_etiquetaDeshacer.Top.Set(yDeshacer, 0f);
+			_cajaAviso.Height.Set(alturaCaja, 0f);
+
+			float yTrasCaja = _yAntesDeAviso + alturaCaja + SeparacionTrasCajaAviso;
+			_confirmar.Top.Set(yTrasCaja, 0f);
+			_mensaje.Top.Set(yTrasCaja + AltoBotonConfirmar + SeparacionTrasConfirmar, 0f);
+
+			if (_derecha != null) {
+				_derecha.Recalculate();
+			}
 		}
 
 		/// <summary>
@@ -289,6 +380,9 @@ namespace TerrakeepMod.UI.Exploracion
 			// El modo del mundo puede cambiar sin pasar por aqui (deshacer con Ctrl+Z, otro panel),
 			// asi que los botones se recalculan solos.
 			RefrescarBotones();
+			// Igual que los botones: el aviso de permanencia puede cambiar de numero de lineas sin
+			// pasar por aqui (idioma, autoguardado), asi que su altura tambien se recalcula sola.
+			RecalcularAviso();
 		}
 	}
 }
