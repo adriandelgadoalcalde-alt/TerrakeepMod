@@ -4282,3 +4282,129 @@ del C#) SÍ pasa en verde, y el `-build` completo con empaquetado real ya se dem
 en el sandbox de WS4 (mismo compilador Roslyn de tModLoader, mismo empaquetado, otra carpeta de
 destino) - el arreglo en sí está probado con el compilador y el motor reales, solo falta repetir
 `scripts\compilar.ps1` cuando cierre el juego para que el `.tmod` de `Mods\` quede al día.
+
+---
+
+## 8-sep-2026 — Buffs: la columna del centro (arbol de carpetas) ya no tiene 132 px fijos, se mide por su contenido
+
+**El reporte real**, del usuario con captura: **"la columna del centro esta super apretada...
+encontrar un equilibrio entre las 3 columnas"**. En la captura se veian los nombres de categoria
+partidos en dos lineas con el contador entre parentesis colgando en su propia linea, pegado a la
+barra de scroll: "Offensive" / "(18)", "Defensive" / "(13)", "Mascota" / "(20)"...
+
+### La causa exacta, medida antes de tocar nada
+
+`AnchoColumnaCarpetas = 132f`, una CONSTANTE, en `UI/Personaje/PestanaBuffs.cs`. La cuenta real de
+lo que le quedaba al nombre: 132 - 20 (barra de scroll) - 4 (margen de la lista) - 20 (relleno del
+`UIPanel` de la caja) - 40 (icono de la carpeta: 6 + 26 + 8) - 22 (flecha ">" de "tiene
+subcarpetas") = **46 px**. Ninguna categoria del arbol cabe en 46 px con la fuente del juego a
+escala 0,8 ("Offensivo (18)" mide 86 px), asi que TODAS se partian en dos lineas por sistema.
+
+**No era una regresion**: la columna nacio con esos 132 px. Lo que paso es que el criterio de "el
+contenido se lee entero, es el LAYOUT el que se adapta" (7-sep, dos entradas mas arriba) se aplico
+a las filas de buff activo y a las de resultado, pero **a esta columna nunca**. `FilaCarpetaBuffTk`
+ya envolvia el nombre en vez de recortarlo -por eso no salia ningun "..."-, pero envolver dentro de
+una caja de 46 px no arregla nada: solo convierte el recorte en un apilamiento vertical igual de
+ilegible. De donde salen los 132 px, ademas, tiene una explicacion real que conviene no perder: son
+exactamente los dos botones de la cabecera de la columna ("Inicio" 60 + hueco 8 + "Subir" 64). Eso
+es un MINIMO legitimo; el error fue usarlo tambien como maximo.
+
+### El arreglo: el ancho lo decide el contenido, con suelo y techo medidos
+
+`PestanaBuffs.AjustarAnchoCarpetas()` (nuevo, llamado desde `Update` como el resto de ajustes de
+esta pestaña) reparte cada fotograma el ancho de "Añadir" entre sus dos subcolumnas:
+
+- **Lo que pide el arbol**: el mayor `AnchoParaUnaLinea` de las carpetas visibles ahora mismo. Ese
+  numero lo da la propia fila (`FilaCarpetaBuffTk.AnchoParaUnaLinea`, nuevo), que mide el nombre
+  con la fuente REAL y suma su icono y su flecha - no se recalcula aqui una copia de esa cuenta,
+  para que si la fila cambia de aspecto el reparto la siga solo.
+- **Mas la merma real de una fila respecto a su columna** (`_mermaFilaCarpeta`), que tampoco se
+  escribe a mano: se MIDE restando el ancho ya dibujado de una fila al de la columna. Asi incluye el
+  relleno del `UIPanel`, que no esta a la vista en ese archivo y que dado por supuesto habria dejado
+  la columna corta por unos pixeles - justo el tipo de numero a ojo que este panel viene evitando.
+- **Suelo**: `AnchoMinimoCarpetas` = los 132 px de los dos botones, ya con su motivo escrito.
+- **Techo**: lo que quede sin bajar la columna de resultados de su suelo ESTRUCTURAL
+  (`AnchoMinimoResultados()`: icono + la palabra mas larga de un nombre de buff medida con la fuente
+  real + boton "Aplicar" + barra de scroll, ~253 px), no de su ancho "comodo".
+
+**Ese ultimo punto fue un error real de la primera version, cazado por la propia verificacion**: la
+primera pasada uso como suelo de resultados su ancho COMODO (358 px, con el colchon de 200 px para
+que un nombre medio no se envuelva). Con ese suelo, a 800x720 el techo del arbol caia por debajo de
+su propio minimo y la resolucion mas apretada -que es justo la del reporte- se quedaba SIN NINGUNA
+mejora, otra vez clavada en 132 px (evidencia de esa primera pasada: `arbol=161px`, 0 de 7 carpetas
+en una sola linea en español). Un segundo intento con reparto proporcional del deficit tampoco
+llegaba a las 7 en una linea. Con el suelo estructural el arbol tiene sitio en las dos resoluciones.
+
+Ademas, `HolguraDeRedondeo` (2 px): la primera pasada dejo "Índice (354)" partido en dos lineas
+PIDIENDO 140,x px de fila y teniendo 140 - el ancho real sale de una cadena de `StyleDimension` en
+coma flotante y se queda una fraccion por debajo, y `PartirEnLineas` parte con comparacion estricta.
+Es margen de redondeo medido, no un numero de diseño.
+
+**Cambios de apoyo** en `UI/Personaje/Widgets/FilaCarpetaBuffTk.cs`: la fila pasa de ancho FIJO en
+pixeles a ancho relativo (100 % de su lista) y reenvuelve su nombre cuando su ancho real cambia
+(`AjustarAlAnchoReal()`, llamado desde `PestanaBuffs.AjustarFilasCarpetas()`), porque con el ancho
+de columna ya en vivo el `PartirEnLineas` de una sola vez en el constructor se quedaba obsoleto en
+cuanto cambiaba la resolucion o la carpeta abierta. `FilaCarpetaTk` (Libreria) NO se toca: es de
+otro agente y su columna sigue teniendo 300 px fijos, que ahi si dan de sobra.
+
+### Verificado en el juego real (arnes propio nuevo)
+
+`Common/Panel/AutopruebaColumnasBuffs.cs` + `scripts/verificar-columnas-buffs.ps1`, sandbox propio
+`tModLoader-TerrakeepColumnas`. Es un arnes **autonomo a proposito** -trae su propio `ModSystem`,
+su propia variable de entorno (`TERRAKEEP_AUTOTEST_COLBUFFS`) y su propio guardado de captura- para
+no tocar ni `AutopruebaEspaciado.cs` ni `PanelTerrakeepSystem.cs` ni `CapturaDePantalla.cs`, que son
+archivos compartidos con los otros agentes en marcha. Recorre 2 resoluciones (1600x900 y 800x720, el
+minimo real del motor) x 2 idiomas x 2 niveles del arbol (raiz y un nivel hondo), con 30 buffs
+activos a la vez, y mide con la geometria YA dibujada: los tres anchos de columna, que ningun nombre
+de carpeta desborde ni lleve "...", **en cuantas LINEAS acaba cada uno** (que es la medida real de
+"esta apretado"), que la ruta no desborde, y que las filas de resultados y de activos no se hayan
+roto al quitarles ancho.
+
+**Resultado final, las 8 combinaciones en verde, 0 fallos** (`evidencia/columnas-buffs.log.txt`):
+
+```
+1600x900/es raiz  - pestaña=1060 | Activos=264 | Añadir=786 (arbol=186 + resultados=592). 7/7 en una linea
+1600x900/es hondo - arbol=209 + resultados=569. 11/11 en una linea ("Índice (331-354)")
+1600x900/en raiz  - arbol=183 + resultados=595. 7/7 en una linea
+1600x900/en hondo - arbol=205 + resultados=573. 11/11 en una linea
+800x720/es raiz   - pestaña=748  | Activos=264 | Añadir=474 (arbol=186 + resultados=280). 7/7 en una linea
+800x720/es hondo  - arbol=209 + resultados=257. 11/11 en una linea
+800x720/en raiz   - arbol=183 + resultados=283. 7/7 en una linea
+800x720/en hondo  - arbol=205 + resultados=261. 11/11 en una linea
+```
+
+Antes: **0 de 7** en una sola linea a 800x720 y 6 de 7 a 1600x900 (con "Índice (354)" partido).
+Ahora **7 de 7 y 11 de 11 en las cuatro combinaciones de cada nivel**, incluida la resolucion
+minima. Las 8 capturas reales (`evidencia/columnas-buffs-capturas/`) lo confirman a ojo: cada
+categoria con su contador entre parentesis en la MISMA linea, con aire hasta la barra de scroll, y
+las tres columnas equilibradas. En el caso mas apretado de todos (800x720 en ingles con "Índice"
+abierto, resultados=261 px) un nombre largo como "Weapon Imbue: Ichor (id 76)" se envuelve a dos
+lineas y se lee ENTERO - la degradacion prevista y aceptable, nunca un recorte.
+
+### Tropiezo del entorno, anotado por si se repite
+
+`scripts\verificar-columnas-buffs.ps1` fallo la primera vez en la compilacion, pero **por codigo
+ajeno**: `UI/Personaje/PestanaApariencia.cs` (otro agente, trabajandolo en paralelo ahora mismo)
+estaba a medias y daba 14 errores `CS0103` con el compilador de tModLoader (`RegistroPanel`,
+`GameShaders`, `CapturaDePantalla` sin `using`). La fase 1 con el SDK del sistema NO lo detecta
+porque el `.csproj` tiene usings implicitos y el Roslyn interno de tModLoader compila sin ellos -
+un detalle util: **la fase 1 en verde no garantiza que el `-build` real pase**. Resuelto sin tocar
+nada suyo ni esperar: `git archive HEAD` a una copia limpia en el scratchpad (con la carpeta
+llamada `TerrakeepMod`, que es de donde tModLoader saca el nombre del mod), mis 4 archivos copiados
+encima, y el script ejecutado desde ahi. Toda la verificacion de arriba es de esa copia aislada:
+HEAD + solo mis cambios, sin trabajo a medias de nadie.
+
+### Indice privado para comitear
+
+`UI/Personaje/PestanaBuffs.cs`, `UI/Personaje/Widgets/FilaCarpetaBuffTk.cs` (arreglo real),
+`Common/Panel/AutopruebaColumnasBuffs.cs` y `scripts/verificar-columnas-buffs.ps1` (nuevos, arnes
+propio), `evidencia/columnas-buffs.log.txt` y `evidencia/columnas-buffs-capturas/*.png` (8 archivos,
+evidencia propia con nombre propio, sin colision con la de otros agentes) y esta entrada de
+`bitacora.md`. No se comitea nada de otros agentes en marcha a la vez
+(`Common/Libreria/ArbolLibreria.cs`, `Common/Libreria/CatalogoVivo.cs`,
+`Common/Libreria/PanelLibreriaSystem.cs`, `Common/Libreria/AuditoriaCategorias.cs`,
+`UI/Libreria/SlotCatalogoLibreria.cs`, `UI/Libreria/Widgets/EditorPrefijoTk.cs`,
+`UI/Panel/PanelTerrakeepState.cs`, `UI/Panel/CapaSuperposicionTk.cs`,
+`UI/Personaje/PestanaApariencia.cs`, `UI/Personaje/Widgets/MunecoTk.cs`,
+`scripts/verificar-categorias-libreria.ps1`), ni las carpetas de build sueltas
+(`bin-checkDebug/`, `obj-verif-espaciado/`).

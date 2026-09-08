@@ -1,0 +1,106 @@
+# Evidencia del reparto de las 3 columnas de la pestaña Buffs - 2026-09-08 02:45:53
+[02:45:53.168] AUTOPRUEBA COLUMNAS-BUFFS: 27 pasos en cola. Resolucion de partida 1280x720.
+[02:45:53.169] AUTOPRUEBA COLUMNAS-BUFFS - buffs de prueba puestos: 30 (CountBuffs=29). Nombre mas largo real="Regeneración de maná" (178px sin escalar).
+[02:45:53.358] AUTOPRUEBA COLUMNAS-BUFFS - resolucion pedida 1600x900 -> real tras SetDisplayMode: 1600x900, UIScale=1.
+[02:45:53.868] AUTOPRUEBA COLUMNAS-BUFFS - idioma pedido es -> cultura activa ahora: es-ES (cambio real=False).
+[02:45:54.419] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/raiz) - REPARTO: pestaña=1060px | Activos=264px | Añadir=786px (arbol=186px + resultados=592px).
+[02:45:54.419] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/raiz) - carpeta 1: "Utilidad (17)" -> 1 linea(s), 77px de 92px, pedia 127px de fila para una sola.
+[02:45:54.419] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/raiz) - carpeta 2: "Offensivo (18)" -> 1 linea(s), 86px de 92px, pedia 136px de fila para una sola.
+[02:45:54.420] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/raiz) - carpeta 3: "Defensivo (13)" -> 1 linea(s), 88px de 92px, pedia 138px de fila para una sola.
+[02:45:54.420] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/raiz) - carpeta 4: "Special (10)" -> 1 linea(s), 73px de 92px, pedia 123px de fila para una sola.
+[02:45:54.420] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/raiz) - carpeta 5: "Mascota (20)" -> 1 linea(s), 85px de 92px, pedia 135px de fila para una sola.
+[02:45:54.421] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/raiz) - carpeta 6: "Negativo (26)" -> 1 linea(s), 88px de 92px, pedia 138px de fila para una sola.
+[02:45:54.421] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/raiz) - carpeta 7: "Índice (354)" -> 1 linea(s), 78px de 80px, pedia 140px de fila para una sola.
+[02:45:54.421] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/raiz) - RESUMEN: 7 carpetas (7 en UNA sola linea), 100 resultados, 27 activos -> OK, nada desbordado ni recortado en ninguna de las 3 columnas.
+[02:45:54.597] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/raiz) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepColumnas\terrakeep-capturas\colbuffs-1600x900-es-raiz.png" (1600x900)
+[02:45:54.945] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/hondo) - REPARTO: pestaña=1060px | Activos=264px | Añadir=786px (arbol=209px + resultados=569px).
+[02:45:54.946] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/hondo) - carpeta 1: "Índice (1-33)" -> 1 linea(s), 84px de 115px, pedia 134px de fila para una sola.
+[02:45:54.946] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/hondo) - carpeta 2: "Índice (34-66)" -> 1 linea(s), 98px de 115px, pedia 148px de fila para una sola.
+[02:45:54.946] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/hondo) - carpeta 3: "Índice (67-99)" -> 1 linea(s), 94px de 115px, pedia 144px de fila para una sola.
+[02:45:54.947] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/hondo) - carpeta 4: "Índice (100-132)" -> 1 linea(s), 104px de 115px, pedia 154px de fila para una sola.
+[02:45:54.947] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/hondo) - carpeta 5: "Índice (133-165)" -> 1 linea(s), 105px de 115px, pedia 155px de fila para una sola.
+[02:45:54.947] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/hondo) - carpeta 6: "Índice (166-198)" -> 1 linea(s), 105px de 115px, pedia 155px de fila para una sola.
+[02:45:54.947] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/hondo) - carpeta 7: "Índice (199-231)" -> 1 linea(s), 102px de 115px, pedia 152px de fila para una sola.
+[02:45:54.948] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/hondo) - carpeta 8: "Índice (232-264)" -> 1 linea(s), 113px de 115px, pedia 163px de fila para una sola.
+[02:45:54.948] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/hondo) - carpeta 9: "Índice (265-297)" -> 1 linea(s), 110px de 115px, pedia 160px de fila para una sola.
+[02:45:54.948] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/hondo) - carpeta 10: "Índice (298-330)" -> 1 linea(s), 111px de 115px, pedia 161px de fila para una sola.
+[02:45:54.948] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/hondo) - carpeta 11: "Índice (331-354)" -> 1 linea(s), 108px de 115px, pedia 158px de fila para una sola.
+[02:45:54.949] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/hondo) - RESUMEN: 11 carpetas (11 en UNA sola linea), 100 resultados, 27 activos -> OK, nada desbordado ni recortado en ninguna de las 3 columnas.
+[02:45:55.126] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/es/hondo) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepColumnas\terrakeep-capturas\colbuffs-1600x900-es-hondo.png" (1600x900)
+[02:45:55.311] AUTOPRUEBA COLUMNAS-BUFFS - idioma pedido en -> cultura activa ahora: en-US (cambio real=True).
+[02:45:55.841] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/raiz) - REPARTO: pestaña=1060px | Activos=264px | Añadir=786px (arbol=183px + resultados=595px).
+[02:45:55.841] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/raiz) - carpeta 1: "Utility (17)" -> 1 linea(s), 65px de 89px, pedia 115px de fila para una sola.
+[02:45:55.841] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/raiz) - carpeta 2: "Offensive (18)" -> 1 linea(s), 86px de 89px, pedia 136px de fila para una sola.
+[02:45:55.842] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/raiz) - carpeta 3: "Defensive (13)" -> 1 linea(s), 87px de 89px, pedia 137px de fila para una sola.
+[02:45:55.842] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/raiz) - carpeta 4: "Special (10)" -> 1 linea(s), 73px de 89px, pedia 123px de fila para una sola.
+[02:45:55.842] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/raiz) - carpeta 5: "Pet (20)" -> 1 linea(s), 53px de 89px, pedia 103px de fila para una sola.
+[02:45:55.842] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/raiz) - carpeta 6: "Negative (26)" -> 1 linea(s), 87px de 89px, pedia 137px de fila para una sola.
+[02:45:55.843] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/raiz) - carpeta 7: "Index (354)" -> 1 linea(s), 74px de 77px, pedia 136px de fila para una sola.
+[02:45:55.843] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/raiz) - RESUMEN: 7 carpetas (7 en UNA sola linea), 100 resultados, 27 activos -> OK, nada desbordado ni recortado en ninguna de las 3 columnas.
+[02:45:56.017] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/raiz) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepColumnas\terrakeep-capturas\colbuffs-1600x900-en-raiz.png" (1600x900)
+[02:45:56.363] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/hondo) - REPARTO: pestaña=1060px | Activos=264px | Añadir=786px (arbol=205px + resultados=573px).
+[02:45:56.363] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/hondo) - carpeta 1: "Index (1-33)" -> 1 linea(s), 80px de 111px, pedia 130px de fila para una sola.
+[02:45:56.364] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/hondo) - carpeta 2: "Index (34-66)" -> 1 linea(s), 94px de 111px, pedia 144px de fila para una sola.
+[02:45:56.364] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/hondo) - carpeta 3: "Index (67-99)" -> 1 linea(s), 90px de 111px, pedia 140px de fila para una sola.
+[02:45:56.365] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/hondo) - carpeta 4: "Index (100-132)" -> 1 linea(s), 100px de 111px, pedia 150px de fila para una sola.
+[02:45:56.365] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/hondo) - carpeta 5: "Index (133-165)" -> 1 linea(s), 101px de 111px, pedia 151px de fila para una sola.
+[02:45:56.365] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/hondo) - carpeta 6: "Index (166-198)" -> 1 linea(s), 101px de 111px, pedia 151px de fila para una sola.
+[02:45:56.365] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/hondo) - carpeta 7: "Index (199-231)" -> 1 linea(s), 98px de 111px, pedia 148px de fila para una sola.
+[02:45:56.366] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/hondo) - carpeta 8: "Index (232-264)" -> 1 linea(s), 109px de 111px, pedia 159px de fila para una sola.
+[02:45:56.366] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/hondo) - carpeta 9: "Index (265-297)" -> 1 linea(s), 106px de 111px, pedia 156px de fila para una sola.
+[02:45:56.366] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/hondo) - carpeta 10: "Index (298-330)" -> 1 linea(s), 107px de 111px, pedia 157px de fila para una sola.
+[02:45:56.366] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/hondo) - carpeta 11: "Index (331-354)" -> 1 linea(s), 104px de 111px, pedia 154px de fila para una sola.
+[02:45:56.367] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/hondo) - RESUMEN: 11 carpetas (11 en UNA sola linea), 100 resultados, 27 activos -> OK, nada desbordado ni recortado en ninguna de las 3 columnas.
+[02:45:56.541] AUTOPRUEBA COLUMNAS-BUFFS (1600x900/en/hondo) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepColumnas\terrakeep-capturas\colbuffs-1600x900-en-hondo.png" (1600x900)
+[02:45:56.699] AUTOPRUEBA COLUMNAS-BUFFS - resolucion pedida 800x720-minimo -> real tras SetDisplayMode: 800x720, UIScale=1.
+[02:45:57.237] AUTOPRUEBA COLUMNAS-BUFFS - idioma pedido es -> cultura activa ahora: es-ES (cambio real=True).
+[02:45:57.762] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/raiz) - REPARTO: pestaña=748px | Activos=264px | Añadir=474px (arbol=186px + resultados=280px).
+[02:45:57.763] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/raiz) - carpeta 1: "Utilidad (17)" -> 1 linea(s), 77px de 92px, pedia 127px de fila para una sola.
+[02:45:57.763] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/raiz) - carpeta 2: "Offensivo (18)" -> 1 linea(s), 86px de 92px, pedia 136px de fila para una sola.
+[02:45:57.763] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/raiz) - carpeta 3: "Defensivo (13)" -> 1 linea(s), 88px de 92px, pedia 138px de fila para una sola.
+[02:45:57.764] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/raiz) - carpeta 4: "Special (10)" -> 1 linea(s), 73px de 92px, pedia 123px de fila para una sola.
+[02:45:57.764] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/raiz) - carpeta 5: "Mascota (20)" -> 1 linea(s), 85px de 92px, pedia 135px de fila para una sola.
+[02:45:57.764] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/raiz) - carpeta 6: "Negativo (26)" -> 1 linea(s), 88px de 92px, pedia 138px de fila para una sola.
+[02:45:57.765] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/raiz) - carpeta 7: "Índice (354)" -> 1 linea(s), 78px de 80px, pedia 140px de fila para una sola.
+[02:45:57.765] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/raiz) - RESUMEN: 7 carpetas (7 en UNA sola linea), 100 resultados, 27 activos -> OK, nada desbordado ni recortado en ninguna de las 3 columnas.
+[02:45:57.862] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/raiz) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepColumnas\terrakeep-capturas\colbuffs-800x720-minimo-es-raiz.png" (800x720)
+[02:45:58.197] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/hondo) - REPARTO: pestaña=748px | Activos=264px | Añadir=474px (arbol=209px + resultados=257px).
+[02:45:58.198] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/hondo) - carpeta 1: "Índice (1-33)" -> 1 linea(s), 84px de 115px, pedia 134px de fila para una sola.
+[02:45:58.198] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/hondo) - carpeta 2: "Índice (34-66)" -> 1 linea(s), 98px de 115px, pedia 148px de fila para una sola.
+[02:45:58.199] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/hondo) - carpeta 3: "Índice (67-99)" -> 1 linea(s), 94px de 115px, pedia 144px de fila para una sola.
+[02:45:58.199] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/hondo) - carpeta 4: "Índice (100-132)" -> 1 linea(s), 104px de 115px, pedia 154px de fila para una sola.
+[02:45:58.199] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/hondo) - carpeta 5: "Índice (133-165)" -> 1 linea(s), 105px de 115px, pedia 155px de fila para una sola.
+[02:45:58.199] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/hondo) - carpeta 6: "Índice (166-198)" -> 1 linea(s), 105px de 115px, pedia 155px de fila para una sola.
+[02:45:58.200] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/hondo) - carpeta 7: "Índice (199-231)" -> 1 linea(s), 102px de 115px, pedia 152px de fila para una sola.
+[02:45:58.200] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/hondo) - carpeta 8: "Índice (232-264)" -> 1 linea(s), 113px de 115px, pedia 163px de fila para una sola.
+[02:45:58.200] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/hondo) - carpeta 9: "Índice (265-297)" -> 1 linea(s), 110px de 115px, pedia 160px de fila para una sola.
+[02:45:58.200] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/hondo) - carpeta 10: "Índice (298-330)" -> 1 linea(s), 111px de 115px, pedia 161px de fila para una sola.
+[02:45:58.200] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/hondo) - carpeta 11: "Índice (331-354)" -> 1 linea(s), 108px de 115px, pedia 158px de fila para una sola.
+[02:45:58.201] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/hondo) - RESUMEN: 11 carpetas (11 en UNA sola linea), 100 resultados, 27 activos -> OK, nada desbordado ni recortado en ninguna de las 3 columnas.
+[02:45:58.297] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/es/hondo) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepColumnas\terrakeep-capturas\colbuffs-800x720-minimo-es-hondo.png" (800x720)
+[02:45:58.473] AUTOPRUEBA COLUMNAS-BUFFS - idioma pedido en -> cultura activa ahora: en-US (cambio real=True).
+[02:45:58.999] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/raiz) - REPARTO: pestaña=748px | Activos=264px | Añadir=474px (arbol=183px + resultados=283px).
+[02:45:59.000] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/raiz) - carpeta 1: "Utility (17)" -> 1 linea(s), 65px de 89px, pedia 115px de fila para una sola.
+[02:45:59.000] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/raiz) - carpeta 2: "Offensive (18)" -> 1 linea(s), 86px de 89px, pedia 136px de fila para una sola.
+[02:45:59.000] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/raiz) - carpeta 3: "Defensive (13)" -> 1 linea(s), 87px de 89px, pedia 137px de fila para una sola.
+[02:45:59.000] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/raiz) - carpeta 4: "Special (10)" -> 1 linea(s), 73px de 89px, pedia 123px de fila para una sola.
+[02:45:59.000] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/raiz) - carpeta 5: "Pet (20)" -> 1 linea(s), 53px de 89px, pedia 103px de fila para una sola.
+[02:45:59.001] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/raiz) - carpeta 6: "Negative (26)" -> 1 linea(s), 87px de 89px, pedia 137px de fila para una sola.
+[02:45:59.001] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/raiz) - carpeta 7: "Index (354)" -> 1 linea(s), 74px de 77px, pedia 136px de fila para una sola.
+[02:45:59.001] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/raiz) - RESUMEN: 7 carpetas (7 en UNA sola linea), 100 resultados, 27 activos -> OK, nada desbordado ni recortado en ninguna de las 3 columnas.
+[02:45:59.097] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/raiz) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepColumnas\terrakeep-capturas\colbuffs-800x720-minimo-en-raiz.png" (800x720)
+[02:45:59.436] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/hondo) - REPARTO: pestaña=748px | Activos=264px | Añadir=474px (arbol=205px + resultados=261px).
+[02:45:59.437] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/hondo) - carpeta 1: "Index (1-33)" -> 1 linea(s), 80px de 111px, pedia 130px de fila para una sola.
+[02:45:59.437] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/hondo) - carpeta 2: "Index (34-66)" -> 1 linea(s), 94px de 111px, pedia 144px de fila para una sola.
+[02:45:59.437] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/hondo) - carpeta 3: "Index (67-99)" -> 1 linea(s), 90px de 111px, pedia 140px de fila para una sola.
+[02:45:59.437] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/hondo) - carpeta 4: "Index (100-132)" -> 1 linea(s), 100px de 111px, pedia 150px de fila para una sola.
+[02:45:59.438] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/hondo) - carpeta 5: "Index (133-165)" -> 1 linea(s), 101px de 111px, pedia 151px de fila para una sola.
+[02:45:59.438] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/hondo) - carpeta 6: "Index (166-198)" -> 1 linea(s), 101px de 111px, pedia 151px de fila para una sola.
+[02:45:59.438] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/hondo) - carpeta 7: "Index (199-231)" -> 1 linea(s), 98px de 111px, pedia 148px de fila para una sola.
+[02:45:59.438] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/hondo) - carpeta 8: "Index (232-264)" -> 1 linea(s), 109px de 111px, pedia 159px de fila para una sola.
+[02:45:59.439] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/hondo) - carpeta 9: "Index (265-297)" -> 1 linea(s), 106px de 111px, pedia 156px de fila para una sola.
+[02:45:59.439] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/hondo) - carpeta 10: "Index (298-330)" -> 1 linea(s), 107px de 111px, pedia 157px de fila para una sola.
+[02:45:59.439] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/hondo) - carpeta 11: "Index (331-354)" -> 1 linea(s), 104px de 111px, pedia 154px de fila para una sola.
+[02:45:59.439] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/hondo) - RESUMEN: 11 carpetas (11 en UNA sola linea), 100 resultados, 27 activos -> OK, nada desbordado ni recortado en ninguna de las 3 columnas.
+[02:45:59.536] AUTOPRUEBA COLUMNAS-BUFFS (800x720-minimo/en/hondo) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepColumnas\terrakeep-capturas\colbuffs-800x720-minimo-en-hondo.png" (800x720)
+[02:45:59.690] AUTOPRUEBA COLUMNAS-BUFFS COMPLETA. Fallos totales: 0.

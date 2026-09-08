@@ -34,14 +34,29 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		private readonly int _buffs;
 
 		/// <summary>Nombre YA envuelto (<see cref="EtiquetaTk.PartirEnLineas"/>) a tantas lineas como
-		/// haga falta para caber en el ancho real de esta fila. Se calcula UNA vez, en el
-		/// constructor, porque <paramref name="ancho"/> es fijo durante toda la vida de la fila (lo
-		/// decide <c>AnchoColumnaCarpetas</c>, una constante, no algo que cambie con la ventana).</summary>
-		private readonly string _nombrePartido;
+		/// haga falta para caber en el ancho real de esta fila.
+		/// <para />
+		/// Antes se calculaba UNA sola vez en el constructor, porque el ancho de la columna de
+		/// carpetas era una CONSTANTE (<c>AnchoColumnaCarpetas</c> = 132 px fijos). Desde el
+		/// 8-sep-2026 esa columna se dimensiona en vivo segun el contenido real
+		/// (<c>PestanaBuffs.AjustarAnchoCarpetas</c>), asi que el ancho de la fila cambia con la
+		/// resolucion y con la carpeta abierta: se recalcula desde
+		/// <see cref="AjustarAlAnchoReal"/> cada vez que ese ancho cambia de verdad.</summary>
+		private string _nombrePartido;
 
 		/// <summary>Alto REAL (con la fuente real) del bloque de texto ya envuelto. Con esto la fila
 		/// crece lo que haga falta en vez de recortar el nombre.</summary>
-		private readonly float _altoTexto;
+		private float _altoTexto;
+
+		/// <summary>Ancho con el que se calculo <see cref="_nombrePartido"/> la ultima vez. Sirve
+		/// para no rehacer la particion (ni pedir un <c>Recalculate</c> de la lista) en cada
+		/// fotograma cuando nada ha cambiado.</summary>
+		private float _anchoUsado;
+
+		/// <summary>Relleno vertical de la fila: lo que sobra del <see cref="AltoMinimo"/> por
+		/// encima de UNA linea de texto. Se conserva cuando el nombre pasa a ocupar mas lineas,
+		/// para que el margen de arriba/abajo sea siempre el mismo.</summary>
+		private readonly float _relleno;
 
 		/// <summary>La carpeta que representa esta fila.</summary>
 		public readonly CategoryTreeNodeData Nodo;
@@ -66,23 +81,92 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			// haga falta - es un UIList real (ver PestanaBuffs.RellenarCarpetas), asi que una fila
 			// mas alta simplemente empuja a la siguiente hacia abajo, no rompe nada.
 			DynamicSpriteFont fuente = FontAssets.MouseText.Value;
-			float xTexto = _iconoTipo > 0 ? 6f + LadoIcono + 8f : 10f;
-			float anchoTexto = ancho - xTexto - (_tieneHijas ? 22f : 10f);
-			_nombrePartido = EtiquetaTk.PartirEnLineas(_nombre, anchoTexto > 10f ? anchoTexto : ancho, EscalaTexto);
-			_altoTexto = fuente.MeasureString(_nombrePartido).Y * EscalaTexto;
 			float altoUnaLinea = fuente.MeasureString("Ag").Y * EscalaTexto;
-			float relleno = AltoMinimo - altoUnaLinea;
+			_relleno = AltoMinimo - altoUnaLinea;
 
 			SetPadding(0f);
-			Width.Set(ancho, 0f);
-			Height.Set(Math.Max(AltoMinimo, _altoTexto + relleno), 0f);
+			// Ancho RELATIVO (100% de la lista que la contiene), no los pixeles fijos de antes: la
+			// columna de carpetas ya no mide siempre lo mismo (ver PestanaBuffs.AjustarAnchoCarpetas),
+			// asi que la fila tiene que seguir a su contenedor. El parametro "ancho" solo sirve de
+			// valor de PARTIDA para el primerisimo fotograma, antes de que haya geometria real.
+			Width.Set(0f, 1f);
 			BorderColor = new Color(0, 0, 0, 0);
+			Envolver(ancho);
 
 			OnLeftClick += (evento, elemento) => {
 				if (AlPulsar != null) {
 					AlPulsar();
 				}
 			};
+		}
+
+		/// <summary>Distancia del borde izquierdo de la fila al principio del texto: deja sitio al
+		/// icono si de verdad hay uno que dibujar.</summary>
+		private float XTexto {
+			get { return _iconoTipo > 0 ? 6f + LadoIcono + 8f : 10f; }
+		}
+
+		/// <summary>Hueco reservado a la derecha del texto: la flecha ">" de "tiene subcarpetas", o
+		/// un margen normal si no la lleva.</summary>
+		private float MargenDerecho {
+			get { return _tieneHijas ? 22f : 10f; }
+		}
+
+		/// <summary>
+		/// Ancho de fila con el que este nombre cabria ENTERO en una sola linea, medido con la
+		/// fuente real. Lo usa <c>PestanaBuffs</c> para dimensionar la columna de carpetas segun su
+		/// contenido de verdad en vez de con un numero fijo puesto a ojo.
+		/// </summary>
+		public float AnchoParaUnaLinea {
+			get {
+				return XTexto + FontAssets.MouseText.Value.MeasureString(_nombre).X * EscalaTexto
+					+ MargenDerecho;
+			}
+		}
+
+		/// <summary>Cuantas lineas ocupa el nombre ahora mismo. 1 = se lee de un vistazo, que es lo
+		/// que se persigue; mas de 1 sigue siendo legible (nunca se recorta), solo mas alto.</summary>
+		public int LineasDelNombre {
+			get { return _nombrePartido.Split('\n').Length; }
+		}
+
+		/// <summary>El nombre YA envuelto tal cual se dibuja, para que el arnes de pruebas mida lo
+		/// mismo que se ve y no una reconstruccion suya.</summary>
+		public string NombrePartido {
+			get { return _nombrePartido; }
+		}
+
+		/// <summary>Ancho real disponible para el texto dentro de la fila ahora mismo.</summary>
+		public float AnchoTextoDisponible {
+			get {
+				float ancho = GetDimensions().Width;
+				return (ancho > 0f ? ancho : _anchoUsado) - XTexto - MargenDerecho;
+			}
+		}
+
+		/// <summary>
+		/// Reenvuelve el nombre si el ancho REAL de la fila (ya dibujada) ha cambiado desde la
+		/// ultima vez - por un cambio de resolucion, o porque la columna de carpetas se ha
+		/// redimensionado al abrir otra carpeta. Devuelve true si de verdad ha cambiado algo, para
+		/// que quien llame pida un <c>Recalculate</c> de la lista solo cuando hace falta.
+		/// </summary>
+		public bool AjustarAlAnchoReal()
+		{
+			float ancho = GetDimensions().Width;
+			if (ancho <= 0f || Math.Abs(ancho - _anchoUsado) < 0.5f) {
+				return false;
+			}
+			Envolver(ancho);
+			return true;
+		}
+
+		private void Envolver(float ancho)
+		{
+			_anchoUsado = ancho;
+			float anchoTexto = ancho - XTexto - MargenDerecho;
+			_nombrePartido = EtiquetaTk.PartirEnLineas(_nombre, anchoTexto > 10f ? anchoTexto : ancho, EscalaTexto);
+			_altoTexto = FontAssets.MouseText.Value.MeasureString(_nombrePartido).Y * EscalaTexto;
+			Height.Set(Math.Max(AltoMinimo, _altoTexto + _relleno), 0f);
 		}
 
 		protected override void DrawSelf(SpriteBatch spriteBatch)

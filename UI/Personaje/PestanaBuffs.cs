@@ -49,9 +49,30 @@ namespace TerrakeepMod.UI.Personaje
 		/// </summary>
 		private const int MaximoResultados = 100;
 
-		private const float AnchoColumnaCarpetas = 132f;
+		/// <summary>
+		/// Ancho MINIMO de la columna del arbol de carpetas, y el unico numero de esa columna que
+		/// sigue siendo fijo - porque no lo decide el texto sino dos controles de ancho conocido: los
+		/// botones "Inicio" (60 px) y "Subir" (64 px) de la cabecera, con el hueco de 8 px que se les
+		/// puso entre medias. 60 + 8 + 64 = 132.
+		/// <para />
+		/// Hasta el 8-sep-2026 estos 132 px eran el ancho TOTAL y unico de la columna, no su minimo,
+		/// y ese era el bug real que reporto el usuario con captura ("la columna del centro esta
+		/// super apretada"): descontando la barra de scroll (20 px), el margen (4 px), el icono de la
+		/// carpeta (40 px) y la flecha de "tiene subcarpetas" (22 px), al NOMBRE de la categoria le
+		/// quedaban 46 px reales - menos de lo que mide "Buffs" en la fuente del juego. Ninguna
+		/// categoria cabia en una linea: "Offensive (37)" se partia en "Offensive" + "(37)" pegado a
+		/// la barra de scroll, y lo mismo "Defensive", "Mascotas"... Ahora esos 132 px solo son el
+		/// suelo, y el ancho de verdad lo decide el contenido (ver <see cref="AjustarAnchoCarpetas"/>).
+		/// </summary>
+		private const float AnchoMinimoCarpetas = 132f;
+
 		private const float AnchoBarraScrollCarpetas = 20f;
 		private const float SeparacionSubcolumnas = 8f;
+
+		/// <summary>Ancho con el que se construye la columna de carpetas en el primerisimo fotograma,
+		/// antes de que haya geometria real que medir. <see cref="AjustarAnchoCarpetas"/> lo corrige
+		/// en cuanto la hay (normalmente el mismo fotograma: se llama tambien desde el constructor).</summary>
+		private const float AnchoCarpetasDePartida = 200f;
 
 		/// <summary>
 		/// Alto de fila de "buff activo"/"resultado de añadir", en pixeles. Antes eran 36 con el
@@ -173,9 +194,50 @@ namespace TerrakeepMod.UI.Personaje
 		/// mas de una linea.</summary>
 		public EtiquetaTk TituloActivos => _tituloActivos;
 
+		/// <summary>SOLO PARA AUTOPRUEBAS: la subcolumna del arbol de carpetas dentro de "Añadir",
+		/// para medir su ancho real ya repartido por <see cref="AjustarAnchoCarpetas"/>.</summary>
+		public UIElement ColumnaCarpetas => _columnaCarpetas;
+
+		/// <summary>SOLO PARA AUTOPRUEBAS: la subcolumna de busqueda+resultados, idem.</summary>
+		public UIElement ColumnaResultados => _columnaResultados;
+
+		/// <summary>SOLO PARA AUTOPRUEBAS: las filas del arbol de carpetas visibles ahora mismo, para
+		/// comprobar que su nombre cabe entero y en cuantas lineas.</summary>
+		public IEnumerable<FilaCarpetaBuffTk> FilasCarpetaParaPrueba {
+			get {
+				for (int i = 0; i < _listaCarpetas._items.Count; i++) {
+					FilaCarpetaBuffTk fila = _listaCarpetas._items[i] as FilaCarpetaBuffTk;
+					if (fila != null) {
+						yield return fila;
+					}
+				}
+			}
+		}
+
+		/// <summary>SOLO PARA AUTOPRUEBAS: la etiqueta de la ruta ("Raiz &gt; ..."), para comprobar
+		/// que tampoco desborda su columna.</summary>
+		public EtiquetaTk RutaCarpetasParaPrueba => _rutaTexto;
+
 		// --- Arbol de carpetas de "Añadir" (ArbolBuffs) ----------------------------------------
 		private readonly List<CategoryTreeNodeData> _ruta = new List<CategoryTreeNodeData>();
 		private UIList _listaCarpetas;
+		private UIElement _columnaCarpetas;
+		private UIElement _columnaResultados;
+
+		/// <summary>Ancho real de la columna de carpetas ahora mismo. Lo decide
+		/// <see cref="AjustarAnchoCarpetas"/> cada fotograma a partir del contenido REAL, no una
+		/// constante.</summary>
+		private float _anchoCarpetas = AnchoCarpetasDePartida;
+
+		/// <summary>
+		/// Cuanto ancho pierde una FILA de carpeta respecto a la columna que la contiene: la barra de
+		/// scroll, el margen que se le resta a la lista y el relleno del <see cref="UIPanel"/> de la
+		/// caja. No se supone ni se escribe a mano: se MIDE cada fotograma restando el ancho real ya
+		/// dibujado de una fila al ancho real de la columna, asi que sigue siendo correcto aunque el
+		/// relleno del panel cambie. -1 mientras todavia no haya ninguna fila dibujada que medir.
+		/// </summary>
+		private float _mermaFilaCarpeta = -1f;
+
 		private UIPanel _cajaCarpetas;
 		private BotonTk _botonInicio;
 		private BotonTk _botonSubirCarpeta;
@@ -525,11 +587,14 @@ namespace TerrakeepMod.UI.Personaje
 			derecha.Append(titulo);
 
 			// --- Columna de carpetas (ArbolBuffs), a la izquierda de "derecha" -----------------
+			// Su ancho ya no es una constante: lo fija AjustarAnchoCarpetas cada fotograma segun los
+			// nombres REALES de las carpetas visibles. Aqui solo se le da el valor de partida.
 			UIElement columnaCarpetas = new UIElement();
-			columnaCarpetas.Width.Set(AnchoColumnaCarpetas, 0f);
+			columnaCarpetas.Width.Set(_anchoCarpetas, 0f);
 			columnaCarpetas.Top.Set(26f, 0f);
 			columnaCarpetas.Height.Set(-26f, 1f);
 			derecha.Append(columnaCarpetas);
+			_columnaCarpetas = columnaCarpetas;
 
 			_botonInicio = new BotonTk(Idiomas.Texto("Personaje.Buffs.Arbol.Inicio"), 0.72f);
 			_botonInicio.Width.Set(60f, 0f);
@@ -548,7 +613,10 @@ namespace TerrakeepMod.UI.Personaje
 			_botonSubirCarpeta.AlPulsar += SubirCarpeta;
 			columnaCarpetas.Append(_botonSubirCarpeta);
 
-			_rutaTexto = new EtiquetaTk(RutaCorta, 0.68f, AnchoColumnaCarpetas, 18f);
+			// Ancho al 100% de la columna (no un pixelaje fijo): la columna ya no mide siempre lo
+			// mismo, y RutaCorta envuelve el texto con el ancho REAL de esta etiqueta.
+			_rutaTexto = new EtiquetaTk(RutaCorta, EscalaRutaCarpetas, 0f, 18f);
+			_rutaTexto.Width.Set(0f, 1f);
 			_rutaTexto.ColorTexto = EstiloTk.TextoSuave;
 			_rutaTexto.Top.Set(32f, 0f);
 			columnaCarpetas.Append(_rutaTexto);
@@ -574,12 +642,15 @@ namespace TerrakeepMod.UI.Personaje
 			_listaCarpetas.SetScrollbar(barraCarpetas);
 
 			// --- Columna de busqueda + resultados, a la derecha de la de carpetas --------------
+			// Left/Width tambien los recoloca AjustarAnchoCarpetas: van pegados al ancho real de la
+			// columna de carpetas, sea el que sea.
 			UIElement columnaResultados = new UIElement();
-			columnaResultados.Left.Set(AnchoColumnaCarpetas + SeparacionSubcolumnas, 0f);
-			columnaResultados.Width.Set(-(AnchoColumnaCarpetas + SeparacionSubcolumnas), 1f);
+			columnaResultados.Left.Set(_anchoCarpetas + SeparacionSubcolumnas, 0f);
+			columnaResultados.Width.Set(-(_anchoCarpetas + SeparacionSubcolumnas), 1f);
 			columnaResultados.Top.Set(26f, 0f);
 			columnaResultados.Height.Set(-26f, 1f);
 			derecha.Append(columnaResultados);
+			_columnaResultados = columnaResultados;
 
 			EtiquetaTk etiquetaBusqueda = new EtiquetaTk(
 				() => Idiomas.Texto("Personaje.Buffs.Buscar"), 0.8f, 70f, 20f);
@@ -734,6 +805,220 @@ namespace TerrakeepMod.UI.Personaje
 		}
 
 		/// <summary>
+		/// Reparte el ancho de la columna "Añadir" entre sus DOS subcolumnas -el arbol de carpetas y
+		/// la busqueda+resultados- a partir del contenido REAL de cada una, cada fotograma.
+		/// <para />
+		/// <b>El bug que arregla</b> (reporte del usuario con captura, 8-sep-2026: "la columna del
+		/// centro esta super apretada... encontrar un equilibrio entre las 3 columnas"): el arbol
+		/// tenia 132 px FIJOS. De ahi salen 20 px de barra de scroll, 4 de margen, 40 del icono de la
+		/// carpeta y 22 de la flecha de "tiene subcarpetas" -> 46 px reales para el nombre. NINGUNA
+		/// categoria cabe en 46 px, asi que todas se partian en dos lineas por sistema
+		/// ("Offensive" + "(37)" debajo, pegado a la barra), que es exactamente lo que se veia en la
+		/// captura. No era una regresion: la columna nacio asi, y el arreglo de "el texto se lee
+		/// entero, nunca con ..." de ayer se aplico a las filas de buff pero nunca a esta columna.
+		/// <para />
+		/// <b>Como se decide el ancho ahora</b>, con el mismo criterio que el resto de la pestaña -la
+		/// caja se adapta al contenido, medido con la fuente real, nunca un numero puesto a ojo-:
+		/// <list type="number">
+		/// <item>Lo que PIDE el arbol: el mayor <c>AnchoParaUnaLinea</c> de las carpetas visibles
+		/// ahora mismo (icono + nombre medido con la fuente real + flecha), mas la merma real de una
+		/// fila respecto a su columna (<see cref="_mermaFilaCarpeta"/>, tambien MEDIDA, no supuesta).
+		/// Con eso ningun nombre de categoria se parte en dos si de verdad cabe.</item>
+		/// <item>Un SUELO: <see cref="AnchoMinimoCarpetas"/>, que es lo que ocupan los dos botones de
+		/// la cabecera ("Inicio" y "Subir"), no una cifra estetica.</item>
+		/// <item>Un TECHO: lo que quede sin bajar la columna de resultados de su suelo ESTRUCTURAL
+		/// (<see cref="AnchoMinimoResultados"/>: icono + la palabra mas larga de un nombre de buff +
+		/// el boton "Aplicar" + la barra de scroll), no de su ancho "comodo". La diferencia entre
+		/// esos dos numeros no es teorica: con el comodo (358 px) como suelo, a 800x720 el techo
+		/// caia por debajo del minimo del arbol y la resolucion mas apretada -justo la del reporte-
+		/// se quedaba SIN ninguna mejora, otra vez clavada en 132 px. Con el suelo estructural
+		/// (~253 px) el arbol tambien crece ahi, y a los resultados les sigue quedando de sobra
+		/// para su fila de dos lineas.</item>
+		/// </list>
+		/// Dentro de esos limites el arbol tiene prioridad hasta lo que pide y ni un pixel mas: todo
+		/// lo que sobre despues se le da entero a los resultados, que es quien de verdad lo
+		/// aprovecha (mas filas legibles de un vistazo). Y si ni siquiera el techo llega a lo que
+		/// pide, lo que no quepa en una linea se envuelve a dos: sigue leyendose ENTERO, solo mas
+		/// alto, que es la degradacion aceptable de este panel (nunca "...").
+		/// <para />
+		/// La columna "Activos" (izquierda) no se toca aqui: ya tiene su propio tope real
+		/// (<see cref="AnchoMaximoActivos"/>) y todo lo que le sobra se le da a "Añadir", que es
+		/// justo el reparto a tres bandas que pedia el reporte.
+		/// </summary>
+		private void AjustarAnchoCarpetas()
+		{
+			if (_columnaCarpetas == null || _derecha == null) {
+				return;
+			}
+
+			float anchoAnadir = _derecha.GetDimensions().Width;
+			if (anchoAnadir <= 0f) {
+				// Todavia no hay geometria real: se reintenta solo en el Update siguiente.
+				return;
+			}
+
+			MedirMermaDeFila();
+
+			float disponible = anchoAnadir - SeparacionSubcolumnas;
+			float nuevo = Math.Max(AnchoPedidoPorElArbol(), AnchoMinimoCarpetas);
+
+			float techo = disponible - AnchoMinimoResultados();
+			if (nuevo > techo) {
+				nuevo = techo;
+			}
+			if (nuevo < AnchoMinimoCarpetas) {
+				nuevo = AnchoMinimoCarpetas;
+			}
+
+			if (Math.Abs(nuevo - _anchoCarpetas) < 0.5f) {
+				return;
+			}
+
+			_anchoCarpetas = nuevo;
+			_columnaCarpetas.Width.Set(nuevo, 0f);
+			_columnaResultados.Left.Set(nuevo + SeparacionSubcolumnas, 0f);
+			_columnaResultados.Width.Set(-(nuevo + SeparacionSubcolumnas), 1f);
+			// Sin esto Width.Set/Left.Set no mueven nada visible hasta que otra cosa dispare un
+			// Recalculate por su cuenta - el mismo bug real ya documentado en
+			// AjustarAlturaRutaCarpetas.
+			_derecha.Recalculate();
+		}
+
+		/// <summary>
+		/// Ancho de columna con el que la carpeta de nombre mas largo de las visibles ahora mismo
+		/// cabria en UNA sola linea. Se pregunta a las propias filas ya construidas
+		/// (<c>FilaCarpetaBuffTk.AnchoParaUnaLinea</c>, que mide con la fuente real e incluye su
+		/// icono y su flecha) en vez de recalcular aqui una copia de esa cuenta: si la fila cambia de
+		/// aspecto, este numero la sigue sola.
+		/// </summary>
+		private float AnchoPedidoPorElArbol()
+		{
+			float mayor = 0f;
+			for (int i = 0; i < _listaCarpetas._items.Count; i++) {
+				FilaCarpetaBuffTk fila = _listaCarpetas._items[i] as FilaCarpetaBuffTk;
+				if (fila == null) {
+					continue;
+				}
+				float pide = fila.AnchoParaUnaLinea;
+				if (pide > mayor) {
+					mayor = pide;
+				}
+			}
+
+			if (mayor <= 0f) {
+				return AnchoMinimoCarpetas;
+			}
+			return mayor + HolguraDeRedondeo +
+				(_mermaFilaCarpeta > 0f ? _mermaFilaCarpeta : AnchoBarraScrollCarpetas + 4f);
+		}
+
+		/// <summary>
+		/// Margen de REDONDEO, no de diseño. El ancho real de una fila sale de una cadena de
+		/// <c>StyleDimension</c> en coma flotante (columna -> caja con su relleno -> lista -> fila) y
+		/// puede quedarse una fraccion de pixel por debajo de lo pedido; <c>PartirEnLineas</c> parte
+		/// en cuanto el texto mide MAS que el ancho (comparacion estricta), asi que esa fraccion
+		/// bastaba para partir en dos lineas un nombre que cabia justo. Medido de verdad en la
+		/// primera pasada de verificacion: "Índice (354)" pedia 140,x px de fila, se le daban 140 y
+		/// se partia igualmente.
+		/// </summary>
+		private const float HolguraDeRedondeo = 2f;
+
+		/// <summary>
+		/// Mide cuanto ancho pierde de verdad una fila respecto a su columna (barra de scroll, el
+		/// -4 px de la lista y el relleno del <see cref="UIPanel"/> de la caja). Se mide en lugar de
+		/// escribirse a mano porque el relleno de un <c>UIPanel</c> no es cero y no esta a la vista
+		/// en este archivo: darlo por supuesto es justo el tipo de "numero a ojo" que deja la columna
+		/// unos pixeles corta y parte un nombre que casi cabia.
+		/// </summary>
+		private void MedirMermaDeFila()
+		{
+			float anchoColumna = _columnaCarpetas.GetDimensions().Width;
+			if (anchoColumna <= 0f || _listaCarpetas._items.Count == 0) {
+				return;
+			}
+
+			float anchoFila = _listaCarpetas._items[0].GetDimensions().Width;
+			if (anchoFila <= 0f) {
+				return;
+			}
+			_mermaFilaCarpeta = anchoColumna - anchoFila;
+		}
+
+		/// <summary>
+		/// Reenvuelve las filas del arbol cuyo ancho real haya cambiado (por resolucion o por el
+		/// reparto de <see cref="AjustarAnchoCarpetas"/>) y, si alguna ha cambiado de alto, recoloca
+		/// la lista. Mismo patron que <see cref="AjustarAltoFilasActivas"/>, pero delegado en la
+		/// propia fila porque es ella la que sabe donde empieza su texto.
+		/// </summary>
+		private void AjustarFilasCarpetas()
+		{
+			bool algunCambio = false;
+			for (int i = 0; i < _listaCarpetas._items.Count; i++) {
+				FilaCarpetaBuffTk fila = _listaCarpetas._items[i] as FilaCarpetaBuffTk;
+				if (fila != null && fila.AjustarAlAnchoReal()) {
+					algunCambio = true;
+				}
+			}
+			if (algunCambio) {
+				_listaCarpetas.Recalculate();
+			}
+		}
+
+		private const float AnchoIconoFila = 40f;
+		private const float AnchoBotonAplicar = 80f;
+		private const float AnchoBarraScrollResultados = 24f;
+
+		/// <summary>
+		/// Ancho por debajo del cual la columna de busqueda+resultados deja de ser usable de verdad:
+		/// el mayor de lo que necesitan sus tres piezas, medido con la fuente real.
+		/// <list type="bullet">
+		/// <item>Una fila de resultado: icono (40) + el boton "Aplicar" (80) + su margen + la barra
+		/// de scroll (24) + un hueco de texto donde el nombre, ya envuelto, siga leyendose sin
+		/// partirse palabra a palabra (120, medido con la fuente real como el ancho de una palabra
+		/// larga de verdad: <see cref="AnchoPalabraLargaDeBuff"/>).</item>
+		/// <item>La fila del buscador: la etiqueta "Buscar" MEDIDA con la fuente real (no los 66 px
+		/// fijos con los que se coloca el campo) mas un hueco de campo donde se pueda escribir.</item>
+		/// <item>La fila de "Segundos": su etiqueta medida igual, mas el campo de 80 px.</item>
+		/// </list>
+		/// No se cachea en un <c>static</c> como <see cref="AnchoTiempoReal"/>: dos de las tres
+		/// piezas son texto TRADUCIDO, y el idioma se puede cambiar en vivo desde Ajustes.
+		/// </summary>
+		private static float AnchoMinimoResultados()
+		{
+			var fuente = Terraria.GameContent.FontAssets.MouseText.Value;
+			const float anchoCampoUsable = 120f;
+			const float anchoCampoDuracion = 80f;
+
+			float fila = AnchoIconoFila + AnchoPalabraLargaDeBuff() + SeparacionEnFila +
+				AnchoBotonAplicar + MargenDerechoFila + AnchoBarraScrollResultados;
+			float buscador = fuente.MeasureString(Idiomas.Texto("Personaje.Buffs.Buscar")).X * 0.8f +
+				SeparacionEnFila + anchoCampoUsable;
+			float duracion = fuente.MeasureString(Idiomas.Texto("Personaje.Buffs.Segundos")).X * 0.8f +
+				SeparacionEnFila + anchoCampoDuracion;
+
+			return Math.Max(fila, Math.Max(buscador, duracion));
+		}
+
+		private static float _anchoPalabraLarga = -1f;
+
+		/// <summary>
+		/// Ancho de una PALABRA larga tipica de un nombre de buff, medido con la fuente real a la
+		/// escala en la que se dibuja. Es el suelo por debajo del cual envolver deja de servir: una
+		/// caja mas estrecha que la palabra mas larga ya no puede partir por espacios
+		/// (<c>EtiquetaTk.PartirEnLineas</c> parte por PALABRAS, nunca por letras) y el texto se
+		/// saldria de su caja. Se usa "Regeneracion" a proposito, que es la palabra mas larga que
+		/// aparece de verdad en los nombres de buff en español.
+		/// </summary>
+		private static float AnchoPalabraLargaDeBuff()
+		{
+			if (_anchoPalabraLarga < 0f) {
+				_anchoPalabraLarga = Terraria.GameContent.FontAssets.MouseText.Value
+					.MeasureString("Regeneracion").X * 0.8f;
+			}
+			return _anchoPalabraLarga;
+		}
+
+		/// <summary>
 		/// Ancho REAL (medido con la fuente del juego) que necesita la columna de tiempo para
 		/// enseñar CUALQUIER duracion posible sin recortar NUNCA, ni en el caso mas extremo: "9999
 		/// h 59 min" no es un numero optimista, es una COTA MATEMATICA real. <c>Player.buffTime</c>
@@ -780,18 +1065,26 @@ namespace TerrakeepMod.UI.Personaje
 		{
 			_listaCarpetas.Clear();
 
+			// Ancho de PARTIDA de cada fila (solo para el primer fotograma): a partir de ahi cada
+			// fila se adapta sola al ancho real de la lista, ver FilaCarpetaBuffTk.AjustarAlAnchoReal.
+			float anchoFilaDePartida = _anchoCarpetas - AnchoBarraScrollCarpetas - 4f;
+
 			IReadOnlyList<CategoryTreeNodeData> carpetas = CarpetasVisibles();
 			for (int i = 0; i < carpetas.Count; i++) {
 				CategoryTreeNodeData nodo = carpetas[i];
-				FilaCarpetaBuffTk fila = new FilaCarpetaBuffTk(nodo, AnchoColumnaCarpetas - AnchoBarraScrollCarpetas - 4f);
+				FilaCarpetaBuffTk fila = new FilaCarpetaBuffTk(nodo, anchoFilaDePartida);
 				fila.AlPulsar += () => AbrirCarpeta(nodo);
 				_listaCarpetas.Add(fila);
 			}
 
 			if (carpetas.Count == 0) {
-				EtiquetaTk vacio = new EtiquetaTk(
-					() => Idiomas.Texto("Personaje.Buffs.Arbol.SinSubcarpetas"), 0.7f,
-					AnchoColumnaCarpetas - AnchoBarraScrollCarpetas - 4f, 40f);
+				EtiquetaTk vacio = null;
+				vacio = new EtiquetaTk(() => {
+					string texto = Idiomas.Texto("Personaje.Buffs.Arbol.SinSubcarpetas");
+					float ancho = vacio.GetDimensions().Width;
+					return ancho > 0f ? EtiquetaTk.PartirEnLineas(texto, ancho, 0.7f) : texto;
+				}, 0.7f, 0f, 40f);
+				vacio.Width.Set(0f, 1f);
 				vacio.ColorTexto = EstiloTk.TextoSuave;
 				_listaCarpetas.Add(vacio);
 			}
@@ -817,6 +1110,13 @@ namespace TerrakeepMod.UI.Personaje
 		public void AbrirCarpetaParaPrueba(CategoryTreeNodeData nodo)
 		{
 			AbrirCarpeta(nodo);
+		}
+
+		/// <summary>Igual que <see cref="IrALaRaiz"/> pero publico, para que el arnes pueda volver al
+		/// primer nivel del arbol (las carpetas de la captura del reporte) sin simular el clic.</summary>
+		public void IrALaRaizParaPrueba()
+		{
+			IrALaRaiz();
 		}
 
 		private void SubirCarpeta()
@@ -845,8 +1145,9 @@ namespace TerrakeepMod.UI.Personaje
 		private float _altoRutaCarpetas = 18f;
 
 		/// <summary>
-		/// Ruta completa, ENVUELTA a tantas lineas como haga falta para caber en
-		/// <see cref="AnchoColumnaCarpetas"/> - nunca recortada por el PRINCIPIO con "..." como
+		/// Ruta completa, ENVUELTA a tantas lineas como haga falta para caber en el ancho REAL de la
+		/// columna de carpetas -que desde el 8-sep-2026 ya no es una constante, ver
+		/// <see cref="AjustarAnchoCarpetas"/>- y nunca recortada por el PRINCIPIO con "..." como
 		/// antes (con solo 132 px de columna, una ruta de 3-4 niveles se cortaba a media palabra
 		/// del primer nombre visible). Mismo criterio que el resto del panel: la caja crece, el
 		/// texto se lee entero.
@@ -857,7 +1158,11 @@ namespace TerrakeepMod.UI.Personaje
 			for (int i = 0; i < _ruta.Count; i++) {
 				sb.Append(" > ").Append(_ruta[i].Name);
 			}
-			return EtiquetaTk.PartirEnLineas(sb.ToString(), AnchoColumnaCarpetas, EscalaRutaCarpetas);
+			float ancho = _rutaTexto != null ? _rutaTexto.GetDimensions().Width : 0f;
+			if (ancho <= 0f) {
+				ancho = _anchoCarpetas;
+			}
+			return EtiquetaTk.PartirEnLineas(sb.ToString(), ancho, EscalaRutaCarpetas);
 		}
 
 		/// <summary>
@@ -1002,8 +1307,7 @@ namespace TerrakeepMod.UI.Personaje
 			// se envuelve entero en su propia linea (sin la columna de tiempo, solo compite con el
 			// boton "Aplicar" - que pasa igualmente a su propia linea 2, ya sin nada con lo que
 			// solaparse).
-			const float anchoBotonAplicar = 80f;
-			float leftAplicar = -(anchoBotonAplicar + MargenDerechoFila);
+			float leftAplicar = -(AnchoBotonAplicar + MargenDerechoFila);
 
 			UIElement fila = new UIElement();
 			fila.Width.Set(0f, 1f);
@@ -1027,7 +1331,7 @@ namespace TerrakeepMod.UI.Personaje
 
 			BotonTk anadir = new BotonTk(Idiomas.Texto("Personaje.Buffs.Aplicar"), 0.75f);
 			_botonesAplicar.Add(anadir);
-			anadir.Width.Set(anchoBotonAplicar, 0f);
+			anadir.Width.Set(AnchoBotonAplicar, 0f);
 			anadir.Height.Set(AltoLineaSegunda, 0f);
 			anadir.Left.Set(leftAplicar, 1f);
 			anadir.AlPulsar += () => AplicarBuff(tipo);
@@ -1068,6 +1372,11 @@ namespace TerrakeepMod.UI.Personaje
 			// resolucion/UIScale): se recalcula cada fotograma, igual que PestanaMundo.RecalcularAviso.
 			RecalcularColumnas();
 			AjustarAlturaTitulo();
+			// El orden importa: primero se reparte el ancho entre las dos subcolumnas de "Añadir",
+			// luego las filas del arbol se reenvuelven al ancho que les haya tocado, y solo despues
+			// se mide la ruta (que tambien depende de ese ancho).
+			AjustarAnchoCarpetas();
+			AjustarFilasCarpetas();
 			AjustarAlturaRutaCarpetas();
 
 			// Los buffs caducan solos: si el conjunto de tipos activos ha cambiado desde el
