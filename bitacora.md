@@ -4175,3 +4175,110 @@ sandbox de la herramienta con "system path... is protected from removal", pese a
 funcionado sin problema muchas veces antes en esta misma sesión sobre la misma ruta exacta.
 `Clear-Content` sobre el mismo archivo sí funcionó como alternativa. No se investigó más a fondo
 por no ser bloqueante.
+
+---
+
+## 8-sep-2026 — Auto-equipar de Builds: los objetos CREADOS ya aplican el prefijo REAL del catálogo, no solo el genérico
+
+**El problema real** (encargo explícito, ya investigado antes de tocar nada): `AutoEquipar.CrearDesdeLibreria`
+creaba los objetos que el jugador no tenía con `CatalogoMejorPrefijo.MejorPrefijo(tipo)` - el
+"mejor prefijo posible" GENÉRICO, el mismo que usa la Librería - ignorando a propósito
+`ObjetoBuild.PrefijoRecomendado`/`PrefixId`, que el catálogo de builds SÍ trae para bastantes
+objetos. Para Vanilla y para el resto de clases de Calamity esto no perdía nada real (dato
+ausente o coincidente con el genérico, documentado ya en el propio catálogo). El caso GRAVE era
+Pícaro de Calamity: el catálogo trae los 21 `PrefixId` sintéticos (10000+) de los prefijos REALES
+de Pícaro (`modPrefixMod`/`modPrefixName`, `CalamityMod/Prefixes/*.cs` decompilado), que
+`CatalogoMejorPrefijo`/`best_prefix.json` NUNCA conoce (solo `Terraria.ID.PrefixID` plano) -
+aplicar el genérico a un arma o accesorio Pícaro le ponía un prefijo vainilla sin sentido para
+ese tipo de daño en vez de su prefijo real.
+
+**Investigado antes de escribir nada** (regla del CLAUDE.md, "mirar el código real"):
+- `rogue_prefixes.json` SÍ existe, en `Terrakeep.App/Assets/calamity/rogue_prefixes.json` del
+  repo hermano `Terrasavr-Native` - tabla de los 21 `ModPrefix` reales (17 de arma + 4 de
+  accesorio) con su id sintético (`CalamityIds.PrefixIdBase`=10000 + índice) y su nombre
+  `"internal"` (ej. `10002`→`"Flawless"`, `10020`→`"Silent"`, los dos "best" que ya usa el
+  catálogo de builds para Pícaro).
+- `Terrakeep.Core.Data.RoguePrefixCatalog` (mismo repo hermano, ya compilado dentro de
+  `lib/Terrakeep.Core.dll`) ya parsea ese JSON y expone `ById(int)` - reutilizado tal cual, cero
+  reimplementación de la tabla.
+- `BuildItemRef.PrefixId` (int?, `Terrakeep.Core/Data/BuildsCatalog.cs`) YA estaba en el DLL
+  (confirmado con `strings lib/Terrakeep.Core.dll | grep PrefixId`) pero `ObjetoBuild` (el modelo
+  del lado del mod, `ModeloBuilds.cs`) nunca lo leía - solo se portó `Prefix` (string) a
+  `PrefijoRecomendado`, no `PrefixId` (int). Confirmado exactamente lo que sospechaba el encargo.
+- **Cómo se aplica de verdad un `ModPrefix` de mod EN VIVO** (decompilado real,
+  `tModLoader-Decompiled\tModLoader\Terraria\ModLoader\PrefixLoader.cs`/`ModPrefix.cs` +
+  `tModLoader-Decompiled\CalamityMod\CalamityMod\Prefixes\*.cs`, esta última carpeta ya existía
+  gracias a `scripts/generar-mejor-prefijo.py` del repo hermano, que ya decompilaba Calamity para
+  otro propósito): un `ModPrefix` se registra con un `Type` (int) asignado en caliente por
+  `PrefixLoader.ReservePrefixID()` (secuencial, por encima de `PrefixID.Count`=85 real de esta
+  1.4.4.9), buscable por `ModContent.TryFind<ModPrefix>("CalamityMod", nombreDeClase)` - y el
+  nombre de clase de CalamityMod coincide EXACTO con el campo `"internal"` del JSON
+  (`Prefixes/Flawless.cs` → `class Flawless : RogueWeaponPrefix`, `Prefixes/Silent.cs` →
+  `class Silent : RogueAccessoryPrefix`). `Terraria.Item.Prefix(int prefixWeWant)` acepta ese
+  `Type` directamente - su firma real NO está limitada a `byte` (esa limitación es solo de
+  `CatalogoMejorPrefijo.MejorPrefijo`, que devuelve `byte?` a propósito porque solo conoce
+  `PrefixID` vanilla). Nada que reimplementar: resolver el id y pasárselo tal cual a `Item.Prefix`.
+- Para el nombre vanilla recomendado (`PrefijoRecomendado`, ej. `"Legendary"`) no hizo falta
+  invertir a mano la tabla `prefixNames` de `best_prefix.json` (que el encargo sospechaba que
+  habría que usar): `Terraria.ID.PrefixID.Search` es un `IdDictionary` real construido por
+  reflexión sobre los campos `public const int` de la propia clase (`IdDictionary.Create<PrefixID,
+  int>()`, decompilado) - exactamente el mismo patrón que `CatalogoBuilds.ResolverPid` ya usa con
+  `ItemID.Search` para los pid de objeto. `PrefixID.Search.TryGetId("Legendary", out int id)`
+  resuelve directo, sin duplicar ninguna tabla.
+
+**Hecho**:
+- `ModeloBuilds.cs`: `ObjetoBuild` gana el campo `PrefixId` (int?).
+- `CatalogoBuilds.cs` (`Convertir`): propaga `refe.PrefixId` al crear cada `ObjetoBuild`.
+- Copiado `Terrakeep.App/Assets/calamity/rogue_prefixes.json` → `Assets/rogue_prefixes.json` del
+  mod (mismo patrón ya usado con `best_prefix.json`).
+- Nuevo `Common/Builds/CatalogoPrefijoPicaro.cs`: lee/parsea `rogue_prefixes.json` (mismo ciclo
+  Load()/PostSetupContent() que el resto de catálogos, por el mismo motivo real de
+  `TmodFile.GetStream`) y expone `ResolverPrefijoReal(idSintetico)` → `int?` (el `ModPrefix.Type`
+  real de esta partida, o null sin lanzar si Calamity no está o cambió el nombre de la clase).
+  Cableado en `PanelBuildsSystem.Load/PostSetupContent/Unload`, junto a `CatalogoBuilds`.
+- `AutoEquipar.CrearDesdeLibreria` cambia de firma (`ObjetoBuild` en vez de `int tipo`, más un
+  `out string origenPrefijo` para la evidencia) y añade `ResolverPrefijoDeBuild`, con el orden de
+  prioridad real pedido: 1) `PrefixId` real de Pícaro (`CatalogoPrefijoPicaro`); 2) si no,
+  `PrefijoRecomendado` vanilla (`PrefixID.Search`); 3) si no, el genérico de siempre
+  (`CatalogoMejorPrefijo`, intacto para todo lo que no tiene un dato mejor). El comentario de la
+  cabecera de la clase (antes decía que `PrefijoRecomendado` era "solo texto informativo") se
+  actualizó para reflejar que ya decide de verdad.
+- Evidencia real añadida al propio log de auto-equipar (`resultado.Detalle`): cada objeto CREADO
+  deja qué vía de prefijo se tomó Y el `item.prefix`/nombre real tras aplicarlo (`Lang.prefix[...]`),
+  para no fiarse nunca de "el resultado coincide con el genérico" como prueba de que se tomó la
+  vía nueva (los dos catálogos pueden coincidir por casualidad, como documenta el propio encargo
+  para 35 de las 36 armas vanilla).
+
+**Verificado en el juego real** (`scripts\verificar-builds-en-juego.ps1`, sandbox
+`tModLoader-TerrakeepWS4`, mundo/personaje `TerrakeepPrueba`):
+
+- **Pícaro de Calamity** (`-Calamity -Clase rogue -Fuente calamity`, prehardmode): los 5 objetos
+  creados con `PrefixId` en el catálogo salieron con el `ModPrefix` REAL, confirmado con el
+  `item.prefix`/nombre reales tras `Item.Prefix()`, no solo con "se tomó la rama":
+  `Coin of Deceit`/`Scuttler's Jewel`/`Amidias' Pendant` (accesorios, `PrefixId`=10020) →
+  `item.prefix=103 "Silent"`; `Scourge of the Desert`/`Spore Knife` (armas, `PrefixId`=10002) →
+  `item.prefix=90 "Flawless"`. Los dos ids (90, 103) están muy por encima de `PrefixID.Count`=85 -
+  prueba de que son de verdad prefijos de MOD, no vainilla. Evidencia completa en
+  `evidencia/ws4-builds-calamity.log.txt`.
+- **Vanilla, melee prehardmode** (`-Clase melee -Fuente vanilla`, por defecto NightsEdge/Molten/etc
+  ya sembrados - se MUEVEN, prefijo intacto; Sunfury y La Despedazadora NO sembrados, se CREAN):
+  `Furia solar` (Sunfury) → rama "recomendado del catálogo, Godly" → `item.prefix=59 "(Piadoso)"`
+  (`PrefixID.Godly`=59 real, confirmado contra el decompilado); `La Despedazadora` (TheBreaker) →
+  rama "recomendado del catálogo, Legendary" → `item.prefix=81 "(Legendario)"`
+  (`PrefixID.Legendary`=81 real). Exactamente lo que documentaba el catálogo, aplicado de verdad
+  por la vía nueva (no por casualidad del genérico: el log deja constancia de qué rama disparó
+  cada uno). Segunda pasada idempotente (`creados=0, ya colocados=11`). Evidencia completa en
+  `evidencia/ws4-builds.log.txt`.
+- Accesorios Pícaro con `PrefixId` cubiertos en la misma pasada de arriba (Coin of Deceit,
+  Scuttler's Jewel, Amidias' Pendant), no hizo falta una prueba aparte.
+
+**Pendiente, no bloqueante para este arreglo**: el `.tmod` final para la carpeta `Mods\` real
+(`scripts\compilar.ps1`, fase 2) no se pudo desplegar en esta sesión porque el propio Adrián tenía
+tModLoader ABIERTO DE VERDAD jugando (`Terraria: Perfectamente equi-librado`, ventana real,
+~2 GB de RAM, respondiendo) - `ModCompile.Build`/`TmodFile.Save()` no puede escribir
+`Mods\TerrakeepMod.tmod` mientras el juego lo tiene bloqueado. No se ha cerrado esa partida (cerrar
+la sesión de otro es una decisión suya, no algo que tocar sin preguntar) - la fase 1 (validación
+del C#) SÍ pasa en verde, y el `-build` completo con empaquetado real ya se demostró funcionando
+en el sandbox de WS4 (mismo compilador Roslyn de tModLoader, mismo empaquetado, otra carpeta de
+destino) - el arreglo en sí está probado con el compilador y el motor reales, solo falta repetir
+`scripts\compilar.ps1` cuando cierre el juego para que el `.tmod` de `Mods\` quede al día.

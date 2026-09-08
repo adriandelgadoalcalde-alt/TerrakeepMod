@@ -103,10 +103,16 @@ namespace TerrakeepMod.Common.Builds
 	/// </para>
 	/// <para>
 	/// <b>Prefijo</b>: los objetos MOVIDOS (ya poseidos) se mueven con el prefijo que ya tuvieran,
-	/// sin reforjar nada gratis. Los objetos CREADOS salen con el mismo "mejor prefijo" real que ya
-	/// aplica la Libreria al cogerlos del catalogo (<see cref="CatalogoMejorPrefijo"/>), no con el
-	/// prefijo "recomendado" informativo de <c>ObjetoBuild.PrefijoRecomendado</c> (ese sigue siendo
-	/// solo texto en el panel).
+	/// sin reforjar nada gratis. Los objetos CREADOS aplican, por este orden de preferencia (ver
+	/// <see cref="CrearDesdeLibreria"/>): 1) si el catalogo trae un prefijo REAL de Picaro de
+	/// Calamity (<c>ObjetoBuild.PrefixId</c>, <see cref="CatalogoPrefijoPicaro"/>), ese; 2) si no,
+	/// pero trae un prefijo vanilla recomendado (<c>ObjetoBuild.PrefijoRecomendado</c>), el id
+	/// vanilla real de ese nombre (<c>Terraria.ID.PrefixID.Search</c>); 3) si no tiene ninguno de
+	/// los dos, el mismo "mejor prefijo" generico que ya aplica la Libreria al coger un objeto del
+	/// catalogo (<see cref="CatalogoMejorPrefijo"/>). <c>PrefijoRecomendado</c>/<c>PrefixId</c> YA
+	/// NO son solo texto informativo del panel: pasaron a decidir de verdad el prefijo de un
+	/// objeto creado desde que el catalogo de Calamity trajo prefijos reales de Picaro que el
+	/// generico no podia conocer (ver la cabecera de <see cref="CatalogoPrefijoPicaro"/>).
 	/// </para>
 	/// <para>
 	/// <b>Sobre el loadout</b>: se escribe sobre el conjunto de equipo que elige quien llama a
@@ -194,9 +200,9 @@ namespace TerrakeepMod.Common.Builds
 					jugador.inventory[huecoDesplazado] = destino[slot];
 				}
 
-				destino[slot] = CrearDesdeLibreria(objeto.Tipo);
+				destino[slot] = CrearDesdeLibreria(objeto, out string origenPrefijo);
 				resultado.Creados++;
-				resultado.Detalle.Add($"{objeto.Nombre}: creado del catalogo -> equipo[{slot}]");
+				resultado.Detalle.Add($"{objeto.Nombre}: creado del catalogo (prefijo: {origenPrefijo}) -> equipo[{slot}]");
 			}
 		}
 
@@ -233,7 +239,7 @@ namespace TerrakeepMod.Common.Builds
 
 				// No lo tiene: se trae del catalogo. PrimerSlotAccesorioLibre solo devuelve slots
 				// VACIOS (ver su XMLdoc), asi que aqui nunca hace falta desplazar nada.
-				Item nuevo = CrearDesdeLibreria(objeto.Tipo);
+				Item nuevo = CrearDesdeLibreria(objeto, out string origenPrefijo);
 				int slot = EquipoJugador.PrimerSlotAccesorioLibre(jugador, destino, nuevo);
 				if (slot < 0) {
 					RegistrarSinSitio(resultado, objeto, CausaSinSitio.SlotAccesorioOcupado,
@@ -244,7 +250,7 @@ namespace TerrakeepMod.Common.Builds
 
 				destino[slot] = nuevo;
 				resultado.Creados++;
-				resultado.Detalle.Add($"{objeto.Nombre}: creado del catalogo -> equipo[{slot}] (accesorio)");
+				resultado.Detalle.Add($"{objeto.Nombre}: creado del catalogo (prefijo: {origenPrefijo}) -> equipo[{slot}] (accesorio)");
 			}
 		}
 
@@ -277,9 +283,9 @@ namespace TerrakeepMod.Common.Builds
 					continue;
 				}
 
-				jugador.inventory[hueco] = CrearDesdeLibreria(objeto.Tipo);
+				jugador.inventory[hueco] = CrearDesdeLibreria(objeto, out string origenPrefijo);
 				resultado.Creados++;
-				resultado.Detalle.Add($"{objeto.Nombre}: creado del catalogo -> inventario[{hueco}]");
+				resultado.Detalle.Add($"{objeto.Nombre}: creado del catalogo (prefijo: {origenPrefijo}) -> inventario[{hueco}]");
 			}
 		}
 
@@ -304,23 +310,75 @@ namespace TerrakeepMod.Common.Builds
 		}
 
 		/// <summary>
-		/// Crea un ejemplar nuevo de <paramref name="tipo"/> exactamente por la MISMA ruta real que
-		/// <c>ContenidoLibreria.PedirObjeto</c> usa para coger un objeto del catalogo de la
-		/// Libreria: <c>Item.SetDefaults</c> y, si el catalogo de mejor prefijo tiene entrada para
-		/// este tipo, <c>Item.Prefix</c> con el. Nada reimplementado a mano.
+		/// Crea un ejemplar nuevo de <c>objeto.Tipo</c>: <c>Item.SetDefaults</c> + el prefijo real
+		/// que decida <see cref="ResolverPrefijoDeBuild"/> (ver su XMLdoc para el orden de
+		/// preferencia). <paramref name="origenPrefijo"/> sale con una descripcion corta de que
+		/// prefijo se aplico y por que via, para dejarlo en <see cref="ResultadoAutoEquipar.Detalle"/>
+		/// como evidencia real (nunca hay que fiarse de que "coincide con el generico" demuestre
+		/// que se tomo la via correcta: los dos catalogos pueden dar el mismo valor por casualidad).
 		/// </summary>
-		private static Item CrearDesdeLibreria(int tipo)
+		private static Item CrearDesdeLibreria(ObjetoBuild objeto, out string origenPrefijo)
 		{
 			Item nuevo = new Item();
-			nuevo.SetDefaults(tipo);
+			nuevo.SetDefaults(objeto.Tipo);
 
-			byte? mejorPrefijo = CatalogoMejorPrefijo.MejorPrefijo(tipo);
-			if (mejorPrefijo.HasValue) {
-				nuevo.Prefix(mejorPrefijo.Value);
+			int? prefijo = ResolverPrefijoDeBuild(objeto, out origenPrefijo);
+			if (prefijo.HasValue) {
+				// Evidencia real de que Item.Prefix() aplico el id de verdad (no lo descarto en
+				// silencio por CanApplyPrefix): tras la llamada, nuevo.prefix debe quedar en el
+				// mismo id que se pidio, con un nombre real en Lang.prefix (nunca vacio).
+				nuevo.Prefix(prefijo.Value);
+				string nombreAplicado = nuevo.prefix > 0 && nuevo.prefix < Lang.prefix.Length
+					? Lang.prefix[nuevo.prefix].Value
+					: "?";
+				origenPrefijo += $" -> item.prefix={nuevo.prefix} \"{nombreAplicado}\"" +
+					(nuevo.prefix == prefijo.Value ? "" : " (DISTINTO DEL PEDIDO, revisar CanApplyPrefix)");
 			}
 
 			nuevo.stack = 1;
 			return nuevo;
+		}
+
+		/// <summary>
+		/// El prefijo real a aplicar al CREAR un objeto de una build, por este orden de
+		/// preferencia:
+		/// <list type="number">
+		/// <item>Si <c>objeto.PrefixId</c> trae un id sintetico de un prefijo REAL de Picaro de
+		/// Calamity y <see cref="CatalogoPrefijoPicaro"/> lo resuelve contra el
+		/// <c>Terraria.ModLoader.ModPrefix</c> real de esta partida, ese.</item>
+		/// <item>Si no, pero <c>objeto.PrefijoRecomendado</c> trae un nombre vanilla real
+		/// (<c>Terraria.ID.PrefixID.Search</c> lo resuelve a un id valido en el
+		/// <c>PrefixID.Count</c> de esta version), ese.</item>
+		/// <item>Si no tiene ninguno de los dos datos reales, el "mejor prefijo" generico de
+		/// siempre (<see cref="CatalogoMejorPrefijo"/>) - el comportamiento de antes de este
+		/// cambio, intacto para todo lo que no tiene un dato mejor en el catalogo de builds.</item>
+		/// </list>
+		/// </summary>
+		private static int? ResolverPrefijoDeBuild(ObjetoBuild objeto, out string origenPrefijo)
+		{
+			if (objeto.PrefixId.HasValue) {
+				int? picaro = CatalogoPrefijoPicaro.ResolverPrefijoReal(objeto.PrefixId.Value);
+				if (picaro.HasValue) {
+					origenPrefijo = $"Picaro real de Calamity, id {objeto.PrefixId.Value}";
+					return picaro;
+				}
+			}
+
+			if (!string.IsNullOrEmpty(objeto.PrefijoRecomendado) &&
+				PrefixID.Search.TryGetId(objeto.PrefijoRecomendado, out int vanillaId) &&
+				vanillaId > 0 && vanillaId < PrefixID.Count) {
+				origenPrefijo = $"recomendado del catalogo, {objeto.PrefijoRecomendado}";
+				return vanillaId;
+			}
+
+			byte? generico = CatalogoMejorPrefijo.MejorPrefijo(objeto.Tipo);
+			if (generico.HasValue) {
+				origenPrefijo = "mejor generico (CatalogoMejorPrefijo)";
+				return generico.Value;
+			}
+
+			origenPrefijo = "ninguno";
+			return null;
 		}
 
 		/// <summary>Ejemplar de solo lectura de un objeto, para consultar sus campos.</summary>

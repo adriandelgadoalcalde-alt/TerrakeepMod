@@ -213,6 +213,7 @@ namespace TerrakeepMod.Common.Builds
 					NombreEs = refe.Es,
 					NombreEn = refe.En,
 					PrefijoRecomendado = refe.Prefix,
+					PrefixId = refe.PrefixId,
 					Tipo = ResolverPid(refe.Pid),
 				};
 

@@ -124,6 +124,7 @@ namespace TerrakeepMod.Common.Builds
 
 			// Los .json hay que leerlos mientras el .tmod sigue abierto (ver CatalogoBuilds).
 			CatalogoBuilds.LeerArchivos(Mod);
+			CatalogoPrefijoPicaro.LeerArchivo(Mod);
 
 			if (!Main.dedServ) {
 				// L no esta asignada a nada en los controles por defecto de Terraria, y K y J ya
@@ -138,6 +139,11 @@ namespace TerrakeepMod.Common.Builds
 			// tambien los objetos de Calamity. Antes de este punto los pid "CalamityMod/..." no
 			// se podrian resolver.
 			CatalogoBuilds.Resolver(Mod);
+
+			// Solo parsea la tabla; el ModPrefix real de CalamityMod se resuelve bajo demanda
+			// (ver CatalogoPrefijoPicaro.ResolverPrefijoReal), pero a estas alturas ya esta
+			// registrado igualmente (PostSetupContent corre tras el contenido de TODOS los mods).
+			CatalogoPrefijoPicaro.Resolver();
 		}
 
 		public override void Unload()
@@ -145,6 +151,7 @@ namespace TerrakeepMod.Common.Builds
 			_atajo = null;
 			RegistroBuilds.Mod = null;
 			CatalogoBuilds.Descargar();
+			CatalogoPrefijoPicaro.Descargar();
 		}
 
 		public override void UpdateUI(GameTime gameTime)

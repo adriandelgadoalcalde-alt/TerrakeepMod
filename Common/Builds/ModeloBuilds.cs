@@ -24,9 +24,18 @@ namespace TerrakeepMod.Common.Builds
 		public string NombreEn;
 
 		/// <summary>Prefijo RECOMENDADO por el catalogo (nombre interno vanilla, ej.
-		/// "Legendary"), o null. Es solo informativo: auto-equipar nunca cambia el prefijo del
-		/// objeto real del jugador (ver <see cref="AutoEquipar"/>).</summary>
+		/// "Legendary"), o null. Auto-equipar lo aplica de verdad al CREAR un objeto que el
+		/// jugador no tenia (ver <see cref="AutoEquipar.CrearDesdeLibreria"/>); nunca cambia el
+		/// prefijo de un objeto que el jugador YA POSEE (esos solo se mueven, tal cual).</summary>
 		public string PrefijoRecomendado;
+
+		/// <summary>Id sintetico (&gt;= <c>CalamityIds.PrefixIdBase</c>, 10000+) de un prefijo
+		/// REAL de Picaro de Calamity (<c>modPrefixMod</c>/<c>modPrefixName</c>, no vanilla), o
+		/// null. Viene de <c>BuildItemRef.PrefixId</c> (<c>Terrakeep.Core</c>) y tiene prioridad
+		/// sobre <see cref="PrefijoRecomendado"/> al crear el objeto: ver
+		/// <see cref="CatalogoPrefijoPicaro"/> para como se resuelve contra el
+		/// <c>Terraria.ModLoader.ModPrefix</c> real de esta partida.</summary>
+		public int? PrefixId;
 
 		/// <summary>Id real de <c>Item.type</c> en esta partida, o 0 si el pid no se pudo
 		/// resolver (tipicamente: es de Calamity y Calamity no esta cargado).</summary>

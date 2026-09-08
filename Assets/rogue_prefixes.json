@@ -1,0 +1,33 @@
+{
+	"note": "Los 21 ModPrefix reales que registra CalamityMod (17 de arma + 4 de accesorio), extraidos de las clases concretas decompiladas en CalamityMod/Prefixes/*.cs (no las 3 clases abstractas base: RogueWeaponPrefix, HorribleWeaponPrefix, RogueAccessoryPrefix). id = CALAMITY_PREFIX_ID_BASE (10000) + indice, un numero SINTETICO usado solo dentro de Terrasavr (nunca se manda al juego tal cual) para reutilizar el campo numerico 'Prefix' ya existente en la UI - ver overrides.js. mod es siempre 'CalamityMod' (los 21 estan en ese mod, ninguno en CalamityModMusic). Los multiplicadores vienen de los overrides reales de cada clase (damageMult/useTimeMult/critBonus/shootSpeedMult/stealthDmgMult); sin campo = sin cambio para esa estadistica (multiplicador 1 / bonus 0). No hay localizacion es-ES oficial en el .tmod (solo existe Localization/en-US/Mods.CalamityMod.Prefixes.hjson) - las traducciones 'es' de aqui son propias, no oficiales.",
+	"idBase": 10000,
+	"weapon": [
+		{ "id": 10000, "internal": "Vicious", "es": "Vicioso", "en": "Vicious", "damageMult": 1.1, "useTimeMult": 0.95, "shootSpeedMult": 1.15 },
+		{ "id": 10001, "internal": "Unbalanced", "es": "Desequilibrado", "en": "Unbalanced", "useTimeMult": 1.15, "shootSpeedMult": 0.95 },
+		{ "id": 10002, "internal": "Flawless", "es": "Impecable", "en": "Flawless", "damageMult": 1.15, "useTimeMult": 0.9, "critBonus": 5, "shootSpeedMult": 1.1, "stealthDmgMult": 1.15 },
+		{ "id": 10003, "internal": "Blunt", "es": "Desafilado", "en": "Blunt", "damageMult": 0.85 },
+		{ "id": 10004, "internal": "Sleek", "es": "Aerodinámico", "en": "Sleek", "damageMult": 1, "useTimeMult": 0.9, "shootSpeedMult": 1.15 },
+		{ "id": 10005, "internal": "Horrible", "es": "Horrible", "en": "Horrible", "damageMult": 0.66, "sizeMult": 1.66, "knockbackMult": 0.01 },
+		{ "id": 10006, "internal": "Glorious", "es": "Glorioso", "en": "Glorious", "damageMult": 1.1, "useTimeMult": 0.95 },
+		{ "id": 10007, "internal": "Feathered", "es": "Emplumado", "en": "Feathered", "useTimeMult": 0.85, "shootSpeedMult": 1.1 },
+		{ "id": 10008, "internal": "Atrocious", "es": "Atroz", "en": "Atrocious", "damageMult": 0.85, "shootSpeedMult": 0.9, "stealthDmgMult": 0.9 },
+		{ "id": 10009, "internal": "Flimsy", "es": "Endeble", "en": "Flimsy", "damageMult": 0.9, "stealthDmgMult": 0.9 },
+		{ "id": 10010, "internal": "Hefty", "es": "Corpulento", "en": "Hefty", "damageMult": 1.1, "stealthDmgMult": 1.15 },
+		{ "id": 10011, "internal": "Sharp", "es": "Afilado", "en": "Sharp", "damageMult": 1.15 },
+		{ "id": 10012, "internal": "Serrated", "es": "Serrado", "en": "Serrated", "damageMult": 1.1, "useTimeMult": 0.9, "shootSpeedMult": 1.05 },
+		{ "id": 10013, "internal": "Pointy", "es": "Puntiagudo", "en": "Pointy", "damageMult": 1.1 },
+		{ "id": 10014, "internal": "Lethal", "es": "Letal", "en": "Lethal", "damageMult": 1.1, "useTimeMult": 0.95, "critBonus": 2, "shootSpeedMult": 1.05, "stealthDmgMult": 1.05 },
+		{ "id": 10015, "internal": "Mighty", "es": "Poderoso", "en": "Mighty", "damageMult": 1.15, "stealthDmgMult": 1.05 },
+		{ "id": 10016, "internal": "Radical", "es": "Radical", "en": "Radical", "damageMult": 1.05, "useTimeMult": 0.95, "shootSpeedMult": 1.05, "stealthDmgMult": 0.9 }
+	],
+	"accessory": [
+		{ "id": 10017, "internal": "Dauntless", "es": "Intrépido", "en": "Dauntless", "effect": "+20 vida máxima" },
+		{ "id": 10018, "internal": "Friendly", "es": "Amistoso", "en": "Friendly", "effect": "+1 minion (RollChance=0, no sale al reforjar al azar)" },
+		{ "id": 10019, "internal": "Invigorating", "es": "Vigorizante", "en": "Invigorating", "effect": "+0.5 regeneración de vida parcial" },
+		{ "id": 10020, "internal": "Silent", "es": "Silencioso", "en": "Silent", "effect": "+8% generación de sigilo (Pícaro)" }
+	],
+	"best": {
+		"weapon": "Flawless",
+		"accessory": "Silent"
+	}
+}

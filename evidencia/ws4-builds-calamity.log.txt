@@ -1,62 +1,76 @@
-# Evidencia de WS4 (Builds) - 2026-09-06 01:47:46
-[01:47:46.154] [Terrakeep] Builds: catalogo resuelto. [Vanilla: 3 etapas, 156/156 objetos resueltos] [Calamity: 3 etapas, 154/154 objetos resueltos] 
-[01:47:50.504] [Terrakeep] AUTOPRUEBA BUILDS: TERRAKEEP_AUTOTEST_BUILDS detectada. Marca de ejecucion: WS4-014721-50928
-[01:47:50.504] [Terrakeep] AUTOPRUEBA BUILDS: objetos sembrados para la prueba: CalamityMod/SulphurousHelmet(type=5959)->inventario[0], CalamityMod/SulphurousLeggings(type=5960)->inventario[1], CalamityMod/ScourgeoftheDesert(type=8128)->inventario[2], CalamityMod/CoinofDeceit(type=5646)->inventario[3], CalamityMod/ScuttlersJewel(type=5753)->inventario[4]
-[01:47:50.511] [Terrakeep] PANEL BUILDS ABIERTO via autoprueba (TERRAKEEP_AUTOTEST_BUILDS). Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPrueba". Fuente="Vanilla" Etapa="Pre-Hardmode (listo para el Muro de Carne)" Clase="Cuerpo a cuerpo". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Builds.PanelBuildsState
-[01:47:50.511] [Terrakeep] Builds "ya lo tienes" (al abrir): 0 de 13 objetos de "Pre-Hardmode (listo para el Muro de Carne)" / Cuerpo a cuerpo.
-[01:47:50.512] [Terrakeep]   - Casco fundido [MoltenHelmet] type=231: no lo tienes
-[01:47:50.512] [Terrakeep]   - Coraza fundida [MoltenBreastplate] type=232: no lo tienes
-[01:47:50.512] [Terrakeep]   - Grebas fundidas [MoltenGreaves] type=233: no lo tienes
-[01:47:50.513] [Terrakeep]   - Filo de la noche [NightsEdge] type=273: no lo tienes
-[01:47:50.513] [Terrakeep]   - Furia solar [Sunfury] type=220: no lo tienes
-[01:47:50.513] [Terrakeep]   - La Despedazadora [TheBreaker] type=104: no lo tienes
-[01:47:50.513] [Terrakeep]   - Garras de bestia [FeralClaws] type=211: no lo tienes
-[01:47:50.513] [Terrakeep]   - Piedra filosofal [PhilosophersStone] type=535: no lo tienes
-[01:47:50.514] [Terrakeep]   - Collar con cruz [CrossNecklace] type=554: no lo tienes
-[01:47:50.514] [Terrakeep]   - Escudo de obsidiana [ObsidianShield] type=397: no lo tienes
-[01:47:50.514] [Terrakeep]   - Banda de regeneración [BandofRegeneration] type=49: no lo tienes
-[01:47:50.514] [Terrakeep]   - Mantra antimaldición [CountercurseMantra] type=904: no lo tienes
-[01:47:50.515] [Terrakeep]   - Bezoar [Bezoar] type=887: no lo tienes
-[01:47:50.515] [Terrakeep] AUTOPRUEBA BUILDS: fuente pedida "calamity" -> seleccionada ("Calamity")
-[01:47:50.515] [Terrakeep] AUTOPRUEBA BUILDS: filtro activo -> Fuente="Calamity" Etapa="Pre-Hardmode (listo para el Muro de Carne)" Clase="Pícaro" (clave pedida: "rogue").
-[01:47:50.515] [Terrakeep] Builds "ya lo tienes" (con el filtro ya aplicado): 5 de 8 objetos de "Pre-Hardmode (listo para el Muro de Carne)" / Pícaro.
-[01:47:50.516] [Terrakeep]   - Casco Sulfuroso [CalamityMod/SulphurousHelmet] type=5959: LO TIENES en inventario[0]
-[01:47:50.516] [Terrakeep]   - Coraza Sulfurosa [CalamityMod/SulphurousBreastplate] type=5958: no lo tienes
-[01:47:50.516] [Terrakeep]   - Grebas Sulfurosas [CalamityMod/SulphurousLeggings] type=5960: LO TIENES en inventario[1]
-[01:47:50.516] [Terrakeep]   - Azote del Desierto [CalamityMod/ScourgeoftheDesert] type=8128: LO TIENES en inventario[2]
-[01:47:50.517] [Terrakeep]   - Cuchillo de Espora [CalamityMod/SporeKnife] type=8142: no lo tienes
-[01:47:50.517] [Terrakeep]   - Moneda del Engaño [CalamityMod/CoinofDeceit] type=5646: LO TIENES en inventario[3]
-[01:47:50.517] [Terrakeep]   - Joya del Corredor [CalamityMod/ScuttlersJewel] type=5753: LO TIENES en inventario[4]
-[01:47:50.517] [Terrakeep]   - Colgante de Amidias [CalamityMod/AmidiasPendant] type=5618: no lo tienes
-[01:47:50.518] [Terrakeep] AUTOPRUEBA BUILDS: equipo ANTES de auto-equipar: casco="" pechera="" grebas="" acc1="" acc2="" acc3="" acc4="" acc5=""
-[01:47:50.519] [Terrakeep] AUTO-EQUIPAR "Calamity / Pre-Hardmode (listo para el Muro de Carne)" / Pícaro: movidos=4, ya colocados=1, no los tienes=3, sin sitio=0, no existen aqui=0. Conjunto activo (CurrentLoadoutIndex)=0, slots de accesorio disponibles=5.
-[01:47:50.519] [Terrakeep]   - Casco Sulfuroso: inventario[0] -> equipo[0]
-[01:47:50.519] [Terrakeep]   - Coraza Sulfurosa: no lo tienes
-[01:47:50.520] [Terrakeep]   - Grebas Sulfurosas: inventario[1] -> equipo[2]
-[01:47:50.520] [Terrakeep]   - Moneda del Engaño: inventario[3] -> equipo[3] (accesorio)
-[01:47:50.520] [Terrakeep]   - Joya del Corredor: inventario[4] -> equipo[4] (accesorio)
-[01:47:50.520] [Terrakeep]   - Colgante de Amidias: no lo tienes
-[01:47:50.520] [Terrakeep]   - Azote del Desierto: ya en la mochila
-[01:47:50.520] [Terrakeep]   - Cuchillo de Espora: no lo tienes
-[01:47:50.521] [Terrakeep]   Equipo tras auto-equipar: casco="Sulphurous Helmet#5959" pechera="" grebas="Sulphurous Leggings#5960" acc1="Coin of Deceit#5646" acc2="Scuttler's Jewel#5753" acc3="" acc4="" acc5=""
-[01:47:50.521] [Terrakeep] Builds "ya lo tienes" (despues de auto-equipar): 5 de 8 objetos de "Pre-Hardmode (listo para el Muro de Carne)" / Pícaro.
-[01:47:50.521] [Terrakeep]   - Casco Sulfuroso [CalamityMod/SulphurousHelmet] type=5959: LO TIENES en equipo[0]
-[01:47:50.522] [Terrakeep]   - Coraza Sulfurosa [CalamityMod/SulphurousBreastplate] type=5958: no lo tienes
-[01:47:50.522] [Terrakeep]   - Grebas Sulfurosas [CalamityMod/SulphurousLeggings] type=5960: LO TIENES en equipo[2]
-[01:47:50.522] [Terrakeep]   - Azote del Desierto [CalamityMod/ScourgeoftheDesert] type=8128: LO TIENES en inventario[2]
-[01:47:50.522] [Terrakeep]   - Cuchillo de Espora [CalamityMod/SporeKnife] type=8142: no lo tienes
-[01:47:50.523] [Terrakeep]   - Moneda del Engaño [CalamityMod/CoinofDeceit] type=5646: LO TIENES en equipo[3]
-[01:47:50.523] [Terrakeep]   - Joya del Corredor [CalamityMod/ScuttlersJewel] type=5753: LO TIENES en equipo[4]
-[01:47:50.523] [Terrakeep]   - Colgante de Amidias [CalamityMod/AmidiasPendant] type=5618: no lo tienes
-[01:47:50.524] [Terrakeep] AUTOPRUEBA BUILDS: segunda pasada de auto-equipar (prueba de idempotencia).
-[01:47:50.524] [Terrakeep] AUTO-EQUIPAR "Calamity / Pre-Hardmode (listo para el Muro de Carne)" / Pícaro: movidos=0, ya colocados=5, no los tienes=3, sin sitio=0, no existen aqui=0. Conjunto activo (CurrentLoadoutIndex)=0, slots de accesorio disponibles=5.
-[01:47:50.524] [Terrakeep]   - Casco Sulfuroso: ya puesto en equipo[0]
-[01:47:50.524] [Terrakeep]   - Coraza Sulfurosa: no lo tienes
-[01:47:50.525] [Terrakeep]   - Grebas Sulfurosas: ya puesto en equipo[2]
-[01:47:50.525] [Terrakeep]   - Moneda del Engaño: ya equipado
-[01:47:50.525] [Terrakeep]   - Joya del Corredor: ya equipado
-[01:47:50.525] [Terrakeep]   - Colgante de Amidias: no lo tienes
-[01:47:50.526] [Terrakeep]   - Azote del Desierto: ya en la mochila
-[01:47:50.526] [Terrakeep]   - Cuchillo de Espora: no lo tienes
-[01:47:50.526] [Terrakeep]   Equipo tras auto-equipar: casco="Sulphurous Helmet#5959" pechera="" grebas="Sulphurous Leggings#5960" acc1="Coin of Deceit#5646" acc2="Scuttler's Jewel#5753" acc3="" acc4="" acc5=""
-[01:47:50.528] [Terrakeep] Panel Builds dibujado. Marco: x=150 y=60 w=980 h=600. Resolucion actual: 1280x720. 8 slots de catalogo. Primeros: ["Casco Sulfuroso" x=176 y=292 w=44 h=44 loTiene=True] ["Coraza Sulfurosa" x=176 y=346 w=44 h=44 loTiene=False] ["Grebas Sulfurosas" x=176 y=400 w=44 h=44 loTiene=True] ["Azote del Desierto" x=490 y=292 w=44 h=44 loTiene=True] 
+# Evidencia de WS4 (Builds) - 2026-09-08 02:17:23
+[02:17:23.449] [Terrakeep] Builds: catalogo resuelto. [Vanilla: 3 etapas, 156/156 objetos resueltos] [Calamity: 3 etapas, 154/154 objetos resueltos] 
+[02:17:23.453] [Terrakeep] PrefijoPicaro: tabla cargada desde Assets/rogue_prefixes.json (17 de arma + 4 de accesorio).
+[02:17:27.829] [Terrakeep] AUTOPRUEBA BUILDS: TERRAKEEP_AUTOTEST_BUILDS detectada. Marca de ejecucion: WS4-021658-127536
+[02:17:27.830] [Terrakeep] AUTOPRUEBA BUILDS: objetos sembrados para la prueba: MoltenHelmet(type=231)->inventario[0], MoltenGreaves(type=233)->inventario[1], NightsEdge(type=273)->inventario[2], FeralClaws(type=211)->inventario[3], ObsidianShield(type=397)->inventario[4], BandofRegeneration(type=49)->inventario[5]
+[02:17:27.840] [Terrakeep] Pestaña activa: "Builds" (via reapertura).
+[02:17:27.841] [Terrakeep] PANEL ABIERTO via autoprueba (TERRAKEEP_AUTOTEST_BUILDS). Pestaña: "Builds". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPrueba". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
+[02:17:27.841] [Terrakeep] Builds: Fuente="Vanilla" Etapa="Pre-Hardmode (listo para el Muro de Carne)" Clase="Cuerpo a cuerpo".
+[02:17:27.841] [Terrakeep] Builds "ya lo tienes" (al abrir): 6 de 13 objetos de "Pre-Hardmode (listo para el Muro de Carne)" / Cuerpo a cuerpo.
+[02:17:27.842] [Terrakeep]   - Casco fundido [MoltenHelmet] type=231: LO TIENES en inventario[0]
+[02:17:27.842] [Terrakeep]   - Coraza fundida [MoltenBreastplate] type=232: no lo tienes
+[02:17:27.842] [Terrakeep]   - Grebas fundidas [MoltenGreaves] type=233: LO TIENES en inventario[1]
+[02:17:27.842] [Terrakeep]   - Filo de la noche [NightsEdge] type=273: LO TIENES en inventario[2]
+[02:17:27.843] [Terrakeep]   - Furia solar [Sunfury] type=220: no lo tienes
+[02:17:27.843] [Terrakeep]   - La Despedazadora [TheBreaker] type=104: no lo tienes
+[02:17:27.843] [Terrakeep]   - Garras de bestia [FeralClaws] type=211: LO TIENES en inventario[3]
+[02:17:27.843] [Terrakeep]   - Piedra filosofal [PhilosophersStone] type=535: no lo tienes
+[02:17:27.844] [Terrakeep]   - Collar con cruz [CrossNecklace] type=554: no lo tienes
+[02:17:27.844] [Terrakeep]   - Escudo de obsidiana [ObsidianShield] type=397: LO TIENES en inventario[4]
+[02:17:27.844] [Terrakeep]   - Banda de regeneración [BandofRegeneration] type=49: LO TIENES en inventario[5]
+[02:17:27.844] [Terrakeep]   - Mantra antimaldición [CountercurseMantra] type=904: no lo tienes
+[02:17:27.845] [Terrakeep]   - Bezoar [Bezoar] type=887: no lo tienes
+[02:17:27.845] [Terrakeep] AUTOPRUEBA BUILDS: fuente pedida "calamity" -> seleccionada ("Calamity")
+[02:17:27.845] [Terrakeep] AUTOPRUEBA BUILDS: filtro activo -> Fuente="Calamity" Etapa="Pre-Hardmode (listo para el Muro de Carne)" Clase="Pícaro" (clave pedida: "rogue").
+[02:17:27.845] [Terrakeep] Builds "ya lo tienes" (con el filtro ya aplicado): 0 de 8 objetos de "Pre-Hardmode (listo para el Muro de Carne)" / Pícaro.
+[02:17:27.846] [Terrakeep]   - Sulphurous Helmet [CalamityMod/SulphurousHelmet] type=5959: no lo tienes
+[02:17:27.846] [Terrakeep]   - Sulphurous Breastplate [CalamityMod/SulphurousBreastplate] type=5958: no lo tienes
+[02:17:27.846] [Terrakeep]   - Sulphurous Leggings [CalamityMod/SulphurousLeggings] type=5960: no lo tienes
+[02:17:27.847] [Terrakeep]   - Scourge of the Desert [CalamityMod/ScourgeoftheDesert] type=8128: no lo tienes
+[02:17:27.847] [Terrakeep]   - Spore Knife [CalamityMod/SporeKnife] type=8142: no lo tienes
+[02:17:27.847] [Terrakeep]   - Coin of Deceit [CalamityMod/CoinofDeceit] type=5646: no lo tienes
+[02:17:27.847] [Terrakeep]   - Scuttler's Jewel [CalamityMod/ScuttlersJewel] type=5753: no lo tienes
+[02:17:27.848] [Terrakeep]   - Amidias' Pendant [CalamityMod/AmidiasPendant] type=5618: no lo tienes
+[02:17:27.848] [Terrakeep] AUTOPRUEBA BUILDS: filtro por clase con un clic real en la pildora 5 de 5 ("Pícaro"): clase "Pícaro" -> "Pícaro". Objetos de la clase ahora: 8.
+[02:17:27.848] [Terrakeep] AUTOPRUEBA BUILDS: equipo ANTES de auto-equipar (los 3 conjuntos): [Conjunto 1 *ACTIVO*: casco="" pechera="" grebas="" acc1="" acc2="" acc3="" acc4="" acc5=""] [Conjunto 2: casco="" pechera="" grebas="" acc1="" acc2="" acc3="" acc4="" acc5=""] [Conjunto 3: casco="" pechera="" grebas="" acc1="" acc2="" acc3="" acc4="" acc5=""]
+[02:17:27.936] [Terrakeep] AUTOPRUEBA BUILDS: captura guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS4\terrakeep-capturas\builds-antes.png" (1280x720)
+[02:17:27.939] [Terrakeep] AUTO-EQUIPAR "Calamity / Pre-Hardmode (listo para el Muro de Carne)" / Pícaro: movidos=0, ya colocados=0, creados=8, sin sitio=0, no existen aquí=0. Conjunto de destino=1/3 (ACTIVO ahora mismo, se ve al instante), Conjunto activo real (CurrentLoadoutIndex)=0, slots de accesorio disponibles=5.
+[02:17:27.939] [Terrakeep]   - Sulphurous Helmet: creado del catalogo (prefijo: ninguno) -> equipo[0]
+[02:17:27.940] [Terrakeep]   - Sulphurous Breastplate: creado del catalogo (prefijo: ninguno) -> equipo[1]
+[02:17:27.940] [Terrakeep]   - Sulphurous Leggings: creado del catalogo (prefijo: ninguno) -> equipo[2]
+[02:17:27.940] [Terrakeep]   - Coin of Deceit: creado del catalogo (prefijo: Picaro real de Calamity, id 10020 -> item.prefix=103 "Silent") -> equipo[3] (accesorio)
+[02:17:27.940] [Terrakeep]   - Scuttler's Jewel: creado del catalogo (prefijo: Picaro real de Calamity, id 10020 -> item.prefix=103 "Silent") -> equipo[4] (accesorio)
+[02:17:27.941] [Terrakeep]   - Amidias' Pendant: creado del catalogo (prefijo: Picaro real de Calamity, id 10020 -> item.prefix=103 "Silent") -> equipo[5] (accesorio)
+[02:17:27.941] [Terrakeep]   - Scourge of the Desert: creado del catalogo (prefijo: Picaro real de Calamity, id 10002 -> item.prefix=90 "Flawless") -> inventario[6]
+[02:17:27.941] [Terrakeep]   - Spore Knife: creado del catalogo (prefijo: Picaro real de Calamity, id 10002 -> item.prefix=90 "Flawless") -> inventario[7]
+[02:17:27.942] [Terrakeep]   Conjunto 1 tras auto-equipar: casco="Sulphurous Helmet#5959" pechera="Sulphurous Breastplate#5958" grebas="Sulphurous Leggings#5960" acc1="Coin of Deceit#5646" acc2="Scuttler's Jewel#5753" acc3="Amidias' Pendant#5618" acc4="" acc5=""
+[02:17:27.942] [Terrakeep] AUTOPRUEBA BUILDS: clic real en "Auto-equipar" -> mensaje inmediato="Auto-equipar: movidos=0, ya colocados=0, creados=8, sin sitio=0, no existen aquí=0" fotogramasRestantes=360.
+[02:17:28.028] [Terrakeep] AUTOPRUEBA BUILDS: captura guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS4\terrakeep-capturas\builds-justo-tras-clic.png" (1280x720)
+[02:17:28.028] [Terrakeep] Builds "ya lo tienes" (despues de auto-equipar): 8 de 8 objetos de "Pre-Hardmode (listo para el Muro de Carne)" / Pícaro.
+[02:17:28.028] [Terrakeep]   - Sulphurous Helmet [CalamityMod/SulphurousHelmet] type=5959: LO TIENES en equipo[0]
+[02:17:28.029] [Terrakeep]   - Sulphurous Breastplate [CalamityMod/SulphurousBreastplate] type=5958: LO TIENES en equipo[1]
+[02:17:28.029] [Terrakeep]   - Sulphurous Leggings [CalamityMod/SulphurousLeggings] type=5960: LO TIENES en equipo[2]
+[02:17:28.029] [Terrakeep]   - Scourge of the Desert [CalamityMod/ScourgeoftheDesert] type=8128: LO TIENES en inventario[6]
+[02:17:28.029] [Terrakeep]   - Spore Knife [CalamityMod/SporeKnife] type=8142: LO TIENES en inventario[7]
+[02:17:28.029] [Terrakeep]   - Coin of Deceit [CalamityMod/CoinofDeceit] type=5646: LO TIENES en equipo[3]
+[02:17:28.030] [Terrakeep]   - Scuttler's Jewel [CalamityMod/ScuttlersJewel] type=5753: LO TIENES en equipo[4]
+[02:17:28.030] [Terrakeep]   - Amidias' Pendant [CalamityMod/AmidiasPendant] type=5618: LO TIENES en equipo[5]
+[02:17:28.030] [Terrakeep] AUTOPRUEBA BUILDS: equipo DESPUES de auto-equipar (los 3 conjuntos): [Conjunto 1 *ACTIVO*: casco="Sulphurous Helmet#5959" pechera="Sulphurous Breastplate#5958" grebas="Sulphurous Leggings#5960" acc1="Coin of Deceit#5646" acc2="Scuttler's Jewel#5753" acc3="Amidias' Pendant#5618" acc4="" acc5=""] [Conjunto 2: casco="" pechera="" grebas="" acc1="" acc2="" acc3="" acc4="" acc5=""] [Conjunto 3: casco="" pechera="" grebas="" acc1="" acc2="" acc3="" acc4="" acc5=""]
+[02:17:28.031] [Terrakeep] AUTOPRUEBA BUILDS: segunda pasada de auto-equipar (prueba de idempotencia).
+[02:17:28.031] [Terrakeep] AUTO-EQUIPAR "Calamity / Pre-Hardmode (listo para el Muro de Carne)" / Pícaro: movidos=0, ya colocados=8, creados=0, sin sitio=0, no existen aquí=0. Conjunto de destino=1/3 (ACTIVO ahora mismo, se ve al instante), Conjunto activo real (CurrentLoadoutIndex)=0, slots de accesorio disponibles=5.
+[02:17:28.031] [Terrakeep]   - Sulphurous Helmet: ya puesto en equipo[0]
+[02:17:28.032] [Terrakeep]   - Sulphurous Breastplate: ya puesto en equipo[1]
+[02:17:28.032] [Terrakeep]   - Sulphurous Leggings: ya puesto en equipo[2]
+[02:17:28.032] [Terrakeep]   - Coin of Deceit: ya equipado
+[02:17:28.032] [Terrakeep]   - Scuttler's Jewel: ya equipado
+[02:17:28.033] [Terrakeep]   - Amidias' Pendant: ya equipado
+[02:17:28.033] [Terrakeep]   - Scourge of the Desert: ya en la mochila
+[02:17:28.033] [Terrakeep]   - Spore Knife: ya en la mochila
+[02:17:28.033] [Terrakeep]   Conjunto 1 tras auto-equipar: casco="Sulphurous Helmet#5959" pechera="Sulphurous Breastplate#5958" grebas="Sulphurous Leggings#5960" acc1="Coin of Deceit#5646" acc2="Scuttler's Jewel#5753" acc3="Amidias' Pendant#5618" acc4="" acc5=""
+[02:17:28.034] [Terrakeep] AUTOPRUEBA BUILDS: equipo tras la segunda pasada (los 3 conjuntos): [Conjunto 1 *ACTIVO*: casco="Sulphurous Helmet#5959" pechera="Sulphurous Breastplate#5958" grebas="Sulphurous Leggings#5960" acc1="Coin of Deceit#5646" acc2="Scuttler's Jewel#5753" acc3="Amidias' Pendant#5618" acc4="" acc5=""] [Conjunto 2: casco="" pechera="" grebas="" acc1="" acc2="" acc3="" acc4="" acc5=""] [Conjunto 3: casco="" pechera="" grebas="" acc1="" acc2="" acc3="" acc4="" acc5=""]
+[02:17:28.120] [Terrakeep] AUTOPRUEBA BUILDS: captura +0 fotogramas tras el clic real en Auto-equipar. mensaje="Auto-equipar: movidos=0, ya colocados=8, creados=0, sin sitio=0, no existen aquí=0" fotogramasRestantes=360. captura guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS4\terrakeep-capturas\builds-persistencia-000f.png" (1280x720)
+[02:17:28.125] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=100 y=21 w=1080 h=676. Resolucion 1280x720, escala de interfaz 1. Pestaña abierta: "Builds". Barra de pestañas: ["Personaje" x=110 y=61 170x30] ["Librería" x=286 y=61 170x30] ["Builds" x=463 y=61 170x30 ACTIVA] ["Investigación" x=640 y=61 170x30] ["Exploración" x=816 y=61 170x30] ["Ajustes" x=993 y=61 170x30] 
+[02:17:28.135] [Terrakeep] Area de Builds dibujada. Zona: x=110 y=99 w=1060 h=544. Resolucion actual: 1280x720. 8 slots de catalogo. Primeros: ["Sulphurous Helmet" x=110 y=325 w=44 h=44 loTiene=True] ["Sulphurous Breastplate" x=110 y=377 w=44 h=44 loTiene=True] ["Sulphurous Leggings" x=110 y=429 w=44 h=44 loTiene=True] ["Scourge of the Desert" x=463 y=325 w=44 h=44 loTiene=True] 
+[02:17:28.546] [Terrakeep] AUTOPRUEBA BUILDS: captura +20 fotogramas tras el clic real en Auto-equipar. mensaje="Auto-equipar: movidos=0, ya colocados=8, creados=0, sin sitio=0, no existen aquí=0" fotogramasRestantes=340. captura guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS4\terrakeep-capturas\builds-persistencia-020f.png" (1280x720)
+[02:17:29.794] [Terrakeep] AUTOPRUEBA BUILDS: captura +90 fotogramas tras el clic real en Auto-equipar. mensaje="Auto-equipar: movidos=0, ya colocados=8, creados=0, sin sitio=0, no existen aquí=0" fotogramasRestantes=270. captura guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS4\terrakeep-capturas\builds-persistencia-090f.png" (1280x720)
+[02:17:31.709] [Terrakeep] AUTOPRUEBA BUILDS: captura +200 fotogramas tras el clic real en Auto-equipar. mensaje="Auto-equipar: movidos=0, ya colocados=8, creados=0, sin sitio=0, no existen aquí=0" fotogramasRestantes=160. captura guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS4\terrakeep-capturas\builds-persistencia-200f.png" (1280x720)
