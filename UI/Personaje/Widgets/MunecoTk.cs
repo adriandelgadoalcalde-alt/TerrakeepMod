@@ -2,6 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.ID;
 using Terraria.UI;
 using TerrakeepMod.Common.Panel;
 using TerrakeepMod.Common.Personaje;
@@ -36,10 +37,23 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		private readonly Item[] _armaduraVacia = CrearArrayDeAire(PersonajeVivo.SlotsEquipo);
 		private readonly Item[] _tinteVacio = CrearArrayDeAire(PersonajeVivo.SlotsTinte);
 
+		/// <summary>Aire precreado para las ranuras de inventario del muñeco que no llevan moneda
+		/// (ver <see cref="SincronizarEstadoQueLeenLosTintes"/>). Precreado una vez y no en cada
+		/// fotograma: esto corre 60 veces por segundo.</summary>
+		private readonly Item[] _inventarioVacio = CrearArrayDeAire(SlotsQueMiraElTinteDeDinero);
+
 		/// <summary>Si se enseña el equipo puesto o el personaje "desnudo" (solo pelo, piel y
 		/// colores). No se guarda como campo del muñeco: <c>PestanaApariencia</c> lo controla con
 		/// un <see cref="AlternadorTk"/> propio.</summary>
 		public bool ConArmadura = true;
+
+		/// <summary>
+		/// El <see cref="Player"/> propio que se dibuja. Se expone SOLO DE LECTURA para que las
+		/// autopruebas puedan comparar campo a campo lo que ve el renderer del muñeco con lo que
+		/// tiene el jugador real (hizo falta para el fallo de los tintes de pelo: la diferencia
+		/// estaba justo ahi, en campos del <c>Player</c> que la vista previa no copiaba).
+		/// </summary>
+		public Player Jugador => _muneco;
 
 		public MunecoTk()
 		{
@@ -116,6 +130,98 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			muneco.DisplayDollUpdate();
 			muneco.UpdateSocialShadow();
 			muneco.PlayerFrame();
+
+			SincronizarEstadoQueLeenLosTintes(jugador, muneco);
+		}
+
+		/// <summary>
+		/// Copia el estado del jugador real del que dependen los TINTES DE PELO. Va DESPUES de
+		/// <c>PlayerFrame()</c> a proposito, exactamente igual que hace el Maniqui de vanilla con su
+		/// <c>position</c> (<c>TEDisplayDoll.Draw</c>: los cinco pasos, luego
+		/// <c>dollPlayer.position = ...</c>, y solo despues <c>DrawPlayer</c>): asi la POSE del
+		/// muñeco se sigue calculando con un personaje quieto en el origen -de pie, sin animacion de
+		/// salto ni de carrera- y en cambio el DIBUJADO ya ve los valores de verdad.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// <b>Este era el fallo real de los tintes en la vista previa</b>, y no estaba ni en la
+		/// escritura de <c>Player.hairDye</c> ni en el renderer. Los tintes de pelo de Terraria
+		/// <b>no son un color fijo</b>: once de los doce de vanilla son <c>LegacyHairShaderData</c>
+		/// (<c>Terraria.Initializers.DyeInitializer.LoadLegacyHairdyes</c>, decompilado), o sea una
+		/// funcion <c>(Player, Color) -&gt; Color</c> que el juego evalua en cada fotograma
+		/// <b>sobre el Player que se esta dibujando</b> (<c>Player.GetHairColor</c> -&gt;
+		/// <c>GameShaders.Hair.GetColor(hairDye, this, ...)</c>). Como el muñeco es un
+		/// <c>Player</c> propio recien creado, esas funciones leian los valores DE FABRICA y no los
+		/// del personaje, asi que la vista previa enseñaba un color distinto del que se ve de verdad
+		/// en la partida. Medido en el juego real antes de este arreglo, con el personaje de prueba:
+		/// </para>
+		/// <list type="bullet">
+		/// <item>Tinte de maná: jugador <c>(50,75,255)</c> azul, muñeco <c>(250,255,255)</c> blanco
+		/// (el muñeco tenia <c>statMana</c> 0 de 20, el jugador 20 de 20);</item>
+		/// <item>Tinte de las profundidades: jugador <c>(97,154,83)</c>, muñeco <c>(115,160,247)</c>
+		/// (el muñeco estaba en <c>position</c> (0,0), o sea el cielo);</item>
+		/// <item>Tinte de pelo marciano: jugador <c>(232,157,147)</c>, muñeco <c>(105,30,20)</c>.</item>
+		/// </list>
+		/// <para>
+		/// Que campo lee cada tinte esta sacado del codigo real, uno a uno: vital
+		/// <c>statLife</c>/<c>statLifeMax2</c>; maná <c>statMana</c>/<c>statManaMax2</c>;
+		/// profundidades <c>Center</c> (o sea <c>position</c>); dinero las monedas de
+		/// <c>inventory[0..53]</c>; equipo <c>team</c>; biomedio <c>ZoneShimmer</c>; velocidad
+		/// <c>velocity</c>; festivo, arcoiris y tiempo no leen nada del jugador; y el de crepusculo
+		/// es un sombreador de verdad que solo usa <c>direction</c>.
+		/// </para>
+		/// <para>
+		/// <b>El inventario NO se comparte por referencia</b> (a diferencia de <c>armor</c>/
+		/// <c>dye</c>): <c>PlayerFrame</c> mira <c>HeldItem</c>, o sea
+		/// <c>inventory[selectedItem]</c>, y compartir el array entero haria que el muñeco saliera
+		/// empuñando la antorcha o el arma que llevase el jugador. Se copian solo las MONEDAS, que
+		/// es lo unico que lee el tinte de dinero y lo unico que nunca se dibuja en la mano.
+		/// </para>
+		/// <para>
+		/// El tinte marciano ademas muestrea <c>Lighting.GetColor</c> en el tile del jugador: dentro
+		/// del dibujado del muñeco eso devuelve blanco a proposito (<c>Main.gameMenu</c> forzado a
+		/// true, ver <see cref="DrawSelf"/>), que es justo lo que hace que la vista previa no
+		/// parpadee con las antorchas. Ese tinte, por tanto, se ve en la vista previa a plena luz;
+		/// es la consecuencia querida del arreglo del parpadeo, no un fallo suelto.
+		/// </para>
+		/// </remarks>
+		private void SincronizarEstadoQueLeenLosTintes(Player jugador, Player muneco)
+		{
+			muneco.position = jugador.position;
+			muneco.velocity = jugador.velocity;
+
+			muneco.statLife = jugador.statLife;
+			muneco.statLifeMax = jugador.statLifeMax;
+			muneco.statLifeMax2 = jugador.statLifeMax2;
+			muneco.statMana = jugador.statMana;
+			muneco.statManaMax = jugador.statManaMax;
+			muneco.statManaMax2 = jugador.statManaMax2;
+
+			muneco.team = jugador.team;
+			muneco.ZoneShimmer = jugador.ZoneShimmer;
+
+			// Solo las monedas, y en su misma ranura: el tinte de dinero las suma recorriendo
+			// inventory[0..53] sin mirar en cual esta cada una.
+			Item[] origen = jugador.inventory;
+			Item[] destino = muneco.inventory;
+			int hasta = Math.Min(SlotsQueMiraElTinteDeDinero, Math.Min(origen.Length, destino.Length));
+			for (int i = 0; i < hasta; i++) {
+				Item objeto = origen[i];
+				destino[i] = EsMoneda(objeto) ? objeto : _inventarioVacio[i];
+			}
+		}
+
+		/// <summary>Ranuras que recorre el tinte de dinero (<c>DyeInitializer</c>: <c>for (i = 0;
+		/// i &lt; 54; i++)</c>) - las 50 de la mochila mas las 4 de monedas.</summary>
+		private const int SlotsQueMiraElTinteDeDinero = 54;
+
+		private static bool EsMoneda(Item objeto)
+		{
+			if (objeto == null) {
+				return false;
+			}
+			return objeto.type == ItemID.CopperCoin || objeto.type == ItemID.SilverCoin
+				|| objeto.type == ItemID.GoldCoin || objeto.type == ItemID.PlatinumCoin;
 		}
 
 		protected override void DrawSelf(SpriteBatch spriteBatch)

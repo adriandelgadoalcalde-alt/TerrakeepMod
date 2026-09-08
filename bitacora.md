@@ -4736,3 +4736,144 @@ a 1.4.5** (las que describen este juego): Báculo de slime *"its best possible m
 cuchillas *"Its best modifiers are **Demonic**, Deadly, Mystic, or Hurtful"*, y la historia de
 `Modifiers`: *"Added 13 new modifiers… exclusively obtainable by summon weapons, **which previously
 shared modifiers with magic weapons**"* (1.4.5.0).
+
+---
+
+## 8-sep-2026 — Apariencia: los tintes de pelo mentían en la vista previa, y botón para deshacer
+
+Dos encargos del usuario probando el mod, los dos sobre **Personaje → Apariencia**
+(`UI/Personaje/PestanaApariencia.cs` y `UI/Personaje/Widgets/MunecoTk.cs`).
+
+### 1. El bug: "los tintes de pelo no se aplican bien o no se ven"
+
+**Lo primero fue descartar lo obvio, con el código real decompilado en la mano, no suponiendo.**
+La escritura sobre el `Player` estaba bien: `PestanaApariencia` pone `Player.hairDye` con el id de
+sombreador sacado de `Item.hairDye`, que es literalmente de donde lo copia el juego
+(`Player.cs`: `hairDye = item.hairDye;`). Y el renderer también: el pelo se pinta con el
+`colorHair` que calcula `PlayerDrawSet` llamando a `Player.GetHairColor()`.
+
+**Lo que sí es cierto -y es la raíz del fallo- es que un tinte de pelo de Terraria NO es un
+color.** De los trece que trae vanilla, **doce son `LegacyHairShaderData`**
+(`Terraria.Initializers.DyeInitializer.LoadLegacyHairdyes`, decompilado): una función
+`(Player, Color) -> Color` que el juego evalúa **en cada fotograma sobre el `Player` que se está
+dibujando**. Solo el de crepúsculo (objeto 3259) es un sombreador de verdad
+(`GameShaders.Hair.Apply`, `TwilightHairDyeShaderData`).
+
+Y el muñeco de la vista previa es un `Player` **propio** (`new Player()`, el patrón del Maniquí de
+vanilla). O sea que esas doce funciones estaban leyendo los valores **de fábrica** del muñeco y no
+los del personaje. Medido en el juego real, con el personaje de prueba y ANTES del arreglo:
+
+| Tinte | Color con el JUGADOR | Color con el MUÑECO |
+|---|---|---|
+| Tinte de maná | `(50,75,255)` azul | `(250,255,255)` **casi blanco** |
+| Tinte de las profundidades | `(97,154,83)` | `(115,160,247)` |
+| Tinte de pelo marciano | `(232,157,147)` | `(105,30,20)` |
+| Tinte de dinero (con 30 platino) | `(161,172,173)` | `(226,118,76)` |
+
+El de maná salía blanco porque el muñeco tenía `statMana` 0 de 20 y el jugador 20 de 20; el de las
+profundidades, porque el muñeco vivía en `position` (0,0), o sea el cielo; el de dinero, porque
+recorre `inventory[0..53]` y el muñeco no tenía inventario. Los otros ocho coincidían **por
+casualidad** (no leen nada del jugador, o leen algo que en el personaje de prueba también valía
+cero).
+
+**El arreglo** (`MunecoTk.SincronizarEstadoQueLeenLosTintes`): copiar del jugador real, justo
+antes de dibujar, el estado que leen los tintes - `position`, `velocity`, vida y maná (los tres
+campos de cada uno: `stat*`, `stat*Max`, `stat*Max2`), `team`, `ZoneShimmer` y las monedas de
+`inventory[0..53]`. Qué campo lee cada tinte está sacado uno a uno del código real, no a bulto.
+
+Dos detalles que no son adorno:
+
+- **Va DESPUÉS de `PlayerFrame()`**, exactamente igual que el Maniquí de vanilla hace con su
+  `position` (`TEDisplayDoll.Draw`: los cinco pasos, luego `dollPlayer.position = ...`, y solo
+  entonces `DrawPlayer`). Así la POSE se sigue calculando con un personaje quieto -de pie, sin
+  animación de salto ni de carrera- y solo el dibujado ve los valores de verdad.
+- **El inventario NO se comparte por referencia** (a diferencia de `armor`/`dye`): `PlayerFrame`
+  mira `HeldItem`, o sea `inventory[selectedItem]`, y compartir el array entero sacaría al muñeco
+  empuñando la antorcha o el arma del jugador. Se copian **solo las monedas**, que es lo único que
+  lee el tinte de dinero y lo único que nunca se dibuja en la mano.
+
+Queda dicho claro: el **tinte marciano** muestrea `Lighting.GetColor` en el tile del jugador, y
+dentro del dibujado del muñeco eso devuelve blanco a propósito (`Main.gameMenu` forzado a true, el
+arreglo del parpadeo del 7-sep). En la vista previa ese tinte se ve, por tanto, a plena luz. Es la
+consecuencia querida de aquel arreglo, no un fallo suelto.
+
+### 2. La función nueva: botón "Deshacer cambios"
+
+Al lado del botón de Cerrar: mismo borde derecho, mismo alto (34) y justo encima - el pie del
+marco mide 44 px y "Cerrar" ocupa los 34 de abajo, así que entre los dos quedan los 10 px de
+separación del propio marco. Ancho 210 y no 160 porque "Deshacer cambios" a escala 0,8 pide unos
+200 px con la fuente real.
+
+**No se metió DENTRO de la fila del pie**, aunque por ancho cabría: esa línea de ayuda del pie es
+una `EtiquetaTk` de 820 px que **no ignora el ratón** y se comería los clics de la mitad izquierda
+del botón; y además el pie es del marco común de las seis áreas (`PanelTerrakeepState`), que en
+esta tarea estaba fuera de alcance por haber otros agentes trabajando en él.
+
+Restaura los once campos de apariencia (peinado, tinte, variante y los siete colores) a como
+estaban **al entrar en la pestaña** - no un deshacer de toda la sesión. La foto se toma en el
+constructor de `PestanaApariencia`, y como `ContenidoPersonaje` reconstruye la pestaña cada vez
+que se entra en ella, la foto es siempre "lo que había justo al abrir Apariencia".
+
+**Snapshot puro, no closures encadenadas**, el mismo criterio que ya razona `EntradaSnapshot<T>`
+para todo el historial del mod (y que usa `ContainerViewModel.ClearAll` en la app de escritorio
+hermana). Son once valores de tipo valor, así que la foto es una copia de verdad sin clonar nada.
+La acción además se registra en el historial general con `Historial.CambiarValor`, así que el
+propio Ctrl+Z puede deshacer el deshacer. El botón **se apaga solo** mientras no haya nada que
+deshacer, en vez de dejarse pulsar sin efecto.
+
+### De regalo, un solape de textos que ya estaba y no se veía
+
+Al mirar la captura del panel apareció que la línea `Personaje.Apariencia.NotaColores` **no cabía**:
+a 1600x900 con escala de interfaz 1,47 el área de contenido se queda en 312 px de alto y esa
+etiqueta caía en el 352, o sea 40 px por DEBAJO, **dibujada encima de la línea de ayuda del pie**.
+Las dos frases se pisaban y no se leía ninguna. Y encima decían lo mismo ("Todo lo que toques aquí
+se escribe al instante sobre el personaje cargado."). Se ha quitado la etiqueta y su clave del
+generador de idiomas; no se deja una clave sin usar.
+
+### Verificación real, en el juego, con arnés propio
+
+`scripts/verificar-apariencia.ps1` (sandbox propio `tModLoader-TerrakeepApariencia`, cliente
+gráfico real a 1600x900 en español) + `TERRAKEEP_AUTOTEST_APARIENCIA`, un arnés autocontenido
+dentro de `PestanaApariencia.cs` (sin la variable de entorno es un no-op total). Se apoya en
+`TERRAKEEP_AUTOTEST_PANEL` solo para abrir el panel y entrar en Apariencia, y espera 260
+fotogramas a que aquella termine sus pasos antes de empezar los suyos, para no pelearse con ella.
+
+Lo que hace y lo que salió:
+
+1. **Tabla de los trece tintes**, comparando `GameShaders.Hair.GetColor` con el jugador y con el
+   muñeco. Antes del arreglo: **tres DISTINTOS** (maná, profundidades, marciano) y el de dinero
+   también en cuanto se le dan monedas. Después: **los trece iguales**, incluido el de dinero con
+   30 platino en la cartera.
+2. **Tres tintes reales aplicados con CLICS REALES** en la flecha ">" del selector (party, maná y
+   crepúsculo - uno de color fijo, uno que era de los rotos y uno que es sombreador de verdad),
+   con captura del back buffer de cada uno. El de maná sale ya **azul** en el muñeco.
+3. **El botón**: 3 clics reales en la flecha del peinado + 2 en la de variante + los siete colores
+   reescritos, captura, **clic real en "Deshacer cambios"**, y comparación campo a campo:
+   `RESULTADO: OK ... (identicos campo a campo)`, botón apagado después, e historial general con
+   la entrada "Deshacer los cambios de apariencia".
+4. **El personaje REAL, con el panel cerrado**: última captura con el tinte festivo puesto, pelo
+   magenta en el mundo. `Player.GetHairColor` = `(244,22,175)`.
+
+Capturas en `evidencia/apariencia-capturas/`, log completo en `evidencia/apariencia.log.txt`.
+
+### Tres obstáculos reales del arnés (y lo que costaron)
+
+- **`Main.OnPreDraw` para capturar sin panel: imagen COMPLETAMENTE NEGRA.** Ese evento vive ya
+  dentro de `Main.DoDraw`, después de `InitTargets`/`ReleaseTargets`, cuando el back buffer ya no
+  tiene el fotograma presentado.
+- **`Main.OnTickForThirdPartySoftwareOnly`: imagen ATRASADA un segundo.** En el cliente ese evento
+  solo se dispara en la rama de "la ventana no tiene el foco" de `Main.DoUpdate` - la misma en la
+  que el juego sigue actualizando a toda velocidad pero deja de dibujar. El que sirve es
+  **`Main.OnTickForInternalCodeOnly`**, y aun así la cuenta atrás solo avanza con `Main.hasFocus`;
+  el script además reafirma el foco cada 5 s durante toda la espera, no solo al principio.
+- **Las monedas del tinte de dinero, dadas en el paso 0, no las veía el muñeco todavía.**
+  `MunecoTk` se sincroniza en el mismo `Update` de la pestaña y `base.Update` (los hijos) va
+  primero, así que la tabla se imprimía con el muñeco aún sin ellas y salía "DISTINTOS" en el
+  tinte 4. Se dan 230 fotogramas antes del primer paso.
+
+### Alcance
+
+Tocados solo `UI/Personaje/PestanaApariencia.cs`, `UI/Personaje/Widgets/MunecoTk.cs`,
+`scripts/generar-localizacion.py` (cuatro claves nuevas y una retirada) + los dos `.hjson`
+regenerados, y `scripts/verificar-apariencia.ps1` (archivo nuevo). Commit con índice privado. Con
+Calamity cargado no se ha probado: el renderer y los tintes son los mismos, pero queda dicho.

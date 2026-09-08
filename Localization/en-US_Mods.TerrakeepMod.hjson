@@ -201,7 +201,10 @@ Personaje: {
 			Zapatos: Shoes
 		}
 
-		NotaColores: Changes show on the character right away: the game draws it from these very fields.
+		Deshacer: Undo changes
+		DeshacerAyuda: Puts hairstyle, dye, variant and the seven colours back to how they were when you opened Appearance.
+		DeshacerNada: You have not changed anything here since you opened this tab.
+		DeshacerAccion: Undo the appearance changes
 	}
 
 	Desbloqueos: {

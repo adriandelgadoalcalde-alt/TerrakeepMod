@@ -218,9 +218,19 @@ T = [
     ("Personaje.Apariencia.Color.CamisetaInterior", "Camiseta interior", "Undershirt"),
     ("Personaje.Apariencia.Color.Pantalones", "Pantalones", "Trousers"),
     ("Personaje.Apariencia.Color.Zapatos", "Zapatos", "Shoes"),
-    ("Personaje.Apariencia.NotaColores",
-     "Los cambios se ven al instante sobre el personaje: el juego lo dibuja leyendo estos mismos campos.",
-     "Changes show on the character right away: the game draws it from these very fields."),
+    # Personaje.Apariencia.NotaColores se quito: no cabia (se dibujaba encima de la linea de ayuda
+    # del pie del marco, visto en una captura real a 1600x900) y ademas decia lo mismo que ella.
+    # Boton "Deshacer cambios", pegado al de Cerrar dentro de la pestaña Apariencia.
+    ("Personaje.Apariencia.Deshacer", "Deshacer cambios", "Undo changes"),
+    ("Personaje.Apariencia.DeshacerAyuda",
+     "Devuelve peinado, tinte, variante y los siete colores a como estaban al abrir Apariencia.",
+     "Puts hairstyle, dye, variant and the seven colours back to how they were when you opened Appearance."),
+    ("Personaje.Apariencia.DeshacerNada",
+     "No has cambiado nada de la apariencia desde que entraste en esta pestaña.",
+     "You have not changed anything here since you opened this tab."),
+    ("Personaje.Apariencia.DeshacerAccion",
+     "Deshacer los cambios de apariencia",
+     "Undo the appearance changes"),
 
     ("Personaje.Desbloqueos.Titulo",
      "{0} desbloqueos permanentes. Se escriben directamente en Main.LocalPlayer.",

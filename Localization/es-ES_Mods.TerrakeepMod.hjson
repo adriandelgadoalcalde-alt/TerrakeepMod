@@ -201,7 +201,10 @@ Personaje: {
 			Zapatos: Zapatos
 		}
 
-		NotaColores: Los cambios se ven al instante sobre el personaje: el juego lo dibuja leyendo estos mismos campos.
+		Deshacer: Deshacer cambios
+		DeshacerAyuda: Devuelve peinado, tinte, variante y los siete colores a como estaban al abrir Apariencia.
+		DeshacerNada: No has cambiado nada de la apariencia desde que entraste en esta pestaña.
+		DeshacerAccion: Deshacer los cambios de apariencia
 	}
 
 	Desbloqueos: {
