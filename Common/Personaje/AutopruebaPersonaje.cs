@@ -915,6 +915,24 @@ namespace TerrakeepMod.Common.Personaje
 
 			Registrar("Paso 25 - " + CapturaDePantalla.Guardar("ws1-personaje-prefijo-abierto"));
 
+			// Los tres bugs del desplegable que arreglo la capa de superposicion (ver bitacora, se
+			// dibujaba fuera del panel / lo tapaba el boton Cerrar / no le llegaba la rueda) se
+			// comprueban a fondo en la autoprueba de Libreria; aqui se confirma que el mismo widget
+			// reutilizado en Personaje - donde el mini-panel vive en OTRO sitio de la pantalla, que
+			// es justo lo que podria volver a sacarlo del panel - sigue bien colocado y receptivo.
+			TerrakeepMod.UI.Panel.PanelTerrakeepState marco = PanelTerrakeepSystem.Panel;
+			Rectangle popupRect = editorPrefijo.RectanguloPopup.ToRectangle();
+			Rectangle cerrarRect = marco != null && marco.BotonCerrar != null
+				? marco.BotonCerrar.GetDimensions().ToRectangle() : Rectangle.Empty;
+			UIElement bajoElRaton = marco != null ? marco.GetElementAt(editorPrefijo.CentroPopup) : null;
+			Registrar("Paso 25 - geometria del popup en Personaje: " + editorPrefijo.DiagnosticoGeometria()
+				+ ". Dentro de la capa del panel: " + editorPrefijo.DentroDeLaCapa
+				+ "; se cruza con el boton Cerrar (" + cerrarRect.X + "," + cerrarRect.Y + "): "
+				+ popupRect.Intersects(cerrarRect)
+				+ "; GetElementAt en su centro devuelve "
+				+ (bajoElRaton == null ? "null" : bajoElRaton.GetType().Name)
+				+ " (del popup: " + editorPrefijo.EsDelPopup(bajoElRaton) + ").");
+
 			if (botones.Count < 2) {
 				Registrar("Paso 25 - el popup de prefijo se abrio (" + editorPrefijo.PopupAbierto
 					+ ") pero solo trae " + botones.Count + " boton(es) (se esperaban al menos 2: "

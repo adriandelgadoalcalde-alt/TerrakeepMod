@@ -4511,3 +4511,121 @@ vez de esperar o de tocar su archivo, se compiló una **copia aislada** del repo
 `tModLoader-TerrakeepCategorias\ModSources\` con ese único archivo sustituido por su versión de
 `HEAD` (`git show HEAD:...`). Compila en verde y es el `.tmod` con el que se hicieron las dos
 verificaciones reales.
+
+---
+
+## 8-sep-2026 — El desplegable de prefijos se salía del panel, lo tapaba "Cerrar" y no tenía scroll
+
+Encargo con captura del usuario, sobre el editor de prefijo/cantidad de la Librería añadido hoy
+mismo: al abrir el desplegable de prefijos (1) el menú se dibujaba **fuera del panel del mod**,
+flotando sobre el MUNDO del juego a la derecha del marco; (2) el botón **"Cerrar (O)" del pie del
+panel quedaba por encima**, tapando sus opciones; y (3) **el scroll no funcionaba**: no había forma
+de bajar por la lista.
+
+### Los tres son el MISMO error de raíz: el popup colgaba del botón que lo abre
+
+`EditorPrefijoTk.ConstruirPopup` hacía `Append(_popup)` sobre sí mismo (el widget del botón
+"Prefijo: X", 176x26 px) y lo colocaba midiendo `Main.screenWidth`/`Main.screenHeight`. Cada
+síntoma sale de una consecuencia distinta de esa misma decisión, y las tres están en el código real
+decompilado, no supuestas:
+
+- **Fuera del panel**: ningún `UIElement` recorta a sus hijos salvo que se le ponga
+  `OverflowHidden`, así que un hijo con un `Left` mayor que el ancho de su padre se dibuja igual.
+  Y medir contra `Main.screenWidth` solo garantiza que cabe en la VENTANA, no dentro del panel -
+  por eso el menú se salía hacia el mundo sin que ninguna cuenta fallara.
+- **Tapado por "Cerrar"**: `UIElement.DrawChildren` dibuja en el orden de `Append`, y
+  `PanelTerrakeepState.ConstruirPie()` (ayuda + botón Cerrar) se ejecuta DESPUÉS de colgar
+  `_contenedor`. O sea que todo lo que salga de la zona de contenido queda por debajo del pie, por
+  muy "flotante" que sea.
+- **Sin scroll (y sin clics de ratón reales)**: `UIElement.GetElementAt` - la llamada que usa
+  `UserInterface.Update` para repartir clics y rueda - solo **desciende** a un hijo cuyo
+  `ContainsPoint` sea true, y para llegar a ese hijo antes ha tenido que bajar por todos sus
+  ancestros, que también tienen que contener el punto. Un popup de 240x220 que sobresale de un
+  botón de 176x26 queda, para el ratón, en tierra de nadie: se ve, pero el motor **nunca le entrega
+  un evento**. El arreglo del 7-sep (`MaxWidth`/`MaxHeight` a mano, que es real y sigue puesto)
+  arregló que se VIERA entero, no que se pudiera USAR: la autoprueba de entonces pulsaba los
+  botones llamando a `BotonTk.LeftClick` a mano, que se salta el hit-testing entero, así que el
+  fallo no podía salir por ahí.
+
+### El arreglo: `UI/Panel/CapaSuperposicionTk.cs`
+
+Una capa vacía colgada como **ÚLTIMO hijo del marco**, con la misma geometría que `_contenedor` (ni
+título, ni pestañas, ni pie). El desplegable vive ahí, y los tres problemas caen a la vez: sigue
+dentro del árbol de interfaz del panel; acotarse a la capa ES no salirse del panel (`Left`/`Top` se
+calculan en coordenadas de pantalla y se acotan al rectángulo real de la capa, que es lo que antes
+se hacía contra la ventana); al ser el último hijo se dibuja por encima de todo, botón "Cerrar"
+incluido; y como la capa sí contiene el punto del ratón, `GetElementAt` desciende hasta el
+desplegable y le llegan rueda y clics.
+
+Detalles que hicieron falta de verdad:
+
+- **Transparente al ratón mientras está vacía** (`IgnoresMouseInteraction`), o robaría todos los
+  clics del panel: `GetElementAt` salta el elemento Y sus hijos con ese flag. Con algo dentro se
+  apaga y la capa hace de fondo modal: el clic fuera del desplegable lo cierra en vez de
+  atravesarlo.
+- **Las ranuras de objeto no se enteran solas**: `SlotObjetoVanilla`, `SlotSeleccionTk`,
+  `SlotPapeleraTk` y `SlotCatalogoLibreria` miran el ratón A MANO dentro de su `DrawSelf`
+  (`ContainsPoint(Main.MouseScreen)` + `ItemSlot.Handle`), fuera del sistema de eventos - sin una
+  consulta explícita (`CapaSuperposicionTk.TapaAlRaton`), un clic en una fila del desplegable
+  ADEMÁS habría cogido o soltado el objeto de la ranura de debajo, que es justo donde se abre.
+- **Nada de estado estático colgado**: la capa se vacía sola en `OnDeactivate` (al cerrar el panel,
+  `UserInterface.SetState(null)` baja recursivamente por el árbol llamándolo, código real) y en
+  `CambiarArea` (el desplegable pertenece a un contenido que se tira, pero vive en la capa, que no).
+- **`ManualSortMethod` vacío en la `UIList`** del popup, bug latente encontrado leyendo su código:
+  sin él, `UIList` ordena con `List.Sort` + `UIElement.CompareTo`, que devuelve 0 para todo - y
+  `List.Sort` **no es estable**, así que con 66 filas reales podía permutarlas y dejar cada prefijo
+  bajo la cabecera de otro grupo. Lo dice la propia documentación de `UIList`.
+- **Rueda también fuera de la lista** (el margen del popup y la franja de la barra): enganche en el
+  popup que mira `evt.Target` - no `IsMouseHovering` - para no aplicar el desplazamiento dos veces
+  cuando el evento viene burbujeando desde dentro de la `UIList` (que ya lo aplicó y llama a
+  `base.ScrollWheel`, que sube al padre).
+
+### Verificado en el juego real, con datos y con capturas
+
+Pasos 19-21 nuevos en `AutopruebaLibreria` (sandbox `tModLoader-TerrakeepWS3`, 1090x613 de UI
+real). Nada de "se ve bien": geometría ya calculada y la ruta real del motor.
+
+```
+Paso 19 - popup x=505 y=321 240x220; capa x=31 y=96 1027x444; dentroDeLaCapa=True
+Paso 19 - orden real de hijos del marco: ... [9] BotonTk(Cerrar) ... [10] CapaSuperposicionTk OCUPADA
+Paso 19 - boton "Cerrar" x=899 y=551 160x34. Se cruzan: False (y la capa se dibuja despues -> encima)
+Paso 19 - UIElement.GetElementAt(625,431) devuelve: BotonTk "Godly" -> el raton llega al desplegable
+Paso 20 - rueda REAL (3 muescas de 120 via UIElement.ScrollWheel, igual que UserInterface.Update):
+          ViewPosition 0.0 -> 360.0
+Paso 21 - primera fila de la lista: y=327.2 -> y=-32.8 (el contenido se desplazo de verdad)
+Paso 21 - visibles ANTES: None | Demonic | Godly | Legendary | Ruthless | Godly
+          visibles DESPUES: Agile | Murderous | Dangerous | Legendary | Keen | Superior | Forceful
+Paso 21 - rueda hacia arriba (4 muescas): 360.0 -> 0.0 (sube tambien)
+```
+
+Tres capturas reales del back buffer en `evidencia/prefijo-capturas/`: el desplegable abierto
+dentro del panel (`...-1-abierto-dentro-del-panel.png`), el mismo tras el scroll con OTRAS opciones
+visibles y la barra desplazada (`...-2-tras-scroll.png`), y el de antes de pulsar un prefijo. En
+las dos primeras se ve el botón "Cerrar (O)" abajo a la derecha, entero y sin tocar el menú.
+
+**También en Personaje**, donde el mismo mini-panel se reutiliza en otro sitio de la pantalla (paso
+25 de `AutopruebaPersonaje`, sandbox WS1, 1280x720): `popup x=808 y=424 240x220; capa x=110 y=99
+1060x544; dentroDeLaCapa=True; se cruza con el boton Cerrar (1010,654): False; GetElementAt en su
+centro devuelve BotonTk (del popup: True)`. Ahí sí cabe a la derecha del botón, que es la
+preferencia de siempre; en la Librería no cabía dentro del panel y cae a la izquierda solo.
+
+### Índice privado para comitear
+
+`GIT_INDEX_FILE=<propio> git read-tree HEAD && git add ... && git commit`, después `git reset` a
+secas en un comando aparte. Archivos de esta tarea: `UI/Panel/CapaSuperposicionTk.cs` (nuevo),
+`UI/Panel/PanelTerrakeepState.cs`, `UI/Libreria/Widgets/EditorPrefijoTk.cs`,
+`UI/Libreria/Widgets/SlotSeleccionTk.cs`, `UI/Libreria/SlotCatalogoLibreria.cs`,
+`UI/Personaje/Widgets/SlotPapeleraTk.cs`, `UI/SlotObjetoVanilla.cs`,
+`Common/Libreria/AutopruebaLibreria.cs`, `Common/Personaje/AutopruebaPersonaje.cs`,
+`evidencia/ws3-libreria.log.txt`, `evidencia/prefijo-capturas/*.png`, `bitacora.md`. Nada de los
+otros agentes que trabajan a la vez en el repo (`Common/Libreria/ArbolLibreria.cs`,
+`CatalogoVivo.cs`, `PanelLibreriaSystem.cs`, `AuditoriaCategorias.cs`,
+`Common/Panel/CapturaDePantalla.cs`, `UI/Personaje/PestanaApariencia.cs`,
+`UI/Personaje/Widgets/MunecoTk.cs`, `Assets/best_prefix.json`, sus `scripts/verificar-*.ps1` y sus
+logs de evidencia), ni las carpetas de build sueltas.
+
+**Tropiezo del entorno, anotado por si se repite**: la fase 1 de validación falló una vez con 4
+`CS0103: ItemID no existe` en `UI/Personaje/Widgets/MunecoTk.cs` - trabajo a medias de otro agente
+(le faltaba `using Terraria.ID;`), no de esta tarea. Se resolvió solo al reintentar un minuto
+después, cuando ese agente terminó su edición; no hizo falta tocar su archivo ni compilar una copia
+aislada.
