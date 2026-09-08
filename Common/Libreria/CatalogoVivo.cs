@@ -143,6 +143,29 @@ namespace TerrakeepMod.Common.Libreria
 				? _nombrePlegado[tipo] : "";
 		}
 
+		/// <summary>
+		/// true si <paramref name="tipo"/> es un objeto REAL del juego base <b>en la version de
+		/// Terraria que esta corriendo ahora mismo</b>.
+		/// <para />
+		/// Las dos condiciones son necesarias y ninguna sobra:
+		/// <list type="bullet">
+		/// <item><c>tipo &lt; ItemID.Count</c> deja fuera los ids de MODS. tModLoader reparte los
+		/// ids de los mods a partir de <c>ItemID.Count</c>, asi que un id vanilla inventado (o
+		/// heredado de una version mas nueva del juego) cae justo encima de un objeto de Calamity y
+		/// se colaria en una carpeta vanilla como si fuera suyo.</item>
+		/// <item>Tener nombre real en el catalogo deja fuera los huecos: no todos los ids por debajo
+		/// de <c>ItemID.Count</c> son un objeto de verdad.</item>
+		/// </list>
+		/// Lo usa <see cref="ArbolLibreria"/> para podar el arbol vanilla curado, que se extrajo de
+		/// Terraria <b>1.4.5.8</b> (<c>ItemID.Count = 6196</c>) mientras que tModLoader va por
+		/// <b>1.4.4.9</b> (<c>ItemID.Count = 5456</c>) - ver la cabecera de esa clase.
+		/// </summary>
+		public static bool EsVanillaReal(int tipo)
+		{
+			return tipo > 0 && tipo < ItemID.Count
+				&& _nombre != null && tipo < _nombre.Length && _nombre[tipo] != null;
+		}
+
 		/// <summary>Mod dueño del objeto ("Terraria" si es del juego base).</summary>
 		public static string ModDe(int tipo)
 		{

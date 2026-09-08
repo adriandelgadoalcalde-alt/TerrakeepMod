@@ -1,0 +1,55 @@
+﻿# Auditoria de las categorias de la Libreria - 2026-09-08 02:44:02
+[02:44:02.319] TERRAKEEP_AUDIT_CATEGORIAS detectada. Esperando a estar dentro del mundo...
+[02:44:04.379] Arbol: 10 carpetas raiz (9 del arbol vanilla curado, 1 de mods instalados, 0 de vanilla sin catalogar); 5513 objetos vivos en total (90 de mods), catalogo construido en 1 ms; vanilla fuera del arbol curado: 0; poda por version del juego: 722 ids inexistentes (1452 apariciones), 40 carpetas vacias quitadas, 1 iconos corregidos
+[02:44:04.380] Version del juego: ItemID.Count=5456 (vanilla), ItemLoader.ItemCount=5546 (con mods).
+[02:44:04.381] RECUENTO 1 (cobertura): el juego cargado tiene 5423 objetos vanilla reales (ids 1..5455 con muestra y nombre). El arbol vanilla curado cubre 5423; el arbol entero (curado + carpetas de mod + 'sin catalogar') cubre 5423 vanilla. Huerfanos (vanilla real en ninguna carpeta): 0.
+[02:44:04.382] RECUENTO 2 (salud del arbol): carpetas vacias=0, ids que no existen en el juego=0, iconos de carpeta que no son un objeto real=0, objetos de MOD colados dentro del arbol vanilla curado=0. (La poda quito 722 ids de otra version del juego, 1452 apariciones, 40 carpetas y corrigio 1 iconos.)
+[02:44:04.382] RECUENTO 3 (clasificacion real, criterio comprobado sobre el Item de verdad):
+[02:44:04.383]    "Melee damage (294)" (Categories/Weapons/Melee damage): 294 objetos, 8 subcarpetas, 1 que NO cumplen "damage>0 y DamageType melee" -> 3821 ("Ale Tosser").
+[02:44:04.383]       muestra: "Iron Pickaxe", "Iron Broadsword", "Iron Shortsword", "Iron Hammer", "Iron Axe", "Wooden Sword", "War Axe of the Night", "Light's Bane"
+[02:44:04.383]    "Ranged damage (178)" (Categories/Weapons/Ranged damage): 178 objetos, 5 subcarpetas, 5 que NO cumplen "damage>0 y DamageType a distancia" -> 905 ("Coin Gun"), 1000 ("Confetti Gun"), 4765 ("Tree Globe"), 4766 ("World Globe"), 5285 ("Moon Globe").
+[02:44:04.383]       muestra: "Wooden Bow", "Wooden Arrow", "Flaming Arrow", "Shuriken", "Demon Bow", "Unholy Arrow", "Jester's Arrow", "Copper Coin"
+[02:44:04.384]    "Magic damage (75)" (Categories/Weapons/Magic damage): 75 objetos, 2 subcarpetas, 0 que NO cumplen "damage>0 y DamageType magia".
+[02:44:04.384]       muestra: "Vilethorn", "Flower of Fire", "Magic Missile", "Space Gun", "Aqua Scepter", "Water Bolt", "Flamelash", "Demon Scythe"
+[02:44:04.384]    "Summon damage (21)" (Categories/Weapons/Summon damage): 21 objetos, 0 subcarpetas, 0 que NO cumplen "damage>0 y DamageType invocacion".
+[02:44:04.384]       muestra: "Pygmy Staff", "Slime Staff", "Raven Staff", "Hornet Staff", "Imp Staff", "Optic Staff", "Spider Staff", "Pirate Staff"
+[02:44:04.384]    "Summoner whips (9)" (Categories/Weapons/Summoner whips): 9 objetos, 0 subcarpetas, 0 que NO cumplen "latigo (DamageType SummonMeleeSpeed)".
+[02:44:04.384]       muestra: "Leather Whip", "Durendal", "Morning Star", "Dark Harvest", "Cool Whip", "Firecracker", "Snapthorn", "Kaleidoscope"
+[02:44:04.385]    "Sentry damage (17)" (Categories/Weapons/Sentry damage): 17 objetos, 0 subcarpetas, 0 que NO cumplen "item.sentry".
+[02:44:04.385]       muestra: "Staff of the Frost Hydra", "Queen Spider Staff", "Lunar Portal Staff", "Rainbow Crystal Staff", "Flameburst Rod", "Flameburst Cane", "Flameburst Staff", "Ballista Rod"
+[02:44:04.385]    "Armor (249)" (Categories/Equipable/Armor): 249 objetos, 7 subcarpetas, 0 que NO cumplen "ocupa cabeza, cuerpo o piernas".
+[02:44:04.385]       muestra: "Goggles", "Copper Greaves", "Iron Greaves", "Silver Greaves", "Gold Greaves", "Copper Chainmail", "Iron Chainmail", "Silver Chainmail"
+[02:44:04.386]    "Accessories (311)" (Categories/Equipable/Accessories): 311 objetos, 8 subcarpetas, 0 que NO cumplen "item.accessory".
+[02:44:04.386]       muestra: "Copper Watch", "Silver Watch", "Gold Watch", "Depth Meter", "Band of Regeneration", "Cloud in a Bottle", "Hermes Boots", "Band of Starpower"
+[02:44:04.387]    "Vanity (493)" (Categories/Equipable/Vanity): 493 objetos, 2 subcarpetas, 89 que NO cumplen "item.vanity" -> 215 ("Whoopie Cushion"), 562 ("Music Box (Overworld Day)"), 563 ("Music Box (Eerie)"), 564 ("Music Box (Night)"), 565 ("Music Box (Title)"), 566 ("Music Box (Underground)"), 567 ("Music Box (Boss 1)"), 568 ("Music Box (Jungle)"), 569 ("Music Box (Corruption)"), 570 ("Music Box (Underground Corruption)"), ... +79.
+[02:44:04.387]       muestra: "Jungle Rose", "Whoopie Cushion", "Sunglasses", "Top Hat", "Tuxedo Shirt", "Tuxedo Pants", "Summer Hat", "Bunny Hood"
+[02:44:04.387]    "Head slot (271)" (Categories/Equipable/Head slot): 271 objetos, 7 subcarpetas, 0 que NO cumplen "headSlot>=0".
+[02:44:04.387]       muestra: "Goggles", "Mining Helmet", "Copper Helmet", "Iron Helmet", "Silver Helmet", "Gold Helmet", "Shadow Helmet", "Meteor Helmet"
+[02:44:04.388]    "Body slot (187)" (Categories/Equipable/Body slot): 187 objetos, 5 subcarpetas, 0 que NO cumplen "bodySlot>=0".
+[02:44:04.388]       muestra: "Copper Chainmail", "Iron Chainmail", "Silver Chainmail", "Gold Chainmail", "Shadow Scalemail", "Meteor Suit", "Necro Breastplate", "Jungle Shirt"
+[02:44:04.388]    "Leg slot (155)" (Categories/Equipable/Leg slot): 155 objetos, 4 subcarpetas, 0 que NO cumplen "legSlot>=0".
+[02:44:04.389]       muestra: "Copper Greaves", "Iron Greaves", "Silver Greaves", "Gold Greaves", "Shadow Greaves", "Meteor Leggings", "Necro Greaves", "Jungle Pants"
+[02:44:04.389]    "Wings (7)" (Categories/Equipable/Wings): 7 objetos, 0 subcarpetas, 7 que NO cumplen "wingSlot>0" -> 128 ("Rocket Boots"), 405 ("Spectre Boots"), 898 ("Lightning Boots"), 1862 ("Frostspark Boots"), 3993 ("Fairy Boots"), 4874 ("Hellfire Treads"), 5000 ("Terraspark Boots").
+[02:44:04.389]       muestra: "Rocket Boots", "Spectre Boots", "Lightning Boots", "Frostspark Boots", "Fairy Boots", "Hellfire Treads", "Terraspark Boots"
+[02:44:04.389]    "Dyes (130)" (Categories/Equipable/Dyes): 130 objetos, 4 subcarpetas, 0 que NO cumplen "dye>0 o hairDye>=0".
+[02:44:04.389]       muestra: "Red Dye", "Orange Dye", "Yellow Dye", "Lime Dye", "Green Dye", "Teal Dye", "Cyan Dye", "Sky Blue Dye"
+[02:44:04.390]    "Pickaxes (44)" (Categories/Tools/Pickaxes): 44 objetos, 2 subcarpetas, 0 que NO cumplen "pick>0".
+[02:44:04.390]       muestra: "Iron Pickaxe", "Nightmare Pickaxe", "Molten Pickaxe", "Cobalt Drill", "Mythril Drill", "Adamantite Drill", "Drax", "Cobalt Pickaxe"
+[02:44:04.390]    "Axes (41)" (Categories/Tools/Axes): 41 objetos, 2 subcarpetas, 0 que NO cumplen "axe>0".
+[02:44:04.390]       muestra: "Iron Axe", "War Axe of the Night", "Meteor Hamaxe", "Molten Hamaxe", "Cobalt Chainsaw", "Mythril Chainsaw", "Adamantite Chainsaw", "Drax"
+[02:44:04.391]    "Hammers (32)" (Categories/Tools/Hammers): 32 objetos, 0 subcarpetas, 0 que NO cumplen "hammer>0".
+[02:44:04.391]       muestra: "Iron Hammer", "The Breaker", "Wooden Hammer", "Meteor Hamaxe", "Molten Hamaxe", "Pwnhammer", "Ebonwood Hammer", "Rich Mahogany Hammer"
+[02:44:04.391]    "Fishing poles (11)" (Categories/Tools/Fishing poles): 11 objetos, 0 subcarpetas, 0 que NO cumplen "fishingPole>1".
+[02:44:04.391]       muestra: "Wood Fishing Pole", "Reinforced Fishing Pole", "Fiberglass Fishing Pole", "Fisher of Souls", "Golden Fishing Rod", "Mechanic's Rod", "Sitting Duck's Fishing Pole", "Fleshcatcher"
+[02:44:04.392]    "Placeable (2680)" (Categories/Placeable): 2680 objetos, 7 subcarpetas, 118 que NO cumplen "createTile>=0 o createWall>=0" -> 261 ("Goldfish"), 929 ("Cannonball"), 1338 ("Explosive Bunny"), 1992 ("Firefly"), 1994 ("Monarch Butterfly"), 1995 ("Purple Emperor Butterfly"), 1996 ("Red Admiral Butterfly"), 1997 ("Ulysses Butterfly"), 1998 ("Sulphur Butterfly"), 1999 ("Tree Nymph Butterfly"), ... +108.
+[02:44:04.392]       muestra: "Dirt Block", "Stone Block", "Torch", "Wood", "Iron Ore", "Copper Ore", "Gold Ore", "Silver Ore"
+[02:44:04.392]    "Walls (272)" (Categories/Walls): 272 objetos, 7 subcarpetas, 0 que NO cumplen "createWall>=0".
+[02:44:04.393]       muestra: "Stone Wall", "Dirt Wall", "Wood Wall", "Gray Brick Wall", "Red Brick Wall", "Blue Brick Wall", "Green Brick Wall", "Pink Brick Wall"
+[02:44:04.393]    TOTAL: 20 carpetas, 5477 comprobaciones objeto a objeto, 220 mal clasificados.
+[02:44:04.393] OBJETO 4956 "Zenith" (damage=190, DamageType=MeleeNoSpeedDamageClass): esperado dentro de "Categories/Weapons/Melee damage" -> OK. Hojas donde cae: Categories/Weapons/Melee damage (316)/Page 8 | Items by ID/4801-5200/4921-4960
+[02:44:04.393] OBJETO 757 "Terra Blade" (damage=85, DamageType=MeleeDamageClass): esperado dentro de "Categories/Weapons/Melee damage" -> OK. Hojas donde cae: Categories/Weapons/Melee damage (316)/Page 2 | Items by ID/401-800/721-760
+[02:44:04.393] OBJETO 3063 "Meowmere" (damage=200, DamageType=MeleeDamageClass): esperado dentro de "Categories/Weapons/Melee damage" -> OK. Hojas donde cae: Categories/Weapons/Melee damage (316)/Page 5 | Items by ID/2801-3200/3041-3080
+[02:44:04.393] OBJETO 3541 "Last Prism" (damage=100, DamageType=MagicDamageClass): esperado dentro de "Categories/Weapons/Magic damage" -> OK. Hojas donde cae: Categories/Weapons/Magic damage (76)/Page 2 | Items by ID/3201-3600/3521-3560
+[02:44:04.394] OBJETO 1553 "S.D.M.G." (damage=85, DamageType=RangedDamageClass): esperado dentro de "Categories/Weapons/Ranged damage" -> OK. Hojas donde cae: Categories/Weapons/Ranged damage (180)/Page 3 | Items by ID/1201-1600/1521-1560
+[02:44:04.394] OBJETO 1343 "Fire Gauntlet" (damage=-1, DamageType=DefaultDamageClass): esperado dentro de "Categories/Equipable/Accessories" -> OK. Hojas donde cae: Categories/Equipable/Accessories (321)/Page 3 | Items by ID/1201-1600/1321-1360
+[02:44:04.394] AUDITORIA CATEGORIAS COMPLETA

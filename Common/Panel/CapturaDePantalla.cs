@@ -62,7 +62,11 @@ namespace TerrakeepMod.Common.Panel
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
 						Personaje.AutopruebaPersonaje.Variable))
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
-						Libreria.PanelLibreriaSystem.VariableAutoprueba));
+						Libreria.PanelLibreriaSystem.VariableAutoprueba))
+					// Recuento de las categorias de la Libreria (arreglo del 8-sep-2026): captura las
+					// paginas que antes salian vacias o mezcladas, para poder verlas de verdad.
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
+						Libreria.AuditoriaCategorias.Variable));
 			}
 		}
 

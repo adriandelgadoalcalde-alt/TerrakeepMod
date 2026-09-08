@@ -4408,3 +4408,106 @@ evidencia propia con nombre propio, sin colision con la de otros agentes) y esta
 `UI/Personaje/PestanaApariencia.cs`, `UI/Personaje/Widgets/MunecoTk.cs`,
 `scripts/verificar-categorias-libreria.ps1`), ni las carpetas de build sueltas
 (`bin-checkDebug/`, `obj-verif-espaciado/`).
+
+---
+
+## 8-sep-2026 — Librería: "Categorías" con páginas vacías, objetos que no salían y objetos mezclados
+
+**Reportado por el usuario probando el mod (con capturas)**: dentro de la carpeta raíz
+"Categorías" había *muchas páginas vacías*, en algunas categorías *no salía nada yendo objeto a
+objeto*, y cuando salía algo *estaba todo mezclado* pese a que los sprites/iconos indicaban dónde
+debería ir cada cosa. Pidió comprobar en concreto que en "daño cuerpo a cuerpo" salieran todos los
+objetos que deben, poniendo de ejemplo **La Cenit** (`ItemID.Zenith`).
+
+### Causa real: el árbol curado es de una versión de Terraria MÁS NUEVA que la del juego
+
+`Assets/vanilla_library_tree.json` se extrajo del Terrasavr real, que va por Terraria **1.4.5.8**
+(`ItemID.Count = 6196`, ids reales hasta 6145). tModLoader va por **1.4.4.9**
+(`ItemID.Count = 5456`). Comprobado constante a constante contra los dos `ItemID.cs` decompilados
+(`Downloads\tModLoader-Decompiled\tModLoader\` y `\TerrariaVanilla\`): **5504 constantes con id
+< 5456 comparadas, 0 diferencias** — Terraria solo añade ids al final, nunca reordena. O sea que
+lo único que sobra son los **690 ids que 1.4.5 añadió y aquí no existen** (722 contando además los
+huecos sin objeto real por debajo de 5456). Nadie los estaba filtrando, y de ahí salían los tres
+síntomas exactos que describió el usuario:
+
+1. **Páginas vacías** — 36 hojas del árbol contenían *solo* ids de 1.4.5: 13 páginas seguidas de
+   "Colocable" (Page 68..81), "Paredes/Page 8", "Vanidad/Page 14", y 17 rangos enteros de "Objetos
+   por id" (5481-5520 en adelante).
+2. **Objetos que no salían** — `Item.SetDefaults` con un id por encima de `ItemLoader.ItemCount`
+   revienta con `IndexOutOfRangeException` en su primera línea útil
+   (`material = ItemID.Sets.IsAMaterial[type]`, código real del `Item.cs` decompilado), así que la
+   rejilla se quedaba a medio montar en cuanto una página tocaba uno.
+3. **Todo mezclado** — con Calamity cargado esos ids **sí existen**: tModLoader reparte los ids de
+   los mods justo a partir de `ItemID.Count`, así que **1452 apariciones** de objetos de Calamity
+   caían dentro de carpetas vanilla, y **40 carpetas** enseñaban como icono el sprite de un objeto
+   de Calamity. Eso es literalmente lo que el usuario describía como "los sprites indican dónde
+   debería ir cada objeto y el contenido no se corresponde".
+
+### Arreglo
+
+- `Common/Libreria/CatalogoVivo.cs`: nuevo `EsVanillaReal(tipo)` — `tipo < ItemID.Count` (deja
+  fuera los ids de MODS, no basta con `ItemLoader.ItemCount`) **y** con nombre real en el catálogo
+  (deja fuera los huecos).
+- `Common/Libreria/ArbolLibreria.cs`: poda del árbol curado justo después de que Core lo monte.
+  Quita los ids que no existen, elimina la carpeta entera si se queda sin un solo objeto, reescribe
+  el recuento del rótulo ("Daño de Cuerpo a Cuerpo (316)" → "(294)" — se puede porque
+  `LibraryLabelCatalog.Translate` traduce por PLANTILLA `"Melee damage ($1)"` y sustituye el número
+  después, así que ningún rótulo se queda sin traducir) y sustituye el icono de la carpeta por el
+  de su primer objeto real cuando el suyo no existía. **La poda se hace en el lado del mod, no en
+  `Terrakeep.Core`**: Core lo comparte la app de escritorio, que sí corre contra 1.4.5.8 y ahí no
+  sobra ningún id. **No se renumeran las páginas** a propósito: las hojas van ordenadas por id y lo
+  que se cae es siempre la cola, verificado hoja a hoja sobre el `.json` real antes de decidirlo.
+- `UI/Libreria/SlotCatalogoLibreria.cs`: guarda `tipo < ItemLoader.ItemCount` antes de
+  `SetDefaults`, de red por si alguna vez llega otro id imposible por otro camino.
+- `Common/Libreria/AuditoriaCategorias.cs` (nuevo) + una línea en `PanelLibreriaSystem.UpdateUI` y
+  otra en `CapturaDePantalla.Permitida`: arnés de recuento propio (`TERRAKEEP_AUDIT_CATEGORIAS`),
+  aparte de `AutopruebaLibreria` porque otro agente la tenía abierta y porque esto no depende de
+  ningún clic. Script `scripts/verificar-categorias-libreria.ps1`, sandbox propio
+  `tModLoader-TerrakeepCategorias`.
+
+### Verificado en el juego real (`-tmlsavedirectory` + `-skipselect`, con y sin Calamity)
+
+Recuento "objeto a objeto" real, evidencia en `evidencia/categorias-libreria.log.txt` y
+`evidencia/categorias-libreria-calamity.log.txt`:
+
+- **Cobertura**: el juego cargado tiene **5423** objetos vanilla reales (ids 1..5455 con muestra y
+  nombre). El árbol curado cubre **5423**. **Huérfanos: 0**.
+- **Salud del árbol**: carpetas vacías **0**, ids que no existen **0**, iconos de carpeta que no
+  son un objeto real **0**, y — con **CalamityMod cargado** (`ItemLoader.ItemCount = 8279`, 2817
+  objetos de mod) — objetos de mod colados dentro del árbol vanilla curado: **0**. La poda quitó
+  **722 ids / 1452 apariciones / 40 carpetas** y corrigió **1 icono** (los otros 39 iconos rotos
+  colgaban de carpetas que la poda eliminó enteras).
+- **La Cenit** (`ItemID.Zenith`, 4956, `MeleeNoSpeedDamageClass`): aparece en
+  `Categories/Weapons/Melee damage/Page 8` — **OK**. Igual comprobados Terra Blade (757), Meowmere
+  (3063), Last Prism (3541) en magia, S.D.M.G. (1553) a distancia y Fire Gauntlet (1343) en
+  accesorios: todos en su carpeta.
+- **Navegación real por la interfaz** (el panel abierto de verdad, no solo los datos): "Melee
+  damage (294)" → Page 8 con **26 objetos, todos llenos** (antes 36 huecos con 9 rotos);
+  "Colocable (2680)" → Pages 61+ → **Page 67 con 40 objetos**, y ya no existen las páginas 68..81.
+  Capturas reales en `evidencia/categorias-capturas/`. Los rótulos y la ruta caben y se envuelven
+  bien, ningún texto cortado ni desbordado (el recuento del rótulo solo puede menguar, nunca
+  crecer).
+
+### Dos cosas que NO son un fallo y conviene no "arreglar"
+
+- **El árbol curado no clasifica por los campos del `Item`**, sino por la tabla `metatype` que
+  Terrasavr trae curada a mano (`local-site/script.js` real: "Melee damage" = `metatype` contiene
+  `'d'`; "Wings" = `textLq` contiene `"allows flight"`, por eso esa carpeta son las 7 **botas** que
+  dan vuelo y las alas de verdad viven en "Accessories", que es lo que son; "Dyes" = el nombre
+  acaba en `"Dye"`). El RECUENTO 3 del arnés mide la discrepancia entre esa curación y los campos
+  reales: sale un puñado de casos frontera esperables (Coin Gun con daño base 0, bichos
+  capturables como colocables, cajas de música como vanidad). Lo que tiene que salir a cero son los
+  RECUENTOS 1 y 2, y sale.
+- Con **Calamity cargado**, "Melee damage" pasa de 1 a 211 discrepancias en ese RECUENTO 3 porque
+  **Calamity reemplaza el `DamageType` de las armas vanilla melee** por una clase suya. Es cosa de
+  Calamity, no del árbol: los objetos son los mismos y están donde deben.
+
+### Obstáculo del entorno (autonomía técnica)
+
+El `-build` del proyecto entero falló tres veces con `CS0103` en `Common/Libreria/
+AutopruebaLibreria.cs` (`ComprobarPopupDentroDelPanel`, `ComprobarScrollReal`, `CapturarTrasScroll`
+no existen) — trabajo a medias de **otro agente** que estaba en ese archivo, no de esta tarea. En
+vez de esperar o de tocar su archivo, se compiló una **copia aislada** del repo en
+`tModLoader-TerrakeepCategorias\ModSources\` con ese único archivo sustituido por su versión de
+`HEAD` (`git show HEAD:...`). Compila en verde y es el `.tmod` con el que se hicieron las dos
+verificaciones reales.

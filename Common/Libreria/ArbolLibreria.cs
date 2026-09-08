@@ -30,6 +30,32 @@ namespace TerrakeepMod.Common.Libreria
 	/// quedarian inalcanzables por navegacion.
 	/// </summary>
 	/// <remarks>
+	/// <b>El arbol curado viene de una version de Terraria MAS NUEVA que la del juego, y hay que
+	/// podarlo</b> (bug real reportado por el usuario el 8-sep-2026: "Categorías" con muchas
+	/// paginas vacias, objetos que no salen y objetos mezclados que no pintan nada en su carpeta).
+	/// <c>vanilla_library_tree.json</c> se extrajo del Terrasavr real, que va por Terraria
+	/// <b>1.4.5.8</b> (<c>ItemID.Count = 6196</c>, ids reales hasta 6145); tModLoader va por
+	/// <b>1.4.4.9</b> (<c>ItemID.Count = 5456</c>). Las tablas de ids de las dos versiones son
+	/// IDENTICAS por debajo de 5456 (comprobado constante a constante contra los dos
+	/// <c>ItemID.cs</c> decompilados: 5504 constantes comparadas, 0 diferencias - Terraria solo
+	/// añade ids al final), asi que la unica diferencia real son los <b>690 ids que 1.4.5 añadio y
+	/// aqui no existen</b>. Sin podarlos pasaba justo lo que se veia:
+	/// <list type="number">
+	/// <item><b>Paginas vacias</b>: 36 hojas enteras del arbol solo contenian ids de 1.4.5 (13
+	/// paginas seguidas de "Colocable", "Paredes/Page 8", y 17 rangos de "Objetos por id").</item>
+	/// <item><b>Objetos que no salen</b>: <c>Item.SetDefaults</c> con un id por encima de
+	/// <c>ItemLoader.ItemCount</c> revienta con <c>IndexOutOfRangeException</c> en la primera linea
+	/// que toca un array indexado por tipo (<c>material = ItemID.Sets.IsAMaterial[type]</c>, codigo
+	/// real del <c>Item.cs</c> decompilado), asi que la rejilla se quedaba a medio montar.</item>
+	/// <item><b>Todo mezclado</b>: con un mod cargado esos mismos ids SI existen - son de
+	/// CalamityMod - y aparecian dentro de carpetas vanilla (1390 apariciones), incluido el icono
+	/// de 40 carpetas, que es lo que el usuario describia como "los sprites indican donde deberia
+	/// ir cada objeto y el contenido no se corresponde".</item>
+	/// </list>
+	/// La poda se hace <b>aqui, en el lado del mod</b>, y no en <c>Terrakeep.Core</c>: Core lo
+	/// comparte la app de escritorio, que si corre contra 1.4.5.8 y ahi no sobra ningun id.
+	/// </remarks>
+	/// <remarks>
 	/// <b>El icono de una carpeta viaja como texto, y es a proposito.</b> El
 	/// <c>Func&lt;int,string&gt; iconResolver</c> de Core existe porque en la app de escritorio el
 	/// icono es una RUTA de imagen ("pack://siteoforigin:,,,/..."). Dentro del juego no hay
@@ -67,6 +93,22 @@ namespace TerrakeepMod.Common.Libreria
 
 		/// <summary>Cuantos objetos vanilla no aparecian en el arbol curado (0 en el caso normal).</summary>
 		public static int VanillaSinCatalogar { get; private set; }
+
+		/// <summary>Ids distintos del arbol curado que NO existen en esta version del juego (los que
+		/// Terraria 1.4.5 añadio y 1.4.4.9 no tiene). Ver la poda.</summary>
+		public static int IdsDeOtraVersion { get; private set; }
+
+		/// <summary>Apariciones de esos ids repartidas por las carpetas (un id puede estar en
+		/// varias), o sea cuantos huecos rotos habia de verdad en la interfaz.</summary>
+		public static int AparicionesDeOtraVersion { get; private set; }
+
+		/// <summary>Carpetas del arbol curado que la poda quito enteras por quedarse sin un solo
+		/// objeto real.</summary>
+		public static int CarpetasVaciasPodadas { get; private set; }
+
+		/// <summary>Carpetas cuyo icono era un objeto de otra version (y con un mod cargado enseñaba
+		/// el sprite de ese mod) y se sustituyo por el de su primer objeto real.</summary>
+		public static int IconosCorregidos { get; private set; }
 
 		/// <summary>Resumen de la ultima construccion, para el log de evidencia.</summary>
 		public static string Resumen { get; private set; }
@@ -129,15 +171,30 @@ namespace TerrakeepMod.Common.Libreria
 			List<CategoryTreeNodeData> raices = new List<CategoryTreeNodeData>();
 			int raicesVanillaCuradas = 0;
 
-			// ---- 1. El arbol vanilla curado, tal cual lo monta Core ----------------------------
+			IdsDeOtraVersion = 0;
+			AparicionesDeOtraVersion = 0;
+			CarpetasVaciasPodadas = 0;
+			IconosCorregidos = 0;
+
+			// ---- 1. El arbol vanilla curado, tal cual lo monta Core, YA PODADO -----------------
 			if (ParsearArchivos()) {
 				// calamity = null a proposito: la carpeta madre "Calamity (mod)" de la app de
 				// escritorio la sustituye aqui el descubrimiento en vivo, que ademas cubre
 				// cualquier otro mod. Core ya contempla explicitamente este caso.
 				List<CategoryTreeNodeData> vanilla = LibraryTreeBuilder.BuildItemTree(
 					_arbolVanilla, _etiquetas, null, IconoDe);
-				raices.AddRange(vanilla);
-				raicesVanillaCuradas = vanilla.Count;
+
+				// La poda (ver el <remarks> de la clase): el arbol curado es de Terraria 1.4.5.8 y
+				// el juego que lo enseña es 1.4.4.9.
+				HashSet<int> deOtraVersion = new HashSet<int>();
+				for (int i = 0; i < vanilla.Count; i++) {
+					CategoryTreeNodeData podada = Podar(vanilla[i], deOtraVersion);
+					if (podada != null) {
+						raices.Add(podada);
+					}
+				}
+				IdsDeOtraVersion = deOtraVersion.Count;
+				raicesVanillaCuradas = raices.Count;
 			}
 
 			// ---- 2. Una carpeta madre por mod instalado, descubierta en vivo -------------------
@@ -195,7 +252,126 @@ namespace TerrakeepMod.Common.Libreria
 				$"{(vanillaSueltos.Count > 0 ? "1 de vanilla sin catalogar" : "0 de vanilla sin catalogar")}); " +
 				$"{CatalogoVivo.Objetos.Count} objetos vivos en total ({CatalogoVivo.DeMods} de mods), " +
 				$"catalogo construido en {CatalogoVivo.MilisegundosConstruccion:F0} ms; " +
-				$"vanilla fuera del arbol curado: {vanillaSueltos.Count}";
+				$"vanilla fuera del arbol curado: {vanillaSueltos.Count}; " +
+				$"poda por version del juego: {IdsDeOtraVersion} ids inexistentes " +
+				$"({AparicionesDeOtraVersion} apariciones), {CarpetasVaciasPodadas} carpetas vacias " +
+				$"quitadas, {IconosCorregidos} iconos corregidos";
+		}
+
+		/// <summary>
+		/// Recorta un nodo del arbol curado a lo que existe DE VERDAD en esta version del juego.
+		/// Devuelve <c>null</c> si la carpeta se queda sin un solo objeto real (entonces desaparece
+		/// del arbol en vez de quedarse como una pagina vacia).
+		/// <para />
+		/// De paso arregla las dos cosas que se ven en pantalla y que dependen de esos ids:
+		/// <list type="bullet">
+		/// <item>El <b>recuento del rotulo</b> ("Daño de Cuerpo a Cuerpo (316)"). Se puede reescribir
+		/// sin miedo porque <c>LibraryLabelCatalog.Translate</c> traduce por PLANTILLA
+		/// (<c>"Melee damage ($1)"</c>) y sustituye el numero despues, asi que cambiarlo no deja
+		/// ningun rotulo sin traducir. Y el numero solo puede MENGUAR, nunca crecer: el texto no
+		/// puede desbordar su caja por esto.</item>
+		/// <item>El <b>icono</b> de la carpeta, si era un objeto que aqui no existe (con un mod
+		/// cargado enseñaba el sprite del objeto de mod que ocupa ese id). Pasa a ser el de su
+		/// primer objeto real, que es el mismo criterio que usa Core para las carpetas que construye
+		/// el.</item>
+		/// </list>
+		/// <b>No se renumeran las paginas</b> a proposito: las hojas del arbol curado van ordenadas
+		/// por id, y los ids que sobran son siempre los mas altos, asi que lo que se cae es siempre
+		/// la COLA ("Page 8" de una carpeta con 8 paginas, no una de en medio). Verificado hoja a
+		/// hoja sobre el .json real antes de decidirlo. Renumerar ademas rompería la correspondencia
+		/// con la app de escritorio, que enseña ese mismo arbol entero.
+		/// </summary>
+		private static CategoryTreeNodeData Podar(CategoryTreeNodeData nodo, HashSet<int> deOtraVersion)
+		{
+			if (nodo == null) {
+				return null;
+			}
+
+			List<int> ids = new List<int>();
+			HashSet<int> conjunto = new HashSet<int>();
+			List<CategoryTreeNodeData> hijos = new List<CategoryTreeNodeData>();
+
+			if (nodo.Children != null && nodo.Children.Count > 0) {
+				foreach (CategoryTreeNodeData hijo in nodo.Children) {
+					CategoryTreeNodeData podado = Podar(hijo, deOtraVersion);
+					if (podado != null) {
+						hijos.Add(podado);
+					}
+				}
+				// Misma union ordenada que hace Core: el orden real de los hijos, sin repetir un id
+				// que caiga en mas de uno.
+				foreach (CategoryTreeNodeData hijo in hijos) {
+					foreach (int id in hijo.ItemIdsOrdered) {
+						if (conjunto.Add(id)) {
+							ids.Add(id);
+						}
+					}
+				}
+				if (hijos.Count == 0) {
+					CarpetasVaciasPodadas++;
+					return null;
+				}
+			}
+			else {
+				if (nodo.ItemIdsOrdered != null) {
+					foreach (int id in nodo.ItemIdsOrdered) {
+						if (!CatalogoVivo.EsVanillaReal(id)) {
+							deOtraVersion.Add(id);
+							AparicionesDeOtraVersion++;
+							continue;
+						}
+						if (conjunto.Add(id)) {
+							ids.Add(id);
+						}
+					}
+				}
+				if (ids.Count == 0) {
+					CarpetasVaciasPodadas++;
+					return null;
+				}
+			}
+
+			string icono = nodo.IconPath;
+			if (!CatalogoVivo.EsVanillaReal(IdDeIcono(icono))) {
+				icono = IconoDe(ids[0]);
+				IconosCorregidos++;
+			}
+
+			return nodo with {
+				Name = ConRecuento(nodo.Name, ids.Count),
+				NameEn = ConRecuento(nodo.NameEn, ids.Count),
+				IconPath = icono,
+				ItemIdsOrdered = ids,
+				ItemIdSet = conjunto,
+				Children = hijos
+			};
+		}
+
+		/// <summary>
+		/// Reescribe el "(N)" final de un rotulo con el recuento de verdad. Deja intacto cualquier
+		/// nombre que no acabe asi ("Materials", "5201-5240", "(&lt; 0)").
+		/// </summary>
+		private static string ConRecuento(string nombre, int objetos)
+		{
+			if (string.IsNullOrEmpty(nombre)) {
+				return nombre;
+			}
+
+			int cierre = nombre.Length - 1;
+			if (nombre[cierre] != ')') {
+				return nombre;
+			}
+			int i = cierre - 1;
+			while (i >= 0 && nombre[i] >= '0' && nombre[i] <= '9') {
+				i--;
+			}
+			if (i < 0 || i == cierre - 1 || nombre[i] != '(') {
+				return nombre;   // No hay ningun numero entre parentesis al final.
+			}
+
+			return nombre.Substring(0, i + 1)
+				+ objetos.ToString(CultureInfo.InvariantCulture)
+				+ ")";
 		}
 
 		/// <summary>

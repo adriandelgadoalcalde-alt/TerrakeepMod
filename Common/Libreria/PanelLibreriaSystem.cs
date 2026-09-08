@@ -103,6 +103,9 @@ namespace TerrakeepMod.Common.Libreria
 			// excepcion aqui abortaria el resto del metodo antes de llegar a la autoprueba.
 			ActualizarAutoprueba();
 			AutopruebaLibreria.Actualizar();
+			// Recuento objeto a objeto del arbol (TERRAKEEP_AUDIT_CATEGORIAS). Va aparte de la
+			// autoprueba a proposito: no depende de ningun clic ni de que la interfaz este entera.
+			AuditoriaCategorias.Actualizar();
 		}
 
 		/// <summary>Abre el panel en la pestaña de Libreria, o lo cierra si ya estaba ahi.</summary>
