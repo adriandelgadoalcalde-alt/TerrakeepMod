@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameInput;
+using Terraria.ModLoader;
 using Terraria.UI;
 
 namespace TerrakeepMod.UI.Libreria
@@ -48,7 +49,14 @@ namespace TerrakeepMod.UI.Libreria
 			_escala = escala;
 
 			_muestra[0] = new Item();
-			if (tipo > 0) {
+			// El tope de arriba NO es una precaucion de adorno: Item.SetDefaults toca en su primera
+			// linea util un array indexado por tipo (material = ItemID.Sets.IsAMaterial[type], codigo
+			// real del Item.cs decompilado), asi que un id por encima de ItemLoader.ItemCount tumba la
+			// rejilla entera con IndexOutOfRangeException en vez de dejar un hueco. Es lo que pasaba
+			// con los ids que el arbol curado heredaba de Terraria 1.4.5 (ver ArbolLibreria); ahora
+			// eso se poda en el arbol, y esta guarda queda de red por si alguna vez llega otro id
+			// imposible por cualquier otro camino.
+			if (tipo > 0 && tipo < ItemLoader.ItemCount) {
 				_muestra[0].SetDefaults(tipo);
 			}
 
@@ -99,9 +107,16 @@ namespace TerrakeepMod.UI.Libreria
 			if (ContainsPoint(Main.MouseScreen) && !PlayerInput.IgnoreMouseInterface) {
 				// Sin esto el clic atraviesa el panel y el jugador ataca o coloca bloques detras.
 				Main.LocalPlayer.mouseInterface = true;
-				// Tooltip REAL del juego (nombre, daño, prefijos, texto del mod...). No hace falta
-				// ningun formateador propio: esto ya lo da vanilla entero y actualizado.
-				ItemSlot.MouseHover(_muestra, ItemSlot.Context.ChestItem, 0);
+				// El clic (OnLeftClick/OnRightClick, arriba) ya lo bloquea sola la capa del panel
+				// cuando hay un desplegable abierto, porque va por el sistema de eventos de
+				// UIElement. El tooltip NO: se pide aqui a mano, mirando el raton directamente, asi
+				// que hay que callarlo aparte - si no, el tooltip del objeto que quedara debajo del
+				// menu de prefijos asomaria por encima de el. Ver CapaSuperposicionTk.TapaAlRaton.
+				if (!Panel.CapaSuperposicionTk.TapaAlRaton(Main.MouseScreen)) {
+					// Tooltip REAL del juego (nombre, daño, prefijos, texto del mod...). No hace falta
+					// ningun formateador propio: esto ya lo da vanilla entero y actualizado.
+					ItemSlot.MouseHover(_muestra, ItemSlot.Context.ChestItem, 0);
+				}
 			}
 
 			Main.inventoryScale = escalaPrevia;

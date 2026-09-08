@@ -65,6 +65,7 @@ namespace TerrakeepMod.UI.Panel
 
 		private UIPanel _marco;
 		private UIElement _contenedor;
+		private CapaSuperposicionTk _capaSuperposicion;
 		private readonly List<BotonTk> _botonesPestana = new List<BotonTk>();
 		private BotonTk _botonCerrar;
 		private UIElement _contenidoActual;
@@ -85,6 +86,55 @@ namespace TerrakeepMod.UI.Panel
 
 		/// <summary>El contenido montado en la pestaña abierta, sea del tipo que sea.</summary>
 		public UIElement ContenidoActual => _contenidoActual;
+
+		/// <summary>La capa donde flotan los desplegables del panel. Ver
+		/// <see cref="CapaSuperposicionTk"/> para el porque de que exista.</summary>
+		public CapaSuperposicionTk CapaSuperposicion => _capaSuperposicion;
+
+		/// <summary>El boton "Cerrar (tecla)" del pie. Expuesto para que la autoprueba pueda medir su
+		/// rectangulo REAL y demostrar que ya no se solapa con un desplegable abierto.</summary>
+		public BotonTk BotonCerrar => _botonCerrar;
+
+		/// <summary>Los hijos del marco EN EL ORDEN EN QUE SE DIBUJAN (que es el orden de
+		/// <c>Append</c>, ver <c>UIElement.DrawChildren</c>). La autoprueba lo recorre para demostrar
+		/// que la capa de superposicion va despues del boton "Cerrar".</summary>
+		public IEnumerable<UIElement> MarcoHijos =>
+			_marco != null ? _marco.Children : new List<UIElement>();
+
+		/// <summary>
+		/// SOLO DIAGNOSTICO: el orden REAL en que el marco dibuja a sus hijos (que es el orden de
+		/// <c>Append</c>, ver <c>UIElement.DrawChildren</c>) y la geometria ya calculada de cada uno.
+		/// Lo lee la autoprueba para demostrar con datos, y no de palabra, que la capa de
+		/// superposicion se dibuja DESPUES del boton "Cerrar" - o sea, por encima.
+		/// </summary>
+		public string DiagnosticoOrdenDibujado()
+		{
+			if (_marco == null) {
+				return "(marco null)";
+			}
+
+			System.Text.StringBuilder texto = new System.Text.StringBuilder();
+			int indice = 0;
+			foreach (UIElement hijo in _marco.Children) {
+				CalculatedStyle d = hijo.GetDimensions();
+				string etiqueta = hijo.GetType().Name;
+				if (ReferenceEquals(hijo, _botonCerrar)) {
+					etiqueta = "BotonTk(Cerrar)";
+				}
+				else if (ReferenceEquals(hijo, _capaSuperposicion)) {
+					etiqueta = "CapaSuperposicionTk" +
+						(_capaSuperposicion.Ocupada ? " OCUPADA" : " vacia");
+				}
+				if (texto.Length > 0) {
+					texto.Append(" | ");
+				}
+				texto.Append('[').Append(indice).Append("] ").Append(etiqueta)
+					.Append(" x=").Append((int)d.X).Append(" y=").Append((int)d.Y)
+					.Append(' ').Append((int)d.Width).Append('x').Append((int)d.Height);
+				indice++;
+			}
+			return texto.ToString();
+		}
 
 		public ContenidoPersonaje Personaje => _contenidoActual as ContenidoPersonaje;
 		public ContenidoLibreria Libreria => _contenidoActual as ContenidoLibreria;
@@ -117,6 +167,19 @@ namespace TerrakeepMod.UI.Panel
 			_marco.Append(_contenedor);
 
 			ConstruirPie();
+
+			// LA ULTIMA, y a proposito: es la capa donde flotan los desplegables (hoy el selector de
+			// prefijo). UIElement.DrawChildren dibuja en el orden en que se hizo Append, asi que
+			// colgarla despues del pie es lo que garantiza que un desplegable abierto quede POR ENCIMA
+			// del boton "Cerrar" y de todo lo demas del marco - el bug que reporto el usuario con
+			// captura era exactamente el contrario (el boton de cerrar tapando las opciones). Ocupa la
+			// misma franja que _contenedor (ni el titulo, ni las pestañas, ni el pie), asi que un
+			// desplegable acotado a ella no puede salirse del panel ni pisar el pie.
+			_capaSuperposicion = new CapaSuperposicionTk();
+			_capaSuperposicion.Width.Set(0f, 1f);
+			_capaSuperposicion.Top.Set(arribaContenido, 0f);
+			_capaSuperposicion.Height.Set(-(arribaContenido + AltoPie), 1f);
+			_marco.Append(_capaSuperposicion);
 
 			CambiarArea(UltimaArea, "reapertura");
 		}
@@ -234,6 +297,13 @@ namespace TerrakeepMod.UI.Panel
 			}
 
 			RefrescarTextos();
+
+			// Un desplegable abierto pertenece al contenido que se va a tirar, pero vive en la capa
+			// de superposicion (que NO se tira al cambiar de pestaña): sin esto se quedaria flotando
+			// huerfano encima de la pestaña nueva.
+			if (_capaSuperposicion != null) {
+				_capaSuperposicion.Quitar(null);
+			}
 
 			if (_contenidoActual != null) {
 				_contenedor.RemoveChild(_contenidoActual);

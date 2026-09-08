@@ -7,6 +7,7 @@ using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Prefijos;
 using TerrakeepMod.Common.Undo;
+using TerrakeepMod.UI.Panel;
 using TerrakeepMod.UI.Personaje.Widgets;
 using Terrakeep.Core.Data;
 
@@ -40,6 +41,8 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 		private UIPanel _popup;
 		private UIList _lista;
 		private UIScrollbar _scroll;
+		private CapaSuperposicionTk _capa;
+		private float _anchoPopupReal = AnchoPopup;
 		private bool _abierto;
 		private Item _itemDelPopup;
 
@@ -133,12 +136,118 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 			CalculatedStyle p = _popup.GetDimensions();
 			CalculatedStyle l = _lista != null ? _lista.GetDimensions() : default;
 			CalculatedStyle b = _botonToggle.GetDimensions();
+			CalculatedStyle c = _capa != null ? _capa.GetInnerDimensions() : default;
 			return "boton x=" + (int)b.X + " y=" + (int)b.Y + " " + (int)b.Width + "x" + (int)b.Height
 				+ "; popup x=" + (int)p.X + " y=" + (int)p.Y + " " + (int)p.Width + "x" + (int)p.Height
 				+ "; lista x=" + (int)l.X + " y=" + (int)l.Y + " " + (int)l.Width + "x" + (int)l.Height
+				+ "; capa x=" + (int)c.X + " y=" + (int)c.Y + " " + (int)c.Width + "x" + (int)c.Height
+				+ " (" + (_capa != null ? "el popup cuelga de la capa del panel" : "SIN capa: colgado de si mismo") + ")"
+				+ "; dentroDeLaCapa=" + DentroDeLaCapa
 				+ "; filas internas=" + (_lista != null ? _lista.Count : 0)
 				+ "; alturaInternaTotal=" + (_lista != null ? _lista.GetTotalHeight() : 0f)
+				+ "; " + DiagnosticoScroll()
 				+ "; Main.screenWidth=" + Main.screenWidth + " Main.screenHeight=" + Main.screenHeight;
+		}
+
+		/// <summary>SOLO DIAGNOSTICO: estado real de la barra de scroll del popup.</summary>
+		public string DiagnosticoScroll()
+		{
+			if (_scroll == null) {
+				return "scroll (null)";
+			}
+			return "scroll ViewPosition=" + _scroll.ViewPosition.ToString("0.0")
+				+ " ViewSize=" + _scroll.ViewSize.ToString("0.0")
+				+ " MaxViewSize=" + _scroll.MaxViewSize.ToString("0.0")
+				+ " CanScroll=" + _scroll.CanScroll
+				+ "; primeraFila y=" + PrimeraFilaY.ToString("0.0");
+		}
+
+		/// <summary>true si el popup abierto cabe ENTERO dentro de la capa del panel (o sea, dentro
+		/// del panel). Es la comprobacion que delata el bug original: antes se salia hacia el mundo
+		/// del juego. Sin popup abierto, false.</summary>
+		public bool DentroDeLaCapa {
+			get {
+				if (_popup == null || _capa == null) {
+					return false;
+				}
+				CalculatedStyle p = _popup.GetDimensions();
+				CalculatedStyle c = _capa.GetInnerDimensions();
+				return p.X >= c.X - 0.5f && p.Y >= c.Y - 0.5f
+					&& p.X + p.Width <= c.X + c.Width + 0.5f
+					&& p.Y + p.Height <= c.Y + c.Height + 0.5f;
+			}
+		}
+
+		/// <summary>Posicion Y REAL, en pantalla, de la primera fila de la lista. Cambia cuando el
+		/// scroll se mueve de verdad: es la prueba de que el contenido visible se ha desplazado, no
+		/// solo de que un numero interno haya cambiado.</summary>
+		public float PrimeraFilaY {
+			get {
+				if (_lista == null) {
+					return 0f;
+				}
+				foreach (UIElement fila in _lista) {
+					return fila.GetDimensions().Y;
+				}
+				return 0f;
+			}
+		}
+
+		/// <summary>Posicion actual de la barra de scroll del popup (0 = arriba del todo).</summary>
+		public float PosicionScroll => _scroll != null ? _scroll.ViewPosition : 0f;
+
+		/// <summary>Rectangulo real, ya calculado, del popup abierto (vacio si no hay ninguno).</summary>
+		public CalculatedStyle RectanguloPopup => _popup != null ? _popup.GetDimensions() : default;
+
+		/// <summary>true si <paramref name="elemento"/> es el popup abierto o algo colgado de el. Lo
+		/// usa la autoprueba para comprobar que el motor entrega de verdad el raton al desplegable
+		/// (<c>UIElement.GetElementAt</c>, la misma llamada que hace <c>UserInterface</c>).</summary>
+		public bool EsDelPopup(UIElement elemento)
+		{
+			for (UIElement actual = elemento; actual != null; actual = actual.Parent) {
+				if (ReferenceEquals(actual, _popup)) {
+					return true;
+				}
+			}
+			return false;
+		}
+
+		/// <summary>true si la lista de prefijos NO cabe entera y hace falta scroll de verdad.</summary>
+		public bool NecesitaScroll => _scroll != null && _scroll.CanScroll;
+
+		/// <summary>Centro real, en coordenadas de pantalla, del popup abierto. Lo usa la autoprueba
+		/// para preguntarle al motor que elemento hay bajo ese punto por la ruta REAL
+		/// (<c>UIElement.GetElementAt</c>, la misma que usa <c>UserInterface</c>).</summary>
+		public Microsoft.Xna.Framework.Vector2 CentroPopup {
+			get {
+				if (_popup == null) {
+					return Microsoft.Xna.Framework.Vector2.Zero;
+				}
+				CalculatedStyle p = _popup.GetDimensions();
+				return new Microsoft.Xna.Framework.Vector2(p.X + p.Width / 2f, p.Y + p.Height / 2f);
+			}
+		}
+
+		/// <summary>Nombres de las filas VISIBLES ahora mismo dentro del recorte real del popup, en
+		/// orden. Con el scroll movido tiene que cambiar de verdad; es la evidencia en texto que
+		/// acompaña a las dos capturas.</summary>
+		public List<string> FilasVisibles()
+		{
+			List<string> visibles = new List<string>();
+			if (_lista == null) {
+				return visibles;
+			}
+
+			CalculatedStyle vista = _lista.GetDimensions();
+			foreach (UIElement fila in _lista) {
+				CalculatedStyle d = fila.GetDimensions();
+				if (d.Y + d.Height <= vista.Y || d.Y >= vista.Y + vista.Height) {
+					continue;
+				}
+				BotonTk boton = fila as BotonTk;
+				visibles.Add(boton != null ? boton.Texto : "(" + fila.GetType().Name + ")");
+			}
+			return visibles;
 		}
 
 		private void Alternar()
@@ -165,91 +274,152 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 
 		private void Cerrar()
 		{
-			if (_popup != null) {
-				RemoveChild(_popup);
-			}
+			// El estado propio se limpia ANTES de tocar la capa: quitar de la capa dispara su aviso
+			// "me han quitado esto", que vuelve a entrar aqui - con todo ya a null esa segunda vuelta
+			// no hace nada, en vez de rebotar en bucle entre los dos.
+			UIPanel popup = _popup;
+			CapaSuperposicionTk capa = _capa;
 			_popup = null;
 			_lista = null;
 			_scroll = null;
+			_capa = null;
 			_itemDelPopup = null;
 			_abierto = false;
+
+			if (popup == null) {
+				return;
+			}
+			if (capa != null) {
+				capa.Quitar(popup);
+			}
+			else {
+				RemoveChild(popup);
+			}
 		}
 
 		/// <summary>Reconstruye el popup entero para <paramref name="objeto"/>: los grupos legales
 		/// dependen del objeto concreto, asi que no tiene sentido guardar un popup entre aperturas.</summary>
 		private void ConstruirPopup(Item objeto)
 		{
-			// Se abre hacia donde de verdad quede sitio en la VENTANA REAL, midiendo con
-			// Main.screenWidth/Height en vez de suponer un lado fijo - mismo criterio que ya usa
-			// este mod para no fiarse de min()/max() en CSS o de un ancho de fuente supuesto:
-			// medir lo real del motor, no adivinar. Encargo explicito del usuario tras probarlo
-			// ("el panel de prefijos se abre arriba, mejor seria a la derecha, que todavia hay
-			// espacio"): por defecto se abre a la DERECHA del boton, con el borde superior
-			// alineado - solo cae hacia la izquierda o se desplaza verticalmente si de verdad no
-			// cabe en la ventana actual (ventanas pequeñas, o la Libreria pegada al borde).
+			// ---------------------------------------------------------------------------------
+			// DONDE VIVE EL POPUP: en la capa de superposicion del panel, NUNCA colgado del boton.
+			//
+			// Los tres bugs que reporto el usuario con captura (el desplegable dibujandose sobre el
+			// MUNDO a la derecha del panel, el boton "Cerrar (O)" tapandolo, y el scroll sin
+			// responder) eran tres sintomas del mismo error de raiz: colgarlo del boton que lo abre.
+			// El detalle completo esta en la cabecera de CapaSuperposicionTk; en corto:
+			//   - ningun UIElement recorta a sus hijos (salvo OverflowHidden), asi que un hijo
+			//     colocado mas alla del ancho de su padre se dibuja igual, encima del mundo;
+			//   - el marco dibuja a sus hijos en el orden de Append, y el pie ("Cerrar") va despues
+			//     de la zona de contenido, asi que todo lo que salga del contenido queda por debajo;
+			//   - UIElement.GetElementAt (el que reparte clics y rueda) solo desciende a un hijo si
+			//     TODOS sus ancestros contienen el punto del raton: un popup de 240x220 que sobresale
+			//     de un boton de 176x26 no recibia ni un evento, de ahi que la rueda no hiciera nada.
+			// La capa arregla los tres de una vez: sigue dentro del arbol del panel, ocupa la zona
+			// util del marco (asi que acotarse a ella es no salirse del panel), es el ultimo hijo del
+			// marco (se dibuja por encima de todo) y contiene de verdad el punto del raton.
+			// ---------------------------------------------------------------------------------
+			_capa = CapaSuperposicionTk.Buscar(this);
+
+			// El area REAL donde puede vivir el popup: la capa (zona util del marco) si la hay, y si
+			// no - montado suelto en una prueba, sin panel alrededor - la ventana entera, como antes.
+			CalculatedStyle area = _capa != null
+				? _capa.GetInnerDimensions()
+				: new CalculatedStyle(0f, 0f, Main.screenWidth, Main.screenHeight);
+
+			// Tamaño REAL, fijado a mano en las cuatro propiedades. UIElement.MaxWidth/MaxHeight
+			// valen StyleDimension.Fill POR DEFECTO (100% del padre): cuando el padre era el propio
+			// boton "Prefijo: X" (176x26 px) eso RECORTABA el popup a 176x26 pese a pedirle 240x220
+			// con Width/Height, sin ningun aviso ni excepcion - solo se veian ~14px de la primera
+			// fila. Ahora el padre es la capa, que es grande, pero se siguen fijando explicitamente:
+			// es el tamaño que este control quiere, no algo heredado de quien lo tenga colgado.
+			// Ademas se acotan al area real, para que en una ventana diminuta el popup se ENCOJA en
+			// vez de desbordarse (Math.Min normal, no una funcion del motor: aqui se decide un
+			// numero, no se le pide nada a nadie).
+			float anchoReal = Math.Min(AnchoPopup, area.Width);
+			float altoReal = Math.Min(AltoPopup, area.Height);
+			_anchoPopupReal = anchoReal;
+
 			_popup = new UIPanel();
-			_popup.Width.Set(AnchoPopup, 0f);
-			_popup.Height.Set(AltoPopup, 0f);
-			// EL HALLAZGO REAL de este bug (el "no muestra ninguna opcion de nada" que reporto el
-			// usuario): UIElement.MaxWidth/MaxHeight valen StyleDimension.Fill POR DEFECTO (100% del
-			// padre) - y el padre de este popup es el propio boton "Prefijo: X" (176x26 px). Sin
-			// fijarlos aqui, el motor RECORTA el popup a como mucho 176x26 pese a pedirle
-			// Width/Height=240x220 explicitamente: el popup SI se abria y SI tenia filas reales
-			// dentro (confirmado con un diagnostico real: 66 filas internas, 1602px de alto interno
-			// acumulado), pero solo se veian ~14px de la primera ("Ninguno"), el resto quedaba
-			// recortado sin ningun aviso. Visto con un diagnostico de geometria real en el juego, no
-			// adivinado - el mismo motivo por el que este mod no se fia de min()/max() en CSS ni de
-			// un ancho de fuente supuesto: medir SIEMPRE lo real del motor.
-			_popup.MaxWidth.Set(AnchoPopup, 0f);
-			_popup.MaxHeight.Set(AltoPopup, 0f);
+			_popup.Width.Set(anchoReal, 0f);
+			_popup.Height.Set(altoReal, 0f);
+			_popup.MaxWidth.Set(anchoReal, 0f);
+			_popup.MaxHeight.Set(altoReal, 0f);
 			_popup.BackgroundColor = EstiloTk.FondoCaja;
-			_popup.BorderColor = new Color(0, 0, 0, 0);
+			// Borde visible, a diferencia del resto de cajas del panel: esto flota POR ENCIMA de
+			// otros controles, y sin una linea que lo separe se lee como si formara parte de lo que
+			// hay debajo.
+			_popup.BorderColor = EstiloTk.BordeSobre * 0.55f;
 			_popup.SetPadding(6f);
 
+			// ---- Colocacion, en coordenadas de PANTALLA y acotada al area ----------------------
+			// Preferencia (encargo explicito del usuario en su dia): a la DERECHA del boton, con el
+			// borde superior alineado. Si ahi no cabe DENTRO DEL PANEL, a la izquierda; y pase lo que
+			// pase, el ultimo acotado deja el popup dentro del area - nunca desbordando hacia el
+			// mundo del juego, que es lo que se veia en la captura del usuario.
 			CalculatedStyle boton = _botonToggle.GetDimensions();
+			const float Separacion = 4f;
 
-			float left = boton.Width + 4f;
-			if (boton.X + boton.Width + 4f + AnchoPopup > Main.screenWidth) {
-				left = -(AnchoPopup + 4f);
-				// Tampoco cabe a la izquierda (ventana muy estrecha): se deja pegado al borde
-				// izquierdo de la ventana en vez de salirse por fuera.
-				if (boton.X + left < 0f) {
-					left = -boton.X;
-				}
+			float x = boton.X + boton.Width + Separacion;
+			if (x + anchoReal > area.X + area.Width) {
+				x = boton.X - anchoReal - Separacion;
+			}
+			if (x + anchoReal > area.X + area.Width) {
+				x = area.X + area.Width - anchoReal;
+			}
+			if (x < area.X) {
+				x = area.X;
 			}
 
-			// Margen de sobra por abajo: el pie del marco (boton "Cerrar", AltoPie en
-			// PanelTerrakeepState) vive en la franja final de la ventana, y pegar el popup al borde
-			// EXACTO de Main.screenHeight se lo comia por encima en una captura real. No hace falta
-			// conocer el marco desde aqui (este widget no sabe nada de PanelTerrakeepState a
-			// proposito): un margen fijo de sobra alcanza para dejarlo siempre claramente encima.
-			const float MargenInferior = 66f;
-
-			float top = 0f;
-			if (boton.Y + AltoPopup > Main.screenHeight - MargenInferior) {
-				top = Main.screenHeight - MargenInferior - AltoPopup - boton.Y;
+			float y = boton.Y;
+			if (y + altoReal > area.Y + area.Height) {
+				y = area.Y + area.Height - altoReal;
 			}
-			if (boton.Y + top < 0f) {
-				top = -boton.Y;
+			if (y < area.Y) {
+				y = area.Y;
 			}
 
-			_popup.Left.Set(left, 0f);
-			_popup.Top.Set(top, 0f);
-			Append(_popup);
+			// Left/Top son relativos al INTERIOR del padre (UIElement.Recalculate usa
+			// Parent.GetInnerDimensions, codigo real), asi que la posicion de pantalla que se acaba
+			// de calcular se pasa a coordenadas del padre restandole el origen del area.
+			_popup.Left.Set(x - area.X, 0f);
+			_popup.Top.Set(y - area.Y, 0f);
 
 			_lista = new UIList();
 			_lista.Width.Set(-20f, 1f);
 			_lista.Height.Set(0f, 1f);
 			_lista.ListPadding = 3f;
+			// Sin esto, UIList ORDENA sus elementos con List.Sort y UIElement.CompareTo, que devuelve
+			// 0 para todos: List.Sort no es estable, asi que con muchas filas (aqui hay 66 reales)
+			// puede permutarlas y dejar cada prefijo bajo una cabecera que no es la suya. Lo dice la
+			// documentacion del propio UIList: "if elements are added in order, you can use an empty
+			// sort method to preserve the original order".
+			_lista.ManualSortMethod = elementos => { };
 			_popup.Append(_lista);
 
 			_scroll = new UIScrollbar();
 			_scroll.Width.Set(16f, 0f);
 			_scroll.Height.Set(0f, 1f);
 			_scroll.HAlign = 1f;
-			_scroll.SetView(100f, 1000f);
 			_popup.Append(_scroll);
+			// SetScrollbar deja la barra ya sincronizada con el alto REAL de la lista (llama a
+			// UpdateScrollbar, que hace el SetView de verdad con GetInnerDimensions().Height y el
+			// alto interno acumulado). No hace falta - ni conviene - inventarse un SetView(100,1000)
+			// a mano: seria un dato falso que el primer Recalculate pisa igualmente.
 			_lista.SetScrollbar(_scroll);
+
+			// La rueda sobre la LISTA la maneja la propia UIList. Este enganche cubre el resto de la
+			// superficie del popup (el margen, y sobre todo la franja de la barra de scroll), donde
+			// si no la rueda no haria nada. Se mira el ORIGEN del evento (evt.Target) y no el hover:
+			// si el evento nacio dentro de la lista, ella ya lo ha aplicado y solo esta burbujeando
+			// hacia arriba (UIList.ScrollWheel llama a base.ScrollWheel, codigo real), asi que
+			// aplicarlo otra vez aqui desplazaria el doble.
+			_popup.OnScrollWheel += (evento, elemento) => {
+				if (_scroll == null || _lista == null || VieneDeLaLista(evento.Target)) {
+					return;
+				}
+				_scroll.ViewPosition -= evento.ScrollWheelValue;
+			};
 
 			// "Ninguno" (quitar el prefijo) siempre arriba del todo, fuera de cualquier grupo.
 			_lista.Add(CrearFilaPrefijo(0, objeto, Idiomas.Texto("Libreria.Prefijo.Ninguno"), ""));
@@ -272,13 +442,35 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 				}
 			}
 
-			_lista.Recalculate();
+			// Se cuelga de la capa AL FINAL, con el contenido ya dentro, y se recalcula desde el
+			// propio popup: Recalculate baja de padres a hijos, asi que esta unica llamada deja la
+			// lista, sus 60 y pico filas y la barra de scroll con sus medidas reales de una vez
+			// (UIList.Recalculate termina llamando a UpdateScrollbar con el alto real acumulado).
+			if (_capa != null) {
+				_capa.Mostrar(_popup, Cerrar);
+			}
+			else {
+				Append(_popup);
+			}
+			_popup.Recalculate();
+		}
+
+		/// <summary>true si <paramref name="objetivo"/> es la lista del popup o cualquier cosa
+		/// colgada de ella (una fila, una cabecera).</summary>
+		private bool VieneDeLaLista(UIElement objetivo)
+		{
+			for (UIElement actual = objetivo; actual != null; actual = actual.Parent) {
+				if (ReferenceEquals(actual, _lista)) {
+					return true;
+				}
+			}
+			return false;
 		}
 
 		private EtiquetaTk CrearCabecera(string texto, Color? color = null)
 		{
 			string capturado = texto;
-			EtiquetaTk etiqueta = new EtiquetaTk(() => capturado, 0.72f, AnchoPopup - 24f, 18f);
+			EtiquetaTk etiqueta = new EtiquetaTk(() => capturado, 0.72f, _anchoPopupReal - 24f, 18f);
 			etiqueta.ColorTexto = color ?? EstiloTk.TextoAviso;
 			return etiqueta;
 		}

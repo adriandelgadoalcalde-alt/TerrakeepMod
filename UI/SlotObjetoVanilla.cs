@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameInput;
 using Terraria.UI;
+using TerrakeepMod.UI.Panel;
 
 namespace TerrakeepMod.UI
 {
@@ -72,10 +73,18 @@ namespace TerrakeepMod.UI
 				// Sin esto el clic atraviesa la interfaz y el jugador ataca/coloca bloques
 				// detras del panel.
 				Main.LocalPlayer.mouseInterface = true;
-				// Aqui vive TODO el comportamiento vanilla: coger, soltar, apilar, clic
-				// derecho, equipar rapido con mayusculas, tooltip... 4313 lineas de
-				// ItemSlot.cs reutilizadas sin reimplementar nada.
-				ItemSlot.Handle(_inventario, _contexto, _indice);
+
+				// Pero SI hay un desplegable abierto encima (el selector de prefijo), la ranura se
+				// calla: este control gestiona el raton a mano, fuera del sistema de eventos de
+				// UIElement, asi que no se entera por si solo de que algo lo tapa - sin esta
+				// consulta, un clic en una fila del desplegable ademas cogeria o soltaria el objeto
+				// de la ranura que quedara justo debajo. Ver CapaSuperposicionTk.TapaAlRaton.
+				if (!CapaSuperposicionTk.TapaAlRaton(Main.MouseScreen)) {
+					// Aqui vive TODO el comportamiento vanilla: coger, soltar, apilar, clic
+					// derecho, equipar rapido con mayusculas, tooltip... 4313 lineas de
+					// ItemSlot.cs reutilizadas sin reimplementar nada.
+					ItemSlot.Handle(_inventario, _contexto, _indice);
+				}
 			}
 
 			ItemSlot.Draw(spriteBatch, _inventario, _contexto, _indice, rect.TopLeft());

@@ -4,6 +4,7 @@ using Terraria;
 using Terraria.GameInput;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
+using TerrakeepMod.UI.Panel;
 using TerrakeepMod.UI.Personaje.Widgets;
 
 namespace TerrakeepMod.UI.Libreria.Widgets
@@ -74,12 +75,18 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 
 			if (ContainsPoint(Main.MouseScreen) && !PlayerInput.IgnoreMouseInterface) {
 				Main.LocalPlayer.mouseInterface = true;
-				// Context.InventoryItem: el contexto generico de vanilla, sin restriccion de tipo
-				// de objeto ni comportamiento especial (a diferencia de TrashItem/EquipArmor...) -
-				// admite arrastrar y sacar CUALQUIER objeto, que es justo lo que pide el encargo
-				// ("arrastra el arma o el objeto", sin distinguir tipo).
-				ItemSlot.Handle(ref _seleccion, ItemSlot.Context.InventoryItem);
-				ItemSlot.MouseHover(ref _seleccion, ItemSlot.Context.InventoryItem);
+				// Callado mientras haya un desplegable abierto encima (el selector de prefijo, que se
+				// abre justo al lado de este recuadro): esta ranura gestiona el raton a mano, fuera
+				// del sistema de eventos de UIElement, asi que no se entera sola de que la tapan.
+				// Ver CapaSuperposicionTk.TapaAlRaton.
+				if (!CapaSuperposicionTk.TapaAlRaton(Main.MouseScreen)) {
+					// Context.InventoryItem: el contexto generico de vanilla, sin restriccion de tipo
+					// de objeto ni comportamiento especial (a diferencia de TrashItem/EquipArmor...) -
+					// admite arrastrar y sacar CUALQUIER objeto, que es justo lo que pide el encargo
+					// ("arrastra el arma o el objeto", sin distinguir tipo).
+					ItemSlot.Handle(ref _seleccion, ItemSlot.Context.InventoryItem);
+					ItemSlot.MouseHover(ref _seleccion, ItemSlot.Context.InventoryItem);
+				}
 			}
 
 			ItemSlot.Draw(spriteBatch, ref _seleccion, ItemSlot.Context.InventoryItem, rect.TopLeft());

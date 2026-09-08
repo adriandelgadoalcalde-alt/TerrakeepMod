@@ -12,6 +12,7 @@ using TerrakeepMod.Common.Panel;
 using TerrakeepMod.Common.Prefijos;
 using TerrakeepMod.Common.Undo;
 using TerrakeepMod.UI.Libreria;
+using TerrakeepMod.UI.Panel;
 using TerrakeepMod.UI.Libreria.Widgets;
 using TerrakeepMod.UI.Personaje.Widgets;
 using Terrakeep.Core.Data;
@@ -136,8 +137,14 @@ namespace TerrakeepMod.Common.Libreria
 				// enseñaba el popup todavia CERRADO - bug real visto en una captura ("Prefix: None"
 				// sin desplegar nada). Con un paso de por medio (~12 fotogramas reales) el popup ya
 				// esta dibujado de verdad para cuando se captura.
-				case 19: CapturarYPulsarPrefijo(); break;
-				case 20: ComprobarPapeleraDesdeLibreria(); break;
+				// Los tres bugs que reporto el usuario con captura sobre este mismo desplegable (se
+				// dibujaba FUERA del panel, sobre el mundo; el boton "Cerrar (O)" lo tapaba; el scroll
+				// no respondia). Cada uno se comprueba con datos reales, no de vista:
+				case 19: ComprobarPopupDentroDelPanel(); break;   // + captura 1 (arriba del todo)
+				case 20: ComprobarScrollReal(); break;            // rueda de verdad, por la ruta del motor
+				case 21: CapturarTrasScroll(); break;             // captura 2 (ya desplazado)
+				case 22: CapturarYPulsarPrefijo(); break;
+				case 23: ComprobarPapeleraDesdeLibreria(); break;
 				default:
 					Registrar("AUTOPRUEBA WS3 COMPLETA. Todos los pasos ejecutados sin excepciones.");
 					_terminada = true;
@@ -908,11 +915,190 @@ namespace TerrakeepMod.Common.Libreria
 				+ "clics se hacen en el paso siguiente, para darle al menos un fotograma real de sobra.");
 		}
 
+		// --- Pasos 19-21: los tres bugs del desplegable de prefijos, con datos reales -------------
+		private static float _scrollAntes;
+		private static float _filaAntes;
+		private static List<string> _visiblesAntes = new List<string>();
+
+		/// <summary>
+		/// Bugs 1 y 2 del encargo: el desplegable se dibujaba FUERA del panel (sobre el mundo del
+		/// juego) y el boton "Cerrar (O)" lo tapaba. Los dos se comprueban con geometria REAL ya
+		/// calculada, no de vista: que el rectangulo del popup cabe entero dentro de la capa del
+		/// panel, que NO se cruza con el del boton de cerrar, y que la capa se dibuja DESPUES que ese
+		/// boton (o sea, por encima) en el orden real de hijos del marco.
+		/// </summary>
+		private static void ComprobarPopupDentroDelPanel()
+		{
+			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
+			PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
+			if (herramientas == null || panel == null || !herramientas.EditorPrefijo.PopupAbierto) {
+				Registrar("Paso 19 - el popup no esta abierto (paso 18 fallo), se salta.");
+				return;
+			}
+
+			EditorPrefijoTk editor = herramientas.EditorPrefijo;
+			Registrar("Paso 19 - geometria real: " + editor.DiagnosticoGeometria());
+			Registrar("Paso 19 - orden REAL de dibujado dentro del marco (UIElement.DrawChildren "
+				+ "dibuja en el orden de Append, asi que el ULTIMO es el que queda encima): "
+				+ panel.DiagnosticoOrdenDibujado());
+
+			// Bug 1: dentro del panel.
+			Registrar("Paso 19 - el popup cabe entero dentro de la capa del panel: "
+				+ editor.DentroDeLaCapa + " (" + (editor.DentroDeLaCapa
+					? "OK, ya no se sale hacia el mundo del juego" : "FALLO") + ").");
+
+			// Bug 2: ni tapado por el boton Cerrar, ni cruzandose con el.
+			Rectangle popup = editor.RectanguloPopup.ToRectangle();
+			Rectangle cerrar = panel.BotonCerrar != null
+				? panel.BotonCerrar.GetDimensions().ToRectangle() : Rectangle.Empty;
+			bool seCruzan = popup.Intersects(cerrar);
+			int indicePopup = IndiceEnElMarco(panel, panel.CapaSuperposicion);
+			int indiceCerrar = IndiceEnElMarco(panel, panel.BotonCerrar);
+			Registrar("Paso 19 - boton \"Cerrar\" en x=" + cerrar.X + " y=" + cerrar.Y + " "
+				+ cerrar.Width + "x" + cerrar.Height + "; popup en x=" + popup.X + " y=" + popup.Y
+				+ " " + popup.Width + "x" + popup.Height + ". Se cruzan: " + seCruzan + " ("
+				+ (seCruzan ? "se cruzan, pero" : "OK, ni se rozan; y ademas") + " la capa se dibuja "
+				+ "en la posicion " + indicePopup + " del marco y el boton Cerrar en la " + indiceCerrar
+				+ " -> " + (indicePopup > indiceCerrar
+					? "OK, el desplegable queda POR ENCIMA del boton de cerrar"
+					: "FALLO: el boton de cerrar se dibuja despues y lo taparia") + ").");
+
+			// Bug 3, primera mitad: que el motor le entregue el raton al popup. Es la misma llamada
+			// exacta que hace UserInterface.Update para repartir clics y rueda.
+			Vector2 centro = editor.CentroPopup;
+			UIElement bajoElRaton = panel.GetElementAt(centro);
+			bool esDelPopup = editor.EsDelPopup(bajoElRaton);
+			Registrar("Paso 19 - UIElement.GetElementAt(" + (int)centro.X + "," + (int)centro.Y
+				+ ") (la MISMA llamada con la que UserInterface reparte clics y rueda) devuelve: "
+				+ (bajoElRaton == null ? "null" : bajoElRaton.GetType().Name
+					+ (bajoElRaton is BotonTk ? " \"" + ((BotonTk)bajoElRaton).Texto + "\"" : ""))
+				+ " -> " + (esDelPopup
+					? "OK, el raton llega de verdad al desplegable"
+					: "FALLO: el motor entrega el raton a otra cosa, el desplegable esta sordo") + ".");
+
+			Registrar("Paso 19 - filas visibles ahora (arriba del todo): "
+				+ string.Join(" | ", editor.FilasVisibles()));
+
+			// Captura 1 de las dos que pide la verificacion: el desplegable abierto, sin desplazar.
+			Registrar("Paso 19 - " + CapturaDePantalla.Guardar("ws3-prefijo-1-abierto-dentro-del-panel"));
+		}
+
+		/// <summary>Posicion de un elemento entre los hijos del marco (el orden en que se dibujan).</summary>
+		private static int IndiceEnElMarco(PanelTerrakeepState panel, UIElement buscado)
+		{
+			if (panel == null || buscado == null) {
+				return -1;
+			}
+			int indice = 0;
+			foreach (UIElement hijo in panel.MarcoHijos) {
+				if (ReferenceEquals(hijo, buscado)) {
+					return indice;
+				}
+				indice++;
+			}
+			return -1;
+		}
+
+		/// <summary>
+		/// Bug 3 del encargo: "el scroll del desplegable no funciona". Se mueve la rueda DE VERDAD,
+		/// por la ruta real del motor: se pregunta que elemento hay bajo el punto
+		/// (<c>GetElementAt</c>) y se le manda un <c>UIScrollWheelEvent</c> - exactamente los dos
+		/// pasos que da <c>UserInterface.Update</c> con una rueda real. Tres muescas de 120, como
+		/// tres golpes de rueda seguidos.
+		/// </summary>
+		private static void ComprobarScrollReal()
+		{
+			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
+			PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
+			if (herramientas == null || panel == null || !herramientas.EditorPrefijo.PopupAbierto) {
+				Registrar("Paso 20 - el popup no esta abierto, se salta el scroll.");
+				return;
+			}
+
+			EditorPrefijoTk editor = herramientas.EditorPrefijo;
+			if (!editor.NecesitaScroll) {
+				Registrar("Paso 20 - la lista de prefijos de este objeto CABE entera (CanScroll=false), "
+					+ "asi que no hay scroll que probar aqui. " + editor.DiagnosticoScroll());
+				return;
+			}
+
+			_scrollAntes = editor.PosicionScroll;
+			_filaAntes = editor.PrimeraFilaY;
+			_visiblesAntes = editor.FilasVisibles();
+
+			Vector2 centro = editor.CentroPopup;
+			UIElement bajoElRaton = panel.GetElementAt(centro);
+			if (bajoElRaton == null || !editor.EsDelPopup(bajoElRaton)) {
+				Registrar("Paso 20 - FALLO: bajo el centro del popup el motor no encuentra nada del "
+					+ "popup (" + (bajoElRaton == null ? "null" : bajoElRaton.GetType().Name)
+					+ "), asi que la rueda nunca podria llegarle. No se sigue.");
+				return;
+			}
+
+			for (int muesca = 0; muesca < 3; muesca++) {
+				bajoElRaton.ScrollWheel(new UIScrollWheelEvent(bajoElRaton, centro, -120));
+			}
+
+			Registrar("Paso 20 - rueda REAL hacia abajo (3 muescas de 120 sobre \""
+				+ bajoElRaton.GetType().Name + "\", via UIElement.ScrollWheel, igual que "
+				+ "UserInterface.Update). ViewPosition " + _scrollAntes.ToString("0.0") + " -> "
+				+ editor.PosicionScroll.ToString("0.0") + " ("
+				+ (editor.PosicionScroll > _scrollAntes ? "OK, la barra se ha movido"
+					: "FALLO, la barra sigue igual") + "). " + editor.DiagnosticoScroll()
+				+ ". El contenido dibujado se comprueba en el paso siguiente: UIList mueve sus filas "
+				+ "en su DrawSelf, o sea en el fotograma que viene, no en este.");
+		}
+
+		/// <summary>
+		/// Segunda mitad de la prueba de scroll: con el desplazamiento ya DIBUJADO, se comprueba que
+		/// las filas se han movido de sitio de verdad y que las que se ven son otras - y se guarda la
+		/// segunda captura, la que junto a la del paso 19 demuestra que el contenido visible cambia.
+		/// Despues se sube otra vez con la rueda, para dejar la lista donde estaba y de paso probar
+		/// las dos direcciones.
+		/// </summary>
+		private static void CapturarTrasScroll()
+		{
+			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
+			PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
+			if (herramientas == null || panel == null || !herramientas.EditorPrefijo.PopupAbierto) {
+				Registrar("Paso 21 - el popup no esta abierto, se salta.");
+				return;
+			}
+
+			EditorPrefijoTk editor = herramientas.EditorPrefijo;
+			List<string> visiblesAhora = editor.FilasVisibles();
+			bool cambioLoVisible = !visiblesAhora.SequenceEqual(_visiblesAntes);
+			bool seMovieronLasFilas = Math.Abs(editor.PrimeraFilaY - _filaAntes) > 1f;
+
+			Registrar("Paso 21 - " + CapturaDePantalla.Guardar("ws3-prefijo-2-tras-scroll"));
+			Registrar("Paso 21 - primera fila de la lista: y=" + _filaAntes.ToString("0.0")
+				+ " -> y=" + editor.PrimeraFilaY.ToString("0.0") + " ("
+				+ (seMovieronLasFilas ? "OK, el contenido se ha desplazado de verdad"
+					: "FALLO, las filas siguen en el mismo sitio") + ").");
+			Registrar("Paso 21 - filas visibles ANTES: " + string.Join(" | ", _visiblesAntes));
+			Registrar("Paso 21 - filas visibles DESPUES: " + string.Join(" | ", visiblesAhora)
+				+ " (" + (cambioLoVisible ? "OK, se ven otras" : "FALLO, se ven las mismas") + ").");
+
+			// Y de vuelta arriba, con la rueda al reves: prueba la otra direccion y deja la lista
+			// como estaba para el paso que pulsa un prefijo.
+			Vector2 centro = editor.CentroPopup;
+			UIElement bajoElRaton = panel.GetElementAt(centro);
+			float antesDeSubir = editor.PosicionScroll;
+			if (bajoElRaton != null && editor.EsDelPopup(bajoElRaton)) {
+				for (int muesca = 0; muesca < 4; muesca++) {
+					bajoElRaton.ScrollWheel(new UIScrollWheelEvent(bajoElRaton, centro, 120));
+				}
+			}
+			Registrar("Paso 21 - rueda REAL hacia arriba (4 muescas): ViewPosition "
+				+ antesDeSubir.ToString("0.0") + " -> " + editor.PosicionScroll.ToString("0.0") + " ("
+				+ (editor.PosicionScroll < antesDeSubir ? "OK, sube tambien" : "FALLO, no sube") + ").");
+		}
+
 		private static void CapturarYPulsarPrefijo()
 		{
 			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
 			if (herramientas == null || herramientas.Seleccion.ObjetoActual.IsAir) {
-				Registrar("Paso 19 - no hay nada seleccionado en el recuadro (paso 18 fallo), se salta.");
+				Registrar("Paso 22 - no hay nada seleccionado en el recuadro (paso 18 fallo), se salta.");
 				return;
 			}
 
@@ -928,18 +1114,18 @@ namespace TerrakeepMod.Common.Libreria
 			}
 			List<BotonTk> botones = editor.BotonesPopupParaAutoprueba();
 
-			Registrar("Paso 19 - diagnostico de geometria real: " + editor.DiagnosticoGeometria());
+			Registrar("Paso 22 - diagnostico de geometria real: " + editor.DiagnosticoGeometria());
 
 			// Captura real con el popup YA ABIERTO y YA DIBUJADO (fotograma de sobra desde el paso
 			// 18): pedido explicito del usuario ("el prefijo se abre a la derecha con opciones
 			// reales visibles") - la unica forma honesta de demostrarlo es una imagen real del back
 			// buffer, no solo el recuento de botones.
-			Registrar("Paso 19 - " + CapturaDePantalla.Guardar("ws3-prefijo-abierto-derecha"));
+			Registrar("Paso 22 - " + CapturaDePantalla.Guardar("ws3-prefijo-3-antes-de-pulsar"));
 
 			// El primero de la lista es siempre "Ninguno" (quitar prefijo); el primer prefijo real
 			// legal es el segundo, si lo hay.
 			if (botones.Count < 2) {
-				Registrar("Paso 19 - el popup se abrio (" + editor.PopupAbierto + ") pero solo trae "
+				Registrar("Paso 22 - el popup se abrio (" + editor.PopupAbierto + ") pero solo trae "
 					+ botones.Count + " boton(es) (se esperaban al menos 2: \"Ninguno\" + un prefijo "
 					+ "real). Objeto=\"" + objetivo.Name + "\". Se salta la comprobacion.");
 				return;
@@ -972,7 +1158,7 @@ namespace TerrakeepMod.Common.Libreria
 			bool cambio = prefijoTrasPrimerClic != prefijoAntes;
 			bool sinAcumular = dañoTrasSegundoClic == dañoTrasPrimerClic && prefijoTrasSegundoClic == prefijoTrasPrimerClic;
 
-			Registrar("Paso 19 - editor de prefijo sobre \"" + objetivo.Name + "\". Boton pulsado: \""
+			Registrar("Paso 22 - editor de prefijo sobre \"" + objetivo.Name + "\". Boton pulsado: \""
 				+ nombrePedido + "\". prefix ANTES=" + prefijoAntes + " (daño=" + dañoAntes + "). "
 				+ "Tras el 1er clic: prefix=" + prefijoTrasPrimerClic + " (daño=" + dañoTrasPrimerClic + ") "
 				+ "(" + (cambio ? "OK, cambio de verdad" : "FALLO, no cambio") + "). "
@@ -994,7 +1180,7 @@ namespace TerrakeepMod.Common.Libreria
 		{
 			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
 			if (herramientas == null || herramientas.Seleccion.ObjetoActual.IsAir) {
-				Registrar("Paso 20 - no hay nada seleccionado en el recuadro (paso 15 fallo), se salta.");
+				Registrar("Paso 23 - no hay nada seleccionado en el recuadro (paso 15 fallo), se salta.");
 				return;
 			}
 
@@ -1020,7 +1206,7 @@ namespace TerrakeepMod.Common.Libreria
 				bool manoVacia = Main.mouseItem.IsAir;
 				bool nadaEnElSuelo = objetosActivosDespues == objetosActivosAntes;
 
-				Registrar("Paso 20 - papelera de Libreria (PanelHerramientasLibreriaTk.Papelera, "
+				Registrar("Paso 23 - papelera de Libreria (PanelHerramientasLibreriaTk.Papelera, "
 					+ "misma clase SlotPapeleraTk que Personaje). ANTES recuadro=" + antesRecuadro
 					+ ". Tras cogerlo del recuadro: raton=" + ratonTrasCoger + ". Tras soltarlo en la "
 					+ "papelera: recuadro=" + Describir(herramientas.Seleccion.ObjetoActual)

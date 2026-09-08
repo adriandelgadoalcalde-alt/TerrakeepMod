@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameInput;
 using Terraria.UI;
+using TerrakeepMod.UI.Panel;
 
 namespace TerrakeepMod.UI.Personaje.Widgets
 {
@@ -64,8 +65,13 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 				// Igual que cualquier otra ranura del panel: sin esto el clic atraviesa la
 				// interfaz y el jugador ataca o coloca bloques detras.
 				jugador.mouseInterface = true;
-				ItemSlot.Handle(ref jugador.trashItem, ItemSlot.Context.TrashItem);
-				ItemSlot.MouseHover(ref jugador.trashItem, ItemSlot.Context.TrashItem);
+				// Callada mientras haya un desplegable abierto encima: esta ranura gestiona el raton
+				// a mano, fuera del sistema de eventos de UIElement, asi que no se entera sola de que
+				// la tapan. Ver CapaSuperposicionTk.TapaAlRaton.
+				if (!CapaSuperposicionTk.TapaAlRaton(Main.MouseScreen)) {
+					ItemSlot.Handle(ref jugador.trashItem, ItemSlot.Context.TrashItem);
+					ItemSlot.MouseHover(ref jugador.trashItem, ItemSlot.Context.TrashItem);
+				}
 			}
 
 			ItemSlot.Draw(spriteBatch, ref jugador.trashItem, ItemSlot.Context.TrashItem, rect.TopLeft());
