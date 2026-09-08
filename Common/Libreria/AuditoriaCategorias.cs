@@ -135,28 +135,67 @@ namespace TerrakeepMod.Common.Libreria
 					Navegar("Categories", "Weapons", "Melee damage");
 					break;
 				case 3:
+					// Ya no son "Pagina 1..8": son Espadas, Lanzas, Mayales, Yoyos, Bumeranes,
+					// Picos, Taladros, Motosierras, Hachas, Martillos...
 					Capturar("categorias-melee-carpetas");
 					break;
 				case 4:
-					// La ultima pagina de melee: la que antes venia con 9 de sus 36 huecos ocupados
-					// por objetos de otra version del juego (o de Calamity), y donde cae La Cenit.
-					AbrirUltimaSubcarpeta();
+					Navegar("Categories", "Weapons", "Melee damage", "Swords");
 					break;
 				case 5:
-					Capturar("categorias-melee-ultima-pagina");
+					Capturar("categorias-melee-espadas");
 					break;
 				case 6:
-					// "Colocable" tenia 14 paginas seguidas COMPLETAMENTE vacias al final.
-					Navegar("Categories", "Placeable");
+					Navegar("Categories", "Weapons", "Melee damage", "Pickaxes");
 					break;
 				case 7:
-					AbrirUltimaSubcarpeta();
+					Capturar("categorias-melee-picos");
 					break;
 				case 8:
-					AbrirUltimaSubcarpeta();
+					Navegar("Categories", "Weapons", "Ranged damage");
 					break;
 				case 9:
-					Capturar("categorias-colocable-ultima-pagina");
+					Capturar("categorias-distancia-carpetas");
+					break;
+				case 10:
+					Navegar("Categories", "Weapons", "Ranged damage", "Bows");
+					break;
+				case 11:
+					Capturar("categorias-distancia-arcos");
+					break;
+				case 12:
+					Navegar("Categories", "Weapons", "Ranged damage", "Guns");
+					break;
+				case 13:
+					Capturar("categorias-distancia-armas-de-fuego");
+					break;
+				case 14:
+					// "Colocable" tenia 81 paginas seguidas por id (y 14 vacias al final antes de
+					// la poda); ahora son carpetas por tipo real de objeto colocable.
+					Navegar("Categories", "Placeable");
+					break;
+				case 15:
+					Capturar("categorias-colocable-carpetas");
+					break;
+				case 16:
+					Navegar("Categories", "Placeable", "Blocks");
+					break;
+				case 17:
+					Capturar("categorias-colocable-bloques");
+					break;
+				case 18:
+					// Un subgrupo de mas de 40 objetos se sigue paginando por dentro, pero ya sin
+					// mezclar tipos: la ultima pagina de "Bloques" son bloques y solo bloques.
+					AbrirUltimaSubcarpeta();
+					break;
+				case 19:
+					Capturar("categorias-colocable-bloques-ultima-pagina");
+					break;
+				case 20:
+					Navegar("Categories", "Equipable", "Accessories");
+					break;
+				case 21:
+					Capturar("categorias-accesorios-carpetas");
 					break;
 				default:
 					Escribir(MarcaFinal);
@@ -288,7 +327,9 @@ namespace TerrakeepMod.Common.Libreria
 			foreach (KeyValuePair<string, Criterio> par in Criterios()) {
 				CategoryTreeNodeData nodo = Buscar(par.Key);
 				if (nodo == null) {
-					Escribir($"   [!] no se encontro la carpeta \"{par.Key}\" en el arbol.");
+					if (!par.Value.Opcional) {
+						Escribir($"   [!] no se encontro la carpeta \"{par.Key}\" en el arbol.");
+					}
 					continue;
 				}
 
@@ -485,12 +526,22 @@ namespace TerrakeepMod.Common.Libreria
 		private sealed class Criterio
 		{
 			public readonly string Descripcion;
+			/// <summary>true si la carpeta puede no existir sin que sea un problema (los subtipos
+			/// se declaran una vez y valen para varias carpetas madre: un "Hachamartillo" existe
+			/// dentro de "Hachas" y dentro de "Martillos", pero no dentro de "Picos").</summary>
+			public readonly bool Opcional;
 			private readonly Func<Item, bool> _prueba;
 
-			public Criterio(string descripcion, Func<Item, bool> prueba)
+			public Criterio(string descripcion, Func<Item, bool> prueba, bool opcional = false)
 			{
 				Descripcion = descripcion;
+				Opcional = opcional;
 				_prueba = prueba;
+			}
+
+			public Criterio ComoOpcional()
+			{
+				return new Criterio(Descripcion, _prueba, opcional: true);
 			}
 
 			public bool Cumple(Item it)
@@ -551,6 +602,158 @@ namespace TerrakeepMod.Common.Libreria
 				it => it.createTile >= 0 || it.createWall >= 0);
 			yield return Par("Categories/Walls", "createWall>=0",
 				it => it.createWall >= 0);
+
+			foreach (KeyValuePair<string, Criterio> par in CriteriosDeSubtipo()) {
+				yield return new KeyValuePair<string, Criterio>(par.Key, par.Value.ComoOpcional());
+			}
+		}
+
+		/// <summary>
+		/// Criterio de las carpetas NUEVAS por subtipo (8-sep-2026): dentro de "Categorias", cada
+		/// hoja ya no se parte en "Pagina N" de 40 en 40 por id, sino por el subtipo real del
+		/// objeto (espadas, lanzas, arcos, armas de fuego, picos, bloques...).
+		/// <para />
+		/// Esto es una <b>comprobacion cruzada de verdad</b>, no una tautologia: el reparto se
+		/// calcula FUERA del juego, leyendo el <c>Item.cs</c> decompilado de Terraria 1.4.5.8
+		/// (scripts/extraer-subtipos-libreria-vanilla.py del repo hermano), y aqui se comprueba
+		/// contra el <see cref="Item"/> REAL que carga tModLoader 1.4.4.9. Si la extraccion
+		/// offline se equivocara en un objeto, saldria aqui como "no cumple".
+		/// </summary>
+		private static IEnumerable<KeyValuePair<string, Criterio>> CriteriosDeSubtipo()
+		{
+			const string melee = "Categories/Weapons/Melee damage/";
+			const string dist = "Categories/Weapons/Ranged damage/";
+			const string tools = "Categories/Tools/";
+
+			// -- cuerpo a cuerpo, por el aiStyle REAL del proyectil que dispara el arma
+			yield return Par(melee + "Swords", "no es herramienta y el juego lo trata como espada",
+				EsEspada);
+			yield return Par(melee + "Spears", "proyectil de lanza (aiStyle 19 o 141)",
+				it => AiDelProyectil(it) == 19 || AiDelProyectil(it) == 141);
+			yield return Par(melee + "Flails", "proyectil de mayal/cadena (aiStyle 15, 13 o 69)",
+				it => AiDelProyectil(it) == 15 || AiDelProyectil(it) == 13 || AiDelProyectil(it) == 69);
+			yield return Par(melee + "Yoyos", "ItemID.Sets.Yoyo o proyectil de yoyo (aiStyle 99)",
+				it => ItemID.Sets.Yoyo[it.type] || AiDelProyectil(it) == 99);
+			yield return Par(melee + "Boomerangs", "proyectil de bumeran (aiStyle 3)",
+				it => AiDelProyectil(it) == 3);
+			yield return Par(melee + "Other melee weapons", "hace daño de verdad (damage>0)",
+				it => it.damage > 0);
+
+			// -- herramientas. Los mismos siete subtipos valen dentro de "Daño cuerpo a cuerpo" y
+			// dentro de cada una de las tres carpetas de "Herramientas" (que se solapan a
+			// proposito: un hachamartillo tiene poder de hacha Y de martillo, asi que sale en las
+			// dos). Las combinaciones que no existen se saltan solas, ver `Opcional`.
+			foreach (string raiz in new string[] { melee, tools + "Pickaxes/", tools + "Axes/", tools + "Hammers/" }) {
+				yield return Par(raiz + "Pickaxes", "pick>0 y no es taladro ni motosierra ni pico-hacha",
+					it => it.pick > 0 && it.axe <= 0 && !ItemID.Sets.IsDrill[it.type] && !ItemID.Sets.IsChainsaw[it.type]);
+				yield return Par(raiz + "Drills", "ItemID.Sets.IsDrill",
+					it => ItemID.Sets.IsDrill[it.type]);
+				yield return Par(raiz + "Chainsaws", "ItemID.Sets.IsChainsaw",
+					it => ItemID.Sets.IsChainsaw[it.type]);
+				yield return Par(raiz + "Pickaxe axes", "pick>0 y axe>0",
+					it => it.pick > 0 && it.axe > 0);
+				yield return Par(raiz + "Hamaxes", "axe>0 y hammer>0",
+					it => it.axe > 0 && it.hammer > 0);
+				yield return Par(raiz + "Axes", "axe>0",
+					it => it.axe > 0);
+				yield return Par(raiz + "Hammers", "hammer>0",
+					it => it.hammer > 0);
+			}
+
+			// -- a distancia, por la MUNICION real que consume o que es
+			yield return Par(dist + "Bows", "useAmmo = flecha", it => it.useAmmo == AmmoID.Arrow);
+			yield return Par(dist + "Guns", "useAmmo = bala", it => it.useAmmo == AmmoID.Bullet);
+			yield return Par(dist + "Launchers", "useAmmo = cohete", it => it.useAmmo == AmmoID.Rocket);
+			yield return Par(dist + "Dart weapons", "useAmmo = dardo", it => it.useAmmo == AmmoID.Dart);
+			yield return Par(dist + "Other ammo weapons", "gasta municion de otro tipo",
+				it => it.useAmmo != AmmoID.None && it.useAmmo != AmmoID.Arrow && it.useAmmo != AmmoID.Bullet
+					&& it.useAmmo != AmmoID.Rocket && it.useAmmo != AmmoID.Dart);
+			yield return Par(dist + "Ammo-free weapons", "arma que no gasta municion",
+				it => it.useAmmo == AmmoID.None && it.ammo == AmmoID.None && it.damage > 0);
+			// Sin "damage > 0" a proposito: los tres globos (Tree/World/Moon Globe) son armas
+			// arrojadizas reales con daño 0 en este 1.4.4.9.
+			yield return Par(dist + "Thrown weapons", "arma arrojadiza (consumible, sin municion)",
+				it => it.consumable && it.shoot > 0 && it.useAmmo == AmmoID.None);
+			yield return Par(dist + "Arrows", "ammo = flecha", it => it.ammo == AmmoID.Arrow);
+			yield return Par(dist + "Bullets", "ammo = bala", it => it.ammo == AmmoID.Bullet);
+			yield return Par(dist + "Rockets", "ammo = cohete", it => it.ammo == AmmoID.Rocket);
+			yield return Par(dist + "Darts", "ammo = dardo", it => it.ammo == AmmoID.Dart);
+			yield return Par(dist + "Flares", "ammo = bengala", it => it.ammo == AmmoID.Flare);
+			yield return Par(dist + "Other ammunition", "es municion de otro tipo",
+				it => it.ammo != AmmoID.None && it.ammo != AmmoID.Arrow && it.ammo != AmmoID.Bullet
+					&& it.ammo != AmmoID.Rocket && it.ammo != AmmoID.Dart && it.ammo != AmmoID.Flare);
+
+			// -- equipo, por la ranura real que ocupa
+			foreach (string raiz in new string[] { "Categories/Equipable/Armor/", "Categories/Equipable/Vanity/" }) {
+				yield return Par(raiz + "Head", "headSlot>=0", it => it.headSlot >= 0);
+				yield return Par(raiz + "Body", "bodySlot>=0", it => it.bodySlot >= 0);
+				yield return Par(raiz + "Legs", "legSlot>=0", it => it.legSlot >= 0);
+			}
+			yield return Par("Categories/Equipable/Vanity/Accessory", "accesorio sin ranura de armadura",
+				it => it.accessory && it.headSlot < 0 && it.bodySlot < 0 && it.legSlot < 0);
+			foreach (string raiz in new string[] { "Categories/Equipable/Head slot/",
+					"Categories/Equipable/Body slot/", "Categories/Equipable/Leg slot/" }) {
+				yield return Par(raiz + "Armor", "armadura de verdad (no vanidad ni accesorio)",
+					it => !it.vanity && !it.accessory);
+				yield return Par(raiz + "Vanity", "item.vanity", it => it.vanity);
+			}
+			const string acc = "Categories/Equipable/Accessories/";
+			yield return Par(acc + "Wings", "wingSlot>0", it => it.wingSlot > 0);
+			yield return Par(acc + "Boots", "shoeSlot>0", it => it.shoeSlot > 0);
+			yield return Par(acc + "Balloons", "balloonSlot>0", it => it.balloonSlot > 0);
+			yield return Par(acc + "Shields", "shieldSlot>0", it => it.shieldSlot > 0);
+			yield return Par(acc + "Necklaces", "neckSlot>0", it => it.neckSlot > 0);
+			yield return Par(acc + "Face accessories", "faceSlot>0", it => it.faceSlot > 0);
+			yield return Par(acc + "Gloves", "handOnSlot>0", it => it.handOnSlot > 0);
+			yield return Par(acc + "Back accessories", "backSlot>0", it => it.backSlot > 0);
+			yield return Par(acc + "Belts", "waistSlot>0", it => it.waistSlot > 0);
+			yield return Par("Categories/Equipable/Dyes/Hair dyes", "hairDye>=0", it => it.hairDye >= 0);
+			yield return Par("Categories/Equipable/Dyes/Dyes", "item.dye != 0", it => it.dye != 0);
+
+			// -- colocables, por el tile real que colocan
+			const string col = "Categories/Placeable/";
+			yield return Par(col + "Blocks", "coloca un tile SIN marco (o sea, un bloque)",
+				it => it.createTile >= 0 && !Main.tileFrameImportant[it.createTile]);
+			yield return Par(col + "Banners", "coloca el tile de estandartes",
+				it => it.createTile == TileID.Banners);
+			yield return Par(col + "Paintings", "TileID.Sets.Paintings",
+				it => it.createTile >= 0 && TileID.Sets.Paintings[it.createTile]);
+			yield return Par(col + "Platforms", "TileID.Sets.Platforms",
+				it => it.createTile >= 0 && TileID.Sets.Platforms[it.createTile]);
+			yield return Par(col + "Chests", "tile de cofre o comoda",
+				it => it.createTile >= 0 && (TileID.Sets.BasicChest[it.createTile]
+					|| TileID.Sets.BasicChestFake[it.createTile] || TileID.Sets.BasicDresser[it.createTile]));
+			yield return Par(col + "Torches", "ItemID.Sets.Torches", it => ItemID.Sets.Torches[it.type]);
+			// `ItemID.Sets.Campfires` (que es de donde sale el grupo al extraerlo contra 1.4.5.8)
+			// todavia no existe en el 1.4.4.9 de este tModLoader; el equivalente real aqui es el
+			// tile que colocan, TileID.Sets.Campfire.
+			yield return Par(col + "Campfires", "coloca un tile de hoguera",
+				it => it.createTile >= 0 && TileID.Sets.Campfire[it.createTile]);
+			yield return Par(col + "Statues", "coloca el tile de estatuas",
+				it => it.createTile == TileID.Statues);
+			yield return Par(col + "Music boxes", "coloca el tile de cajas de musica",
+				it => it.createTile == TileID.MusicBoxes);
+		}
+
+		/// <summary>Una espada real: no es pico/hacha/martillo y el juego la mete en su set de
+		/// prefijos de espadas, o dispara el proyectil de espada corta (aiStyle 161).</summary>
+		private static bool EsEspada(Item it)
+		{
+			if (it.pick > 0 || it.axe > 0 || it.hammer > 0) {
+				return false;
+			}
+			return Terraria.GameContent.Prefixes.PrefixLegacy.ItemSets.SwordsHammersAxesPicks[it.type]
+				|| AiDelProyectil(it) == 161;
+		}
+
+		/// <summary>aiStyle REAL del proyectil que dispara un objeto, o -1 si no dispara.</summary>
+		private static int AiDelProyectil(Item it)
+		{
+			Projectile muestra;
+			if (it.shoot <= 0 || !ContentSamples.ProjectilesByType.TryGetValue(it.shoot, out muestra) || muestra == null) {
+				return -1;
+			}
+			return muestra.aiStyle;
 		}
 
 		private static KeyValuePair<string, Criterio> Par(string ruta, string descripcion, Func<Item, bool> prueba)

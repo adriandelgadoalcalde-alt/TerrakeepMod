@@ -1,63 +1,213 @@
-﻿# Auditoria de las categorias de la Libreria - 2026-09-08 02:50:07
-[02:50:07.985] TERRAKEEP_AUDIT_CATEGORIAS detectada. Esperando a estar dentro del mundo...
-[02:50:10.052] Arbol: 12 carpetas raiz (9 del arbol vanilla curado, 3 de mods instalados, 0 de vanilla sin catalogar); 8240 objetos vivos en total (2817 de mods), catalogo construido en 2 ms; vanilla fuera del arbol curado: 0; poda por version del juego: 722 ids inexistentes (1452 apariciones), 40 carpetas vacias quitadas, 1 iconos corregidos
-[02:50:10.053] Version del juego: ItemID.Count=5456 (vanilla), ItemLoader.ItemCount=8279 (con mods).
-[02:50:10.054] RECUENTO 1 (cobertura): el juego cargado tiene 5423 objetos vanilla reales (ids 1..5455 con muestra y nombre). El arbol vanilla curado cubre 5423; el arbol entero (curado + carpetas de mod + 'sin catalogar') cubre 5423 vanilla. Huerfanos (vanilla real en ninguna carpeta): 0.
-[02:50:10.055] RECUENTO 2 (salud del arbol): carpetas vacias=0, ids que no existen en el juego=0, iconos de carpeta que no son un objeto real=0, objetos de MOD colados dentro del arbol vanilla curado=0. (La poda quito 722 ids de otra version del juego, 1452 apariciones, 40 carpetas y corrigio 1 iconos.)
-[02:50:10.055] RECUENTO 3 (clasificacion, criterio comprobado sobre el Item real del juego). OJO al leerlo: el arbol curado NO clasifica por los campos del Item, sino por la tabla 'metatype' que Terrasavr trae curada a mano (script.js real: "Melee damage" = metatype contiene 'd', "Wings" = el tooltip dice "allows flight"...). Lo que se cuenta aqui es la DISCREPANCIA entre las dos, no un error: un puñado de casos frontera (armas cuyo daño base es 0, bichos capturables que Terrasavr trata como colocables, cajas de musica como vanidad) es lo esperado. Lo que tiene que salir a cero son los RECUENTOS 1 y 2.
-[02:50:10.056]    "Melee damage (294)" (Categories/Weapons/Melee damage): 294 objetos, 8 subcarpetas, 211 que NO cumplen "damage>0 y DamageType melee" -> 1 ("Iron Pickaxe"), 4 ("Iron Broadsword"), 6 ("Iron Shortsword"), 7 ("Iron Hammer"), 10 ("Iron Axe"), 24 ("Wooden Sword"), 45 ("War Axe of the Night"), 103 ("Nightmare Pickaxe"), 104 ("The Breaker"), 121 ("Volcano"), ... +201.
-[02:50:10.056]       muestra: "Iron Pickaxe", "Iron Broadsword", "Iron Shortsword", "Iron Hammer", "Iron Axe", "Wooden Sword", "War Axe of the Night", "Light's Bane"
-[02:50:10.056]    "Ranged damage (178)" (Categories/Weapons/Ranged damage): 178 objetos, 5 subcarpetas, 5 que NO cumplen "damage>0 y DamageType a distancia" -> 905 ("Coin Gun"), 1000 ("Confetti Gun"), 4765 ("Tree Globe"), 4766 ("World Globe"), 5285 ("Moon Globe").
-[02:50:10.056]       muestra: "Wooden Bow", "Wooden Arrow", "Flaming Arrow", "Shuriken", "Demon Bow", "Unholy Arrow", "Jester's Arrow", "Copper Coin"
-[02:50:10.057]    "Magic damage (75)" (Categories/Weapons/Magic damage): 75 objetos, 2 subcarpetas, 0 que NO cumplen "damage>0 y DamageType magia".
-[02:50:10.057]       muestra: "Vilethorn", "Flower of Fire", "Magic Missile", "Space Gun", "Aqua Scepter", "Water Bolt", "Flamelash", "Demon Scythe"
-[02:50:10.057]    "Summon damage (21)" (Categories/Weapons/Summon damage): 21 objetos, 0 subcarpetas, 0 que NO cumplen "damage>0 y DamageType invocacion".
-[02:50:10.057]       muestra: "Pygmy Staff", "Slime Staff", "Raven Staff", "Hornet Staff", "Imp Staff", "Optic Staff", "Spider Staff", "Pirate Staff"
-[02:50:10.058]    "Summoner whips (9)" (Categories/Weapons/Summoner whips): 9 objetos, 0 subcarpetas, 0 que NO cumplen "latigo (DamageType SummonMeleeSpeed)".
-[02:50:10.058]       muestra: "Leather Whip", "Durendal", "Morning Star", "Dark Harvest", "Cool Whip", "Firecracker", "Snapthorn", "Kaleidoscope"
-[02:50:10.058]    "Sentry damage (17)" (Categories/Weapons/Sentry damage): 17 objetos, 0 subcarpetas, 0 que NO cumplen "item.sentry".
-[02:50:10.059]       muestra: "Staff of the Frost Hydra", "Queen Spider Staff", "Lunar Portal Staff", "Rainbow Crystal Staff", "Flameburst Rod", "Flameburst Cane", "Flameburst Staff", "Ballista Rod"
-[02:50:10.059]    "Armor (249)" (Categories/Equipable/Armor): 249 objetos, 7 subcarpetas, 0 que NO cumplen "ocupa cabeza, cuerpo o piernas".
-[02:50:10.059]       muestra: "Goggles", "Copper Greaves", "Iron Greaves", "Silver Greaves", "Gold Greaves", "Copper Chainmail", "Iron Chainmail", "Silver Chainmail"
-[02:50:10.059]    "Accessories (311)" (Categories/Equipable/Accessories): 311 objetos, 8 subcarpetas, 0 que NO cumplen "item.accessory".
-[02:50:10.060]       muestra: "Copper Watch", "Silver Watch", "Gold Watch", "Depth Meter", "Band of Regeneration", "Cloud in a Bottle", "Hermes Boots", "Band of Starpower"
-[02:50:10.060]    "Vanity (493)" (Categories/Equipable/Vanity): 493 objetos, 2 subcarpetas, 90 que NO cumplen "item.vanity" -> 215 ("Whoopie Cushion"), 562 ("Music Box (Overworld Day)"), 563 ("Music Box (Eerie)"), 564 ("Music Box (Night)"), 565 ("Music Box (Title)"), 566 ("Music Box (Underground)"), 567 ("Music Box (Boss 1)"), 568 ("Music Box (Jungle)"), 569 ("Music Box (Corruption)"), 570 ("Music Box (Underground Corruption)"), ... +80.
-[02:50:10.060]       muestra: "Jungle Rose", "Whoopie Cushion", "Sunglasses", "Top Hat", "Tuxedo Shirt", "Tuxedo Pants", "Summer Hat", "Bunny Hood"
-[02:50:10.060]    "Head slot (271)" (Categories/Equipable/Head slot): 271 objetos, 7 subcarpetas, 0 que NO cumplen "headSlot>=0".
-[02:50:10.061]       muestra: "Goggles", "Mining Helmet", "Copper Helmet", "Iron Helmet", "Silver Helmet", "Gold Helmet", "Shadow Helmet", "Meteor Helmet"
-[02:50:10.061]    "Body slot (187)" (Categories/Equipable/Body slot): 187 objetos, 5 subcarpetas, 0 que NO cumplen "bodySlot>=0".
-[02:50:10.061]       muestra: "Copper Chainmail", "Iron Chainmail", "Silver Chainmail", "Gold Chainmail", "Shadow Scalemail", "Meteor Suit", "Necro Breastplate", "Jungle Shirt"
-[02:50:10.062]    "Leg slot (155)" (Categories/Equipable/Leg slot): 155 objetos, 4 subcarpetas, 0 que NO cumplen "legSlot>=0".
-[02:50:10.062]       muestra: "Copper Greaves", "Iron Greaves", "Silver Greaves", "Gold Greaves", "Shadow Greaves", "Meteor Leggings", "Necro Greaves", "Jungle Pants"
-[02:50:10.062]    "Wings (7)" (Categories/Equipable/Wings): 7 objetos, 0 subcarpetas, 0 que NO cumplen "el tooltip dice "allows flight"".
-[02:50:10.062]       muestra: "Rocket Boots", "Spectre Boots", "Lightning Boots", "Frostspark Boots", "Fairy Boots", "Hellfire Treads", "Terraspark Boots"
-[02:50:10.062]    "Dyes (130)" (Categories/Equipable/Dyes): 130 objetos, 4 subcarpetas, 0 que NO cumplen "el nombre acaba en "Dye"".
-[02:50:10.063]       muestra: "Red Dye", "Orange Dye", "Yellow Dye", "Lime Dye", "Green Dye", "Teal Dye", "Cyan Dye", "Sky Blue Dye"
-[02:50:10.063]    "Pickaxes (44)" (Categories/Tools/Pickaxes): 44 objetos, 2 subcarpetas, 0 que NO cumplen "pick>0".
-[02:50:10.063]       muestra: "Iron Pickaxe", "Nightmare Pickaxe", "Molten Pickaxe", "Cobalt Drill", "Mythril Drill", "Adamantite Drill", "Drax", "Cobalt Pickaxe"
-[02:50:10.063]    "Axes (41)" (Categories/Tools/Axes): 41 objetos, 2 subcarpetas, 0 que NO cumplen "axe>0".
-[02:50:10.064]       muestra: "Iron Axe", "War Axe of the Night", "Meteor Hamaxe", "Molten Hamaxe", "Cobalt Chainsaw", "Mythril Chainsaw", "Adamantite Chainsaw", "Drax"
-[02:50:10.064]    "Hammers (32)" (Categories/Tools/Hammers): 32 objetos, 0 subcarpetas, 0 que NO cumplen "hammer>0".
-[02:50:10.064]       muestra: "Iron Hammer", "The Breaker", "Wooden Hammer", "Meteor Hamaxe", "Molten Hamaxe", "Pwnhammer", "Ebonwood Hammer", "Rich Mahogany Hammer"
-[02:50:10.064]    "Fishing poles (11)" (Categories/Tools/Fishing poles): 11 objetos, 0 subcarpetas, 0 que NO cumplen "fishingPole>1".
-[02:50:10.065]       muestra: "Wood Fishing Pole", "Reinforced Fishing Pole", "Fiberglass Fishing Pole", "Fisher of Souls", "Golden Fishing Rod", "Mechanic's Rod", "Sitting Duck's Fishing Pole", "Fleshcatcher"
-[02:50:10.065]    "Placeable (2680)" (Categories/Placeable): 2680 objetos, 7 subcarpetas, 118 que NO cumplen "createTile>=0 o createWall>=0" -> 261 ("Goldfish"), 929 ("Cannonball"), 1338 ("Explosive Bunny"), 1992 ("Firefly"), 1994 ("Monarch Butterfly"), 1995 ("Purple Emperor Butterfly"), 1996 ("Red Admiral Butterfly"), 1997 ("Ulysses Butterfly"), 1998 ("Sulphur Butterfly"), 1999 ("Tree Nymph Butterfly"), ... +108.
-[02:50:10.065]       muestra: "Dirt Block", "Stone Block", "Torch", "Wood", "Iron Ore", "Copper Ore", "Gold Ore", "Silver Ore"
-[02:50:10.065]    "Walls (272)" (Categories/Walls): 272 objetos, 7 subcarpetas, 0 que NO cumplen "createWall>=0".
-[02:50:10.066]       muestra: "Stone Wall", "Dirt Wall", "Wood Wall", "Gray Brick Wall", "Red Brick Wall", "Blue Brick Wall", "Green Brick Wall", "Pink Brick Wall"
-[02:50:10.066]    TOTAL: 20 carpetas, 5477 comprobaciones objeto a objeto, 424 mal clasificados.
-[02:50:10.066] OBJETO 4956 "Zenith" (damage=210, DamageType=MeleeNoSpeedDamageClass): esperado dentro de "Categories/Weapons/Melee damage" -> OK. Hojas donde cae: Categories/Weapons/Melee damage (316)/Page 8 | Items by ID/4801-5200/4921-4960
-[02:50:10.067] OBJETO 757 "Terra Blade" (damage=90, DamageType=MeleeDamageClass): esperado dentro de "Categories/Weapons/Melee damage" -> OK. Hojas donde cae: Categories/Weapons/Melee damage (316)/Page 2 | Items by ID/401-800/721-760
-[02:50:10.067] OBJETO 3063 "Meowmere" (damage=200, DamageType=MeleeDamageClass): esperado dentro de "Categories/Weapons/Melee damage" -> OK. Hojas donde cae: Categories/Weapons/Melee damage (316)/Page 5 | Items by ID/2801-3200/3041-3080
-[02:50:10.067] OBJETO 3541 "Last Prism" (damage=57, DamageType=MagicDamageClass): esperado dentro de "Categories/Weapons/Magic damage" -> OK. Hojas donde cae: Categories/Weapons/Magic damage (76)/Page 2 | Items by ID/3201-3600/3521-3560
-[02:50:10.068] OBJETO 1553 "S.D.M.G." (damage=85, DamageType=RangedDamageClass): esperado dentro de "Categories/Weapons/Ranged damage" -> OK. Hojas donde cae: Categories/Weapons/Ranged damage (180)/Page 3 | Items by ID/1201-1600/1521-1560
-[02:50:10.068] OBJETO 1343 "Fire Gauntlet" (damage=-1, DamageType=DefaultDamageClass): esperado dentro de "Categories/Equipable/Accessories" -> OK. Hojas donde cae: Categories/Equipable/Accessories (321)/Page 3 | Items by ID/1201-1600/1321-1360
-[02:50:10.577] NAVEGACION: área x=26 y=99 748x544; ruta="Library > Categories > Weapons > Melee damage (294)"; carpetas visibles=8; resultados=100 de 294 (8 columnas); 1ª ranura de catálogo ("Iron Pickaxe") en x=346 y=149 44x44; destino="Inventory" con 50 ranuras vivas
-[02:50:10.917] CAPTURA "categorias-melee-carpetas": captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepCategorias\terrakeep-capturas\categorias-melee-carpetas.png" (800x720)
-[02:50:11.154] NAVEGACION (ultima subcarpeta): área x=26 y=99 748x544; ruta="Library > Categories > Weapons > Melee damage (294) > Page 8"; carpetas visibles=0; resultados=26 de 26 (8 columnas); 1ª ranura de catálogo ("Drippler Crippler") en x=346 y=149 44x44; destino="Inventory" con 50 ranuras vivas
-[02:50:11.492] CAPTURA "categorias-melee-ultima-pagina": captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepCategorias\terrakeep-capturas\categorias-melee-ultima-pagina.png" (800x720)
-[02:50:11.729] NAVEGACION: área x=26 y=99 748x544; ruta="Library > Categories > Placeable (2680)"; carpetas visibles=7; resultados=100 de 2680 (8 columnas); 1ª ranura de catálogo ("Dirt Block") en x=346 y=149 44x44; destino="Inventory" con 50 ranuras vivas
-[02:50:12.012] NAVEGACION (ultima subcarpeta): área x=26 y=99 748x544; ruta="Library > Categories > Placeable (2680) > Pages 61+"; carpetas visibles=7; resultados=100 de 280 (8 columnas); 1ª ranura de catálogo ("Everscream Relic") en x=346 y=149 44x44; destino="Inventory" con 50 ranuras vivas
-[02:50:12.381] NAVEGACION (ultima subcarpeta): área x=26 y=99 748x544; ruta="Library > Categories > Placeable (2680) > Pages 61+ > Page 67"; carpetas visibles=0; resultados=40 de 40 (8 columnas); 1ª ranura de catálogo ("Echo Chamber") en x=346 y=149 44x44; destino="Inventory" con 50 ranuras vivas
-[02:50:12.808] CAPTURA "categorias-colocable-ultima-pagina": captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepCategorias\terrakeep-capturas\categorias-colocable-ultima-pagina.png" (800x720)
-[02:50:13.044] AUDITORIA CATEGORIAS COMPLETA
+﻿# Auditoria de las categorias de la Libreria - 2026-09-08 11:13:02
+[11:13:02.090] TERRAKEEP_AUDIT_CATEGORIAS detectada. Esperando a estar dentro del mundo...
+[11:13:04.168] Arbol: 12 carpetas raiz (9 del arbol vanilla curado, 3 de mods instalados, 0 de vanilla sin catalogar); 8240 objetos vivos en total (2817 de mods), catalogo construido en 2 ms; vanilla fuera del arbol curado: 0; poda por version del juego: 722 ids inexistentes (1452 apariciones), 26 carpetas vacias quitadas, 1 iconos corregidos
+[11:13:04.168] Version del juego: ItemID.Count=5456 (vanilla), ItemLoader.ItemCount=8279 (con mods).
+[11:13:04.170] RECUENTO 1 (cobertura): el juego cargado tiene 5423 objetos vanilla reales (ids 1..5455 con muestra y nombre). El arbol vanilla curado cubre 5423; el arbol entero (curado + carpetas de mod + 'sin catalogar') cubre 5423 vanilla. Huerfanos (vanilla real en ninguna carpeta): 0.
+[11:13:04.170] RECUENTO 2 (salud del arbol): carpetas vacias=0, ids que no existen en el juego=0, iconos de carpeta que no son un objeto real=0, objetos de MOD colados dentro del arbol vanilla curado=0. (La poda quito 722 ids de otra version del juego, 1452 apariciones, 26 carpetas y corrigio 1 iconos.)
+[11:13:04.171] RECUENTO 3 (clasificacion, criterio comprobado sobre el Item real del juego). OJO al leerlo: el arbol curado NO clasifica por los campos del Item, sino por la tabla 'metatype' que Terrasavr trae curada a mano (script.js real: "Melee damage" = metatype contiene 'd', "Wings" = el tooltip dice "allows flight"...). Lo que se cuenta aqui es la DISCREPANCIA entre las dos, no un error: un puñado de casos frontera (armas cuyo daño base es 0, bichos capturables que Terrasavr trata como colocables, cajas de musica como vanidad) es lo esperado. Lo que tiene que salir a cero son los RECUENTOS 1 y 2.
+[11:13:04.171]    "Daño de Cuerpo a Cuerpo (294)" (Categories/Weapons/Melee damage): 294 objetos, 14 subcarpetas, 211 que NO cumplen "damage>0 y DamageType melee" -> 4 ("Espada larga de hierro"), 6 ("Espada corta de hierro"), 24 ("Espada de madera"), 121 ("Volcán"), 155 ("Muramasa"), 186 ("Caña para respirar"), 198 ("Espada de luz azul"), 199 ("Espada de luz roja"), 200 ("Espada de luz verde"), 201 ("Espada de luz morada"), ... +201.
+[11:13:04.171]       muestra: "Espada larga de hierro", "Espada corta de hierro", "Espada de madera", "Azote de la luz", "Furia de estrellas", "Volcán", "Muramasa", "Caña para respirar"
+[11:13:04.172]    "Daño a Distancia (178)" (Categories/Weapons/Ranged damage): 178 objetos, 13 subcarpetas, 5 que NO cumplen "damage>0 y DamageType a distancia" -> 905 ("Pistola de monedas"), 1000 ("Pistola de confeti"), 4765 ("Globo de árbol"), 4766 ("Globo del mundo"), 5285 ("Globo lunar").
+[11:13:04.172]       muestra: "Arco de madera", "Arco demoníaco", "Arco de hierro", "Furia fundida", "Repetidor de cobalto", "Repetidor de mithril", "Repetidor de adamantita", "Repetidor sagrado"
+[11:13:04.172]    "Daño Magico (75)" (Categories/Weapons/Magic damage): 75 objetos, 2 subcarpetas, 0 que NO cumplen "damage>0 y DamageType magia".
+[11:13:04.172]       muestra: "Espina vil", "Flor de fuego", "Proyectil mágico", "Pistola espacial", "Cetro de agua", "Proyectil de agua", "Látigo de llamas", "Guadaña demoníaca"
+[11:13:04.173]    "Daño de Invocacion (21)" (Categories/Weapons/Summon damage): 21 objetos, 0 subcarpetas, 0 que NO cumplen "damage>0 y DamageType invocacion".
+[11:13:04.173]       muestra: "Báculo pigmeo", "Báculo de slime", "Báculo de cuervo", "Báculo de avispón", "Báculo de diablillo", "Báculo óptico", "Báculo de araña", "Báculo pirata"
+[11:13:04.173]    "Latigos de Invocador (9)" (Categories/Weapons/Summoner whips): 9 objetos, 0 subcarpetas, 0 que NO cumplen "latigo (DamageType SummonMeleeSpeed)".
+[11:13:04.173]       muestra: "Látigo de cuero", "Durendal", "Lucero del alba", "Cosecha oscura", "Látigo gélido", "Petardo", "Latespinas", "Caleidoscopio"
+[11:13:04.173]    "Daño Centinela (17)" (Categories/Weapons/Sentry damage): 17 objetos, 0 subcarpetas, 0 que NO cumplen "item.sentry".
+[11:13:04.174]       muestra: "Báculo de la hidra de escarcha", "Báculo de reina araña", "Báculo del portal lunar", "Báculo de cristal arcoíris", "Varita de Explosión de llamas", "Bastón de Explosión de llamas", "Báculo de Explosión de llamas", "Varita de balista"
+[11:13:04.174]    "Armadura (249)" (Categories/Equipable/Armor): 249 objetos, 3 subcarpetas, 0 que NO cumplen "ocupa cabeza, cuerpo o piernas".
+[11:13:04.174]       muestra: "Gafas de protección", "Casco de minero", "Casco de cobre", "Casco de hierro", "Casco de plata", "Casco de oro", "Casco de las sombras", "Casco de meteorito"
+[11:13:04.174]    "Accessorios (311)" (Categories/Equipable/Accessories): 311 objetos, 11 subcarpetas, 0 que NO cumplen "item.accessory".
+[11:13:04.175]       muestra: "Alas demoníacas", "Alas de ángel", "Alas de Red", "Mochila cohete", "Alas de mariposa", "Alas de hada", "Alas de arpía", "Alas de hueso"
+[11:13:04.175]    "Vanidad (493)" (Categories/Equipable/Vanity): 493 objetos, 5 subcarpetas, 90 que NO cumplen "item.vanity" -> 215 ("Cojín flatulento"), 562 ("Caja de música (Superficie de día)"), 563 ("Caja de música (Sobrecogedor)"), 564 ("Caja de música (Noche)"), 565 ("Caja de música (Título)"), 566 ("Caja de música (Subsuelo)"), 567 ("Caja de música (Jefe final 1)"), 568 ("Caja de música (Selva)"), 569 ("Caja de música (Corrupción)"), 570 ("Caja de música (Corrupción en el subsuelo)"), ... +80.
+[11:13:04.175]       muestra: "Gafas de sol", "Sombrero de copa", "Sombrero veraniego", "Máscara de conejito", "Gorra de fontanero", "Gorro de héroe", "Pecera", "Sombrero de arqueólogo"
+[11:13:04.175]    "Ranura de la Cabeza (271)" (Categories/Equipable/Head slot): 271 objetos, 2 subcarpetas, 0 que NO cumplen "headSlot>=0".
+[11:13:04.176]       muestra: "Gafas de protección", "Casco de minero", "Casco de cobre", "Casco de hierro", "Casco de plata", "Casco de oro", "Casco de las sombras", "Casco de meteorito"
+[11:13:04.176]    "Ranura del Cuerpo (187)" (Categories/Equipable/Body slot): 187 objetos, 3 subcarpetas, 0 que NO cumplen "bodySlot>=0".
+[11:13:04.176]       muestra: "Cota de malla de cobre", "Cota de malla de hierro", "Cota de malla de plata", "Cota de malla de oro", "Cota de escamas de las sombras", "Cota de meteorito", "Coraza de los muertos", "Camisa para la selva"
+[11:13:04.176]    "Ranura de las Piernas (155)" (Categories/Equipable/Leg slot): 155 objetos, 3 subcarpetas, 0 que NO cumplen "legSlot>=0".
+[11:13:04.177]       muestra: "Grebas de cobre", "Grebas de hierro", "Grebas de plata", "Grebas de oro", "Grebas de las sombras", "Perneras de meteorito", "Grebas de los muertos", "Pantalones para la selva"
+[11:13:04.177]    "Alas (7)" (Categories/Equipable/Wings): 7 objetos, 0 subcarpetas, 7 que NO cumplen "el tooltip dice "allows flight"" -> 128 ("Botas cohete"), 405 ("Botas de espectro"), 898 ("Botas relámpago"), 1862 ("Botas del campo helado"), 3993 ("Botas de hada"), 4874 ("Bandas infernales"), 5000 ("Botas de terrachispa").
+[11:13:04.177]       muestra: "Botas cohete", "Botas de espectro", "Botas relámpago", "Botas del campo helado", "Botas de hada", "Bandas infernales", "Botas de terrachispa"
+[11:13:04.178]    "Tintes (130)" (Categories/Equipable/Dyes): 130 objetos, 2 subcarpetas, 130 que NO cumplen "el nombre acaba en "Dye"" -> 1007 ("Tinte rojo"), 1008 ("Tinte naranja"), 1009 ("Tinte amarillo"), 1010 ("Tinte verde lima"), 1011 ("Tinte verde"), 1012 ("Tinte verde azulado"), 1013 ("Tinte turquesa"), 1014 ("Tinte azul celeste"), 1015 ("Tinte azul"), 1016 ("Tinte morado"), ... +120.
+[11:13:04.178]       muestra: "Tinte rojo", "Tinte naranja", "Tinte amarillo", "Tinte verde lima", "Tinte verde", "Tinte verde azulado", "Tinte turquesa", "Tinte azul celeste"
+[11:13:04.178]    "Picos (44)" (Categories/Tools/Pickaxes): 44 objetos, 3 subcarpetas, 0 que NO cumplen "pick>0".
+[11:13:04.178]       muestra: "Pico de hierro", "Pico de pesadilla", "Pico fundido", "Pico de cobalto", "Pico de mithril", "Pico de adamantita", "Pico mortífero", "Pico de cactus"
+[11:13:04.178]    "Hachas (41)" (Categories/Tools/Axes): 41 objetos, 5 subcarpetas, 0 que NO cumplen "axe>0".
+[11:13:04.179]       muestra: "Taladro hacha", "Pico hacha", "Picoserrucho", "Garra de piñonita excavadora", "Hacha de hierro", "Hacha de la noche", "Clúster sed de sangre", "Hacha de guerra de cobalto"
+[11:13:04.179]    "Martillos (32)" (Categories/Tools/Hammers): 32 objetos, 2 subcarpetas, 0 que NO cumplen "hammer>0".
+[11:13:04.179]       muestra: "Hacha-martillo de meteorito", "Hacha-martillo fundida", "El hacha", "Hacha-martillo espectral", "Hacha-martillo de fulguración solar", "Hacha-martillo de vórtice", "Hacha-martillo de nebulosa", "Hacha-martillo de polvo estelar"
+[11:13:04.180]    "Canas de Pesca (11)" (Categories/Tools/Fishing poles): 11 objetos, 0 subcarpetas, 0 que NO cumplen "fishingPole>1".
+[11:13:04.180]       muestra: "Caña de madera", "Caña de pescar reforzada", "Caña de fibra de cristal", "Pescador de almas", "Caña dorada", "Caña mecánica", "Caña de blanco fácil", "Atrapacarne"
+[11:13:04.181]    "Colocable (2680)" (Categories/Placeable): 2680 objetos, 38 subcarpetas, 118 que NO cumplen "createTile>=0 o createWall>=0" -> 261 ("Pececillo"), 1338 ("Conejo explosivo"), 1992 ("Luciérnaga"), 1994 ("Mariposa monárquica"), 1995 ("Mariposa emperador morada"), 1996 ("Mariposa almirante roja"), 1997 ("Mariposa Ulises"), 1998 ("Mariposa de sulfuro"), 1999 ("Mariposa ninfa de los árboles"), 2000 ("Mariposa cebra de cola corta"), ... +108.
+[11:13:04.181]       muestra: "Bloque de tierra", "Bloque de piedra", "Madera", "Mineral de hierro", "Mineral de cobre", "Mineral de oro", "Mineral de plata", "Mineral endemoniado"
+[11:13:04.181]    "Paredes (272)" (Categories/Walls): 272 objetos, 7 subcarpetas, 0 que NO cumplen "createWall>=0".
+[11:13:04.181]       muestra: "Pared de piedra", "Pared de tierra", "Pared de madera", "Pared de ladrillo gris", "Pared de ladrillo rojo", "Pared de ladrillo azul", "Pared de ladrillo verde", "Pared de ladrillo rosa"
+[11:13:04.182]    "Espadas (105)" (Categories/Weapons/Melee damage/Swords): 105 objetos, 3 subcarpetas, 0 que NO cumplen "no es herramienta y el juego lo trata como espada".
+[11:13:04.182]       muestra: "Espada larga de hierro", "Espada corta de hierro", "Espada de madera", "Azote de la luz", "Furia de estrellas", "Volcán", "Muramasa", "Caña para respirar"
+[11:13:04.182]    "Lanzas (17)" (Categories/Weapons/Melee damage/Spears): 17 objetos, 0 subcarpetas, 0 que NO cumplen "proyectil de lanza (aiStyle 19 o 141)".
+[11:13:04.182]       muestra: "Lanza de la oscuridad", "Tridente", "Lanza", "Alabarda de mithril", "Guja de adamantita", "Naginata de cobalto", "Gungnir", "Lanza de champiñón"
+[11:13:04.182]    "Mayales (14)" (Categories/Weapons/Melee damage/Flails): 14 objetos, 0 subcarpetas, 0 que NO cumplen "proyectil de mayal/cadena (aiStyle 15, 13 o 69)".
+[11:13:04.183]       muestra: "Flagelo con bola", "Luna azul", "Furia solar", "Flagelo Taoísta", "La albóndiga", "Florecillas", "Puño de gólem", "Cañón KO"
+[11:13:04.183]    "Yoyós (21)" (Categories/Weapons/Melee damage/Yoyos): 21 objetos, 0 subcarpetas, 0 que NO cumplen "ItemID.Sets.Yoyo o proyectil de yoyo (aiStyle 99)".
+[11:13:04.183]       muestra: "Código 1", "Yoyó de madera", "Malestar", "Arteria", "Amazonas", "Cascada", "Chik", "Código 2"
+[11:13:04.183]    "Bumeranes (17)" (Categories/Weapons/Melee damage/Boomerangs): 17 objetos, 0 subcarpetas, 1 que NO cumplen "proyectil de bumeran (aiStyle 3)" -> 671 ("Llave-espada").
+[11:13:04.183]       muestra: "Bumerán encantado", "Bumerán en llamas", "Chakram de espinas", "Bumerán de madera", "Disco de luz", "Bumerán de hielo", "Llave-espada", "Hacha de mano poseída"
+[11:13:04.184]    "Otras armas cuerpo a cuerpo (15)" (Categories/Weapons/Melee damage/Other melee weapons): 15 objetos, 0 subcarpetas, 0 que NO cumplen "hace daño de verdad (damage>0)".
+[11:13:04.184]       muestra: "Cuchillos de vampiro", "Azote del Corruptor", "Cuchillo volador", "Cuchillo de Llamas oscuras", "Escudo de Cthulhu", "Arkhalis", "Erupción solar", "Amanecer"
+[11:13:04.184]    "Picos (29)" (Categories/Weapons/Melee damage/Pickaxes): 29 objetos, 0 subcarpetas, 0 que NO cumplen "pick>0 y no es taladro ni motosierra ni pico-hacha".
+[11:13:04.184]       muestra: "Pico de hierro", "Pico de pesadilla", "Pico fundido", "Pico de cobalto", "Pico de mithril", "Pico de adamantita", "Pico mortífero", "Pico de cactus"
+[11:13:04.185]    "Taladros (12)" (Categories/Weapons/Melee damage/Drills): 12 objetos, 0 subcarpetas, 0 que NO cumplen "ItemID.Sets.IsDrill".
+[11:13:04.185]       muestra: "Taladro de cobalto", "Taladro de mithril", "Taladro de adamantita", "Taladro hacha", "Taladro de paladio", "Taladro de oricalco", "Taladro de titanio", "Taladro de clorofita"
+[11:13:04.185]    "Motosierras (9)" (Categories/Weapons/Melee damage/Chainsaws): 9 objetos, 0 subcarpetas, 0 que NO cumplen "ItemID.Sets.IsChainsaw".
+[11:13:04.185]       muestra: "Motosierra de cobalto", "Motosierra de mithril", "Motosierra de adamantita", "Motosierra de paladio", "Motosierra de oricalco", "Motosierra de titanio", "Motosierra de clorofita", "Tiburón dientes de sierra"
+[11:13:04.186]    "Picos hacha (3)" (Categories/Weapons/Melee damage/Pickaxe axes): 3 objetos, 0 subcarpetas, 0 que NO cumplen "pick>0 y axe>0".
+[11:13:04.186]       muestra: "Pico hacha", "Picoserrucho", "Garra de piñonita excavadora"
+[11:13:04.186]    "Hachas-martillo (9)" (Categories/Weapons/Melee damage/Hamaxes): 9 objetos, 0 subcarpetas, 0 que NO cumplen "axe>0 y hammer>0".
+[11:13:04.186]       muestra: "Hacha-martillo de meteorito", "Hacha-martillo fundida", "El hacha", "Hacha-martillo espectral", "Hacha-martillo de fulguración solar", "Hacha-martillo de vórtice", "Hacha-martillo de nebulosa", "Hacha-martillo de polvo estelar"
+[11:13:04.186]    "Hachas (19)" (Categories/Weapons/Melee damage/Axes): 19 objetos, 0 subcarpetas, 0 que NO cumplen "axe>0".
+[11:13:04.187]       muestra: "Hacha de hierro", "Hacha de la noche", "Clúster sed de sangre", "Hacha de guerra de cobalto", "Hacha de guerra de mithril", "Hacha de guerra de adamantita", "Hacha de guerra de paladio", "Hacha de guerra de oricalco"
+[11:13:04.187]    "Martillos (23)" (Categories/Weapons/Melee damage/Hammers): 23 objetos, 0 subcarpetas, 0 que NO cumplen "hammer>0".
+[11:13:04.187]       muestra: "Martillo de hierro", "La Despedazadora", "Martillo de madera", "Gran martillo", "Martillo de madera de ébano", "Martillo de madera de caoba rica", "Martillo de madera perlada", "Martillo champiñón"
+[11:13:04.187]    "Picos (29)" (Categories/Tools/Pickaxes/Pickaxes): 29 objetos, 0 subcarpetas, 0 que NO cumplen "pick>0 y no es taladro ni motosierra ni pico-hacha".
+[11:13:04.187]       muestra: "Pico de hierro", "Pico de pesadilla", "Pico fundido", "Pico de cobalto", "Pico de mithril", "Pico de adamantita", "Pico mortífero", "Pico de cactus"
+[11:13:04.188]    "Taladros (12)" (Categories/Tools/Pickaxes/Drills): 12 objetos, 0 subcarpetas, 0 que NO cumplen "ItemID.Sets.IsDrill".
+[11:13:04.188]       muestra: "Taladro de cobalto", "Taladro de mithril", "Taladro de adamantita", "Taladro hacha", "Taladro de paladio", "Taladro de oricalco", "Taladro de titanio", "Taladro de clorofita"
+[11:13:04.188]    "Picos hacha (3)" (Categories/Tools/Pickaxes/Pickaxe axes): 3 objetos, 0 subcarpetas, 0 que NO cumplen "pick>0 y axe>0".
+[11:13:04.189]       muestra: "Pico hacha", "Picoserrucho", "Garra de piñonita excavadora"
+[11:13:04.189]    "Taladros (1)" (Categories/Tools/Axes/Drills): 1 objetos, 0 subcarpetas, 0 que NO cumplen "ItemID.Sets.IsDrill".
+[11:13:04.189]       muestra: "Taladro hacha"
+[11:13:04.189]    "Motosierras (9)" (Categories/Tools/Axes/Chainsaws): 9 objetos, 0 subcarpetas, 0 que NO cumplen "ItemID.Sets.IsChainsaw".
+[11:13:04.190]       muestra: "Motosierra de cobalto", "Motosierra de mithril", "Motosierra de adamantita", "Motosierra de paladio", "Motosierra de oricalco", "Motosierra de titanio", "Motosierra de clorofita", "Tiburón dientes de sierra"
+[11:13:04.190]    "Picos hacha (3)" (Categories/Tools/Axes/Pickaxe axes): 3 objetos, 0 subcarpetas, 0 que NO cumplen "pick>0 y axe>0".
+[11:13:04.190]       muestra: "Pico hacha", "Picoserrucho", "Garra de piñonita excavadora"
+[11:13:04.190]    "Hachas-martillo (9)" (Categories/Tools/Axes/Hamaxes): 9 objetos, 0 subcarpetas, 0 que NO cumplen "axe>0 y hammer>0".
+[11:13:04.191]       muestra: "Hacha-martillo de meteorito", "Hacha-martillo fundida", "El hacha", "Hacha-martillo espectral", "Hacha-martillo de fulguración solar", "Hacha-martillo de vórtice", "Hacha-martillo de nebulosa", "Hacha-martillo de polvo estelar"
+[11:13:04.191]    "Hachas (19)" (Categories/Tools/Axes/Axes): 19 objetos, 0 subcarpetas, 0 que NO cumplen "axe>0".
+[11:13:04.191]       muestra: "Hacha de hierro", "Hacha de la noche", "Clúster sed de sangre", "Hacha de guerra de cobalto", "Hacha de guerra de mithril", "Hacha de guerra de adamantita", "Hacha de guerra de paladio", "Hacha de guerra de oricalco"
+[11:13:04.192]    "Hachas-martillo (9)" (Categories/Tools/Hammers/Hamaxes): 9 objetos, 0 subcarpetas, 0 que NO cumplen "axe>0 y hammer>0".
+[11:13:04.192]       muestra: "Hacha-martillo de meteorito", "Hacha-martillo fundida", "El hacha", "Hacha-martillo espectral", "Hacha-martillo de fulguración solar", "Hacha-martillo de vórtice", "Hacha-martillo de nebulosa", "Hacha-martillo de polvo estelar"
+[11:13:04.192]    "Martillos (23)" (Categories/Tools/Hammers/Hammers): 23 objetos, 0 subcarpetas, 0 que NO cumplen "hammer>0".
+[11:13:04.192]       muestra: "Martillo de hierro", "La Despedazadora", "Martillo de madera", "Gran martillo", "Martillo de madera de ébano", "Martillo de madera de caoba rica", "Martillo de madera perlada", "Martillo champiñón"
+[11:13:04.193]    "Arcos (40)" (Categories/Weapons/Ranged damage/Bows): 40 objetos, 2 subcarpetas, 0 que NO cumplen "useAmmo = flecha".
+[11:13:04.193]       muestra: "Arco de madera", "Arco demoníaco", "Arco de hierro", "Furia fundida", "Repetidor de cobalto", "Repetidor de mithril", "Repetidor de adamantita", "Repetidor sagrado"
+[11:13:04.193]    "Armas de fuego (24)" (Categories/Weapons/Ranged damage/Guns): 24 objetos, 0 subcarpetas, 0 que NO cumplen "useAmmo = bala".
+[11:13:04.193]       muestra: "Pistola de pedernal", "Mosquete", "Minitiburón", "Pistola", "Desintegrador Fénix", "Fusil de asalto de precisión", "Megatiburón", "Escopeta"
+[11:13:04.194]    "Lanzadores (7)" (Categories/Weapons/Ranged damage/Launchers): 7 objetos, 0 subcarpetas, 0 que NO cumplen "useAmmo = cohete".
+[11:13:04.194]       muestra: "Lanzagranadas", "Lanzacohetes", "Lanzaminas de proximidad", "Cañón de muñecos de nieve", "Lanzador de electroesferas", "Celebración", "Celebración v2"
+[11:13:04.194]    "Armas de dardos (4)" (Categories/Weapons/Ranged damage/Dart weapons): 4 objetos, 0 subcarpetas, 0 que NO cumplen "useAmmo = dardo".
+[11:13:04.194]       muestra: "Cerbatana", "Cerbatana", "Pistola de dardos", "Escopeta de dardos"
+[11:13:04.194]    "Otras armas con munición (12)" (Categories/Weapons/Ranged damage/Other ammo weapons): 12 objetos, 0 subcarpetas, 0 que NO cumplen "gasta municion de otro tipo".
+[11:13:04.194]       muestra: "Cañón de estrellas", "Pistola de arena", "Lanzallamas", "Pistola de monedas", "Stynger", "Cañón de bolas de nieve", "Fusil de maíz de caramelo", "Lanzador de linternas calabaza"
+[11:13:04.195]    "Armas sin munición (4)" (Categories/Weapons/Ranged damage/Ammo-free weapons): 4 objetos, 0 subcarpetas, 0 que NO cumplen "arma que no gasta municion".
+[11:13:04.195]       muestra: "Arpón", "Pistola de pirañas", "Toxicarpa", "Pistola de pintura"
+[11:13:04.195]    "Armas arrojadizas (27)" (Categories/Weapons/Ranged damage/Thrown weapons): 27 objetos, 0 subcarpetas, 0 que NO cumplen "arma arrojadiza (consumible, sin municion)".
+[11:13:04.195]       muestra: "Estrellas ninja", "Moneda de cobre", "Moneda de plata", "Moneda de oro", "Moneda de platino", "Hueso", "Bola con pinchos", "Granada"
+[11:13:04.195]    "Flechas (15)" (Categories/Weapons/Ranged damage/Arrows): 15 objetos, 0 subcarpetas, 0 que NO cumplen "ammo = flecha".
+[11:13:04.195]       muestra: "Flecha de madera", "Flecha ardiente", "Flecha infame", "Flecha de bufón", "Flecha de fuego infernal", "Flecha sagrada", "Flecha maldita", "Flecha de quemadura gélida"
+[11:13:04.196]    "Balas (16)" (Categories/Weapons/Ranged damage/Bullets): 16 objetos, 0 subcarpetas, 0 que NO cumplen "ammo = bala".
+[11:13:04.196]       muestra: "Bala de mosquete", "Proyectil de meteorito", "Bala de plata", "Bala de cristal", "Bala maldita", "Bala de clorofita", "Bala de alta velocidad", "Bala de icor"
+[11:13:04.196]    "Cohetes (12)" (Categories/Weapons/Ranged damage/Rockets): 12 objetos, 0 subcarpetas, 0 que NO cumplen "ammo = cohete".
+[11:13:04.196]       muestra: "Cohete I", "Cohete II", "Cohete III", "Cohete IV", "Cohete clúster I", "Cohete clúster II", "Cohete húmedo", "Cohete de lava"
+[11:13:04.197]    "Dardos (5)" (Categories/Weapons/Ranged damage/Darts): 5 objetos, 0 subcarpetas, 0 que NO cumplen "ammo = dardo".
+[11:13:04.197]       muestra: "Semilla", "Dardo venenoso", "Dardo de cristal", "Dardo maldito", "Dardo de icor"
+[11:13:04.197]    "Bengalas (6)" (Categories/Weapons/Ranged damage/Flares): 6 objetos, 0 subcarpetas, 0 que NO cumplen "ammo = bengala".
+[11:13:04.197]       muestra: "Bengala", "Bengala azul", "Brillo de espeleología", "Brillo maldito", "Brillo arcoíris", "Brillo fulgurante"
+[11:13:04.198]    "Otra munición (6)" (Categories/Weapons/Ranged damage/Other ammunition): 6 objetos, 0 subcarpetas, 0 que NO cumplen "es municion de otro tipo".
+[11:13:04.198]       muestra: "Bola de nieve", "Proyectil Stynger", "Maíz de caramelo", "Linterna calabaza explosiva", "Estaca", "Clavo"
+[11:13:04.198]    "Cabeza (102)" (Categories/Equipable/Armor/Head): 102 objetos, 3 subcarpetas, 0 que NO cumplen "headSlot>=0".
+[11:13:04.198]       muestra: "Gafas de protección", "Casco de minero", "Casco de cobre", "Casco de hierro", "Casco de plata", "Casco de oro", "Casco de las sombras", "Casco de meteorito"
+[11:13:04.198]    "Cuerpo (79)" (Categories/Equipable/Armor/Body): 79 objetos, 2 subcarpetas, 0 que NO cumplen "bodySlot>=0".
+[11:13:04.199]       muestra: "Cota de malla de cobre", "Cota de malla de hierro", "Cota de malla de plata", "Cota de malla de oro", "Cota de escamas de las sombras", "Cota de meteorito", "Coraza de los muertos", "Camisa para la selva"
+[11:13:04.199]    "Piernas (68)" (Categories/Equipable/Armor/Legs): 68 objetos, 2 subcarpetas, 0 que NO cumplen "legSlot>=0".
+[11:13:04.199]       muestra: "Grebas de cobre", "Grebas de hierro", "Grebas de plata", "Grebas de oro", "Grebas de las sombras", "Perneras de meteorito", "Grebas de los muertos", "Pantalones para la selva"
+[11:13:04.199]    "Cabeza (170)" (Categories/Equipable/Vanity/Head): 170 objetos, 5 subcarpetas, 0 que NO cumplen "headSlot>=0".
+[11:13:04.200]       muestra: "Gafas de sol", "Sombrero de copa", "Sombrero veraniego", "Máscara de conejito", "Gorra de fontanero", "Gorro de héroe", "Pecera", "Sombrero de arqueólogo"
+[11:13:04.200]    "Cuerpo (109)" (Categories/Equipable/Vanity/Body): 109 objetos, 3 subcarpetas, 0 que NO cumplen "bodySlot>=0".
+[11:13:04.200]       muestra: "Camisa de esmoquin", "Camisa de fontanero", "Camisa de héroe", "Chaqueta de arqueólogo", "Vestido", "Camisa informal", "Camisa del doctor", "Camisa de payaso"
+[11:13:04.200]    "Piernas (88)" (Categories/Equipable/Vanity/Legs): 88 objetos, 3 subcarpetas, 0 que NO cumplen "legSlot>=0".
+[11:13:04.200]       muestra: "Pantalones de esmoquin", "Pantalones de fontanero", "Pantalones de héroe", "Pantalones de arqueólogo", "Pantalones informales", "Pantalones del doctor", "Pantalones de payaso", "Pantalones de Papá Noel"
+[11:13:04.200]    "Accesorio (125)" (Categories/Equipable/Vanity/Accessory): 125 objetos, 4 subcarpetas, 1 que NO cumplen "accesorio sin ranura de armadura" -> 215 ("Cojín flatulento").
+[11:13:04.201]       muestra: "Rosa de la selva", "Cojín flatulento", "Caja de música (Superficie de día)", "Caja de música (Sobrecogedor)", "Caja de música (Noche)", "Caja de música (Título)", "Caja de música (Subsuelo)", "Caja de música (Jefe final 1)"
+[11:13:04.201]    "Armadura (102)" (Categories/Equipable/Head slot/Armor): 102 objetos, 3 subcarpetas, 0 que NO cumplen "armadura de verdad (no vanidad ni accesorio)".
+[11:13:04.201]       muestra: "Gafas de protección", "Casco de minero", "Casco de cobre", "Casco de hierro", "Casco de plata", "Casco de oro", "Casco de las sombras", "Casco de meteorito"
+[11:13:04.202]    "Vanidad (169)" (Categories/Equipable/Head slot/Vanity): 169 objetos, 5 subcarpetas, 0 que NO cumplen "item.vanity".
+[11:13:04.202]       muestra: "Gafas de sol", "Sombrero de copa", "Sombrero veraniego", "Máscara de conejito", "Gorra de fontanero", "Gorro de héroe", "Pecera", "Sombrero de arqueólogo"
+[11:13:04.202]    "Armadura (78)" (Categories/Equipable/Body slot/Armor): 78 objetos, 2 subcarpetas, 1 que NO cumplen "armadura de verdad (no vanidad ni accesorio)" -> 5007 ("Sudadera del hombre muerto").
+[11:13:04.202]       muestra: "Cota de malla de cobre", "Cota de malla de hierro", "Cota de malla de plata", "Cota de malla de oro", "Cota de escamas de las sombras", "Cota de meteorito", "Coraza de los muertos", "Camisa para la selva"
+[11:13:04.202]    "Vanidad (108)" (Categories/Equipable/Body slot/Vanity): 108 objetos, 3 subcarpetas, 0 que NO cumplen "item.vanity".
+[11:13:04.203]       muestra: "Camisa de esmoquin", "Camisa de fontanero", "Camisa de héroe", "Chaqueta de arqueólogo", "Vestido", "Camisa del doctor", "Camisa de payaso", "Camisa de Papá Noel"
+[11:13:04.203]    "Armadura (66)" (Categories/Equipable/Leg slot/Armor): 66 objetos, 2 subcarpetas, 0 que NO cumplen "armadura de verdad (no vanidad ni accesorio)".
+[11:13:04.203]       muestra: "Grebas de cobre", "Grebas de hierro", "Grebas de plata", "Grebas de oro", "Grebas de las sombras", "Perneras de meteorito", "Grebas de los muertos", "Pantalones para la selva"
+[11:13:04.203]    "Vanidad (87)" (Categories/Equipable/Leg slot/Vanity): 87 objetos, 3 subcarpetas, 0 que NO cumplen "item.vanity".
+[11:13:04.204]       muestra: "Pantalones de esmoquin", "Pantalones de fontanero", "Pantalones de héroe", "Pantalones de arqueólogo", "Pantalones del doctor", "Pantalones de payaso", "Pantalones de Papá Noel", "Perneras de Red"
+[11:13:04.204]    "Alas (42)" (Categories/Equipable/Accessories/Wings): 42 objetos, 2 subcarpetas, 0 que NO cumplen "wingSlot>0".
+[11:13:04.204]       muestra: "Alas demoníacas", "Alas de ángel", "Alas de Red", "Mochila cohete", "Alas de mariposa", "Alas de hada", "Alas de arpía", "Alas de hueso"
+[11:13:04.204]    "Botas (25)" (Categories/Equipable/Accessories/Boots): 25 objetos, 0 subcarpetas, 0 que NO cumplen "shoeSlot>0".
+[11:13:04.204]       muestra: "Botas de Hermes", "Botas cohete", "Aletas", "Botas de espectro", "Botas de flotación", "Botas relámpago", "Botas de flotación obsidianas", "Katiuskas de lava"
+[11:13:04.205]    "Globos (13)" (Categories/Equipable/Accessories/Balloons): 13 objetos, 0 subcarpetas, 0 que NO cumplen "balloonSlot>0".
+[11:13:04.205]       muestra: "Globo rojo brillante", "Nube en globo", "Tormenta de arena en globo", "Ventisca en globo", "Puñado de globos", "Globo de miel", "Globo de herradura azul", "Globo de herradura blanco"
+[11:13:04.205]    "Escudos (8)" (Categories/Equipable/Accessories/Shields): 8 objetos, 0 subcarpetas, 0 que NO cumplen "shieldSlot>0".
+[11:13:04.205]       muestra: "Escudo de cobalto", "Escudo de obsidiana", "Escudo de paladín", "Escudo de cruz ansata", "Escudo de Cthulhu", "Escudo de escudero", "Escudo congelado", "Escudo de héroe"
+[11:13:04.205]    "Collares (12)" (Categories/Equipable/Accessories/Necklaces): 12 objetos, 0 subcarpetas, 0 que NO cumplen "neckSlot>0".
+[11:13:04.206]       muestra: "Collar con cruz", "Velo estelar", "Collar pigmeo", "Collar del pánico", "Collar de medusa", "Collar del cariño", "Collar de diente de tiburón", "Bufanda de gusano"
+[11:13:04.206]    "Accesorios de cara (15)" (Categories/Equipable/Accessories/Face accessories): 15 objetos, 0 subcarpetas, 0 que NO cumplen "faceSlot>0".
+[11:13:04.206]       muestra: "Calavera de obsidiana", "Don de la naturaleza", "Equipo de buceo", "Venda", "Rosa de obsidiana", "Equipo de buceo medusa", "Equipo de buceo ártico", "Flor arcana"
+[11:13:04.206]    "Guantes (23)" (Categories/Equipable/Accessories/Gloves): 23 objetos, 0 subcarpetas, 0 que NO cumplen "handOnSlot>0".
+[11:13:04.207]       muestra: "Banda de regeneración", "Banda de polvo de estrellas", "Garras de bestia", "Argolla", "Guante de titán", "Talismán de mitos", "Guante de poder", "Piedra de sol"
+[11:13:04.207]    "Accesorios de espalda (11)" (Categories/Equipable/Accessories/Back accessories): 11 objetos, 0 subcarpetas, 0 que NO cumplen "backSlot>0".
+[11:13:04.207]       muestra: "Manto de estrellas", "Capa de abejas", "Carcaj mágico", "Paquete de artilugios de arquitecto", "Mochila colmena", "Bolsa de aparejos del Pescador", "Capa de maná", "Carcaj fundido"
+[11:13:04.207]    "Cinturones (16)" (Categories/Equipable/Accessories/Belts): 16 objetos, 0 subcarpetas, 0 que NO cumplen "waistSlot>0".
+[11:13:04.207]       muestra: "Reloj de cobre", "Reloj de plata", "Reloj de oro", "Nube embotellada", "Cinturón de herramientas", "Flor de maná", "Reloj de estaño", "Reloj de tungsteno"
+[11:13:04.207]    "Tintes de pelo (12)" (Categories/Equipable/Dyes/Hair dyes): 12 objetos, 0 subcarpetas, 0 que NO cumplen "hairDye>=0".
+[11:13:04.208]       muestra: "Tinta vital", "Tinte de maná", "Tinte de las profundidades", "Tinte de dinero", "Tinte de tiempo", "Tinte de equipo", "Tinte de biomedio", "Tinte festivo"
+[11:13:04.208]    "Tintes (118)" (Categories/Equipable/Dyes/Dyes): 118 objetos, 3 subcarpetas, 0 que NO cumplen "item.dye != 0".
+[11:13:04.208]       muestra: "Tinte rojo", "Tinte naranja", "Tinte amarillo", "Tinte verde lima", "Tinte verde", "Tinte verde azulado", "Tinte turquesa", "Tinte azul celeste"
+[11:13:04.208]    "Bloques (259)" (Categories/Placeable/Blocks): 259 objetos, 7 subcarpetas, 0 que NO cumplen "coloca un tile SIN marco (o sea, un bloque)".
+[11:13:04.208]       muestra: "Bloque de tierra", "Bloque de piedra", "Madera", "Mineral de hierro", "Mineral de cobre", "Mineral de oro", "Mineral de plata", "Mineral endemoniado"
+[11:13:04.209]    "Estandartes (311)" (Categories/Placeable/Banners): 311 objetos, 8 subcarpetas, 0 que NO cumplen "coloca el tile de estandartes".
+[11:13:04.209]       muestra: "Estandarte rojo", "Estandarte verde", "Estandarte azul", "Estandarte amarillo", "Estandarte de cruz ansata", "Estandarte de serpiente", "Estandarte omega", "Estandarte del mundo"
+[11:13:04.209]    "Cuadros (223)" (Categories/Placeable/Paintings): 223 objetos, 6 subcarpetas, 0 que NO cumplen "TileID.Sets.Paintings".
+[11:13:04.209]       muestra: "Trofeo Ojo de Cthulhu", "Trofeo Devoramundos", "Trofeo Cerebro de Cthulhu", "Trofeo Esqueletrón", "Trofeo Abeja reina", "Trofeo Muro carnoso", "Trofeo Destructor", "Trofeo Esqueletrón mayor"
+[11:13:04.210]    "Plataformas (55)" (Categories/Placeable/Platforms): 55 objetos, 2 subcarpetas, 0 que NO cumplen "TileID.Sets.Platforms".
+[11:13:04.210]       muestra: "Plataforma de madera", "Plataforma de madera de ébano", "Plataforma de madera de caoba rica", "Plataforma de madera perlada", "Plataforma de hueso", "Plataforma de madera sombría", "Plataforma de ladrillo azul", "Plataforma de ladrillo rosa"
+[11:13:04.210]    "Cofres (158)" (Categories/Placeable/Chests): 158 objetos, 4 subcarpetas, 0 que NO cumplen "tile de cofre o comoda".
+[11:13:04.210]       muestra: "Cofre", "Cofre de oro", "Cofre de las sombras", "Aparador", "Barril", "Cubo de basura", "Cofre de madera de ébano", "Cofre de madera de caoba rica"
+[11:13:04.211]    "Antorchas (24)" (Categories/Placeable/Torches): 24 objetos, 0 subcarpetas, 0 que NO cumplen "ItemID.Sets.Torches".
+[11:13:04.211]       muestra: "Antorcha", "Antorcha azul", "Antorcha roja", "Antorcha verde", "Antorcha morada", "Antorcha blanca", "Antorcha amarilla", "Antorcha demoníaca"
+[11:13:04.211]    "Hogueras (16)" (Categories/Placeable/Campfires): 16 objetos, 0 subcarpetas, 0 que NO cumplen "coloca un tile de hoguera".
+[11:13:04.211]       muestra: "Hoguera", "Hoguera maldita", "Hoguera demoníaca", "Hoguera congelada", "Hoguera de icor", "Hoguera arcoíris", "Hoguera ultrabrillante", "Hoguera de hueso"
+[11:13:04.211]    "Estatuas (82)" (Categories/Placeable/Statues): 82 objetos, 3 subcarpetas, 0 que NO cumplen "coloca el tile de estatuas".
+[11:13:04.212]       muestra: "Estatua de ángel", "Estatua de armadura", "Estatua de estrella", "Estatua de espada", "Estatua de slime", "Estatua de duende", "Estatua de escudo", "Estatua de murciélago"
+[11:13:04.212]    "Cajas de música (88)" (Categories/Placeable/Music boxes): 88 objetos, 3 subcarpetas, 0 que NO cumplen "coloca el tile de cajas de musica".
+[11:13:04.212]       muestra: "Caja de música (Superficie de día)", "Caja de música (Sobrecogedor)", "Caja de música (Noche)", "Caja de música (Título)", "Caja de música (Subsuelo)", "Caja de música (Jefe final 1)", "Caja de música (Selva)", "Caja de música (Corrupción)"
+[11:13:04.212]    TOTAL: 89 carpetas, 8927 comprobaciones objeto a objeto, 564 mal clasificados.
+[11:13:04.213] OBJETO 4956 "Cénit" (damage=210, DamageType=MeleeNoSpeedDamageClass): esperado dentro de "Categories/Weapons/Melee damage" -> OK. Hojas donde cae: Categories/Weapons/Melee damage (316)/Swords (111)/Page 3 | Items by ID/4801-5200/4921-4960
+[11:13:04.213] OBJETO 757 "Espada Terra" (damage=90, DamageType=MeleeDamageClass): esperado dentro de "Categories/Weapons/Melee damage" -> OK. Hojas donde cae: Categories/Weapons/Melee damage (316)/Swords (111)/Page 1 | Items by ID/401-800/721-760
+[11:13:04.213] OBJETO 3063 "Filomiau" (damage=200, DamageType=MeleeDamageClass): esperado dentro de "Categories/Weapons/Melee damage" -> OK. Hojas donde cae: Categories/Weapons/Melee damage (316)/Swords (111)/Page 2 | Items by ID/2801-3200/3041-3080
+[11:13:04.214] OBJETO 3541 "Último prisma" (damage=57, DamageType=MagicDamageClass): esperado dentro de "Categories/Weapons/Magic damage" -> OK. Hojas donde cae: Categories/Weapons/Magic damage (76)/Page 2 | Items by ID/3201-3600/3521-3560
+[11:13:04.214] OBJETO 1553 "ADEE" (damage=85, DamageType=RangedDamageClass): esperado dentro de "Categories/Weapons/Ranged damage" -> OK. Hojas donde cae: Categories/Weapons/Ranged damage (180)/Guns (24) | Items by ID/1201-1600/1521-1560
+[11:13:04.214] OBJETO 1343 "Guantelete de fuego" (damage=-1, DamageType=DefaultDamageClass): esperado dentro de "Categories/Equipable/Accessories" -> OK. Hojas donde cae: Categories/Equipable/Accessories (321)/Gloves (23) | Items by ID/1201-1600/1321-1360
+[11:13:04.718] NAVEGACION: área x=26 y=99 748x544; ruta="Librería > Categorias > Armas > Daño de Cuerpo a Cuerpo (294)"; carpetas visibles=14; resultados=100 de 294 (8 columnas); 1ª ranura de catálogo ("Espada larga de hierro") en x=346 y=149 44x44; destino="Inventario" con 50 ranuras vivas
+[11:13:05.065] CAPTURA "categorias-melee-carpetas": captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepCategorias\terrakeep-capturas\categorias-melee-carpetas.png" (800x720)
+[11:13:05.301] NAVEGACION: área x=26 y=99 748x544; ruta="Librería > Categorias > Armas > Daño de Cuerpo a Cuerpo (294) > Espadas (105)"; carpetas visibles=3; resultados=100 de 105 (8 columnas); 1ª ranura de catálogo ("Espada larga de hierro") en x=346 y=149 44x44; destino="Inventario" con 50 ranuras vivas
+[11:13:05.642] CAPTURA "categorias-melee-espadas": captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepCategorias\terrakeep-capturas\categorias-melee-espadas.png" (800x720)
+[11:13:05.878] NAVEGACION: área x=26 y=99 748x544; ruta="Librería > Categorias > Armas > Daño de Cuerpo a Cuerpo (294) > Picos (29)"; carpetas visibles=0; resultados=29 de 29 (8 columnas); 1ª ranura de catálogo ("Pico de hierro") en x=346 y=149 44x44; destino="Inventario" con 50 ranuras vivas
+[11:13:06.219] CAPTURA "categorias-melee-picos": captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepCategorias\terrakeep-capturas\categorias-melee-picos.png" (800x720)
+[11:13:06.455] NAVEGACION: área x=26 y=99 748x544; ruta="Librería > Categorias > Armas > Daño a Distancia (178)"; carpetas visibles=13; resultados=100 de 178 (8 columnas); 1ª ranura de catálogo ("Arco de madera") en x=346 y=149 44x44; destino="Inventario" con 50 ranuras vivas
+[11:13:06.799] CAPTURA "categorias-distancia-carpetas": captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepCategorias\terrakeep-capturas\categorias-distancia-carpetas.png" (800x720)
+[11:13:07.036] NAVEGACION: área x=26 y=99 748x544; ruta="Librería > Categorias > Armas > Daño a Distancia (178) > Arcos (40)"; carpetas visibles=2; resultados=40 de 40 (8 columnas); 1ª ranura de catálogo ("Arco de madera") en x=346 y=149 44x44; destino="Inventario" con 50 ranuras vivas
+[11:13:07.374] CAPTURA "categorias-distancia-arcos": captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepCategorias\terrakeep-capturas\categorias-distancia-arcos.png" (800x720)
+[11:13:07.611] NAVEGACION: área x=26 y=99 748x544; ruta="Librería > Categorias > Armas > Daño a Distancia (178) > Armas de fuego (24)"; carpetas visibles=0; resultados=24 de 24 (8 columnas); 1ª ranura de catálogo ("Pistola de pedernal") en x=346 y=149 44x44; destino="Inventario" con 50 ranuras vivas
+[11:13:07.950] CAPTURA "categorias-distancia-armas-de-fuego": captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepCategorias\terrakeep-capturas\categorias-distancia-armas-de-fuego.png" (800x720)
+[11:13:08.186] NAVEGACION: área x=26 y=99 748x544; ruta="Librería > Categorias > Colocable (2680)"; carpetas visibles=38; resultados=100 de 2680 (8 columnas); 1ª ranura de catálogo ("Bloque de tierra") en x=346 y=149 44x44; destino="Inventario" con 50 ranuras vivas
+[11:13:08.532] CAPTURA "categorias-colocable-carpetas": captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepCategorias\terrakeep-capturas\categorias-colocable-carpetas.png" (800x720)
+[11:13:08.768] NAVEGACION: área x=26 y=99 748x544; ruta="Librería > Categorias > Colocable (2680) > Bloques (259)"; carpetas visibles=7; resultados=100 de 259 (8 columnas); 1ª ranura de catálogo ("Bloque de tierra") en x=346 y=149 44x44; destino="Inventario" con 50 ranuras vivas
+[11:13:09.107] CAPTURA "categorias-colocable-bloques": captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepCategorias\terrakeep-capturas\categorias-colocable-bloques.png" (800x720)
+[11:13:09.342] NAVEGACION (ultima subcarpeta): área x=26 y=99 748x544; ruta="Librería > Categorias > Colocable (2680) > Bloques (259) > Pagina 7"; carpetas visibles=0; resultados=19 de 19 (8 columnas); 1ª ranura de catálogo ("Ladrillo de mercurio") en x=346 y=149 44x44; destino="Inventario" con 50 ranuras vivas
+[11:13:09.680] CAPTURA "categorias-colocable-bloques-ultima-pagina": captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepCategorias\terrakeep-capturas\categorias-colocable-bloques-ultima-pagina.png" (800x720)
+[11:13:09.916] NAVEGACION: área x=26 y=99 748x544; ruta="Librería > Categorias > Equipable > Accessorios (311)"; carpetas visibles=11; resultados=100 de 311 (8 columnas); 1ª ranura de catálogo ("Alas demoníacas") en x=346 y=149 44x44; destino="Inventario" con 50 ranuras vivas
+[11:13:10.264] CAPTURA "categorias-accesorios-carpetas": captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepCategorias\terrakeep-capturas\categorias-accesorios-carpetas.png" (800x720)
+[11:13:10.500] AUDITORIA CATEGORIAS COMPLETA

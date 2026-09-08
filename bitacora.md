@@ -4903,3 +4903,134 @@ generada contra Terraria 1.4.5.8 para editar guardados que en realidad son de tM
 donde algunos prefijos de esa tabla no existen. Ya está generada la tabla correcta
 (`best_prefix_tml.json`) por si en algún momento se quiere que el botón ★ detecte la versión del
 guardado abierto.
+
+---
+
+## 8-sep-2026 — "Categorías": cada carpeta se organiza por el TIPO REAL del objeto, no de 40 en 40 por id
+
+**Reportado por el usuario con captura**, y es un problema distinto (y más de fondo) que el de
+esta misma mañana: dentro de la carpeta raíz "Categorías", cada hoja se partía en *"Página 1"*,
+*"Página 2"*… y **cada página enseña como icono el primer objeto de su lista**, así que parecía
+que la página representaba un tipo de arma concreto — un arco, un pico — cuando dentro había de
+todo: *"da igual qué página cliques, después no está ordenado; dentro de picos te encuentras
+espadas"*. Después amplió el encargo a **toda** la rama: *"dentro de 'categorias' también están
+equipable, herramientas, colocable y paredes; todo eso también debe organizarse"*.
+
+No era un fallo: es el comportamiento **fiel** del Terrasavr original (`Hc.deploy` parte cualquier
+hoja de más de 40 objetos en páginas por orden de id). Lo que se pide es ir más allá.
+
+### De dónde sale el criterio (nunca de una lista a mano)
+
+Todo el reparto se calcula **fuera del juego**, en el repo hermano
+(`scripts/extraer-subtipos-libreria-vanilla.py`, nuevo), leyendo el código decompilado real de
+Terraria 1.4.5.8 — que es la versión de la que salió el árbol curado:
+
+| Qué separa | Dato real |
+|---|---|
+| arcos / armas de fuego / lanzadores / armas de dardos | `Item.useAmmo` (flecha, bala, cohete, dardo) |
+| flechas / balas / cohetes / dardos / bengalas | `Item.ammo` |
+| lanzas, mayales, bumeranes, yoyós, espadas cortas | el **`aiStyle` real del proyectil** que dispara (`Projectile.cs`: 19 lanza, 15/13/69 mayal, 3 bumerán, 99 yoyó, 161 espada corta) |
+| espadas | set de prefijos real del juego `PrefixLegacy.ItemSets.SwordsHammersAxesPicks`, quitando lo que tenga poder de pico/hacha/martillo |
+| picos, taladros, motosierras, hachas, hachas-martillo, picos hacha | `Item.pick`/`axe`/`hammer` + `ItemID.Sets.IsDrill`/`IsChainsaw` |
+| cabeza / cuerpo / piernas / accesorio | `Item.headSlot`/`bodySlot`/`legSlot`/`accessory` |
+| alas, botas, globos, escudos, collares, cara, guantes, espalda, cinturones | los doce **slots visuales** reales del accesorio (`wingSlot`, `shoeSlot`, `balloonSlot`…) |
+| accesorios informativos | el helper real `Item.DefaultToInfoAccessory()` |
+| tintes de pelo | `DyeInitializer` (vía `hair_dyes.json`, ya extraído en su día) |
+| bloques vs muebles | `Main.tileFrameImportant` del tile que coloca |
+| estandartes, cuadros, cofres, plataformas, antorchas, hogueras, estatuas, cajas de música, sillas, camas, puertas… | el **tile real** que coloca (`Item.createTile`), con su nombre real |
+
+Lo que no tiene un campo o un set unívoco **no se fuerza**: cae en un "Otros…" con nombre honesto.
+
+### Qué se ve ahora en el juego (números reales, ya podados a 1.4.4.9)
+
+- **Daño de Cuerpo a Cuerpo (294)** → 14 carpetas: Espadas 105, Lanzas 17, Mayales 14, Yoyós 21,
+  Bumeranes 17, Otras armas cuerpo a cuerpo 15, Otras armas con munición 1, Picos 29, Taladros 12,
+  Picos hacha 3, Hachas 19, Motosierras 9, Hachas-martillo 9, Martillos 23.
+- **Daño a Distancia (178)** → 13 carpetas: Arcos 40, Armas de fuego 24, Lanzadores 7, Armas de
+  dardos 4, Otras armas con munición 12, Armas sin munición 4, Armas arrojadizas 27, Flechas 15,
+  Balas 16, Cohetes 12, Dardos 5, Bengalas 6, Otra munición 6.
+- **Colocable (2680)** → 38 carpetas (Bloques 259, Estandartes 311, Cuadros 223, Cofres 158, Cajas
+  de música 88, Jaulas de bicho 92, Estatuas 82, Plataformas 55, Lámparas de araña 49, Faroles 49,
+  Bancos 47, Sillas 48, Puertas, Mesas, Relojes, Fregaderos, Bancos de trabajo, Camas, Pianos,
+  Bañeras, Lámparas, Candelabros, Estanterías, Retretes, Velas, Estatuas de letras, Reliquias,
+  Cajas de pesca, Cometas, Lingotes, Antorchas, Hogueras, Plantas en maceta, Lápidas, Plantas de
+  tinte, Torres, Fuentes y **Otros colocables 397**). Antes eran 81 páginas seguidas por id.
+- **Accesorios (311)** → 11 carpetas (Alas 42, Botas 25, Globos 13, Escudos 8, Collares 12,
+  Accesorios de cara 15, Guantes 23, Accesorios de espalda 11, Cinturones 16, Accesorios
+  informativos 16, Otros accesorios 130).
+- **Armadura (249)** → Cabeza 102 / Cuerpo 79 / Piernas 68. **Vanidad (493)** → Cabeza / Cuerpo /
+  Piernas / Accesorio. **Cabeza/Cuerpo/Piernas** → Armadura / Vanidad. **Tintes (130)** → Tintes
+  118 / Tintes de pelo 12. **Herramientas** → Picos, Taladros, Picos hacha / Hachas, Motosierras,
+  Hachas-martillo / Martillos.
+
+Un subgrupo de más de 40 objetos se sigue paginando **por dentro** ("Bloques (259) > Página 7"),
+pero ya nunca mezclando tipos, y el icono de la página es siempre del tipo que toca.
+
+### Las dos ramas que se revisaron y se dejan como están (con motivo, no por dejadez)
+
+- **Magia (75)**: no existe en el juego ningún campo ni set que separe los tipos de arma mágica
+  (báculos, libros, pistolas mágicas…). Cada proyectil mágico tiene su propio `aiStyle`, y agrupar
+  por él daría 40 carpetas de un objeto cada una. Se queda paginada: **límite real conocido**.
+- **Paredes (272)**: todos sus objetos son paredes, así que el icono de la página ya es una pared
+  y no hay ninguna falsa impresión que arreglar. Los sets reales que existen (`WallID.Sets.Fences`,
+  `Glass`, `Main.wallHouse`) cubren 12/10/una parte y dejarían un "Otras paredes" de ~250: peor
+  que ahora.
+
+### Verificado en el juego real, objeto a objeto y con capturas
+
+`scripts\verificar-categorias-libreria.ps1` (sandbox propio, `-tmlsavedirectory` + `-skipselect`),
+con el juego en **español** y también en inglés, y con y sin **Calamity**. `AuditoriaCategorias`
+lleva ahora un criterio real por cada carpeta nueva, y **eso es una comprobación cruzada de
+verdad**: el reparto se calcula leyendo `Item.cs` de 1.4.5.8 fuera del juego y aquí se comprueba
+contra el `Item` que carga tModLoader 1.4.4.9.
+
+```
+RECUENTO 1 (cobertura): 5423 objetos vanilla reales, el árbol curado cubre 5423. Huérfanos: 0.
+RECUENTO 2 (salud): carpetas vacías=0, ids que no existen=0, iconos imposibles=0,
+                    objetos de MOD dentro del árbol vanilla=0 (también con Calamity cargado).
+RECUENTO 3: 89 carpetas, 8927 comprobaciones objeto a objeto.
+```
+
+De esas 8927, **solo 3 objetos de las carpetas NUEVAS no cumplen su criterio**, y los tres son
+diferencias reales entre la versión del árbol (1.4.5.8) y la del juego (1.4.4.9), comprobadas en
+los dos `Item.cs` decompilados:
+
+| objeto | en 1.4.5.8 | en 1.4.4.9 |
+|---|---|---|
+| Llave-espada (671) | `shoot = 1074`, proyectil de bumerán → cae en "Bumeranes" | no dispara nada: es una espada |
+| Cojín flatulento (215) | accesorio (`DefaultToVoiceOverrideAccessory`) | todavía no es accesorio |
+| Sudadera del muerto (5007) | `bodySlot` con defensa 4, no vanidad | vanidad |
+
+Las otras 213 discrepancias del RECUENTO 3 son las **ya conocidas y documentadas** de las cuatro
+carpetas madre (la tabla `metatype` curada de Terrasavr contra los campos reales del `Item`), no
+de este cambio. Con el juego en español suben porque dos criterios miran el texto en inglés
+("Wings" = el tooltip dice *allows flight*, "Dyes" = el nombre acaba en *Dye*), que es lo que hace
+el Terrasavr real; tampoco es de este cambio.
+
+Capturas reales en `evidencia/categorias-capturas/`: la lista de carpetas de melee, de distancia,
+de colocable y de accesorios, y el contenido de "Espadas", "Picos", "Arcos", "Armas de fuego",
+"Bloques" y su última página. **Ningún texto cortado**: el rótulo más largo en español
+("Otras armas cuerpo a cuerpo (15)", "Accesorios informativos (16)") cabe entero en su fila.
+
+### Un bug latente que este cambio destapó: la lista de carpetas se desordenaba sola
+
+Con "Colocable" pasando de 9 a **38 subcarpetas**, las carpetas salían en pantalla en un orden
+aleatorio aunque el `.json` las trae ordenadas. Causa: `UIList` ordena sus elementos con
+`List.Sort` + `UIElement.CompareTo`, que devuelve 0 para todos — y **`List.Sort` no es estable**,
+así que en cuanto hay unos cuantos elementos deja de respetar el orden de inserción. Es el mismo
+fallo que ya se había encontrado esta mañana en el desplegable de prefijos, y el mismo arreglo:
+`ManualSortMethod = elementos => { }` en `_listaCarpetas` y en `_listaResultados` de
+`ContenidoLibreria`. Comprobado con captura antes y después.
+
+Quedan con el mismo riesgo latente, sin tocar por estar fuera de este encargo, las `UIList` de
+`PestanaBusqueda`, `ContenidoInvestigacion` y `PestanaBuffs`.
+
+### Alcance
+
+`Assets/vanilla_library_tree.json` y `Assets/vanilla_library_labels_es.json` son **copia tal cual**
+de los del repo hermano (mismo criterio de siempre: copiados, nunca editados a mano).
+`Common/Libreria/AuditoriaCategorias.cs` (criterios nuevos + pasos visuales nuevos) y
+`UI/Libreria/ContenidoLibreria.cs` (las dos `UIList`). La poda por versión del juego
+(`ArbolLibreria.Podar`) **no se ha tocado**: el árbol nuevo pasa por ella tal cual — quita 722 ids,
+1452 apariciones y 26 carpetas vacías (antes eran 40; ahora se quedan vacías menos carpetas porque
+los ids que sobran ya no forman páginas enteras).

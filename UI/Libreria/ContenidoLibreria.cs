@@ -237,6 +237,13 @@ namespace TerrakeepMod.UI.Libreria
 			_listaCarpetas.Top.Set(56f, 0f);
 			_listaCarpetas.Height.Set(-56f, 1f);
 			_listaCarpetas.ListPadding = 4f;
+			// Sin esto, UIList ORDENA sus elementos con List.Sort + UIElement.CompareTo, que
+			// devuelve 0 para todos: List.Sort NO es estable, asi que en cuanto hay unas cuantas
+			// filas deja de respetar el orden en que se añadieron. Se vio de verdad el 8-sep-2026
+			// con "Colocable", que al organizarse por tipo pasa a tener 38 subcarpetas: salian
+			// desordenadas. Mismo arreglo, y por el mismo motivo, que ya lleva el desplegable de
+			// prefijos (lo dice la documentacion del propio UIList).
+			_listaCarpetas.ManualSortMethod = elementos => { };
 			columna.Append(_listaCarpetas);
 
 			_scrollCarpetas = new UIScrollbar();
@@ -267,6 +274,9 @@ namespace TerrakeepMod.UI.Libreria
 			_listaResultados.Width.Set(-AnchoBarraScroll, 1f);
 			_listaResultados.Height.Set(0f, 1f);
 			_listaResultados.ListPadding = 2f;
+			// Mismo motivo que en la lista de carpetas: las FILAS de la rejilla tienen que salir
+			// en el orden en que se añaden, no en el que le apetezca a List.Sort.
+			_listaResultados.ManualSortMethod = elementos => { };
 			zona.Append(_listaResultados);
 
 			_scrollResultados = new UIScrollbar();
