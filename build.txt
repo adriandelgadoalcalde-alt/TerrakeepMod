@@ -1,11 +1,11 @@
 displayName = Terrakeep
 author = IncrediBad
-version = 0.1.0
-# homepage: SIN valor a proposito. UIModInfo solo añade el boton "Visitar sitio web del mod"
-# si hay una url ("if (!string.IsNullOrEmpty(_url))", codigo real del tModLoader instalado), y
-# lo que habia era "https://github.com/" a secas: un boton que llevaba a la portada de GitHub y
-# no al proyecto. Se vio en la captura real de la ficha del mod. El repositorio es privado; si
-# algun dia se publica, aqui va su url.
+version = 0.2.0
+# El repositorio ya es publico (8-sep-2026) - homepage real, para que el boton "Visitar sitio
+# web del mod" de UIModInfo (solo aparece si hay url, codigo real del tModLoader instalado)
+# lleve de verdad al proyecto en vez de a la portada de GitHub a secas, que era lo que habia
+# antes de saber si se iba a publicar.
+homepage = https://github.com/adriandelgadoalcalde-alt/TerrakeepMod
 
 # NoSync: es una herramienta local (interfaz + edicion del personaje/mundo de la partida
 # propia). No añade contenido que haya que sincronizar entre cliente y servidor, asi que ni

@@ -6,7 +6,7 @@ Un solo panel (tecla K) con seis pestañas, todas con la interfaz nativa de Terr
 
 - Libreria: catalogo navegable de TODOS los objetos de la partida, incluidos los de cualquier mod instalado, con buscador (coma = o, espacio = y, #id, .texto). Coge un objeto del catalogo y sueltalo en cualquier contenedor real.
 
-- Builds: equipo recomendado por etapa y clase, con "ya lo tienes" y auto-equipar. Solo mueve lo que ya tienes: nunca crea objetos.
+- Builds: equipo recomendado por etapa y clase, con "ya lo tienes" y auto-equipar. Si no tienes un objeto de la build, lo crea directamente desde la Libreria con su mejor prefijo real para esa build (vanilla o Calamity).
 
 - Investigacion: cuanto llevas investigado de cada carpeta en Modo Viaje, y como completarlo o quitarlo. Pasa por la API oficial del juego, asi que el menu de duplicar del Modo Viaje refleja lo mismo.
 
