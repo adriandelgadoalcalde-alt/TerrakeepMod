@@ -4877,3 +4877,29 @@ Tocados solo `UI/Personaje/PestanaApariencia.cs`, `UI/Personaje/Widgets/MunecoTk
 `scripts/generar-localizacion.py` (cuatro claves nuevas y una retirada) + los dos `.hjson`
 regenerados, y `scripts/verificar-apariencia.ps1` (archivo nuevo). Commit con índice privado. Con
 Calamity cargado no se ha probado: el renderer y los tintes son los mismos, pero queda dicho.
+
+---
+
+## 8-sep-2026 — Cierre del lote de 5 informes de la partida: fusión y compilación conjunta
+
+Los cinco frentes de este bloque (Categorías, columnas de Buffs, tintes/deshacer en Apariencia,
+desplegable de prefijos fuera del panel, cobertura de mejor prefijo en báculos) se lanzaron en
+paralelo sobre el mismo árbol de trabajo, cada uno con su propio índice privado de git para no
+pisarse. Commits, en orden: `8d0ba70` (Buffs), `c25d3f2` (Categorías), `ee10c98` + `770f890`
+(desplegable de prefijos), `679504b` (báculos), `c785108` (Apariencia).
+
+Dos agentes (Categorías y Buffs) avisaron de que, mientras Apariencia estaba a medias, el árbol
+compartido no compilaba con el SDK del sistema por `CS0103` en `PestanaApariencia.cs` sin
+terminar - lo resolvieron verificando desde una copia aislada (`git archive HEAD` + sus propios
+archivos encima) en vez de esperar o tocar el archivo ajeno. Con los cinco commits ya fusionados,
+`scripts\compilar.ps1` se relanzó sobre el árbol completo: **0 errores, 21 advertencias** (todas
+`ChangeMagicNumberToID`, cosméticas, ninguna en código tocado hoy) en la fase 1, y la fase 2
+empaquetó `Mods\TerrakeepMod.tmod` (958.832 bytes) sin problema. Ningún choque real entre los
+cinco frentes al fusionarse.
+
+Quedan sin actuar, por decisión de producto y no por fallo técnico (anotado por el agente de
+báculos): la app de escritorio (`Terrasavr-Native`) sigue usando la tabla de mejor-prefijo
+generada contra Terraria 1.4.5.8 para editar guardados que en realidad son de tModLoader 1.4.4.9,
+donde algunos prefijos de esa tabla no existen. Ya está generada la tabla correcta
+(`best_prefix_tml.json`) por si en algún momento se quiere que el botón ★ detecte la versión del
+guardado abierto.
