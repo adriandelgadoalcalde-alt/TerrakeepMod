@@ -4629,3 +4629,110 @@ logs de evidencia), ni las carpetas de build sueltas.
 (le faltaba `using Terraria.ID;`), no de esta tarea. Se resolvió solo al reintentar un minuto
 después, cuando ese agente terminó su edición; no hizo falta tocar su archivo ni compilar una copia
 aislada.
+
+---
+
+## 8-sep-2026 — "Mejor prefijo": ningún báculo de INVOCACIÓN enseñaba su etiqueta (la tabla se generaba contra otra versión del juego)
+
+**El problema real**, tal cual lo reportó el usuario: *"todos los báculos del juego no muestran la
+etiqueta de mejor prefijo posible, ni uno solo"*, más una petición de repasar TODOS los objetos por
+si había más huecos del mismo tipo.
+
+### Qué son de verdad "los báculos" aquí (comprobado, no supuesto)
+
+No son una clase de daño ni un `ItemID.Sets` propio. Cruzando `best_prefix.json` con los nombres
+reales en español, los objetos afectados eran los **38 objetos de INVOCACIÓN** del set `Summon`
+que existen en este 1.4.4.9 - y casi todos se llaman literalmente "Báculo de…": Báculo de slime,
+Báculo óptico, Báculo pigmeo, Báculo de araña, Xenobáculo, Terraprisma, Flor de Abigail, las 9
+varitas/bastones/báculos de las torres del Ejército Antiguo… Los báculos de **magia** (Báculo de
+amatista y compañía) sí funcionaban: están en el set `Magic`, que no estaba roto. Por eso el
+síntoma se veía como "todos los báculos" sin serlo del todo.
+
+### La causa raíz (mirando el código real de las dos versiones, no suponiendo)
+
+`Assets/best_prefix.json` se copiaba tal cual del repo hermano, y allí se generaba contra
+`TerrariaVanilla\` (Terraria **1.4.5.8**). Este mod corre sobre tModLoader **1.4.4.9**, y a estos
+efectos son dos juegos distintos:
+
+- 1.4.5.8 separó `PrefixesForMagic` de `PrefixesForSummons` y añadió 85 Fabled..97; en 1.4.4.9 hay
+  un único `PrefixesForMagicAndSummons` (tope 83 Mythical) y `PrefixID.Count` = **85**. Las 149
+  entradas de invocación (46 vanilla + 103 de Calamity, más 1 vanilla en 95 Eager) apuntaban a un
+  prefijo **que no existe aquí**, y `CatalogoMejorPrefijo` las descartaba con su guardarraíl de
+  rango (`valor < PrefixID.Count`) - correcto por su parte: mejor sin etiqueta que una etiqueta
+  rota. Pero eso dejaba a todas esas armas sin nada que enseñar.
+- Que las armas de invocación de MOD caen en el mismo pool está en el decompilado, no supuesto:
+  `SummonDamageClass.GetPrefixInheritance(dc) => dc == DamageClass.Magic`, o sea
+  `ModItem.MagicPrefix()` es true para ellas y `Item.GetPrefixCategories()` las manda a
+  `PrefixCategory.Magic` → `PrefixesForMagicAndSummons`.
+- Y no bastaba con cambiar el pool: **289 objetos tienen stats distintas entre las dos versiones**.
+  El caso que decide aquí es que en 1.4.4.9 los báculos de invocación **gastan maná** y en 1.4.5.8
+  no, así que aquí los prefijos que tocan el maná sí pasan el filtro `round(mana*mcst)==mana` y
+  gana Mythical. Lo confirma por fuera el historial de la wiki oficial: *"Desktop 1.4.5.0: Removed
+  mana cost (cost 10 mana previously)"*.
+
+### Hecho
+
+- El generador del repo hermano (`Terrasavr-Native`, `scripts/generar-mejor-prefijo.py`) ahora emite
+  **dos** tablas con el mismo criterio: la de siempre para la app de escritorio (1.4.5.8) y una
+  nueva contra 1.4.4.9 (`best_prefix_tml.json`) - ver la bitácora de ese repo para el detalle.
+- `Assets/best_prefix.json` de aquí pasa a ser **copia tal cual de `best_prefix_tml.json`** (mismo
+  criterio de siempre: copiado, nunca editado a mano). Cabecera de `CatalogoMejorPrefijo`
+  actualizada; su comprobación de rango se queda como guardarraíl aunque hoy ya no descarte nada.
+- `AutopruebaPrefijos`: el paso 1 era una regresión de la defensa de rango con el Báculo pigmeo
+  ("tiene que devolver null") - ya no aplica y se sustituye por 5 báculos de invocación reales con
+  su prefijo esperado y su línea de tooltip; y un paso 6 nuevo de **auditoría objeto a objeto
+  contra el propio motor** (`Item.CanHavePrefixes()` para cada `Item.type` real cargado).
+
+### Cobertura real, antes y después (medida en el juego, no en el .json)
+
+| | antes | ahora |
+|---|---|---|
+| vanilla con etiqueta | 821 | **826** |
+| Calamity con etiqueta | 916 | **1019** |
+| de los 826 que `Item.CanHavePrefixes()` acepta, con sugerencia | 798 (96,6 %) | **813 (98,4 %)** |
+| con sugerencia que el motor NO deja prefijar | 1 | **0** |
+
+Los 5 vanilla de diferencia (821→826) son el neto de tres cosas a la vez: **+48** que antes no
+salían (38 báculos de invocación + 8 accesorios de los bloques `if (type…)` + los contrapesos) y
+**+16** pelotas de golf, contra **−57** falsos positivos retirados (muebles dinásticos, las 15
+bolsas del tesoro, bloques y paredes de arenisca, ropa de vanidad de obsidiana, el Cojín flatulento
+- que en 1.4.4.9 todavía no es accesorio) y **−1** Pistola de monedas. **Ninguna regresión**: no hay
+un solo objeto que antes enseñara la etiqueta legítimamente y ahora no.
+
+### Las 13 excepciones que quedan, reales, no huecos
+
+- **12 son objetos del propio tModLoader** (las alas de desarrollador: `AetherBreaker's Wings`,
+  `Zeph's Wings`, `A Call Beyond`…). No son vanilla ni de Calamity, y esta tabla cubre a propósito
+  solo esas dos fuentes. No se inventa un valor para contenido de terceros.
+- **Pistola de bengalas (930)**: `Item.CanHavePrefixes()` dice `true` (tiene daño 2), pero no está
+  en NINGÚN bool set de `PrefixLegacy` y no es accesorio, así que `Item.GetPrefixCategories()`
+  devuelve lista vacía y `PrefixLoader.Roll` corta con `if (prefixCategories.Count == 0) return
+  false`. **En el juego real no puede recibir ningún prefijo**: `CanHavePrefixes()` es más laxo que
+  la reforja de verdad. Excepción real del propio juego, documentada, sin inventar valor.
+
+### Verificado en el juego real
+
+`scripts\verificar-prefijos-en-juego.ps1` (sandbox propio `tModLoader-TerrakeepPrefijos`,
+`-tmlsavedirectory` + `-skipselect`, copia aislada de HEAD + los archivos de este cambio), todos
+los pasos en OK. Los báculos, con su línea de tooltip real:
+
+```
+Paso 1.0 - "Slime Staff"  (1309, mana=10, kb=2): MejorPrefijo=83 (Mythical)  Linea: "Best possible prefix: Mythical"  OK.
+Paso 1.1 - "Optic Staff"  (2535, mana=10, kb=2): MejorPrefijo=83 (Mythical)  Linea: "Best possible prefix: Mythical"  OK.
+Paso 1.2 - "Pygmy Staff"  (1157, mana=10, kb=3): MejorPrefijo=83 (Mythical)  Linea: "Best possible prefix: Mythical"  OK.
+Paso 1.3 - "Flinx Staff"  (5069, mana= 5, kb=2): MejorPrefijo=83 (Mythical)  Linea: "Best possible prefix: Mythical"  OK.
+Paso 1.4 - "Blade Staff"  (4758, mana=10, kb=0): MejorPrefijo=60 (Demonic)   Linea: "Best possible prefix: Demonic"   OK.
+Paso 6 - 826 admiten prefijo segun Item.CanHavePrefixes(); 813 tienen sugerencia (98.4%).
+         Objetos con sugerencia que el motor NO deja prefijar: 0.
+```
+
+Los pasos 3/4/5 (no regresión de lo que ya funcionaba: coger de la Librería con el mejor prefijo
+puesto, aviso con prefijo subóptimo, sin aviso cuando ya es el óptimo) siguen en OK con la
+Espada corta de cobre → 81 Legendary. Log completo en `evidencia/prefijos.log.txt`.
+
+Antes de generar nada se verificaron los valores contra **revisiones de la wiki oficial anteriores
+a 1.4.5** (las que describen este juego): Báculo de slime *"its best possible modifier is
+**Mythical**"*, Báculo óptico *"Its best modifiers are **Mythical**, Furious, or Godly"*, Báculo de
+cuchillas *"Its best modifiers are **Demonic**, Deadly, Mystic, or Hurtful"*, y la historia de
+`Modifiers`: *"Added 13 new modifiers… exclusively obtainable by summon weapons, **which previously
+shared modifiers with magic weapons**"* (1.4.5.0).

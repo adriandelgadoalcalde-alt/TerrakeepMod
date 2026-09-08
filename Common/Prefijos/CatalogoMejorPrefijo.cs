@@ -8,9 +8,11 @@ namespace TerrakeepMod.Common.Prefijos
 {
 	/// <summary>
 	/// Envoltorio en vivo de <c>Assets/best_prefix.json</c> (copiado tal cual del repo hermano
-	/// <c>Terrasavr-Native</c>, <c>Terrakeep.App/Assets/calamity/best_prefix.json</c>) - la
-	/// tabla real de "mejor prefijo posible" por objeto que ya usaba la app de escritorio para el
-	/// boton "Mejor prefijo" (la estrella) y para el prefijo automatico al colocar un objeto.
+	/// <c>Terrasavr-Native</c>, <c>Terrakeep.App/Assets/calamity/<b>best_prefix_tml.json</b></c>) -
+	/// la tabla real de "mejor prefijo posible" por objeto. Mismo criterio y mismo generador
+	/// (<c>scripts/generar-mejor-prefijo.py</c>) que la tabla de la app de escritorio, pero
+	/// calculada contra el arbol de <b>tModLoader 1.4.4.9</b>, que es el juego real donde corre
+	/// este mod, en vez de contra el de Terraria 1.4.5.8, que es el de la app.
 	/// </summary>
 	/// <remarks>
 	/// <b>Se parsea con <see cref="BestPrefixCatalog"/> de <c>Terrakeep.Core</c> tal cual</b>,
@@ -30,21 +32,23 @@ namespace TerrakeepMod.Common.Prefijos
 	/// Por eso <see cref="MejorPrefijo"/> devuelve directamente un <c>byte</c> asignable sin mas a
 	/// <c>Item.prefix</c>, sin ninguna resolucion adicional contra <c>ModPrefix</c>.
 	/// <para />
-	/// <b>Hallazgo real, verificado contra el codigo decompilado (regla del CLAUDE.md de este
-	/// repo): el generador usa TerrariaVanilla (1.4.5.8), pero el tModLoader REAL instalado aqui
-	/// es 1.4.4.9</b>, y difieren justo en los prefijos de invocacion. `PrefixID.Count` es 98 en
-	/// 1.4.5.8 (separo `PrefixesForSummons` de `PrefixesForMagic` y añadio 85 Fabled..97
-	/// Scraggling, solo para invocacion) pero es <b>85</b> en el `tModLoader.dll` REAL instalado
-	/// (`Terraria\ID\PrefixID.cs` decompilado: `public static readonly int Count = 85;`, o sea
-	/// ids validos 0..84) - ahi Magia e Invocacion siguen compartiendo un unico pool
-	/// (`PrefixesForMagicAndSummons`, tope real 83 Mythical, `PrefixLegacy.cs` decompilado). Eso
-	/// deja 149 entradas de `best_prefix.json` (todas armas de invocacion: 46 vanilla + 103
-	/// Calamity, mas 1 caso vanilla en 95) con un valor que <b>no existe</b> en el
-	/// `Terraria.ID.PrefixID` real de este juego: asignarlo reventaria `Lang.prefix[valor]`
-	/// (`IndexOutOfRangeException`) y pondria un `Item.prefix` invalido. <see cref="MejorPrefijo"/>
-	/// las descarta con la misma comprobacion de rango que usaria el motor real
-	/// (`valor &lt; PrefixID.Count`), en vez de inventar a que prefijo de 1.4.4.9 equivaldrian:
-	/// mejor sin sugerencia que una sugerencia rota o inventada.
+	/// <b>Por que la tabla del mod NO es la misma que la de la app de escritorio</b> (hallazgo del
+	/// 8-sep-2026, a raiz de que NINGUN baculo de invocacion enseñaba su etiqueta): `PrefixID.Count`
+	/// es 98 en Terraria 1.4.5.8 (separo `PrefixesForSummons` de `PrefixesForMagic` y añadio
+	/// 85 Fabled..97 Scraggling, solo para invocacion) pero es <b>85</b> en el `tModLoader.dll`
+	/// REAL instalado (`Terraria\ID\PrefixID.cs` decompilado: `public static readonly int
+	/// Count = 85;`, o sea ids validos 0..84) - aqui Magia e Invocacion comparten un unico pool
+	/// (`PrefixesForMagicAndSummons`, tope real 83 Mythical), y ahi caen tambien las armas de
+	/// invocacion de MOD (`SummonDamageClass.GetPrefixInheritance(dc) => dc == DamageClass.Magic`).
+	/// La tabla vieja, generada contra 1.4.5.8, traia 149 entradas (todas de invocacion: 46 vanilla
+	/// + 103 de Calamity, mas 1 caso vanilla en 95 Eager) con un valor que <b>no existe</b> en este
+	/// juego, asi que se descartaban aqui y esas armas se quedaban sin etiqueta. Ya no: la tabla se
+	/// genera contra 1.4.4.9 y todas tienen su prefijo real (83 Mythical en casi todas, 60 Demonic
+	/// en el Baculo de cuchillas, que no tiene retroceso).
+	/// <para />
+	/// La comprobacion de rango de <see cref="MejorPrefijo"/> (`valor &lt; PrefixID.Count`) se
+	/// queda como guardarrail: hoy no descarta nada, pero un valor fuera de rango reventaria
+	/// `Lang.prefix[valor]` con `IndexOutOfRangeException` y pondria un `Item.prefix` invalido.
 	/// </remarks>
 	public static class CatalogoMejorPrefijo
 	{
