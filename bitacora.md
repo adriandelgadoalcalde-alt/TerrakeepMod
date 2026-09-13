@@ -6548,3 +6548,91 @@ Sincronización: terminada y verificada. Quedan las dos últimas piezas del enca
 loadouts (nativo `Player.Loadouts`, 3 slots fijos sin nombre - investigado ya contra
 `EquipmentLoadout.cs`/`Player.cs` decompilados en la entrada anterior); 4) vista de completitud
 (bestiario/logros/colección/jefes).
+
+## 13-sep-2026 (continuación 6) — Tercera pieza del encargo: gestión ampliada de loadouts
+## (conjuntos), y un hallazgo real de seguridad entre autopruebas por el camino
+
+Encargo: "si Terraria ya tiene loadouts nativos, amplía/mejora la gestión de eso desde el panel
+del mod (guardar más de 3, nombrarlos, aplicar rápido) - investiga el sistema real de loadouts
+de Terraria antes de construir encima".
+
+### Investigación real (Player.cs/EquipmentLoadout.cs decompilados)
+
+`Player.Loadouts` es un array FIJO de exactamente 3 `EquipmentLoadout` (`Player.cs` ~línea 57422,
+`new EquipmentLoadout[3]` - tamaño del motor, no algo que un mod pueda ampliar sin reescribir
+media docena de sitios que lo dan por hecho). `EquipmentLoadout` (Armor[20]/Dye[10]/Hide[10]) no
+tiene NINGÚN campo de nombre - los "Conjunto 1/2/3" que ya enseñaba `PestanaEquipo` (WS1) eran
+literales. Hallazgo no obvio, ya documentado por `PestanaEquipo` pero crítico para esta pieza:
+mientras un conjunto está ACTIVO, su entrada en `Loadouts[]` está VACÍA de verdad - el dato real
+vive en `Player.armor`/`.dye`/`.hideVisibleAccessory` hasta el próximo `TrySwitchingLoadout`
+(`EquipmentLoadout.Swap` intercambia ELEMENTOS con esos arrays). Por eso un preset del mod
+siempre se aplica sobre el conjunto ACTIVO (los arrays vivos), nunca escribiendo directamente en
+`Loadouts[i]`: escribir ahí para un conjunto que no está activo se perdería en el siguiente
+cambio de conjunto real.
+
+### Lo que ya existía (no se reescribió) vs. lo que se añadió
+
+`PestanaEquipo` (WS1) ya tenía el "aplicar rápido" de los tres nativos (`TrySwitchingLoadout`).
+Esta sesión añade las DOS piezas que faltaban del encargo, como sub-pestaña NUEVA de Personaje
+("Conjuntos", séptima, índice 6 - añadida al final para no correr el índice guardado de las
+demás):
+
+- **Nombrarlos**: `LoadoutsPlayer : ModPlayer` (persistido DENTRO del propio `.plr`, vía
+  `SaveData`/`LoadData` oficial - nunca un archivo aparte) guarda `Nombres[3]`. Botón
+  "Renombrar" junto a cada conjunto abre un `CampoTextoTk` inline.
+- **Guardar más de 3**: `PresetLoadout` - una foto propia del mod (armadura+tintes+ocultar,
+  serializada con `ItemIO.Save`/`Load` real de tModLoader, así que items de Calamity también se
+  guardan bien) con nombre, sin límite fijo, en una lista `UIList`+`UIScrollbar`. "Guardar
+  conjunto activo como preset" fotografía el equipo activo; "Aplicar" lo escribe de vuelta sobre
+  el activo; "Borrar" lo quita.
+- **Deshacer/rehacer integrado**: aplicar un preset queda deshacible por el historial general de
+  WS7 (`Historial.CambiarValor` con una foto conjunta armadura+tintes+ocultar - una sola entrada,
+  no tres sueltas) - cruce real con la primera pieza de este mismo encargo.
+
+### Verificación real, en el juego real
+
+`Common/Loadouts/AutopruebaConjuntos.cs` (mismo patrón que `PestanaApariencia`/
+`AutopruebaApariencia`: corre dentro de `PestanaConjuntos.Update`, solo mientras esa pestaña está
+construida de verdad) + `LoadoutsSystem.cs` (arranque: abre el panel y salta a la pestaña 6) +
+`scripts/verificar-conjuntos.ps1`. Ocho pasos reales: 3 conjuntos nativos construidos, renombrar
+persistido en el ModPlayer, guardar preset con el equipo REAL puesto, cambiar de casco y Aplicar
+el preset (vuelve el casco correcto), Ctrl+Z (vuelve el casco de antes) y Ctrl+Y (vuelve el del
+preset), captura real es/en, limpieza. Todo en verde.
+
+**Bug real encontrado por la propia captura, no leyendo código**: la fila "Guardar conjunto activo
+como preset" no aparecía en absoluto en la primera captura - `VAlign=1f` ya ancla el elemento a la
+base del contenedor, y `Top.Set(-Npx, 1f)` (segundo argumento a 1f en vez de 0f) suma ADEMÁS un
+alto entero del contenedor por encima de eso, empujando la fila muy por debajo del marco visible
+del panel. Arreglado a `Top.Set(-Npx, 0f)` (píxeles puros) en las tres piezas de esa fila;
+verificado de nuevo con captura real, ahora sí visible y sin solapar nada.
+
+### Hallazgo de seguridad entre autopruebas (encontrado verificando esto, no buscándolo)
+
+`AutopruebaConjuntos` cicla el idioma es→en→es para capturar las dos versiones (mismo patrón que
+ya usaba WS7). La pieza de sincronización de la sesión anterior engancha CUALQUIER cambio de
+idioma real (`Idiomas.Cambiado`) para reflejarlo en el `settings.json` de escritorio - así que,
+sin darse cuenta, la primera pasada de `verificar-conjuntos.ps1` escribió de verdad en el
+`%LOCALAPPDATA%\Terrakeep\settings.json` REAL de esta máquina (visto en su propio log:
+`Sincronizacion: Idioma reflejado...`). La prueba restauraba el idioma al final, así que el
+archivo quedó en un valor correcto, pero por suerte del orden de los pasos, no por diseño - un
+corte a mitad de la prueba lo habría dejado mal. Arreglado con un guardado nuevo en
+`SincronizacionSystem` (`OtraAutopruebaEnMarcha`, reutilizando la misma lista de variables que ya
+agrega `CapturaDePantalla.Permitida` - ahora `public` a propósito para esto) que evita tocar el
+archivo real durante CUALQUIER autoprueba del mod que no sea la suya propia (esa sigue
+funcionando: ya redirige a una carpeta de TEMP). Reverificado: `verificar-conjuntos.ps1` ya no
+toca el archivo real, y `verificar-sincronizacion.ps1` sigue en verde con su propio guardado
+funcionando igual. De paso, `SincronizacionEscritorio.EscribirIdiomaEscritorio` pasó a pedir
+`Formatting.Indented` explícito (el archivo real había quedado en una sola línea tras el toque
+accidental; restaurado a mano y el código ya no lo repetirá).
+
+### Verificación cruzada (regresión)
+
+Antes de comitear, se re-ejecutaron TAMBIÉN `verificar-deshacer-arrastre.ps1` y
+`verificar-sincronizacion.ps1` completos: los tres en verde a la vez, sin ningún FALLO.
+
+### Dónde seguir
+
+Gestión de loadouts: terminada y verificada. Queda la última pieza del encargo: 4) vista de
+completitud (bestiario/logros/colección/jefes derrotados), reutilizando datos reales ya
+existentes del juego (banderas `NPC.downed*` que ya usa la Guía, `Common/Investigacion` para
+colección de objetos).

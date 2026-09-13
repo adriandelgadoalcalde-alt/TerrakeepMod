@@ -32,6 +32,7 @@ Personaje: {
 		Buffs: Buffs
 		Apariencia: Appearance
 		Desbloqueos: Unlocks
+		Conjuntos: Loadouts
 	}
 
 	Nombre: Name
@@ -97,6 +98,23 @@ Personaje: {
 		RanurasActivas: Active accessory slots: {0} of 7
 		Leyenda: Columns: worn · vanity · dye
 		LeyendaMisc: Columns: equipped · dye
+	}
+
+	Conjuntos: {
+		TituloNativos: The game's three loadouts
+		IrAyuda: Switch to this loadout (Player.TrySwitchingLoadout).
+		Renombrar: Rename
+		TituloPresets: Saved presets (no limit)
+		SinPresets: No presets saved yet. Use "Save active loadout" below.
+		Aplicar: Apply
+		AplicarAyuda: Writes this preset over the CURRENTLY active loadout (armor, vanity, dyes). Undoable with Ctrl+Z.
+		Borrar: Delete
+		NombreNuevo: Save active loadout as preset:
+		NombrePista: preset name
+		NombreSinTitulo: Untitled
+		GuardarNuevo: Save new preset
+		GuardarNuevoAyuda: Snapshots armor, vanity and dyes of the CURRENTLY active loadout into a new preset with this name.
+		HistorialAplicar: Apply preset "{0}"
 	}
 
 	Herramientas: {

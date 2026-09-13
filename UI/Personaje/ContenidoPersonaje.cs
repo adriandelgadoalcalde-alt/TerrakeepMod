@@ -35,10 +35,15 @@ namespace TerrakeepMod.UI.Personaje
 		private UIElement _pestanaActual;
 		private int _indicePestana;
 
-		/// <summary>Nombres internos de las seis sub-pestañas: son la ultima parte de su clave de
-		/// localizacion (<c>Personaje.Pestana.&lt;clave&gt;</c>), no texto que se enseñe.</summary>
+		/// <summary>Nombres internos de las sub-pestañas: son la ultima parte de su clave de
+		/// localizacion (<c>Personaje.Pestana.&lt;clave&gt;</c>), no texto que se enseñe.
+		/// "Conjuntos" (gestion de loadouts) se añadio la ultima, al final, por el mismo motivo
+		/// que la Guia entra la ultima en <c>AreaTerrakeep</c>: el indice se guarda entre
+		/// aperturas (<see cref="UltimaPestana"/>) y lo leen tambien las autopruebas por numero,
+		/// asi que insertar una pestaña nueva en medio habria corrido el indice de todas las de
+		/// detras.</summary>
 		public static readonly string[] ClavesPestana = {
-			"Inventario", "Almacenes", "Equipo", "Buffs", "Apariencia", "Desbloqueos"
+			"Inventario", "Almacenes", "Equipo", "Buffs", "Apariencia", "Desbloqueos", "Conjuntos"
 		};
 
 		private static string NombrePestana(int indice)
@@ -69,7 +74,7 @@ namespace TerrakeepMod.UI.Personaje
 			_contenedor.Height.Set(-arribaContenido, 1f);
 			Append(_contenedor);
 
-			CambiarPestana(PersonajeVivo.Acotar(UltimaPestana, 0, 5));
+			CambiarPestana(PersonajeVivo.Acotar(UltimaPestana, 0, ClavesPestana.Length - 1));
 		}
 
 		private void ConstruirBarraPestanas()
@@ -145,6 +150,7 @@ namespace TerrakeepMod.UI.Personaje
 				case 3: return new PestanaBuffs();
 				case 4: return new PestanaApariencia();
 				case 5: return new PestanaDesbloqueos();
+				case 6: return new PestanaConjuntos();
 				default: return null;
 			}
 		}

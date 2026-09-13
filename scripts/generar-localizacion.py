@@ -69,6 +69,7 @@ T = [
     ("Personaje.Pestana.Buffs", "Buffs", "Buffs"),
     ("Personaje.Pestana.Apariencia", "Apariencia", "Appearance"),
     ("Personaje.Pestana.Desbloqueos", "Desbloqueos", "Unlocks"),
+    ("Personaje.Pestana.Conjuntos", "Conjuntos", "Loadouts"),
 
     ("Personaje.Nombre", "Nombre", "Name"),
     ("Personaje.SinNombre", "(sin nombre)", "(no name)"),
@@ -131,6 +132,32 @@ T = [
     ("Personaje.Equipo.Leyenda", "Columnas: equipado · vanidad · tinte",
      "Columns: worn · vanity · dye"),
     ("Personaje.Equipo.LeyendaMisc", "Columnas: puesto · tinte", "Columns: equipped · dye"),
+
+    # ---------------------------------------------------------------- personaje: conjuntos (loadouts)
+    # Pestaña nueva "Conjuntos": nombre de los 3 loadouts nativos (persistido con el personaje,
+    # el motor no guarda ninguno - ver EquipmentLoadout.cs decompilado) + presets propios del mod
+    # sin limite fijo (Player.Loadouts es un array fijo de 3, no algo que un mod pueda ampliar).
+    ("Personaje.Conjuntos.TituloNativos", "Los tres conjuntos del juego", "The game's three loadouts"),
+    ("Personaje.Conjuntos.IrAyuda", "Cambia a este conjunto (Player.TrySwitchingLoadout).",
+     "Switch to this loadout (Player.TrySwitchingLoadout)."),
+    ("Personaje.Conjuntos.Renombrar", "Renombrar", "Rename"),
+    ("Personaje.Conjuntos.TituloPresets", "Presets guardados (sin límite)", "Saved presets (no limit)"),
+    ("Personaje.Conjuntos.SinPresets",
+     "Todavía no hay ningún preset guardado. Usa \"Guardar conjunto activo\" más abajo.",
+     "No presets saved yet. Use \"Save active loadout\" below."),
+    ("Personaje.Conjuntos.Aplicar", "Aplicar", "Apply"),
+    ("Personaje.Conjuntos.AplicarAyuda",
+     "Escribe este preset sobre el conjunto ACTIVO ahora mismo (armadura, vanidad, tintes). Deshacible con Ctrl+Z.",
+     "Writes this preset over the CURRENTLY active loadout (armor, vanity, dyes). Undoable with Ctrl+Z."),
+    ("Personaje.Conjuntos.Borrar", "Borrar", "Delete"),
+    ("Personaje.Conjuntos.NombreNuevo", "Guardar conjunto activo como preset:", "Save active loadout as preset:"),
+    ("Personaje.Conjuntos.NombrePista", "nombre del preset", "preset name"),
+    ("Personaje.Conjuntos.NombreSinTitulo", "Sin título", "Untitled"),
+    ("Personaje.Conjuntos.GuardarNuevo", "Guardar preset nuevo", "Save new preset"),
+    ("Personaje.Conjuntos.GuardarNuevoAyuda",
+     "Fotografía armadura, vanidad y tintes del conjunto ACTIVO ahora mismo en un preset nuevo con este nombre.",
+     "Snapshots armor, vanity and dyes of the CURRENTLY active loadout into a new preset with this name."),
+    ("Personaje.Conjuntos.HistorialAplicar", "Aplicar preset \"{0}\"", "Apply preset \"{0}\""),
 
     # Fila de herramientas (papelera + editor de cantidad), compartida por Inventario, Almacenes
     # y Equipo.

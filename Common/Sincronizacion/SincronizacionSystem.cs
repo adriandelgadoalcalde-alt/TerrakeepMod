@@ -31,6 +31,26 @@ namespace TerrakeepMod.Common.Sincronizacion
 		/// cualquier otro metodo de este sistema pueda tocar el %LOCALAPPDATA%\Terrakeep real.</summary>
 		public const string VariableAutoprueba = "TERRAKEEP_AUTOTEST_SINCRO";
 
+		/// <summary>
+		/// true si hay alguna autoprueba del mod en marcha QUE NO SEA la de sincronizacion.
+		/// <para />
+		/// Hallazgo real de esta sesion: <c>AutopruebaConjuntos</c> cicla el idioma es-&gt;en-&gt;es
+		/// para capturar las dos versiones (mismo patron que WS7), y sin este guardado
+		/// <see cref="EscribirIdiomaTrasCambio"/> reflejaba ESE cambio de prueba en el
+		/// <c>settings.json</c> REAL de la maquina - visto en el log real de una pasada de
+		/// <c>verificar-conjuntos.ps1</c>. La prueba restauraba el idioma al final y el archivo
+		/// quedaba bien, pero por suerte, no por diseño: un corte a mitad la habria dejado mal.
+		/// <para />
+		/// No basta con negar <see cref="Panel.CapturaDePantalla.Permitida"/> a secas: DURANTE la
+		/// propia autoprueba de sincronizacion (<see cref="VariableAutoprueba"/> puesta) esa
+		/// propiedad TAMBIEN da true (esta en su lista), y ese caso si tiene que seguir
+		/// funcionando - ahi <see cref="SincronizacionEscritorio.CarpetaTerrakeep"/> ya esta
+		/// redirigida a una carpeta de TEMP (ver <c>OnModLoad</c>), asi que escribir es seguro.
+		/// </summary>
+		private static bool OtraAutopruebaEnMarcha =>
+			Panel.CapturaDePantalla.Permitida &&
+			string.IsNullOrEmpty(Environment.GetEnvironmentVariable(VariableAutoprueba));
+
 		public override void OnModLoad()
 		{
 			if (!string.IsNullOrEmpty(Environment.GetEnvironmentVariable(VariableAutoprueba))) {
@@ -59,6 +79,10 @@ namespace TerrakeepMod.Common.Sincronizacion
 		/// </summary>
 		private void EscribirIdiomaTrasCambio()
 		{
+			if (OtraAutopruebaEnMarcha) {
+				return;
+			}
+
 			if (Idiomas.EnEspanol) {
 				SincronizacionEscritorio.EscribirIdiomaEscritorio("es");
 			}
@@ -134,6 +158,9 @@ namespace TerrakeepMod.Common.Sincronizacion
 		/// </summary>
 		private static void ResolverIdiomaDeArranque()
 		{
+			if (OtraAutopruebaEnMarcha) {
+				return;
+			}
 			if (AjustesConfig.Instance == null || AjustesConfig.Instance.Idioma != IdiomaDeTerrakeep.SeguirElJuego) {
 				return;
 			}
@@ -164,6 +191,9 @@ namespace TerrakeepMod.Common.Sincronizacion
 
 		private void ComprobarGuardado()
 		{
+			if (OtraAutopruebaEnMarcha) {
+				return;
+			}
 			if (string.IsNullOrEmpty(_rutaPlrVigilada)) {
 				return;
 			}

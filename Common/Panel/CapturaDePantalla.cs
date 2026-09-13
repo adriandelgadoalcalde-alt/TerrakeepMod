@@ -44,8 +44,18 @@ namespace TerrakeepMod.Common.Panel
 		/// <summary>
 		/// true solo si hay alguna autoprueba de las que piden capturas en marcha. Jugando normal el
 		/// mod no escribe ninguna imagen en ningun sitio.
+		/// <para />
+		/// <c>public</c> y no <c>private</c>: <c>SincronizacionSystem</c> reutiliza EXACTAMENTE
+		/// esta misma lista para no escribir jamas en el <c>%LOCALAPPDATA%\Terrakeep\settings.json</c>
+		/// REAL mientras cualquier autoprueba del mod esta en marcha - hallazgo real de esta
+		/// sesion: <c>AutopruebaConjuntos</c> cicla el idioma es-&gt;en-&gt;es para capturar las
+		/// dos versiones (mismo patron que ya usaba WS7), y sin este guardado el evento
+		/// <c>Idiomas.Cambiado</c> reflejaba ESE cambio de prueba en el settings.json real de esta
+		/// maquina - visto en el log real de una pasada de <c>verificar-conjuntos.ps1</c>. La
+		/// prueba dejaba el archivo en un estado correcto al final (restauraba el idioma), pero
+		/// era pura suerte: cualquier corte a mitad de la prueba lo habria dejado mal.
 		/// </summary>
-		private static bool Permitida {
+		public static bool Permitida {
 			get {
 				return !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaPanelUnico.Variable))
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaIdiomas.Variable))
@@ -71,7 +81,12 @@ namespace TerrakeepMod.Common.Panel
 					// del area nueva (dos columnas de prosa envuelta) ni de ver la barra con SIETE
 					// pestañas, que es justo donde un rotulo se sale sin que ningun dato lo diga.
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
-						Guia.AutopruebaGuia.Variable));
+						Guia.AutopruebaGuia.Variable))
+					// Conjuntos (gestion ampliada de loadouts): la pestaña nueva necesita su
+					// propia captura para comprobar de verdad que los botones de renombrar y la
+					// lista de presets no se solapan con nada.
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
+						Loadouts.LoadoutsSystem.VariableAutoprueba));
 			}
 		}
 

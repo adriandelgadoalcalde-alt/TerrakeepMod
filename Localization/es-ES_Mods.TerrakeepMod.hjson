@@ -32,6 +32,7 @@ Personaje: {
 		Buffs: Buffs
 		Apariencia: Apariencia
 		Desbloqueos: Desbloqueos
+		Conjuntos: Conjuntos
 	}
 
 	Nombre: Nombre
@@ -97,6 +98,23 @@ Personaje: {
 		RanurasActivas: Ranuras de accesorio activas: {0} de 7
 		Leyenda: Columnas: equipado · vanidad · tinte
 		LeyendaMisc: Columnas: puesto · tinte
+	}
+
+	Conjuntos: {
+		TituloNativos: Los tres conjuntos del juego
+		IrAyuda: Cambia a este conjunto (Player.TrySwitchingLoadout).
+		Renombrar: Renombrar
+		TituloPresets: Presets guardados (sin límite)
+		SinPresets: Todavía no hay ningún preset guardado. Usa "Guardar conjunto activo" más abajo.
+		Aplicar: Aplicar
+		AplicarAyuda: Escribe este preset sobre el conjunto ACTIVO ahora mismo (armadura, vanidad, tintes). Deshacible con Ctrl+Z.
+		Borrar: Borrar
+		NombreNuevo: Guardar conjunto activo como preset:
+		NombrePista: nombre del preset
+		NombreSinTitulo: Sin título
+		GuardarNuevo: Guardar preset nuevo
+		GuardarNuevoAyuda: Fotografía armadura, vanidad y tintes del conjunto ACTIVO ahora mismo en un preset nuevo con este nombre.
+		HistorialAplicar: Aplicar preset "{0}"
 	}
 
 	Herramientas: {
