@@ -787,6 +787,8 @@ Guia: {
 		shadowOrbSmashed: Haber roto ya una Esfera Oscura o un Corazón Carmesí
 		hardMode: Que el mundo entre en Modo Difícil (derrotar al Muro de Carne)
 		downedMechBossAny: Derrotar a cualquiera de los tres mecánicos (Destructor, Gemelos o Esqueletron Prime)
+		downedPlantBoss: Derrotar a Plantera
+		downedGolemBoss: Derrotar al Golem
 	}
 
 	Zona: {
@@ -795,6 +797,8 @@ Guia: {
 		Cavernas: las cavernas
 		Mazmorra: la entrada de la Mazmorra
 		Infierno: el Infierno
+		Jungla: la jungla subterránea
+		TemploLihzahrd: el Templo de la Selva
 	}
 
 	Tramo: {
@@ -942,6 +946,30 @@ Guia: {
 			Titulo: Derrotar a uno de los tres
 			Porque: El juego marca NPC.downedMechBossAny al morir cualquiera de los tres, y esa es la bandera que de verdad abre lo siguiente: mineral de Hardmode nuevo (Mithril u Oricalco) y el empujón real para que Plantera merezca la pena. No hace falta derrotarlos a los tres para seguir adelante, aunque el equipo completo de los tres es el mejor que hay antes de Plantera.
 			Como: Los Gemelos y Esqueletron Prime vuelan y persiguen: un arena elevada con plataformas ayuda más que el suelo. El Destructor es un gusano larguísimo: un arma que atraviese en línea recta acaba con más de un segmento por disparo.
+		}
+
+		ArmaParaPlantera: {
+			Titulo: Un arma que aguante DOS peleas seguidas
+			Porque: Plantera tiene 50 de daño, 14 de defensa y 30000 de vida (NPC.cs, type==262), pero el número que de verdad importa aquí no es la defensa: en cuanto baja de la mitad de su vida se enrabia, acelera y persigue mucho más deprisa por toda la jungla. No es un jefe más duro de atravesar, es DOS peleas distintas seguidas, y la segunda te puede acorralar si no tienes con qué mantener el ritmo. 45 de daño ya se nota, pero aquí compensa más una buena movilidad que un número mayor.
+			Como: Rompe un bulbo de Plantera en la jungla subterránea para invocarla; solo aparecen tras derrotar a cualquiera de los tres mecánicos. Despeja un pasillo largo antes de romperlo: la segunda fase persigue en línea recta y la jungla natural está demasiado cerrada para esquivar.
+		}
+
+		VencerAPlantera: {
+			Titulo: Derrotarla
+			Porque: NPC.downedPlantBoss es la bandera que de verdad importa: al ponerse a true por primera vez, la puerta de piedra del Templo de la Selva deja de estar sellada (NPC.cs, case 262 de la muerte del jefe) y el Ciborg se muda a vivir contigo. También suelta las semillas de Clorofita, la base de todo el mineral que viene después.
+			Como: Pelea en el pasillo que despejaste, nunca en la jungla cerrada: sus tentáculos y semillas persiguen mejor entre árboles apretados que en un corredor limpio.
+		}
+
+		ArmaParaElTemplo: {
+			Titulo: Un arma para las tres fases del Golem
+			Porque: El Golem pelea en tres fases con números distintos (NPC.cs): el cuerpo (type==245) tiene 72 de daño, 26 de defensa y 15000 de vida; al romper los dos puños, la cabeza queda suelta (type==249) con 32 de defensa y 80 de daño, y hasta entonces NO recibe daño (dontTakeDamage=true). Con la fórmula de siempre, 55 de daño deja golpes útiles en las tres fases sin que la última, la más dura, se haga eterna.
+			Como: La puerta de piedra del Templo se abre sola en cuanto Plantera muere. Dentro, las trampas y cofres del Templo sueltan Células de Poder Lihzahrd: úsalas en el Altar Lihzahrd para invocarlo. Rompe primero los dos puños; mientras vivan, la cabeza no se puede dañar.
+		}
+
+		VencerAlGolem: {
+			Titulo: Derrotarlo
+			Porque: NPC.downedGolemBoss es la bandera real de este cierre: sube un escalón más el equipo de todos los vecinos del pueblo (NPC.cs, BuffTownNPC: +15% de daño y +8 de defensa a los NPC del pueblo, el mismo salto que dan Plantera, la Emperatriz de la Luz o el Cultista) y dejas el Templo despejado justo antes de plantearte los últimos opcionales y, después, al propio Cultista Lunático junto a la Mazmorra.
+			Como: Pelea dentro de la sala del Templo, con espacio para rodear los pilares de piedra: te protegen de sus golpes de área mientras esperas la abertura.
 		}
 	}
 }

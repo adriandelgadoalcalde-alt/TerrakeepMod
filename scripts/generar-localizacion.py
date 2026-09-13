@@ -837,6 +837,8 @@ T += [
     ("Guia.Bandera.downedMechBossAny",
      "Derrotar a cualquiera de los tres mecánicos (Destructor, Gemelos o Esqueletron Prime)",
      "Defeating any of the three mechanical bosses (The Destroyer, The Twins or Skeletron Prime)"),
+    ("Guia.Bandera.downedPlantBoss", "Derrotar a Plantera", "Defeat Plantera"),
+    ("Guia.Bandera.downedGolemBoss", "Derrotar al Golem", "Defeat Golem"),
 
     # --- zonas -------------------------------------------------------------------------------
     ("Guia.Zona.Superficie", "la superficie", "the surface"),
@@ -844,6 +846,8 @@ T += [
     ("Guia.Zona.Cavernas", "las cavernas", "the caverns"),
     ("Guia.Zona.Mazmorra", "la entrada de la Mazmorra", "the Dungeon entrance"),
     ("Guia.Zona.Infierno", "el Infierno", "the Underworld"),
+    ("Guia.Zona.Jungla", "la jungla subterránea", "the underground jungle"),
+    ("Guia.Zona.TemploLihzahrd", "el Templo de la Selva", "the Jungle Temple"),
 
     # --- tramos ------------------------------------------------------------------------------
     ("Guia.Tramo.PreOjo.Nombre", "Antes del primer jefe", "Before the first boss"),
@@ -1034,6 +1038,42 @@ T += [
     ("Guia.Paso.VencerAUnMecanico.Como",
      "Los Gemelos y Esqueletron Prime vuelan y persiguen: un arena elevada con plataformas ayuda más que el suelo. El Destructor es un gusano larguísimo: un arma que atraviese en línea recta acaba con más de un segmento por disparo.",
      "The Twins and Skeletron Prime fly and give chase: a raised platform arena helps more than open ground. The Destroyer is an extremely long worm: a weapon that pierces in a straight line takes out more than one segment per shot."),
+
+    # --- pasos del octavo tramo: Plantera ------------------------------------------------------
+    ("Guia.Paso.ArmaParaPlantera.Titulo", "Un arma que aguante DOS peleas seguidas",
+     "A weapon that can handle TWO fights in one"),
+    ("Guia.Paso.ArmaParaPlantera.Porque",
+     "Plantera tiene 50 de daño, 14 de defensa y 30000 de vida (NPC.cs, type==262), pero el número que de verdad importa aquí no es la defensa: en cuanto baja de la mitad de su vida se enrabia, acelera y persigue mucho más deprisa por toda la jungla. No es un jefe más duro de atravesar, es DOS peleas distintas seguidas, y la segunda te puede acorralar si no tienes con qué mantener el ritmo. 45 de daño ya se nota, pero aquí compensa más una buena movilidad que un número mayor.",
+     "Plantera has 50 damage, 14 defense and 30000 health (NPC.cs, type==262), but the number that actually matters here is not defense: as soon as it drops below half health it enrages, speeds up and chases much faster through the whole jungle. It is not a harder wall to punch through, it is TWO different fights back to back, and the second one can corner you if you cannot keep up the pace. 45 damage already helps, but good mobility pays off more here than a bigger number."),
+    ("Guia.Paso.ArmaParaPlantera.Como",
+     "Rompe un bulbo de Plantera en la jungla subterránea para invocarla; solo aparecen tras derrotar a cualquiera de los tres mecánicos. Despeja un pasillo largo antes de romperlo: la segunda fase persigue en línea recta y la jungla natural está demasiado cerrada para esquivar.",
+     "Break a Plantera's Bulb in the underground jungle to summon her; they only appear after beating any of the three mechanical bosses. Clear a long corridor before breaking it: the second phase chases in a straight line and the natural jungle is too cluttered to dodge in."),
+
+    ("Guia.Paso.VencerAPlantera.Titulo", "Derrotarla", "Defeat her"),
+    ("Guia.Paso.VencerAPlantera.Porque",
+     "NPC.downedPlantBoss es la bandera que de verdad importa: al ponerse a true por primera vez, la puerta de piedra del Templo de la Selva deja de estar sellada (NPC.cs, case 262 de la muerte del jefe) y el Ciborg se muda a vivir contigo. También suelta las semillas de Clorofita, la base de todo el mineral que viene después.",
+     "NPC.downedPlantBoss is the flag that actually matters: the first time it flips to true, the Jungle Temple's stone door stops being sealed (NPC.cs, the case 262 block on the boss's death) and the Cyborg moves in. It also drops Chlorophyte seeds, the base of all the ore that comes after this."),
+    ("Guia.Paso.VencerAPlantera.Como",
+     "Pelea en el pasillo que despejaste, nunca en la jungla cerrada: sus tentáculos y semillas persiguen mejor entre árboles apretados que en un corredor limpio.",
+     "Fight in the corridor you cleared, never in the closed jungle: her tentacles and seeds chase better through tight trees than down a clean corridor."),
+
+    # --- pasos del noveno tramo: el Templo y el Golem ------------------------------------------
+    ("Guia.Paso.ArmaParaElTemplo.Titulo", "Un arma para las tres fases del Golem",
+     "A weapon for the Golem's three phases"),
+    ("Guia.Paso.ArmaParaElTemplo.Porque",
+     "El Golem pelea en tres fases con números distintos (NPC.cs): el cuerpo (type==245) tiene 72 de daño, 26 de defensa y 15000 de vida; al romper los dos puños, la cabeza queda suelta (type==249) con 32 de defensa y 80 de daño, y hasta entonces NO recibe daño (dontTakeDamage=true). Con la fórmula de siempre, 55 de daño deja golpes útiles en las tres fases sin que la última, la más dura, se haga eterna.",
+     "The Golem fights in three phases with different numbers (NPC.cs): the body (type==245) has 72 damage, 26 defense and 15000 health; once both fists are destroyed, the head breaks free (type==249) with 32 defense and 80 damage, and until then it takes NO damage at all (dontTakeDamage=true). With the usual formula, 55 damage lands useful hits in all three phases without the last one, the hardest, dragging on forever."),
+    ("Guia.Paso.ArmaParaElTemplo.Como",
+     "La puerta de piedra del Templo se abre sola en cuanto Plantera muere. Dentro, las trampas y cofres del Templo sueltan Células de Poder Lihzahrd: úsalas en el Altar Lihzahrd para invocarlo. Rompe primero los dos puños; mientras vivan, la cabeza no se puede dañar.",
+     "The Temple's stone door opens on its own once Plantera dies. Inside, the Temple's traps and chests drop Lihzahrd Power Cells: use one at the Lihzahrd Altar to summon him. Break both fists first; while they live, the head cannot be damaged."),
+
+    ("Guia.Paso.VencerAlGolem.Titulo", "Derrotarlo", "Defeat him"),
+    ("Guia.Paso.VencerAlGolem.Porque",
+     "NPC.downedGolemBoss es la bandera real de este cierre: sube un escalón más el equipo de todos los vecinos del pueblo (NPC.cs, BuffTownNPC: +15% de daño y +8 de defensa a los NPC del pueblo, el mismo salto que dan Plantera, la Emperatriz de la Luz o el Cultista) y dejas el Templo despejado justo antes de plantearte los últimos opcionales y, después, al propio Cultista Lunático junto a la Mazmorra.",
+     "NPC.downedGolemBoss is the real flag behind this one: it raises every town NPC's stats one more notch (NPC.cs, BuffTownNPC: +15% damage and +8 defense to town NPCs, the same bump Plantera, the Empress of Light or the Cultist give), and it leaves the Temple clear right before you turn to the last optional fights and, after that, the Lunatic Cultist himself by the Dungeon."),
+    ("Guia.Paso.VencerAlGolem.Como",
+     "Pelea dentro de la sala del Templo, con espacio para rodear los pilares de piedra: te protegen de sus golpes de área mientras esperas la abertura.",
+     "Fight inside the Temple room, with room to circle the stone pillars: they shield you from its area attacks while you wait for an opening."),
 ]
 
 KEYBINDS = [

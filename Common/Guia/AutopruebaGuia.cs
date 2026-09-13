@@ -59,6 +59,8 @@ namespace TerrakeepMod.Common.Guia
 		private static bool _hardModeOriginal;
 		private static bool _downedMechBoss1Original;
 		private static bool _downedMechBossAnyOriginal;
+		private static bool _downedPlantBossOriginal;
+		private static bool _downedGolemBossOriginal;
 		private static readonly List<int> _npcsCreados = new List<int>();
 
 		/// <summary>Tipos de NPC del pueblo que ya vivian en el mundo de prueba y que la prueba
@@ -311,10 +313,40 @@ namespace TerrakeepMod.Common.Guia
 				case 76: Capturar("guia-15-mecanicos-vencer"); break;
 				case 77: MarcarUnMecanicoDerrotadoDeMentira(); break;
 
-				case 78: ComprobarSinObjetivo(); break;
-				case 79: Capturar("guia-16-todo-lo-implementado-hecho"); break;
+				// --- septimo tramo implementado: Plantera -----------------------------------------
+				case 78: QuitarArmaDeLaMochila(); break;
+				case 79: ComprobarPaso("ArmaParaPlantera",
+					"downedMechBossAny=true a mano (el siguiente tramo implementado es Plantera) y " +
+					"sin arma todavia en la mochila"); break;
+				case 80: Capturar("guia-17-plantera-preparativos"); break;
+				case 81: PonerArmaConDano(45); break;
+				case 82: VolcarEstadoDelJugador("con arma contra Plantera"); break;
+				case 83: ComprobarPaso("VencerAPlantera",
+					"arma de 45+ de daño puesta: el unico requisito obligatorio del primer paso ya " +
+					"esta cumplido, asi que el paso siguiente pasa a ser el actual"); break;
+				case 84: ComprobarLecturaDeJefeDelTramoActual("Plantera"); break;
+				case 85: Capturar("guia-18-plantera-vencer"); break;
+				case 86: MarcarPlanteraDerrotadaDeMentira(); break;
 
-				case 80: RestaurarTramosNuevos(); break;
+				// --- octavo tramo implementado: el Templo y el Golem ------------------------------
+				case 87: QuitarArmaDeLaMochila(); break;
+				case 88: ComprobarPaso("ArmaParaElTemplo",
+					"downedPlantBoss=true a mano (el siguiente tramo implementado es el Templo y el " +
+					"Golem) y sin arma todavia en la mochila"); break;
+				case 89: Capturar("guia-19-templo-preparativos"); break;
+				case 90: PonerArmaConDano(55); break;
+				case 91: VolcarEstadoDelJugador("con arma contra el Golem"); break;
+				case 92: ComprobarPaso("VencerAlGolem",
+					"arma de 55+ de daño puesta: el unico requisito obligatorio del primer paso ya " +
+					"esta cumplido, asi que el paso siguiente pasa a ser el actual"); break;
+				case 93: ComprobarLecturaDeJefeDelTramoActual("Golem"); break;
+				case 94: Capturar("guia-20-templo-vencer"); break;
+				case 95: MarcarGolemDerrotadoDeMentira(); break;
+
+				case 96: ComprobarSinObjetivo(); break;
+				case 97: Capturar("guia-21-todo-lo-implementado-hecho"); break;
+
+				case 98: RestaurarTramosNuevos(); break;
 				default: Terminar(); break;
 			}
 		}
@@ -349,6 +381,8 @@ namespace TerrakeepMod.Common.Guia
 			_hardModeOriginal = Main.hardMode;
 			_downedMechBoss1Original = NPC.downedMechBoss1;
 			_downedMechBossAnyOriginal = NPC.downedMechBossAny;
+			_downedPlantBossOriginal = NPC.downedPlantBoss;
+			_downedGolemBossOriginal = NPC.downedGolemBoss;
 			NPC.downedBoss1 = false;
 
 			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Personaje, "autoprueba de la Guia");
@@ -573,13 +607,14 @@ namespace TerrakeepMod.Common.Guia
 				claves.Append(porDelante[i].Clave);
 				if (porDelante[i].Clave == "PreOjo" || porDelante[i].Clave == "MaldadDelMundo" ||
 					porDelante[i].Clave == "Esqueletron" || porDelante[i].Clave == "MuroDeCarne" ||
-					porDelante[i].Clave == "Mecanicos") {
+					porDelante[i].Clave == "Mecanicos" || porDelante[i].Clave == "Plantera" ||
+					porDelante[i].Clave == "TemploYGolem") {
 					haySuperado = true;
 				}
 			}
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - hoja de ruta con todo cerrado: " +
 				claves + " " + (!haySuperado
-					? "-> OK: ninguno de los cinco tramos ya superados vuelve a aparecer."
+					? "-> OK: ninguno de los siete tramos ya superados vuelve a aparecer."
 					: "-> NO CUADRA: hay un tramo ya superado en \"lo que viene despues\"."));
 		}
 
@@ -913,7 +948,28 @@ namespace TerrakeepMod.Common.Guia
 				"restaura al terminar.");
 		}
 
-		/// <summary>Deshace TODO lo que han tocado los pasos 37-77: las banderas nuevas, el mundo y
+		/// <summary>Marca a Plantera como derrotada SIN pelearla, para comprobar el cierre del
+		/// septimo tramo.</summary>
+		private static void MarcarPlanteraDerrotadaDeMentira()
+		{
+			NPC.downedPlantBoss = true;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - NPC.downedPlantBoss puesto a " +
+				"true a mano (la bandera real que enciende NPC.SetEventFlagCleared al morir Plantera, " +
+				"NPC.cs case 262 - la misma que abre la puerta de piedra del Templo). Se restaura al " +
+				"terminar.");
+		}
+
+		/// <summary>Marca al Golem como derrotado SIN pelearlo, para comprobar el cierre del octavo
+		/// tramo.</summary>
+		private static void MarcarGolemDerrotadoDeMentira()
+		{
+			NPC.downedGolemBoss = true;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - NPC.downedGolemBoss puesto a " +
+				"true a mano (la bandera real que enciende NPC.SetEventFlagCleared al morir el Golem, " +
+				"NPC.cs case 245). Se restaura al terminar.");
+		}
+
+		/// <summary>Deshace TODO lo que han tocado los pasos 37-95: las banderas nuevas, el mundo y
 		/// el inventario, ademas de los NPC creados en este segundo bloque de la prueba.</summary>
 		private static void RestaurarTramosNuevos()
 		{
@@ -924,6 +980,8 @@ namespace TerrakeepMod.Common.Guia
 			Main.hardMode = _hardModeOriginal;
 			NPC.downedMechBoss1 = _downedMechBoss1Original;
 			NPC.downedMechBossAny = _downedMechBossAnyOriginal;
+			NPC.downedPlantBoss = _downedPlantBossOriginal;
+			NPC.downedGolemBoss = _downedGolemBossOriginal;
 
 			Player jugador = Main.LocalPlayer;
 			jugador.inventory[0] = new Item();
@@ -940,10 +998,11 @@ namespace TerrakeepMod.Common.Guia
 			_npcsCreados.Clear();
 
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - restaurado tras la maldad del " +
-				"mundo, Esqueletron, el Muro de Carne y los mecanicos: downedBoss1=" + NPC.downedBoss1 +
-				", downedBoss2=" + NPC.downedBoss2 + ", downedBoss3=" + NPC.downedBoss3 +
+				"mundo, Esqueletron, el Muro de Carne, los mecanicos, Plantera y el Golem: downedBoss1=" +
+				NPC.downedBoss1 + ", downedBoss2=" + NPC.downedBoss2 + ", downedBoss3=" + NPC.downedBoss3 +
 				", shadowOrbSmashed=" + Terraria.WorldGen.shadowOrbSmashed + ", hardMode=" + Main.hardMode +
 				", downedMechBoss1=" + NPC.downedMechBoss1 + ", downedMechBossAny=" + NPC.downedMechBossAny +
+				", downedPlantBoss=" + NPC.downedPlantBoss + ", downedGolemBoss=" + NPC.downedGolemBoss +
 				", NPC de prueba retirados=" + quitados + ".");
 		}
 

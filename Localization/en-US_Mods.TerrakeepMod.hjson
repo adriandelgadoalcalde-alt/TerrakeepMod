@@ -787,6 +787,8 @@ Guia: {
 		shadowOrbSmashed: Having already broken a Shadow Orb or Crimson Heart
 		hardMode: Getting the world into Hardmode (defeating the Wall of Flesh)
 		downedMechBossAny: Defeating any of the three mechanical bosses (The Destroyer, The Twins or Skeletron Prime)
+		downedPlantBoss: Defeat Plantera
+		downedGolemBoss: Defeat Golem
 	}
 
 	Zona: {
@@ -795,6 +797,8 @@ Guia: {
 		Cavernas: the caverns
 		Mazmorra: the Dungeon entrance
 		Infierno: the Underworld
+		Jungla: the underground jungle
+		TemploLihzahrd: the Jungle Temple
 	}
 
 	Tramo: {
@@ -942,6 +946,30 @@ Guia: {
 			Titulo: Defeat one of the three
 			Porque: The game sets NPC.downedMechBossAny when any of the three dies, and that is the flag that really unlocks what comes next: new Hardmode ore (Mythril or Orichalcum) and the real push that makes Plantera worth fighting. You do not need to beat all three to move on, though the combined gear from all three is the best there is before Plantera.
 			Como: The Twins and Skeletron Prime fly and give chase: a raised platform arena helps more than open ground. The Destroyer is an extremely long worm: a weapon that pierces in a straight line takes out more than one segment per shot.
+		}
+
+		ArmaParaPlantera: {
+			Titulo: A weapon that can handle TWO fights in one
+			Porque: Plantera has 50 damage, 14 defense and 30000 health (NPC.cs, type==262), but the number that actually matters here is not defense: as soon as it drops below half health it enrages, speeds up and chases much faster through the whole jungle. It is not a harder wall to punch through, it is TWO different fights back to back, and the second one can corner you if you cannot keep up the pace. 45 damage already helps, but good mobility pays off more here than a bigger number.
+			Como: Break a Plantera's Bulb in the underground jungle to summon her; they only appear after beating any of the three mechanical bosses. Clear a long corridor before breaking it: the second phase chases in a straight line and the natural jungle is too cluttered to dodge in.
+		}
+
+		VencerAPlantera: {
+			Titulo: Defeat her
+			Porque: NPC.downedPlantBoss is the flag that actually matters: the first time it flips to true, the Jungle Temple's stone door stops being sealed (NPC.cs, the case 262 block on the boss's death) and the Cyborg moves in. It also drops Chlorophyte seeds, the base of all the ore that comes after this.
+			Como: Fight in the corridor you cleared, never in the closed jungle: her tentacles and seeds chase better through tight trees than down a clean corridor.
+		}
+
+		ArmaParaElTemplo: {
+			Titulo: A weapon for the Golem's three phases
+			Porque: The Golem fights in three phases with different numbers (NPC.cs): the body (type==245) has 72 damage, 26 defense and 15000 health; once both fists are destroyed, the head breaks free (type==249) with 32 defense and 80 damage, and until then it takes NO damage at all (dontTakeDamage=true). With the usual formula, 55 damage lands useful hits in all three phases without the last one, the hardest, dragging on forever.
+			Como: The Temple's stone door opens on its own once Plantera dies. Inside, the Temple's traps and chests drop Lihzahrd Power Cells: use one at the Lihzahrd Altar to summon him. Break both fists first; while they live, the head cannot be damaged.
+		}
+
+		VencerAlGolem: {
+			Titulo: Defeat him
+			Porque: NPC.downedGolemBoss is the real flag behind this one: it raises every town NPC's stats one more notch (NPC.cs, BuffTownNPC: +15% damage and +8 defense to town NPCs, the same bump Plantera, the Empress of Light or the Cultist give), and it leaves the Temple clear right before you turn to the last optional fights and, after that, the Lunatic Cultist himself by the Dungeon.
+			Como: Fight inside the Temple room, with room to circle the stone pillars: they shield you from its area attacks while you wait for an opening.
 		}
 	}
 }

@@ -303,16 +303,71 @@
       "orden": 8,
       "ambito": "vanilla",
       "jefeFinal": 262,
-      "implementado": false,
-      "pasos": []
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "ArmaParaPlantera",
+          "zona": "Jungla",
+          "capa": "cavernas",
+          "jefe": 262,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==262: daño 50, defensa 14, vida 30000. Tiene DOS fases (a partir de la mitad de la vida se enrabia, acelera y persigue mas rapido: NPC.cs, el frame de type==262 cambia con life<=lifeMax/2), asi que lo que pide de verdad no es atravesar defensa sino aguantar el ritmo entero sin que la segunda fase te pille sin salida.",
+              "tipo": "dano_arma",
+              "valor": 45
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerAPlantera",
+          "zona": "Jungla",
+          "capa": "cavernas",
+          "jefe": 262,
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedPlantBoss" }
+          ]
+        }
+      ]
     },
     {
       "clave": "TemploYGolem",
       "orden": 9,
       "ambito": "vanilla",
       "jefeFinal": 245,
-      "implementado": false,
-      "pasos": []
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "ArmaParaElTemplo",
+          "zona": "TemploLihzahrd",
+          "capa": "cavernas",
+          "jefe": 245,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==245 (cuerpo): daño 72, defensa 26, vida 15000. La cabeza suelta (type==249, tras destruir los dos puños) sube a 32 de defensa y 80 de daño, y no recibe daño mientras vivan los puños (dontTakeDamage=true). Con daño-defensa*0.5 (minimo 1), 55 de daño deja golpes utiles contra las tres fases.",
+              "tipo": "dano_arma",
+              "valor": 55
+            },
+            {
+              "_fuente": "ItemID.cs: Celula de Poder Lihzahrd=1293. Se usa en el Altar Lihzahrd, dentro del Templo, para invocar al Golem; sale de las trampas y cofres del Templo.",
+              "tipo": "objeto",
+              "id": 1293,
+              "cantidad": 1,
+              "recomendado": true
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerAlGolem",
+          "zona": "TemploLihzahrd",
+          "capa": "cavernas",
+          "jefe": 245,
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedGolemBoss" }
+          ]
+        }
+      ]
     },
     {
       "clave": "JefesOpcionalesTardios",
