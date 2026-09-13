@@ -6085,3 +6085,121 @@ la investigación:
    hace falta ningún trabajo nuevo en la Guía - documentado el porqué, no forzado.
 8. **Semillas secretas**: ya cubierto por `MundoActual.SemillasSecretas` (Exploración) - sin
    trabajo pendiente.
+
+## 13-sep-2026 (continuación 2) — Los cuatro tramos opcionales que quedaban: Piratas, Luna de
+## Calabazas, Luna Helada y Antiguo Ejército D2
+
+Partiendo de los datos reales que ya había dejado listos la entrada anterior (objetos de
+invocación, banderas confirmadas en `NPC.cs`), esta sesión construyó los cuatro tramos opcionales
+que faltaban de la lista pedida, con el mismo patrón exacto que los ocho ya existentes: `.json` +
+`BanderasGuia` + localización es/en vía `scripts/generar-localizacion.py` + bloque dedicado en
+`AutopruebaGuia.cs`, verificado con `scripts/verificar-guia.ps1` en vanilla Y con `-Calamity`.
+
+### Investigación real hecha esta sesión (más allá de lo que ya traía la entrada anterior)
+
+- **Stats reales de los cinco jefes de oleada** (Mourning Wood, Pumpking, Everscream, Santa-NK1,
+  Reina de Hielo) y del Capitán Pirata y Betsy: sacados del bloque `else if (type == N)` de
+  `NPC.cs` (SetDefaults NO usa un switch para estos campos, usa una cadena de `else if` - se
+  localizaron buscando primero el patrón equivocado, un `switch` con `case 325:`, que solo existía
+  para el escalado por dificultad, no para los valores base).
+- **Orden real de aparición dentro de cada evento**: `NPC.CheckProgressPumpkinMoon`/
+  `CheckProgressFrostMoon` (`NPC.cs`, listas `MoonEventRequiredPointsPerWaveLookup` por oleada)
+  confirman Mourning Wood (oleada 5) antes que Pumpking (oleada 9), y Everscream (oleada 3) antes
+  que Santa-NK1 (oleada 6) antes que la Reina de Hielo (oleada 10) - el orden que usan los cuatro
+  pasos de cada tramo.
+- **Mecanismo real de invocación del Antiguo Ejército D2**, sin investigar todavía en la entrada
+  anterior: `Player.cs` (~línea 30670) - clic derecho sobre el tile 466 (Soporte del Cristal de
+  Eternia, del objeto `DD2ElderCrystalStand=3816`) con el Cristal de Eternia (`DD2ElderCrystal=
+  3828`) en el inventario consume el objeto y llama a `DD2Event.SummonCrystal` (`GameContent/
+  Events/DD2Event.cs`), siempre que no haya ya un asedio en marcha ni sea Luna de Calabazas/Helada.
+  Betsy (`NPC.cs`, type==551): 80 de daño, 38 de defensa, 50000 de vida.
+- **El "Doblón del Capitán rescatado" que iba a poner en el texto de Piratas era falso** - se
+  comprobó antes de escribirlo: `NPC.downedPirates` no está ligado a ningún NPC cautivo que
+  rescatar (ese patrón es solo el del Ejército Goblin, con el Duende Mecánico). Lo real, sacado de
+  `GameContent/ItemDropRules/ItemDropDatabase.cs` (`RegisterToNPC(216,...)`), es que el Capitán
+  Pirata suelta objetos concretos (Cañón de Monedas, báculo de invocación Pirata, Tarjeta de
+  Descuento...) solo mientras dura la invasión - así quedó escrito, sin el rescate inventado.
+- **El "Tabernero se muda tras un jefe mecánico" que iba a poner en el texto de D2 tampoco se
+  pudo verificar** - no se encontró la condición de aparición real del NPC 550 en el código
+  decompilado (no usa el mismo patrón `SpawnAllowed_*` de otros vecinos). Se dejó el texto sin esa
+  afirmación en vez de darla por buena de memoria.
+- **Pumpkin Moon Medallion y Naughty Present NO exigen cristales de vida** (a diferencia del
+  Ejército Goblin/Legión de Escarcha): `Player.cs` (~líneas 43625/43692/53498/53502) solo exige que
+  sea de noche y que no haya ya otro evento de oleadas en marcha. Se comprobó antes de copiar el
+  requisito `cristales_vida` de los otros dos, que aquí habría sido un requisito falso.
+
+### Bug real, PRE-EXISTENTE, encontrado y corregido de paso
+
+Al tocar `Guia.Bandera.*` para las banderas nuevas se encontró que **`downedGoblins` y
+`downedFrost`** (usadas por `EjercitoGoblin`/`LegionDeEscarcha`, los dos tramos opcionales ya
+verificados de la entrada anterior) **no tenían clave de localización**: `EvaluadorGuia.
+EvaluarBandera` llama a `Idiomas.Texto("Guia.Bandera." + requisito.Bandera)` sin comprobar que la
+clave exista, así que el segundo paso de esos dos tramos ("Derrotarlo") enseñaba la clave cruda sin
+traducir en vez de un texto legible. No es una regresión de esta sesión - estaba desde que se
+implementaron esos dos tramos y el log en verde nunca lo habría pillado (la clave sí "resuelve" a
+algo, solo que a la clave misma). Se añadieron las tres claves que faltaban (`downedGoblins`,
+`downedFrost` y la nueva `downedPirates`) en el mismo bloque.
+
+### El fallo real de ESTA sesión, encontrado por el propio arnés (no en una captura)
+
+Al escribir el bloque nuevo de `AutopruebaGuia.cs` se asumió que, tras superar Piratas (Orden 19),
+el siguiente opcional pendiente sería `LunaDeCalabazas` (Orden 72). El primer pase del arnés lo
+desmintió con el log en rojo: el objetivo opcional real era `ReinaAbeja/ArmaParaLaReina`.
+
+**Causa real:** `ReinaAbeja` (Orden 25) e `InicioModoDificil` (Orden 45) caen ENTRE Piratas (19) y
+LunaDeCalabazas (72), y ningún paso de este bloque nuevo los tocaba - seguían con su valor REAL del
+mundo de pruebas (pendientes), así que en cuanto Piratas quedó superado, el algoritmo de "menor
+Orden sin superar" los eligió a ellos antes que a LunaDeCalabazas, exactamente como se supone que
+tiene que funcionar. El error no estaba en `EstadoGuia`, estaba en la prueba: le faltaba remarcar
+esos dos tramos superados temporalmente, igual que `Arrancar()` ya hace con los ocho opcionales más
+tempranos desde el principio.
+
+**Arreglo real:** `PrepararOpcionalesRestantes()` marca también `NPC.downedQueenBee` y
+`NPC.downedQueenSlime` a `true` antes de probar Piratas/Calabazas/Helada/D2, y los devuelve a su
+valor original (capturado en `Arrancar()`, campo nuevo `_downedQueenSlimeOriginal`) al final del
+bloque. La comprobación final (`ComprobarLosOchoOpcionalesNuevosDesaparecen`) se ajustó para
+esperar que el siguiente opcional pendiente de verdad, tras cerrar los diez, sea
+`JefesOpcionalesTardios/ArmaParaFishron` (el único que ningún bloque de todo el arnés toca nunca).
+Con el arreglo, la segunda pasada salió limpia.
+
+### Verificación real
+
+`scripts/verificar-guia.ps1` (vanilla) y `-Calamity`: **las dos en verde, "Ninguna comprobación en
+rojo"**, catálogo `20 tramos (20 con requisitos evaluables), 54 pasos, 105 requisitos, 0 avisos` en
+ambas (antes: 16 tramos, 40 pasos, 80 requisitos). 55 capturas reales por ejecución (`guia-40` a
+`guia-54` son las quince nuevas). Miradas de verdad varias capturas (`guia-40`, `guia-41`,
+`guia-54`): mismo layout ya establecido para Goblin/Legión (columna izquierda con el objetivo
+obligatorio reabierto por las pruebas de dirección/brújula, columna derecha con el aviso de
+Calamity + "Qué te falta" + "Lectura del jefe"; la sección "Objetivo opcional" vive más abajo,
+fuera del viewport sin hacer scroll - comportamiento ya existente, no una regresión de esta
+sesión, confirmado comparando `guia-40` byte a byte contra el mismo layout de `guia-36-goblin-
+preparativos.png` de la sesión anterior).
+
+`dotnet` compiló limpio (0 errores) tanto en la fase 1 (SDK del sistema) como en la fase 2
+(Roslyn interno de tModLoader, sin `-eac`).
+
+### La última pieza pendiente de la lista original: pesca/Pescador, investigada y cerrada
+
+La entrada anterior dejó dicho que `Player.anglerQuestsFinished` "es un dato real y medible,
+candidato razonable" y que merecía investigarse más antes de decidir. Esta sesión lo hizo:
+`Player.GetAnglerReward` (`Player.cs`, ~línea 57928) usa `anglerQuestsFinished` únicamente como
+multiplicador CONTINUO de rareza de recompensa (`GetAnglerRewardRarityMultiplier(questsDone)`), no
+hay ningún umbral discreto en el código (ni "a las 10 misiones desbloqueas X armadura/título/NPC")
+como sí existe para Modo Difícil, cristales de vida o cualquier otro requisito de la Guía. Es el
+mismo patrón ya descartado para Pilones: progreso continuo sin una bandera de cierre real que
+marcar. **Decisión: pesca/Pescador tampoco necesita un tramo de la Guía** - no por pereza, sino
+porque no hay ningún hito discreto real que citar sin inventárselo. Con esto se cierra el último
+punto que seguía abierto de la lista de contenido opcional pedida en las últimas sesiones: no
+queda nada más pendiente de investigar salvo Locura Marciana (jefe multi-parte, sin objeto de
+invocación directo - sigue sin investigar, no estaba en el encargo de esta sesión) y Eclipse
+Solar/Luna de Sangre (decisión ya tomada: no son tramos, no tienen bandera de cierre).
+
+### Dónde seguir
+
+Los cuatro tramos de esta sesión (Piratas, Luna de Calabazas, Luna Helada, Antiguo Ejército D2)
+están **terminados y verificados** en vanilla y Calamity, 0 avisos. La Guía cubre ahora TODO el
+contenido opcional pedido salvo Locura Marciana (investigación pendiente, jefe multi-parte sin
+objeto de invocación directo, sin tocar esta sesión a propósito - no estaba en el encargo). Si se
+pide en el futuro: el jefe es `NPCID.MartianSaucer=392` con partes `393`/`394`/`395`, y hace falta
+investigar primero el NPC/bandera real de la Sonda Marciana (Martian Probe) que dispara el evento,
+antes de escribir el paso "arma y prepárate".

@@ -811,6 +811,15 @@ Guia: {
 		downedQueenSlime: Defeat the Queen Slime
 		downedFishron: Defeat Duke Fishron
 		downedEmpressOfLight: Defeat the Empress of Light
+		downedGoblins: Defeat the Goblin Army
+		downedFrost: Defeat the Frost Legion
+		downedPirates: Defeat the Pirates
+		downedHalloweenTree: Defeat Mourning Wood
+		downedHalloweenKing: Defeat Pumpking
+		downedChristmasTree: Defeat Everscream
+		downedChristmasSantank: Defeat Santa-NK1
+		downedChristmasIceQueen: Defeat the Ice Queen
+		downedDD2EventAnyDifficulty: Beat the Old One's Army (any difficulty)
 	}
 
 	Zona: {
@@ -843,6 +852,11 @@ Guia: {
 		LegionDeEscarcha: {
 			Nombre: The Frost Legion (optional)
 			Resumen: Another wave invasion, with the same requirements as the Goblin Army. Its three enemy types apply cold on top of the hit.
+		}
+
+		Piratas: {
+			Nombre: The Pirates (optional)
+			Resumen: Another wave invasion, with the same requirements as the Goblin Army. Its toughest enemy, the Pirate Captain, has far more defense than either of the other two invasions.
 		}
 
 		Deerclops: {
@@ -888,6 +902,21 @@ Guia: {
 		TemploYGolem: {
 			Nombre: The Temple and Golem
 			Resumen: Golem, 15000 health and 26 defense, inside the Jungle Temple.
+		}
+
+		LunaDeCalabazas: {
+			Nombre: The Pumpkin Moon (optional)
+			Resumen: A wave event with two bosses of its own: Mourning Wood (14000 health) and Pumpking (26000 health), which closes out the event.
+		}
+
+		LunaHelada: {
+			Nombre: The Frost Moon (optional)
+			Resumen: The longer of the two wave events: three bosses of its own, Everscream, Santa-NK1 and the Ice Queen (34000 health, the highest of the three).
+		}
+
+		EjercitoD2: {
+			Nombre: The Old One's Army (optional)
+			Resumen: Defend the Eternia Crystal through three sieges in a row. Betsy, each siege's boss, has 50000 health.
 		}
 
 		JefesOpcionalesTardios: {
@@ -991,6 +1020,18 @@ Guia: {
 			Como: Same as the Goblin Army: a bottleneck near your base works better than fighting in the open against both directions at once.
 		}
 
+		ArmaParaLosPiratas: {
+			Titulo: A weapon strong enough for a much more armoured enemy
+			Porque: The Pirate Captain is the toughest common enemy of the three wave invasions: 70 damage and 30 defense (NPC.cs, type==216), well above the Goblin Warrior's 8 or Mister Stabby's 26. Watch out for a very common misconception: the "Flying Dutchman" often cited as the event's boss is not a real enemy (NPC.cs, type==491: dontTakeDamage=true, 0 damage) - it is just the decorative ship.
+			Como: Same condition as the Goblin Army and the Frost Legion: 5 life crystals already used before you can summon it yourself with the Pirate Map.
+		}
+
+		VencerALosPiratas: {
+			Titulo: Defeat them (optional)
+			Porque: NPC.downedPirates does not unlock anything mandatory: it is an optional extra, just like the Goblin Army and the Frost Legion. What actually changes is what its enemies drop, only while the invasion is active: the Pirate Captain can drop the Coin Gun or the Pirate summon staff (ItemDropDatabase.cs, RegisterToNPC(216,...): items 905/855/854/2584/3033/672).
+			Como: Same as the Goblin Army: a chokepoint near your base works better than fighting in the open against both directions at once.
+		}
+
 		ArmaContraLaMaldad: {
 			Titulo: A weapon that can keep swinging
 			Porque: The same formula as always (you take off damage minus half its defense, minimum 1) weighs less here than against the Eye: each Eater of Worlds segment only has 2 defense, and the Brain of Cthulhu itself has 14, though you cannot touch it until the Creepers around it die. What you do need is stamina: the Eater is dozens of segments doing 22 damage each, and the Brain hits for 30 on direct contact. A short, no-reach weapon leaves you standing still between hits; one with range or that shoots lets you hit and back away.
@@ -1061,6 +1102,78 @@ Guia: {
 			Titulo: Defeat him
 			Porque: NPC.downedGolemBoss is the real flag behind this one: it raises every town NPC's stats one more notch (NPC.cs, BuffTownNPC: +15% damage and +8 defense to town NPCs, the same bump Plantera, the Empress of Light or the Cultist give), and it leaves the Temple clear right before you turn to the last optional fights and, after that, the Lunatic Cultist himself by the Dungeon.
 			Como: Fight inside the Temple room, with room to circle the stone pillars: they shield you from its area attacks while you wait for an opening.
+		}
+
+		ArmaParaMourningWood: {
+			Titulo: A weapon for the first of the event's two bosses
+			Porque: Mourning Wood has 120 damage, 34 defense and 14000 health (NPC.cs, type==325) and arrives on the fifth wave of the Pumpkin Moon, the first of the two you need to beat.
+			Como: It can only be summoned at night and only if no other wave event is already running. A closed-off area with narrow corridors helps against both it and the rest of the wave.
+		}
+
+		VencerAMourningWood: {
+			Titulo: Defeat it (optional)
+			Porque: NPC.downedHalloweenTree is not the flag that closes the whole event: it only marks this first boss as beaten. The Pumpkin Moon keeps going until the ninth wave, where Pumpking arrives.
+			Como: It throws flaming logs from range: do not stand still in its firing line.
+		}
+
+		ArmaParaPumpking: {
+			Titulo: A weapon for the boss that closes out the event
+			Porque: Pumpking has 50 damage, 40 defense and 26000 health (NPC.cs, type==327) - less damage per hit than Mourning Wood, but almost double the health and more defense.
+			Como: It arrives on the ninth wave, once Mourning Wood is already down: you do not need to use the Medallion again, the event keeps going on its own if you hold out until then.
+		}
+
+		VencerAPumpking: {
+			Titulo: Defeat it: closes out the event
+			Porque: NPC.downedHalloweenKing marks the Pumpkin Moon as fully beaten. It drops its own exclusive gear, different from Mourning Wood's.
+			Como: It flies and fires explosive pumpkins from range: the fight is almost entirely airborne, a grappling hook helps you keep up with it.
+		}
+
+		ArmaParaEverscream: {
+			Titulo: A weapon for the first of the event's three bosses
+			Porque: Everscream has 110 damage, 38 defense and 13000 health (NPC.cs, type==344) and arrives on the third wave of the Frost Moon, the first of the three you need to beat.
+			Como: It can only be summoned at night and only if no other wave event is already running. Just like the Pumpkin Moon, a chokepoint near your base helps against the whole wave.
+		}
+
+		VencerAEverscream: {
+			Titulo: Defeat it (optional)
+			Porque: NPC.downedChristmasTree only marks this first boss as beaten: the Frost Moon keeps going until the tenth wave, where the Ice Queen arrives, with Santa-NK1 coming first.
+			Como: It fires bursts of icy projectiles from range, similar to Mourning Wood but with a faster rate of fire.
+		}
+
+		ArmaParaSantaNK1: {
+			Titulo: A weapon for the second boss: the most armoured of the three
+			Porque: Santa-NK1 has 120 damage, 56 defense and 18000 health (NPC.cs, type==346) - the highest defense of the event's three bosses, well above Everscream's and the Ice Queen's 38.
+			Como: It arrives on the sixth wave. It fires exploding presents and machine-gun bursts in a straight line: moving diagonally dodges more than backing away in a straight line.
+		}
+
+		VencerASantaNK1: {
+			Titulo: Defeat it (optional)
+			Porque: NPC.downedChristmasSantank marks the second boss as beaten. One remains: the Ice Queen, the last one and the one with the most health of the three.
+			Como: It is an almost stationary tank: a weapon with long range or that shoots works better than a melee one.
+		}
+
+		ArmaParaIceQueen: {
+			Titulo: A weapon for the boss that closes out the event
+			Porque: The Ice Queen has 120 damage, 38 defense and 34000 health (NPC.cs, type==345) - the highest of the event's three bosses - and coldDamage=true, applying extra cold damage on top of the direct hit.
+			Como: It arrives on the tenth wave, with Everscream and Santa-NK1 already down: the event keeps going on its own, without using the Naughty Present again. A heat source or a cold-resistance buff helps here more than in any other section.
+		}
+
+		VencerAIceQueen: {
+			Titulo: Defeat her: closes out the event
+			Porque: NPC.downedChristmasIceQueen marks the Frost Moon as fully beaten, the longer of the two wave events (ten waves until she appears, versus nine for the Pumpkin Moon).
+			Como: It fires fanned-out bursts of ice crystals: moving in wide circles leaves fewer openings than backing away in a straight line.
+		}
+
+		ArmaParaElEjercitoD2: {
+			Titulo: A weapon strong enough for a whole siege
+			Porque: Betsy, the boss that closes out each siege, has 80 damage, 38 defense and 50000 health (NPC.cs, type==551). It is not just her: each siege is several waves of the event's own enemies (goblins, wyverns, dark mages...) before she shows up.
+			Como: It is summoned by right-clicking the Eternia Crystal Stand (a structure you craft and place yourself) while carrying the Eternia Crystal in your inventory (Player.cs, ~line 30670): it gets consumed on use, just like the rest of this guide's summoning items.
+		}
+
+		VencerAlEjercitoD2: {
+			Titulo: Beat all three sieges (optional)
+			Porque: Player.downedDD2EventAnyDifficulty turns on when you finish the event on ANY difficulty (Media/Expert/For the worthy), you do not need the hardest one for the guide to count it done - though the best gear comes from the highest difficulty you can actually survive.
+			Como: Protect the Eternia Crystal, not just yourself: if it falls, the siege ends in defeat even if you are still alive. Building narrow corridors around the crystal, with traps, helps more than fighting out in the open.
 		}
 
 		ArmaParaElCultista: {

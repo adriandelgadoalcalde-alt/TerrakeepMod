@@ -276,6 +276,49 @@
       ]
     },
     {
+      "clave": "Piratas",
+      "orden": 19,
+      "ambito": "vanilla",
+      "opcional": true,
+      "jefeFinal": 0,
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "ArmaParaLosPiratas",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==216: el Capitan Pirata, el mas duro de los comunes del evento, tiene 70 de daño, 30 de defensa y 3000 de vida - mucha mas defensa que el Guerrero Goblin (8) o Mister Estocada (26). OJO: el 'Flying Dutchman' que se suele citar de memoria (type==491, Pirate Ship) NO es un enemigo de combate real - tiene dontTakeDamage=true y damage=0, es solo la plataforma visual.",
+              "tipo": "dano_arma",
+              "valor": 35
+            },
+            {
+              "_fuente": "Main.CanStartInvasion(3,...): usar el Mapa Pirata exige ConsumedLifeCrystals>=5, el mismo hito que el Ejercito Goblin y la Legion de Escarcha.",
+              "tipo": "cristales_vida",
+              "valor": 5,
+              "recomendado": true
+            },
+            {
+              "_fuente": "ItemID.cs: Mapa Pirata=1315. Usado en la superficie, invoca la invasion al instante.",
+              "tipo": "objeto",
+              "id": 1315,
+              "cantidad": 1,
+              "recomendado": true
+            }
+          ]
+        },
+        {
+          "clave": "VencerALosPiratas",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedPirates" }
+          ]
+        }
+      ]
+    },
+    {
       "clave": "MaldadDelMundo",
       "orden": 20,
       "ambito": "vanilla",
@@ -595,6 +638,199 @@
           "jefe": 245,
           "requisitos": [
             { "tipo": "bandera", "bandera": "downedGolemBoss" }
+          ]
+        }
+      ]
+    },
+    {
+      "clave": "LunaDeCalabazas",
+      "orden": 72,
+      "ambito": "vanilla",
+      "opcional": true,
+      "jefeFinal": 325,
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "ArmaParaMourningWood",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 325,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==325: Mourning Wood, el primer jefe de oleada del evento (aparece en la oleada 5), tiene 120 de daño, 34 de defensa y 14000 de vida.",
+              "tipo": "dano_arma",
+              "valor": 58
+            },
+            {
+              "_fuente": "ItemID.cs: Medallon de la Luna de Calabazas=1844. Player.cs (ItemCheck): solo se puede usar de noche y si no hay ya otro evento de oleadas (Luna Helada o Antiguo Ejercito D2) en marcha.",
+              "tipo": "objeto",
+              "id": 1844,
+              "cantidad": 1,
+              "recomendado": true
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerAMourningWood",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 325,
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedHalloweenTree" }
+          ]
+        },
+        {
+          "clave": "ArmaParaPumpking",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 327,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==327: Pumpking, el jefe final del evento (aparece en la oleada 9), tiene 50 de daño, 40 de defensa y 26000 de vida - mas vida que Mourning Wood pese a golpear mas flojo.",
+              "tipo": "dano_arma",
+              "valor": 63
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerAPumpking",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 327,
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedHalloweenKing" }
+          ]
+        }
+      ]
+    },
+    {
+      "clave": "LunaHelada",
+      "orden": 73,
+      "ambito": "vanilla",
+      "opcional": true,
+      "jefeFinal": 344,
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "ArmaParaEverscream",
+          "zona": "Nieve",
+          "capa": "superficie",
+          "jefe": 344,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==344: Everscream, el primer jefe de oleada del evento (aparece en la oleada 3), tiene 110 de daño, 38 de defensa y 13000 de vida.",
+              "tipo": "dano_arma",
+              "valor": 58
+            },
+            {
+              "_fuente": "ItemID.cs: Regalo Travieso=1958. Player.cs (ItemCheck): solo se puede usar de noche y si no hay ya otro evento de oleadas (Luna de Calabazas o Antiguo Ejercito D2) en marcha.",
+              "tipo": "objeto",
+              "id": 1958,
+              "cantidad": 1,
+              "recomendado": true
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerAEverscream",
+          "zona": "Nieve",
+          "capa": "superficie",
+          "jefe": 344,
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedChristmasTree" }
+          ]
+        },
+        {
+          "clave": "ArmaParaSantaNK1",
+          "zona": "Nieve",
+          "capa": "superficie",
+          "jefe": 346,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==346: Santa-NK1 (aparece en la oleada 6) tiene 120 de daño, 56 de defensa y 18000 de vida - la defensa mas alta de los tres jefes de oleada del evento.",
+              "tipo": "dano_arma",
+              "valor": 66
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerASantaNK1",
+          "zona": "Nieve",
+          "capa": "superficie",
+          "jefe": 346,
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedChristmasSantank" }
+          ]
+        },
+        {
+          "clave": "ArmaParaIceQueen",
+          "zona": "Nieve",
+          "capa": "superficie",
+          "jefe": 345,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==345: la Reina de Hielo, jefe final del evento (aparece en la oleada 10), tiene 120 de daño, 38 de defensa y 34000 de vida (la mas alta de los tres) y coldDamage=true, aplica frio extra ademas del golpe.",
+              "tipo": "dano_arma",
+              "valor": 62
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerAIceQueen",
+          "zona": "Nieve",
+          "capa": "superficie",
+          "jefe": 345,
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedChristmasIceQueen" }
+          ]
+        }
+      ]
+    },
+    {
+      "clave": "EjercitoD2",
+      "orden": 74,
+      "ambito": "vanilla",
+      "opcional": true,
+      "jefeFinal": 551,
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "ArmaParaElEjercitoD2",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 551,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==551 (DD2Betsy), el jefe final de cada asedio: 80 de daño, 38 de defensa y 50000 de vida.",
+              "tipo": "dano_arma",
+              "valor": 65
+            },
+            {
+              "_fuente": "ItemID.cs: Cristal de Eternia=3828. Player.cs (~linea 30670): clic derecho sobre el Soporte del Cristal de Eternia (tile 466, del objeto DD2ElderCrystalStand=3816) con el Cristal en el inventario lo consume e invoca el asedio (DD2Event.SummonCrystal), siempre que no haya ya un asedio en marcha ni sea Luna de Calabazas/Helada.",
+              "tipo": "objeto",
+              "id": 3828,
+              "cantidad": 1,
+              "recomendado": true
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerAlEjercitoD2",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 551,
+          "requisitos": [
+            {
+              "_fuente": "Player.cs (~linea 23413): downedDD2EventAnyDifficulty se pone a true al terminar el evento en CUALQUIER dificultad (no hace falta la mas dura). Es un campo de Player, no de NPC/WorldGen - el primer caso de la tabla de BanderasGuia que lee Main.LocalPlayer.",
+              "tipo": "bandera",
+              "bandera": "downedDD2EventAnyDifficulty"
+            }
           ]
         }
       ]

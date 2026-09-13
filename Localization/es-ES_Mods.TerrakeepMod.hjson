@@ -811,6 +811,15 @@ Guia: {
 		downedQueenSlime: Derrotar a la Reina Slime
 		downedFishron: Derrotar al Duque Pezhongo
 		downedEmpressOfLight: Derrotar a la Emperatriz de la Luz
+		downedGoblins: Derrotar al Ejército Goblin
+		downedFrost: Derrotar a la Legión de Escarcha
+		downedPirates: Derrotar a los Piratas
+		downedHalloweenTree: Derrotar a Mourning Wood
+		downedHalloweenKing: Derrotar a Pumpking
+		downedChristmasTree: Derrotar a Everscream
+		downedChristmasSantank: Derrotar a Santa-NK1
+		downedChristmasIceQueen: Derrotar a la Reina de Hielo
+		downedDD2EventAnyDifficulty: Superar el Antiguo Ejército D2 (cualquier dificultad)
 	}
 
 	Zona: {
@@ -843,6 +852,11 @@ Guia: {
 		LegionDeEscarcha: {
 			Nombre: La Legión de Escarcha (opcional)
 			Resumen: Otra invasión por oleadas, con los mismos requisitos que el Ejército Goblin. Sus tres tipos de enemigo aplican frío además del golpe.
+		}
+
+		Piratas: {
+			Nombre: Los Piratas (opcional)
+			Resumen: Otra invasión por oleadas, con los mismos requisitos que el Ejército Goblin. Su enemigo más duro, el Capitán Pirata, tiene mucha más defensa que los de las otras dos invasiones.
 		}
 
 		Deerclops: {
@@ -888,6 +902,21 @@ Guia: {
 		TemploYGolem: {
 			Nombre: El Templo y el Golem
 			Resumen: Golem, 15000 de vida y 26 de defensa, dentro del Templo de la Selva.
+		}
+
+		LunaDeCalabazas: {
+			Nombre: La Luna de Calabazas (opcional)
+			Resumen: Un evento por oleadas con dos jefes propios: Mourning Wood (14000 de vida) y Pumpking (26000 de vida), el que cierra el evento.
+		}
+
+		LunaHelada: {
+			Nombre: La Luna Helada (opcional)
+			Resumen: El evento por oleadas más largo de los dos: tres jefes propios, Everscream, Santa-NK1 y la Reina de Hielo (34000 de vida, la más alta de los tres).
+		}
+
+		EjercitoD2: {
+			Nombre: El Antiguo Ejército D2 (opcional)
+			Resumen: Defiende el Cristal de Eternia de tres asedios seguidos. Betsy, el jefe de cada asedio, tiene 50000 de vida.
 		}
 
 		JefesOpcionalesTardios: {
@@ -991,6 +1020,18 @@ Guia: {
 			Como: Igual que el Ejército Goblin: un cuello de botella cerca de tu base rinde mejor que pelear a campo abierto contra las dos direcciones a la vez.
 		}
 
+		ArmaParaLosPiratas: {
+			Titulo: Un arma capaz de un enemigo mucho más blindado
+			Porque: El Capitán Pirata es el enemigo común más duro de las tres invasiones por oleadas: 70 de daño y 30 de defensa (NPC.cs, type==216), muy por encima de los 8 del Guerrero Goblin o los 26 de Mister Estocada. Cuidado con una idea equivocada muy extendida: el "Flying Dutchman" que se suele citar como el jefe del evento no es un enemigo real (NPC.cs, type==491: dontTakeDamage=true, daño 0) - es solo la nave, decorativa.
+			Como: Misma condición que el Ejército Goblin y la Legión de Escarcha: 5 cristales de vida ya usados antes de poder invocarla tú mismo con el Mapa Pirata.
+		}
+
+		VencerALosPiratas: {
+			Titulo: Derrotarlos (opcional)
+			Porque: NPC.downedPirates no abre ningún camino obligatorio: es un extra opcional, igual que el Ejército Goblin y la Legión de Escarcha. Lo que de verdad cambia es lo que sueltan sus enemigos, únicamente mientras dura la invasión: el Capitán Pirata puede soltar el Cañón de Monedas o el báculo de invocación Pirata (ItemDropDatabase.cs, RegisterToNPC(216,...): items 905/855/854/2584/3033/672).
+			Como: Igual que el Ejército Goblin: un cuello de botella cerca de tu base rinde mejor que pelear a campo abierto contra las dos direcciones a la vez.
+		}
+
 		ArmaContraLaMaldad: {
 			Titulo: Un arma que aguante muchos golpes seguidos
 			Porque: La misma fórmula de siempre (le quitas daño menos la mitad de su defensa, mínimo 1) aquí pesa menos que con el Ojo: cada segmento del Devorador de Mundos solo tiene 2 de defensa, y el propio Cerebro de Cthulhu 14, aunque no puedes tocarlo hasta que mueran los Reptadores que lo rodean. Lo que sí hace falta es aguante: el Devorador son decenas de segmentos con 22 de daño cada uno, y el Cerebro golpea 30 en contacto directo. Un arma corta y sin alcance te deja parado entre golpes; una que llegue lejos o dispare deja pegar y retroceder.
@@ -1061,6 +1102,78 @@ Guia: {
 			Titulo: Derrotarlo
 			Porque: NPC.downedGolemBoss es la bandera real de este cierre: sube un escalón más el equipo de todos los vecinos del pueblo (NPC.cs, BuffTownNPC: +15% de daño y +8 de defensa a los NPC del pueblo, el mismo salto que dan Plantera, la Emperatriz de la Luz o el Cultista) y dejas el Templo despejado justo antes de plantearte los últimos opcionales y, después, al propio Cultista Lunático junto a la Mazmorra.
 			Como: Pelea dentro de la sala del Templo, con espacio para rodear los pilares de piedra: te protegen de sus golpes de área mientras esperas la abertura.
+		}
+
+		ArmaParaMourningWood: {
+			Titulo: Un arma para el primero de los dos jefes del evento
+			Porque: Mourning Wood tiene 120 de daño, 34 de defensa y 14000 de vida (NPC.cs, type==325) y llega en la quinta oleada de la Luna de Calabazas, la primera de las dos que hay que superar.
+			Como: Solo se puede invocar de noche y si no hay ya otro evento de oleadas en marcha. Un espacio cerrado con pasillos estrechos ayuda tanto contra él como contra el resto de la oleada.
+		}
+
+		VencerAMourningWood: {
+			Titulo: Derrotarlo (opcional)
+			Porque: NPC.downedHalloweenTree no es la bandera de cierre del evento entero: solo marca a este primer jefe como caído. La Luna de Calabazas sigue hasta la novena oleada, donde llega Pumpking.
+			Como: Lanza troncos en llamas a distancia: no te quedes quieto en su línea de tiro.
+		}
+
+		ArmaParaPumpking: {
+			Titulo: Un arma para el jefe que cierra el evento
+			Porque: Pumpking tiene 50 de daño, 40 de defensa y 26000 de vida (NPC.cs, type==327) - menos daño por golpe que Mourning Wood, pero casi el doble de vida y más defensa.
+			Como: Llega en la novena oleada, ya con Mourning Wood superado: no hace falta volver a usar el Medallón, el evento sigue solo si aguantas hasta entonces.
+		}
+
+		VencerAPumpking: {
+			Titulo: Derrotarlo: cierra el evento
+			Porque: NPC.downedHalloweenKing marca la Luna de Calabazas como superada del todo. Suelta su propio equipo exclusivo, distinto del de Mourning Wood.
+			Como: Vuela y dispara calabazas explosivas a distancia: el combate es casi todo aéreo, un gancho ayuda a seguirle el ritmo.
+		}
+
+		ArmaParaEverscream: {
+			Titulo: Un arma para el primero de los tres jefes del evento
+			Porque: Everscream tiene 110 de daño, 38 de defensa y 13000 de vida (NPC.cs, type==344) y llega en la tercera oleada de la Luna Helada, la primera de las tres que hay que superar.
+			Como: Solo se puede invocar de noche y si no hay ya otro evento de oleadas en marcha. Igual que con la Luna de Calabazas, un cuello de botella cerca de tu base ayuda contra toda la oleada.
+		}
+
+		VencerAEverscream: {
+			Titulo: Derrotarlo (opcional)
+			Porque: NPC.downedChristmasTree solo marca a este primer jefe como caído: la Luna Helada sigue hasta la décima oleada, donde llega la Reina de Hielo, pasando antes por Santa-NK1.
+			Como: Dispara ráfagas de proyectiles helados a distancia, parecido a Mourning Wood pero con más cadencia.
+		}
+
+		ArmaParaSantaNK1: {
+			Titulo: Un arma para el segundo jefe: el más blindado de los tres
+			Porque: Santa-NK1 tiene 120 de daño, 56 de defensa y 18000 de vida (NPC.cs, type==346) - la defensa más alta de los tres jefes del evento, muy por encima de los 38 de Everscream y la Reina de Hielo.
+			Como: Llega en la sexta oleada. Dispara regalos explosivos y ráfagas de ametralladora en línea recta: moverte en diagonal esquiva más que retroceder en línea.
+		}
+
+		VencerASantaNK1: {
+			Titulo: Derrotarlo (opcional)
+			Porque: NPC.downedChristmasSantank marca al segundo jefe como caído. Queda uno: la Reina de Hielo, la última y con más vida de los tres.
+			Como: Es un tanque casi estático: rinde mejor un arma con mucho alcance o que dispare que una cuerpo a cuerpo.
+		}
+
+		ArmaParaIceQueen: {
+			Titulo: Un arma para el jefe que cierra el evento
+			Porque: La Reina de Hielo tiene 120 de daño, 38 de defensa y 34000 de vida (NPC.cs, type==345) - la más alta de los tres jefes del evento - y coldDamage=true, aplica frío extra además del golpe directo.
+			Como: Llega en la décima oleada, con Everscream y Santa-NK1 ya superados: el evento sigue solo, sin volver a usar el Regalo Travieso. Una fuente de calor o un buff contra el frío ayuda aquí más que en ningún otro tramo.
+		}
+
+		VencerAIceQueen: {
+			Titulo: Derrotarla: cierra el evento
+			Porque: NPC.downedChristmasIceQueen marca la Luna Helada como superada del todo, el evento por oleadas más largo de los dos (diez oleadas hasta que aparece, frente a las nueve de la Luna de Calabazas).
+			Como: Dispara ráfagas de cristales de hielo en abanico: moverte en círculos amplios deja menos huecos que retroceder en línea recta.
+		}
+
+		ArmaParaElEjercitoD2: {
+			Titulo: Un arma capaz de un asedio entero
+			Porque: Betsy, el jefe que cierra cada asedio, tiene 80 de daño, 38 de defensa y 50000 de vida (NPC.cs, type==551). No es solo ella: cada asedio son varias oleadas de enemigos propios del evento (goblins, wyverns, magos oscuros...) antes de que aparezca.
+			Como: Se invoca con clic derecho sobre el Soporte del Cristal de Eternia (una estructura que fabricas y colocas tú) llevando el Cristal de Eternia en el inventario (Player.cs, ~línea 30670): se consume al usarlo, igual que el resto de objetos de invocación de esta guía.
+		}
+
+		VencerAlEjercitoD2: {
+			Titulo: Superar los tres asedios (opcional)
+			Porque: Player.downedDD2EventAnyDifficulty se enciende al terminar el evento en CUALQUIER dificultad (Media/Alta/Para Expertos), no hace falta la más dura para que la guía lo dé por hecho - aunque el mejor equipo sale de la dificultad más alta que te veas capaz de aguantar.
+			Como: Protege el Cristal de Eternia, no solo a ti mismo: si cae, el asedio termina en derrota aunque tú sigas vivo. Construir pasillos estrechos alrededor del cristal, con trampas, ayuda más que pelear a cuerpo descubierto.
 		}
 
 		ArmaParaElCultista: {

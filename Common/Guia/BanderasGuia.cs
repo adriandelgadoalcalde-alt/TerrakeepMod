@@ -71,7 +71,21 @@ namespace TerrakeepMod.Common.Guia
 				{ "downedMartians", () => NPC.downedMartians },
 				// NPC.cs: "downedFrost" (no "downedFrostLegion") es el nombre real del campo que
 				// enciende la Legion de Escarcha al derrotarla.
-				{ "downedFrost", () => NPC.downedFrost }
+				{ "downedFrost", () => NPC.downedFrost },
+
+				// --- Luna de Calabazas y Luna Helada: DOS y TRES banderas, un jefe de oleada cada
+				// una (NPC.cs, no hay una bandera unica de "evento completo" para ninguno de los dos) --
+				{ "downedHalloweenTree", () => NPC.downedHalloweenTree },     // Mourning Wood
+				{ "downedHalloweenKing", () => NPC.downedHalloweenKing },     // Pumpking
+				{ "downedChristmasTree", () => NPC.downedChristmasTree },     // Everscream
+				{ "downedChristmasSantank", () => NPC.downedChristmasSantank }, // Santa-NK1
+				{ "downedChristmasIceQueen", () => NPC.downedChristmasIceQueen }, // Reina de Hielo
+
+				// --- Antiguo Ejercito D2: la PRIMERA bandera de la tabla que lee Player en vez de
+				// NPC/WorldGen/Main (Player.cs, ~linea 2171/23413/55965). Player.cs comprobado:
+				// se guarda y se lee del .plr sin condicion, como cualquier otro downed*.
+				{ "downedDD2EventAnyDifficulty", () =>
+					Main.LocalPlayer != null && Main.LocalPlayer.downedDD2EventAnyDifficulty }
 			};
 		}
 
