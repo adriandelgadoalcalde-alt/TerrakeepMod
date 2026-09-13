@@ -43,7 +43,7 @@ namespace TerrakeepMod.UI.Personaje
 		/// asi que insertar una pestaña nueva en medio habria corrido el indice de todas las de
 		/// detras.</summary>
 		public static readonly string[] ClavesPestana = {
-			"Inventario", "Almacenes", "Equipo", "Buffs", "Apariencia", "Desbloqueos", "Conjuntos"
+			"Inventario", "Almacenes", "Equipo", "Buffs", "Apariencia", "Desbloqueos", "Conjuntos", "Completitud"
 		};
 
 		private static string NombrePestana(int indice)
@@ -151,6 +151,7 @@ namespace TerrakeepMod.UI.Personaje
 				case 4: return new PestanaApariencia();
 				case 5: return new PestanaDesbloqueos();
 				case 6: return new PestanaConjuntos();
+				case 7: return new PestanaCompletitud();
 				default: return null;
 			}
 		}

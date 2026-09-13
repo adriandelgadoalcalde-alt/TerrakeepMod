@@ -86,7 +86,11 @@ namespace TerrakeepMod.Common.Panel
 					// propia captura para comprobar de verdad que los botones de renombrar y la
 					// lista de presets no se solapan con nada.
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
-						Loadouts.LoadoutsSystem.VariableAutoprueba));
+						Loadouts.LoadoutsSystem.VariableAutoprueba))
+					// Completitud (vista de que falta para el 100%): misma necesidad real que
+					// Conjuntos - comprobar visualmente las cuatro barras/listas de resumen.
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
+						Completitud.CompletitudSystem.VariableAutoprueba));
 			}
 		}
 

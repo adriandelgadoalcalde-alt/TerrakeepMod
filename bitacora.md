@@ -6636,3 +6636,92 @@ Gestión de loadouts: terminada y verificada. Queda la última pieza del encargo
 completitud (bestiario/logros/colección/jefes derrotados), reutilizando datos reales ya
 existentes del juego (banderas `NPC.downed*` que ya usa la Guía, `Common/Investigacion` para
 colección de objetos).
+
+## 13-sep-2026 (continuación 7) — Cuarta y última pieza del encargo: vista de "qué falta para el
+## 100%", y cierre de las cuatro piezas grandes de esta sesión
+
+Encargo: "un resumen de completitud (bestiario, logros, colección de objetos, jefes derrotados) -
+reutiliza datos reales del juego, nunca inventados".
+
+### De dónde sale cada dato real (los cuatro, sin inventar ninguno)
+
+Nueva sub-pestaña de Personaje, "Completitud" (octava, índice 7). `Common/Completitud/
+EstadoCompletitud.cs`:
+
+- **Jefes y eventos**: reutiliza tal cual `CatalogoGuia.Tramos` (el árbol de la propia Guía, 21
+  tramos reales ya investigados y verificados en sesiones anteriores) - un tramo cuenta como
+  superado con el MISMO criterio que ya usa `EstadoGuia` internamente: su último paso completado
+  (`EvaluadorGuia.PasoCompletado`). No se reinvestiga nada, se reutiliza el trabajo ya hecho.
+- **Bestiario**: `Main.BestiaryDB`/`Main.BestiaryTracker`, el sistema oficial de 1.4 - un bicho
+  cuenta como "conocido" si su `BestiaryEntryUnlockState` ya superó `NotKnownAtAll_0` (visto,
+  matado o hablado con él), el mismo criterio con el que el propio juego decide qué enseñar en su
+  pantalla de bestiario.
+- **Logros**: `Main.Achievements.CreateAchievementsList()`, el `AchievementManager` oficial -
+  `Achievement.IsCompleted` real. Los logros secretos (`Hidden`) no enseñan su nombre hasta
+  completarse (un "???" real, mismo criterio que la pantalla de logros de vanilla - nunca
+  spoileado).
+- **Objetos investigados (Modo Viaje)**: reutiliza `EstadoInvestigacion.EsInvestigable`/`.Completo`
+  (ya construidos por la pestaña "Investigación" del mod), sumando tipo a tipo - a propósito NO se
+  suman las carpetas raíz de `CatalogoInvestigacion` directamente: varias son vistas ALTERNATIVAS
+  de los mismos objetos ("Categorías" y "Objetos por ID" cuentan casi los mismos ~5400 objetos
+  cada una por su cuenta), sumarlas habría contado cada objeto dos o tres veces.
+
+Cada resumen es una barra (`MedidorPreparacionTk`, reutilizado tal cual de la Guía - mismo
+rojo/ámbar/verde) + "hecho/total (%)" + lista de lo que falta cuando tiene sentido enseñarla
+(jefes y logros; bestiario e investigación no, por lo mismo que ya no lista Investigación en su
+propia pestaña: con miles de objetos no cabría ni sería legible - "Investigación" ya es el sitio
+real para explorar eso carpeta a carpeta).
+
+### Verificación real, en el juego real
+
+`Common/Completitud/AutopruebaCompletitud.cs` + `CompletitudSystem.cs` (mismo patrón que
+Conjuntos) + `scripts/verificar-completitud.ps1`. Comprobación cruzada real: `Jefes.Total` tiene
+que dar exactamente 21, el mismo número que la propia Guía ya tiene verificado en la bitácora -
+si no coincidiera, "Completitud" estaría leyendo mal el mismo catálogo. Log real:
+`Jefes.Total=21... OK: mismo catalogo, mismo numero`. Los cuatro resúmenes con datos reales y
+coherentes (`Bestiario: 0/540`, `Logros: 0/115`, `Investigacion: 0/5491`, para el personaje
+sintético de pruebas, recién creado). Captura real es/en, sin ningún solapamiento.
+
+**Bug real encontrado por la propia captura** (segunda vez en esta sesión con la misma familia de
+bug): la etiqueta de "hecho/total (%)" no aparecía en la primera captura - `HAlign=1f` A LA VEZ
+que `Left.Set(0f, 1f)` suma los dos desplazamientos y empuja el elemento fuera del marco visible
+(la combinación exacta que ya rompió la fila de guardar preset de Conjuntos, pero con
+`HAlign`+`Left` en vez de `VAlign`+`Top` - mismo patrón, otro sitio). Arreglado a `Left.Set(-260f,
+1f)` sin `HAlign`; verificado de nuevo con captura real, visible y alineado a la derecha sin
+solapar el título.
+
+### Un segundo hallazgo real, sobre la propia pieza de sincronización de dos sesiones atrás
+
+Comprobando por qué el `settings.json` REAL de esta máquina había cambiado de formato (de
+indentado a una sola línea) sin que ninguna autoprueba lo tocara (confirmado por la ausencia de la
+línea `Sincronizacion: Idioma reflejado...` en los logs), se releyó el código REAL de
+`SettingsService.Save` de la app de escritorio: usa `JsonSerializer.Serialize(settings)` SIN
+ninguna opción de indentado - su `settings.json` real de verdad es compacto, de una sola línea. La
+suposición anterior de esta sesión ("la app usa `WriteIndented=true`") era incorrecta, sin
+comprobar contra el código real antes de escribirla. Corregido:
+`SincronizacionEscritorio.EscribirIdiomaEscritorio` ahora escribe con `Formatting.None` a
+propósito, para no imponerle a un archivo ajeno un formato que la propia app nunca produce por su
+cuenta.
+
+### Verificación cruzada final (regresión de las cuatro piezas juntas)
+
+Antes de comitear, se re-ejecutaron `verificar-conjuntos.ps1` y `verificar-sincronizacion.ps1`
+completos tras el arreglo de formato - las cuatro autopruebas de esta sesión (arrastre,
+sincronización, conjuntos, completitud) en verde a la vez, sin ningún FALLO, y sin tocar nunca el
+`%LOCALAPPDATA%\Terrakeep` real salvo por la propia escritura legítima que sí le corresponde a la
+autoprueba de sincronización (redirigida a TEMP).
+
+### Cierre de las cuatro piezas grandes del encargo (13-sep-2026)
+
+1. **Undo/redo general**: cerrado el agujero real (el arrastre con el ratón nunca pasaba por el
+   historial), verificado.
+2. **Sincronización con Terrakeep (escritorio)**: idioma compartido + historial de copias
+   compartido (formato `.tkbak` real), documentando con honestidad lo que NO tiene análogo real,
+   verificado.
+3. **Gestión de loadouts**: nombrar los tres conjuntos nativos + presets propios sin límite fijo,
+   con deshacer/rehacer integrado, verificado.
+4. **Vista de completitud**: los cuatro resúmenes reales de esta entrada, verificado.
+
+Las cuatro con captura real es/en, arnés de pruebas propio por pieza (mismo patrón establecido:
+variable de entorno, sandbox compartido, log real, sin FALLO) y comprobación cruzada final para
+descartar regresiones entre ellas. No queda ningún punto pendiente del encargo original.

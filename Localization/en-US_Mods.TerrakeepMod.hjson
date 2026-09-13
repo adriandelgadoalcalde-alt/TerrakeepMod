@@ -33,6 +33,7 @@ Personaje: {
 		Apariencia: Appearance
 		Desbloqueos: Unlocks
 		Conjuntos: Loadouts
+		Completitud: Completion
 	}
 
 	Nombre: Name
@@ -296,6 +297,16 @@ Personaje: {
 			Descripcion: Needs the unlock above (Player.UsingSuperCart checks both).
 		}
 	}
+}
+
+Completitud: {
+	Jefes: Bosses and events (Guide)
+	Bestiario: Bestiary
+	Logros: Achievements
+	Investigacion: Researched items (Journey Mode)
+	Numeros: "{0} / {1}  ({2}%)"
+	Completo: Complete!
+	LogroOculto: ??? (secret achievement, not yet discovered)
 }
 
 Libreria: {

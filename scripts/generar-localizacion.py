@@ -70,6 +70,7 @@ T = [
     ("Personaje.Pestana.Apariencia", "Apariencia", "Appearance"),
     ("Personaje.Pestana.Desbloqueos", "Desbloqueos", "Unlocks"),
     ("Personaje.Pestana.Conjuntos", "Conjuntos", "Loadouts"),
+    ("Personaje.Pestana.Completitud", "Completitud", "Completion"),
 
     ("Personaje.Nombre", "Nombre", "Name"),
     ("Personaje.SinNombre", "(sin nombre)", "(no name)"),
@@ -158,6 +159,18 @@ T = [
      "Fotografía armadura, vanidad y tintes del conjunto ACTIVO ahora mismo en un preset nuevo con este nombre.",
      "Snapshots armor, vanity and dyes of the CURRENTLY active loadout into a new preset with this name."),
     ("Personaje.Conjuntos.HistorialAplicar", "Aplicar preset \"{0}\"", "Apply preset \"{0}\""),
+
+    # ---------------------------------------------------------------- personaje: completitud
+    # Pestaña nueva "Completitud": cuatro resumenes reales de progreso (jefes/eventos de la Guia,
+    # bestiario, logros, objetos investigados) - ver EstadoCompletitud.cs para de donde sale cada
+    # dato real, nunca inventado.
+    ("Completitud.Jefes", "Jefes y eventos (Guía)", "Bosses and events (Guide)"),
+    ("Completitud.Bestiario", "Bestiario", "Bestiary"),
+    ("Completitud.Logros", "Logros", "Achievements"),
+    ("Completitud.Investigacion", "Objetos investigados (Modo Viaje)", "Researched items (Journey Mode)"),
+    ("Completitud.Numeros", "{0} / {1}  ({2}%)", "{0} / {1}  ({2}%)"),
+    ("Completitud.Completo", "¡Completo!", "Complete!"),
+    ("Completitud.LogroOculto", "??? (logro secreto, todavía sin descubrir)", "??? (secret achievement, not yet discovered)"),
 
     # Fila de herramientas (papelera + editor de cantidad), compartida por Inventario, Almacenes
     # y Equipo.

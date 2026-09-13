@@ -135,12 +135,14 @@ namespace TerrakeepMod.Common.Sincronizacion
 				// la app de escritorio (temporal + File.Move): un corte a mitad deja el .tmp
 				// suelto, nunca el settings.json real a medio escribir.
 				string tmp = RutaSettings + ".tmp";
-				// Formatting.Indented explicito: TerrakeepSettings.Save de la app de escritorio usa
-				// System.Text.Json con WriteIndented=true, y un settings.json que de golpe pasara
-				// a una sola linea seria un cambio de formato raro y sin aviso para quien lo abra
-				// a mano - JObject.ToString() sin argumento no siempre lo deja indentado, visto en
-				// el archivo real de esta sesion.
-				File.WriteAllText(tmp, json.ToString(Newtonsoft.Json.Formatting.Indented));
+				// Formatting.None explicito, y no un descuido: SettingsService.Save de la app de
+				// escritorio (leido su codigo real) escribe con
+				// "JsonSerializer.Serialize(settings)" SIN ninguna opcion de indentado - su
+				// settings.json real de verdad es una sola linea compacta. Escribir aqui con
+				// sangria habria sido un formato que la propia app NUNCA produce por su cuenta,
+				// no una mejora - de hecho la primera version de este metodo lo hacia asi por una
+				// suposicion sin comprobar, y se corrigio tras ver el archivo real.
+				File.WriteAllText(tmp, json.ToString(Newtonsoft.Json.Formatting.None));
 				File.Delete(RutaSettings);
 				File.Move(tmp, RutaSettings);
 

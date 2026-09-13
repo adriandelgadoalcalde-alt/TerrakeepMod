@@ -33,6 +33,7 @@ Personaje: {
 		Apariencia: Apariencia
 		Desbloqueos: Desbloqueos
 		Conjuntos: Conjuntos
+		Completitud: Completitud
 	}
 
 	Nombre: Nombre
@@ -296,6 +297,16 @@ Personaje: {
 			Descripcion: Exige el desbloqueo de arriba (Player.UsingSuperCart comprueba los dos).
 		}
 	}
+}
+
+Completitud: {
+	Jefes: Jefes y eventos (Guía)
+	Bestiario: Bestiario
+	Logros: Logros
+	Investigacion: Objetos investigados (Modo Viaje)
+	Numeros: "{0} / {1}  ({2}%)"
+	Completo: ¡Completo!
+	LogroOculto: ??? (logro secreto, todavía sin descubrir)
 }
 
 Libreria: {
