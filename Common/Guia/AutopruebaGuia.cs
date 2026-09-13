@@ -68,6 +68,8 @@ namespace TerrakeepMod.Common.Guia
 		private static bool _downedTowerStardustOriginal;
 		private static bool _downedMoonlordOriginal;
 		private static bool _downedQueenBeeOriginal;
+		private static bool _downedSlimeKingOriginal;
+		private static bool _downedDeerclopsOriginal;
 		private static readonly List<int> _npcsCreados = new List<int>();
 
 		/// <summary>Tipos de NPC del pueblo que ya vivian en el mundo de prueba y que la prueba
@@ -236,14 +238,17 @@ namespace TerrakeepMod.Common.Guia
 				case 36: Restaurar(); break;
 
 				// --- segundo tramo implementado: la maldad del mundo (Devorador / Cerebro) ------
-				// El tramo 1 se cierra a mano (downedBoss1=true) para que EstadoGuia.PasoActual
-				// pase al siguiente tramo IMPLEMENTADO. ReinaAbeja esta entre medias en el .json
-				// pero implementado=false, asi que el catalogo la salta sola: si el paso que
-				// aparece aqui fuera el suyo, seria la señal de que ese filtro se ha roto.
+				// El tramo 1 se cierra a mano (downedBoss1=true) para que EstadoGuia.PasoActual pase
+				// al siguiente tramo OBLIGATORIO. ReySlime (Orden 5) y Deerclops (Orden 15) quedan
+				// entre medias en el .json, y ReinaAbeja (Orden 25) justo despues de este tramo: los
+				// tres son TramoGuia.Opcional=true, asi que PasoActual los salta siempre sin mirar su
+				// Orden - si el paso que aparece aqui fuera el de cualquiera de los tres, seria la
+				// señal de que ese filtro se ha roto.
 				case 37: PrepararMaldadDelMundo(); break;
 				case 38: ComprobarPaso("ArmaContraLaMaldad",
-					"downedBoss1=true a mano y nada de la maldad del mundo hecho todavia " +
-					"(y NO \"ReinaAbeja\", que esta implementado=false y el catalogo la salta)"); break;
+					"downedBoss1=true a mano y nada de la maldad del mundo hecho todavia (y NO " +
+					"\"ReySlime\"/\"Deerclops\"/\"ReinaAbeja\", los tres Opcional=true y saltados " +
+					"siempre por PasoActual)"); break;
 				case 39: MarcarEsferaRotaDeMentira(); break;
 				case 40: PonerObjetoDeInvocacion(); break;
 				case 41: ComprobarPaso("ArmaContraLaMaldad",
@@ -398,6 +403,45 @@ namespace TerrakeepMod.Common.Guia
 				case 124: Capturar("guia-28-todo-lo-implementado-hecho"); break;
 
 				case 125: RestaurarTramosNuevos(); break;
+
+				// --- los dos tramos opcionales nuevos de esta sesion: ReySlime y Deerclops -------
+				// Los dos se dejaron marcados "superados" desde Arrancar() para no interferir con
+				// nada de lo anterior. Aqui se ponen en false uno a uno, se comprueban con
+				// EstadoGuia.PasoOpcionalActual (el mismo camino que usa ContenidoGuia.MontarDetalle
+				// para la seccion "Objetivo opcional") y se devuelven a su valor original al final.
+				case 126: PrepararOpcionalesTempranos(); break;
+				case 127: ComprobarPasoOpcional("ReySlime", "ArmaParaElReySlime",
+					"ningun opcional sin superar todavia: ReySlime es el de menor Orden (5) de todos " +
+					"los tramos opcionales, por delante incluso de PreOjo (10)"); break;
+				case 128: Capturar("guia-29-reyslime-preparativos"); break;
+				case 129: PonerArmaConDano(12); break;
+				case 130: VolcarEstadoDelJugador("con arma contra el Rey Slime"); break;
+				case 131: ComprobarPasoOpcional("ReySlime", "VencerAlReySlime",
+					"arma de 12+ de daño puesta: el unico requisito obligatorio del primer paso ya " +
+					"esta cumplido, asi que el paso siguiente pasa a ser el objetivo opcional"); break;
+				case 132: ComprobarLecturaDeJefeOpcional("Rey Slime"); break;
+				case 133: Capturar("guia-30-reyslime-vencer"); break;
+				case 134: MarcarReySlimeDerrotadoDeMentira(); break;
+				case 135: QuitarArmaDeLaMochila(); break;
+				case 136: ComprobarPasoOpcional("Deerclops", "ArmaParaDeerclops",
+					"ReySlime ya superado (downedSlimeKing=true a mano): el siguiente opcional por " +
+					"Orden es Deerclops (15), por delante todavia de ReinaAbeja (25)"); break;
+				case 137: Capturar("guia-31-deerclops-preparativos"); break;
+				case 138: PonerArmaConDano(16); break;
+				case 139: VolcarEstadoDelJugador("con arma contra Deerclops"); break;
+				case 140: ComprobarPasoOpcional("Deerclops", "VencerADeerclops",
+					"arma de 16+ de daño puesta: el unico requisito obligatorio del primer paso ya " +
+					"esta cumplido, asi que el paso siguiente pasa a ser el objetivo opcional"); break;
+				case 141: ComprobarLecturaDeJefeOpcional("Deerclops"); break;
+				case 142: Capturar("guia-32-deerclops-vencer"); break;
+				case 143: MarcarDeerclopsDerrotadoDeMentira(); break;
+				case 144: QuitarArmaDeLaMochila(); break;
+				case 145: ComprobarLosDosOpcionalesTempranosDesaparecen(); break;
+				case 146: RestaurarOpcionalesTempranos(); break;
+				// Reutilizada (es idempotente: vuelve a escribir los mismos _xOriginal de
+				// Arrancar()) para deshacer el cierre del camino obligatorio que hizo
+				// PrepararOpcionalesTempranos solo para las capturas de este bloque.
+				case 147: RestaurarTramosNuevos(); break;
 				default: Terminar(); break;
 			}
 		}
@@ -442,6 +486,17 @@ namespace TerrakeepMod.Common.Guia
 			_downedMoonlordOriginal = NPC.downedMoonlord;
 			_downedQueenBeeOriginal = NPC.downedQueenBee;
 			NPC.downedBoss1 = false;
+
+			// ReySlime y Deerclops (los dos tramos opcionales nuevos de esta sesion, Orden 5 y 15,
+			// los mas bajos de todos los opcionales) se marcan SUPERADOS desde ya: asi no interfieren
+			// con ningun paso 1-125 de este arnes (que ya daban por buenos "ReinaAbeja"/
+			// "InicioModoDificil"/"JefesOpcionalesTardios" como los opcionales de menor Orden sin
+			// superar). Su propio bloque dedicado, al final de la prueba, los pone en false, los
+			// comprueba de verdad y los devuelve a su valor ORIGINAL (no a "true") al terminar.
+			_downedSlimeKingOriginal = NPC.downedSlimeKing;
+			_downedDeerclopsOriginal = NPC.downedDeerclops;
+			NPC.downedSlimeKing = true;
+			NPC.downedDeerclops = true;
 
 			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Personaje, "autoprueba de la Guia");
 		}
@@ -1176,6 +1231,193 @@ namespace TerrakeepMod.Common.Guia
 				", downedPlantBoss=" + NPC.downedPlantBoss + ", downedGolemBoss=" + NPC.downedGolemBoss +
 				", downedAncientCultist=" + NPC.downedAncientCultist + ", downedTowers=" + NPC.downedTowers +
 				", downedMoonlord=" + NPC.downedMoonlord + ", NPC de prueba retirados=" + quitados + ".");
+		}
+
+		// -------------------------------------------------------------------------------------
+		// Los dos tramos opcionales nuevos de esta sesion: ReySlime y Deerclops
+		// -------------------------------------------------------------------------------------
+
+		/// <summary>Igual que <see cref="ComprobarPaso"/> pero para el objetivo OPCIONAL
+		/// (<see cref="EstadoGuia.PasoOpcionalActual"/>), que vive en su propio hueco del panel
+		/// (la seccion "Objetivo opcional" de <c>ContenidoGuia.MontarDetalle</c>) y nunca sustituye
+		/// al objetivo obligatorio de <see cref="ComprobarPaso"/>.</summary>
+		private static void ComprobarPasoOpcional(string tramoEsperado, string claveEsperada, string porque)
+		{
+			ContenidoGuia contenido = GuiaSystem.PanelActual;
+			if (contenido == null) {
+				RegistroGuia.Aviso(Terrakeep.LogTag + " AUTOPRUEBA GUIA: la pestaña de la Guia no esta montada.");
+				return;
+			}
+			contenido.Reconstruir();
+
+			TramoGuia tramo;
+			PasoGuia paso = EstadoGuia.PasoOpcionalActual(out tramo);
+			string clave = paso != null ? paso.Clave : "(ninguno)";
+			string tramoClave = tramo != null ? tramo.Clave : "(ninguno)";
+			bool ok = clave == claveEsperada && tramoClave == tramoEsperado;
+
+			int cumplidos = 0, total = 0;
+			float preparacion = paso != null ? EvaluadorGuia.Preparacion(paso, out cumplidos, out total) : 0f;
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - objetivo OPCIONAL: \"" + tramoClave + "/" +
+				clave + "\" (\"" + (paso != null ? paso.Titulo : "-") + "\"), esperado \"" + tramoEsperado + "/" +
+				claveEsperada + "\" porque " + porque + " " + (ok ? "-> OK" : "-> NO CUADRA") +
+				". Preparacion " + (int)(preparacion * 100f + 0.5f) + "% (" + cumplidos + "/" + total +
+				" obligatorios).");
+
+			if (paso != null) {
+				List<ResultadoRequisito> resultados = EvaluadorGuia.Evaluar(paso);
+				for (int i = 0; i < resultados.Count; i++) {
+					ResultadoRequisito estado = resultados[i];
+					RegistroGuia.Linea(Terrakeep.LogTag + "   requisito opcional " + (i + 1) + "/" +
+						resultados.Count + ": [" +
+						(estado.NoEvaluable ? "?" : (estado.Cumplido ? "HECHO" : "FALTA")) + "] " +
+						estado.Linea + " (" + estado.Actual + "/" + estado.Pedido +
+						(estado.Requisito != null && estado.Requisito.Recomendado ? ", recomendado" : "") + ")");
+				}
+			}
+		}
+
+		/// <summary>Igual que <see cref="ComprobarLecturaDeJefeDelTramoActual"/> pero leyendo el jefe
+		/// del objetivo OPCIONAL en vez del obligatorio.</summary>
+		private static void ComprobarLecturaDeJefeOpcional(string etiqueta)
+		{
+			TramoGuia tramo;
+			PasoGuia paso = EstadoGuia.PasoOpcionalActual(out tramo);
+			if (paso == null || tramo == null) {
+				RegistroGuia.Aviso(Terrakeep.LogTag + " AUTOPRUEBA GUIA: no hay objetivo opcional para leer " +
+					"el jefe de \"" + etiqueta + "\".");
+				return;
+			}
+
+			int tipoJefe = paso.Jefe != 0 ? paso.Jefe : tramo.JefeFinal;
+			int vida, dano, defensa;
+			bool ok = EvaluadorGuia.StatsDeJefe(tipoJefe, out vida, out dano, out defensa);
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - stats REALES de \"" + etiqueta +
+				"\" (opcional) en esta partida (ContentSamples + NPC.ScaleStats con Main.GameModeInfo): " +
+				"tipo=" + tipoJefe + " (\"" + EvaluadorGuia.NombreDeNpc(tipoJefe) + "\"), resuelto=" + ok +
+				", vida=" + vida + ", defensa=" + defensa + ", daño=" + dano + ". Modo de esta partida: " +
+				EstadoGuia.MundoActualModo() + ".");
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - lectura que ve el jugador:\n" +
+				EstadoGuia.LecturaDeJefe(tipoJefe));
+		}
+
+		/// <summary>
+		/// Pone <c>downedSlimeKing</c> y <c>downedDeerclops</c> a false SIN pelear a ninguno de
+		/// los dos, para poder comprobar sus tramos desde un estado conocido. Se restauran a su
+		/// valor ORIGINAL (capturado en <see cref="Arrancar"/>, no necesariamente false) en
+		/// <see cref="RestaurarOpcionalesTempranos"/>.
+		/// </summary>
+		/// <remarks>
+		/// Ademas cierra el camino OBLIGATORIO entero (los mismos flags que ya deja en true
+		/// <see cref="ComprobarSinObjetivo"/> mas arriba). No es cosmetica de laboratorio: sin
+		/// esto, la columna izquierda del panel se queda enseñando "Armadura: mas de 10 de
+		/// defensa" (el objetivo obligatorio, que aqui no se ha tocado) durante todo este bloque,
+		/// y la seccion "Objetivo opcional" de la columna derecha (donde vive de verdad
+		/// ReySlime/Deerclops) queda empujada FUERA del back buffer visible por el "Este tramo,
+		/// paso a paso" del objetivo obligatorio - visto la primera vez en la propia captura real
+		/// de esta sesion, no en el log (que seguia en verde: <see cref="ComprobarPasoOpcional"/>
+		/// lee <see cref="EstadoGuia.PasoOpcionalActual"/> directamente, sin pasar por scroll ni
+		/// por lo que quede o no dentro del viewport). Con el camino obligatorio cerrado, el
+		/// objetivo opcional sube a la parte visible, igual que ya demostro la captura
+		/// "guia-28-todo-lo-implementado-hecho.png" de la sesion anterior. Se restaura con
+		/// <see cref="RestaurarTramosNuevos"/> (reutilizada, es idempotente) al final de este
+		/// bloque.
+		/// </remarks>
+		private static void PrepararOpcionalesTempranos()
+		{
+			NPC.downedSlimeKing = false;
+			NPC.downedDeerclops = false;
+
+			NPC.downedBoss1 = true;
+			NPC.downedBoss2 = true;
+			NPC.downedBoss3 = true;
+			Main.hardMode = true;
+			NPC.downedMechBoss1 = true;
+			NPC.downedMechBossAny = true;
+			NPC.downedPlantBoss = true;
+			NPC.downedGolemBoss = true;
+			NPC.downedAncientCultist = true;
+			NPC.downedTowerSolar = true;
+			NPC.downedTowerVortex = true;
+			NPC.downedTowerNebula = true;
+			NPC.downedTowerStardust = true;
+			NPC.downedMoonlord = true;
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - preparados los dos opcionales " +
+				"tempranos: downedSlimeKing=false, downedDeerclops=false (a mano, estaban en true desde " +
+				"Arrancar() para no interferir con el resto de la prueba). El camino OBLIGATORIO se " +
+				"cierra entero de nuevo (mismos flags que ComprobarSinObjetivo) para que la seccion " +
+				"\"Objetivo opcional\" suba a la parte visible del back buffer en las capturas de este " +
+				"bloque, en vez de quedar tapada por el objetivo obligatorio. Se restaura todo al " +
+				"terminar.");
+		}
+
+		/// <summary>Marca al Rey Slime como derrotado SIN pelearlo.</summary>
+		private static void MarcarReySlimeDerrotadoDeMentira()
+		{
+			NPC.downedSlimeKing = true;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - NPC.downedSlimeKing puesto a true " +
+				"a mano (la bandera real que enciende NPC.SetEventFlagCleared al morir el Rey Slime, " +
+				"NPC.cs case 50). Se restaura al terminar.");
+		}
+
+		/// <summary>Marca a Deerclops como derrotado SIN pelearlo.</summary>
+		private static void MarcarDeerclopsDerrotadoDeMentira()
+		{
+			NPC.downedDeerclops = true;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - NPC.downedDeerclops puesto a true " +
+				"a mano (la bandera real que enciende NPC.SetEventFlagCleared al morir Deerclops, " +
+				"NPC.cs case 668, linea ~85353). Se restaura al terminar.");
+		}
+
+		/// <summary>
+		/// Comprueba el otro sentido del arreglo del tramo opcional (el mismo que ya comprobaba
+		/// <see cref="ComprobarOpcionalSuperadoDesaparece"/> para la Reina Abeja), aplicado a los
+		/// dos tramos opcionales de menor Orden de todos: tienen que DESAPARECER de la hoja de ruta
+		/// en cuanto se superan, y el objetivo opcional tiene que saltar al siguiente pendiente por
+		/// Orden (ReinaAbeja, sin tocar en todo este bloque).
+		/// </summary>
+		private static void ComprobarLosDosOpcionalesTempranosDesaparecen()
+		{
+			List<TramoGuia> porDelante = EstadoGuia.TramosPorDelante(null);
+			bool tieneReySlime = false, tieneDeerclops = false, tieneReinaAbeja = false;
+			for (int i = 0; i < porDelante.Count; i++) {
+				if (porDelante[i].Clave == "ReySlime") tieneReySlime = true;
+				if (porDelante[i].Clave == "Deerclops") tieneDeerclops = true;
+				if (porDelante[i].Clave == "ReinaAbeja") tieneReinaAbeja = true;
+			}
+			bool ok = !tieneReySlime && !tieneDeerclops && tieneReinaAbeja;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - con ReySlime y Deerclops superados, " +
+				"hoja de ruta: ReySlime presente=" + tieneReySlime + " (debe ser false, ya superado), " +
+				"Deerclops presente=" + tieneDeerclops + " (debe ser false, ya superado), ReinaAbeja " +
+				"presente=" + tieneReinaAbeja + " (debe seguir true, no se ha tocado) " +
+				(ok ? "-> OK." : "-> NO CUADRA."));
+
+			TramoGuia tramoOpcional;
+			PasoGuia pasoOpcional = EstadoGuia.PasoOpcionalActual(out tramoOpcional);
+			bool okSiguiente = pasoOpcional != null && tramoOpcional != null &&
+				tramoOpcional.Clave == "ReinaAbeja" && pasoOpcional.Clave == "ArmaParaLaReina";
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - objetivo opcional tras superar " +
+				"ReySlime y Deerclops (sin arma en la mochila): \"" +
+				(pasoOpcional != null ? tramoOpcional.Clave + "/" + pasoOpcional.Clave : "(ninguno)") +
+				"\", esperado \"ReinaAbeja/ArmaParaLaReina\" (el siguiente opcional pendiente por Orden) " +
+				(okSiguiente ? "-> OK." : "-> NO CUADRA."));
+		}
+
+		/// <summary>Devuelve <c>downedSlimeKing</c> y <c>downedDeerclops</c> a su valor ORIGINAL
+		/// (el que tenia el mundo de pruebas antes de que <see cref="Arrancar"/> los forzara a
+		/// true), y limpia la mochila.</summary>
+		private static void RestaurarOpcionalesTempranos()
+		{
+			NPC.downedSlimeKing = _downedSlimeKingOriginal;
+			NPC.downedDeerclops = _downedDeerclopsOriginal;
+			Main.LocalPlayer.inventory[0] = new Item();
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - restaurados los dos opcionales " +
+				"tempranos a su valor original: downedSlimeKing=" + NPC.downedSlimeKing +
+				", downedDeerclops=" + NPC.downedDeerclops + ".");
 		}
 
 		private static void Restaurar()

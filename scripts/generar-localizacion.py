@@ -846,6 +846,8 @@ T += [
     ("Guia.Bandera.downedTowers", "Derrotar a las cuatro torres celestiales",
      "Defeat all four celestial towers"),
     ("Guia.Bandera.downedMoonlord", "Derrotar al Señor de la Luna", "Defeat the Moon Lord"),
+    ("Guia.Bandera.downedSlimeKing", "Derrotar al Rey Slime", "Defeat King Slime"),
+    ("Guia.Bandera.downedDeerclops", "Derrotar a Deerclops", "Defeat Deerclops"),
     ("Guia.Bandera.downedQueenBee", "Derrotar a la Reina Abeja", "Defeat the Queen Bee"),
     ("Guia.Bandera.downedQueenSlime", "Derrotar a la Reina Slime", "Defeat the Queen Slime"),
     ("Guia.Bandera.downedFishron", "Derrotar al Duque Pezhongo", "Defeat Duke Fishron"),
@@ -860,12 +862,23 @@ T += [
     ("Guia.Zona.Infierno", "el Infierno", "the Underworld"),
     ("Guia.Zona.Jungla", "la jungla subterránea", "the underground jungle"),
     ("Guia.Zona.TemploLihzahrd", "el Templo de la Selva", "the Jungle Temple"),
+    ("Guia.Zona.Nieve", "el bioma de nieve", "the snow biome"),
 
     # --- tramos ------------------------------------------------------------------------------
+    ("Guia.Tramo.ReySlime.Nombre", "El Rey Slime (opcional)", "King Slime (optional)"),
+    ("Guia.Tramo.ReySlime.Resumen",
+     "2000 de vida, en la superficie. El opcional más flojo de todo el árbol: se puede derrotar incluso antes del Ojo de Cthulhu.",
+     "2000 health, on the surface. The weakest optional in the whole tree: it can be beaten even before the Eye of Cthulhu."),
+
     ("Guia.Tramo.PreOjo.Nombre", "Antes del primer jefe", "Before the first boss"),
     ("Guia.Tramo.PreOjo.Resumen",
      "Casa, mineral, cristales de vida y cuatro vecinos, hasta el Ojo de Cthulhu.",
      "A house, ore, life crystals and four villagers, up to the Eye of Cthulhu."),
+
+    ("Guia.Tramo.Deerclops.Nombre", "Deerclops (opcional)", "Deerclops (optional)"),
+    ("Guia.Tramo.Deerclops.Resumen",
+     "7000 de vida, en el bioma de nieve. Solo aparece de noche, durante una tormenta, y sin ningún otro peligro activo cerca.",
+     "7000 health, in the snow biome. It only appears at night, during a storm, with no other danger active nearby."),
 
     ("Guia.Tramo.MaldadDelMundo.Nombre", "La maldad de tu mundo", "Your world's evil"),
     ("Guia.Tramo.MaldadDelMundo.Resumen",
@@ -977,6 +990,42 @@ T += [
     ("Guia.Paso.InvocarElOjo.Como",
      "Seis lentes en un Altar Demoniaco o Carmesí. Las lentes las sueltan los ojos que vuelan de noche por la superficie, así que salen solas mientras preparas el resto.",
      "Six lenses at a Demon or Crimson Altar. Lenses drop from the eyes that fly around the surface at night, so they pile up on their own while you get everything else ready."),
+
+    # --- pasos del tramo opcional del Rey Slime ------------------------------------------------
+    ("Guia.Paso.ArmaParaElReySlime.Titulo", "Cualquier arma, aunque sea de la primera capa",
+     "Any weapon, even a first-tier one"),
+    ("Guia.Paso.ArmaParaElReySlime.Porque",
+     "El Rey Slime tiene 40 de daño, solo 10 de defensa y 2000 de vida (NPC.cs, type==50) - menos vida que el Ojo de Cthulhu, y se puede derrotar incluso ANTES que él. No bloquea nada del camino obligatorio, pero es el primer jefe de verdad con el que probarte, y suelta la Corona de Slime, que lo vuelve a invocar cuando quieras.",
+     "King Slime has 40 damage, only 10 defense and 2000 health (NPC.cs, type==50) - less health than the Eye of Cthulhu, and he can be beaten even BEFORE it. He blocks nothing on the mandatory path, but he is the first real boss to try yourself against, and he drops the Slime Crown, which summons him again whenever you want."),
+    ("Guia.Paso.ArmaParaElReySlime.Como",
+     "Aparece solo, muy de vez en cuando, con lluvia de slimes en la superficie. La Corona de Slime lo llama al instante si prefieres elegir tú el momento.",
+     "He appears on his own, rarely, during a slime rain on the surface. The Slime Crown summons him instantly if you would rather pick the moment yourself."),
+
+    ("Guia.Paso.VencerAlReySlime.Titulo", "Derrotarlo (opcional)", "Defeat him (optional)"),
+    ("Guia.Paso.VencerAlReySlime.Porque",
+     "NPC.downedSlimeKing no abre ningún camino obligatorio - es puramente un extra, pensado para tan pronto que ni siquiera hace falta esperar al Ojo. Lo que suelta (la Corona, el Compañero Slime Real) es un trofeo temprano más que una necesidad.",
+     "NPC.downedSlimeKing does not unlock anything on the mandatory path - it is purely a bonus, meant so early you do not even need to wait for the Eye. What he drops (the Crown, the Royal Slime Companion) is an early trophy more than a necessity."),
+    ("Guia.Paso.VencerAlReySlime.Como",
+     "Salta hacia ti y suelta slimes más pequeños sin parar: una arena con plataformas para esquivar el salto vale más que espacio llano.",
+     "He jumps at you and keeps spawning smaller slimes: an arena with platforms to dodge the jump helps more than flat ground."),
+
+    # --- pasos del tramo opcional de Deerclops --------------------------------------------------
+    ("Guia.Paso.ArmaParaDeerclops.Titulo", "Un arma capaz de aguantar el frío",
+     "A weapon that can weather the cold"),
+    ("Guia.Paso.ArmaParaDeerclops.Porque",
+     "Deerclops tiene 20 de daño, 10 de defensa y 7000 de vida (NPC.cs, type==668), pero su daño lleva el flag coldDamage: además del golpe, aplica un debuff de frío extra que hace más dura la pelea de lo que sugiere su daño base. No bloquea nada, pero es de los pocos jefes que puede aparecer solo, sin que tú elijas el momento.",
+     "Deerclops has 20 damage, 10 defense and 7000 health (NPC.cs, type==668), but its damage carries the coldDamage flag: on top of the hit, it applies an extra cold debuff that makes the fight harder than its base damage suggests. It blocks nothing, but it is one of the few bosses that can show up on its own, without you picking the moment."),
+    ("Guia.Paso.ArmaParaDeerclops.Como",
+     "Solo aparece de noche, durante una tormenta, dentro del bioma de nieve y sin ningún otro peligro activo cerca (Main.cs: la condición real que comprueba el juego). El Deer Thing lo invoca al instante si prefieres no esperar a que se den todas esas condiciones a la vez.",
+     "It only appears at night, during a storm, inside the snow biome and with no other danger active nearby (Main.cs: the real condition the game checks). The Deer Thing summons it instantly if you would rather not wait for all of that to line up at once."),
+
+    ("Guia.Paso.VencerADeerclops.Titulo", "Derrotarlo (opcional)", "Defeat it (optional)"),
+    ("Guia.Paso.VencerADeerclops.Porque",
+     "NPC.downedDeerclops no abre ningún camino obligatorio - es puramente un extra, importado del universo de Don't Starve Together. Lo que suelta (el Ojo de Deerclops, la mascota Deer Thing) es un trofeo temprano más que una necesidad.",
+     "NPC.downedDeerclops does not unlock anything on the mandatory path - it is purely a bonus, imported from the Don't Starve Together universe. What it drops (the Deerclops Eye, the Deer Thing pet) is an early trophy more than a necessity."),
+    ("Guia.Paso.VencerADeerclops.Como",
+     "Golpea el suelo y lanza pinchos de hielo en línea recta desde ambos lados: una arena elevada, lejos del suelo que pisa, evita la mayoría de sus ataques.",
+     "It slams the ground and shoots ice spikes in straight lines from both sides: an elevated arena, away from the ground it stands on, avoids most of its attacks."),
 
     # --- pasos del segundo tramo: la maldad del mundo (Devorador / Cerebro) ------------------
     ("Guia.Paso.ArmaContraLaMaldad.Titulo", "Un arma que aguante muchos golpes seguidos",

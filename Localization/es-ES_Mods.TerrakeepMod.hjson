@@ -794,6 +794,8 @@ Guia: {
 		downedAncientCultist: Derrotar al Cultista Lunático
 		downedTowers: Derrotar a las cuatro torres celestiales
 		downedMoonlord: Derrotar al Señor de la Luna
+		downedSlimeKing: Derrotar al Rey Slime
+		downedDeerclops: Derrotar a Deerclops
 		downedQueenBee: Derrotar a la Reina Abeja
 		downedQueenSlime: Derrotar a la Reina Slime
 		downedFishron: Derrotar al Duque Pezhongo
@@ -808,12 +810,23 @@ Guia: {
 		Infierno: el Infierno
 		Jungla: la jungla subterránea
 		TemploLihzahrd: el Templo de la Selva
+		Nieve: el bioma de nieve
 	}
 
 	Tramo: {
+		ReySlime: {
+			Nombre: El Rey Slime (opcional)
+			Resumen: 2000 de vida, en la superficie. El opcional más flojo de todo el árbol: se puede derrotar incluso antes del Ojo de Cthulhu.
+		}
+
 		PreOjo: {
 			Nombre: Antes del primer jefe
 			Resumen: Casa, mineral, cristales de vida y cuatro vecinos, hasta el Ojo de Cthulhu.
+		}
+
+		Deerclops: {
+			Nombre: Deerclops (opcional)
+			Resumen: 7000 de vida, en el bioma de nieve. Solo aparece de noche, durante una tormenta, y sin ningún otro peligro activo cerca.
 		}
 
 		MaldadDelMundo: {
@@ -907,6 +920,30 @@ Guia: {
 			Titulo: Llamarlo tú, en vez de esperarlo
 			Porque: Cumpliendo todo lo anterior, el Ojo puede aparecer solo al caer la noche, pero sólo una de cada tres noches: puedes pasarte varias noches preparado y sin que llegue. El Vidente Sospechoso lo llama cuando tú quieras, que es lo que te deja elegir el momento en vez de que te pille a medias.
 			Como: Seis lentes en un Altar Demoniaco o Carmesí. Las lentes las sueltan los ojos que vuelan de noche por la superficie, así que salen solas mientras preparas el resto.
+		}
+
+		ArmaParaElReySlime: {
+			Titulo: Cualquier arma, aunque sea de la primera capa
+			Porque: El Rey Slime tiene 40 de daño, solo 10 de defensa y 2000 de vida (NPC.cs, type==50) - menos vida que el Ojo de Cthulhu, y se puede derrotar incluso ANTES que él. No bloquea nada del camino obligatorio, pero es el primer jefe de verdad con el que probarte, y suelta la Corona de Slime, que lo vuelve a invocar cuando quieras.
+			Como: Aparece solo, muy de vez en cuando, con lluvia de slimes en la superficie. La Corona de Slime lo llama al instante si prefieres elegir tú el momento.
+		}
+
+		VencerAlReySlime: {
+			Titulo: Derrotarlo (opcional)
+			Porque: NPC.downedSlimeKing no abre ningún camino obligatorio - es puramente un extra, pensado para tan pronto que ni siquiera hace falta esperar al Ojo. Lo que suelta (la Corona, el Compañero Slime Real) es un trofeo temprano más que una necesidad.
+			Como: Salta hacia ti y suelta slimes más pequeños sin parar: una arena con plataformas para esquivar el salto vale más que espacio llano.
+		}
+
+		ArmaParaDeerclops: {
+			Titulo: Un arma capaz de aguantar el frío
+			Porque: Deerclops tiene 20 de daño, 10 de defensa y 7000 de vida (NPC.cs, type==668), pero su daño lleva el flag coldDamage: además del golpe, aplica un debuff de frío extra que hace más dura la pelea de lo que sugiere su daño base. No bloquea nada, pero es de los pocos jefes que puede aparecer solo, sin que tú elijas el momento.
+			Como: Solo aparece de noche, durante una tormenta, dentro del bioma de nieve y sin ningún otro peligro activo cerca (Main.cs: la condición real que comprueba el juego). El Deer Thing lo invoca al instante si prefieres no esperar a que se den todas esas condiciones a la vez.
+		}
+
+		VencerADeerclops: {
+			Titulo: Derrotarlo (opcional)
+			Porque: NPC.downedDeerclops no abre ningún camino obligatorio - es puramente un extra, importado del universo de Don't Starve Together. Lo que suelta (el Ojo de Deerclops, la mascota Deer Thing) es un trofeo temprano más que una necesidad.
+			Como: Golpea el suelo y lanza pinchos de hielo en línea recta desde ambos lados: una arena elevada, lejos del suelo que pisa, evita la mayoría de sus ataques.
 		}
 
 		ArmaContraLaMaldad: {

@@ -21,8 +21,48 @@
 
   "tramos": [
     {
+      "clave": "ReySlime",
+      "orden": 5,
+      "ambito": "vanilla",
+      "opcional": true,
+      "jefeFinal": 50,
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "ArmaParaElReySlime",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 50,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==50: daño 40, defensa 10, vida 2000 - el opcional mas flojo de todo el arbol, pensado para ANTES del Ojo de Cthulhu. Su propia condicion de aparicion natural (Main.AnyPlayerReadyToFightKingSlime: ConsumedLifeCrystals>2 y statDefense>8) pide incluso menos que el tramo PreOjo.",
+              "tipo": "dano_arma",
+              "valor": 12
+            },
+            {
+              "_fuente": "Player.cs, SummonItemCheck (linea ~41813): ItemID.SlimeCrown=560 invoca al Rey Slime (type 50) al usarlo. Alternativa a esperar la lluvia de slimes aleatoria.",
+              "tipo": "objeto",
+              "id": 560,
+              "cantidad": 1,
+              "recomendado": true
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerAlReySlime",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 50,
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedSlimeKing" }
+          ]
+        }
+      ]
+    },
+    {
       "clave": "PreOjo",
-      "orden": 1,
+      "orden": 10,
       "ambito": "vanilla",
       "jefeFinal": 4,
       "implementado": true,
@@ -110,8 +150,48 @@
     },
 
     {
+      "clave": "Deerclops",
+      "orden": 15,
+      "ambito": "vanilla",
+      "opcional": true,
+      "jefeFinal": 668,
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "ArmaParaDeerclops",
+          "zona": "Nieve",
+          "capa": "superficie",
+          "jefe": 668,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==668: daño 20 (coldDamage=true, aplica Frostburn extra), defensa 10, vida 7000.",
+              "tipo": "dano_arma",
+              "valor": 16
+            },
+            {
+              "_fuente": "Player.cs, SummonItemCheck (linea ~41813): ItemID.DeerThing=5120 invoca a Deerclops (type 668) al usarlo. Alternativa a esperar a que aparezca solo (Main.cs: solo durante una tormenta, justo tras el atardecer, con el jugador en ZoneSnow y sin peligro cerca - NPC.AnyDanger).",
+              "tipo": "objeto",
+              "id": 5120,
+              "cantidad": 1,
+              "recomendado": true
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerADeerclops",
+          "zona": "Nieve",
+          "capa": "superficie",
+          "jefe": 668,
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedDeerclops" }
+          ]
+        }
+      ]
+    },
+    {
       "clave": "MaldadDelMundo",
-      "orden": 2,
+      "orden": 20,
       "ambito": "vanilla",
       "jefeFinal": 13,
       "jefeFinalCarmesi": 266,
@@ -155,7 +235,7 @@
     },
     {
       "clave": "ReinaAbeja",
-      "orden": 3,
+      "orden": 25,
       "ambito": "vanilla",
       "opcional": true,
       "jefeFinal": 222,
@@ -195,7 +275,7 @@
     },
     {
       "clave": "Esqueletron",
-      "orden": 4,
+      "orden": 30,
       "ambito": "vanilla",
       "jefeFinal": 35,
       "implementado": true,
@@ -231,7 +311,7 @@
     },
     {
       "clave": "MuroDeCarne",
-      "orden": 5,
+      "orden": 40,
       "ambito": "vanilla",
       "jefeFinal": 113,
       "implementado": true,
@@ -281,7 +361,7 @@
     },
     {
       "clave": "InicioModoDificil",
-      "orden": 6,
+      "orden": 45,
       "ambito": "vanilla",
       "opcional": true,
       "jefeFinal": 657,
@@ -321,7 +401,7 @@
     },
     {
       "clave": "Mecanicos",
-      "orden": 7,
+      "orden": 50,
       "ambito": "vanilla",
       "jefeFinal": 134,
       "implementado": true,
@@ -364,7 +444,7 @@
     },
     {
       "clave": "Plantera",
-      "orden": 8,
+      "orden": 60,
       "ambito": "vanilla",
       "jefeFinal": 262,
       "implementado": true,
@@ -396,7 +476,7 @@
     },
     {
       "clave": "TemploYGolem",
-      "orden": 9,
+      "orden": 70,
       "ambito": "vanilla",
       "jefeFinal": 245,
       "implementado": true,
@@ -435,7 +515,7 @@
     },
     {
       "clave": "JefesOpcionalesTardios",
-      "orden": 10,
+      "orden": 75,
       "ambito": "vanilla",
       "opcional": true,
       "jefeFinal": 370,
@@ -498,7 +578,7 @@
     },
     {
       "clave": "EventosLunares",
-      "orden": 11,
+      "orden": 80,
       "ambito": "vanilla",
       "jefeFinal": 439,
       "implementado": true,
@@ -561,7 +641,7 @@
     },
     {
       "clave": "MoonLord",
-      "orden": 12,
+      "orden": 90,
       "ambito": "vanilla",
       "jefeFinal": 398,
       "implementado": true,
