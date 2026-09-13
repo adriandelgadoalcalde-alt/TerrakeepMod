@@ -57,6 +57,8 @@ namespace TerrakeepMod.Common.Guia
 		private static bool _downedBoss3Original;
 		private static bool _shadowOrbSmashedOriginal;
 		private static bool _hardModeOriginal;
+		private static bool _downedMechBoss1Original;
+		private static bool _downedMechBossAnyOriginal;
 		private static readonly List<int> _npcsCreados = new List<int>();
 
 		/// <summary>Tipos de NPC del pueblo que ya vivian en el mundo de prueba y que la prueba
@@ -290,10 +292,29 @@ namespace TerrakeepMod.Common.Guia
 				case 67: Capturar("guia-12-muro-vencer"); break;
 				case 68: PasarAModoDificilDeMentira(); break;
 
-				case 69: ComprobarSinObjetivo(); break;
-				case 70: Capturar("guia-13-todo-lo-implementado-hecho"); break;
+				// --- sexto tramo implementado: los tres mecanicos --------------------------------
+				// El arma de case63 (25+ de daño) sigue en la mochila y por su rango (25 a 45) puede
+				// bastar por casualidad para el umbral de 40 de "ArmaParaLosMecanicos": se quita
+				// aqui, igual que entre los tramos anteriores, para comprobar de verdad que el paso
+				// es el que toca ANTES de tener arma.
+				case 69: QuitarArmaDeLaMochila(); break;
+				case 70: ComprobarPaso("ArmaParaLosMecanicos",
+					"hardMode=true a mano (el siguiente tramo implementado son los tres mecanicos) " +
+					"y sin arma todavia en la mochila"); break;
+				case 71: Capturar("guia-14-mecanicos-preparativos"); break;
+				case 72: PonerArmaConDano(40); break;
+				case 73: VolcarEstadoDelJugador("con arma contra los mecanicos"); break;
+				case 74: ComprobarPaso("VencerAUnMecanico",
+					"arma de 40+ de daño puesta: el unico requisito obligatorio del primer paso ya " +
+					"esta cumplido, asi que el paso siguiente pasa a ser el actual"); break;
+				case 75: ComprobarLecturaDeJefeDelTramoActual("Destructor (jefeFinal del tramo)"); break;
+				case 76: Capturar("guia-15-mecanicos-vencer"); break;
+				case 77: MarcarUnMecanicoDerrotadoDeMentira(); break;
 
-				case 71: RestaurarTramosNuevos(); break;
+				case 78: ComprobarSinObjetivo(); break;
+				case 79: Capturar("guia-16-todo-lo-implementado-hecho"); break;
+
+				case 80: RestaurarTramosNuevos(); break;
 				default: Terminar(); break;
 			}
 		}
@@ -326,6 +347,8 @@ namespace TerrakeepMod.Common.Guia
 			_downedBoss3Original = NPC.downedBoss3;
 			_shadowOrbSmashedOriginal = Terraria.WorldGen.shadowOrbSmashed;
 			_hardModeOriginal = Main.hardMode;
+			_downedMechBoss1Original = NPC.downedMechBoss1;
+			_downedMechBossAnyOriginal = NPC.downedMechBossAny;
 			NPC.downedBoss1 = false;
 
 			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Personaje, "autoprueba de la Guia");
@@ -549,13 +572,14 @@ namespace TerrakeepMod.Common.Guia
 				}
 				claves.Append(porDelante[i].Clave);
 				if (porDelante[i].Clave == "PreOjo" || porDelante[i].Clave == "MaldadDelMundo" ||
-					porDelante[i].Clave == "Esqueletron" || porDelante[i].Clave == "MuroDeCarne") {
+					porDelante[i].Clave == "Esqueletron" || porDelante[i].Clave == "MuroDeCarne" ||
+					porDelante[i].Clave == "Mecanicos") {
 					haySuperado = true;
 				}
 			}
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - hoja de ruta con todo cerrado: " +
 				claves + " " + (!haySuperado
-					? "-> OK: ninguno de los cuatro tramos ya superados vuelve a aparecer."
+					? "-> OK: ninguno de los cinco tramos ya superados vuelve a aparecer."
 					: "-> NO CUADRA: hay un tramo ya superado en \"lo que viene despues\"."));
 		}
 
@@ -874,7 +898,22 @@ namespace TerrakeepMod.Common.Guia
 				"NPC.cs case 113). Se restaura al terminar.");
 		}
 
-		/// <summary>Deshace TODO lo que han tocado los pasos 37-68: las banderas nuevas, el mundo y
+		/// <summary>Marca uno de los tres mecanicos (el Destructor) como derrotado SIN pelearlo,
+		/// para comprobar el cierre del sexto tramo. El motor real solo exige UNO de los tres:
+		/// NPC.cs case 134 pone downedMechBoss1 y downedMechBossAny juntos al morir el Destructor,
+		/// y son los mismos dos campos que tocaria matar a cualquiera de los otros dos.</summary>
+		private static void MarcarUnMecanicoDerrotadoDeMentira()
+		{
+			NPC.downedMechBoss1 = true;
+			NPC.downedMechBossAny = true;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - NPC.downedMechBoss1 y " +
+				"downedMechBossAny puestos a true a mano (la pareja real que enciende " +
+				"NPC.SetEventFlagCleared al morir el Destructor, NPC.cs case 134; matar a los " +
+				"Gemelos o a Esqueletron Prime en su lugar tocaria los mismos dos campos). Se " +
+				"restaura al terminar.");
+		}
+
+		/// <summary>Deshace TODO lo que han tocado los pasos 37-77: las banderas nuevas, el mundo y
 		/// el inventario, ademas de los NPC creados en este segundo bloque de la prueba.</summary>
 		private static void RestaurarTramosNuevos()
 		{
@@ -883,6 +922,8 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedBoss3 = _downedBoss3Original;
 			Terraria.WorldGen.shadowOrbSmashed = _shadowOrbSmashedOriginal;
 			Main.hardMode = _hardModeOriginal;
+			NPC.downedMechBoss1 = _downedMechBoss1Original;
+			NPC.downedMechBossAny = _downedMechBossAnyOriginal;
 
 			Player jugador = Main.LocalPlayer;
 			jugador.inventory[0] = new Item();
@@ -899,9 +940,10 @@ namespace TerrakeepMod.Common.Guia
 			_npcsCreados.Clear();
 
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - restaurado tras la maldad del " +
-				"mundo, Esqueletron y el Muro de Carne: downedBoss1=" + NPC.downedBoss1 + ", downedBoss2=" +
-				NPC.downedBoss2 + ", downedBoss3=" + NPC.downedBoss3 + ", shadowOrbSmashed=" +
-				Terraria.WorldGen.shadowOrbSmashed + ", hardMode=" + Main.hardMode +
+				"mundo, Esqueletron, el Muro de Carne y los mecanicos: downedBoss1=" + NPC.downedBoss1 +
+				", downedBoss2=" + NPC.downedBoss2 + ", downedBoss3=" + NPC.downedBoss3 +
+				", shadowOrbSmashed=" + Terraria.WorldGen.shadowOrbSmashed + ", hardMode=" + Main.hardMode +
+				", downedMechBoss1=" + NPC.downedMechBoss1 + ", downedMechBossAny=" + NPC.downedMechBossAny +
 				", NPC de prueba retirados=" + quitados + ".");
 		}
 

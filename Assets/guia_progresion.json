@@ -260,8 +260,43 @@
       "orden": 7,
       "ambito": "vanilla",
       "jefeFinal": 134,
-      "implementado": false,
-      "pasos": []
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "ArmaParaLosMecanicos",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 134,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs: Gemelos (type==125/126) defensa 10, vida 20000/23000, daño 45/50. Esqueletron Prime (type==127) defensa 24, vida 28000, daño 47. Destructor (type==134, cabeza) defensa 0 pero cuerpo/cola (135/136) defensa 30/35, vida 80000, daño 55/70. Con daño-defensa*0.5 (minimo 1), 40 de daño deja golpes utiles contra los tres.",
+              "tipo": "dano_arma",
+              "valor": 40
+            },
+            {
+              "_fuente": "ItemID.cs: Ojo Mecanico=544 (Gemelos), Gusano Mecanico=556 (Destructor), Craneo Mecanico=557 (Esqueletron Prime). Cualquiera de los tres invoca a su jefe de noche.",
+              "tipo": "objeto_cualquiera",
+              "ids": [544, 556, 557],
+              "cantidad": 1,
+              "recomendado": true
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerAUnMecanico",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 134,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs: SetEventFlagCleared enciende downedMechBossAny al morir cualquiera de los tres (case 125/126, case 127 via boss, case 134). Es la bandera real que sube el mineral de Hardmode y adelanta Plantera; no hace falta matar a los tres para seguir, aunque el mejor equipo sale de matarlos todos.",
+              "tipo": "bandera",
+              "bandera": "downedMechBossAny"
+            }
+          ]
+        }
+      ]
     },
     {
       "clave": "Plantera",

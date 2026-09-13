@@ -786,6 +786,7 @@ Guia: {
 		downedBoss3: Defeat Skeletron
 		shadowOrbSmashed: Having already broken a Shadow Orb or Crimson Heart
 		hardMode: Getting the world into Hardmode (defeating the Wall of Flesh)
+		downedMechBossAny: Defeating any of the three mechanical bosses (The Destroyer, The Twins or Skeletron Prime)
 	}
 
 	Zona: {
@@ -929,6 +930,18 @@ Guia: {
 			Titulo: Defeat it: the world changes forever
 			Porque: There is no middle ground here: on death, NPC.cs calls WorldGen.StartHardmode(), which sets Main.hardMode to true with no way back in this save. From that point everything jumps at once (new, tougher enemies across the whole world, including areas you already thought were safe), but it also opens up what you need to keep going: Hardmode ores from smashing Demon or Crimson Altars with a hammer, and the path to the three mechanical bosses.
 			Como: Build a long, flat bridge over the lava before summoning it: the Wall advances on you by itself, so you need room to back away while shooting instead of uneven ground that slows you down. The mouth is its weakest part; the eye is its toughest.
+		}
+
+		ArmaParaLosMecanicos: {
+			Titulo: A weapon fit for a real Hardmode boss
+			Porque: All three raise the bar at once (NPC.cs): the Twins have 10 defense with 20000 and 23000 health, Skeletron Prime 24 defense with 28000, and the Destroyer's head has no defense but its body and tail sit at 30 and 35, with 80000 health spread across dozens of segments. With the usual formula, a 40 damage weapon lands useful hits against all three without dragging the fight out forever, and that huge health pool is why: a weak weapon here does not lose the fight outright, it stretches it until a single mistake does.
+			Como: Any early-Hardmode ore weapon (Cobalt/Palladium or better) already covers this. Each one is summoned at night with its own item: the Mechanical Eye for the Twins, the Mechanical Worm for the Destroyer, the Mechanical Skull for Skeletron Prime. You do not need to fight all three at once, nor in a fixed order.
+		}
+
+		VencerAUnMecanico: {
+			Titulo: Defeat one of the three
+			Porque: The game sets NPC.downedMechBossAny when any of the three dies, and that is the flag that really unlocks what comes next: new Hardmode ore (Mythril or Orichalcum) and the real push that makes Plantera worth fighting. You do not need to beat all three to move on, though the combined gear from all three is the best there is before Plantera.
+			Como: The Twins and Skeletron Prime fly and give chase: a raised platform arena helps more than open ground. The Destroyer is an extremely long worm: a weapon that pierces in a straight line takes out more than one segment per shot.
 		}
 	}
 }

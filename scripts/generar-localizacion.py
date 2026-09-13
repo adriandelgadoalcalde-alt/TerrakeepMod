@@ -834,6 +834,9 @@ T += [
     ("Guia.Bandera.hardMode",
      "Que el mundo entre en Modo Difícil (derrotar al Muro de Carne)",
      "Getting the world into Hardmode (defeating the Wall of Flesh)"),
+    ("Guia.Bandera.downedMechBossAny",
+     "Derrotar a cualquiera de los tres mecánicos (Destructor, Gemelos o Esqueletron Prime)",
+     "Defeating any of the three mechanical bosses (The Destroyer, The Twins or Skeletron Prime)"),
 
     # --- zonas -------------------------------------------------------------------------------
     ("Guia.Zona.Superficie", "la superficie", "the surface"),
@@ -1013,6 +1016,24 @@ T += [
     ("Guia.Paso.VencerAlMuro.Como",
      "Construye un puente largo y llano sobre la lava antes de invocarlo: el Muro avanza solo hacia ti, así que necesitas sitio para retroceder disparando en vez de terreno irregular que te frene. La boca es su parte más débil; el ojo, la más resistente.",
      "Build a long, flat bridge over the lava before summoning it: the Wall advances on you by itself, so you need room to back away while shooting instead of uneven ground that slows you down. The mouth is its weakest part; the eye is its toughest."),
+
+    # --- pasos del septimo tramo: los tres mecanicos (Destructor / Gemelos / Esqueletron Prime) --
+    ("Guia.Paso.ArmaParaLosMecanicos.Titulo", "Un arma capaz de un jefe de Hardmode de verdad",
+     "A weapon fit for a real Hardmode boss"),
+    ("Guia.Paso.ArmaParaLosMecanicos.Porque",
+     "Los tres suben el listón de golpe (NPC.cs): los Gemelos tienen 10 de defensa con 20000 y 23000 de vida, Esqueletron Prime 24 de defensa con 28000, y el Destructor su cabeza sin defensa pero el cuerpo y la cola a 30 y 35, con 80000 de vida repartidos en decenas de segmentos. Con la fórmula de siempre, un arma de 40 de daño deja golpes útiles contra los tres sin que la pelea se eternice, y esa vida tan alta es la razón: un arma floja aquí no pierde la pelea de golpe, la alarga hasta que un error la pierde por ti.",
+     "All three raise the bar at once (NPC.cs): the Twins have 10 defense with 20000 and 23000 health, Skeletron Prime 24 defense with 28000, and the Destroyer's head has no defense but its body and tail sit at 30 and 35, with 80000 health spread across dozens of segments. With the usual formula, a 40 damage weapon lands useful hits against all three without dragging the fight out forever, and that huge health pool is why: a weak weapon here does not lose the fight outright, it stretches it until a single mistake does."),
+    ("Guia.Paso.ArmaParaLosMecanicos.Como",
+     "Cualquier arma de mineral de Hardmode temprano (Cobalto/Paladio o superior) ya cumple. Se invocan de noche con un objeto concreto cada uno: Ojo Mecánico para los Gemelos, Gusano Mecánico para el Destructor, Cráneo Mecánico para Esqueletron Prime. No hace falta pelear a los tres a la vez ni en un orden fijo.",
+     "Any early-Hardmode ore weapon (Cobalt/Palladium or better) already covers this. Each one is summoned at night with its own item: the Mechanical Eye for the Twins, the Mechanical Worm for the Destroyer, the Mechanical Skull for Skeletron Prime. You do not need to fight all three at once, nor in a fixed order."),
+
+    ("Guia.Paso.VencerAUnMecanico.Titulo", "Derrotar a uno de los tres", "Defeat one of the three"),
+    ("Guia.Paso.VencerAUnMecanico.Porque",
+     "El juego marca NPC.downedMechBossAny al morir cualquiera de los tres, y esa es la bandera que de verdad abre lo siguiente: mineral de Hardmode nuevo (Mithril u Oricalco) y el empujón real para que Plantera merezca la pena. No hace falta derrotarlos a los tres para seguir adelante, aunque el equipo completo de los tres es el mejor que hay antes de Plantera.",
+     "The game sets NPC.downedMechBossAny when any of the three dies, and that is the flag that really unlocks what comes next: new Hardmode ore (Mythril or Orichalcum) and the real push that makes Plantera worth fighting. You do not need to beat all three to move on, though the combined gear from all three is the best there is before Plantera."),
+    ("Guia.Paso.VencerAUnMecanico.Como",
+     "Los Gemelos y Esqueletron Prime vuelan y persiguen: un arena elevada con plataformas ayuda más que el suelo. El Destructor es un gusano larguísimo: un arma que atraviese en línea recta acaba con más de un segmento por disparo.",
+     "The Twins and Skeletron Prime fly and give chase: a raised platform arena helps more than open ground. The Destroyer is an extremely long worm: a weapon that pierces in a straight line takes out more than one segment per shot."),
 ]
 
 KEYBINDS = [

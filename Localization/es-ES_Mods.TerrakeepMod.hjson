@@ -786,6 +786,7 @@ Guia: {
 		downedBoss3: Derrotar a Esqueletron
 		shadowOrbSmashed: Haber roto ya una Esfera Oscura o un Corazón Carmesí
 		hardMode: Que el mundo entre en Modo Difícil (derrotar al Muro de Carne)
+		downedMechBossAny: Derrotar a cualquiera de los tres mecánicos (Destructor, Gemelos o Esqueletron Prime)
 	}
 
 	Zona: {
@@ -929,6 +930,18 @@ Guia: {
 			Titulo: Derrotarlo: el mundo cambia para siempre
 			Porque: Aquí no hay medias tintas: al morir, NPC.cs llama a WorldGen.StartHardmode(), que pone Main.hardMode a true y no tiene marcha atrás en esta partida. A partir de ahí todo sube de golpe (enemigos nuevos y más duros por todo el mundo, incluido en zonas que ya dabas por seguras), pero también se abre lo que hace falta para seguir: minerales de Hardmode al romper Altares Demoniacos o Carmesíes con un mazo, y el camino a los tres jefes mecánicos.
 			Como: Construye un puente largo y llano sobre la lava antes de invocarlo: el Muro avanza solo hacia ti, así que necesitas sitio para retroceder disparando en vez de terreno irregular que te frene. La boca es su parte más débil; el ojo, la más resistente.
+		}
+
+		ArmaParaLosMecanicos: {
+			Titulo: Un arma capaz de un jefe de Hardmode de verdad
+			Porque: Los tres suben el listón de golpe (NPC.cs): los Gemelos tienen 10 de defensa con 20000 y 23000 de vida, Esqueletron Prime 24 de defensa con 28000, y el Destructor su cabeza sin defensa pero el cuerpo y la cola a 30 y 35, con 80000 de vida repartidos en decenas de segmentos. Con la fórmula de siempre, un arma de 40 de daño deja golpes útiles contra los tres sin que la pelea se eternice, y esa vida tan alta es la razón: un arma floja aquí no pierde la pelea de golpe, la alarga hasta que un error la pierde por ti.
+			Como: Cualquier arma de mineral de Hardmode temprano (Cobalto/Paladio o superior) ya cumple. Se invocan de noche con un objeto concreto cada uno: Ojo Mecánico para los Gemelos, Gusano Mecánico para el Destructor, Cráneo Mecánico para Esqueletron Prime. No hace falta pelear a los tres a la vez ni en un orden fijo.
+		}
+
+		VencerAUnMecanico: {
+			Titulo: Derrotar a uno de los tres
+			Porque: El juego marca NPC.downedMechBossAny al morir cualquiera de los tres, y esa es la bandera que de verdad abre lo siguiente: mineral de Hardmode nuevo (Mithril u Oricalco) y el empujón real para que Plantera merezca la pena. No hace falta derrotarlos a los tres para seguir adelante, aunque el equipo completo de los tres es el mejor que hay antes de Plantera.
+			Como: Los Gemelos y Esqueletron Prime vuelan y persiguen: un arena elevada con plataformas ayuda más que el suelo. El Destructor es un gusano larguísimo: un arma que atraviese en línea recta acaba con más de un segmento por disparo.
 		}
 	}
 }
