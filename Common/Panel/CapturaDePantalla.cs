@@ -66,7 +66,12 @@ namespace TerrakeepMod.Common.Panel
 					// Recuento de las categorias de la Libreria (arreglo del 8-sep-2026): captura las
 					// paginas que antes salian vacias o mezcladas, para poder verlas de verdad.
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
-						Libreria.AuditoriaCategorias.Variable));
+						Libreria.AuditoriaCategorias.Variable))
+					// Guia en tiempo real: sin capturas no habria forma de comprobar la estetica
+					// del area nueva (dos columnas de prosa envuelta) ni de ver la barra con SIETE
+					// pestañas, que es justo donde un rotulo se sale sin que ningun dato lo diga.
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
+						Guia.AutopruebaGuia.Variable));
 			}
 		}
 

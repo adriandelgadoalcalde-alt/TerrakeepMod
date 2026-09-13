@@ -32,6 +32,7 @@ T = [
     ("Panel.Area.Investigacion", "Investigación", "Research"),
     ("Panel.Area.Exploracion", "Exploración", "Exploration"),
     ("Panel.Area.Ajustes", "Ajustes", "Settings"),
+    ("Panel.Area.Guia", "Guía", "Guide"),
     ("Panel.Ayuda.Personaje",
      "Todo lo que toques aquí se escribe al instante sobre el personaje cargado.",
      "Everything you touch here is written straight to the loaded character."),
@@ -55,6 +56,11 @@ T = [
     ("Panel.Ayuda.Ajustes",
      "El idioma cambia en vivo. Ctrl+Z deshace cualquier acción de Terrakeep.",
      "The language changes live. Ctrl+Z undoes any Terrakeep action."),
+    # Texto CORTO, igual que el de Builds: esta línea se dibuja siempre visible con EtiquetaTk
+    # (820 px a escala 0,75) y EtiquetaTk no recorta ni envuelve por su cuenta.
+    ("Panel.Ayuda.Guia",
+     "Te dice qué hacer ahora y por qué, leyendo tu personaje real. Dirección, nunca coordenadas.",
+     "Tells you what to do now and why, reading your real character. Direction, never coordinates."),
 
     # ---------------------------------------------------------------- personaje
     ("Personaje.Pestana.Inventario", "Inventario", "Inventory"),
@@ -750,6 +756,197 @@ T += [
 
     # ---------------------------------------------------------------- prefijos
     ("Prefijos.MejorPrefijo", "Mejor prefijo posible: {0}", "Best possible prefix: {0}"),
+
+    # ================================================================= GUÍA
+    # La guía en tiempo real. Todo lo que se afirma aquí sobre el juego está comprobado en el
+    # código decompilado de ESTA versión (ver la bitácora, entrada de la Guía): las condiciones
+    # de aparición del Ojo salen de Main.UpdateTime_StartNight, la fórmula de la defensa de
+    # NPC.HitModifiers/Player.VanillaBaseDefenseEffectiveness, y las vidas de los jefes de los
+    # bloques SetDefaults de NPC.cs. Nada viene de una guía de memoria.
+
+    # --- marco -------------------------------------------------------------------------------
+    ("Guia.ObjetivoActual", "Tu objetivo ahora mismo", "Your objective right now"),
+    ("Guia.SinObjetivo",
+     "No queda nada pendiente en el tramo que la guía sabe medir todavía. Sigue el mapa de la derecha: el juego continúa.",
+     "Nothing left pending in the stretch the guide can measure yet. Follow the roadmap on the right: the game goes on."),
+    ("Guia.PorQue", "Por qué", "Why"),
+    ("Guia.Como", "Por dónde se empieza", "Where to start"),
+    ("Guia.Preparacion", "Preparación {0}%  ·  {1} de {2} requisitos que el juego exige",
+     "Readiness {0}%  ·  {1} of {2} requirements the game enforces"),
+    ("Guia.EnElTramo", "Tramo: {0}", "Stretch: {0}"),
+    ("Guia.QueTeFalta", "Qué te falta", "What you are missing"),
+    ("Guia.LecturaDelJefe", "Lectura del jefe", "Boss reading"),
+    ("Guia.EsteTramo", "Este tramo, paso a paso", "This stretch, step by step"),
+    ("Guia.LoQueViene", "Lo que viene después", "What comes next"),
+
+    ("Guia.AvisoCalamityTitulo", "Tienes Calamity instalado", "You have Calamity installed"),
+    ("Guia.AvisoCalamity",
+     "Con Calamity la progresión cambia de arriba abajo: otros jefes, otro orden y otras cifras. Esta guía todavía es la de Terraria a secas, así que úsala como referencia de vanilla y no como el orden completo de tu partida. El árbol de Calamity está pendiente, y se dice en vez de inventárselo.",
+     "Calamity changes progression from top to bottom: different bosses, different order, different numbers. This guide still covers plain Terraria, so treat it as the vanilla reference and not as your run's full order. The Calamity tree is pending, and that is said out loud rather than made up."),
+
+    ("Guia.Direccion.YaEstas", "Estás donde toca: {0}", "You are where you need to be: {0}"),
+    ("Guia.Direccion.Baja", "Hacia abajo, en {0}", "Downwards, in {0}"),
+    ("Guia.Direccion.Sube", "Hacia arriba, en {0}", "Upwards, in {0}"),
+
+    ("Guia.Modo.Normal", "modo normal", "normal mode"),
+    ("Guia.Modo.Experto", "modo experto", "expert mode"),
+    ("Guia.Modo.Maestro", "modo maestro", "master mode"),
+    ("Guia.Modo.Viaje", "modo viaje", "journey mode"),
+
+    # --- lectura del jefe --------------------------------------------------------------------
+    ("Guia.Jefe.Stats", "{0}: {1} de vida, {2} de defensa y {3} de daño en {4}.",
+     "{0}: {1} health, {2} defense and {3} damage on {4}."),
+    ("Guia.Jefe.SinArma",
+     "No llevas ningún arma encima, así que ahora mismo no puedes hacerle nada.",
+     "You are not carrying any weapon, so right now you cannot do anything to it."),
+    ("Guia.Jefe.TuArma",
+     "Tu mejor arma ({0}, {1} de daño) le quita {2} por golpe: harían falta unos {3} golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.",
+     "Your best weapon ({0}, {1} damage) takes {2} off per hit: that is about {3} hits. An enemy subtracts half its defense from every hit it takes, with a minimum of 1."),
+
+    # --- requisitos --------------------------------------------------------------------------
+    ("Guia.Req.Recomendado", "(recomendado, no obligatorio)", "(recommended, not required)"),
+    ("Guia.Req.NoEvaluable", "Esto la guía no lo sabe comprobar todavía: {0}",
+     "The guide cannot check this yet: {0}"),
+    ("Guia.Req.CristalesVida", "Cristales de vida usados: {0} de {1}",
+     "Life Crystals used: {0} of {1}"),
+    ("Guia.Req.VidaMaxima", "Vida máxima: {0} de {1}", "Max health: {0} of {1}"),
+    ("Guia.Req.Defensa", "Defensa: {0} de {1}", "Defense: {0} of {1}"),
+    ("Guia.Req.NpcsPueblo", "Vecinos en el pueblo: {0} de {1}", "Villagers in town: {0} of {1}"),
+    ("Guia.Req.Npc", "Que viva contigo: {0}", "Living with you: {0}"),
+    ("Guia.Req.Objeto", "Llevar encima: {0}", "Carrying: {0}"),
+    ("Guia.Req.ObjetoVarios", "{0}: llevas {1} de {2}", "{0}: you carry {1} of {2}"),
+    ("Guia.Req.ObjetoCualquiera", "Cualquiera de estos ({0}): llevas {1} de {2}",
+     "Any of these ({0}): you carry {1} of {2}"),
+    ("Guia.Req.DanoArma", "Tu mejor arma es {0}, con {1} de daño; hacen falta {2}",
+     "Your best weapon is {0}, with {1} damage; {2} needed"),
+    ("Guia.Req.DanoArmaSinArma", "No llevas ningún arma; hacen falta {0} de daño",
+     "You are not carrying a weapon; {0} damage needed"),
+    ("Guia.Req.GanchoSi", "Llevas un gancho: {0}", "You carry a hook: {0}"),
+    ("Guia.Req.GanchoNo", "No llevas ningún gancho", "You are not carrying a hook"),
+
+    ("Guia.Bandera.downedBoss1", "Derrotar al Ojo de Cthulhu", "Defeat the Eye of Cthulhu"),
+
+    # --- zonas -------------------------------------------------------------------------------
+    ("Guia.Zona.Superficie", "la superficie", "the surface"),
+    ("Guia.Zona.Subterraneo", "el subsuelo", "the underground"),
+    ("Guia.Zona.Cavernas", "las cavernas", "the caverns"),
+
+    # --- tramos ------------------------------------------------------------------------------
+    ("Guia.Tramo.PreOjo.Nombre", "Antes del primer jefe", "Before the first boss"),
+    ("Guia.Tramo.PreOjo.Resumen",
+     "Casa, mineral, cristales de vida y cuatro vecinos, hasta el Ojo de Cthulhu.",
+     "A house, ore, life crystals and four villagers, up to the Eye of Cthulhu."),
+
+    ("Guia.Tramo.MaldadDelMundo.Nombre", "La maldad de tu mundo", "Your world's evil"),
+    ("Guia.Tramo.MaldadDelMundo.Resumen",
+     "Devorador de Mundos o Cerebro de Cthulhu, según cómo se generó tu mundo. La primera vez que muere cae un meteorito seguro; después, una de cada dos.",
+     "Eater of Worlds or Brain of Cthulhu, depending on how your world was generated. The first time it dies a meteorite falls for sure; after that, one in two."),
+
+    ("Guia.Tramo.ReinaAbeja.Nombre", "La Reina Abeja (opcional)", "Queen Bee (optional)"),
+    ("Guia.Tramo.ReinaAbeja.Resumen",
+     "3400 de vida, en la colmena de la jungla. No bloquea nada, pero lo que suelta adelanta todo el resto del prehardmode.",
+     "3400 health, in the jungle hive. It blocks nothing, but what it drops speeds up the rest of pre-hardmode."),
+
+    ("Guia.Tramo.Esqueletron.Nombre", "Esqueletron y la Mazmorra", "Skeletron and the Dungeon"),
+    ("Guia.Tramo.Esqueletron.Resumen",
+     "4400 de vida. Al morir se abre la Mazmorra entera y llega el Sastre a vivir contigo.",
+     "4400 health. When it dies the whole Dungeon opens up and the Clothier moves in."),
+
+    ("Guia.Tramo.MuroDeCarne.Nombre", "El Muro de Carne", "The Wall of Flesh"),
+    ("Guia.Tramo.MuroDeCarne.Resumen",
+     "8000 de vida, en el Infierno. Al morir el mundo entra en Modo Difícil, y eso no tiene marcha atrás.",
+     "8000 health, in the Underworld. When it dies the world turns Hardmode, and there is no going back."),
+
+    ("Guia.Tramo.InicioModoDificil.Nombre", "Los primeros pasos del Modo Difícil",
+     "The first steps of Hardmode"),
+    ("Guia.Tramo.InicioModoDificil.Resumen",
+     "Minerales nuevos rompiendo Altares, y la Reina Slime (18000 de vida) como opcional.",
+     "New ores from smashing Altars, plus Queen Slime (18000 health) as an optional."),
+
+    ("Guia.Tramo.Mecanicos.Nombre", "Los tres mecánicos", "The three mechanical bosses"),
+    ("Guia.Tramo.Mecanicos.Resumen",
+     "Destructor 80000, Gemelos 20000 y 23000, Esqueletron Prime 28000 de vida.",
+     "The Destroyer 80000, The Twins 20000 and 23000, Skeletron Prime 28000 health."),
+
+    ("Guia.Tramo.Plantera.Nombre", "Plantera", "Plantera"),
+    ("Guia.Tramo.Plantera.Resumen",
+     "30000 de vida, en un bulbo de la jungla subterránea. Al morir llega el Ciborg.",
+     "30000 health, in a bulb in the underground jungle. When it dies the Cyborg arrives."),
+
+    ("Guia.Tramo.TemploYGolem.Nombre", "El Templo y el Golem", "The Temple and Golem"),
+    ("Guia.Tramo.TemploYGolem.Resumen",
+     "Golem, 15000 de vida y 26 de defensa, dentro del Templo de la Selva.",
+     "Golem, 15000 health and 26 defense, inside the Jungle Temple."),
+
+    ("Guia.Tramo.JefesOpcionalesTardios.Nombre", "Los opcionales de después",
+     "The late optional bosses"),
+    ("Guia.Tramo.JefesOpcionalesTardios.Resumen",
+     "Duque Pezhongo (60000 de vida, 50 de defensa) y la Emperatriz de la Luz (70000). Opcionales, pero su equipo es lo mejor que hay antes de la luna.",
+     "Duke Fishron (60000 health, 50 defense) and the Empress of Light (70000). Optional, but their gear is the best there is before the moon."),
+
+    ("Guia.Tramo.EventosLunares.Nombre", "El Cultista y los Pilares",
+     "The Cultist and the Pillars"),
+    ("Guia.Tramo.EventosLunares.Resumen",
+     "Cultista Lunático, 32000 de vida y 42 de defensa. Al morir empiezan los cuatro Pilares.",
+     "Lunatic Cultist, 32000 health and 42 defense. When it dies the four Pillars begin."),
+
+    ("Guia.Tramo.MoonLord.Nombre", "El Señor de la Luna", "The Moon Lord"),
+    ("Guia.Tramo.MoonLord.Resumen",
+     "El final: 50000 de vida sólo el núcleo, y 70 de defensa.",
+     "The end: 50000 health for the core alone, and 70 defense."),
+
+    # --- pasos del primer tramo --------------------------------------------------------------
+    ("Guia.Paso.Refugio.Titulo", "Una casa y un vecino", "A house and a neighbour"),
+    ("Guia.Paso.Refugio.Porque",
+     "Los vecinos no son decoración: la mitad de la progresión temprana pasa por ellos, y el propio juego cuenta cuántos tienes para decidir si el Ojo de Cthulhu aparece de noche. Además, de noche la superficie se llena de enemigos y una casa cerrada es la diferencia entre seguir jugando y volver a empezar el día.",
+     "Villagers are not decoration: half of early progression goes through them, and the game itself counts how many you have to decide whether the Eye of Cthulhu shows up at night. On top of that, the surface fills with enemies after dark, and a sealed house is the difference between playing on and starting the day over."),
+    ("Guia.Paso.Refugio.Como",
+     "Una habitación con paredes puestas, una puerta, una mesa, una silla y una fuente de luz ya cuenta como vivienda. El Guía se muda solo en cuanto haya una libre.",
+     "A room with placed walls, a door, a table, a chair and a light source already counts as housing. The Guide moves in by himself as soon as one is free."),
+
+    ("Guia.Paso.Defensa.Titulo", "Armadura: más de 10 de defensa",
+     "Armor: more than 10 defense"),
+    ("Guia.Paso.Defensa.Porque",
+     "La defensa te quita daño fijo de cada golpe que recibes: la mitad de tu defensa en modo normal, tres cuartos en experto y la defensa entera en maestro. No es un número de adorno, y además es una de las dos condiciones que el juego comprueba de verdad para dejar aparecer al Ojo de Cthulhu por la noche.",
+     "Defense removes a flat amount from every hit you take: half your defense on normal, three quarters on expert and your whole defense on master. It is not a decorative number, and it is also one of the two things the game actually checks before letting the Eye of Cthulhu show up at night."),
+    ("Guia.Paso.Defensa.Como",
+     "Un juego completo de cualquiera de los minerales de la primera capa ya pasa de 10. Si te falta poco, un accesorio o un buff de defensa lo cubre.",
+     "A full set of any of the first-tier ores already goes past 10. If you are close, one accessory or a defense buff covers the rest."),
+
+    ("Guia.Paso.CristalesDeVida.Titulo", "Cinco cristales de vida (200 de vida)",
+     "Five Life Crystals (200 health)"),
+    ("Guia.Paso.CristalesDeVida.Porque",
+     "Los cristales son la única forma de subir la vida en esta parte del juego. Y ojo con un detalle que no se ve por ningún lado: el juego lleva un contador aparte de cuántos has USADO, y es ese contador el que mira para dejar aparecer al Ojo de Cthulhu, no tu vida máxima. Subir la vida a mano desde el editor de Terrakeep te deja con 200 de vida y el contador a cero, así que el Ojo no vendría nunca: hay que usarlos de verdad.",
+     "Crystals are the only way to raise your health in this part of the game. And watch out for a detail that is nowhere on screen: the game keeps a separate counter of how many you have USED, and that counter is what it checks before letting the Eye of Cthulhu appear, not your max health. Raising health by hand from Terrakeep's editor leaves you at 200 health with the counter at zero, so the Eye would never come: they have to be used for real."),
+    ("Guia.Paso.CristalesDeVida.Como",
+     "Brillan en las paredes de las cuevas, bastante por debajo de la superficie. Una antorcha y bajar en horizontal cubriendo terreno es más rápido que cavar en vertical.",
+     "They glow on cave walls, well below the surface. A torch and moving sideways covering ground finds them faster than digging straight down."),
+
+    ("Guia.Paso.PuebloDeCuatro.Titulo", "Cuatro vecinos", "Four villagers"),
+    ("Guia.Paso.PuebloDeCuatro.Porque",
+     "Cuatro es el número exacto que el juego exige para que el Ojo de Cthulhu pueda aparecer solo al caer la noche. Cada vecino además se muda por un motivo concreto: el Mercader con 50 de plata encima de alguien, la Enfermera en cuanto alguien haya usado un cristal de vida y el Mercader ya viva contigo, y el de Demoliciones con una bomba en el inventario y el Mercader también presente.",
+     "Four is the exact number the game demands before the Eye of Cthulhu can turn up by itself at nightfall. Each villager also moves in for a concrete reason: the Merchant once somebody carries 50 silver, the Nurse as soon as somebody has used a Life Crystal and the Merchant already lives with you, and the Demolitionist with a bomb in the inventory and the Merchant present too."),
+    ("Guia.Paso.PuebloDeCuatro.Como",
+     "Construye las viviendas primero: un vecino no se muda si no hay una libre y válida, aunque cumplas su condición.",
+     "Build the houses first: a villager will not move in without a free, valid one, even if you meet their condition."),
+
+    ("Guia.Paso.ArmaYArena.Titulo", "Un arma que le haga daño de verdad",
+     "A weapon that actually hurts it"),
+    ("Guia.Paso.ArmaYArena.Porque",
+     "Aquí está la respuesta a por qué una espada de madera ya no vale, y no es una opinión: cada golpe que recibe un enemigo pierde la mitad de la defensa de ese enemigo, con un mínimo de 1. El Ojo de Cthulhu tiene 12 de defensa, así que resta 6 a cada golpe. Con un arma de 7 de daño le estás quitando 1 por golpe y tienes 2800 de vida por delante: no es que juegues mal, es que esa espada no puede.",
+     "This is the answer to why a wooden sword no longer cuts it, and it is not an opinion: every hit an enemy takes loses half of that enemy's defense, with a minimum of 1. The Eye of Cthulhu has 12 defense, so 6 comes off every hit. With a 7 damage weapon you are taking 1 per hit off a 2800 health boss: you are not playing badly, that sword simply cannot do it."),
+    ("Guia.Paso.ArmaYArena.Como",
+     "Cualquier arma de mineral de la primera capa ya pasa de sobra. Unas plataformas largas para moverte en horizontal y unas pociones de curación cambian la pelea por completo, aunque el juego no te las pida.",
+     "Any first-tier ore weapon clears this easily. Long platform runs to move sideways and a few healing potions change the fight completely, even though the game does not ask for them."),
+
+    ("Guia.Paso.InvocarElOjo.Titulo", "Llamarlo tú, en vez de esperarlo",
+     "Summon it yourself instead of waiting"),
+    ("Guia.Paso.InvocarElOjo.Porque",
+     "Cumpliendo todo lo anterior, el Ojo puede aparecer solo al caer la noche, pero sólo una de cada tres noches: puedes pasarte varias noches preparado y sin que llegue. El Vidente Sospechoso lo llama cuando tú quieras, que es lo que te deja elegir el momento en vez de que te pille a medias.",
+     "With everything above done the Eye can show up on its own at nightfall, but only one night in three: you can spend several nights ready and have it never come. The Suspicious Looking Eye calls it whenever you want, which is what lets you pick the moment instead of being caught halfway through something."),
+    ("Guia.Paso.InvocarElOjo.Como",
+     "Seis lentes en un Altar Demoniaco o Carmesí. Las lentes las sueltan los ojos que vuelan de noche por la superficie, así que salen solas mientras preparas el resto.",
+     "Six lenses at a Demon or Crimson Altar. Lenses drop from the eyes that fly around the surface at night, so they pile up on their own while you get everything else ready."),
 ]
 
 KEYBINDS = [
@@ -759,6 +956,7 @@ KEYBINDS = [
     ("AbrirInvestigacion", "Abrir la Investigación de Terrakeep", "Open Terrakeep Research"),
     ("AbrirExploracion", "Abrir la Exploración de Terrakeep", "Open Terrakeep Exploration"),
     ("AbrirAjustes", "Abrir los Ajustes de Terrakeep", "Open Terrakeep Settings"),
+    ("AbrirGuia", "Abrir la Guía de Terrakeep", "Open Terrakeep Guide"),
     ("Deshacer", "Deshacer (con Ctrl)", "Undo (hold Ctrl)"),
     ("Rehacer", "Rehacer (con Ctrl)", "Redo (hold Ctrl)"),
 ]

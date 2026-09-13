@@ -1,0 +1,202 @@
+{
+  "version": 1,
+  "juego": "Terraria 1.4.4.9 (tModLoader)",
+  "nota": [
+    "Arbol de progresion de Terraria VAINILLA para la Guia en tiempo real de Terrakeep.",
+    "Este archivo dice QUE hace falta y en que orden. COMO se comprueba cada requisito lo dice",
+    "el C# (Common/Guia/EvaluadorGuia.cs), que lo lee del juego en marcha.",
+    "",
+    "Ningun numero que el motor ya sepa esta escrito aqui: la vida y la defensa de un jefe se",
+    "sacan de ContentSamples + NPC.ScaleStats con el modo real de la partida, y la defensa o el",
+    "daño del jugador de sus propios campos. Lo que hay aqui son UMBRALES, y los que vienen de",
+    "una condicion real del motor llevan citada la linea del codigo decompilado de la que salen.",
+    "",
+    "Los tramos con implementado=false estan a proposito: son el mapa de lo que viene despues,",
+    "todavia sin convertir en requisitos evaluables. Se enseñan como hoja de ruta, nunca como",
+    "algo que la guia sepa medir. Ver bitacora.md para el desglose y las prioridades.",
+    "",
+    "Calamity: ningun tramo de ambito calamity todavia. El campo existe desde el primer dia para",
+    "que añadirlo sea DATOS y no reescribir el cerebro. Ver la cabecera de CatalogoGuia.cs."
+  ],
+
+  "tramos": [
+    {
+      "clave": "PreOjo",
+      "orden": 1,
+      "ambito": "vanilla",
+      "jefeFinal": 4,
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "Refugio",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "requisitos": [
+            { "tipo": "npcs_pueblo", "valor": 1 },
+            { "tipo": "objeto", "id": 8, "cantidad": 20, "recomendado": true }
+          ]
+        },
+        {
+          "clave": "Defensa",
+          "zona": "Subterraneo",
+          "capa": "subterraneo",
+          "requisitos": [
+            {
+              "_fuente": "Main.UpdateTime_StartNight: la aparicion nocturna del Ojo exige (int)statDefense > 10, o sea 11",
+              "tipo": "defensa",
+              "valor": 11
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "CristalesDeVida",
+          "zona": "Cavernas",
+          "capa": "cavernas",
+          "requisitos": [
+            {
+              "_fuente": "Main.UpdateTime_StartNight exige ConsumedLifeCrystals >= 5. OJO: es un contador guardado que solo sube al USAR un cristal (Player.ItemCheck, sItem.type==29), NO la vida maxima dividida entre 20 - subir la vida a mano con Terrakeep no lo mueve.",
+              "tipo": "cristales_vida",
+              "valor": 5
+            }
+          ]
+        },
+        {
+          "clave": "PuebloDeCuatro",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "requisitos": [
+            {
+              "_fuente": "Main.UpdateTime_StartNight: cuenta los NPC del pueblo vivos y exige num >= 4",
+              "tipo": "npcs_pueblo",
+              "valor": 4
+            },
+            { "tipo": "npc", "id": 17, "recomendado": true },
+            { "tipo": "npc", "id": 18, "recomendado": true }
+          ]
+        },
+        {
+          "clave": "ArmaYArena",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 4,
+          "requisitos": [
+            {
+              "_fuente": "NPC.HitModifiers: daño = max(daño - defensa*0.5, 1). Con los 12 de defensa del Ojo, cualquier arma por debajo de ~14 se queda en migajas.",
+              "tipo": "dano_arma",
+              "valor": 15
+            },
+            { "tipo": "objeto", "id": 94, "cantidad": 50, "recomendado": true },
+            { "tipo": "objeto_cualquiera", "ids": [28, 188], "cantidad": 5, "recomendado": true }
+          ]
+        },
+        {
+          "clave": "InvocarElOjo",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 4,
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedBoss1" },
+            {
+              "_fuente": "Recipe.cs: el Vidente Sospechoso (43) son 6 Lentes (38) en un Altar Demoniaco/Carmesi (tile 26)",
+              "tipo": "objeto",
+              "id": 43,
+              "cantidad": 1,
+              "recomendado": true
+            }
+          ]
+        }
+      ]
+    },
+
+    {
+      "clave": "MaldadDelMundo",
+      "orden": 2,
+      "ambito": "vanilla",
+      "jefeFinal": 13,
+      "jefeFinalCarmesi": 266,
+      "implementado": false,
+      "pasos": []
+    },
+    {
+      "clave": "ReinaAbeja",
+      "orden": 3,
+      "ambito": "vanilla",
+      "jefeFinal": 222,
+      "implementado": false,
+      "pasos": []
+    },
+    {
+      "clave": "Esqueletron",
+      "orden": 4,
+      "ambito": "vanilla",
+      "jefeFinal": 35,
+      "implementado": false,
+      "pasos": []
+    },
+    {
+      "clave": "MuroDeCarne",
+      "orden": 5,
+      "ambito": "vanilla",
+      "jefeFinal": 113,
+      "implementado": false,
+      "pasos": []
+    },
+    {
+      "clave": "InicioModoDificil",
+      "orden": 6,
+      "ambito": "vanilla",
+      "jefeFinal": 657,
+      "implementado": false,
+      "pasos": []
+    },
+    {
+      "clave": "Mecanicos",
+      "orden": 7,
+      "ambito": "vanilla",
+      "jefeFinal": 134,
+      "implementado": false,
+      "pasos": []
+    },
+    {
+      "clave": "Plantera",
+      "orden": 8,
+      "ambito": "vanilla",
+      "jefeFinal": 262,
+      "implementado": false,
+      "pasos": []
+    },
+    {
+      "clave": "TemploYGolem",
+      "orden": 9,
+      "ambito": "vanilla",
+      "jefeFinal": 245,
+      "implementado": false,
+      "pasos": []
+    },
+    {
+      "clave": "JefesOpcionalesTardios",
+      "orden": 10,
+      "ambito": "vanilla",
+      "jefeFinal": 370,
+      "implementado": false,
+      "pasos": []
+    },
+    {
+      "clave": "EventosLunares",
+      "orden": 11,
+      "ambito": "vanilla",
+      "jefeFinal": 439,
+      "implementado": false,
+      "pasos": []
+    },
+    {
+      "clave": "MoonLord",
+      "orden": 12,
+      "ambito": "vanilla",
+      "jefeFinal": 398,
+      "implementado": false,
+      "pasos": []
+    }
+  ]
+}

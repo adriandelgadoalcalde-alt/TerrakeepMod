@@ -86,7 +86,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		private static Asset<Texture2D> _texturaBorde;
 
 		private string _texto;
-		private readonly float _escalaTexto;
+		private float _escalaTexto;
 		private float _escalaAnimada = EscalaReposo;
 
 		/// <summary>true mientras el boton de raton izquierdo sigue pulsado desde que se apreto
@@ -164,6 +164,21 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		}
 
 		public string Texto => _texto;
+
+		/// <summary>
+		/// Escala del texto. Es escribible para que quien tenga varios botones en una fila apretada
+		/// pueda BAJARLA lo justo para que el rotulo mas largo quepa entero, midiendolo con la
+		/// fuente real.
+		/// <para />
+		/// Hizo falta al añadir la septima pestaña al panel: con siete, cada una pasa de 1/6 a 1/7
+		/// del ancho y "Investigación" ya no cabia a 0,8. La regla de este proyecto es que <b>ningun
+		/// texto se recorta con puntos suspensivos</b>, asi que lo que se adapta es el layout, no el
+		/// texto. Ver <c>PanelTerrakeepState.AjustarEscalaDeLasPestanas</c>.
+		/// </summary>
+		public float EscalaTexto {
+			get { return _escalaTexto; }
+			set { _escalaTexto = value; }
+		}
 
 		/// <summary>Escala de la animacion ahora mismo (0.8 en reposo, 0.96 con el raton encima).
 		/// La leen las autopruebas para demostrar que la animacion corre de verdad.</summary>

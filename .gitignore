@@ -3,6 +3,15 @@ obj/
 *.user
 *.csproj.bak
 
+# Carpetas de salida ALTERNATIVAS que dejan las verificaciones cuando compilan con
+# -p:BaseOutputPath / -p:BaseIntermediateOutputPath aparte (para no pelearse con un bin\
+# bloqueado por un juego abierto - ver feedback_build-lock-baseoutputpath). Son basura de
+# trabajo, nunca parte del mod. IMPORTANTE: si una de ellas se queda con los .cs generados
+# dentro (AssemblyInfo.cs), la compilacion siguiente falla con CS0579 por atributos de
+# ensamblado duplicados, porque el SDK solo excluye por su cuenta bin\ y obj\ "de verdad".
+bin-*/
+obj-*/
+
 # lib/Terrakeep.Core.dll SI se versiona a proposito: es lo que hace que este repo se
 # pueda compilar por si solo sin tener al lado el repo hermano Terrasavr-Native. Se regenera
 # con scripts/actualizar-core.ps1 cuando Core cambie.

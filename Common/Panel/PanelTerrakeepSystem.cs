@@ -6,14 +6,22 @@ using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Builds;
 using TerrakeepMod.Common.Exploracion;
+using TerrakeepMod.Common.Guia;
 using TerrakeepMod.Common.Investigacion;
 using TerrakeepMod.Common.Libreria;
 using TerrakeepMod.UI.Panel;
 
 namespace TerrakeepMod.Common.Panel
 {
-	/// <summary>Las seis areas del panel unico, en el orden en el que salen en la barra de
-	/// pestañas (el mismo que la aplicacion de escritorio hermana).</summary>
+	/// <summary>
+	/// Las areas del panel unico, en el orden en el que salen en la barra de pestañas (el mismo
+	/// que la aplicacion de escritorio hermana, con la Guia añadida al final).
+	/// </summary>
+	/// <remarks>
+	/// <b>Los valores no se reordenan nunca</b>: son el indice con el que se guarda la ultima
+	/// pestaña abierta y el que usan las autopruebas. <see cref="Guia"/> entra la ULTIMA por eso,
+	/// aunque conceptualmente sea lo primero que mira alguien que no sabe que hacer.
+	/// </remarks>
 	public enum AreaTerrakeep
 	{
 		Personaje = 0,
@@ -21,7 +29,8 @@ namespace TerrakeepMod.Common.Panel
 		Builds = 2,
 		Investigacion = 3,
 		Exploracion = 4,
-		Ajustes = 5
+		Ajustes = 5,
+		Guia = 6
 	}
 
 	/// <summary>
@@ -147,6 +156,7 @@ namespace TerrakeepMod.Common.Panel
 				case AreaTerrakeep.Investigacion: return PanelInvestigacionSystem.Atajo;
 				case AreaTerrakeep.Exploracion: return PanelExploracionSystem.Atajo;
 				case AreaTerrakeep.Ajustes: return AjustesSystem.AbrirAjustesKeybind;
+				case AreaTerrakeep.Guia: return GuiaSystem.Atajo;
 				default: return null;
 			}
 		}
@@ -166,6 +176,7 @@ namespace TerrakeepMod.Common.Panel
 				case AreaTerrakeep.Investigacion: return "AbrirInvestigacion";
 				case AreaTerrakeep.Exploracion: return "AbrirExploracion";
 				case AreaTerrakeep.Ajustes: return "AbrirAjustes";
+				case AreaTerrakeep.Guia: return "AbrirGuia";
 				default: return null;
 			}
 		}
@@ -376,6 +387,9 @@ namespace TerrakeepMod.Common.Panel
 					break;
 				case AreaTerrakeep.Exploracion:
 					RegistroExploracion.Linea(mensaje);
+					break;
+				case AreaTerrakeep.Guia:
+					RegistroGuia.Linea(mensaje);
 					break;
 				default:
 					// Personaje y Ajustes no tienen archivo propio: su evidencia es el client.log.

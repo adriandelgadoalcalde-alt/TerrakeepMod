@@ -10,6 +10,7 @@ Panel: {
 		Investigacion: Investigación
 		Exploracion: Exploración
 		Ajustes: Ajustes
+		Guia: Guía
 	}
 
 	Ayuda: {
@@ -19,6 +20,7 @@ Panel: {
 		Investigacion: Se escribe por la vía oficial del Modo Viaje, así que el menú del juego refleja lo mismo.
 		Exploracion: Arrastra el mini-mapa para moverte y usa la rueda para acercar.
 		Ajustes: El idioma cambia en vivo. Ctrl+Z deshace cualquier acción de Terrakeep.
+		Guia: Te dice qué hacer ahora y por qué, leyendo tu personaje real. Dirección, nunca coordenadas.
 	}
 }
 
@@ -728,6 +730,165 @@ Historial: {
 
 Prefijos.MejorPrefijo: Mejor prefijo posible: {0}
 
+Guia: {
+	ObjetivoActual: Tu objetivo ahora mismo
+	SinObjetivo: No queda nada pendiente en el tramo que la guía sabe medir todavía. Sigue el mapa de la derecha: el juego continúa.
+	PorQue: Por qué
+	Como: Por dónde se empieza
+	Preparacion: Preparación {0}%  ·  {1} de {2} requisitos que el juego exige
+	EnElTramo: Tramo: {0}
+	QueTeFalta: Qué te falta
+	LecturaDelJefe: Lectura del jefe
+	EsteTramo: Este tramo, paso a paso
+	LoQueViene: Lo que viene después
+	AvisoCalamityTitulo: Tienes Calamity instalado
+	AvisoCalamity: Con Calamity la progresión cambia de arriba abajo: otros jefes, otro orden y otras cifras. Esta guía todavía es la de Terraria a secas, así que úsala como referencia de vanilla y no como el orden completo de tu partida. El árbol de Calamity está pendiente, y se dice en vez de inventárselo.
+
+	Direccion: {
+		YaEstas: Estás donde toca: {0}
+		Baja: Hacia abajo, en {0}
+		Sube: Hacia arriba, en {0}
+	}
+
+	Modo: {
+		Normal: modo normal
+		Experto: modo experto
+		Maestro: modo maestro
+		Viaje: modo viaje
+	}
+
+	Jefe: {
+		Stats: "{0}: {1} de vida, {2} de defensa y {3} de daño en {4}."
+		SinArma: No llevas ningún arma encima, así que ahora mismo no puedes hacerle nada.
+		TuArma: Tu mejor arma ({0}, {1} de daño) le quita {2} por golpe: harían falta unos {3} golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
+	}
+
+	Req: {
+		Recomendado: (recomendado, no obligatorio)
+		NoEvaluable: Esto la guía no lo sabe comprobar todavía: {0}
+		CristalesVida: Cristales de vida usados: {0} de {1}
+		VidaMaxima: Vida máxima: {0} de {1}
+		Defensa: Defensa: {0} de {1}
+		NpcsPueblo: Vecinos en el pueblo: {0} de {1}
+		Npc: Que viva contigo: {0}
+		Objeto: Llevar encima: {0}
+		ObjetoVarios: "{0}: llevas {1} de {2}"
+		ObjetoCualquiera: Cualquiera de estos ({0}): llevas {1} de {2}
+		DanoArma: Tu mejor arma es {0}, con {1} de daño; hacen falta {2}
+		DanoArmaSinArma: No llevas ningún arma; hacen falta {0} de daño
+		GanchoSi: Llevas un gancho: {0}
+		GanchoNo: No llevas ningún gancho
+	}
+
+	Bandera.downedBoss1: Derrotar al Ojo de Cthulhu
+
+	Zona: {
+		Superficie: la superficie
+		Subterraneo: el subsuelo
+		Cavernas: las cavernas
+	}
+
+	Tramo: {
+		PreOjo: {
+			Nombre: Antes del primer jefe
+			Resumen: Casa, mineral, cristales de vida y cuatro vecinos, hasta el Ojo de Cthulhu.
+		}
+
+		MaldadDelMundo: {
+			Nombre: La maldad de tu mundo
+			Resumen: Devorador de Mundos o Cerebro de Cthulhu, según cómo se generó tu mundo. La primera vez que muere cae un meteorito seguro; después, una de cada dos.
+		}
+
+		ReinaAbeja: {
+			Nombre: La Reina Abeja (opcional)
+			Resumen: 3400 de vida, en la colmena de la jungla. No bloquea nada, pero lo que suelta adelanta todo el resto del prehardmode.
+		}
+
+		Esqueletron: {
+			Nombre: Esqueletron y la Mazmorra
+			Resumen: 4400 de vida. Al morir se abre la Mazmorra entera y llega el Sastre a vivir contigo.
+		}
+
+		MuroDeCarne: {
+			Nombre: El Muro de Carne
+			Resumen: 8000 de vida, en el Infierno. Al morir el mundo entra en Modo Difícil, y eso no tiene marcha atrás.
+		}
+
+		InicioModoDificil: {
+			Nombre: Los primeros pasos del Modo Difícil
+			Resumen: Minerales nuevos rompiendo Altares, y la Reina Slime (18000 de vida) como opcional.
+		}
+
+		Mecanicos: {
+			Nombre: Los tres mecánicos
+			Resumen: Destructor 80000, Gemelos 20000 y 23000, Esqueletron Prime 28000 de vida.
+		}
+
+		Plantera: {
+			Nombre: Plantera
+			Resumen: 30000 de vida, en un bulbo de la jungla subterránea. Al morir llega el Ciborg.
+		}
+
+		TemploYGolem: {
+			Nombre: El Templo y el Golem
+			Resumen: Golem, 15000 de vida y 26 de defensa, dentro del Templo de la Selva.
+		}
+
+		JefesOpcionalesTardios: {
+			Nombre: Los opcionales de después
+			Resumen: Duque Pezhongo (60000 de vida, 50 de defensa) y la Emperatriz de la Luz (70000). Opcionales, pero su equipo es lo mejor que hay antes de la luna.
+		}
+
+		EventosLunares: {
+			Nombre: El Cultista y los Pilares
+			Resumen: Cultista Lunático, 32000 de vida y 42 de defensa. Al morir empiezan los cuatro Pilares.
+		}
+
+		MoonLord: {
+			Nombre: El Señor de la Luna
+			Resumen: El final: 50000 de vida sólo el núcleo, y 70 de defensa.
+		}
+	}
+
+	Paso: {
+		Refugio: {
+			Titulo: Una casa y un vecino
+			Porque: Los vecinos no son decoración: la mitad de la progresión temprana pasa por ellos, y el propio juego cuenta cuántos tienes para decidir si el Ojo de Cthulhu aparece de noche. Además, de noche la superficie se llena de enemigos y una casa cerrada es la diferencia entre seguir jugando y volver a empezar el día.
+			Como: Una habitación con paredes puestas, una puerta, una mesa, una silla y una fuente de luz ya cuenta como vivienda. El Guía se muda solo en cuanto haya una libre.
+		}
+
+		Defensa: {
+			Titulo: Armadura: más de 10 de defensa
+			Porque: La defensa te quita daño fijo de cada golpe que recibes: la mitad de tu defensa en modo normal, tres cuartos en experto y la defensa entera en maestro. No es un número de adorno, y además es una de las dos condiciones que el juego comprueba de verdad para dejar aparecer al Ojo de Cthulhu por la noche.
+			Como: Un juego completo de cualquiera de los minerales de la primera capa ya pasa de 10. Si te falta poco, un accesorio o un buff de defensa lo cubre.
+		}
+
+		CristalesDeVida: {
+			Titulo: Cinco cristales de vida (200 de vida)
+			Porque: Los cristales son la única forma de subir la vida en esta parte del juego. Y ojo con un detalle que no se ve por ningún lado: el juego lleva un contador aparte de cuántos has USADO, y es ese contador el que mira para dejar aparecer al Ojo de Cthulhu, no tu vida máxima. Subir la vida a mano desde el editor de Terrakeep te deja con 200 de vida y el contador a cero, así que el Ojo no vendría nunca: hay que usarlos de verdad.
+			Como: Brillan en las paredes de las cuevas, bastante por debajo de la superficie. Una antorcha y bajar en horizontal cubriendo terreno es más rápido que cavar en vertical.
+		}
+
+		PuebloDeCuatro: {
+			Titulo: Cuatro vecinos
+			Porque: Cuatro es el número exacto que el juego exige para que el Ojo de Cthulhu pueda aparecer solo al caer la noche. Cada vecino además se muda por un motivo concreto: el Mercader con 50 de plata encima de alguien, la Enfermera en cuanto alguien haya usado un cristal de vida y el Mercader ya viva contigo, y el de Demoliciones con una bomba en el inventario y el Mercader también presente.
+			Como: Construye las viviendas primero: un vecino no se muda si no hay una libre y válida, aunque cumplas su condición.
+		}
+
+		ArmaYArena: {
+			Titulo: Un arma que le haga daño de verdad
+			Porque: Aquí está la respuesta a por qué una espada de madera ya no vale, y no es una opinión: cada golpe que recibe un enemigo pierde la mitad de la defensa de ese enemigo, con un mínimo de 1. El Ojo de Cthulhu tiene 12 de defensa, así que resta 6 a cada golpe. Con un arma de 7 de daño le estás quitando 1 por golpe y tienes 2800 de vida por delante: no es que juegues mal, es que esa espada no puede.
+			Como: Cualquier arma de mineral de la primera capa ya pasa de sobra. Unas plataformas largas para moverte en horizontal y unas pociones de curación cambian la pelea por completo, aunque el juego no te las pida.
+		}
+
+		InvocarElOjo: {
+			Titulo: Llamarlo tú, en vez de esperarlo
+			Porque: Cumpliendo todo lo anterior, el Ojo puede aparecer solo al caer la noche, pero sólo una de cada tres noches: puedes pasarte varias noches preparado y sin que llegue. El Vidente Sospechoso lo llama cuando tú quieras, que es lo que te deja elegir el momento en vez de que te pille a medias.
+			Como: Seis lentes en un Altar Demoniaco o Carmesí. Las lentes las sueltan los ojos que vuelan de noche por la superficie, así que salen solas mientras preparas el resto.
+		}
+	}
+}
+
 Keybinds: {
 	AbrirPanel.DisplayName: Abrir Terrakeep
 	AbrirLibreria.DisplayName: Abrir la Librería de Terrakeep
@@ -735,6 +896,7 @@ Keybinds: {
 	AbrirInvestigacion.DisplayName: Abrir la Investigación de Terrakeep
 	AbrirExploracion.DisplayName: Abrir la Exploración de Terrakeep
 	AbrirAjustes.DisplayName: Abrir los Ajustes de Terrakeep
+	AbrirGuia.DisplayName: Abrir la Guía de Terrakeep
 	Deshacer.DisplayName: Deshacer (con Ctrl)
 	Rehacer.DisplayName: Rehacer (con Ctrl)
 }

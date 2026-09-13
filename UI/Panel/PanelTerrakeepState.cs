@@ -10,6 +10,7 @@ using TerrakeepMod.Common.Panel;
 using TerrakeepMod.UI.Ajustes;
 using TerrakeepMod.UI.Builds;
 using TerrakeepMod.UI.Exploracion;
+using TerrakeepMod.UI.Guia;
 using TerrakeepMod.UI.Investigacion;
 using TerrakeepMod.UI.Libreria;
 using TerrakeepMod.UI.Personaje;
@@ -142,6 +143,7 @@ namespace TerrakeepMod.UI.Panel
 		public ContenidoInvestigacion Investigacion => _contenidoActual as ContenidoInvestigacion;
 		public ContenidoExploracion Exploracion => _contenidoActual as ContenidoExploracion;
 		public ContenidoAjustes Ajustes => _contenidoActual as ContenidoAjustes;
+		public ContenidoGuia Guia => _contenidoActual as ContenidoGuia;
 
 		public override void OnInitialize()
 		{
@@ -237,7 +239,7 @@ namespace TerrakeepMod.UI.Panel
 		/// localizacion, no un texto que se enseñe: <c>Panel.Area.&lt;clave&gt;</c> y
 		/// <c>Panel.Ayuda.&lt;clave&gt;</c>.</summary>
 		public static readonly string[] ClavesDeArea = {
-			"Personaje", "Libreria", "Builds", "Investigacion", "Exploracion", "Ajustes"
+			"Personaje", "Libreria", "Builds", "Investigacion", "Exploracion", "Ajustes", "Guia"
 		};
 
 		/// <summary>
@@ -341,10 +343,74 @@ namespace TerrakeepMod.UI.Panel
 				_botonesPestana[i].FijarTexto(NombreDeArea((AreaTerrakeep)i));
 			}
 
+			AjustarEscalaDeLasPestanas();
+
 			if (_botonCerrar != null) {
 				_botonCerrar.FijarTexto(Idiomas.Texto("Panel.Cerrar", PanelTerrakeepSystem.TeclaDe(_area)));
 			}
 		}
+
+		/// <summary>
+		/// Baja la escala del texto de TODAS las pestañas lo justo para que el rotulo mas largo
+		/// quepa entero en su boton, midiendolo con la fuente real del juego.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// Hizo falta al pasar de seis pestañas a siete: cada una baja de 1/6 a 1/7 del ancho del
+		/// marco, y "Investigación" (el rotulo mas largo en español; en ingles lo es "Exploration")
+		/// ya no cabia a la escala fija de 0,8. La regla del proyecto es que <b>ningun texto se
+		/// recorta</b>: lo que se adapta es el layout.
+		/// </para>
+		/// <para>
+		/// Se mide en cada fotograma y no una sola vez a proposito, porque las tres cosas de las que
+		/// depende cambian en vivo: el IDIOMA (los rotulos son otros), la RESOLUCION y la ESCALA DE
+		/// INTERFAZ del jugador (el ancho del boton es una fraccion del marco). Cuesta siete
+		/// <c>MeasureString</c>, lo mismo que ya paga cualquier <see cref="EtiquetaTk"/> del panel.
+		/// La escala es COMUN a las siete: con una por pestaña, las de rotulo corto se verian mas
+		/// grandes que las de al lado y la barra pareceria rota.
+		/// </para>
+		/// </remarks>
+		private void AjustarEscalaDeLasPestanas()
+		{
+			float escala = EstiloTk.EscalaPestana;
+
+			for (int i = 0; i < _botonesPestana.Count; i++) {
+				BotonTk boton = _botonesPestana[i];
+				float ancho = boton.GetDimensions().Width;
+				if (ancho <= 0f || string.IsNullOrEmpty(boton.Texto)) {
+					continue;
+				}
+
+				float anchoTexto =
+					Terraria.GameContent.FontAssets.MouseText.Value.MeasureString(boton.Texto).X;
+				if (anchoTexto <= 0f) {
+					continue;
+				}
+
+				// 8 px de respiro a cada lado; el texto ademas crece un 6% con la animacion de
+				// hover (ver BotonTk.DibujarTexto), asi que se reserva ese margen tambien.
+				float cabe = (ancho - 16f) / (anchoTexto * 1.06f);
+				if (cabe < escala) {
+					escala = cabe;
+				}
+			}
+
+			// Suelo duro: por debajo de esto la fuente del juego se vuelve ilegible, y es preferible
+			// que se note que algo no cabe a enseñar un renglon borroso.
+			if (escala < 0.55f) {
+				escala = 0.55f;
+			}
+
+			for (int i = 0; i < _botonesPestana.Count; i++) {
+				_botonesPestana[i].EscalaTexto = escala;
+			}
+
+			EscalaDeLasPestanas = escala;
+		}
+
+		/// <summary>Escala de texto que ha quedado en la barra de pestañas. La lee la autoprueba
+		/// para demostrar con un numero que los siete rotulos caben de verdad.</summary>
+		public float EscalaDeLasPestanas { get; private set; } = EstiloTk.EscalaPestana;
 
 		private static UIElement CrearContenido(AreaTerrakeep area)
 		{
@@ -364,6 +430,8 @@ namespace TerrakeepMod.UI.Panel
 					return new ContenidoExploracion();
 				case AreaTerrakeep.Ajustes:
 					return new ContenidoAjustes();
+				case AreaTerrakeep.Guia:
+					return new ContenidoGuia();
 				default:
 					return null;
 			}

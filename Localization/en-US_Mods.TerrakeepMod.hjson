@@ -10,6 +10,7 @@ Panel: {
 		Investigacion: Research
 		Exploracion: Exploration
 		Ajustes: Settings
+		Guia: Guide
 	}
 
 	Ayuda: {
@@ -19,6 +20,7 @@ Panel: {
 		Investigacion: It writes through Journey Mode's official API, so the game's own menu shows the same.
 		Exploracion: Drag the mini-map to pan and use the wheel to zoom.
 		Ajustes: The language changes live. Ctrl+Z undoes any Terrakeep action.
+		Guia: Tells you what to do now and why, reading your real character. Direction, never coordinates.
 	}
 }
 
@@ -728,6 +730,165 @@ Historial: {
 
 Prefijos.MejorPrefijo: Best possible prefix: {0}
 
+Guia: {
+	ObjetivoActual: Your objective right now
+	SinObjetivo: Nothing left pending in the stretch the guide can measure yet. Follow the roadmap on the right: the game goes on.
+	PorQue: Why
+	Como: Where to start
+	Preparacion: Readiness {0}%  ·  {1} of {2} requirements the game enforces
+	EnElTramo: Stretch: {0}
+	QueTeFalta: What you are missing
+	LecturaDelJefe: Boss reading
+	EsteTramo: This stretch, step by step
+	LoQueViene: What comes next
+	AvisoCalamityTitulo: You have Calamity installed
+	AvisoCalamity: Calamity changes progression from top to bottom: different bosses, different order, different numbers. This guide still covers plain Terraria, so treat it as the vanilla reference and not as your run's full order. The Calamity tree is pending, and that is said out loud rather than made up.
+
+	Direccion: {
+		YaEstas: You are where you need to be: {0}
+		Baja: Downwards, in {0}
+		Sube: Upwards, in {0}
+	}
+
+	Modo: {
+		Normal: normal mode
+		Experto: expert mode
+		Maestro: master mode
+		Viaje: journey mode
+	}
+
+	Jefe: {
+		Stats: "{0}: {1} health, {2} defense and {3} damage on {4}."
+		SinArma: You are not carrying any weapon, so right now you cannot do anything to it.
+		TuArma: Your best weapon ({0}, {1} damage) takes {2} off per hit: that is about {3} hits. An enemy subtracts half its defense from every hit it takes, with a minimum of 1.
+	}
+
+	Req: {
+		Recomendado: (recommended, not required)
+		NoEvaluable: The guide cannot check this yet: {0}
+		CristalesVida: Life Crystals used: {0} of {1}
+		VidaMaxima: Max health: {0} of {1}
+		Defensa: Defense: {0} of {1}
+		NpcsPueblo: Villagers in town: {0} of {1}
+		Npc: Living with you: {0}
+		Objeto: Carrying: {0}
+		ObjetoVarios: "{0}: you carry {1} of {2}"
+		ObjetoCualquiera: Any of these ({0}): you carry {1} of {2}
+		DanoArma: Your best weapon is {0}, with {1} damage; {2} needed
+		DanoArmaSinArma: You are not carrying a weapon; {0} damage needed
+		GanchoSi: You carry a hook: {0}
+		GanchoNo: You are not carrying a hook
+	}
+
+	Bandera.downedBoss1: Defeat the Eye of Cthulhu
+
+	Zona: {
+		Superficie: the surface
+		Subterraneo: the underground
+		Cavernas: the caverns
+	}
+
+	Tramo: {
+		PreOjo: {
+			Nombre: Before the first boss
+			Resumen: A house, ore, life crystals and four villagers, up to the Eye of Cthulhu.
+		}
+
+		MaldadDelMundo: {
+			Nombre: Your world's evil
+			Resumen: Eater of Worlds or Brain of Cthulhu, depending on how your world was generated. The first time it dies a meteorite falls for sure; after that, one in two.
+		}
+
+		ReinaAbeja: {
+			Nombre: Queen Bee (optional)
+			Resumen: 3400 health, in the jungle hive. It blocks nothing, but what it drops speeds up the rest of pre-hardmode.
+		}
+
+		Esqueletron: {
+			Nombre: Skeletron and the Dungeon
+			Resumen: 4400 health. When it dies the whole Dungeon opens up and the Clothier moves in.
+		}
+
+		MuroDeCarne: {
+			Nombre: The Wall of Flesh
+			Resumen: 8000 health, in the Underworld. When it dies the world turns Hardmode, and there is no going back.
+		}
+
+		InicioModoDificil: {
+			Nombre: The first steps of Hardmode
+			Resumen: New ores from smashing Altars, plus Queen Slime (18000 health) as an optional.
+		}
+
+		Mecanicos: {
+			Nombre: The three mechanical bosses
+			Resumen: The Destroyer 80000, The Twins 20000 and 23000, Skeletron Prime 28000 health.
+		}
+
+		Plantera: {
+			Nombre: Plantera
+			Resumen: 30000 health, in a bulb in the underground jungle. When it dies the Cyborg arrives.
+		}
+
+		TemploYGolem: {
+			Nombre: The Temple and Golem
+			Resumen: Golem, 15000 health and 26 defense, inside the Jungle Temple.
+		}
+
+		JefesOpcionalesTardios: {
+			Nombre: The late optional bosses
+			Resumen: Duke Fishron (60000 health, 50 defense) and the Empress of Light (70000). Optional, but their gear is the best there is before the moon.
+		}
+
+		EventosLunares: {
+			Nombre: The Cultist and the Pillars
+			Resumen: Lunatic Cultist, 32000 health and 42 defense. When it dies the four Pillars begin.
+		}
+
+		MoonLord: {
+			Nombre: The Moon Lord
+			Resumen: The end: 50000 health for the core alone, and 70 defense.
+		}
+	}
+
+	Paso: {
+		Refugio: {
+			Titulo: A house and a neighbour
+			Porque: Villagers are not decoration: half of early progression goes through them, and the game itself counts how many you have to decide whether the Eye of Cthulhu shows up at night. On top of that, the surface fills with enemies after dark, and a sealed house is the difference between playing on and starting the day over.
+			Como: A room with placed walls, a door, a table, a chair and a light source already counts as housing. The Guide moves in by himself as soon as one is free.
+		}
+
+		Defensa: {
+			Titulo: Armor: more than 10 defense
+			Porque: Defense removes a flat amount from every hit you take: half your defense on normal, three quarters on expert and your whole defense on master. It is not a decorative number, and it is also one of the two things the game actually checks before letting the Eye of Cthulhu show up at night.
+			Como: A full set of any of the first-tier ores already goes past 10. If you are close, one accessory or a defense buff covers the rest.
+		}
+
+		CristalesDeVida: {
+			Titulo: Five Life Crystals (200 health)
+			Porque: Crystals are the only way to raise your health in this part of the game. And watch out for a detail that is nowhere on screen: the game keeps a separate counter of how many you have USED, and that counter is what it checks before letting the Eye of Cthulhu appear, not your max health. Raising health by hand from Terrakeep's editor leaves you at 200 health with the counter at zero, so the Eye would never come: they have to be used for real.
+			Como: They glow on cave walls, well below the surface. A torch and moving sideways covering ground finds them faster than digging straight down.
+		}
+
+		PuebloDeCuatro: {
+			Titulo: Four villagers
+			Porque: Four is the exact number the game demands before the Eye of Cthulhu can turn up by itself at nightfall. Each villager also moves in for a concrete reason: the Merchant once somebody carries 50 silver, the Nurse as soon as somebody has used a Life Crystal and the Merchant already lives with you, and the Demolitionist with a bomb in the inventory and the Merchant present too.
+			Como: Build the houses first: a villager will not move in without a free, valid one, even if you meet their condition.
+		}
+
+		ArmaYArena: {
+			Titulo: A weapon that actually hurts it
+			Porque: This is the answer to why a wooden sword no longer cuts it, and it is not an opinion: every hit an enemy takes loses half of that enemy's defense, with a minimum of 1. The Eye of Cthulhu has 12 defense, so 6 comes off every hit. With a 7 damage weapon you are taking 1 per hit off a 2800 health boss: you are not playing badly, that sword simply cannot do it.
+			Como: Any first-tier ore weapon clears this easily. Long platform runs to move sideways and a few healing potions change the fight completely, even though the game does not ask for them.
+		}
+
+		InvocarElOjo: {
+			Titulo: Summon it yourself instead of waiting
+			Porque: With everything above done the Eye can show up on its own at nightfall, but only one night in three: you can spend several nights ready and have it never come. The Suspicious Looking Eye calls it whenever you want, which is what lets you pick the moment instead of being caught halfway through something.
+			Como: Six lenses at a Demon or Crimson Altar. Lenses drop from the eyes that fly around the surface at night, so they pile up on their own while you get everything else ready.
+		}
+	}
+}
+
 Keybinds: {
 	AbrirPanel.DisplayName: Open Terrakeep
 	AbrirLibreria.DisplayName: Open Terrakeep Library
@@ -735,6 +896,7 @@ Keybinds: {
 	AbrirInvestigacion.DisplayName: Open Terrakeep Research
 	AbrirExploracion.DisplayName: Open Terrakeep Exploration
 	AbrirAjustes.DisplayName: Open Terrakeep Settings
+	AbrirGuia.DisplayName: Open Terrakeep Guide
 	Deshacer.DisplayName: Undo (hold Ctrl)
 	Rehacer.DisplayName: Redo (hold Ctrl)
 }
