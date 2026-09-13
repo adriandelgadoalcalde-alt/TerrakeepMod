@@ -5034,3 +5034,219 @@ de los del repo hermano (mismo criterio de siempre: copiados, nunca editados a m
 (`ArbolLibreria.Podar`) **no se ha tocado**: el árbol nuevo pasa por ella tal cual — quita 722 ids,
 1452 apariciones y 26 carpetas vacías (antes eran 40; ahora se quedan vacías menos carpetas porque
 los ids que sobran ya no forman páginas enteras).
+
+---
+
+## 13-sep-2026 — La "Guía en tiempo real": cerebro de progresión + primer tramo funcionando
+
+Encargo nuevo y grande: que Terraria nunca deje al jugador con la parálisis de *"no sé qué hacer
+ahora"*, sin quitarle la exploración libre. La referencia que dio el usuario son Cyberpunk, los
+Souls, Ori y Warcraft 3: **siempre hay un objetivo claro, una dirección, y una razón clara de por
+qué algo todavía no te sale**. Esta ronda sienta las bases: la investigación real, el formato de
+datos y el **primer tramo (pre-Ojo de Cthulhu) funcionando de verdad**.
+
+Vive como **séptima pestaña del panel único**, tecla **G**. Que la G estuviera libre no se supuso:
+se leyó el preset real `PresetProfiles.Redigit` del `tModLoader.dll` instalado
+(`GameInput/PlayerInput.cs`), donde las teclas de fábrica son W A S D, Espacio, Escape, E,
+LeftShift, LeftControl, R, H, J, B, Tab, M, +, −, AvPág/RePág, 0-9, OemPlus/OemMinus, C y F1-F4.
+
+### Lo que se decidió sobre Calamity, y por qué
+
+**Fuera de esta fase, pero dicho en el panel en vez de disimulado.** El motivo no es pereza: con
+Calamity la progresión no es "unos jefes más", es **otro árbol**. Su `DownedBossSystem.cs`
+decompilado tiene **43 banderas de jefe propias** (`downedDesertScourge`, `downedHiveMind`,
+`downedPerforator`, `downedProvidence`, `downedExoMechs`…), el primer jefe deja de ser el Ojo de
+Cthulhu, y el mod mete sus propios modos (Revengeance, Death) que cambian las cifras con las que se
+mide si estás preparado. Nada de eso se puede verificar con el mismo rigor que lo de vanilla
+leyendo el juego decompilado: son datos de diseño de un mod, no condiciones del motor. Enseñar un
+orden de Calamity a medias sería exactamente el *"análogo falso solo por completar la lista"* que
+prohíbe el estándar de la marca.
+
+Lo que sí se hizo es dejar el camino abierto **desde el primer día**: el discriminador
+`AmbitoGuia` (vanilla / calamity / ambos) está en el modelo y en el `.json` por tramo,
+`CatalogoGuia.Tramos` filtra por él, y el mod detecta Calamity con
+`ModLoader.HasMod("CalamityMod")` (la misma vía que ya usan `CatalogoMejorPrefijo` y
+`CatalogoBuilds`). Con Calamity cargado, la Guía **sigue enseñando el árbol de vanilla** y pone
+arriba del todo un aviso diciendo que eso es lo que está leyendo. Añadir Calamity será **datos**
+(tramos en el `.json` + banderas en `BanderasGuia`), no reescribir el cerebro.
+
+### El formato de datos: qué dice el `.json` y qué dice el C#
+
+El reparto es la decisión de diseño central, y está pensado para que ampliar el árbol no sea
+programar:
+
+| | Dónde vive | Qué dice |
+|---|---|---|
+| El árbol | `Assets/guia_progresion.json` | qué tramos, qué pasos, en qué orden, qué requisitos y con qué umbrales |
+| La comprobación | `Common/Guia/EvaluadorGuia.cs` | cómo se mira cada clase de requisito en el juego en marcha |
+| Los textos | `Localization/*.hjson` | título, **porqué** y **cómo** de cada paso, en los dos idiomas |
+
+El vocabulario de requisitos es **cerrado** (10 tipos: `cristales_vida`, `vida_maxima`, `defensa`,
+`npcs_pueblo`, `npc`, `objeto`, `objeto_cualquiera`, `dano_arma`, `gancho`, `bandera`). Añadir un
+paso o un tramo es editar el `.json`; solo añadir una **clase nueva** de requisito obliga a tocar
+C#. Un tipo que no se reconozca **no revienta y no se da por bueno**: se marca "no evaluable", se
+enseña como tal y se avisa en el log al cargar. Un falso verde en una guía es peor que no tener
+guía.
+
+**Ningún número que el motor ya sepa está escrito en el `.json`.** La vida, la defensa y el daño de
+un jefe se sacan clonando su muestra de `ContentSamples.NpcsByNetId` y llamando a su propio
+`NPC.ScaleStats(null, Main.GameModeInfo, null)` — el método público real que usa el juego cuando el
+jefe aparece de verdad —, así que el número que ve el jugador es el de **su** partida y no "el del
+wiki". El daño del arma sale de `Player.GetWeaponDamage`, o sea el mismo que aparece en su tooltip.
+Lo que sí guarda el `.json` son los **umbrales de diseño**, y los que vienen de una condición real
+del motor llevan citada su fuente en el propio archivo.
+
+Un paso se da por hecho cuando cumple todos sus requisitos **obligatorios**; los **recomendados**
+(la arena, las pociones, el gancho) cuentan para el medidor pero no bloquean. Esa distinción es
+deliberada: es la diferencia entre "el juego no te deja" y "te vas a llevar un disgusto", y
+mentir ahí convertiría la brújula en una lista de tareas. El medidor pesa doble un obligatorio que
+un recomendado y suma el progreso **parcial** de cada uno (3 vecinos de 4 son 0,75 de ese
+requisito), para que se mueva mientras juegas en vez de dar saltos de todo o nada.
+
+### La investigación, verificada contra el juego decompilado (nada de memoria)
+
+| Qué | Dónde se leyó | Qué dice de verdad |
+|---|---|---|
+| Aparición nocturna del Ojo de Cthulhu | `Main.UpdateTime_StartNight` | `ConsumedLifeCrystals >= 5` **y** `(int)statDefense > 10` **y** `num >= 4` NPC del pueblo **y** `rand.Next(3) == 0` |
+| Daño que recibe un enemigo | `NPC.HitModifiers.GetDamage` | `max(daño − defensa × 0,5, 1)`; el `DefenseEffectiveness` de un NPC es **siempre 0,5** |
+| Daño que recibe el jugador | `Player.VanillaBaseDefenseEffectiveness` | defensa × **0,5** normal, **0,75** experto, **1** maestro |
+| Modos de juego | `GameModeData` | normal ×1, experto ×2, maestro ×3 (vida y daño); la defensa **no** se multiplica |
+| Vidente Sospechoso | `Recipe.cs:14362` | 6 Lentes (38) en un Altar (tile 26) |
+| Meteorito | `NPC.cs` case 13/14/15/266 + `Main.UpdateTime_StartNight` | **garantizado** la primera vez que muere el Devorador/Cerebro (`!downedBoss2`), después 1 de cada 2; y 1/50 por noche con `downedBoss2` |
+| Modo Difícil | `NPC.cs` case 113 | el Muro de Carne llama a `WorldGen.StartHardmode()` |
+| Quién se muda y por qué | `NPC.SpawnAllowed_*` + `Main.UpdateTime_SpawnTownNPCs` | Mercader = 50 de plata (5000 de cobre contando los ids 71/72/73/74); Enfermera = alguien con `ConsumedLifeCrystals > 0` **y Mercader presente**; Demoliciones = un objeto de `ItemsThatCountAsBombsForDemolitionistToSpawn` **y Mercader**; Armería = munición de bala; Comerciante de tintes = un tinte **y ya 4 vecinos**; Dríade = `downedBoss1`/`downedBoss2`/`downedBoss3`; Sastre = `downedBoss3`; Zoólogo = bestiario ≥ 10%; Pintor = ≥ 8 vecinos; Ciborg = `hardMode && downedPlantBoss` |
+| Duración de la noche | `Main.nightLength` | 32400 ticks = 9 minutos reales |
+| Vidas/defensas/daños base | bloques `SetDefaults` de `NPC.cs` | Ojo 2800/12/15 · Devorador (cabeza) 150/2/22 · Reina Abeja 3400/8/30 · Esqueletron 4400/10/32 · Deerclops 7000/10/20 · Muro de Carne 8000/12/50 · Reina Slime 18000/26/60 · Retinazer 20000/10/45 · Spazmatism 23000/10/50 · Prime 28000/24/47 · Destructor 80000/0/70 · Plantera 30000/14/50 · Golem 15000/26/72 · Duque Pezhongo 60000/50/100 · Emperatriz 70000/50/80 · Cultista 32000/42/50 · Moon Lord (núcleo) 50000/70 · King Slime 2000/10/40 · Cerebro 1250/14/30 |
+
+### El hallazgo que corrige un error muy fácil de cometer
+
+**`Player.ConsumedLifeCrystals` NO es `(statLifeMax − 100) / 20`.** Es un **contador guardado
+aparte** (`consumedLifeCrystals`, con tope 15 en su setter) que solo sube cuando el jugador **usa**
+un Cristal de Vida (`Player.ItemCheck`, `sItem.type == 29`). Esa fórmula aparece **una sola vez** en
+todo el motor, al convertir un personaje de una versión antigua que aún no guardaba el contador.
+
+Y es justo el campo que mira el juego para dejar aparecer al Ojo. La diferencia no es teórica en
+**este** mod: con Terrakeep se puede subir la vida máxima a mano, y eso **no** mueve el contador. Si
+la Guía preguntara por `statLifeMax` le diría *"ya estás listo"* a alguien que se va a pasar las
+noches esperando a un jefe que no va a venir. Salió de un fallo de la propia autoprueba (poner
+`statLifeMax = 200` dejaba el contador en 0) y ahora es **un paso fijo del arnés**, para que no se
+pueda volver a colar. El texto del paso lo cuenta tal cual al jugador, porque es justo el tipo de
+cosa que no se ve por ningún lado.
+
+### Verificado en el juego real, no "compila y parece bien"
+
+`scripts\verificar-guia.ps1` (sandbox propio con `-tmlsavedirectory` + `-skipselect`, nunca los
+personajes del usuario). El arnés no comprueba que el código parezca correcto: **lleva al personaje
+de prueba por el tramo entero**, un requisito cada vez, y después de cada cambio vuelve a
+preguntarle a la guía cuál es el objetivo:
+
+```
+objetivo actual: "Refugio"          esperado "Refugio"          -> OK   (mundo sin vecinos)
+objetivo actual: "Defensa"          esperado "Defensa"          -> OK   (1 vecino)
+objetivo actual: "CristalesDeVida"  esperado "CristalesDeVida"  -> OK   (defensa 13 > 10)
+objetivo actual: "PuebloDeCuatro"   esperado "PuebloDeCuatro"   -> OK   (5 cristales USADOS)
+objetivo actual: "ArmaYArena"       esperado "ArmaYArena"       -> OK   (Starfury, 25 de daño)
+objetivo actual: "InvocarElOjo"     esperado "InvocarElOjo"     -> OK
+con downedBoss1=true: paso en pantalla=(ninguno) -> OK: el tramo se da por cerrado.
+```
+
+Todo por caminos reales: los vecinos con `NPC.NewNPC`, la armadura y el arma buscadas **por
+propiedades** y no por id fijo, el contador de cristales por su propiedad real, la pestaña abierta
+con un **clic real** en la barra, y el idioma cambiado con la misma llamada que usa el selector de
+Ajustes. El medidor que se ve en pantalla se compara con el cálculo (`medidor en pantalla: 0.125
+-> OK: coincide`). La lectura del jefe que ve el jugador, con el Starfury puesto:
+
+```
+Ojo de Cthulhu: 2800 de vida, 12 de defensa y 15 de daño en modo normal.
+Tu mejor arma (Furia de estrellas, 25 de daño) le quita 19 por golpe: harían falta unos 148
+golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
+```
+
+Log completo en `evidencia\guia.log.txt`; capturas reales del back buffer en el sandbox
+(`terrakeep-capturas\guia-1..6-*.png`), en **inglés y en español**.
+
+### Tres cosas que NO se vieron leyendo el código
+
+1. **La columna del objetivo se solapaba consigo misma.** Estaba maquetada con un hueco **fijo** de
+   120 px para el párrafo del "por qué"; en inglés a 800x720 ese párrafo ocupa ocho líneas y el
+   rótulo *"Where to start"* se pintaba **encima de sus dos últimas**. Ningún dato del log lo habría
+   dicho: se vio mirando la captura. Arreglo: la columna es una `UIList`, que apila cada elemento
+   por el **alto real** del de arriba (y `ParrafoTk` ajusta el suyo midiendo con la fuente). No
+   queda ni un hueco fijo que se pueda quedar corto.
+2. **La séptima pestaña estrecha la barra.** Cada botón pasa de 1/6 a 1/7 del marco y en español
+   *"Investigación"* ya no cabía a la escala fija de 0,8. Como la regla del proyecto es que **ningún
+   texto se recorta**, lo que se adapta es el layout:
+   `PanelTerrakeepState.AjustarEscalaDeLasPestanas` mide los siete rótulos con la fuente real en
+   cada fotograma y baja la escala **común** lo justo. Medido en el juego: **0,800 en inglés**
+   (sobra sitio) y **0,793 en español** (*"Investigación"* se queda con 16 px de holgura). Común a
+   las siete a propósito: con una escala por pestaña, las de rótulo corto se verían más grandes y
+   la barra parecería rota.
+3. **Un contador de texto para no volver a fiarse de la vista.** El arnés recorre todos los
+   párrafos montados, mide cada línea con la fuente real y da la peor holgura: *"38 párrafos, 64
+   líneas, la más justa a 0,4 px del borde"*.
+
+### Dos tropiezos del arnés, anotados por si se repiten
+
+- **La defensa de una armadura recién equipada tardó 140 fotogramas en recalcularse.** La ponen
+  `Player.ResetEffects`/`UpdateEquips` dentro de `Player.Update`, y con la espera fija de 14
+  fotogramas que separaba los pasos la comprobación leía la defensa vieja y daba un **falso "NO
+  CUADRA"**. Ahora las comprobaciones que dependen del motor esperan **por condición** (`EsperarA`,
+  con tope de 300 fotogramas y aviso si se agota), no por reloj. En la pasada siguiente la misma
+  espera se resolvió al primer intento: por eso no vale fijar un número.
+- **El mundo sintético de pruebas ya traía dos vecinos dentro**, así que el primer paso salía
+  cumplido de entrada y la comprobación daba "NO CUADRA" sin que hubiera nada roto — la guía
+  acertaba, la prueba partía de un estado que no controlaba. El arnés los retira al empezar y los
+  vuelve a crear al terminar.
+
+### Un tropiezo del entorno (regla de autonomía técnica)
+
+Compilar con `-p:BaseIntermediateOutputPath` apuntando a una carpeta **dentro del proyecto**
+(`obj-guia\`) rompe la compilación siguiente con **CS0579** (atributos de ensamblado duplicados): el
+SDK solo excluye por su cuenta `bin\` y `obj\`, así que los `AssemblyInfo.cs` generados en la
+carpeta alternativa se cuelan en el glob de fuentes. Y el problema se hereda: el
+`ModCompile.IgnoreCompletely` de tModLoader tampoco las excluye, o sea que rompería también el
+`.tmod`. Se han añadido `bin-*/` y `obj-*/` al `.gitignore` con la explicación, y los dos `.cs` que
+quedaron dentro se dejaron vacíos (esta sesión no tenía permiso para borrar carpetas).
+
+### Lo que falta del árbol, con prioridad
+
+Los 12 tramos de vanilla ya están en el `.json` **en orden y con su jefe final**, y se ven en el
+panel como hoja de ruta ("Lo que viene después") con sus cifras reales. Lo que les falta a los 11
+que quedan es **pasos con requisitos evaluables**. Prioridad, de mayor a menor:
+
+1. **`MaldadDelMundo`** (Devorador / Cerebro). El siguiente natural y el que más se nota: es el
+   primero cuyo jefe depende del mundo (`WorldGen.crimson`, ya leído por `CatalogoGuia`) y el que
+   suelta el meteorito. Requisitos nuevos que hará falta: "romper N esferas de sombra / corazones"
+   (mirar `WorldGen.shadowOrbCount`) y "tener un arma que atraviese" (el Devorador es un gusano).
+2. **`Esqueletron`**. Cierra el prehardmode de verdad: abre la Mazmorra entera. Requisito nuevo:
+   hablar con el Anciano de noche (NPC 37, ya localizable con el requisito `npc`).
+3. **`MuroDeCarne`**. El punto de no retorno; el tramo donde más falta hace un aviso claro de "esto
+   cambia el mundo para siempre" y un medidor honesto (equipo de infierno, puente de cenizas).
+4. **`Mecanicos`**. Tres jefes con un salto de dificultad enorme respecto al Muro; es el otro sitio
+   clásico donde la gente se atasca. Requisito nuevo: nivel de mineral de modo difícil.
+5. **`Plantera`** y **`TemploYGolem`**. Encadenados y bien definidos por banderas
+   (`downedMechBossAny` → bulbos, `downedPlantBoss` → Templo).
+6. **`InicioModoDificil`**, **`ReinaAbeja`**, **`JefesOpcionalesTardios`**: opcionales o de
+   transición, valen sobre todo como hoja de ruta.
+7. **`EventosLunares`** y **`MoonLord`**. Los últimos: a esas alturas el jugador ya no se pierde, y
+   el valor de la guía ahí es más el medidor de preparación que la dirección.
+
+Aparte del árbol, las dos piezas del diseño acordado que **todavía no están**:
+
+- **Marcadores en el mapa** para el objetivo actual. La infraestructura ya existe en Exploración
+  (`Common/Exploracion/MarcadoresExploracion.cs` y `CapaMapaExploracion.cs`), así que es
+  engancharse ahí, con el mismo límite: **zona, nunca el secreto exacto sin explorar**.
+- **Dirección horizontal** (hacia qué lado cae la jungla, la nieve, la mazmorra). Hoy la Guía solo
+  da la CAPA (arriba/abajo), que es lo único que se puede decir sin coordenadas y sin mirar el
+  mundo. `Main.dungeonX` y el `BuscadorMundo` de Exploración dan para más, pero hay que decidir
+  primero dónde está la línea entre "brújula" y "GPS" para cada cosa.
+
+### Alcance
+
+Nuevos: `Assets/guia_progresion.json`, `Common/Guia/` (9 archivos), `UI/Guia/` (4 archivos),
+`scripts/verificar-guia.ps1`. Tocados: `Common/Panel/PanelTerrakeepSystem.cs` (área 7 + atajo +
+registro), `UI/Panel/PanelTerrakeepState.cs` (séptima pestaña + escala adaptativa),
+`Common/Panel/CapturaDePantalla.cs` (permitir capturas con esta autoprueba),
+`UI/Personaje/Widgets/BotonTk.cs` (`EscalaTexto` escribible),
+`scripts/generar-localizacion.py` + los dos `.hjson` (162 claves nuevas por idioma) y
+`.gitignore`. Commit `4335eb2`.

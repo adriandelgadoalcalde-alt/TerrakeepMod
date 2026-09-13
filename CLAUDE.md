@@ -120,6 +120,25 @@ compiló MSBuild ("Loading pre-compiled TerrakeepMod.dll") en vez de compilarlo 
   proyecto ENTERO (el modo de "copia aislada" que tenían cuatro de ellos ya no compila:
   todas las áreas comparten widgets, paleta e idiomas; `-Completo` se conserva pero ya no
   hace nada).
+- **Una carpeta de salida alternativa DENTRO del proyecto rompe la compilación siguiente.**
+  Compilar con `-p:BaseIntermediateOutputPath=obj-loquesea\` deja ahí un `AssemblyInfo.cs` y
+  un `.NETCoreApp,Version=v8.0.AssemblyAttributes.cs`, y el SDK solo excluye del glob de
+  fuentes `bin\` y `obj\` **exactos**: a partir de ahí todo falla con **CS0579** (atributos de
+  ensamblado duplicados). `ModCompile.IgnoreCompletely` de tModLoader tampoco las excluye, así
+  que rompe igual el `.tmod`. Ya están `bin-*/` y `obj-*/` en el `.gitignore`, pero ignorarlas
+  **no** las saca del glob: si hace falta compilar aparte, que el `BaseIntermediateOutputPath`
+  apunte **fuera** del proyecto (al scratchpad de la sesión).
+- **`Player.ConsumedLifeCrystals` NO es `(statLifeMax - 100) / 20`**: es un contador guardado
+  aparte (`consumedLifeCrystals`) que solo sube al **usar** un Cristal de Vida
+  (`Player.ItemCheck`, `sItem.type == 29`). Esa fórmula sale una sola vez en todo el motor, al
+  convertir un personaje de una versión antigua. Importa porque es el campo que mira el juego
+  para dejar aparecer al Ojo de Cthulhu (`Main.UpdateTime_StartNight`) y porque este mod
+  permite editar la vida máxima a mano: leer `statLifeMax` en su lugar sería mentir.
+- **La barra de pestañas del panel único va por SIETE.** El texto de las pestañas ya no tiene
+  escala fija: `PanelTerrakeepState.AjustarEscalaDeLasPestanas` mide los siete rótulos con la
+  fuente real cada fotograma y baja la escala común lo justo para que quepan (0,800 en inglés,
+  0,793 en español). Si se añade una octava, comprobarlo en el juego y en los dos idiomas -
+  "Investigación" es el rótulo crítico.
 - El aviso `WARN: Image loading failed: unknown image type` de cada compilación viene de
   `icon_small.png`: `ContentConverters.Convert` intenta pasarlo a `.rawimg`,
   `FNA3D.ReadImageStream` no lo lee y el PNG se empaqueta tal cual, que es lo que hace
