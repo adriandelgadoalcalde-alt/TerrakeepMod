@@ -550,6 +550,15 @@ T += [
     ("Exploracion.Objetivo.Rubi", "Rubí", "Ruby"),
     ("Exploracion.Objetivo.Diamante", "Diamante", "Diamond"),
     ("Exploracion.Objetivo.GemasIncrustadas", "Gemas incrustadas", "Embedded gems"),
+
+    # Objetivos AD-HOC de BrujulaGuia (Common/Guia/BrujulaGuia.cs), no del catalogo publico de
+    # Exploracion: JungleGrass/SnowBlock/IceBlock son tiles de RELLENO de bioma, y
+    # Lang.GetMapObjectName no les da nombre propio en el mapa (solo lo tienen los objetos
+    # "interesantes" - minerales, tesoros, estructuras), asi que ObjetivoBusqueda.EtiquetaLegible()
+    # cae a esta clave. Sin ella se veia la clave cruda sin traducir en el tooltip del mapa vanilla
+    # al pasar el raton por el marcador dorado de la brujula - visto en el log real, no supuesto.
+    ("Exploracion.Objetivo.BrujulaJungla", "Jungla", "Jungle"),
+    ("Exploracion.Objetivo.BrujulaNieve", "Nieve", "Snow"),
     ("Exploracion.Objetivo.CorazonesCristal", "Corazones de cristal", "Life Crystals"),
     ("Exploracion.Objetivo.FrutosVida", "Frutos de la vida", "Life Fruit"),
     ("Exploracion.Objetivo.OrbesSombra", "Orbes de sombra / Corazones",
@@ -789,6 +798,15 @@ T += [
     ("Guia.Direccion.YaEstas", "Estás donde toca: {0}", "You are where you need to be: {0}"),
     ("Guia.Direccion.Baja", "Hacia abajo, en {0}", "Downwards, in {0}"),
     ("Guia.Direccion.Sube", "Hacia arriba, en {0}", "Upwards, in {0}"),
+    ("Guia.Direccion.ConLado", "{0}, {1}", "{0}, {1}"),
+    ("Guia.Direccion.Izquierda", "a tu izquierda", "to your left"),
+    ("Guia.Direccion.Derecha", "a tu derecha", "to your right"),
+    ("Guia.Brujula.Marcado", "Marcado en el mapa del juego (M): ya has explorado por ahí.",
+     "Marked on the game map (M): you have already explored around there."),
+    ("Guia.Brujula.Buscando", "Mirando en lo que ya has explorado...", "Checking what you have already explored..."),
+    ("Guia.Brujula.SinExplorar",
+     "Todavía no has explorado esa zona: el mapa no puede señalarla, solo tú puedes encontrarla.",
+     "You have not explored that area yet: the map cannot point to it, only you can find it."),
 
     ("Guia.Modo.Normal", "modo normal", "normal mode"),
     ("Guia.Modo.Experto", "modo experto", "expert mode"),

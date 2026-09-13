@@ -555,6 +555,8 @@ Exploracion: {
 		Rubi: Ruby
 		Diamante: Diamond
 		GemasIncrustadas: Embedded gems
+		BrujulaJungla: Jungle
+		BrujulaNieve: Snow
 		CorazonesCristal: Life Crystals
 		FrutosVida: Life Fruit
 		OrbesSombra: Shadow Orbs / Crimson Hearts
@@ -753,6 +755,12 @@ Guia: {
 		ConLado: "{0}, {1}"
 		Izquierda: to your left
 		Derecha: to your right
+	}
+
+	Brujula: {
+		Marcado: Marked on the game map (M): you have already explored around there.
+		Buscando: Checking what you have already explored...
+		SinExplorar: You have not explored that area yet: the map cannot point to it, only you can find it.
 	}
 
 	Modo: {

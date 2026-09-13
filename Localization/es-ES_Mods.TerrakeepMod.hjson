@@ -555,6 +555,8 @@ Exploracion: {
 		Rubi: Rubí
 		Diamante: Diamante
 		GemasIncrustadas: Gemas incrustadas
+		BrujulaJungla: Jungla
+		BrujulaNieve: Nieve
 		CorazonesCristal: Corazones de cristal
 		FrutosVida: Frutos de la vida
 		OrbesSombra: Orbes de sombra / Corazones
@@ -753,6 +755,12 @@ Guia: {
 		ConLado: "{0}, {1}"
 		Izquierda: a tu izquierda
 		Derecha: a tu derecha
+	}
+
+	Brujula: {
+		Marcado: Marcado en el mapa del juego (M): ya has explorado por ahí.
+		Buscando: Mirando en lo que ya has explorado...
+		SinExplorar: Todavía no has explorado esa zona: el mapa no puede señalarla, solo tú puedes encontrarla.
 	}
 
 	Modo: {

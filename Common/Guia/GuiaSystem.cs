@@ -87,6 +87,13 @@ namespace TerrakeepMod.Common.Guia
 				return;
 			}
 			AutopruebaGuia.Avanzar();
+			BrujulaGuia.Actualizar();
+		}
+
+		public override void OnWorldUnload()
+		{
+			// Los marcadores de la brujula son coordenadas de ESTE mundo: en otro no significan nada.
+			BrujulaGuia.AlSalirDelMundo();
 		}
 
 		public override void Unload()
@@ -95,6 +102,7 @@ namespace TerrakeepMod.Common.Guia
 			_arbolConstruido = false;
 			RegistroGuia.Mod = null;
 			CatalogoGuia.Descargar();
+			BrujulaGuia.Descargar();
 		}
 
 		/// <summary>Abre el panel en la pestaña de la Guia, o lo cierra si ya estaba ahi.</summary>

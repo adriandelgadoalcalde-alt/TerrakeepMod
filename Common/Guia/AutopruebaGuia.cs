@@ -6,6 +6,7 @@ using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
 using TerrakeepMod.Common.Ajustes;
+using TerrakeepMod.Common.Exploracion;
 using TerrakeepMod.Common.Panel;
 using TerrakeepMod.UI.Guia;
 using TerrakeepMod.UI.Panel;
@@ -452,6 +453,33 @@ namespace TerrakeepMod.Common.Guia
 				// (Zona=Mazmorra), moviendo al jugador de verdad a los dos lados de dungeonX.
 				case 148: ComprobarDireccionHorizontalMazmorra(); break;
 				case 149: RestaurarDireccionHorizontal(); break;
+
+				// --- marcadores de mapa (la brujula): la tercera pieza de diseño del encargo ------
+				// Primero se comprueba que NO hay marcador con el mapa sin explorar (brujula, nunca
+				// GPS); despues se busca el area REAL de la Mazmorra en TODO el mundo (sin la
+				// restriccion de "solo explorado", el mismo barrido que ya usa Exploracion) para
+				// saber DONDE revelar mapa de verdad, y se comprueba que la brujula la encuentra en
+				// cuanto esa zona real pasa a estar explorada - y que el marcador se ve de verdad
+				// dibujado en el mapa vanilla, no solo en el log.
+				case 150: PrepararEscenarioBrujula(); break;
+				case 151: ComprobarPaso("ArmaParaEsqueletron",
+					"escenario preparado a mano para probar la brujula de mapa (paso con Zona=Mazmorra)"); break;
+				case 152: EsperarA(() => BrujulaGuia.EstadoParaZona("Mazmorra") != BrujulaGuia.EstadoBrujula.Buscando,
+					"la brujula termine el primer barrido (con el mapa todavia sin explorar ahi)"); break;
+				case 153: ComprobarEstadoBrujula(BrujulaGuia.EstadoBrujula.SinExplorar,
+					"nada del mapa revelado todavia en la zona real de la Mazmorra"); break;
+				case 154: Capturar("guia-33-brujula-sin-explorar"); break;
+				case 155: RevelarElAreaRealDeLaMazmorra(); break;
+				case 156: BrujulaGuia.ForzarRebusquedaParaAutoprueba(); break;
+				case 157: EsperarA(() => BrujulaGuia.EstadoParaZona("Mazmorra") != BrujulaGuia.EstadoBrujula.Buscando,
+					"la brujula termine el segundo barrido (con el area real ya revelada)"); break;
+				case 158: ComprobarEstadoBrujula(BrujulaGuia.EstadoBrujula.Marcado,
+					"el area REAL de la Mazmorra de este mundo, ya revelada: la brujula debe encontrarla"); break;
+				case 159: Capturar("guia-34-brujula-marcado"); break;
+				case 160: SaltarAlMapaVanillaEnElMarcador(); break;
+				case 161: Capturar("guia-35-brujula-mapa-vanilla"); break;
+				case 162: VolverAlPanelDesdeElMapa(); break;
+				case 163: RestaurarEscenarioBrujula(); break;
 				default: Terminar(); break;
 			}
 		}
@@ -1505,6 +1533,155 @@ namespace TerrakeepMod.Common.Guia
 			Main.LocalPlayer.position = _posicionOriginal;
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - restaurados Main.dungeonX (" +
 				Main.dungeonX + ") y la posicion real del jugador tras la prueba de direccion horizontal.");
+		}
+
+		// -------------------------------------------------------------------------------------
+		// Marcadores de mapa (la brujula)
+		// -------------------------------------------------------------------------------------
+
+		/// <summary>Deja activo, a mano, el paso real "ArmaParaEsqueletron" (Zona=Mazmorra):
+		/// downedBoss1/downedBoss2 a true, downedBoss3 a false, sin arma en la mochila. Reutiliza
+		/// los mismos campos <c>_downedBoss*Original</c> capturados en <see cref="Arrancar"/>, asi
+		/// que <see cref="RestaurarTramosNuevos"/> (llamada de nuevo en
+		/// <see cref="RestaurarEscenarioBrujula"/>) los devuelve a su valor real de verdad.</summary>
+		private static void PrepararEscenarioBrujula()
+		{
+			NPC.downedBoss1 = true;
+			NPC.downedBoss2 = true;
+			NPC.downedBoss3 = false;
+			Main.LocalPlayer.inventory[0] = new Item();
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - preparado el escenario de la " +
+				"brujula: downedBoss1=true, downedBoss2=true, downedBoss3=false (a mano) y sin arma " +
+				"en la mochila, para que el objetivo activo sea \"ArmaParaEsqueletron\" (Zona=Mazmorra).");
+		}
+
+		/// <summary>Vuelca el estado de <see cref="BrujulaGuia.EstadoParaZona"/> para la Mazmorra y
+		/// comprueba que es el esperado.</summary>
+		private static void ComprobarEstadoBrujula(BrujulaGuia.EstadoBrujula esperado, string porque)
+		{
+			BrujulaGuia.EstadoBrujula real = BrujulaGuia.EstadoParaZona("Mazmorra");
+			bool ok = real == esperado;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - estado de la brujula para " +
+				"\"Mazmorra\": " + real + ", esperado " + esperado + " porque " + porque + " " +
+				(ok ? "-> OK." : "-> NO CUADRA.") + " Marcadores ahora mismo: " +
+				MarcadoresGuia.Resultados.Count + ".");
+		}
+
+		/// <summary>
+		/// Busca DONDE esta de verdad la Mazmorra de este mundo (barrido SIN <c>soloExplorado</c>,
+		/// el mismo que ya usa Exploracion para "en TODO el mundo" - no un area adivinada) y revela
+		/// un cuadrado real de mapa alrededor de ese punto con <c>Main.Map.Update</c>, la misma
+		/// tecnica ya verificada de <c>AutopruebaExploracion.SembrarMapaDePrueba</c>. Asi la
+		/// siguiente busqueda de la brujula (que SI usa <c>soloExplorado=true</c>) tiene garantizado
+		/// encontrar algo real, sin apostar a que un area calculada a ciegas alrededor de
+		/// <c>Main.dungeonX</c> acierte con la profundidad real de esta partida.
+		/// </summary>
+		private static void RevelarElAreaRealDeLaMazmorra()
+		{
+			ObjetivoBusqueda objetivo = null;
+			foreach (ObjetivoBusqueda candidato in CatalogoObjetivos.Todos) {
+				if (candidato.Clave == "Mazmorra" && candidato.Categoria == "Paredes") {
+					objetivo = candidato;
+					break;
+				}
+			}
+			if (objetivo == null || !objetivo.Resuelto) {
+				RegistroGuia.Aviso(Terrakeep.LogTag + " AUTOPRUEBA GUIA: no se resolvio el objetivo " +
+					"\"Mazmorra\" del catalogo de Exploracion, no se puede revelar su area real.");
+				return;
+			}
+
+			BuscadorMundo buscador = new BuscadorMundo();
+			buscador.Empezar(objetivo, soloExplorado: false);
+			// Bloqueante a proposito: es preparacion de escenario de la prueba, no juego real, y el
+			// barrido completo de un mundo pequeño tarda del orden de decenas de milisegundos
+			// (ver la cabecera de BuscadorMundo) - un presupuesto grande por vuelta lo termina en
+			// unas pocas iteraciones en vez de en 100+ fotogramas sueltos.
+			int vueltas = 0;
+			while (buscador.EnMarcha && vueltas < 10000) {
+				buscador.Avanzar(50.0);
+				vueltas++;
+			}
+
+			if (buscador.Resultados.Count == 0) {
+				RegistroGuia.Aviso(Terrakeep.LogTag + " AUTOPRUEBA GUIA: " + buscador.Resumen() +
+					" -> no se encontro ninguna pared de Mazmorra en TODO el mundo de pruebas, no se " +
+					"puede revelar su area real.");
+				return;
+			}
+
+			ResultadoBusqueda real = buscador.Resultados[0];
+			int centroX = (int)real.Tile.X;
+			int centroY = (int)real.Tile.Y;
+			const int radio = 40;
+			int desde = Math.Max(10, centroX - radio);
+			int hasta = Math.Min(Main.maxTilesX - 10, centroX + radio);
+			int arriba = Math.Max(10, centroY - radio);
+			int abajo = Math.Min(Main.maxTilesY - 10, centroY + radio);
+
+			int revelados = 0;
+			for (int x = desde; x < hasta; x++) {
+				for (int y = arriba; y < abajo; y++) {
+					Main.Map.Update(x, y, 255);
+					revelados++;
+				}
+			}
+			Main.refreshMap = true;
+			Main.updateMap = true;
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - " + buscador.Resumen() +
+				" -> area REAL de la Mazmorra encontrada en (" + centroX + ", " + centroY + ") " +
+				"(Main.dungeonX de este mundo=" + Main.dungeonX + "), revelados " + revelados +
+				" tiles de mapa a su alrededor con Main.Map.Update. Esto NO es funcionalidad del " +
+				"mod: es la misma preparacion de escenario que ya usa AutopruebaExploracion.");
+		}
+
+		/// <summary>Salta al mapa vanilla de verdad, centrado en el marcador real que acaba de dejar
+		/// la brujula, con la misma llamada de produccion que usa el boton "Ver en el mapa" de
+		/// Exploracion.</summary>
+		private static void SaltarAlMapaVanillaEnElMarcador()
+		{
+			if (!MarcadoresGuia.HayAlgo) {
+				RegistroGuia.Aviso(Terrakeep.LogTag + " AUTOPRUEBA GUIA: no hay marcador de la " +
+					"brujula, no se puede saltar al mapa vanilla a comprobarlo.");
+				return;
+			}
+
+			ResultadoBusqueda marcador = MarcadoresGuia.Resultados[0];
+			PanelExploracionSystem.VerEnElMapa(marcador.Tile, 4f, "autoprueba de la Guia (brujula)");
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - saltado al mapa vanilla via " +
+				"PanelExploracionSystem.VerEnElMapa, centrado en el marcador real de la brujula (" +
+				(int)marcador.Tile.X + ", " + (int)marcador.Tile.Y + "). Main.mapFullscreen=" +
+				Main.mapFullscreen + ". Marcadores de la brujula pendientes de dibujar: " +
+				MarcadoresGuia.Resultados.Count + " (color dorado, distinto del ambar de Exploracion).");
+		}
+
+		private static void VolverAlPanelDesdeElMapa()
+		{
+			Main.mapFullscreen = false;
+			GuiaSystem.AbrirPanel("autoprueba de la Guia: vuelta del mapa vanilla tras la brujula");
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - mapa vanilla cerrado " +
+				"(Main.mapFullscreen=" + Main.mapFullscreen + "), panel de la Guia reabierto. " +
+				"Fotogramas en los que CapaMapaExploracion llego a dibujar algo: " +
+				CapaMapaExploracion.FotogramasDibujados + ".");
+		}
+
+		/// <summary>Deshace el escenario de la brujula: las banderas de jefe (via
+		/// <see cref="RestaurarTramosNuevos"/>, reutilizada), y limpia el marcador y el buscador
+		/// propios de la brujula. El mapa revelado NO se deshace (no hay "des-revelar" en la API del
+		/// motor) - es el mundo sintetico de pruebas, no uno real del usuario.</summary>
+		private static void RestaurarEscenarioBrujula()
+		{
+			RestaurarTramosNuevos();
+			BrujulaGuia.AlSalirDelMundo();
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - escenario de la brujula " +
+				"restaurado: banderas de jefe devueltas a su valor real, MarcadoresGuia limpiado. " +
+				"El mapa revelado durante la prueba se queda asi (es el mundo sintetico de pruebas, " +
+				"no hay forma de \"des-revelar\" en la API del motor).");
 		}
 
 		private static void Restaurar()

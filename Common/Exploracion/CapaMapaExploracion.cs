@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
@@ -43,7 +44,7 @@ namespace TerrakeepMod.Common.Exploracion
 
 		public override void Draw(ref MapOverlayDrawContext context, ref string text)
 		{
-			if (!Main.mapFullscreen || !MarcadoresExploracion.HayAlgo) {
+			if (!Main.mapFullscreen || (!MarcadoresExploracion.HayAlgo && !MarcadoresGuia.HayAlgo)) {
 				DibujadosUltimoFotograma = 0;
 				return;
 			}
@@ -51,11 +52,33 @@ namespace TerrakeepMod.Common.Exploracion
 			Texture2D icono = IconosExploracion.Rombo(Main.spriteBatch.GraphicsDevice);
 			int dibujados = 0;
 
-			foreach (ResultadoBusqueda resultado in MarcadoresExploracion.Resultados) {
+			dibujados += DibujarConjunto(ref context, ref text, icono,
+				MarcadoresExploracion.Resultados, MarcadoresExploracion.Color);
+
+			// La brujula de la Guia se dibuja DESPUES (encima): sus resultados son como mucho uno,
+			// nunca compiten en cantidad con una busqueda manual, y conviene que se lea claro si las
+			// dos coinciden en el mismo punto del mapa.
+			dibujados += DibujarConjunto(ref context, ref text, icono,
+				MarcadoresGuia.Resultados, MarcadoresGuia.Color);
+
+			DibujadosUltimoFotograma = dibujados;
+			if (dibujados > 0) {
+				FotogramasDibujados++;
+			}
+		}
+
+		/// <summary>Dibuja un conjunto de marcadores con un color propio. Comun a la busqueda manual
+		/// de Exploracion y a la brujula de la Guia: son el mismo icono, solo cambia de donde salen
+		/// los resultados y el color.</summary>
+		private static int DibujarConjunto(ref MapOverlayDrawContext context, ref string text,
+			Texture2D icono, List<ResultadoBusqueda> resultados, Color color)
+		{
+			int dibujados = 0;
+			foreach (ResultadoBusqueda resultado in resultados) {
 				MapOverlayDrawContext.DrawResult trazo = context.Draw(
 					icono,
 					resultado.Tile,
-					MarcadoresExploracion.Color,
+					color,
 					new SpriteFrame(1, 1),
 					1f,       // escala normal
 					1.4f,     // escala con el raton encima, igual que hacen los iconos de vanilla
@@ -68,11 +91,7 @@ namespace TerrakeepMod.Common.Exploracion
 						" (" + (int)resultado.Tile.X + ", " + (int)resultado.Tile.Y + ")";
 				}
 			}
-
-			DibujadosUltimoFotograma = dibujados;
-			if (dibujados > 0) {
-				FotogramasDibujados++;
-			}
+			return dibujados;
 		}
 	}
 }
