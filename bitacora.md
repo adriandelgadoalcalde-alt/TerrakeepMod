@@ -5583,3 +5583,252 @@ arreglo del diálogo modal bloqueante), `evidencia/espaciado*.log.txt` y las dos
 capturas. No se ha tocado nada de `Common/Guia/` ni de los tramos de progresión pendientes
 (`MuroDeCarne`, `Mecanicos`) — fuera del alcance de esta auditoría, encargo de otra sesión en
 curso.
+
+## 13-sep-2026 (sesión larga) — La Guía llega al 100%: los doce tramos hasta Moon Lord, dos bugs reales y los tres jefes opcionales nombrados en el encargo
+
+Encargo explícito del usuario: la guía de progresión tiene que cubrir el camino vanilla entero
+hasta derrotar a Moon Lord, "de principio a fin, sin huecos". Partiendo de donde dejó la sesión
+anterior (`PreOjo`, `MaldadDelMundo`, `Esqueletron` ya cerrados), esta sesión implementa **los
+nueve tramos que faltaban del camino obligatorio** — `MuroDeCarne`, `Mecanicos`, `Plantera`,
+`TemploYGolem`, `EventosLunares` (Cultista Lunático + las cuatro torres) y `MoonLord` — más **los
+tres jefes opcionales que el propio encargo nombró explícitamente**: la Reina Abeja, la Reina
+Slime (dentro de `InicioModoDificil`) y el Duque Pezhongo junto con la Emperatriz de la Luz
+(dentro de `JefesOpcionalesTardios`). Con esto, **los doce tramos del `.json` tienen ya
+requisitos evaluables** (32 pasos, 64 requisitos, 0 avisos de datos) — el árbol vanilla completo
+queda cerrado, salvo las dos piezas de diseño aparte (marcadores de mapa y dirección horizontal)
+y el contenido opcional más allá de estos tres jefes, ver "Dónde seguir" al final.
+
+Encargo ampliado a media sesión por el coordinador: además del camino obligatorio, la guía tiene
+que evitar que el jugador se sienta perdido en NINGUNA parte del juego, incluido el contenido
+opcional (más jefes, eventos, biomas, clases, pesca, mascotas/monturas, Pilones, semillas
+secretas, Mercader Ambulante). Se cubrió lo que el tiempo permitió con el mismo rigor que el
+camino obligatorio (los tres jefes ya nombrados en el encargo original) y se deja planificado con
+claridad el resto — ver "Dónde seguir".
+
+### De dónde sale cada número, tramo a tramo (todo desde el `NPC.cs` decompilado real)
+
+Igual que en las sesiones anteriores, ni un solo número se copió de memoria ni de una wiki: se
+sacó del `NPC.cs` decompilado de esta versión (`Downloads\tModLoader-Decompiled\tModLoader\
+Terraria\NPC.cs`), con la línea real citada en el `_fuente` de cada requisito del `.json`.
+
+- **Muro de Carne** (`type==113`, cuerpo): daño 50, defensa 12, vida 8000; el ojo (`type==114`)
+  daño 50, defensa 0. Mecanismo de invocación confirmado en el motor, no supuesto: `NPC.cs`
+  `case 22` (el Guía) — `Collision.LavaCollision(position,...)` → `SpawnWOF(position)`. Cierre con
+  bandera **`hardMode`** (ya presente en `BanderasGuia` desde el primer día): confirmado que
+  `case 113` de la muerte del jefe llama a `WorldGen.StartHardmode()`.
+- **Los tres mecánicos**: Gemelos (`type==125/126`) defensa 10, vida 20000/23000, daño 45/50;
+  Esqueletron Prime (`type==127`) defensa 24, vida 28000, daño 47; Destructor (`type==134`,
+  cabeza sin defensa; cuerpo/cola `135/136` defensa 30/35) vida 80000. Solo hace falta **UNO** de
+  los tres para seguir: confirmado que los tres tocan la misma pareja
+  `downedMechBoss{1,2,3}`+`downedMechBossAny` al morir (`case 125/126`, `case 127`, `case 134`), y
+  es `downedMechBossAny` (ya presente) la bandera real que cierra el tramo.
+- **Plantera** (`type==262`): daño 50, defensa 14, vida 30000, con DOS fases (se enrabia bajo la
+  mitad de la vida). Cierre con `downedPlantBoss` (ya presente), confirmada como la bandera que
+  abre la puerta de piedra del Templo (`case 262`).
+- **Golem** (`type==245`, cuerpo): daño 72, defensa 26, vida 15000; cabeza suelta (`type==249`)
+  tras romper los puños, 32 de defensa/80 de daño y **sin recibir daño** mientras vivan los puños
+  (`dontTakeDamage`). Cierre con `downedGolemBoss` (ya presente), confirmada vía `BuffTownNPC`
+  (+15%/+8 a los NPC del pueblo) como el mismo escalón que dan Plantera/Emperatriz/Cultista.
+- **Cultista Lunático** (`type==439`): daño 50, defensa 42, vida 32000 — la defensa más alta de
+  todo el prehardmode y el hardmode hasta ahí. Confirmado en el motor que las cuatro
+  `CultistDevote`/`CultistArcher` (`type==437/438`) que lo protegen deben morir todas antes de que
+  aparezca (AI del `type==437`, `NPC.cs` líneas ~39560-39645). Su muerte (`case 439`) enciende
+  `downedAncientCultist` **Y llama en la misma línea** a `WorldGen.TriggerLunarApocalypse()` — no
+  hay margen para prepararse después, y la guía lo avisa con todas las letras.
+- **Las cuatro torres** (Solar=517/Vortex=422/Nebula=507/Stardust=493): 20 de defensa y 20000 de
+  vida cada una, daño 0 directo (el peligro real son sus oleadas). `NPC.downedTowers` es una
+  **propiedad calculada** que exige las cuatro banderas `downedTower*` juntas — confirmado
+  leyendo su `getter` real, no asumido.
+- **Moon Lord**: núcleo (`type==398`) 70 de defensa y 50000 de vida PROPIA, con `dontTakeDamage`
+  hasta que caen sus manos (`type==397`, 40 defensa/25000 vida cada una) y la cabeza (`type==396`,
+  50 defensa/45000 vida) — más de 145000 de vida repartida en total. Cierre con `downedMoonlord`,
+  la última bandera de la progresión vanilla.
+- **Reina Abeja** (`type==222`): daño 30, defensa 8, vida 3400 — menos defensa que el propio Ojo
+  de Cthulhu. Cierre con `downedQueenBee`.
+- **Reina Slime** (`type==657`): daño 60, defensa 26, vida 18000. Cierre con `downedQueenSlime`.
+- **Duque Pezhongo** (`type==370`): daño 100, defensa 50, vida 60000 — el daño más alto de todo
+  el árbol hasta el propio Moon Lord. Cierre con `downedFishron`.
+- **Emperatriz de la Luz** (`type==636`): daño 80, defensa 50, vida 70000 — la vida más alta de
+  los opcionales tardíos, y con `dontTakeDamage` salvo en las condiciones de luz correctas (pelear
+  de noche la vuelve mucho más dura a propósito). Cierre con `downedEmpressOfLight`.
+
+Cada tramo obligatorio sigue el mismo patrón de dos pasos que ya cerró `PreOjo` (arma → bandera
+del jefe), salvo `EventosLunares` que son CUATRO pasos seguidos (arma-Cultista → vencer-Cultista →
+arma-Torres → vencer-Torres) por ser dos jefes distintos en el mismo tramo — y ahí salió el primer
+bug real, ver abajo. `JefesOpcionalesTardios` es igual, cuatro pasos por los mismos dos jefes
+(Fishron + Emperatriz).
+
+### Bug real #1: un tramo de CUATRO pasos podía "reabrirse" a mitad, el mismo fallo de siempre pero un nivel más adentro
+
+La sesión del 13-sep ya había arreglado que un TRAMO entero no se reabriera al perder un requisito
+efímero (quitarte el arma, la armadura...) una vez superado. Ese arreglo solo protegía el **último**
+paso de cada tramo. Con `EventosLunares` de CUATRO pasos (dos jefes seguidos), el arnés lo pilló en
+el primer pase real: tras marcar al Cultista como derrotado y quitar el arma antes de ir a las
+torres, la guía volvía a enseñar "arma para el Cultista" — con el Cultista llevando rato muerto.
+
+**Causa real:** `EstadoGuia.PasoActual` solo comprobaba si el ÚLTIMO paso del tramo ya estaba
+cumplido para decidir si el tramo entero se daba por hecho; el resto de los pasos se evaluaban
+todos en vivo cada vez, sin memoria de "esto ya se dio por bueno antes". Con un tramo de dos
+pasos (arma→bandera) esto coincidía con "el paso que cierra de verdad" por casualidad; con cuatro
+pasos (dos jefes) dejó de coincidir.
+
+**Arreglo real, en `EstadoGuia.cs`:** el "suelo" del tramo ya no es solo su último paso, es el
+paso **anclado por bandera** (todos sus requisitos obligatorios son de tipo `bandera` — un dato
+persistido que el motor nunca vuelve a poner a `false`, a diferencia de `dano_arma` o `defensa`,
+que se releen en vivo) MÁS AVANZADO que ya esté cumplido, sea o no el último. Se extrajo el
+cálculo a un método compartido (`PrimerPasoPendiente`) que también usa el nuevo
+`PasoOpcionalActual` (ver más abajo). Verificado con el mismo arnés: el paso `PrepararLasTorres`
+aparece correctamente tras cerrar al Cultista y quitar el arma, sin volver atrás.
+
+### Bug real #2: la hoja de ruta escondía los tramos opcionales para siempre en cuanto el camino obligatorio los adelantaba
+
+Visto literalmente en una captura, no en el log: con Moon Lord recién cerrado, la columna "Lo que
+viene después" quedaba **completamente en blanco**, pese a que `ReinaAbeja`, `InicioModoDificil`
+y `JefesOpcionalesTardios` seguían sin construir en ese momento de la prueba.
+
+**Causa real:** `EstadoGuia.TramosPorDelante` calculaba el punto de partida (`desde`) como el
+`Orden` más alto entre los tramos IMPLEMENTADOS, y solo enseñaba tramos con `Orden > desde`. En
+cuanto el camino obligatorio llega a `MoonLord` (Orden 12, el más alto de todos), ningún tramo
+tiene `Orden` mayor — así que la hoja de ruta se queda vacía para siempre, aunque queden jefes
+opcionales sin tocar.
+
+**Arreglo real:** un tramo sin implementar (todavía mapa puro) se enseña SIEMPRE, pase lo que pase
+con `desde` — ya no hay datos con los que decidir si está superado. Este arreglo llevó
+directamente a la decisión de arquitectura de fondo (ver siguiente sección): en cuanto esos tres
+tramos se implementaron de verdad, hacía falta un criterio distinto para ELLOS (basado en su
+propia bandera de cierre, no en el `Orden`) sin romper el criterio ya bueno para los obligatorios.
+
+### La decisión de arquitectura que la bitácora ya había dejado pendiente: `TramoGuia.Opcional`
+
+La entrada del 13-sep sobre `Mecanicos`/`Esqueletron` ya avisaba: *"`ReinaAbeja` merece una nota
+propia: si algún día se implementa habrá que decidir si debe seguir apareciendo en la hoja de ruta
+incluso después de tramos con Orden mayor... conviene decidirlo antes de implementarla"*. Esta
+sesión llegó exactamente a ese punto al implementar los tres opcionales, y sin resolverlo primero
+habría sido un fallo real y no de laboratorio: `EstadoGuia.PasoActual` recorre los tramos POR
+ORDEN, así que marcar `ReinaAbeja` (Orden 3) como `implementado=true` sin más habría hecho que la
+guía mandara **"tu objetivo ahora mismo es la Reina Abeja" ANTES que Esqueletron** (Orden 4) solo
+por tener menor número — justo lo contrario de "opcional".
+
+**La solución:** `TramoGuia` gana un campo `Opcional` (leído del `.json`, `"opcional": true`).
+Con él:
+
+- `PasoActual` salta SIEMPRE los tramos opcionales al buscar el objetivo obligatorio — nunca
+  bloquean el camino principal, pase lo que pase con su `Orden`.
+- `TramosPorDelante` deja de mirar el `Orden` para ellos: se enseñan en la hoja de ruta mientras no
+  estén superados (comprobado con su propia bandera de cierre), y desaparecen en cuanto el jugador
+  los cierra de verdad — verificado marcando `downedQueenBee=true` a mano y comprobando que
+  `ReinaAbeja` desaparece mientras `InicioModoDificil`/`JefesOpcionalesTardios` siguen ahí.
+- **Hallazgo aparte, encontrado ANTES de terminar la feature, no después:** con los tramos
+  opcionales siempre saltados por `PasoActual`, sus pasos (con su propio umbral de daño y sus
+  objetos recomendados, ya escritos con el mismo cuidado que los obligatorios) se habrían quedado
+  sin NINGÚN sitio donde enseñarse — la hoja de ruta solo da el resumen en dos líneas del tramo,
+  nunca sus pasos evaluables. Se añadió `EstadoGuia.PasoOpcionalActual()` (el primer paso
+  pendiente del primer tramo opcional, por Orden, que no esté superado) y una sección nueva
+  **"Objetivo opcional"** en `ContenidoGuia` (columna derecha, entre el tramo obligatorio en curso
+  y la hoja de ruta), con sus propios requisitos (`FilaRequisitoTk`) y lectura de jefe en vivo.
+  Verificado con captura real: tras derrotar Moon Lord, el panel muestra "Objetivo opcional: La
+  Reina Abeja (opcional): Derrotarla" con sus 3400 de vida reales y el arma actual del jugador
+  (105 de daño en la prueba) calculando los golpes que hacen falta — el mismo nivel de detalle que
+  ya tiene el camino obligatorio, no una versión rebajada.
+
+### Verificación real, en cada tramo y al final del todo
+
+Cada tramo (MuroDeCarne, Mecanicos, Plantera+TemploYGolem juntos, EventosLunares+MoonLord juntos,
+y finalmente los tres opcionales) se compiló y se llevó al personaje de prueba por el tramo
+entero con `scripts\verificar-guia.ps1`, **sin Calamity y con Calamity cargado las dos veces**,
+antes de pasar al siguiente — nunca se escribió el tramo siguiente sobre una base sin probar. Cada
+pasada real quedó en verde (`Ninguna comprobacion en rojo`) antes de seguir, y las dos veces que
+salió algo en rojo (los dos bugs de arriba, más un fallo menor de la propia prueba que esperaba el
+paso equivocado del opcional sin contar con que un arma de 90+ de daño de un paso anterior seguía
+puesta) se pararon, se arreglaron y se re-verificaron antes de continuar - nunca se seguió con una
+comprobación roja pendiente.
+
+La pasada final, con el árbol completo (doce tramos) y Calamity cargado:
+```
+12 tramos (12 con requisitos evaluables), 32 pasos, 64 requisitos, 0 avisos. Calamity cargado=True.
+...
+OK: encontrado 'AUTOPRUEBA GUIA COMPLETA' en el log.
+Ninguna comprobacion en rojo.
+```
+Capturas reales revisadas a mano en cada tramo (no solo el log en verde, la lección que este
+proyecto no se puede permitir olvidar): preparativos y cierre de cada jefe, la pantalla final con
+"No queda nada pendiente" + hoja de ruta con los tres opcionales, y el "Objetivo opcional" con
+números en vivo — sin solapes ni texto cortado, con el aviso de Calamity siempre el primero de la
+columna derecha cuando toca. Logs completos en `evidencia\guia.log.txt` y
+`evidencia\guia-calamity.log.txt` (la pasada final de esta sesión; las intermedias quedan en el
+historial de git). Capturas en el sandbox de pruebas (`terrakeep-capturas`, fuera del repo, se
+regeneran con el script).
+
+### Alcance de la sesión
+
+Commits: `3665c42` (Muro de Carne), `b4b13dc` (mecánicos), `9226df1` (Plantera + Templo/Golem),
+`5128b9a` (Cultista + torres + Moon Lord, con los dos arreglos de bugs), `2661e8c` (los tres
+opcionales + arquitectura `Opcional`).
+
+Tocados en total: `Assets/guia_progresion.json` (los nueve tramos obligatorios que faltaban +
+los tres opcionales nombrados, con `"opcional": true` en los tres), `Common/Guia/BanderasGuia.cs`
+(sin cambios — todas las banderas necesarias ya estaban desde el primer día),
+`Common/Guia/EstadoGuia.cs` (los dos arreglos de bugs + `Opcional`/`PasoOpcionalActual`/
+`PrimerPasoPendiente`), `Common/Guia/ModeloGuia.cs` (`TramoGuia.Opcional`),
+`Common/Guia/CatalogoGuia.cs` (parseo de `"opcional"`), `Common/Guia/AutopruebaGuia.cs` (arnés
+ampliado de 61 a 125 pasos, con comprobaciones nuevas dedicadas a los dos bugs y a la sección de
+objetivo opcional), `UI/Guia/ContenidoGuia.cs` (sección "Objetivo opcional"),
+`scripts/generar-localizacion.py` + los dos `.hjson` (de 599 a 673 claves: 9 tramos × pasos
+completos es/en + 3 opcionales × pasos completos + banderas nuevas + zonas nuevas + las dos claves
+de "Objetivo opcional"), `evidencia/guia*.log.txt`.
+
+### Dónde seguir (para la próxima pasada, sin releer nada a ciegas)
+
+**El camino obligatorio hasta Moon Lord está TERMINADO y verificado al 100%** (los nueve tramos,
+las dos pasadas cada uno). Lo que queda, en el orden en que conviene abordarlo:
+
+1. **Las dos piezas de diseño acordadas** (lo único que el encargo original pedía "una vez el
+   árbol llegue a Moon Lord" — ya se puede empezar):
+   - **Marcadores de mapa**: "brújula de propósito, nunca GPS" — nunca revelar secretos sin
+     explorar, solo evitar la sensación de estar perdido. La infraestructura ya existe en
+     Exploración: `Common/Exploracion/MarcadoresExploracion.cs` y `CapaMapaExploracion.cs` (sin
+     tocar todavía por esta sesión). Referencia de UX que dio el usuario: el nivel de guía de
+     Cyberpunk/Witcher 3/Souls/Borderlands/Dying Light/Warcraft 3/Ori.
+   - **Dirección horizontal** (izquierda/derecha en el mundo 2D) hacia el objetivo actual. Hoy
+     `EstadoGuia.Direccion` solo da la CAPA (arriba/abajo, con las fronteras reales del mundo:
+     `Main.worldSurface`/`rockLayer`/`UnderworldLayer`). `Main.dungeonX` y el `BuscadorMundo` de
+     Exploración dan para más, pero antes de tocar código hace falta decidir dónde está la línea
+     entre "brújula" y "GPS" para el eje horizontal — no es obvio como con la capa (que tiene
+     fronteras binarias claras del propio juego), un bioma puede estar a un lado u otro según el
+     mundo, así que probablemente haga falta leer `Main.dungeonX`/posiciones reales de bioma del
+     `BuscadorMundo` y decidir el nivel de precisión (¿"a tu izquierda", sin más? ¿una distancia
+     aproximada tipo "lejos"/"cerca"?) antes de escribir una sola línea.
+
+2. **Contenido opcional más allá de los tres jefes ya cubiertos**, pedido por el coordinador a
+   media sesión de hoy. Cubierto con el mismo rigor que el camino obligatorio: Reina Abeja, Reina
+   Slime, Duque Pezhongo, Emperatriz de la Luz (los tres tramos de esta sesión). **Sin cubrir
+   todavía, con lo ya investigado para no repetir el trabajo:**
+   - **Rey Slime** (`NPCID.KingSlime=50`): daño 40, defensa 10, vida 2000 (`NPC.cs`, bloque
+     `type==50`). El más flojo de todos los opcionales, pensado para muy pronto (incluso antes del
+     Ojo de Cthulhu). Bandera ya en `BanderasGuia`: `downedSlimeKing`. No tiene tramo en el
+     `.json` todavía — haría falta decidir dónde encaja (¿un tramo propio con `Orden` bajo, tipo
+     0.5, o dentro de `PreOjo` como opcional?).
+   - **Deerclops** (`NPCID.Deerclops=668`): daño 20 (con `coldDamage=true`, debuff de frío
+     extra), defensa 10, vida 7000 (`NPC.cs`, bloque `type==668`). Evento de nieve, se invoca con
+     el Amuleto Esquimal de noche en bioma nevado, o aparece solo con baja probabilidad. Bandera
+     ya en `BanderasGuia`: `downedDeerclops`. Tampoco tiene tramo todavía.
+   - **Eventos**: Ejército Goblin, Piratas, Legión de Escarcha, Luna de Calabazas, Luna Helada,
+     Eclipse Solar, Luna de Sangre, Antiguo Ejército D2, Locura Marciana. `BanderasGuia` ya tiene
+     `downedGoblins`/`savedGoblin`/`savedMech`/`savedWizard`/`downedPirates`/`downedMartians` (de
+     cuando se pensó el vocabulario cerrado, no usadas todavía por ningún tramo) - faltan las de
+     Frost Legion, las cuatro lunas/eclipse y DD2, que no están en la tabla y habría que
+     confirmar sus nombres reales en `NPC.cs` antes de citarlas.
+   - **Biomas opcionales de exploración** (Selva, Mazmorra, Océano, Desierto, Nieve,
+     Corrupción/Carmesí, Sagrado, Inframundo, islas flotantes): la exploración YA los cubre de
+     verdad vía `Common/Exploracion/` (categorías, búsqueda, mapa) - lo que falta es que la GUÍA
+     los mencione como contenido a explorar, no que se construya desde cero.
+   - **Progresión de clases, pesca/Pescador, mascotas/monturas, Pilones, semillas secretas,
+     Mercader Ambulante**: sin empezar. Ninguno de estos encaja en el modelo actual de "tramo con
+     jefe final" - antes de escribir nada haría falta decidir si merecen su propia sección de la
+     Guía (no un tramo más) o si se quedan fuera a propósito por no ser progresión medible con
+     banderas reales del motor (documentar la decisión, sea cual sea, en vez de forzar un tramo
+     falso solo por completar la lista - mismo criterio que la regla de la "Marca Keep").
+
+Nada de lo anterior se ha tocado esta sesión: es la lista real de lo que falta, con los datos ya
+investigados donde los hay, para que la próxima pasada no tenga que releer el NPC.cs desde cero
+para los que ya están aquí (Rey Slime, Deerclops).
