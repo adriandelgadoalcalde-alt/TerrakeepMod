@@ -6445,3 +6445,106 @@ loadouts ampliada sobre Player.Loadouts (nativo, 3 slots fijos sin nombre - conf
 EquipmentLoadout.cs/Player.cs decompilados); 4) vista de completitud (bestiario/logros/colección/
 jefes) reutilizando datos reales ya existentes (Common/Investigacion, banderas NPC.downed* que ya
 usa la Guía).
+
+## 13-sep-2026 (continuación 5) — Segunda pieza del encargo: qué tiene sentido sincronizar con
+## Terrakeep (escritorio), investigado y construido con criterio honesto
+
+Encargo: investigar qué sincronización real tiene sentido entre el mod en vivo y la app de
+escritorio hermana (Downloads\Terrasavr-Win\Terrasavr-Native\Terrakeep.App), decidiendo con
+criterio y documentando honestamente lo que NO tiene un análogo real - nunca forzando uno falso.
+
+### Lo que se investigó de verdad antes de tocar código
+
+Se leyó `Terrakeep.App/Services/SettingsService.cs` (settings.json en
+`%LOCALAPPDATA%\Terrakeep\`, con Language "es"/"en", ExtraCharacterFolders/WorldFolders,
+BackupHistoryCap, anchos de sidebar) y `BackupHistoryService.cs` completo (historial de copias
+`.tkbak` - zip con player.plr+meta.json, carpeta `{personaje}-{huella}` bajo
+`%LOCALAPPDATA%\Terrakeep\Backups\`, huella = 8 hex de SHA-256 de la ruta completa normalizada).
+
+### Decisión: dos piezas SÍ tienen un análogo real, el resto NO (documentado sin forzar nada)
+
+**SÍ - Idioma compartido.** Las dos herramientas ya guardan "es"/"en" cada una por su cuenta; es
+la misma preferencia de la misma persona sobre la misma marca. Implementado bidireccional pero con
+reglas claras para no pisar una elección activa:
+- Al elegir idioma DENTRO del mod (`Idiomas.Elegir`, el mismo camino que ya usa el selector del
+  panel de Ajustes), se refleja en `settings.json` de escritorio - un merge sobre el JSON
+  existente, nunca lo sustituye entero (se conservan ExtraCharacterFolders, BackupHistoryCap...).
+- Al arrancar una partida, SOLO si el mod nunca ha elegido idioma a mano
+  (`AjustesConfig.Idioma == SeguirElJuego`, el valor de fábrica) se adopta la preferencia de
+  escritorio si existe - una elección activa del jugador dentro del mod nunca se pisa. No se
+  persiste en el ModConfig: se re-evalúa cada partida, así que si la app de escritorio cambia de
+  idioma mañana, la siguiente sesión del mod lo recoge sola.
+
+**SÍ - Historial de copias de seguridad compartido.** El mod no puede "guardar" el `.plr` (eso lo
+hace el propio Terraria), pero SÍ puede fotografiarlo justo cuando el juego lo escribe de verdad
+(detección por sondeo del `LastWriteTimeUtc` del `.plr` activo, cada 0,5 s mientras se juega, más
+una última pasada en `OnWorldUnload`), con el MISMO formato `.tkbak` y la MISMA fórmula de huella
+que ya usa `BackupHistoryService` - abrir el historial desde cualquiera de las dos herramientas
+enseña una única línea de tiempo, jugada en el mod o editada en el escritorio. Motivo reutilizado
+a propósito ('A'/"BeforeSave", la categoría existente más honesta para "una foto tomada alrededor
+de un guardado real a disco") en vez de inventar uno nuevo sin poder recompilar/probar
+`Terrakeep.App` en esta sesión para confirmar que su lector lo reconocería.
+
+**NO, con la razón real de cada una (sin forzar un análogo falso):**
+- *Presets/plantillas reutilizables*: la app de escritorio no tiene hoy ningún concepto así - no
+  existe ese servicio en `Terrakeep.App/Services`, sincronizar algo que ninguna de las dos partes
+  tiene todavía sería inventarse un dato.
+- *Estado de ventana/ancho de panel*: geometría de una ventana WPF de escritorio contra un panel
+  que vive DENTRO de la ventana del propio juego a resolución/escala completamente distintas
+  (ver `AutopruebaEspaciado`) - un ancho bueno en un monitor de escritorio no significa nada en el
+  juego.
+- *Carpetas extra de personajes/mundos*: son para que la app de escritorio ENCUENTRE partidas
+  fuera de la carpeta estándar; el mod ya está cargando la partida activa, no tiene nada que
+  buscar.
+- *Edición simultánea de la MISMA partida*: mientras tModLoader tiene la partida cargada, el
+  `.plr` en disco es una foto vieja hasta el próximo guardado - la app de escritorio escribiendo
+  encima mientras tanto se perdería en el siguiente guardado del juego. Limitación real de ser dos
+  procesos independientes sobre el mismo archivo, no un hueco de esta sesión - y es justo por lo
+  que el historial de copias (arriba) importa más que un "en vivo" que no puede existir de verdad.
+
+Las cuatro decisiones "NO" están documentadas con el mismo detalle dentro del propio XMLdoc de
+`Common/Sincronizacion/SincronizacionEscritorio.cs`, no solo aquí.
+
+### Implementación
+
+`Common/Sincronizacion/`: `SincronizacionEscritorio.cs` (toda la lógica: fingerprint idéntico,
+lectura/escritura de idioma con merge, formato `.tkbak` byte a byte compatible, purga con la misma
+política que `BackupHistoryService.Purge` - automáticas más antiguas primero, manuales nunca),
+`SincronizacionSystem.cs` (`ModSystem`: engancha `Idiomas.Cambiado`, sondeo del `.plr` cada 30
+fotogramas, adopción de idioma al arrancar), `RegistroSincronizacion.cs`.
+
+`CarpetaTerrakeep` es una propiedad con `internal set` (mismo motivo real que ya documentó la
+propia app de escritorio para `BackupHistoryService.BackupsRoot`: "las pruebas... estrenaban una
+carpeta en el %LOCALAPPDATA% real que no retiraba nadie") - la autoprueba la redirige a una
+carpeta de TEMP propia ANTES de tocar nada, así que ninguna pasada automática toca jamás el
+`%LOCALAPPDATA%\Terrakeep` real de quien esté jugando en esta máquina.
+
+### Verificación real, en el juego real
+
+`Common/Sincronizacion/AutopruebaSincronizacion.cs` (`TERRAKEEP_AUTOTEST_SINCRO`,
+`scripts/verificar-sincronizacion.ps1`, mismo sandbox WS7): tres escenarios reales, código de
+producción exacto, sin mocks.
+
+- `IDIOMA/1`: con `settings.json` de escritorio diciendo "en" y el mod en `SeguirElJuego`, arrancar
+  la partida deja la cultura activa en `en-US` de verdad (log real: `Idioma cambiado EN VIVO...
+  es-ES -> en-US`). OK.
+- `IDIOMA/2`: `Idiomas.Elegir(Espanol)` (mismo camino que el selector del panel) deja
+  `settings.json` con `Language="es"` Y con `BackupHistoryCap` intacto (merge real, no
+  sustitución). OK.
+- `INSTANTANEA/1-2`: `GuardarInstantanea` sobre el `.plr` real del personaje de pruebas crea
+  exactamente un `.tkbak`, y es un zip válido con `player.plr`+`meta.json`, `meta.json` parsea y
+  trae `CharacterName="TerrakeepPrueba"` real. OK.
+- `SONDEO/0-1`: tras tocar el `.plr` (mismo timestamp que dejaría un guardado real), sin llamar a
+  nada a mano, `SincronizacionSystem.UpdateUI` detectó el cambio por su cuenta y generó una
+  instantánea nueva sola - el camino automático de producción, no solo el método aislado. OK.
+
+Pasada completa en verde, `OK: encontrado 'AUTOPRUEBA SINCRONIZACION: terminada' en el log, sin
+ningún FALLO`. `dotnet` compiló limpio (0 errores, 193 avisos - subida de 169 a 193 por los
+nuevos archivos, mismos `CS1701` benignos de siempre).
+
+### Dónde seguir
+
+Sincronización: terminada y verificada. Quedan las dos últimas piezas del encargo: 3) gestión de
+loadouts (nativo `Player.Loadouts`, 3 slots fijos sin nombre - investigado ya contra
+`EquipmentLoadout.cs`/`Player.cs` decompilados en la entrada anterior); 4) vista de completitud
+(bestiario/logros/colección/jefes).
