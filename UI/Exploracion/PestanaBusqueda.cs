@@ -45,6 +45,15 @@ namespace TerrakeepMod.UI.Exploracion
 		private UIList _listaResultados;
 		private readonly List<BotonTk> _pildorasCategoria = new List<BotonTk>();
 
+		// La columna derecha entera (estado/detalle/progreso/resultados) se guarda para poder
+		// recolocar progreso/resultados cada fotograma segun cuantas lineas ocupe "detalle" de
+		// verdad - ver ReflowDerecha.
+		private UIElement _derecha;
+		private EtiquetaTk _detalle;
+		private BarraProgresoExploracion _progreso;
+		private UIPanel _cajaResultados;
+		private int _lineasDetallePintadas = -1;
+
 		/// <summary>Las filas de objetivo que hay pintadas ahora, con el objetivo que representa
 		/// cada una. Se guarda aparte para no tener que reconocerlas por su texto.</summary>
 		private readonly List<KeyValuePair<ObjetivoBusqueda, BotonTk>> _filasObjetivo =
@@ -146,45 +155,96 @@ namespace TerrakeepMod.UI.Exploracion
 			derecha.Height.Set(0f, 1f);
 			derecha.HAlign = 1f;
 			Append(derecha);
+			_derecha = derecha;
 
 			EtiquetaTk estado = new EtiquetaTk(TextoEstado, 0.85f, 640f, 24f);
+			estado.Width.Set(0f, 1f);
 			estado.Top.Set(0f, 0f);
 			derecha.Append(estado);
 
-			EtiquetaTk detalle = new EtiquetaTk(TextoDetalle, 0.75f, 640f, 22f);
-			detalle.ColorTexto = EstiloTk.TextoSuave;
-			detalle.Top.Set(24f, 0f);
-			derecha.Append(detalle);
+			// El texto SIN partir (640 fijos) medía mas que la columna derecha real a 800x720 (la
+			// mas estrecha) y se salia por la derecha - encontrado por la autopruena de espaciado
+			// ampliada (13-sep-2026). Se parte con el ancho REAL de la columna (ReflowDerecha,
+			// llamado cada fotograma porque ese ancho depende de la resolucion) y "progreso"/la
+			// caja de resultados bajan lo que haga falta segun cuantas lineas ocupe.
+			_detalle = new EtiquetaTk(
+				() => EtiquetaTk.PartirEnLineas(TextoDetalle(), _derecha.GetDimensions().Width, 0.75f),
+				0.75f, 640f, 22f);
+			_detalle.Width.Set(0f, 1f);
+			_detalle.ColorTexto = EstiloTk.TextoSuave;
+			_detalle.Top.Set(24f, 0f);
+			derecha.Append(_detalle);
 
-			BarraProgresoExploracion progreso = new BarraProgresoExploracion(
+			_progreso = new BarraProgresoExploracion(
 				() => PanelExploracionSystem.Buscador.EnMarcha ? PanelExploracionSystem.Buscador.Progreso : 0f);
-			progreso.Width.Set(0f, 1f);
-			progreso.Height.Set(10f, 0f);
-			progreso.Top.Set(48f, 0f);
-			derecha.Append(progreso);
+			_progreso.Width.Set(0f, 1f);
+			_progreso.Height.Set(10f, 0f);
+			_progreso.Top.Set(48f, 0f);
+			derecha.Append(_progreso);
 
-			UIPanel caja = new UIPanel();
-			caja.Width.Set(0f, 1f);
-			caja.Top.Set(64f, 0f);
-			caja.Height.Set(-64f, 1f);
-			caja.BackgroundColor = EstiloTk.FondoCaja;
-			caja.BorderColor = new Color(0, 0, 0, 0);
-			caja.SetPadding(6f);
-			derecha.Append(caja);
+			_cajaResultados = new UIPanel();
+			_cajaResultados.Width.Set(0f, 1f);
+			_cajaResultados.Top.Set(64f, 0f);
+			_cajaResultados.Height.Set(-64f, 1f);
+			_cajaResultados.BackgroundColor = EstiloTk.FondoCaja;
+			_cajaResultados.BorderColor = new Color(0, 0, 0, 0);
+			_cajaResultados.SetPadding(6f);
+			derecha.Append(_cajaResultados);
 
 			_listaResultados = new UIList();
 			_listaResultados.Width.Set(-24f, 1f);
 			_listaResultados.Height.Set(0f, 1f);
 			_listaResultados.ListPadding = 3f;
-			caja.Append(_listaResultados);
+			_cajaResultados.Append(_listaResultados);
 
 			UIScrollbar barra = new UIScrollbar();
 			barra.Width.Set(20f, 0f);
 			barra.Height.Set(0f, 1f);
 			barra.HAlign = 1f;
 			barra.SetView(100f, 1000f);
-			caja.Append(barra);
+			_cajaResultados.Append(barra);
 			_listaResultados.SetScrollbar(barra);
+		}
+
+		/// <summary>Alto real de una linea de "detalle" a su escala (0.75f) - medido con la fuente
+		/// real: <c>FontAssets.MouseText</c> da ~24px de alto de fuente a escala 1, asi que a 0.75
+		/// salen ~18px. Se deja un pelin holgado (19) para el descendente de letras como "g"/"p".</summary>
+		private const float AltoLineaDetalle = 19f;
+
+		/// <summary>
+		/// Cuenta las lineas que ocupa AHORA MISMO "detalle" (ya partido con el ancho real de la
+		/// columna) y baja "progreso" y la caja de resultados lo que haga falta para no
+		/// solaparlo. Se llama cada fotograma porque el numero de lineas depende del idioma Y de
+		/// la resolucion de la ventana.
+		/// </summary>
+		private void ReflowDerecha()
+		{
+			if (_derecha == null || _detalle == null || _progreso == null || _cajaResultados == null) {
+				return;
+			}
+
+			float ancho = _derecha.GetDimensions().Width;
+			string partido = EtiquetaTk.PartirEnLineas(TextoDetalle(), ancho, 0.75f);
+			int lineas = 1;
+			for (int i = 0; i < partido.Length; i++) {
+				if (partido[i] == '\n') {
+					lineas++;
+				}
+			}
+
+			if (lineas == _lineasDetallePintadas) {
+				return;
+			}
+			_lineasDetallePintadas = lineas;
+
+			float altoDetalle = lineas * AltoLineaDetalle;
+			float topProgreso = 24f + altoDetalle + 4f;
+			float topCaja = topProgreso + 10f + 6f;
+
+			_progreso.Top.Set(topProgreso, 0f);
+			_cajaResultados.Top.Set(topCaja, 0f);
+			_cajaResultados.Height.Set(-topCaja, 1f);
+			_derecha.Recalculate();
 		}
 
 		private string TextoEstado()
@@ -434,6 +494,8 @@ namespace TerrakeepMod.UI.Exploracion
 		public override void Update(GameTime gameTime)
 		{
 			base.Update(gameTime);
+
+			ReflowDerecha();
 
 			// La lista se repinta solo cuando cambia de verdad: reconstruir 150 botones cada
 			// fotograma seria tirar tiempo, y ademas rompe el arrastre de la barra de scroll.

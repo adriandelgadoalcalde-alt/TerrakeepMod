@@ -2,6 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.UI;
 
 namespace TerrakeepMod.UI.Personaje.Widgets
@@ -70,8 +71,24 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		{
 			CalculatedStyle dim = GetDimensions();
 
-			Utils.DrawBorderString(spriteBatch, EtiquetaActual,
-				new Vector2(dim.X, dim.Y + 6f), EstiloTk.TextoSuave, 0.8f);
+			// Escala del rotulo AUTOAJUSTADA en vez de 0,8 fijo: con un rotulo real de mas
+			// caracteres ("Variante / género" en español, mas larga que su equivalente ingles,
+			// "Variant / gender") la caja de 0,8 quedaba muy justa contra el boton "<" de debajo -
+			// encontrado con la autopruena de espaciado ampliada (13-sep-2026). Se baja lo justo
+			// para que quepa con margen real; nunca sube de 0,8 aunque el rotulo sea corto.
+			string etiqueta = EtiquetaActual;
+			float escalaEtiqueta = 0.8f;
+			float anchoSinEscalar = FontAssets.MouseText.Value.MeasureString(etiqueta).X;
+			float disponible = _anchoEtiqueta - 6f;
+			if (anchoSinEscalar > 0f && disponible > 0f && anchoSinEscalar * escalaEtiqueta > disponible) {
+				escalaEtiqueta = disponible / anchoSinEscalar;
+				if (escalaEtiqueta < 0.5f) {
+					escalaEtiqueta = 0.5f;
+				}
+			}
+
+			Utils.DrawBorderString(spriteBatch, etiqueta,
+				new Vector2(dim.X, dim.Y + 6f), EstiloTk.TextoSuave, escalaEtiqueta);
 
 			string valor = _textoValor();
 			Utils.DrawBorderString(spriteBatch, valor,

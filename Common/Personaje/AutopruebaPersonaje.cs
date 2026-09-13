@@ -171,7 +171,11 @@ namespace TerrakeepMod.Common.Personaje
 		/// <c>ContentSamples.ItemsByType</c> en vez de por ids fijos, asi que la prueba no se
 		/// rompe si cambian los ids ni depende de que Calamity este cargado.
 		/// </summary>
-		private static void PoblarInventario()
+		/// <summary>Rellena el inventario con objetos reales. <c>internal</c> (no <c>private</c>)
+		/// a proposito: la autoprueba de espaciado (<see cref="TerrakeepMod.Common.Panel.AutopruebaEspaciado"/>)
+		/// la reutiliza para dejar la pestaña de Inventario con contenido realista sin duplicar esta
+		/// logica.</summary>
+		internal static void PoblarInventario()
 		{
 			Player jugador = Main.LocalPlayer;
 
@@ -203,7 +207,8 @@ namespace TerrakeepMod.Common.Personaje
 				+ " | municion 54 = " + PersonajeVivo.DescribirObjeto(jugador.inventory[54]));
 		}
 
-		private static void PoblarAlmacenes()
+		/// <summary><c>internal</c>: ver la nota de <see cref="PoblarInventario"/>.</summary>
+		internal static void PoblarAlmacenes()
 		{
 			Player jugador = Main.LocalPlayer;
 			int barra = BuscarObjeto(objeto => objeto.createTile < 0 && objeto.maxStack >= 99 && objeto.value > 0);
@@ -222,7 +227,8 @@ namespace TerrakeepMod.Common.Personaje
 				+ "bank4.item[39]=" + PersonajeVivo.DescribirObjeto(jugador.bank4.item[39]));
 		}
 
-		private static void PoblarEquipo()
+		/// <summary><c>internal</c>: ver la nota de <see cref="PoblarInventario"/>.</summary>
+		internal static void PoblarEquipo()
 		{
 			Player jugador = Main.LocalPlayer;
 

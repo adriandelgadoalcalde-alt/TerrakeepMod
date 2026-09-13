@@ -34,8 +34,23 @@ namespace TerrakeepMod.UI.Personaje
 		/// <summary>Escala minima antes de que las ranuras dejen de leerse.</summary>
 		private const float EscalaMinima = 0.58f;
 
-		/// <summary>Alto de la zona de arriba (selector de conjunto + leyenda de columnas).</summary>
-		private const float ArribaRejilla = 68f;
+		/// <summary>Alto de la zona de arriba (selector de conjunto + leyenda de columnas).
+		/// 78 y no 68: con 68, el titulo de la columna de equipo especial ("Equipo especial", en
+		/// <c>ArribaRejilla-42</c>) caia en la MISMA banda vertical que los tres botones de
+		/// "Conjunto" del selector de arriba (fila fija en y=[0,28]) - un solape real que la
+		/// autopruena de espaciado ampliada encontro en las SEIS combinaciones de
+		/// idioma/resolucion probadas (13-sep-2026), visto tambien en captura. Los 10px de mas
+		/// dejan sitio para bajar ese titulo POR DEBAJO de la fila de botones (ver
+		/// <see cref="ConstruirMisc"/>), asi que las dos columnas dejan de compartir banda sin
+		/// tener que adivinar por donde exactamente acaban los tres botones.</summary>
+		private const float ArribaRejilla = 78f;
+
+		/// <summary>Ancho declarado de <see cref="_leyendaEquipo"/> ("Columnas: equipado · vanidad
+		/// · tinte"). Con las dos leyendas en la MISMA fila (ver <see cref="ConstruirMisc"/>), la
+		/// columna de equipo especial tiene que empezar despues de esto para no solaparla - el
+		/// mismo tipo de fallo que ya evito <see cref="AnchoRotuloFila"/> para las filas de
+		/// abajo.</summary>
+		private const float AnchoLeyendaEquipo = 340f;
 
 		/// <summary>Filas de la columna izquierda: 3 de armadura + 7 de accesorio.</summary>
 		private const int FilasEquipo = 10;
@@ -179,7 +194,7 @@ namespace TerrakeepMod.UI.Personaje
 			// paso real entre ranuras (~35-41 px) las palabras "Equipado", "Vanidad" y "Tinte" se
 			// pisaban unas con otras y se leia "EquipaVanidaTinte". Visto en una captura real.
 			_leyendaEquipo = new EtiquetaTk(
-				() => Idiomas.Texto("Personaje.Equipo.Leyenda"), 0.72f, 340f, 20f);
+				() => Idiomas.Texto("Personaje.Equipo.Leyenda"), 0.72f, AnchoLeyendaEquipo, 20f);
 			_leyendaEquipo.ColorTexto = EstiloTk.TextoSuave;
 			_leyendaEquipo.Left.Set(0f, 0f);
 			_leyendaEquipo.Top.Set(ArribaRejilla - 20f, 0f);
@@ -195,7 +210,16 @@ namespace TerrakeepMod.UI.Personaje
 					: ItemSlot.Context.EquipAccessoryVanity;
 
 				int indiceFila = i;
-				EtiquetaTk nombre = new EtiquetaTk(() => TextoFila(indiceFila), 0.78f, 240f, 20f);
+				// 240 y no AnchoRotuloFila (170) era la caja DECLARADA de este rotulo - pero el
+				// hueco que de verdad le reserva la maquetacion (anchoColumna, en
+				// ColocarColumnas) esta calculado con AnchoRotuloFila. La caja de 240 se salia de
+				// su columna real 70px, y en la segunda columna eso invadia directamente la
+				// columna de equipo especial ("Accesorio 3" solapando con "Ranuras de accesorio
+				// activas") - encontrado por la autopruena de espaciado ampliada (13-sep-2026) en
+				// las seis combinaciones de idioma/resolucion. AnchoRotuloFila ya esta MEDIDO para
+				// el caso real mas largo ("Accesorio 7  (no activa)"), asi que usar el mismo
+				// numero en los dos sitios basta.
+				EtiquetaTk nombre = new EtiquetaTk(() => TextoFila(indiceFila), 0.78f, AnchoRotuloFila, 20f);
 				Append(nombre);
 
 				_filasEquipo.Add(new FilaEquipo(
@@ -356,7 +380,13 @@ namespace TerrakeepMod.UI.Personaje
 			_columnasColocadas = columnas;
 
 			float anchoColumna = paso * 3f + AnchoRotuloFila;
-			float izquierdaMisc = columnas * anchoColumna + 20f;
+			// Math.Max y no solo "columnas * anchoColumna + 20f": con una sola columna (el caso
+			// mas comun, incluido 800x720) ese valor puede quedar por debajo de
+			// AnchoLeyendaEquipo (340), y entonces "Columnas: equipado..." (leyenda IZQUIERDA,
+			// que ocupa toda su caja de 340px) se solapaba con "Columnas: puesto..." (leyenda
+			// DERECHA) - encontrado por la autopruena de espaciado ampliada (13-sep-2026) en las
+			// seis combinaciones de idioma/resolucion probadas.
+			float izquierdaMisc = System.Math.Max(columnas * anchoColumna + 20f, AnchoLeyendaEquipo + 24f);
 
 			for (int i = 0; i < _filasEquipo.Count; i++) {
 				FilaEquipo fila = _filasEquipo[i];
@@ -372,7 +402,13 @@ namespace TerrakeepMod.UI.Personaje
 			_leyendaEquipo.Top.Set(ArribaRejilla - 20f, 0f);
 
 			_tituloMisc.Left.Set(izquierdaMisc, 0f);
-			_tituloMisc.Top.Set(ArribaRejilla - 42f, 0f);
+			// ArribaRejilla-44 y no ArribaRejilla-42: con -42 este titulo (22px de alto) caia en
+			// y=[26,48], la MISMA banda vertical que los tres botones "Conjunto N" del selector de
+			// arriba (fila fija en y=[0,28]) - un solape real e independiente de izquierdaMisc,
+			// encontrado por la autopruena de espaciado ampliada en las seis combinaciones
+			// probadas (13-sep-2026). Con -44 (y ArribaRejilla ya subido a 78, ver su doc) el
+			// titulo cae en y=[34,56], 6px limpios por debajo de esos botones.
+			_tituloMisc.Top.Set(ArribaRejilla - 44f, 0f);
 			_leyendaMisc.Left.Set(izquierdaMisc, 0f);
 			_leyendaMisc.Top.Set(ArribaRejilla - 20f, 0f);
 

@@ -34,7 +34,14 @@ namespace TerrakeepMod.UI.Personaje
 		public CabeceraPersonaje()
 		{
 			Width.Set(0f, 1f);
-			Height.Set(90f, 0f);
+			// 110 y no 90: con un personaje realista (inventario Y los cuatro almacenes con
+			// monedas de verdad) la linea de Dinero necesita DOS lineas para no solaparse con el
+			// boton "Llenar vida y maná" que comparte su misma fila (ver ConstruirDinero) - 20px
+			// de mas para esa segunda linea. Encontrado por la autopruena de espaciado ampliada
+			// (13-sep-2026): el primer arreglo (ensanchar el hueco de Dinero a toda la fila) quito
+			// el desborde pero abrio un solape NUEVO con el boton, visto en las 24 combinaciones
+			// de pestaña/idioma/resolucion que comparten esta cabecera.
+			Height.Set(110f, 0f);
 
 			ConstruirNombre();
 			ConstruirVidaYMana();
@@ -134,12 +141,32 @@ namespace TerrakeepMod.UI.Personaje
 			Append(llenar);
 		}
 
+		/// <summary>Ancho real que ocupa el boton "Llenar vida y maná" (190) mas el margen que hay
+		/// que dejarle a la izquierda de "Dinero", que comparte su fila.</summary>
+		private const float AnchoBotonLlenarConMargen = 190f + 20f;
+
 		private void ConstruirDinero()
 		{
 			// En su propia fila, la de abajo: compartir la fila 34 con el selector de mana (que
 			// empieza en x=270) hacia que los dos textos se pisaran en cuanto el dinero pasaba de
 			// 270 px, y eso es lo normal en cuanto hay cuatro monedas distintas.
-			EtiquetaTk dinero = new EtiquetaTk(TextoDinero, 0.8f, 520f, 24f);
+			//
+			// Envuelto a dos lineas si hace falta, con el ancho real de la fila MENOS el boton
+			// "Llenar vida y maná" (que comparte esta misma fila, alineado a la derecha) - no un
+			// numero fijo. Con un personaje realista (inventario Y los cuatro almacenes con
+			// monedas de verdad) el texto mide unos 650 px: 520 fijos se quedaban cortos y pisaban
+			// "Ahora: ... vida, ... maná" (encontrado por la autopruena de espaciado ampliada,
+			// 13-sep-2026, con el texto literalmente cortado a media palabra); el primer arreglo
+			// (ensanchar a TODA la fila) quito eso pero abrio un solape nuevo con el propio boton
+			// "Llenar", que vive en la misma fila (visto en la siguiente pasada de la misma
+			// autopruena). La solucion real es dejarle sitio al boton Y partir en dos lineas si
+			// el texto no cabe en una sola - la altura extra ya la reserva el constructor (110,
+			// no 90).
+			EtiquetaTk dinero = new EtiquetaTk(
+				() => EtiquetaTk.PartirEnLineas(TextoDinero(),
+					GetDimensions().Width - AnchoBotonLlenarConMargen, 0.8f),
+				0.8f, 520f, 44f);
+			dinero.Width.Set(-AnchoBotonLlenarConMargen, 1f);
 			dinero.ColorTexto = EstiloTk.TextoSuave;
 			dinero.Left.Set(0f, 0f);
 			dinero.Top.Set(64f, 0f);

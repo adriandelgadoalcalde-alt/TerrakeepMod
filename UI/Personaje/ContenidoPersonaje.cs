@@ -24,7 +24,9 @@ namespace TerrakeepMod.UI.Personaje
 	/// </remarks>
 	public class ContenidoPersonaje : UIElement
 	{
-		private const float AltoCabecera = 90f;
+		// Tiene que coincidir con el Height real de CabeceraPersonaje (110f) - ver su comentario:
+		// duplicado a proposito, no hay forma de preguntarle su alto a un hijo antes de construirlo.
+		private const float AltoCabecera = 110f;
 		private const float AltoBarraPestanas = 30f;
 		private const float SeparacionPestanas = 6f;
 

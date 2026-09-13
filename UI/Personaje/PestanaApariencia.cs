@@ -238,6 +238,10 @@ namespace TerrakeepMod.UI.Personaje
 			// scripts/generar-localizacion.py: no se deja una clave sin usar.
 		}
 
+		/// <summary>Las siete filas de color, guardadas para poder darles una escala de rotulo
+		/// COMUN cada fotograma (ver <see cref="AjustarEscalaDeColores"/>).</summary>
+		private readonly List<FilaColorTk> _filasColor = new List<FilaColorTk>();
+
 		/// <summary>Añade una fila de color. Recibe la CLAVE de localizacion, no el texto.</summary>
 		private void Anadir(string clave, float arriba,
 			System.Func<Color> leer, System.Action<Color> escribir)
@@ -247,6 +251,52 @@ namespace TerrakeepMod.UI.Personaje
 			fila.Left.Set(0f, 0f);
 			fila.Top.Set(arriba, 0f);
 			Append(fila);
+			_filasColor.Add(fila);
+		}
+
+		/// <summary>Ancho real, en pixeles, que hay antes de la muestra de color de cada fila
+		/// (ver el <c>124f</c> de <see cref="FilaColorTk.DrawSelf"/>), con un margen real de 6px.</summary>
+		private const float AnchoDisponibleEtiquetaColor = 124f - 6f;
+
+		/// <summary>Escala minima antes de que el rotulo deje de leerse. Nunca deberia hacer falta
+		/// bajar tanto con texto real: es solo la red de seguridad.</summary>
+		private const float EscalaMinimaEtiquetaColor = 0.45f;
+
+		/// <summary>
+		/// Mide, con la fuente REAL, el rotulo mas largo de las siete filas de color ("Camiseta
+		/// interior" es tipicamente el peor caso en español) y baja la escala COMUN de las siete a
+		/// la que haga falta para que quepa antes de la muestra de color - la misma idea que ya usa
+		/// <c>PanelTerrakeepState.AjustarEscalaDeLasPestanas</c> para la barra de pestañas: una
+		/// escala compartida, no una por fila, para que las filas cortas no se vean mas grandes que
+		/// las largas. Encontrado por la autopruena de espaciado ampliada (13-sep-2026): con los
+		/// 0.78 fijos de siempre, "Camiseta interior" se leia encima de su propia muestra de color
+		/// en español, visto en una captura real.
+		/// </summary>
+		private void AjustarEscalaDeColores()
+		{
+			if (_filasColor.Count == 0) {
+				return;
+			}
+
+			var fuente = Terraria.GameContent.FontAssets.MouseText.Value;
+			float anchoMasLargo = 0f;
+			for (int i = 0; i < _filasColor.Count; i++) {
+				float ancho = fuente.MeasureString(_filasColor[i].EtiquetaActual).X;
+				if (ancho > anchoMasLargo) {
+					anchoMasLargo = ancho;
+				}
+			}
+
+			float escala = anchoMasLargo > 0f
+				? System.Math.Min(0.78f, AnchoDisponibleEtiquetaColor / anchoMasLargo)
+				: 0.78f;
+			if (escala < EscalaMinimaEtiquetaColor) {
+				escala = EscalaMinimaEtiquetaColor;
+			}
+
+			for (int i = 0; i < _filasColor.Count; i++) {
+				_filasColor[i].EscalaEtiqueta = escala;
+			}
 		}
 
 		/// <summary>
@@ -384,6 +434,8 @@ namespace TerrakeepMod.UI.Personaje
 				_botonDeshacer.FijarTexto(Idiomas.Texto("Personaje.Apariencia.Deshacer"));
 				_botonDeshacer.Habilitado = HayCambios();
 			}
+
+			AjustarEscalaDeColores();
 
 			AutopruebaApariencia.Avanzar(this);
 		}

@@ -11,6 +11,8 @@ using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Investigacion;
 using TerrakeepMod.Common.Libreria;
 using TerrakeepMod.Common.Personaje;
+using TerrakeepMod.Common.Undo;
+using TerrakeepMod.UI.Ajustes;
 using TerrakeepMod.UI.Builds;
 using TerrakeepMod.UI.Exploracion;
 using TerrakeepMod.UI.Investigacion;
@@ -136,6 +138,14 @@ namespace TerrakeepMod.Common.Panel
 		private static void ConstruirCola()
 		{
 			_acciones.Enqueue(PoblarBuffsDePrueba);
+			// --- Ampliacion 13-sep-2026: auditoria de espaciado para TODO el mod, no solo el
+			// recuadro naranja y Buffs. Ver bitacora.md. Las dos siguientes preparan contenido
+			// realista UNA sola vez (no depende de resolucion/idioma): objetos reales en
+			// Inventario/Almacenes/Equipo (reutilizando AutopruebaPersonaje, sin duplicar la
+			// logica) y dos entradas reales en el historial de deshacer para medir los botones
+			// Deshacer/Rehacer con su texto largo real en vez del estado vacio por defecto.
+			_acciones.Enqueue(PoblarPersonajeDePrueba);
+			_acciones.Enqueue(PrepararAjustesDePrueba);
 
 			foreach (var resolucion in Resoluciones) {
 				var res = resolucion;
@@ -158,6 +168,28 @@ namespace TerrakeepMod.Common.Panel
 					_acciones.Enqueue(() => MedirYCapturarLibreria(res.Nombre, idi.Nombre));
 					_acciones.Enqueue(() => AbrirInvestigacion(res.Nombre, idi.Nombre));
 					_acciones.Enqueue(() => MedirYCapturarInvestigacion(res.Nombre, idi.Nombre));
+
+					// --- Ampliacion 13-sep-2026: el resto de Personaje, Ajustes y Exploracion ---
+					_acciones.Enqueue(() => AbrirPersonajePestana(2, res.Nombre, idi.Nombre)); // Equipo
+					_acciones.Enqueue(() => AuditarYCapturarPersonaje("equipo", res.Nombre, idi.Nombre));
+					_acciones.Enqueue(() => AbrirPersonajePestana(0, res.Nombre, idi.Nombre)); // Inventario
+					_acciones.Enqueue(() => AuditarYCapturarPersonaje("inventario", res.Nombre, idi.Nombre));
+					_acciones.Enqueue(() => AbrirPersonajePestana(1, res.Nombre, idi.Nombre)); // Almacenes
+					_acciones.Enqueue(() => AuditarYCapturarPersonaje("almacenes", res.Nombre, idi.Nombre));
+					_acciones.Enqueue(() => AbrirPersonajePestana(5, res.Nombre, idi.Nombre)); // Desbloqueos
+					_acciones.Enqueue(() => AuditarYCapturarPersonaje("desbloqueos", res.Nombre, idi.Nombre));
+					_acciones.Enqueue(() => AbrirPersonajePestana(4, res.Nombre, idi.Nombre)); // Apariencia
+					_acciones.Enqueue(() => AuditarYCapturarPersonaje("apariencia", res.Nombre, idi.Nombre));
+
+					_acciones.Enqueue(() => AbrirAjustes(res.Nombre, idi.Nombre));
+					_acciones.Enqueue(() => AuditarYCapturarAjustes(res.Nombre, idi.Nombre));
+
+					_acciones.Enqueue(() => AbrirExploracionPestana(0, res.Nombre, idi.Nombre)); // Mapa
+					_acciones.Enqueue(() => AuditarYCapturarExploracion("mapa", res.Nombre, idi.Nombre));
+					_acciones.Enqueue(() => AbrirExploracionPestana(1, res.Nombre, idi.Nombre)); // Busqueda
+					_acciones.Enqueue(() => PrepararBusqueda(res.Nombre, idi.Nombre));
+					_acciones.Enqueue(() => EsperarFotogramas(180)); // dar tiempo a que el buscador progrese/termine
+					_acciones.Enqueue(() => AuditarYCapturarExploracion("busqueda", res.Nombre, idi.Nombre));
 				}
 			}
 		}
@@ -668,6 +700,226 @@ namespace TerrakeepMod.Common.Panel
 		{
 			Registro.Linea("AUTOPRUEBA ESPACIADO/investigacion (" + nombreRes + "/" + nombreIdioma + ") - " +
 				CapturaDePantalla.Guardar("investigacion-" + nombreRes + "-" + nombreIdioma));
+		}
+
+		// ============================================================================================
+		// 13-sep-2026 - Auditoria de espaciado para TODO el mod (editor de personaje, catalogo de
+		// objetos, Ajustes, Exploracion): "ningun texto mas grande que su caja, nada se solapa".
+		// Ver bitacora.md.
+		// ============================================================================================
+
+		/// <summary>Deja Inventario/Almacenes/Equipo con objetos REALES (mismo camino que WS1,
+		/// reutilizado sin duplicar la logica: <see cref="AutopruebaPersonaje.PoblarInventario"/> y
+		/// compañia se cambiaron de <c>private</c> a <c>internal</c> justo para esto). Se hace UNA
+		/// sola vez: el contenido no depende de la resolucion ni del idioma.</summary>
+		private static void PoblarPersonajeDePrueba()
+		{
+			AutopruebaPersonaje.PoblarInventario();
+			AutopruebaPersonaje.PoblarAlmacenes();
+			AutopruebaPersonaje.PoblarEquipo();
+			Registro.Linea("AUTOPRUEBA ESPACIADO - Inventario/Almacenes/Equipo poblados con objetos reales.");
+		}
+
+		/// <summary>Dos entradas reales en el historial de deshacer, para que los botones
+		/// Deshacer/Rehacer del area de Ajustes enseñen su rotulo LARGO real
+		/// ("Deshacer: <![CDATA[<etiqueta>]]>") en vez del texto corto del estado vacio - el caso mas
+		/// exigente para esa caja. Se deja ademas una entrada rehacible (un <c>Deshacer()</c> de mas)
+		/// para medir tambien el boton Rehacer con texto real.</summary>
+		private static void PrepararAjustesDePrueba()
+		{
+			Historial.CambiarValor("vida máxima (autoprueba de espaciado)", 100, 500, v => { });
+			Historial.CambiarValor("maná máximo (autoprueba de espaciado)", 20, 200, v => { });
+			Historial.Deshacer();
+			Registro.Linea("AUTOPRUEBA ESPACIADO - historial de deshacer preparado: " +
+				Historial.Pila.Cuenta + " entrada(s), PuedeDeshacer=" + Historial.Pila.PuedeDeshacer +
+				", PuedeRehacer=" + Historial.Pila.PuedeRehacer + ".");
+		}
+
+		private static void AbrirPersonajePestana(int indice, string nombreRes, string nombreIdioma)
+		{
+			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Personaje,
+				"autoprueba de espaciado (" + nombreRes + "/" + nombreIdioma + ")");
+			PanelTerrakeepSystem.Panel?.Personaje?.IrAPestana(indice);
+		}
+
+		private static void AuditarYCapturarPersonaje(string nombreCorto, string nombreRes, string nombreIdioma)
+		{
+			ContenidoPersonaje personaje = PanelTerrakeepSystem.Panel != null ? PanelTerrakeepSystem.Panel.Personaje : null;
+			if (personaje == null) {
+				Registro.Linea("AUTOPRUEBA ESPACIADO/" + nombreCorto + " (" + nombreRes + "/" + nombreIdioma +
+					"): no se encontro ContenidoPersonaje.");
+				return;
+			}
+			AuditarArbol(personaje, nombreCorto + " (" + nombreRes + "/" + nombreIdioma + ")");
+			Registro.Linea("AUTOPRUEBA ESPACIADO/" + nombreCorto + " (" + nombreRes + "/" + nombreIdioma + ") - " +
+				CapturaDePantalla.Guardar(nombreCorto + "-" + nombreRes + "-" + nombreIdioma));
+		}
+
+		private static void AbrirAjustes(string nombreRes, string nombreIdioma)
+		{
+			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Ajustes,
+				"autoprueba de espaciado (" + nombreRes + "/" + nombreIdioma + ")");
+		}
+
+		private static void AuditarYCapturarAjustes(string nombreRes, string nombreIdioma)
+		{
+			ContenidoAjustes ajustes = PanelTerrakeepSystem.Panel != null ? PanelTerrakeepSystem.Panel.Ajustes : null;
+			if (ajustes == null) {
+				Registro.Linea("AUTOPRUEBA ESPACIADO/ajustes (" + nombreRes + "/" + nombreIdioma +
+					"): no se encontro ContenidoAjustes.");
+				return;
+			}
+			AuditarArbol(ajustes, "ajustes (" + nombreRes + "/" + nombreIdioma + ")");
+			Registro.Linea("AUTOPRUEBA ESPACIADO/ajustes (" + nombreRes + "/" + nombreIdioma + ") - " +
+				CapturaDePantalla.Guardar("ajustes-" + nombreRes + "-" + nombreIdioma));
+		}
+
+		private static void AbrirExploracionPestana(int indice, string nombreRes, string nombreIdioma)
+		{
+			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Exploracion,
+				"autoprueba de espaciado (" + nombreRes + "/" + nombreIdioma + ")");
+			PanelTerrakeepSystem.Panel?.Exploracion?.CambiarPestana(indice);
+		}
+
+		private static void AuditarYCapturarExploracion(string nombreCorto, string nombreRes, string nombreIdioma)
+		{
+			ContenidoExploracion exploracion = PanelTerrakeepSystem.Panel != null ? PanelTerrakeepSystem.Panel.Exploracion : null;
+			if (exploracion == null) {
+				Registro.Linea("AUTOPRUEBA ESPACIADO/" + nombreCorto + " (" + nombreRes + "/" + nombreIdioma +
+					"): no se encontro ContenidoExploracion.");
+				return;
+			}
+			AuditarArbol(exploracion, nombreCorto + " (" + nombreRes + "/" + nombreIdioma + ")");
+			Registro.Linea("AUTOPRUEBA ESPACIADO/" + nombreCorto + " (" + nombreRes + "/" + nombreIdioma + ") - " +
+				CapturaDePantalla.Guardar(nombreCorto + "-" + nombreRes + "-" + nombreIdioma));
+		}
+
+		/// <summary>Lanza una busqueda real (mena de cobre, la usa tambien AutopruebaExploracion:
+		/// existe en cualquier mundo generado, sin depender de Calamity) para que la columna de
+		/// resultados tenga filas REALES que medir, no el aviso vacio de "aqui saldran".</summary>
+		private static void PrepararBusqueda(string nombreRes, string nombreIdioma)
+		{
+			PestanaBusqueda busqueda = PanelTerrakeepSystem.Panel != null && PanelTerrakeepSystem.Panel.Exploracion != null
+				? PanelTerrakeepSystem.Panel.Exploracion.Busqueda : null;
+			if (busqueda == null) {
+				Registro.Linea("AUTOPRUEBA ESPACIADO/busqueda (" + nombreRes + "/" + nombreIdioma +
+					"): no se encontro PestanaBusqueda.");
+				return;
+			}
+
+			bool encontrado = busqueda.SeleccionarPorEtiqueta("Cobre");
+			if (encontrado) {
+				busqueda.Buscar();
+			}
+			Registro.Linea("AUTOPRUEBA ESPACIADO/busqueda (" + nombreRes + "/" + nombreIdioma +
+				") - objetivo \"Cobre\" seleccionado=" + encontrado + ", busqueda lanzada.");
+		}
+
+		/// <summary>No hace nada por si misma: solo alarga la espera antes del siguiente paso
+		/// (<see cref="Avanzar"/> pone <c>_espera</c> a <see cref="FotogramasEntrePasos"/> justo
+		/// ANTES de ejecutar la accion de la cola, asi que lo que se asigne aqui dentro gana).</summary>
+		private static void EsperarFotogramas(int fotogramas)
+		{
+			_espera = fotogramas;
+		}
+
+		/// <summary>
+		/// Recorre TODO el arbol de <paramref name="raiz"/> y comprueba, con la geometria YA
+		/// dibujada (nunca la que se penso al construir), dos cosas para cada
+		/// <see cref="EtiquetaTk"/>/<see cref="BotonTk"/> con texto que encuentra: (1) que su propio
+		/// texto, medido con la fuente y la escala REALES, no mide mas que la caja que tiene
+		/// asignada ("ningun texto mas grande que su caja"), y (2) que no se solapa con ningun otro
+		/// elemento medible que comparta su mismo padre DIRECTO - comparar solo hermanos evita el
+		/// falso positivo obvio de "el hijo esta dentro del padre" (contencion normal, no un fallo).
+		/// <para />
+		/// Generico a proposito: en vez de escribir a mano una comprobacion por cada pestaña nueva
+		/// (el patron que ya usan Aviso/Buffs/Builds, mas especificas porque conocen la fila exacta
+		/// que miden), este metodo barre cualquier pestaña con las mismas dos reglas. No sustituye a
+		/// las comprobaciones especificas donde ya existen (conocen la relacion REAL entre elementos,
+		/// no solo "se tocan los rectangulos"): las complementa en las pestañas que no tenian
+		/// ninguna medicion todavia.
+		/// </summary>
+		private static int AuditarArbol(UIElement raiz, string contexto)
+		{
+			var fuente = FontAssets.MouseText.Value;
+			var medibles = new List<(UIElement Elemento, string Texto, float Escala)>();
+
+			raiz.ExecuteRecursively(elemento => {
+				EtiquetaTk etiqueta = elemento as EtiquetaTk;
+				if (etiqueta != null) {
+					string texto = etiqueta.TextoActual;
+					if (!string.IsNullOrEmpty(texto)) {
+						medibles.Add((etiqueta, texto, etiqueta.Escala));
+					}
+					return;
+				}
+				BotonTk boton = elemento as BotonTk;
+				if (boton != null && !string.IsNullOrEmpty(boton.Texto)) {
+					medibles.Add((boton, boton.Texto, boton.EscalaTexto));
+				}
+			});
+
+			int fallosDesborde = 0;
+			foreach (var m in medibles) {
+				CalculatedStyle dim = m.Elemento.GetDimensions();
+				if (dim.Width <= 0f) {
+					continue;
+				}
+				float anchoTexto = fuente.MeasureString(m.Texto).X * m.Escala;
+				if (anchoTexto > dim.Width + 1.5f) {
+					fallosDesborde++;
+					Registro.Linea("AUTOPRUEBA ESPACIADO/" + contexto + " - FALLO DESBORDE: \"" +
+						m.Texto.Replace("\n", " | ") + "\" (" + m.Elemento.GetType().Name + ") mide " +
+						anchoTexto.ToString("0.0") + "px en caja de " + dim.Width.ToString("0.0") + "px.");
+				}
+			}
+
+			int fallosSolape = 0;
+			var porPadre = new Dictionary<UIElement, List<(UIElement Elemento, string Texto)>>();
+			foreach (var m in medibles) {
+				UIElement padre = m.Elemento.Parent;
+				if (padre == null) {
+					continue;
+				}
+				List<(UIElement Elemento, string Texto)> lista;
+				if (!porPadre.TryGetValue(padre, out lista)) {
+					lista = new List<(UIElement, string)>();
+					porPadre[padre] = lista;
+				}
+				lista.Add((m.Elemento, m.Texto));
+			}
+			foreach (var grupo in porPadre.Values) {
+				for (int i = 0; i < grupo.Count; i++) {
+					CalculatedStyle a = grupo[i].Elemento.GetDimensions();
+					if (a.Width <= 0f || a.Height <= 0f) {
+						continue;
+					}
+					for (int j = i + 1; j < grupo.Count; j++) {
+						CalculatedStyle b = grupo[j].Elemento.GetDimensions();
+						if (b.Width <= 0f || b.Height <= 0f) {
+							continue;
+						}
+						bool solapan = a.X < b.X + b.Width - 0.5f && a.X + a.Width - 0.5f > b.X &&
+							a.Y < b.Y + b.Height - 0.5f && a.Y + a.Height - 0.5f > b.Y;
+						if (solapan) {
+							fallosSolape++;
+							Registro.Linea("AUTOPRUEBA ESPACIADO/" + contexto + " - FALLO SOLAPE: \"" +
+								grupo[i].Texto.Replace("\n", " | ") + "\" (x=" + (int)a.X + " y=" + (int)a.Y +
+								" " + (int)a.Width + "x" + (int)a.Height + ") se solapa con \"" +
+								grupo[j].Texto.Replace("\n", " | ") + "\" (x=" + (int)b.X + " y=" + (int)b.Y +
+								" " + (int)b.Width + "x" + (int)b.Height + ").");
+						}
+					}
+				}
+			}
+
+			Registro.Linea("AUTOPRUEBA ESPACIADO/" + contexto + " - " + medibles.Count +
+				" elemento(s) con texto medido(s) -> " +
+				(fallosDesborde + fallosSolape == 0
+					? "OK, nada desborda ni se solapa"
+					: (fallosDesborde + " desborde(s), " + fallosSolape + " solape(s)")) + ".");
+
+			return fallosDesborde + fallosSolape;
 		}
 
 		private static void Terminar()

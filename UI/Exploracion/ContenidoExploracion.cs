@@ -19,7 +19,9 @@ namespace TerrakeepMod.UI.Exploracion
 	/// </remarks>
 	public class ContenidoExploracion : UIElement
 	{
-		private const float AltoCabecera = 84f;
+		// Tiene que coincidir con el Height real de CabeceraExploracion (98f) - ver su comentario:
+		// duplicado a proposito, no hay forma de preguntarle su alto a un hijo antes de construirlo.
+		private const float AltoCabecera = 98f;
 		private const float AltoBarraPestanas = 30f;
 		private const float SeparacionPestanas = 6f;
 

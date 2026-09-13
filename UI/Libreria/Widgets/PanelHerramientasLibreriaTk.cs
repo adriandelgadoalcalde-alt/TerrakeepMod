@@ -86,18 +86,22 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 			_papelera.Top.Set(filaUno + 14f, 0f);
 			Append(_papelera);
 
-			// Left=64, no 46: con 46 la etiqueta "Seleccionar" quedaba pegada a "Papelera" (se veian
-			// casi tocandose / "Papelera Selecciona" en una captura real) - 64 le deja hueco real de
-			// sobra a "Papelera" (8 letras a escala 0.62) antes de que empiece la siguiente.
+			// Left=74, no 64: 64 dejaba hueco real de sobra al TEXTO de "Papelera" (8 letras a
+			// escala 0.62, ~50px), pero la CAJA declarada de esa etiqueta mide 70px (0 a 70) - 6px
+			// mas que el propio hueco de 64, asi que las dos CAJAS se seguian solapando aunque el
+			// texto no llegara a tocarse de verdad. Encontrado por la autopruena de espaciado
+			// ampliada (13-sep-2026), que compara cajas reales, no solo texto: "cajas" es
+			// literalmente parte del encargo ("que no se solape texto/cajas/opciones"). 74 deja 4px
+			// de margen real tras el borde de la caja de "Papelera" (70).
 			EtiquetaTk etiquetaSeleccion = new EtiquetaTk(
 				() => Idiomas.Texto("Libreria.EditorPrefijo.RecuadroTitulo"), 0.62f, 100f, 14f);
 			etiquetaSeleccion.ColorTexto = EstiloTk.TextoSuave;
-			etiquetaSeleccion.Left.Set(64f, 0f);
+			etiquetaSeleccion.Left.Set(74f, 0f);
 			etiquetaSeleccion.Top.Set(filaUno, 0f);
 			Append(etiquetaSeleccion);
 
 			_seleccion = new SlotSeleccionTk(0.55f);
-			_seleccion.Left.Set(64f, 0f);
+			_seleccion.Left.Set(74f, 0f);
 			_seleccion.Top.Set(filaUno + 14f, 0f);
 			Append(_seleccion);
 

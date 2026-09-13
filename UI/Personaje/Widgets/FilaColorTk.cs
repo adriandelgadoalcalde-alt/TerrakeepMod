@@ -55,6 +55,17 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// idiomas para recoger todo el texto visible de la pestaña.</summary>
 		public string EtiquetaActual => _etiqueta != null ? (_etiqueta() ?? "") : "";
 
+		/// <summary>
+		/// Escala real del rotulo. Escribible: <see cref="TerrakeepMod.UI.Personaje.PestanaApariencia"/>
+		/// la baja (una escala COMUN a las siete filas, calculada con la fuente real cada
+		/// fotograma) cuando el rotulo mas largo de verdad no cabria en los 124px fijos que hay
+		/// antes de la muestra de color - "Camiseta interior" en español media mas que ese hueco y
+		/// se leia literalmente encima de la muestra, encontrado por la autopruena de espaciado
+		/// ampliada (13-sep-2026) en una captura real. Empieza en 0.78 (la de siempre) y solo baja
+		/// si de verdad hace falta.
+		/// </summary>
+		public float EscalaEtiqueta = 0.78f;
+
 		/// <summary>Ancho de cada deslizador de canal. Publico para que la cabecera de la pestaña
 		/// de Apariencia pueda centrar la letra R/V/A EXACTAMENTE encima del suyo en vez de
 		/// colocarla a ojo con espacios.</summary>
@@ -106,7 +117,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			Color color = _leer();
 
 			Utils.DrawBorderString(spriteBatch, EtiquetaActual,
-				new Vector2(dim.X, dim.Y + 4f), EstiloTk.TextoSuave, 0.78f);
+				new Vector2(dim.X, dim.Y + 4f), EstiloTk.TextoSuave, EscalaEtiqueta);
 
 			// Muestra del color, con un borde negro para que se vea aunque el color sea claro.
 			Texture2D pixel = TextureAssets.MagicPixel.Value;

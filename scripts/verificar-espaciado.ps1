@@ -1,17 +1,22 @@
-# Verifica en el juego REAL el arreglo de espaciado del recuadro naranja de aviso de dificultad
-# (Exploracion > "Este mundo") y de la pestaña Buffs de Personaje: que el texto no se sale de su
-# caja y que hay margen real entre controles, en los dos idiomas del mod y a tres resoluciones
-# de ventana (1600x900, 1280x720 y 800x720, el minimo real que admite el motor).
+# Verifica en el juego REAL que ningun texto es mas grande que su caja y que nada se solapa, en
+# TODO el mod (no solo el recuadro naranja de aviso de dificultad de Exploracion > "Este mundo" y
+# la pestaña Buffs de Personaje, las dos primeras areas que tuvo esta autoprueba): tambien
+# Inventario/Almacenes/Equipo/Desbloqueos/Apariencia de Personaje, Ajustes y Mapa/Busqueda de
+# Exploracion. En los dos idiomas del mod y a tres resoluciones de ventana (1600x900, 1280x720 y
+# 800x720, el minimo real que admite el motor). Ver bitacora.md, entrada del 13-sep-2026.
 #
 #   .\verificar-espaciado.ps1
-#   .\verificar-espaciado.ps1 -SegundosEspera 600
+#   .\verificar-espaciado.ps1 -SegundosEspera 900
+#   .\verificar-espaciado.ps1 -Calamity     -> lo mismo con CalamityMod habilitado (mismo patron
+#                                              que verificar-guia.ps1 -Calamity).
 #
 # Mismo patron que verificar-exploracion.ps1/verificar-panel-unico.ps1: sandbox PROPIO (clonado
 # del de WS0 la primera vez) para no pisar el .tmod/enabled.json de otro agente lanzando el juego
 # a la vez, y evidencia leida del archivo PROPIO que escribe el mod dentro de ese sandbox.
 
 param(
-	[int]$SegundosEspera = 420
+	[switch]$Calamity,
+	[int]$SegundosEspera = 900
 )
 
 $ErrorActionPreference = 'Stop'
@@ -39,10 +44,31 @@ if (-not (Test-Path (Join-Path $sandbox "Worlds\$mundo.wld"))) {
 
 # Autoguardado FUERA: la prueba cambia el modo de juego del mundo (permanente al guardar) y
 # ademas conmuta Main.autoSave para ver las dos variantes del aviso de permanencia.
+#
+# ShowNewUpdatedModsInfo A FALSE: obstaculo real encontrado y resuelto en esta sesion (regla de
+# autonomia tecnica, ver bitacora.md). Sin esto, tModLoader compara los mods del Workshop
+# (HEROsMod/CalamityMod, aunque esten DESHABILITADOS en este sandbox: la comparacion mira la
+# carpeta Workshop entera, no enabled.json) contra "LastLaunchedMods.txt" y, si detecta que
+# cambiaron desde el ultimo lanzamiento, abre un dialogo modal ("Mod Changes since last launch",
+# Interface.cs real decompilado, ModOrganizer.DetectModChangesForInfoMessage) que exige un CLIC
+# real para continuar - exactamente el mismo tipo de bloqueo ya documentado en el CLAUDE.md de
+# este proyecto para el aviso de audio. Sin nadie delante para hacer ese clic, el cliente se
+# quedaba colgado para siempre en "Finding Mods..." (confirmado: dos pasadas seguidas, 900s y
+# 2400s, sin que 'terrakeep-espaciado-evidencia.log' llegara a existir - la condicion de "parar
+# tras dos fallos seguidos" de las reglas globales). La propia opcion de menu del juego
+# ("Ajustes de mods > Mostrar aviso de mods actualizados") escribe esta MISMA clave
+# (Main.Configuration.Put("ShowNewUpdatedModsInfo", ...), ModLoader.cs real decompilado): apagarla
+# aqui es exactamente lo que haria un jugador real para no ver mas ese aviso, aplicado solo a este
+# sandbox de pruebas.
 $config = Join-Path $sandbox 'config.json'
 if (Test-Path $config) {
 	$json = Get-Content $config -Raw -Encoding UTF8 | ConvertFrom-Json
 	$json.AutoSave = $false
+	if ($json.PSObject.Properties.Name -contains 'ShowNewUpdatedModsInfo') {
+		$json.ShowNewUpdatedModsInfo = $false
+	} else {
+		$json | Add-Member -NotePropertyName 'ShowNewUpdatedModsInfo' -NotePropertyValue $false -Force
+	}
 	$json | ConvertTo-Json -Depth 10 | Out-File $config -Encoding utf8
 }
 
@@ -67,7 +93,16 @@ $tmod = Join-Path $sandbox 'Mods\TerrakeepMod.tmod'
 if (-not (Test-Path $tmod)) { throw "El -build termino sin error pero no aparecio $tmod" }
 Write-Host "OK: $tmod ($((Get-Item $tmod).Length) bytes)" -ForegroundColor Green
 
-'["TerrakeepMod"]' | Out-File (Join-Path $sandbox 'Mods\enabled.json') -Encoding utf8
+# ---- 2b. Mods habilitados en el sandbox (mismo patron que verificar-guia.ps1 -Calamity) --
+if ($Calamity) {
+	$origenCalamity = Get-ChildItem (Join-Path $env:USERPROFILE 'Documents\My Games\Terraria\tModLoader\Mods') -Filter '*CalamityMod.tmod' |
+		Select-Object -First 1
+	if (-not $origenCalamity) { throw 'No se encuentra CalamityMod.tmod en la carpeta Mods real.' }
+	Copy-Item $origenCalamity.FullName (Join-Path $sandbox 'Mods\CalamityMod.tmod') -Force
+	'["TerrakeepMod","CalamityMod"]' | Out-File (Join-Path $sandbox 'Mods\enabled.json') -Encoding utf8
+} else {
+	'["TerrakeepMod"]' | Out-File (Join-Path $sandbox 'Mods\enabled.json') -Encoding utf8
+}
 
 # ---- 3. Lanzar el cliente real, sin otro cliente grafico a la vez ------------------------
 for ($i = 0; $i -lt 60; $i++) {
@@ -131,14 +166,15 @@ Write-Host ''
 Write-Host '== Evidencia real ==' -ForegroundColor Cyan
 if (Test-Path $evidencia) {
 	Get-Content $evidencia -Encoding UTF8 | ForEach-Object { $_ }
-	$destino = Join-Path $repo 'evidencia\espaciado.log.txt'
+	$sufijo = if ($Calamity) { '-calamity' } else { '' }
+	$destino = Join-Path $repo ('evidencia\espaciado' + $sufijo + '.log.txt')
 	New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destino) | Out-Null
 	Copy-Item $evidencia $destino -Force
 	Write-Host "(copia guardada en $destino)" -ForegroundColor DarkGray
 
 	$capturas = Join-Path $sandbox 'terrakeep-capturas'
 	if (Test-Path $capturas) {
-		$destinoCapturas = Join-Path $repo 'evidencia\espaciado-capturas'
+		$destinoCapturas = Join-Path $repo ('evidencia\espaciado-capturas' + $sufijo)
 		New-Item -ItemType Directory -Force -Path $destinoCapturas | Out-Null
 		Copy-Item (Join-Path $capturas '*.png') $destinoCapturas -Force
 		Write-Host "Capturas reales copiadas a $destinoCapturas :" -ForegroundColor DarkGray
@@ -168,6 +204,13 @@ if (Test-Path $copiaMundo) {
 
 if ($encontrado) {
 	Write-Host "OK: encontrado '$objetivo' en el log." -ForegroundColor Green
+	$malos = Select-String -Path $evidencia -Pattern 'FALLO|NO CUADRA|EXCEPCION|NO COINCIDE|NO CABE' -Encoding UTF8
+	if ($malos) {
+		Write-Host "PERO hay comprobaciones en rojo:" -ForegroundColor Red
+		$malos | ForEach-Object { Write-Host "  $($_.Line)" -ForegroundColor Red }
+		exit 1
+	}
+	Write-Host 'Ninguna comprobacion en rojo.' -ForegroundColor Green
 } else {
 	Write-Host "NO se encontro '$objetivo'. Revisar $evidencia." -ForegroundColor Red
 	exit 1

@@ -40,6 +40,10 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// etiqueta una a una.</summary>
 		public string TextoActual => _texto != null ? (_texto() ?? "") : "";
 
+		/// <summary>Escala real con la que se dibuja el texto. La usa la autoprueba de espaciado
+		/// para medir con la MISMA escala que <see cref="DrawSelf"/>, no una supuesta a mano.</summary>
+		public float Escala => _escala;
+
 		/// <summary>
 		/// Parte un texto en las lineas que quepan en <paramref name="ancho"/> pixeles, midiendolas
 		/// con la fuente REAL con la que se van a dibujar.
