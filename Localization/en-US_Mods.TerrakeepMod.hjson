@@ -740,6 +740,8 @@ Guia: {
 	QueTeFalta: What you are missing
 	LecturaDelJefe: Boss reading
 	EsteTramo: This stretch, step by step
+	ObjetivoOpcionalTitulo: Optional objective
+	ObjetivoOpcionalEnTramo: "{0}: {1}"
 	LoQueViene: What comes next
 	AvisoCalamityTitulo: You have Calamity installed
 	AvisoCalamity: Calamity changes progression from top to bottom: different bosses, different order, different numbers. This guide still covers plain Terraria, so treat it as the vanilla reference and not as your run's full order. The Calamity tree is pending, and that is said out loud rather than made up.
@@ -792,6 +794,10 @@ Guia: {
 		downedAncientCultist: Defeat the Lunatic Cultist
 		downedTowers: Defeat all four celestial towers
 		downedMoonlord: Defeat the Moon Lord
+		downedQueenBee: Defeat the Queen Bee
+		downedQueenSlime: Defeat the Queen Slime
+		downedFishron: Defeat Duke Fishron
+		downedEmpressOfLight: Defeat the Empress of Light
 	}
 
 	Zona: {
@@ -1009,6 +1015,54 @@ Guia: {
 			Titulo: Defeat him: the end of this guide
 			Porque: NPC.downedMoonlord is the last flag in vanilla's main progression: there is no story boss after him. From here the game stays open (Duke Fishron, the Empress of Light, fishing and whatever optional content you left loose), but the mandatory path that started with the Eye of Cthulhu ends right here.
 			Como: Hit the core while the hands and head are still alive and it does nothing: destroy them first, starting with the hands, since those are what grab you and pull you toward his mouth.
+		}
+
+		ArmaParaLaReina: {
+			Titulo: Any first-tier weapon
+			Porque: The Queen Bee has 30 damage, 3400 health and only 8 defense (NPC.cs, type==222) - less than even the Eye of Cthulhu. She blocks nothing on the mandatory path, but she drops gear (the Bee Keeper, Bee armor) that genuinely speeds up the rest of pre-hardmode if you get her early.
+			Como: She lives in the jungle's Bee Hives (surface or underground). Break a Queen Bee Larva to summon her, or use an Abeemination if you would rather pick the moment yourself.
+		}
+
+		VencerALaReina: {
+			Titulo: Defeat her (optional)
+			Porque: NPC.downedQueenBee does not unlock anything on the mandatory path - it is purely a bonus. What she drops (the Bee Keeper, Honeycomb, Bee armor) is some of the best gear available this early in a run.
+			Como: She flies erratically and fires bees and stingers in straight lines: a clear horizontal corridor inside the hive is safer than chasing her through the wax tunnels.
+		}
+
+		ArmaParaLaReinaSlime: {
+			Titulo: A weapon forged from Hardmode ore
+			Porque: The Queen Slime has 60 damage, 26 defense and 18000 health (NPC.cs, type==657) - a reasonable first check right after entering Hardmode. She blocks nothing, but she is the first real proof that the new ore (Cobalt/Palladium) is actually worth something.
+			Como: She can only be summoned at NIGHT and inside The Hallow, with the Queen Slime Crystal. She jumps very high: an arena with several platforms helps more than flat ground.
+		}
+
+		VencerALaReinaSlime: {
+			Titulo: Defeat her (optional)
+			Porque: NPC.downedQueenSlime does not block the path to the mechanical bosses or anything mandatory. She drops the Crystal Assassin Wings, an early-Hardmode flight far better than anything available before her.
+			Como: Almost all her attacks are melee and jumps: keeping your distance with a ranged or magic weapon is safer than trading melee hits against her slams.
+		}
+
+		ArmaParaFishron: {
+			Titulo: The most demanding weapon before the moon
+			Porque: Duke Fishron has 100 damage, 50 defense and 60000 health (NPC.cs, type==370) - the highest damage in the whole tree up to the Moon Lord himself. He is entirely optional, but many players find him harder than the Cultist or even the towers: there is no shortcut here, you need real gear.
+			Como: He is summoned by fishing with a Truffle Worm in the ocean (either side of the world). Fight over open, flat water: his final phases fill the air and water with projectiles and you need room in all directions to dodge.
+		}
+
+		VencerAFishron: {
+			Titulo: Defeat him (optional)
+			Porque: NPC.downedFishron does not unlock anything on the mandatory path. He drops the Shrimpy Truffle and the rest of his gear, some of the best available before the moon, along with access to his own fishing loot pool.
+			Como: He changes attack patterns several times as his health drops: what you dodge in the first phase does not work in the last. Keep moving constantly instead of planting yourself in one spot.
+		}
+
+		ArmaParaLaEmperatriz: {
+			Titulo: A weapon for the highest health among the optionals
+			Porque: The Empress of Light has 80 damage, 50 defense and 70000 health (NPC.cs, type==636) - the highest health of all the late optional bosses. She also takes NO damage (dontTakeDamage) outside the right light conditions: fighting her at night makes her deliberately far more aggressive, as a penalty for ignoring her schedule.
+			Como: Attack the Prismatic Lacewing, a harmless critter found in The Hallow during the day, to summon her. Fight her IN DAYLIGHT the first time: at night she is far tougher and forgives no mistakes.
+		}
+
+		VencerALaEmperatriz: {
+			Titulo: Defeat her (optional)
+			Porque: NPC.downedEmpressOfLight does not block anything mandatory. She drops some of the best wings and mobility accessories in the entire progression, useful even against the Moon Lord himself.
+			Como: She flies in circular patterns and leaves trails of projectiles that linger in place: move away in a straight line after each burst instead of trying to dodge inside the cloud she leaves behind.
 		}
 	}
 }

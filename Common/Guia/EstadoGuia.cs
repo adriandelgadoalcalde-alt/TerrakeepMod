@@ -45,45 +45,92 @@ namespace TerrakeepMod.Common.Guia
 			List<TramoGuia> tramos = CatalogoGuia.Tramos;
 			for (int i = 0; i < tramos.Count; i++) {
 				TramoGuia t = tramos[i];
-				if (!t.Implementado || t.Pasos.Count == 0) {
+				// Un tramo OPCIONAL nunca se convierte en "tu objetivo ahora mismo": el juego no lo
+				// exige, y bloquear el camino obligatorio detras de un jefe opcional (por tener
+				// menor Orden, p.ej. la Reina Abeja antes que Esqueletron) seria justo lo contrario
+				// de "opcional". Tiene su propio hueco aparte, ver <see cref="PasoOpcionalActual"/>.
+				if (!t.Implementado || t.Pasos.Count == 0 || t.Opcional) {
 					continue;
 				}
 
-				// Un paso YA SUPERADO no se vuelve a abrir solo porque un requisito de mas atras
-				// deje de cumplirse en vivo. Es un caso real, no de laboratorio: te quitas la
-				// armadura del prehardmode al conseguir una mejor, sueltas el arma inicial del
-				// inventario, cambias de arma entre un jefe y el siguiente dentro del MISMO
-				// tramo... y todo eso son requisitos de pasos que ya diste por superados hace
-				// tiempo. Un paso cuyo UNICO requisito obligatorio es una bandera (persistida,
-				// el motor nunca la vuelve a poner a false) cierra ese paso PARA SIEMPRE en cuanto
-				// se cumple una vez - a diferencia de "dano_arma" o "defensa", que se releen en
-				// vivo y pueden volver a fallar sin que eso signifique retroceder de verdad.
-				// <para />
-				// Por eso el "suelo" del tramo no es solo su ULTIMO paso (ese era el primer
-				// arreglo, y bastaba mientras cada tramo tenia como mucho un paso de arma y uno de
-				// jefe): es el paso anclado-por-bandera MAS AVANZADO que ya este cumplido, sea o
-				// no el ultimo. Se vio hacer falta de verdad al ampliar un tramo a CUATRO pasos
-				// (Cultista + Torres, dos jefes seguidos en el mismo tramo): matar al Cultista y
-				// quitarte el arma antes de ir a las torres volvia a enseñar "arma para el
-				// Cultista", con el Cultista llevando rato muerto.
-				int suelo = -1;
-				for (int j = 0; j < t.Pasos.Count; j++) {
-					if (EstaAncladoPorBandera(t.Pasos[j]) && EvaluadorGuia.PasoCompletado(t.Pasos[j])) {
-						suelo = j;
-					}
+				PasoGuia paso = PrimerPasoPendiente(t);
+				if (paso != null) {
+					tramo = t;
+					return paso;
 				}
+			}
+			return null;
+		}
 
-				if (suelo == t.Pasos.Count - 1) {
-					// El paso anclado mas avanzado es el ULTIMO del tramo: el tramo entero se da
-					// por hecho, sin mirar nada de mas atras (el caso ya conocido).
+		/// <summary>
+		/// El objetivo OPCIONAL de ahora mismo: el primer paso pendiente del primer tramo opcional
+		/// (por Orden) que todavia no este superado. Nunca sustituye al objetivo obligatorio - vive
+		/// en su propio hueco de la interfaz - pero sin esto los pasos que se escriben para un
+		/// tramo opcional (dano_arma, objeto recomendado...) se quedarian sin ningun sitio donde
+		/// enseñarse: la hoja de ruta solo da el resumen en dos lineas del tramo, nunca sus pasos.
+		/// </summary>
+		public static PasoGuia PasoOpcionalActual(out TramoGuia tramo)
+		{
+			tramo = null;
+			if (!EstadoJugadorGuia.HayPartida) {
+				return null;
+			}
+
+			List<TramoGuia> tramos = CatalogoGuia.Tramos;
+			for (int i = 0; i < tramos.Count; i++) {
+				TramoGuia t = tramos[i];
+				if (!t.Implementado || t.Pasos.Count == 0 || !t.Opcional) {
 					continue;
 				}
 
-				for (int j = suelo + 1; j < t.Pasos.Count; j++) {
-					if (!EvaluadorGuia.PasoCompletado(t.Pasos[j])) {
-						tramo = t;
-						return t.Pasos[j];
-					}
+				PasoGuia paso = PrimerPasoPendiente(t);
+				if (paso != null) {
+					tramo = t;
+					return paso;
+				}
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// El primer paso PENDIENTE de un tramo, o null si ya esta superado del todo. Comun a
+		/// <see cref="PasoActual"/> y <see cref="PasoOpcionalActual"/>.
+		/// </summary>
+		/// <remarks>
+		/// Un paso YA SUPERADO no se vuelve a abrir solo porque un requisito de mas atras deje de
+		/// cumplirse en vivo. Es un caso real, no de laboratorio: te quitas la armadura del
+		/// prehardmode al conseguir una mejor, sueltas el arma inicial del inventario, cambias de
+		/// arma entre un jefe y el siguiente dentro del MISMO tramo... y todo eso son requisitos de
+		/// pasos que ya diste por superados hace tiempo. Un paso cuyo UNICO requisito obligatorio es
+		/// una bandera (persistida, el motor nunca la vuelve a poner a false) cierra ese paso PARA
+		/// SIEMPRE en cuanto se cumple una vez - a diferencia de "dano_arma" o "defensa", que se
+		/// releen en vivo y pueden volver a fallar sin que eso signifique retroceder de verdad.
+		/// <para />
+		/// Por eso el "suelo" del tramo no es solo su ULTIMO paso (ese era el primer arreglo, y
+		/// bastaba mientras cada tramo tenia como mucho un paso de arma y uno de jefe): es el paso
+		/// anclado-por-bandera MAS AVANZADO que ya este cumplido, sea o no el ultimo. Se vio hacer
+		/// falta de verdad al ampliar un tramo a CUATRO pasos (Cultista + Torres, dos jefes seguidos
+		/// en el mismo tramo): matar al Cultista y quitarte el arma antes de ir a las torres volvia
+		/// a enseñar "arma para el Cultista", con el Cultista llevando rato muerto.
+		/// </remarks>
+		private static PasoGuia PrimerPasoPendiente(TramoGuia t)
+		{
+			int suelo = -1;
+			for (int j = 0; j < t.Pasos.Count; j++) {
+				if (EstaAncladoPorBandera(t.Pasos[j]) && EvaluadorGuia.PasoCompletado(t.Pasos[j])) {
+					suelo = j;
+				}
+			}
+
+			if (suelo == t.Pasos.Count - 1) {
+				// El paso anclado mas avanzado es el ULTIMO del tramo: el tramo entero se da por
+				// hecho, sin mirar nada de mas atras (el caso ya conocido).
+				return null;
+			}
+
+			for (int j = suelo + 1; j < t.Pasos.Count; j++) {
+				if (!EvaluadorGuia.PasoCompletado(t.Pasos[j])) {
+					return t.Pasos[j];
 				}
 			}
 			return null;
@@ -142,26 +189,44 @@ namespace TerrakeepMod.Common.Guia
 				// el Orden mas alto entre los tramos implementados (esten o no terminados), no 0.
 				desde = 0;
 				for (int i = 0; i < tramos.Count; i++) {
-					if (tramos[i].Implementado && tramos[i].Orden > desde) {
+					// Los tramos OPCIONALES no cuentan para "desde": PasoActual los salta siempre
+					// (nunca son "el tramo activo"), asi que tampoco deben empujar el punto de
+					// partida de la hoja de ruta - si contaran, un opcional implementado con Orden
+					// alto (p.ej. JefesOpcionalesTardios, Orden 10) esconderia tramos obligatorios
+					// de Orden menor que siguieran pendientes.
+					if (tramos[i].Implementado && !tramos[i].Opcional && tramos[i].Orden > desde) {
 						desde = tramos[i].Orden;
 					}
 				}
 			}
 
 			for (int i = 0; i < tramos.Count; i++) {
-				// Un tramo SIN IMPLEMENTAR (ReinaAbeja, InicioModoDificil, JefesOpcionalesTardios:
-				// opcionales que hoy solo son mapa, sin requisitos evaluables) nunca se sabe dar
-				// por hecho - no hay datos que leer del motor para decidirlo, a proposito. Por eso
-				// se enseña SIEMPRE en la hoja de ruta, pase lo que pase con "desde": si solo se
-				// mirara el Orden, en cuanto el camino obligatorio adelanta su numero (ya paso con
-				// Moon Lord, visto en una captura real: la columna quedo completamente vacia pese a
-				// que estos tres opcionales seguian sin construir) desaparecerian para siempre y el
-				// jugador se quedaria sin saber que existen - exactamente el "sentirse perdido en
-				// contenido opcional" que se pidio evitar. Un tramo ya IMPLEMENTADO sigue dependiendo
-				// solo de "desde", porque para esos si hay una bandera real que demuestra si estan
-				// superados.
-				if (tramos[i].Orden > desde || !tramos[i].Implementado) {
-					salida.Add(tramos[i]);
+				TramoGuia t = tramos[i];
+
+				if (t.Opcional) {
+					// Un opcional IMPLEMENTADO (con requisitos evaluables de verdad) se enseña
+					// mientras no este superado - se comprueba con su propia bandera, igual que
+					// cualquier otro tramo - y deja de aparecer en cuanto el jugador lo cierra,
+					// pase lo que pase con su Orden. Uno SIN IMPLEMENTAR (todavia mapa puro) no
+					// tiene datos con los que decidirlo, asi que se enseña siempre.
+					bool superado = t.Implementado && t.Pasos.Count > 0 &&
+						EvaluadorGuia.PasoCompletado(t.Pasos[t.Pasos.Count - 1]);
+					if (!superado) {
+						salida.Add(t);
+					}
+					continue;
+				}
+
+				// Un tramo OBLIGATORIO sin implementar (todavia mapa puro, sin requisitos
+				// evaluables) nunca se sabe dar por hecho - no hay datos que leer del motor para
+				// decidirlo, a proposito. Por eso se enseña SIEMPRE en la hoja de ruta, pase lo
+				// que pase con "desde": si solo se mirara el Orden, en cuanto el camino obligatorio
+				// adelanta su numero (ya paso con Moon Lord, visto en una captura real: la columna
+				// quedo completamente vacia) desapareceria para siempre. Uno ya IMPLEMENTADO sigue
+				// dependiendo solo de "desde", porque para esos si hay una bandera real que
+				// demuestra si estan superados.
+				if (t.Orden > desde || !t.Implementado) {
+					salida.Add(t);
 				}
 			}
 			return salida;

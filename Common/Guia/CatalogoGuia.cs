@@ -178,7 +178,8 @@ namespace TerrakeepMod.Common.Guia
 				Orden = Entero(nodo, "orden", 0),
 				Ambito = Ambito(Cadena(nodo, "ambito")),
 				JefeFinal = Entero(nodo, "jefeFinal", 0),
-				Implementado = Booleano(nodo, "implementado", false)
+				Implementado = Booleano(nodo, "implementado", false),
+				Opcional = Booleano(nodo, "opcional", false)
 			};
 
 			// El jefe que cierra el tramo de la maldad del mundo depende del mundo REAL, no de una

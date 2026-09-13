@@ -157,9 +157,41 @@
       "clave": "ReinaAbeja",
       "orden": 3,
       "ambito": "vanilla",
+      "opcional": true,
       "jefeFinal": 222,
-      "implementado": false,
-      "pasos": []
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "ArmaParaLaReina",
+          "zona": "Jungla",
+          "capa": "cavernas",
+          "jefe": 222,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==222: daño 30, defensa 8, vida 3400 - mas floja de defensa que el propio Ojo de Cthulhu (12), aunque llega despues en el orden natural del juego.",
+              "tipo": "dano_arma",
+              "valor": 16
+            },
+            {
+              "_fuente": "ItemID.cs: Abeemination=1133 (se fabrica con Panal). La invoca al usarlo dentro de la colmena, alternativa a romper una larva a ciegas.",
+              "tipo": "objeto",
+              "id": 1133,
+              "cantidad": 1,
+              "recomendado": true
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerALaReina",
+          "zona": "Jungla",
+          "capa": "cavernas",
+          "jefe": 222,
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedQueenBee" }
+          ]
+        }
+      ]
     },
     {
       "clave": "Esqueletron",
@@ -251,9 +283,41 @@
       "clave": "InicioModoDificil",
       "orden": 6,
       "ambito": "vanilla",
+      "opcional": true,
       "jefeFinal": 657,
-      "implementado": false,
-      "pasos": []
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "ArmaParaLaReinaSlime",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 657,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==657: daño 60, defensa 26, vida 18000.",
+              "tipo": "dano_arma",
+              "valor": 30
+            },
+            {
+              "_fuente": "ItemID.cs: Cristal de la Reina Slime=4988. Se usa de noche dentro del bioma Sagrado para invocarla.",
+              "tipo": "objeto",
+              "id": 4988,
+              "cantidad": 1,
+              "recomendado": true
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerALaReinaSlime",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 657,
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedQueenSlime" }
+          ]
+        }
+      ]
     },
     {
       "clave": "Mecanicos",
@@ -373,9 +437,64 @@
       "clave": "JefesOpcionalesTardios",
       "orden": 10,
       "ambito": "vanilla",
+      "opcional": true,
       "jefeFinal": 370,
-      "implementado": false,
-      "pasos": []
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "ArmaParaFishron",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 370,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==370: daño 100, defensa 50, vida 60000 - el daño mas alto de todo el arbol hasta el propio Moon Lord.",
+              "tipo": "dano_arma",
+              "valor": 70
+            },
+            {
+              "_fuente": "ItemID.cs: Gusano Trufado=2673. Se usa pescando en el oceano para invocarlo.",
+              "tipo": "objeto",
+              "id": 2673,
+              "cantidad": 1,
+              "recomendado": true
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerAFishron",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 370,
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedFishron" }
+          ]
+        },
+        {
+          "clave": "ArmaParaLaEmperatriz",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 636,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==636: daño 80, defensa 50, vida 70000 - la mas alta de todos los opcionales tardios. No recibe daño (dontTakeDamage) salvo en condiciones concretas de dia/noche.",
+              "tipo": "dano_arma",
+              "valor": 75
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerALaEmperatriz",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 636,
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedEmpressOfLight" }
+          ]
+        }
+      ]
     },
     {
       "clave": "EventosLunares",

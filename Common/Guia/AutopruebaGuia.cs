@@ -67,6 +67,7 @@ namespace TerrakeepMod.Common.Guia
 		private static bool _downedTowerNebulaOriginal;
 		private static bool _downedTowerStardustOriginal;
 		private static bool _downedMoonlordOriginal;
+		private static bool _downedQueenBeeOriginal;
 		private static readonly List<int> _npcsCreados = new List<int>();
 
 		/// <summary>Tipos de NPC del pueblo que ya vivian en el mundo de prueba y que la prueba
@@ -391,11 +392,12 @@ namespace TerrakeepMod.Common.Guia
 				case 119: ComprobarLecturaDeJefeDelTramoActual("Moon Lord"); break;
 				case 120: Capturar("guia-27-moonlord-vencer"); break;
 				case 121: MarcarMoonLordDerrotadoDeMentira(); break;
+				case 122: ComprobarOpcionalSuperadoDesaparece(); break;
 
-				case 122: ComprobarSinObjetivo(); break;
-				case 123: Capturar("guia-28-todo-lo-implementado-hecho"); break;
+				case 123: ComprobarSinObjetivo(); break;
+				case 124: Capturar("guia-28-todo-lo-implementado-hecho"); break;
 
-				case 124: RestaurarTramosNuevos(); break;
+				case 125: RestaurarTramosNuevos(); break;
 				default: Terminar(); break;
 			}
 		}
@@ -438,6 +440,7 @@ namespace TerrakeepMod.Common.Guia
 			_downedTowerNebulaOriginal = NPC.downedTowerNebula;
 			_downedTowerStardustOriginal = NPC.downedTowerStardust;
 			_downedMoonlordOriginal = NPC.downedMoonlord;
+			_downedQueenBeeOriginal = NPC.downedQueenBee;
 			NPC.downedBoss1 = false;
 
 			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Personaje, "autoprueba de la Guia");
@@ -675,11 +678,11 @@ namespace TerrakeepMod.Common.Guia
 
 			// Comprueba el arreglo REAL de esta misma sesion (visto primero en una captura, no en
 			// el log: con Moon Lord cerrado la columna derecha se quedaba completamente en blanco,
-			// escondiendo los tres tramos opcionales sin implementar - ReinaAbeja, InicioModoDificil,
+			// escondiendo los tres tramos opcionales - ReinaAbeja, InicioModoDificil,
 			// JefesOpcionalesTardios - justo el "sentirse perdido en contenido opcional" que no se
-			// puede permitir). Los tres deben seguir en la hoja de ruta AUNQUE su Orden ya haya
-			// quedado atras, porque al no estar implementados no hay bandera real con la que
-			// decidir si estan superados.
+			// puede permitir). Los tres estan IMPLEMENTADOS (tienen requisitos evaluables de
+			// verdad) pero son OPCIONALES (TramoGuia.Opcional), asi que deben seguir en la hoja de
+			// ruta mientras ninguno este superado, sin que su Orden influya.
 			bool tieneReinaAbeja = false, tieneInicioModoDificil = false, tieneJefesOpcionales = false;
 			for (int i = 0; i < porDelante.Count; i++) {
 				if (porDelante[i].Clave == "ReinaAbeja") tieneReinaAbeja = true;
@@ -687,8 +690,8 @@ namespace TerrakeepMod.Common.Guia
 				if (porDelante[i].Clave == "JefesOpcionalesTardios") tieneJefesOpcionales = true;
 			}
 			bool tresPresentes = tieneReinaAbeja && tieneInicioModoDificil && tieneJefesOpcionales;
-			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - los tres tramos opcionales sin " +
-				"implementar (ReinaAbeja=" + tieneReinaAbeja + ", InicioModoDificil=" +
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - los tres tramos opcionales, " +
+				"ninguno superado todavia (ReinaAbeja=" + tieneReinaAbeja + ", InicioModoDificil=" +
 				tieneInicioModoDificil + ", JefesOpcionalesTardios=" + tieneJefesOpcionales + ") " +
 				(tresPresentes
 					? "-> OK: los tres siguen en la hoja de ruta pese a que su Orden ya quedo atras."
@@ -1084,7 +1087,53 @@ namespace TerrakeepMod.Common.Guia
 				"Lord, NPC.cs case 398). Se restaura al terminar.");
 		}
 
-		/// <summary>Deshace TODO lo que han tocado los pasos 37-121: las banderas nuevas, el mundo y
+		/// <summary>
+		/// Comprueba el otro sentido del arreglo del tramo opcional: no solo tiene que APARECER
+		/// mientras no este superado (ya lo comprueba <see cref="ComprobarSinObjetivo"/> con los
+		/// tres sin tocar), tambien tiene que DESAPARECER en cuanto el jugador lo cierra de
+		/// verdad, sin depender de su Orden. Se marca solo la Reina Abeja como derrotada (la mas
+		/// facil de aislar, Orden 3) y se comprueba que las OTRAS dos opcionales siguen ahi.
+		/// </summary>
+		private static void ComprobarOpcionalSuperadoDesaparece()
+		{
+			NPC.downedQueenBee = true;
+
+			System.Collections.Generic.List<TramoGuia> porDelante = EstadoGuia.TramosPorDelante(null);
+			bool tieneReina = false, tieneInicio = false, tieneOpcionalesTardios = false;
+			for (int i = 0; i < porDelante.Count; i++) {
+				if (porDelante[i].Clave == "ReinaAbeja") tieneReina = true;
+				if (porDelante[i].Clave == "InicioModoDificil") tieneInicio = true;
+				if (porDelante[i].Clave == "JefesOpcionalesTardios") tieneOpcionalesTardios = true;
+			}
+			bool ok = !tieneReina && tieneInicio && tieneOpcionalesTardios;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - NPC.downedQueenBee puesto a true " +
+				"a mano. Hoja de ruta: ReinaAbeja presente=" + tieneReina + " (debe ser false, ya " +
+				"superada), InicioModoDificil presente=" + tieneInicio + ", JefesOpcionalesTardios " +
+				"presente=" + tieneOpcionalesTardios + " (deben seguir true, no superados) " +
+				(ok ? "-> OK." : "-> NO CUADRA."));
+
+			// El "objetivo opcional" (la seccion nueva del panel, ver ContenidoGuia.MontarDetalle)
+			// tiene que saltar de la Reina Abeja (recien superada) al tramo opcional SIGUIENTE
+			// (InicioModoDificil), sin que le importe el Orden ni el tramo obligatorio activo. El
+			// arma de 90+ de daño del paso de Moon Lord (case116) sigue puesta a estas alturas de
+			// la prueba y por si sola ya cumple el unico requisito obligatorio del primer paso de
+			// InicioModoDificil (dano_arma>=30), asi que lo correcto es que el objetivo opcional
+			// sea ya su SEGUNDO paso, no el primero - la misma logica ya probada mas arriba con
+			// "VencerAlCultista".
+			TramoGuia tramoOpcional;
+			PasoGuia pasoOpcional = EstadoGuia.PasoOpcionalActual(out tramoOpcional);
+			bool okOpcional = pasoOpcional != null && pasoOpcional.Clave == "VencerALaReinaSlime" &&
+				tramoOpcional != null && tramoOpcional.Clave == "InicioModoDificil";
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - objetivo opcional con la Reina " +
+				"Abeja superada: \"" + (pasoOpcional != null ? tramoOpcional.Clave + "/" + pasoOpcional.Clave : "(ninguno)") +
+				"\", esperado \"InicioModoDificil/VencerALaReinaSlime\" (el arma de 90+ de daño " +
+				"que sigue puesta desde el paso de Moon Lord ya cumple el primer paso ella sola) " +
+				(okOpcional ? "-> OK." : "-> NO CUADRA."));
+
+			NPC.downedQueenBee = _downedQueenBeeOriginal;
+		}
+
+		/// <summary>Deshace TODO lo que han tocado los pasos 37-122: las banderas nuevas, el mundo y
 		/// el inventario, ademas de los NPC creados en este segundo bloque de la prueba.</summary>
 		private static void RestaurarTramosNuevos()
 		{
@@ -1103,6 +1152,7 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedTowerNebula = _downedTowerNebulaOriginal;
 			NPC.downedTowerStardust = _downedTowerStardustOriginal;
 			NPC.downedMoonlord = _downedMoonlordOriginal;
+			NPC.downedQueenBee = _downedQueenBeeOriginal;
 
 			Player jugador = Main.LocalPlayer;
 			jugador.inventory[0] = new Item();

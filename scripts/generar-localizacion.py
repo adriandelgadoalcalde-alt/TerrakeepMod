@@ -777,6 +777,8 @@ T += [
     ("Guia.QueTeFalta", "Qué te falta", "What you are missing"),
     ("Guia.LecturaDelJefe", "Lectura del jefe", "Boss reading"),
     ("Guia.EsteTramo", "Este tramo, paso a paso", "This stretch, step by step"),
+    ("Guia.ObjetivoOpcionalTitulo", "Objetivo opcional", "Optional objective"),
+    ("Guia.ObjetivoOpcionalEnTramo", "{0}: {1}", "{0}: {1}"),
     ("Guia.LoQueViene", "Lo que viene después", "What comes next"),
 
     ("Guia.AvisoCalamityTitulo", "Tienes Calamity instalado", "You have Calamity installed"),
@@ -844,6 +846,11 @@ T += [
     ("Guia.Bandera.downedTowers", "Derrotar a las cuatro torres celestiales",
      "Defeat all four celestial towers"),
     ("Guia.Bandera.downedMoonlord", "Derrotar al Señor de la Luna", "Defeat the Moon Lord"),
+    ("Guia.Bandera.downedQueenBee", "Derrotar a la Reina Abeja", "Defeat the Queen Bee"),
+    ("Guia.Bandera.downedQueenSlime", "Derrotar a la Reina Slime", "Defeat the Queen Slime"),
+    ("Guia.Bandera.downedFishron", "Derrotar al Duque Pezhongo", "Defeat Duke Fishron"),
+    ("Guia.Bandera.downedEmpressOfLight", "Derrotar a la Emperatriz de la Luz",
+     "Defeat the Empress of Light"),
 
     # --- zonas -------------------------------------------------------------------------------
     ("Guia.Zona.Superficie", "la superficie", "the surface"),
@@ -1133,6 +1140,77 @@ T += [
     ("Guia.Paso.VencerAMoonLord.Como",
      "Golpea el núcleo mientras las manos y la cabeza siguen vivas y no le harás nada: destrúyelas primero, empezando por las manos, que son las que te agarran y te acercan a su boca.",
      "Hit the core while the hands and head are still alive and it does nothing: destroy them first, starting with the hands, since those are what grab you and pull you toward his mouth."),
+
+    # --- pasos del tercer tramo (opcional): la Reina Abeja -------------------------------------
+    ("Guia.Paso.ArmaParaLaReina.Titulo", "Un arma cualquiera de la primera capa",
+     "Any first-tier weapon"),
+    ("Guia.Paso.ArmaParaLaReina.Porque",
+     "La Reina Abeja tiene 30 de daño, 3400 de vida y solo 8 de defensa (NPC.cs, type==222) - menos incluso que el Ojo de Cthulhu. No bloquea nada del camino obligatorio, pero suelta equipo (el Aguijón Abeja, la armadura de Abeja) que adelanta el resto del prehardmode de verdad si la pillas pronto.",
+     "The Queen Bee has 30 damage, 3400 health and only 8 defense (NPC.cs, type==222) - less than even the Eye of Cthulhu. She blocks nothing on the mandatory path, but she drops gear (the Bee Keeper, Bee armor) that genuinely speeds up the rest of pre-hardmode if you get her early."),
+    ("Guia.Paso.ArmaParaLaReina.Como",
+     "Vive en las Colmenas de la jungla (superficie o subterránea). Rompe una larva de abeja reina para invocarla, o usa una Abeemination si prefieres elegir el momento tú mismo.",
+     "She lives in the jungle's Bee Hives (surface or underground). Break a Queen Bee Larva to summon her, or use an Abeemination if you would rather pick the moment yourself."),
+
+    ("Guia.Paso.VencerALaReina.Titulo", "Derrotarla (opcional)", "Defeat her (optional)"),
+    ("Guia.Paso.VencerALaReina.Porque",
+     "NPC.downedQueenBee no abre ningún camino obligatorio - es puramente un extra. Lo que sí suelta (Aguijón Abeja, Honeycomb, la armadura de Abeja) es de lo mejor que hay disponible tan pronto en la partida.",
+     "NPC.downedQueenBee does not unlock anything on the mandatory path - it is purely a bonus. What she drops (the Bee Keeper, Honeycomb, Bee armor) is some of the best gear available this early in a run."),
+    ("Guia.Paso.VencerALaReina.Como",
+     "Vuela errática y dispara abejas y proyectiles punzantes en línea recta: un pasillo horizontal despejado dentro de la colmena es más seguro que perseguirla entre los túneles de cera.",
+     "She flies erratically and fires bees and stingers in straight lines: a clear horizontal corridor inside the hive is safer than chasing her through the wax tunnels."),
+
+    # --- pasos del sexto tramo (opcional): los primeros pasos del Modo Dificil -----------------
+    ("Guia.Paso.ArmaParaLaReinaSlime.Titulo", "Un arma de mineral de Hardmode ya fundida",
+     "A weapon forged from Hardmode ore"),
+    ("Guia.Paso.ArmaParaLaReinaSlime.Porque",
+     "La Reina Slime tiene 60 de daño, 26 de defensa y 18000 de vida (NPC.cs, type==657) - un primer filtro razonable nada más entrar en Hardmode. No bloquea nada, pero es la primera prueba real de que el mineral nuevo (Cobalto/Paladio) ya vale para algo.",
+     "The Queen Slime has 60 damage, 26 defense and 18000 health (NPC.cs, type==657) - a reasonable first check right after entering Hardmode. She blocks nothing, but she is the first real proof that the new ore (Cobalt/Palladium) is actually worth something."),
+    ("Guia.Paso.ArmaParaLaReinaSlime.Como",
+     "Solo se puede invocar de NOCHE y dentro del bioma Sagrado, con el Cristal de la Reina Slime. Salta muy alto: una arena con varias plataformas ayuda más que el suelo llano.",
+     "She can only be summoned at NIGHT and inside The Hallow, with the Queen Slime Crystal. She jumps very high: an arena with several platforms helps more than flat ground."),
+
+    ("Guia.Paso.VencerALaReinaSlime.Titulo", "Derrotarla (opcional)", "Defeat her (optional)"),
+    ("Guia.Paso.VencerALaReinaSlime.Porque",
+     "NPC.downedQueenSlime no bloquea el camino a los mecánicos ni a nada obligatorio. Suelta el Ala Real Cristalina, un vuelo temprano de Hardmode muy por encima de lo que hay antes de ella.",
+     "NPC.downedQueenSlime does not block the path to the mechanical bosses or anything mandatory. She drops the Crystal Assassin Wings, an early-Hardmode flight far better than anything available before her."),
+    ("Guia.Paso.VencerALaReinaSlime.Como",
+     "Sus ataques son casi todos cuerpo a cuerpo y saltos: mantener las distancias con un arma a distancia o mágica es más seguro que pelear cuerpo a cuerpo contra sus caídas.",
+     "Almost all her attacks are melee and jumps: keeping your distance with a ranged or magic weapon is safer than trading melee hits against her slams."),
+
+    # --- pasos del decimo tramo (opcional): Duque Pezhongo y la Emperatriz de la Luz -----------
+    ("Guia.Paso.ArmaParaFishron.Titulo", "El arma más exigente antes de la luna",
+     "The most demanding weapon before the moon"),
+    ("Guia.Paso.ArmaParaFishron.Porque",
+     "El Duque Pezhongo tiene 100 de daño, 50 de defensa y 60000 de vida (NPC.cs, type==370) - el daño más alto de todo el árbol hasta el propio Moon Lord. Es opcional del todo, pero mucha gente lo considera más difícil que el Cultista o incluso que las torres: no hay atajo aquí, hace falta equipo de verdad.",
+     "Duke Fishron has 100 damage, 50 defense and 60000 health (NPC.cs, type==370) - the highest damage in the whole tree up to the Moon Lord himself. He is entirely optional, but many players find him harder than the Cultist or even the towers: there is no shortcut here, you need real gear."),
+    ("Guia.Paso.ArmaParaFishron.Como",
+     "Se invoca pescando con un Gusano Trufado en el océano (izquierda o derecha del mundo). Pelea sobre agua abierta y llana: sus fases finales llenan el aire y el agua de proyectiles y necesitas sitio en las tres dimensiones para esquivar.",
+     "He is summoned by fishing with a Truffle Worm in the ocean (either side of the world). Fight over open, flat water: his final phases fill the air and water with projectiles and you need room in all directions to dodge."),
+
+    ("Guia.Paso.VencerAFishron.Titulo", "Derrotarlo (opcional)", "Defeat him (optional)"),
+    ("Guia.Paso.VencerAFishron.Porque",
+     "NPC.downedFishron no abre nada del camino obligatorio. Suelta el Cañón de Cavajabón y el resto de su equipo, de lo mejor que hay disponible antes de la luna, junto con acceso a la pesca de tesoros del Duque.",
+     "NPC.downedFishron does not unlock anything on the mandatory path. He drops the Shrimpy Truffle and the rest of his gear, some of the best available before the moon, along with access to his own fishing loot pool."),
+    ("Guia.Paso.VencerAFishron.Como",
+     "Cambia de patrón varias veces según baja de vida: lo que esquivas en la primera fase no sirve en la última. Mantén el movimiento constante en vez de plantarte en un sitio fijo.",
+     "He changes attack patterns several times as his health drops: what you dodge in the first phase does not work in the last. Keep moving constantly instead of planting yourself in one spot."),
+
+    ("Guia.Paso.ArmaParaLaEmperatriz.Titulo", "Un arma para la vida más alta de los opcionales",
+     "A weapon for the highest health among the optionals"),
+    ("Guia.Paso.ArmaParaLaEmperatriz.Porque",
+     "La Emperatriz de la Luz tiene 80 de daño, 50 de defensa y 70000 de vida (NPC.cs, type==636) - la vida más alta de todos los jefes opcionales tardíos. Además NO recibe daño (dontTakeDamage) salvo en las condiciones de luz correctas: pelear de noche la vuelve muchísimo más agresiva a propósito, como castigo por no respetar su horario.",
+     "The Empress of Light has 80 damage, 50 defense and 70000 health (NPC.cs, type==636) - the highest health of all the late optional bosses. She also takes NO damage (dontTakeDamage) outside the right light conditions: fighting her at night makes her deliberately far more aggressive, as a penalty for ignoring her schedule."),
+    ("Guia.Paso.ArmaParaLaEmperatriz.Como",
+     "Ataca a la Luciérnaga Prismática, una criatura inofensiva que aparece en el Sagrado de día, para invocarla. Pelea DE DÍA la primera vez: de noche es mucho más dura y no perdona errores.",
+     "Attack the Prismatic Lacewing, a harmless critter found in The Hallow during the day, to summon her. Fight her IN DAYLIGHT the first time: at night she is far tougher and forgives no mistakes."),
+
+    ("Guia.Paso.VencerALaEmperatriz.Titulo", "Derrotarla (opcional)", "Defeat her (optional)"),
+    ("Guia.Paso.VencerALaEmperatriz.Porque",
+     "NPC.downedEmpressOfLight no bloquea nada obligatorio. Suelta algunas de las mejores alas y accesorios de movilidad de toda la progresión, útiles incluso contra el propio Moon Lord.",
+     "NPC.downedEmpressOfLight does not block anything mandatory. She drops some of the best wings and mobility accessories in the entire progression, useful even against the Moon Lord himself."),
+    ("Guia.Paso.VencerALaEmperatriz.Como",
+     "Vuela en patrones circulares y deja rastros de proyectiles que se quedan flotando: aléjate en línea recta después de cada ráfaga en vez de intentar esquivar dentro de la nube que deja atrás.",
+     "She flies in circular patterns and leaves trails of projectiles that linger in place: move away in a straight line after each burst instead of trying to dodge inside the cloud she leaves behind."),
 ]
 
 KEYBINDS = [

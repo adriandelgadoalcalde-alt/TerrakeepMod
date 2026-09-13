@@ -184,6 +184,20 @@ namespace TerrakeepMod.Common.Guia
 		/// </summary>
 		public bool Implementado;
 
+		/// <summary>
+		/// true = el juego NO exige este tramo para avanzar (un jefe opcional: Reina Abeja, Reina
+		/// Slime, Duque Pezhongo, Emperatriz de la Luz...). Existe para que un tramo opcional
+		/// IMPLEMENTADO nunca se convierta en un bloqueo del "objetivo de ahora mismo": el camino
+		/// obligatorio sigue avanzando por su Orden aunque este a medias, y el opcional se enseña
+		/// aparte, en la hoja de ruta, hasta que se cierre solo o el jugador decida ignorarlo.
+		/// <para />
+		/// Decision que la propia bitacora dejo pendiente antes de implementar el primero de
+		/// estos tramos (13-sep-2026): sin este campo, marcar "ReinaAbeja" como implementado
+		/// habria hecho que la guia mandara "tu objetivo ahora mismo es la Reina Abeja" ANTES de
+		/// Esqueletron solo por tener menor Orden - exactamente lo contrario de "opcional".
+		/// </summary>
+		public bool Opcional;
+
 		public readonly List<PasoGuia> Pasos = new List<PasoGuia>();
 
 		public string Nombre => Idiomas.Texto("Guia.Tramo." + Clave + ".Nombre");

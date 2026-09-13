@@ -740,6 +740,8 @@ Guia: {
 	QueTeFalta: Qué te falta
 	LecturaDelJefe: Lectura del jefe
 	EsteTramo: Este tramo, paso a paso
+	ObjetivoOpcionalTitulo: Objetivo opcional
+	ObjetivoOpcionalEnTramo: "{0}: {1}"
 	LoQueViene: Lo que viene después
 	AvisoCalamityTitulo: Tienes Calamity instalado
 	AvisoCalamity: Con Calamity la progresión cambia de arriba abajo: otros jefes, otro orden y otras cifras. Esta guía todavía es la de Terraria a secas, así que úsala como referencia de vanilla y no como el orden completo de tu partida. El árbol de Calamity está pendiente, y se dice en vez de inventárselo.
@@ -792,6 +794,10 @@ Guia: {
 		downedAncientCultist: Derrotar al Cultista Lunático
 		downedTowers: Derrotar a las cuatro torres celestiales
 		downedMoonlord: Derrotar al Señor de la Luna
+		downedQueenBee: Derrotar a la Reina Abeja
+		downedQueenSlime: Derrotar a la Reina Slime
+		downedFishron: Derrotar al Duque Pezhongo
+		downedEmpressOfLight: Derrotar a la Emperatriz de la Luz
 	}
 
 	Zona: {
@@ -1009,6 +1015,54 @@ Guia: {
 			Titulo: Derrotarlo: el final de esta guía
 			Porque: NPC.downedMoonlord es la última bandera de la progresión vanilla: no hay ningún jefe de historia principal después de él. A partir de aquí el juego sigue abierto (Duque Pezhongo, la Emperatriz de la Luz, la pesca y el resto del contenido opcional si te quedó algo suelto), pero la ruta obligatoria que empezó con el Ojo de Cthulhu termina exactamente aquí.
 			Como: Golpea el núcleo mientras las manos y la cabeza siguen vivas y no le harás nada: destrúyelas primero, empezando por las manos, que son las que te agarran y te acercan a su boca.
+		}
+
+		ArmaParaLaReina: {
+			Titulo: Un arma cualquiera de la primera capa
+			Porque: La Reina Abeja tiene 30 de daño, 3400 de vida y solo 8 de defensa (NPC.cs, type==222) - menos incluso que el Ojo de Cthulhu. No bloquea nada del camino obligatorio, pero suelta equipo (el Aguijón Abeja, la armadura de Abeja) que adelanta el resto del prehardmode de verdad si la pillas pronto.
+			Como: Vive en las Colmenas de la jungla (superficie o subterránea). Rompe una larva de abeja reina para invocarla, o usa una Abeemination si prefieres elegir el momento tú mismo.
+		}
+
+		VencerALaReina: {
+			Titulo: Derrotarla (opcional)
+			Porque: NPC.downedQueenBee no abre ningún camino obligatorio - es puramente un extra. Lo que sí suelta (Aguijón Abeja, Honeycomb, la armadura de Abeja) es de lo mejor que hay disponible tan pronto en la partida.
+			Como: Vuela errática y dispara abejas y proyectiles punzantes en línea recta: un pasillo horizontal despejado dentro de la colmena es más seguro que perseguirla entre los túneles de cera.
+		}
+
+		ArmaParaLaReinaSlime: {
+			Titulo: Un arma de mineral de Hardmode ya fundida
+			Porque: La Reina Slime tiene 60 de daño, 26 de defensa y 18000 de vida (NPC.cs, type==657) - un primer filtro razonable nada más entrar en Hardmode. No bloquea nada, pero es la primera prueba real de que el mineral nuevo (Cobalto/Paladio) ya vale para algo.
+			Como: Solo se puede invocar de NOCHE y dentro del bioma Sagrado, con el Cristal de la Reina Slime. Salta muy alto: una arena con varias plataformas ayuda más que el suelo llano.
+		}
+
+		VencerALaReinaSlime: {
+			Titulo: Derrotarla (opcional)
+			Porque: NPC.downedQueenSlime no bloquea el camino a los mecánicos ni a nada obligatorio. Suelta el Ala Real Cristalina, un vuelo temprano de Hardmode muy por encima de lo que hay antes de ella.
+			Como: Sus ataques son casi todos cuerpo a cuerpo y saltos: mantener las distancias con un arma a distancia o mágica es más seguro que pelear cuerpo a cuerpo contra sus caídas.
+		}
+
+		ArmaParaFishron: {
+			Titulo: El arma más exigente antes de la luna
+			Porque: El Duque Pezhongo tiene 100 de daño, 50 de defensa y 60000 de vida (NPC.cs, type==370) - el daño más alto de todo el árbol hasta el propio Moon Lord. Es opcional del todo, pero mucha gente lo considera más difícil que el Cultista o incluso que las torres: no hay atajo aquí, hace falta equipo de verdad.
+			Como: Se invoca pescando con un Gusano Trufado en el océano (izquierda o derecha del mundo). Pelea sobre agua abierta y llana: sus fases finales llenan el aire y el agua de proyectiles y necesitas sitio en las tres dimensiones para esquivar.
+		}
+
+		VencerAFishron: {
+			Titulo: Derrotarlo (opcional)
+			Porque: NPC.downedFishron no abre nada del camino obligatorio. Suelta el Cañón de Cavajabón y el resto de su equipo, de lo mejor que hay disponible antes de la luna, junto con acceso a la pesca de tesoros del Duque.
+			Como: Cambia de patrón varias veces según baja de vida: lo que esquivas en la primera fase no sirve en la última. Mantén el movimiento constante en vez de plantarte en un sitio fijo.
+		}
+
+		ArmaParaLaEmperatriz: {
+			Titulo: Un arma para la vida más alta de los opcionales
+			Porque: La Emperatriz de la Luz tiene 80 de daño, 50 de defensa y 70000 de vida (NPC.cs, type==636) - la vida más alta de todos los jefes opcionales tardíos. Además NO recibe daño (dontTakeDamage) salvo en las condiciones de luz correctas: pelear de noche la vuelve muchísimo más agresiva a propósito, como castigo por no respetar su horario.
+			Como: Ataca a la Luciérnaga Prismática, una criatura inofensiva que aparece en el Sagrado de día, para invocarla. Pelea DE DÍA la primera vez: de noche es mucho más dura y no perdona errores.
+		}
+
+		VencerALaEmperatriz: {
+			Titulo: Derrotarla (opcional)
+			Porque: NPC.downedEmpressOfLight no bloquea nada obligatorio. Suelta algunas de las mejores alas y accesorios de movilidad de toda la progresión, útiles incluso contra el propio Moon Lord.
+			Como: Vuela en patrones circulares y deja rastros de proyectiles que se quedan flotando: aléjate en línea recta después de cada ráfaga en vez de intentar esquivar dentro de la nube que deja atrás.
 		}
 	}
 }
