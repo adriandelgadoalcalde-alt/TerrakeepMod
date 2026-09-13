@@ -6725,3 +6725,75 @@ autoprueba de sincronización (redirigida a TEMP).
 Las cuatro con captura real es/en, arnés de pruebas propio por pieza (mismo patrón establecido:
 variable de entorno, sandbox compartido, log real, sin FALLO) y comprobación cruzada final para
 descartar regresiones entre ellas. No queda ningún punto pendiente del encargo original.
+
+---
+
+## 14-sep-2026 — Capturas automáticas de hito (álbum de progreso)
+
+Encargo de la familia Keep: cuando un tramo de la Guía se cierra DE VERDAD jugando normal, el mod
+tiene que guardar solo una captura del momento, sin que el jugador tenga que acordarse de pulsar
+nada, y dejar un panel sencillo para verlas.
+
+### Diseño
+
+- **`Common/Guia/EstadoGuia.TramoSuperado(TramoGuia)`** (nuevo, público): la misma fórmula que ya
+  usaba `TramosPorDelante` solo para los tramos opcionales ("implementado, con pasos, y el último
+  ya completado"), sacada a un sitio único para que la reutilice también el sistema de hitos - un
+  tramo obligatorio y uno opcional se dan por cerrado exactamente igual.
+- **`Common/Hitos/HitosSystem.cs`** (`ModSystem`): toma una fotografía de `TramoSuperado` de cada
+  tramo la primera vez que hay partida activa tras entrar al mundo, y solo cuenta como hito un
+  tramo que pasa de no-superado a superado DESPUÉS de esa fotografía - nunca en la fotografía
+  misma. Sin esto, cargar una partida ya avanzada llenaría el álbum de hitos falsos en el primer
+  fotograma de cada sesión. La fotografía se retoma en cada entrada a partida (`OnWorldUnload` la
+  invalida), así que un tramo ya cerrado en sesiones anteriores nunca vuelve a disparar.
+- **`Common/Panel/CapturaDePantalla.GuardarHito(...)`** (nuevo): la MISMA técnica que ya usaba
+  `Guardar` (`GraphicsDevice.GetBackBufferData` + `Texture2D.SaveAsPng`, nunca el escritorio), pero
+  sin pasar por `Permitida` - `Guardar` sigue siendo SOLO arnés de pruebas a propósito (esa
+  garantía, de la que depende `SincronizacionSystem` para no ensuciar el `settings.json` real
+  durante una autoprueba, no se toca). El núcleo real se sacó a un método privado común
+  (`GuardarEnArchivo`) para no duplicar la captura.
+- **`Common/Hitos/AlbumHitos.cs`**: dispara la captura y mantiene `terrakeep-hitos/album.json`
+  (clave, nombre YA TRADUCIDO al idioma del momento, archivo, fecha, personaje, mundo), escritura
+  atómica (temporal + `File.Move`, mismo patrón que `SincronizacionEscritorio`). Carpeta propia
+  (`terrakeep-hitos`, dentro de `Main.SavePath`) y distinta de `terrakeep-capturas` (esa es solo
+  arnés de pruebas y se puede borrar sin perder nada real; el álbum es del jugador).
+- **Pestaña "Álbum"** (octava área del panel único, `AreaTerrakeep.Album`, atajo **U** - comprobado
+  libre con un grep real de todos los `RegisterKeybind` del mod antes de elegirla):
+  `UI/Hitos/ContenidoAlbum.cs`. Lista con fecha, no miniaturas (el encargo admitía las dos): cargar
+  cada `.png` como textura a resolución real del back buffer por cada fila sería memoria de vídeo
+  sin límite en una partida larga, por una miniatura que además saldría borrosa. Un clic en la fila
+  abre el archivo real con el visor de imágenes del sistema (`Process.Start`); "Abrir carpeta"
+  hace lo mismo con la carpeta entera. "Actualizar" vuelve a leer `album.json` del disco.
+
+### Verificación real, en el juego real
+
+1. **Que las capturas se disparan solas, sin arnés nuevo**: `AutopruebaGuia`
+   (`TERRAKEEP_AUTOTEST_GUIA`, ya existente y verificada al 100%) fuerza una a una las banderas
+   reales de cada tramo. Con `HitosSystem` activo (siempre lo está, sin variable de entorno), la
+   misma pasada de `scripts\verificar-guia.ps1` basta como prueba: **47 archivos `.png` reales**
+   aparecieron solos en `terrakeep-hitos\` (PNG válidos, comprobado con `file`: p.ej.
+   `800x720, 8-bit/color RGBA`, tamaños variados según lo que hubiera en pantalla - nunca 0 bytes
+   ni un color plano), `album.json` con las 47 entradas bien formadas, y
+   `terrakeep-hitos-evidencia.log` con una línea `HITO "..."` por cada una. La barra de pestañas
+   pasó de 7 a 8 y se re-verificó que las ocho caben enteras (`AUTOPRUEBA GUIA/2`, log real:
+   `"Álbum"=52,1px -> OK: las 8 caben enteras`).
+2. **Que el panel del álbum en sí abre y no se solapa**: nuevo `Common/Hitos/AutopruebaHitos.cs`
+   (`TERRAKEEP_AUTOTEST_HITOS`) - clic real en la pestaña, mide con números reales el hueco entre
+   "Actualizar"/"Abrir carpeta" y la caja de la lista, y compara las entradas montadas en pantalla
+   con las reales de `album.json`. **Bug real cazado por la propia autoprueba, no por lectura de
+   código**: la primera versión de la comprobación de espaciado buscaba `is UIPanel` para
+   encontrar la caja de la lista, pero `BotonTk` HEREDA de `UIPanel` (ver `BotonTk.cs`) - la
+   comprobación encontraba el botón "Actualizar" y lo comparaba consigo mismo, dando un falso
+   "NO CUADRA". Corregido excluyendo `BotonTk` de la búsqueda; verificado nuevo con captura real
+   (`evidencia`-style, `hitos-1-album.png`) mostrando el álbum con sus 47 entradas, sin ningún
+   solapamiento, y `"OK: sin solapes"` con las medidas reales
+   (`caja-lista=x=26 y=135 748x508`, muy por debajo de los botones en `y=99..127`).
+3. **Compilación real**: `scripts\compilar.ps1` (Roslyn interno de tModLoader, sin `-eac`):
+   `Compilation finished with 0 errors and 260 warnings` (ninguna advertencia nueva de los
+   archivos añadidos).
+
+### Nota de diseño honesta
+
+El texto de `MedirLaBarraDeSietePestanas` en `AutopruebaGuia.cs` decía "7" a mano en el log; se
+cambió a contar de verdad (`total`) en vez de tocar el número la próxima vez que crezca la barra -
+ya pasó una vez (6→7 con la Guía) y ha vuelto a pasar ahora (7→8 con el Álbum).

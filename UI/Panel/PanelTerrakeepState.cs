@@ -11,6 +11,7 @@ using TerrakeepMod.UI.Ajustes;
 using TerrakeepMod.UI.Builds;
 using TerrakeepMod.UI.Exploracion;
 using TerrakeepMod.UI.Guia;
+using TerrakeepMod.UI.Hitos;
 using TerrakeepMod.UI.Investigacion;
 using TerrakeepMod.UI.Libreria;
 using TerrakeepMod.UI.Personaje;
@@ -144,6 +145,7 @@ namespace TerrakeepMod.UI.Panel
 		public ContenidoExploracion Exploracion => _contenidoActual as ContenidoExploracion;
 		public ContenidoAjustes Ajustes => _contenidoActual as ContenidoAjustes;
 		public ContenidoGuia Guia => _contenidoActual as ContenidoGuia;
+		public ContenidoAlbum Album => _contenidoActual as ContenidoAlbum;
 
 		public override void OnInitialize()
 		{
@@ -239,7 +241,7 @@ namespace TerrakeepMod.UI.Panel
 		/// localizacion, no un texto que se enseñe: <c>Panel.Area.&lt;clave&gt;</c> y
 		/// <c>Panel.Ayuda.&lt;clave&gt;</c>.</summary>
 		public static readonly string[] ClavesDeArea = {
-			"Personaje", "Libreria", "Builds", "Investigacion", "Exploracion", "Ajustes", "Guia"
+			"Personaje", "Libreria", "Builds", "Investigacion", "Exploracion", "Ajustes", "Guia", "Album"
 		};
 
 		/// <summary>
@@ -432,6 +434,8 @@ namespace TerrakeepMod.UI.Panel
 					return new ContenidoAjustes();
 				case AreaTerrakeep.Guia:
 					return new ContenidoGuia();
+				case AreaTerrakeep.Album:
+					return new ContenidoAlbum();
 				default:
 					return null;
 			}

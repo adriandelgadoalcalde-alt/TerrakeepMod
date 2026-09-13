@@ -20,7 +20,8 @@ namespace TerrakeepMod.Common.Panel
 	/// <remarks>
 	/// <b>Los valores no se reordenan nunca</b>: son el indice con el que se guarda la ultima
 	/// pestaña abierta y el que usan las autopruebas. <see cref="Guia"/> entra la ULTIMA por eso,
-	/// aunque conceptualmente sea lo primero que mira alguien que no sabe que hacer.
+	/// aunque conceptualmente sea lo primero que mira alguien que no sabe que hacer. <see cref="Album"/>
+	/// entra DESPUES de esa, por el mismo motivo: es la octava area, no la que mas se usa a diario.
 	/// </remarks>
 	public enum AreaTerrakeep
 	{
@@ -30,7 +31,8 @@ namespace TerrakeepMod.Common.Panel
 		Investigacion = 3,
 		Exploracion = 4,
 		Ajustes = 5,
-		Guia = 6
+		Guia = 6,
+		Album = 7
 	}
 
 	/// <summary>
@@ -157,6 +159,7 @@ namespace TerrakeepMod.Common.Panel
 				case AreaTerrakeep.Exploracion: return PanelExploracionSystem.Atajo;
 				case AreaTerrakeep.Ajustes: return AjustesSystem.AbrirAjustesKeybind;
 				case AreaTerrakeep.Guia: return GuiaSystem.Atajo;
+				case AreaTerrakeep.Album: return Hitos.HitosSystem.Atajo;
 				default: return null;
 			}
 		}
@@ -177,6 +180,7 @@ namespace TerrakeepMod.Common.Panel
 				case AreaTerrakeep.Exploracion: return "AbrirExploracion";
 				case AreaTerrakeep.Ajustes: return "AbrirAjustes";
 				case AreaTerrakeep.Guia: return "AbrirGuia";
+				case AreaTerrakeep.Album: return "AbrirAlbum";
 				default: return null;
 			}
 		}
@@ -390,6 +394,9 @@ namespace TerrakeepMod.Common.Panel
 					break;
 				case AreaTerrakeep.Guia:
 					RegistroGuia.Linea(mensaje);
+					break;
+				case AreaTerrakeep.Album:
+					Hitos.RegistroHitos.Linea(mensaje);
 					break;
 				default:
 					// Personaje y Ajustes no tienen archivo propio: su evidencia es el client.log.

@@ -11,6 +11,7 @@ Panel: {
 		Exploracion: Exploración
 		Ajustes: Ajustes
 		Guia: Guía
+		Album: Álbum
 	}
 
 	Ayuda: {
@@ -21,6 +22,7 @@ Panel: {
 		Exploracion: Arrastra el mini-mapa para moverte y usa la rueda para acercar.
 		Ajustes: El idioma cambia en vivo. Ctrl+Z deshace cualquier acción de Terrakeep.
 		Guia: Te dice qué hacer ahora y por qué, leyendo tu personaje real. Dirección, nunca coordenadas.
+		Album: Captura sola cada vez que cierras un tramo de la Guía. No hace falta acordarse de pulsar nada.
 	}
 }
 
@@ -771,6 +773,23 @@ Historial: {
 
 Prefijos.MejorPrefijo: Mejor prefijo posible: {0}
 
+Hitos: {
+	Actualizar: Actualizar
+	ActualizarAyuda: Vuelve a leer el álbum del disco (por si acabas de cerrar un tramo con el panel ya abierto aquí).
+	AbrirCarpeta: Abrir carpeta
+	AbrirCarpetaAyuda: Abre en el explorador de Windows la carpeta donde se guardan tus capturas de hito.
+	Vacio: Todavía no hay ninguna captura. Se guarda una sola, sin que tengas que pulsar nada, la primera vez que cierres un tramo de la Guía.
+	ResumenVacio: Tu álbum de progreso está vacío por ahora.
+	Resumen: "{0} capturas en tu álbum de progreso."
+	Fila: "{0}  ·  {1}"
+	FilaAyuda:
+		'''
+		Personaje: {0}
+		Mundo: {1}
+		Clic para abrir la imagen completa con el visor de tu sistema.
+		'''
+}
+
 Guia: {
 	ObjetivoActual: Tu objetivo ahora mismo
 	SinObjetivo: No queda nada pendiente en el tramo que la guía sabe medir todavía. Sigue el mapa de la derecha: el juego continúa.
@@ -1330,6 +1349,7 @@ Keybinds: {
 	AbrirGuia.DisplayName: Abrir la Guía de Terrakeep
 	Deshacer.DisplayName: Deshacer (con Ctrl)
 	Rehacer.DisplayName: Rehacer (con Ctrl)
+	// AbrirAlbum.DisplayName: Abrir Album
 }
 
 Configs: {

@@ -93,6 +93,19 @@ namespace TerrakeepMod.Common.Guia
 		}
 
 		/// <summary>
+		/// true si el tramo esta CERRADO del todo: implementado, con pasos, y el ultimo de ellos ya
+		/// completado. Es la misma formula que ya usaba <see cref="TramosPorDelante"/> solo para los
+		/// opcionales, sacada aqui para que <c>HitosSystem</c> (capturas automaticas de hito) la
+		/// reutilice tal cual en vez de duplicarla: un tramo obligatorio y uno opcional se dan por
+		/// "cerrado" exactamente igual, solo cambia si bloquean o no el objetivo de ahora mismo.
+		/// </summary>
+		public static bool TramoSuperado(TramoGuia t)
+		{
+			return t != null && t.Implementado && t.Pasos.Count > 0 &&
+				EvaluadorGuia.PasoCompletado(t.Pasos[t.Pasos.Count - 1]);
+		}
+
+		/// <summary>
 		/// El primer paso PENDIENTE de un tramo, o null si ya esta superado del todo. Comun a
 		/// <see cref="PasoActual"/> y <see cref="PasoOpcionalActual"/>.
 		/// </summary>
@@ -209,8 +222,7 @@ namespace TerrakeepMod.Common.Guia
 					// cualquier otro tramo - y deja de aparecer en cuanto el jugador lo cierra,
 					// pase lo que pase con su Orden. Uno SIN IMPLEMENTAR (todavia mapa puro) no
 					// tiene datos con los que decidirlo, asi que se enseña siempre.
-					bool superado = t.Implementado && t.Pasos.Count > 0 &&
-						EvaluadorGuia.PasoCompletado(t.Pasos[t.Pasos.Count - 1]);
+					bool superado = TramoSuperado(t);
 					if (!superado) {
 						salida.Add(t);
 					}

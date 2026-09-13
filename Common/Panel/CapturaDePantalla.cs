@@ -90,7 +90,12 @@ namespace TerrakeepMod.Common.Panel
 					// Completitud (vista de que falta para el 100%): misma necesidad real que
 					// Conjuntos - comprobar visualmente las cuatro barras/listas de resumen.
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
-						Completitud.CompletitudSystem.VariableAutoprueba));
+						Completitud.CompletitudSystem.VariableAutoprueba))
+					// Álbum de hitos: verifica el PANEL en sí (que abre por clic real y que el
+					// encabezado y la lista no se solapan). La captura automática de cada hito real
+					// no pasa por aquí ni por esta lista - ver CapturaDePantalla.GuardarHito.
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
+						Hitos.AutopruebaHitos.Variable));
 			}
 		}
 
@@ -102,6 +107,56 @@ namespace TerrakeepMod.Common.Panel
 				return "captura no pedida (sin variable de autoprueba)";
 			}
 
+			string ruta = Path.Combine(Main.SavePath, Carpeta, nombre + ".png");
+			string resultado = GuardarEnArchivo(ruta);
+			return resultado ?? ("captura real del back buffer guardada en \"" + ruta + "\"");
+		}
+
+		/// <summary>
+		/// Captura del hito real: MISMA tecnica que <see cref="Guardar"/> (back buffer del propio
+		/// motor grafico, nunca el escritorio), pero <b>sin pasar por <see cref="Permitida"/></b>.
+		/// </summary>
+		/// <remarks>
+		/// <para>
+		/// <see cref="Guardar"/> es, a proposito, SOLO ARNES DE PRUEBAS: jugando normal no debe
+		/// escribir nada, y esa garantia (documentada arriba, y que reutiliza
+		/// <c>SincronizacionSystem</c> para no ensuciar el <c>settings.json</c> real durante una
+		/// autoprueba) no se toca aqui.
+		/// </para>
+		/// <para>
+		/// Las capturas de hito son la excepcion real y deliberada: cuando <c>HitosSystem</c> detecta
+		/// que un tramo de la Guia se ha cerrado DE VERDAD, jugando normal, tiene que quedar una
+		/// imagen aunque no haya ninguna autoprueba en marcha - ese es el objetivo entero de la
+		/// funcion. Por eso esto es un metodo aparte y no un cambio en <see cref="Permitida"/>: la
+		/// propia autoprueba de la Guia (<c>TERRAKEEP_AUTOTEST_GUIA</c>) fuerza banderas de jefe
+		/// reales una a una, asi que sirve tambien para demostrar que esto dispara solo, sin tocar
+		/// nada del arnes existente.
+		/// </para>
+		/// </remarks>
+		/// <returns>La ruta completa del .png si salio bien, o null si fallo (con el detalle ya en
+		/// el valor de <paramref name="detalle"/>).</returns>
+		public static string GuardarHito(string carpetaAbsoluta, string nombreArchivo, out string detalle)
+		{
+			string ruta = Path.Combine(carpetaAbsoluta, nombreArchivo + ".png");
+			string error = GuardarEnArchivo(ruta);
+			if (error != null) {
+				detalle = error;
+				return null;
+			}
+			detalle = "captura real del back buffer guardada en \"" + ruta + "\"";
+			return ruta;
+		}
+
+		/// <summary>
+		/// El nucleo real, comun a <see cref="Guardar"/> (arnes de pruebas) y
+		/// <see cref="GuardarHito"/> (hitos reales de partida): pide el fotograma YA PRESENTADO al
+		/// propio <c>GraphicsDevice</c> (<c>GetBackBufferData</c>) y lo vuelca a PNG
+		/// (<c>Texture2D.SaveAsPng</c>) - ver la cabecera de esta clase para el porque de esta via y
+		/// no <c>CopyFromScreen</c>/<c>PrintWindow</c>, que no sirven en un juego acelerado por GPU.
+		/// </summary>
+		/// <returns>null si salio bien, o una linea describiendo el fallo.</returns>
+		private static string GuardarEnArchivo(string ruta)
+		{
 			try {
 				GraphicsDevice dispositivo = Main.instance.GraphicsDevice;
 				PresentationParameters parametros = dispositivo.PresentationParameters;
@@ -114,9 +169,7 @@ namespace TerrakeepMod.Common.Panel
 				Color[] pixeles = new Color[ancho * alto];
 				dispositivo.GetBackBufferData(pixeles);
 
-				string carpeta = Path.Combine(Main.SavePath, Carpeta);
-				Directory.CreateDirectory(carpeta);
-				string ruta = Path.Combine(carpeta, nombre + ".png");
+				Directory.CreateDirectory(Path.GetDirectoryName(ruta));
 
 				using (Texture2D textura = new Texture2D(dispositivo, ancho, alto)) {
 					textura.SetData(pixeles);
@@ -125,7 +178,7 @@ namespace TerrakeepMod.Common.Panel
 					}
 				}
 
-				return "captura real del back buffer guardada en \"" + ruta + "\" (" + ancho + "x" + alto + ")";
+				return null;
 			}
 			catch (Exception e) {
 				return "captura fallida: " + e.GetType().Name + ": " + e.Message;

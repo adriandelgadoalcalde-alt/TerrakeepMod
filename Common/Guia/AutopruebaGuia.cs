@@ -776,18 +776,23 @@ namespace TerrakeepMod.Common.Guia
 			float escala = panel.EscalaDeLasPestanas;
 			System.Text.StringBuilder texto = new System.Text.StringBuilder();
 			bool todoCabe = true;
+			int total = 0;
 
 			foreach (System.Collections.Generic.KeyValuePair<string, float> par in AnchosDePestana(panel, escala)) {
+				total++;
 				texto.Append('"').Append(par.Key).Append("\"=").Append(par.Value.ToString("0.0")).Append("px ");
 				if (par.Value < 0f) {
 					todoCabe = false;
 				}
 			}
 
-			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA/2 - barra de 7 pestañas: escala de " +
-				"texto comun " + escala.ToString("0.000") + " (la de reposo son 0,800). Holgura de cada " +
-				"rotulo dentro de su boton: " + texto + " " +
-				(todoCabe ? "-> OK: los siete caben enteros." : "-> HAY TEXTO QUE NO CABE."));
+			// El numero de pestañas se lee de PanelTerrakeepState.NombresDeArea (via AnchosDePestana),
+			// nunca escrito a mano aqui: la barra crecio de 6 a 7 con la Guia y de 7 a 8 con el Album,
+			// y este log tiene que seguir siendo cierto sin que nadie se acuerde de tocarlo otra vez.
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA/2 - barra de " + total + " pestañas: " +
+				"escala de texto comun " + escala.ToString("0.000") + " (la de reposo son 0,800). Holgura " +
+				"de cada rotulo dentro de su boton: " + texto + " " +
+				(todoCabe ? "-> OK: las " + total + " caben enteras." : "-> HAY TEXTO QUE NO CABE."));
 		}
 
 		/// <summary>Holgura en pixeles de cada rotulo dentro de su boton, medida con la fuente real.</summary>
