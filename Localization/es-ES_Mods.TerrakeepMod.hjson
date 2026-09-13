@@ -784,6 +784,7 @@ Guia: {
 		Defensa: Defensa: {0} de {1}
 		NpcsPueblo: Vecinos en el pueblo: {0} de {1}
 		Npc: Que viva contigo: {0}
+		NpcActivo: Activo en el mundo ahora mismo: {0}
 		Objeto: Llevar encima: {0}
 		ObjetoVarios: "{0}: llevas {1} de {2}"
 		ObjetoCualquiera: Cualquiera de estos ({0}): llevas {1} de {2}
@@ -820,6 +821,7 @@ Guia: {
 		downedChristmasSantank: Derrotar a Santa-NK1
 		downedChristmasIceQueen: Derrotar a la Reina de Hielo
 		downedDD2EventAnyDifficulty: Superar el Antiguo Ejército D2 (cualquier dificultad)
+		downedMartians: Superar la Locura Marciana
 	}
 
 	Zona: {
@@ -902,6 +904,11 @@ Guia: {
 		TemploYGolem: {
 			Nombre: El Templo y el Golem
 			Resumen: Golem, 15000 de vida y 26 de defensa, dentro del Templo de la Selva.
+		}
+
+		LocuraMarciana: {
+			Nombre: La Locura Marciana (opcional)
+			Resumen: Otra invasión por oleadas, sin objeto de invocación: la dispara sola una Sonda Marciana al detectarte, ya en Modo Difícil y con el Golem derrotado.
 		}
 
 		LunaDeCalabazas: {
@@ -1102,6 +1109,18 @@ Guia: {
 			Titulo: Derrotarlo
 			Porque: NPC.downedGolemBoss es la bandera real de este cierre: sube un escalón más el equipo de todos los vecinos del pueblo (NPC.cs, BuffTownNPC: +15% de daño y +8 de defensa a los NPC del pueblo, el mismo salto que dan Plantera, la Emperatriz de la Luz o el Cultista) y dejas el Templo despejado justo antes de plantearte los últimos opcionales y, después, al propio Cultista Lunático junto a la Mazmorra.
 			Como: Pelea dentro de la sala del Templo, con espacio para rodear los pilares de piedra: te protegen de sus golpes de área mientras esperas la abertura.
+		}
+
+		PrepararLocuraMarciana: {
+			Titulo: Un arma capaz del enemigo mejor blindado
+			Porque: El Oficial Marciano es el enemigo común más blindado de las cuatro invasiones del árbol: 50 de defensa, 75 de daño y 300 de vida (NPC.cs, type==383) - por delante de los 30 del Capitán Pirata, los 26 de Mister Estocada y los 8 del Guerrero Goblin. Con la fórmula de siempre, 60 de daño deja golpes útiles.
+			Como: A diferencia del Ejército Goblin, la Legión de Escarcha o los Piratas, esta invasión no tiene objeto de invocación: una Sonda Marciana aparece sola, por probabilidad, en Modo Difícil y con el Golem ya derrotado, lejos del punto de aparición del mundo. En cuanto te detecta y logra huir sin que la mates, arranca la invasión ella sola - matarla antes de que escape no la dispara.
+		}
+
+		VencerALaLocuraMarciana: {
+			Titulo: Derrotarla (opcional)
+			Porque: NPC.downedMartians no abre ningún camino obligatorio: es un extra opcional, igual que el Ejército Goblin, la Legión de Escarcha y los Piratas. Se enciende con el mismo mecanismo que las otras tres invasiones (Main.UpdateInvasion_Inner, al llegar la cuenta de enemigos a cero), no al matar un único jefe: el propio platillo (Núcleo, Torreta y Cañón, NPCID 395/393/394) es la pieza más dura, pero es una invasión con muchos enemigos, no una pelea contra uno solo.
+			Como: Igual que las otras tres invasiones: un cuello de botella cerca de tu base rinde mejor que pelear a campo abierto. El platillo no es un solo enemigo: son seis NPC luchando juntos (NPC.cs, type==395 al aparecer crea también 393/394/392), un Núcleo de 10000 de vida escoltado por dos Torretas de 5000 y dos Cañones de 3500 cada uno - repartir el daño entre ellos es más seguro que ignorarlos para ir directo al Núcleo.
 		}
 
 		ArmaParaMourningWood: {

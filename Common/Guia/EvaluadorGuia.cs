@@ -58,6 +58,10 @@ namespace TerrakeepMod.Common.Guia
 					EvaluarNpc(r, requisito);
 					break;
 
+				case TipoRequisito.NpcActivo:
+					EvaluarNpcActivo(r, requisito);
+					break;
+
 				case TipoRequisito.Objeto:
 					EvaluarObjeto(r, requisito);
 					break;
@@ -194,6 +198,17 @@ namespace TerrakeepMod.Common.Guia
 			r.Pedido = 1;
 			r.Cumplido = hay;
 			r.Linea = Idiomas.Texto("Guia.Req.Npc", NombreDeNpc(requisito.Id));
+		}
+
+		/// <summary>Igual que <see cref="EvaluarNpc"/> pero con el texto honesto para un enemigo
+		/// hostil (nunca del pueblo): dice si esta activo en el mundo, no si "vive contigo".</summary>
+		private static void EvaluarNpcActivo(ResultadoRequisito r, RequisitoGuia requisito)
+		{
+			bool hay = EstadoJugadorGuia.HayNpc(requisito.Id);
+			r.Actual = hay ? 1 : 0;
+			r.Pedido = 1;
+			r.Cumplido = hay;
+			r.Linea = Idiomas.Texto("Guia.Req.NpcActivo", NombreDeNpc(requisito.Id));
 		}
 
 		private static void EvaluarObjeto(ResultadoRequisito r, RequisitoGuia requisito)

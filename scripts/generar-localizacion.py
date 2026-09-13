@@ -833,6 +833,7 @@ T += [
     ("Guia.Req.Defensa", "Defensa: {0} de {1}", "Defense: {0} of {1}"),
     ("Guia.Req.NpcsPueblo", "Vecinos en el pueblo: {0} de {1}", "Villagers in town: {0} of {1}"),
     ("Guia.Req.Npc", "Que viva contigo: {0}", "Living with you: {0}"),
+    ("Guia.Req.NpcActivo", "Activo en el mundo ahora mismo: {0}", "Active in the world right now: {0}"),
     ("Guia.Req.Objeto", "Llevar encima: {0}", "Carrying: {0}"),
     ("Guia.Req.ObjetoVarios", "{0}: llevas {1} de {2}", "{0}: you carry {1} of {2}"),
     ("Guia.Req.ObjetoCualquiera", "Cualquiera de estos ({0}): llevas {1} de {2}",
@@ -885,6 +886,7 @@ T += [
     ("Guia.Bandera.downedChristmasIceQueen", "Derrotar a la Reina de Hielo", "Defeat the Ice Queen"),
     ("Guia.Bandera.downedDD2EventAnyDifficulty", "Superar el Antiguo Ejército D2 (cualquier dificultad)",
      "Beat the Old One's Army (any difficulty)"),
+    ("Guia.Bandera.downedMartians", "Superar la Locura Marciana", "Beat the Martian Madness"),
 
     # --- zonas -------------------------------------------------------------------------------
     ("Guia.Zona.Superficie", "la superficie", "the surface"),
@@ -967,6 +969,12 @@ T += [
     ("Guia.Tramo.TemploYGolem.Resumen",
      "Golem, 15000 de vida y 26 de defensa, dentro del Templo de la Selva.",
      "Golem, 15000 health and 26 defense, inside the Jungle Temple."),
+
+    ("Guia.Tramo.LocuraMarciana.Nombre", "La Locura Marciana (opcional)",
+     "The Martian Madness (optional)"),
+    ("Guia.Tramo.LocuraMarciana.Resumen",
+     "Otra invasión por oleadas, sin objeto de invocación: la dispara sola una Sonda Marciana al detectarte, ya en Modo Difícil y con el Golem derrotado.",
+     "Another wave invasion, with no summoning item: a Martian Probe triggers it on its own once it spots you, already in Hardmode with Golem defeated."),
 
     ("Guia.Tramo.LunaDeCalabazas.Nombre", "La Luna de Calabazas (opcional)",
      "The Pumpkin Moon (optional)"),
@@ -1252,6 +1260,24 @@ T += [
     ("Guia.Paso.VencerAlGolem.Como",
      "Pelea dentro de la sala del Templo, con espacio para rodear los pilares de piedra: te protegen de sus golpes de área mientras esperas la abertura.",
      "Fight inside the Temple room, with room to circle the stone pillars: they shield you from its area attacks while you wait for an opening."),
+
+    # --- paso opcional: la Locura Marciana (sin objeto de invocacion) -------------------------
+    ("Guia.Paso.PrepararLocuraMarciana.Titulo", "Un arma capaz del enemigo mejor blindado",
+     "A weapon fit for the best-armoured enemy"),
+    ("Guia.Paso.PrepararLocuraMarciana.Porque",
+     "El Oficial Marciano es el enemigo común más blindado de las cuatro invasiones del árbol: 50 de defensa, 75 de daño y 300 de vida (NPC.cs, type==383) - por delante de los 30 del Capitán Pirata, los 26 de Mister Estocada y los 8 del Guerrero Goblin. Con la fórmula de siempre, 60 de daño deja golpes útiles.",
+     "The Martian Officer is the toughest common enemy of the tree's four invasions: 50 defense, 75 damage and 300 health (NPC.cs, type==383) - ahead of the Pirate Captain's 30, Mister Stabby's 26 and the Goblin Warrior's 8. With the usual formula, 60 damage lands useful hits."),
+    ("Guia.Paso.PrepararLocuraMarciana.Como",
+     "A diferencia del Ejército Goblin, la Legión de Escarcha o los Piratas, esta invasión no tiene objeto de invocación: una Sonda Marciana aparece sola, por probabilidad, en Modo Difícil y con el Golem ya derrotado, lejos del punto de aparición del mundo. En cuanto te detecta y logra huir sin que la mates, arranca la invasión ella sola - matarla antes de que escape no la dispara.",
+     "Unlike the Goblin Army, the Frost Legion or the Pirates, this invasion has no summoning item: a Martian Probe shows up on its own, by chance, once you are in Hardmode with Golem already defeated, far from the world's spawn point. As soon as it spots you and manages to flee without being killed, it starts the invasion by itself - killing it before it escapes does not trigger it."),
+
+    ("Guia.Paso.VencerALaLocuraMarciana.Titulo", "Derrotarla (opcional)", "Defeat it (optional)"),
+    ("Guia.Paso.VencerALaLocuraMarciana.Porque",
+     "NPC.downedMartians no abre ningún camino obligatorio: es un extra opcional, igual que el Ejército Goblin, la Legión de Escarcha y los Piratas. Se enciende con el mismo mecanismo que las otras tres invasiones (Main.UpdateInvasion_Inner, al llegar la cuenta de enemigos a cero), no al matar un único jefe: el propio platillo (Núcleo, Torreta y Cañón, NPCID 395/393/394) es la pieza más dura, pero es una invasión con muchos enemigos, no una pelea contra uno solo.",
+     "NPC.downedMartians does not unlock anything mandatory: it is an optional extra, just like the Goblin Army, the Frost Legion and the Pirates. It turns on through the same mechanism as the other three invasions (Main.UpdateInvasion_Inner, once the enemy count reaches zero), not by killing a single boss: the saucer itself (Core, Turret and Cannon, NPCID 395/393/394) is the toughest piece, but this is an invasion with many enemies, not a fight against just one."),
+    ("Guia.Paso.VencerALaLocuraMarciana.Como",
+     "Igual que las otras tres invasiones: un cuello de botella cerca de tu base rinde mejor que pelear a campo abierto. El platillo no es un solo enemigo: son seis NPC luchando juntos (NPC.cs, type==395 al aparecer crea también 393/394/392), un Núcleo de 10000 de vida escoltado por dos Torretas de 5000 y dos Cañones de 3500 cada uno - repartir el daño entre ellos es más seguro que ignorarlos para ir directo al Núcleo.",
+     "Same as the other three invasions: a chokepoint near your base works better than fighting in the open. The saucer is not a single enemy: it is six NPCs fighting together (NPC.cs, type==395 spawns 393/394/392 alongside itself when it appears), a 10000-health Core escorted by two 5000-health Turrets and two 3500-health Cannons - spreading damage across all of them is safer than ignoring them to rush the Core."),
 
     # --- pasos del undecimo tramo: el Cultista Lunatico y las cuatro torres -------------------
     ("Guia.Paso.ArmaParaMourningWood.Titulo", "Un arma para el primero de los dos jefes del evento",

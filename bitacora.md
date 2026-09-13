@@ -6202,4 +6202,132 @@ contenido opcional pedido salvo Locura Marciana (investigación pendiente, jefe 
 objeto de invocación directo, sin tocar esta sesión a propósito - no estaba en el encargo). Si se
 pide en el futuro: el jefe es `NPCID.MartianSaucer=392` con partes `393`/`394`/`395`, y hace falta
 investigar primero el NPC/bandera real de la Sonda Marciana (Martian Probe) que dispara el evento,
+
+## 13-sep-2026 (continuación 3) — Locura Marciana: la última pieza, y cierre de la lista completa
+## de contenido opcional
+
+Encargo de esta sesión: investigar a fondo la Locura Marciana contra el código real decompilado
+(cómo se activa de verdad, qué banderas de finalización existen, si tiene sentido modelarla como
+evento de invasión igual que Goblin/Escarcha/Piratas), implementarla con el mismo patrón exacto
+que el resto del árbol, y después repasar la lista completa de contenido opcional pedida en
+sesiones anteriores para confirmar con números reales si la Guía está genuinamente al 100%.
+
+### Investigación real del mecanismo (NPC.cs/WorldGen.cs/Main.cs decompilados, no de memoria)
+
+- **La Sonda Marciana es `NPCID.MartianProbe=399`** (no `392`, que es el casco del platillo -
+  `NPC.cs`, tabla de nombres ~línea 11325), `aiStyle==80`. Su IA completa está en el bloque
+  `else if (aiStyle == 80)` de `NPC.cs` (~línea 38857-38942): vuela patrullando, y en cuanto
+  detecta a un jugador a menos de 352px estando el jugador por debajo de ella
+  (`distanceToPlayer < 352f && Main.player[num1375].Center.Y > base.Center.Y`), entra en un
+  estado de "alerta" de 60 fotogramas y después uno de "huida" de hasta 180 fotogramas (vuela
+  hacia arriba acelerando, `noTileCollide=true`). Si sobrevive esos ~3 segundos (o sale por
+  arriba del mundo) sin que la maten, **llama `Main.StartInvasion(4)` y se autodestruye**
+  (`NPC.cs` línea ~38938). Si la matas antes, no pasa nada: no hay invasión.
+- **No hay objeto de invocación real** - confirmado buscando en todo `NPC.cs`/`Player.cs`
+  cualquier `ItemCheck` o `SummonItemCheck` que llame a `StartInvasion(4)`: no existe ninguno. El
+  único disparador real es la sonda huyendo con éxito.
+- **Condición de aparición de la sonda** (`NPC.cs`, función gigante de spawn natural, ~líneas
+  87447-87472 y 89636-89664, dos ramas distintas del mismo bucle): `Main.hardMode &&
+  NPC.downedGolemBoss`, estar a más de un tercio de la anchura del mundo del centro
+  (`Math.Abs(x - maxTilesX/2) / (maxTilesX/2) > 0.33f`), que no haya ya otro peligro activo
+  (`!AnyDanger()`) y que no exista ya otra sonda (`!AnyNPCs(399)`). Probabilidad baja por
+  intento de spawn (1/8 y 1/30 en una rama, 1/100 y 1/400 en la otra, más alta con Vela de
+  Agua/`ZoneWaterCandle` - confirmado en el propio código, más antes de `downedMartians` que
+  después, así que el evento puede repetirse).
+- **Hallazgo real no obvio, verificado leyendo `Main.StartInvasion` completo (`Main.cs`
+  ~línea 82210)**: aunque no hay objeto que lo compruebe antes, `StartInvasion(4)` en sí mismo
+  exige **lo mismo que las otras tres invasiones** - al menos un jugador con
+  `ConsumedLifeCrystals>=5`, si no la función no hace nada (`invasionType` se queda a 0) aunque
+  la sonda ya haya escapado. Por eso el primer paso del tramo sí lleva `cristales_vida` como
+  requisito recomendado, con la fuente citada tal cual.
+- **La bandera de cierre es exactamente el mismo mecanismo que Goblin/Escarcha/Piratas**:
+  `Main.UpdateInvasion_Inner` (`Main.cs` ~línea 82123) pone `NPC.downedMartians` a `true` vía
+  `NPC.SetEventFlagCleared` cuando `invasionSize` llega a 0 - no al matar un único jefe. Mismo
+  criterio ya usado con los otros tres: `jefeFinal=0`, sin inventar un análogo falso.
+- **El "platillo" SÍ es un enemigo real y coordinado, aunque no sea "el jefe" que cierra el
+  evento**: `NPCID.MartianSaucer=392` (casco, `dontTakeDamage=true`, decorativo - igual que el
+  "Flying Dutchman" de Piratas) no es el combatiente real. Al aparecer, el Núcleo
+  (`MartianSaucerCore=395`, 10000 de vida, 0 de defensa, 80 de daño, `NPC.cs` ~línea 37003) crea
+  él mismo dos Torretas (`MartianSaucerTurret=393`, 5000 de vida cada una) y dos Cañones
+  (`MartianSaucerCannon=394`, 3500 de vida cada uno) - seis NPC en total luchando juntos, el
+  enemigo más peligroso de la invasión. `NPCID.Sets.BelongsToInvasionMartianMadness` confirma
+  que el Núcleo (395) sí cuenta para el progreso de la invasión, el casco/Torretas/Cañones no
+  directamente por sí solos.
+- **El Oficial Marciano (`type==383`) es el enemigo común más blindado de las cuatro
+  invasiones**: 50 de defensa, 75 de daño, 300 de vida - por delante de los 30 del Capitán
+  Pirata, los 26 de Mister Estocada y los 8 del Guerrero Goblin. Es la referencia real usada
+  para el `dano_arma` del primer paso (60).
+
+### Implementación (mismo patrón exacto que Goblin/Escarcha/Piratas)
+
+- `Assets/guia_progresion.json`: tramo nuevo `LocuraMarciana`, Orden 71 (justo después de
+  `TemploYGolem=70`, antes de `LunaDeCalabazas=72` - el único de los cinco que de verdad exige
+  `downedGolemBoss`), `opcional=true`, `jefeFinal=0`. Dos pasos: `PrepararLocuraMarciana`
+  (`dano_arma=60` obligatorio, `cristales_vida=5` recomendado, y un aviso nuevo de "Sonda
+  Marciana activa en el mundo ahora mismo") y `VencerALaLocuraMarciana` (`bandera:
+  downedMartians`).
+- **Pieza nueva de diseño, no solo datos**: el aviso de "Sonda Marciana activa" no podía
+  reutilizar el tipo `npc` ya existente (el que usa Esqueletron para el Anciano) porque su
+  plantilla de texto es `"Que viva contigo: {0}"` - mentira para un enemigo hostil que nunca
+  "vive contigo". Se añadió un tipo nuevo, honesto y de responsabilidad única:
+  `TipoRequisito.NpcActivo` (`ModeloGuia.cs`), mapeado desde `"npc_activo"` en
+  `CatalogoGuia.Tipo`, evaluado en `EvaluadorGuia.EvaluarNpcActivo` (mismo dato real que `HayNpc`,
+  texto distinto: `"Activo en el mundo ahora mismo: {0}"`, clave `Guia.Req.NpcActivo`). El tipo
+  `npc` original no se tocó: sigue sirviendo bien para el Anciano y cualquier vecino futuro.
+- `scripts/generar-localizacion.py`: `Guia.Bandera.downedMartians` (no tenía clave - a
+  diferencia de la sesión anterior, esta vez se añadió desde el principio, no como fallo
+  encontrado después), `Guia.Tramo.LocuraMarciana.*`, `Guia.Paso.PrepararLocuraMarciana.*`,
+  `Guia.Paso.VencerALaLocuraMarciana.*`, `Guia.Req.NpcActivo`.
+- `Common/Guia/AutopruebaGuia.cs`: bloque nuevo de 8 `case` (mismo patrón que Piratas: preparar,
+  capturar, poner arma, volcar estado, comprobar "vencer", capturar, marcar derrotada de mentira,
+  quitar arma) insertado entre el bloque de Piratas y el de Luna de Calabazas, con la
+  renumeración mecánica de TODOS los `case` posteriores (192→200 en adelante, +8) y de las
+  capturas (`guia-42` en adelante, +2) para mantener la secuencia sin huecos - comprobado con un
+  script que verificó los 251 `case` (0 a 250) sin huecos ni duplicados antes de compilar.
+  `ComprobarLosOchoOpcionalesNuevosDesaparecen` pasó a llamarse
+  `ComprobarLosNueveOpcionalesNuevosDesaparecen` (ahora comprueba los nueve, no ocho).
+
+### Verificación real (`scripts/verificar-guia.ps1`, cliente gráfico real, sin saltarse nada)
+
+Primera pasada (antes de la pieza `NpcActivo`): vanilla en verde, `21 tramos, 56 pasos, 109
+requisitos, 0 avisos`, "Ninguna comprobación en rojo", pero con un fallo de PULIDO real que el
+propio log dejó a la vista sin que ninguna comprobación lo marcara en rojo (0 avisos, 0 "NO
+CUADRA" - el dato era correcto, solo la frase mentía): `requisito opcional 3/3: [FALTA] Que viva
+contigo: Sonda marciana`. Se corrigió con el tipo `NpcActivo` de arriba (no era aceptable
+enseñárselo así al jugador: una Sonda Marciana no "vive contigo"). Segunda pasada en vanilla:
+mismo resultado en verde, y la línea ahora dice `Activo en el mundo ahora mismo: Sonda marciana`
+(confirmado línea a línea en el log, no solo "compiló"). Pasada con `-Calamity`: igual en verde,
+mismo catálogo `21 tramos, 56 pasos, 109 requisitos, 0 avisos`, sin ninguna comprobación en rojo.
+Las tres pasadas dejaron capturas reales del back buffer (`guia-42-marciana-preparativos.png`,
+`guia-43-marciana-vencer.png` por pasada).
+
+### La Guía de Terraria está genuinamente al 100% - repaso final con números reales
+
+Con Locura Marciana cerrada, se repasó la lista completa de contenido opcional pedida en las
+últimas sesiones contra lo que hay hoy en `Assets/guia_progresion.json` y en las decisiones ya
+documentadas de la entrada anterior:
+
+- **Camino obligatorio completo**: Refugio → Ojo de Cthulhu → Maldad del Mundo → Esqueletron →
+  Muro de Carne → tres Mecánicos → Plantera → Templo/Golem → Cultista/Torres → Moon Lord. Once
+  tramos, `implementado=true` en todos, `opcional=false`.
+- **Jefes opcionales**: Rey Slime, Reina Abeja, Deerclops, Reina Slime, Duque Pezhongo,
+  Emperatriz de la Luz - los seis con tramo propio.
+- **Eventos por invasión/oleadas**: Ejército Goblin, Legión de Escarcha, Piratas, Luna de
+  Calabazas, Luna Helada, Antiguo Ejército D2 y **ahora Locura Marciana** - los siete con tramo
+  propio, cada uno con la bandera real citada contra el motor.
+- **Eclipse Solar y Luna de Sangre**: decisión ya tomada y sin cambios - no son tramos porque no
+  existe una bandera de "completado" real (eventos por tiempo/probabilidad, no algo que se
+  derrote una vez). No es un hueco, es un límite real del motor ya documentado.
+- **Exploración/biomas, pesca, mascotas/monturas, Pilones, semillas secretas, Mercader
+  Ambulante**: cada uno con su decisión ya tomada y documentada en la entrada anterior (cubierto
+  por otra pestaña del mod, sin bandera de cierre real, o infraestructura continua) - ninguno
+  forzado a un tramo falso solo por completar la lista.
+
+**Catálogo final: 21 tramos (21 con requisitos evaluables), 56 pasos, 109 requisitos, 0 avisos**,
+verificado en vanilla y con Calamity cargado, con el cliente gráfico real, sin ninguna
+comprobación en rojo. No queda ningún punto pendiente de investigar ni de construir de la lista
+de contenido opcional pedida en ninguna sesión anterior: la Guía cubre el camino obligatorio
+entero más todo el contenido opcional que tiene un hito real y medible, y documenta con claridad
+- sin fingir - los pocos casos donde ese hito no existe de verdad en el motor. Esta es la última
+pieza de este encargo.
 antes de escribir el paso "arma y prepárate".

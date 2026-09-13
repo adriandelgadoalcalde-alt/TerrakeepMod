@@ -643,6 +643,48 @@
       ]
     },
     {
+      "clave": "LocuraMarciana",
+      "orden": 71,
+      "ambito": "vanilla",
+      "opcional": true,
+      "jefeFinal": 0,
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "PrepararLocuraMarciana",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==383 (Martian Officer): el enemigo comun mas blindado de las cuatro invasiones del arbol, 50 de defensa, 75 de daño, 300 de vida - por delante de los 30 del Capitan Pirata, los 26 de Mister Estocada y los 8 del Guerrero Goblin. Con daño-defensa*0.5 (minimo 1), 60 de daño deja golpes utiles.",
+              "tipo": "dano_arma",
+              "valor": 60
+            },
+            {
+              "_fuente": "Main.StartInvasion(int tipo=1) (NPC.cs, linea ~38938, llamada con tipo=4 en cuanto la Sonda Marciana huye con exito): exige lo MISMO que las otras tres invasiones aunque no haya objeto que lo compruebe antes - al menos un jugador con ConsumedLifeCrystals>=5, o la funcion no hace nada (invasionType se queda a 0) aunque la sonda ya haya escapado.",
+              "tipo": "cristales_vida",
+              "valor": 5,
+              "recomendado": true
+            },
+            {
+              "_fuente": "NPCID.MartianProbe=399 (NPC.cs, aiStyle==80). A diferencia de las otras tres invasiones, esta NO tiene objeto de invocacion: la dispara sola una Sonda Marciana que aparece por probabilidad (modo dificil, Golem ya derrotado, lejos del punto de aparicion del mundo) en cuanto te detecta a menos de 352px estando tu por debajo de ella y consigue huir sin que la mates. Este aviso solo dice si hay una sonda activa en el mundo AHORA MISMO - tipo \"npc_activo\", no \"npc\": la Sonda es un enemigo hostil, nunca un vecino que se muda, y el texto generico de \"npc\" (\"Que viva contigo\") mentiria aqui.",
+              "tipo": "npc_activo",
+              "id": 399,
+              "recomendado": true
+            }
+          ]
+        },
+        {
+          "clave": "VencerALaLocuraMarciana",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedMartians" }
+          ]
+        }
+      ]
+    },
+    {
       "clave": "LunaDeCalabazas",
       "orden": 72,
       "ambito": "vanilla",

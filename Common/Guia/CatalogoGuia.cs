@@ -294,6 +294,7 @@ namespace TerrakeepMod.Common.Guia
 				case "defensa": return TipoRequisito.Defensa;
 				case "npcs_pueblo": return TipoRequisito.NpcsPueblo;
 				case "npc": return TipoRequisito.Npc;
+				case "npc_activo": return TipoRequisito.NpcActivo;
 				case "objeto": return TipoRequisito.Objeto;
 				case "objeto_cualquiera": return TipoRequisito.ObjetoCualquiera;
 				case "dano_arma": return TipoRequisito.DanoArma;

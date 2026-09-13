@@ -63,6 +63,14 @@ namespace TerrakeepMod.Common.Guia
 		/// <summary>Un NPC del pueblo concreto, por su id.</summary>
 		Npc,
 
+		/// <summary>
+		/// Un NPC cualquiera (nunca del pueblo) activo en el mundo ahora mismo, por su id. Distinto
+		/// de <see cref="Npc"/> a proposito: aquel usa el texto "Que viva contigo" (un vecino que se
+		/// muda), que mentiria para un enemigo hostil como la Sonda Marciana. Este solo dice si esta
+		/// activo en el mundo - nunca cerca, nunca a salvo.
+		/// </summary>
+		NpcActivo,
+
 		/// <summary>Un objeto concreto en el inventario, por id y cantidad.</summary>
 		Objeto,
 

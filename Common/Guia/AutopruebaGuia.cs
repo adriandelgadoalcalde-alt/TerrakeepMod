@@ -74,9 +74,11 @@ namespace TerrakeepMod.Common.Guia
 		private static bool _downedGoblinsOriginal;
 		private static bool _downedFrostOriginal;
 
-		// --- los cuatro tramos opcionales nuevos de ESTA sesion: Piratas, Luna de Calabazas (dos
-		// banderas), Luna Helada (tres banderas) y Antiguo Ejercito D2 (bandera de Player, no de NPC) --
+		// --- los cinco tramos opcionales nuevos de ESTA sesion (y la anterior): Piratas, Locura
+		// Marciana (sin objeto de invocacion), Luna de Calabazas (dos banderas), Luna Helada (tres
+		// banderas) y Antiguo Ejercito D2 (bandera de Player, no de NPC) --------------------------
 		private static bool _downedPiratasOriginal;
+		private static bool _downedMartiansOriginal;
 		private static bool _downedHalloweenTreeOriginal;
 		private static bool _downedHalloweenKingOriginal;
 		private static bool _downedChristmasTreeOriginal;
@@ -84,9 +86,10 @@ namespace TerrakeepMod.Common.Guia
 		private static bool _downedChristmasIceQueenOriginal;
 		private static bool _downedDD2Original;
 
-		// ReinaAbeja (Orden 25) e InicioModoDificil (Orden 45) caen ENTRE Piratas (19) y LunaDeCalabazas
-		// (72): el bloque de mas abajo tiene que remarcarlas superadas tambien, o "siguiente opcional
-		// pendiente" las elegiria a ellas en vez de a los tramos nuevos de Orden mas alto.
+		// ReinaAbeja (Orden 25) e InicioModoDificil (Orden 45) caen ENTRE Piratas (19) y LocuraMarciana
+		// (71)/LunaDeCalabazas (72): el bloque de mas abajo tiene que remarcarlas superadas tambien, o
+		// "siguiente opcional pendiente" las elegiria a ellas en vez de a los tramos nuevos de Orden
+		// mas alto.
 		private static bool _downedQueenSlimeOriginal;
 		private static int _dungeonXOriginal;
 		private static Vector2 _posicionOriginal;
@@ -535,13 +538,14 @@ namespace TerrakeepMod.Common.Guia
 				case 181: ComprobarLosCuatroOpcionalesTempranosDesaparecen(); break;
 				case 182: RestaurarEventosDeInvasionTempranos(); break;
 
-				// --- los cuatro tramos opcionales nuevos de ESTA sesion: Piratas (Orden 19, un solo
-				// paso de "vencer" como Goblin/Escarcha), Luna de Calabazas (72, dos jefes de oleada
-				// propios), Luna Helada (73, tres) y Antiguo Ejercito D2 (74, la primera bandera de
-				// Player). Los cuatro se dejaron marcados "superados" desde Arrancar() para no
-				// interferir con nada de lo anterior (ver el comentario de alli). Aqui se ponen en
-				// false uno a uno, en el mismo orden que su Orden real, y se devuelven a su valor
-				// ORIGINAL al final.
+				// --- los cinco tramos opcionales nuevos de ESTA sesion y la anterior: Piratas
+				// (Orden 19, un solo paso de "vencer" como Goblin/Escarcha), Locura Marciana (71,
+				// tambien un solo paso de "vencer" pero SIN objeto de invocacion que probar), Luna
+				// de Calabazas (72, dos jefes de oleada propios), Luna Helada (73, tres) y Antiguo
+				// Ejercito D2 (74, la primera bandera de Player). Los cinco se dejaron marcados
+				// "superados" desde Arrancar() para no interferir con nada de lo anterior (ver el
+				// comentario de alli). Aqui se ponen en false uno a uno, en el mismo orden que su
+				// Orden real, y se devuelven a su valor ORIGINAL al final.
 				case 183: PrepararOpcionalesRestantes(); break;
 				case 184: ComprobarPasoOpcional("Piratas", "ArmaParaLosPiratas",
 					"los ocho opcionales anteriores (ReySlime/Deerclops/EjercitoGoblin/" +
@@ -557,84 +561,100 @@ namespace TerrakeepMod.Common.Guia
 				case 190: MarcarPiratasDerrotadoDeMentira(); break;
 				case 191: QuitarArmaDeLaMochila(); break;
 
-				case 192: ComprobarPasoOpcional("LunaDeCalabazas", "ArmaParaMourningWood",
+				// --- Locura Marciana (Orden 71): a diferencia de las otras cuatro, no hay ningun
+				// objeto que probar en la mochila antes del paso "vencer" - el primer paso solo
+				// pide el arma. Mismo patron de 8 cases que Piratas.
+				case 192: ComprobarPasoOpcional("LocuraMarciana", "PrepararLocuraMarciana",
 					"Piratas ya superado (downedPirates=true a mano): el siguiente opcional por Orden " +
-					"es LunaDeCalabazas (72)"); break;
-				case 193: Capturar("guia-42-calabazas-mourningwood-preparativos"); break;
-				case 194: PonerArmaConDano(58); break;
-				case 195: VolcarEstadoDelJugador("con arma contra Mourning Wood"); break;
-				case 196: ComprobarPasoOpcional("LunaDeCalabazas", "VencerAMourningWood",
+					"es LocuraMarciana (71), sin objeto de invocacion que probar"); break;
+				case 193: Capturar("guia-42-marciana-preparativos"); break;
+				case 194: PonerArmaConDano(60); break;
+				case 195: VolcarEstadoDelJugador("con arma contra la Locura Marciana"); break;
+				case 196: ComprobarPasoOpcional("LocuraMarciana", "VencerALaLocuraMarciana",
+					"arma de 60+ de daño puesta: el unico requisito obligatorio del primer paso ya " +
+					"esta cumplido, asi que el paso siguiente pasa a ser el objetivo opcional"); break;
+				case 197: Capturar("guia-43-marciana-vencer"); break;
+				case 198: MarcarLocuraMarcianaDerrotadaDeMentira(); break;
+				case 199: QuitarArmaDeLaMochila(); break;
+
+				case 200: ComprobarPasoOpcional("LunaDeCalabazas", "ArmaParaMourningWood",
+					"LocuraMarciana ya superada (downedMartians=true a mano): el siguiente opcional " +
+					"por Orden es LunaDeCalabazas (72)"); break;
+				case 201: Capturar("guia-44-calabazas-mourningwood-preparativos"); break;
+				case 202: PonerArmaConDano(58); break;
+				case 203: VolcarEstadoDelJugador("con arma contra Mourning Wood"); break;
+				case 204: ComprobarPasoOpcional("LunaDeCalabazas", "VencerAMourningWood",
 					"arma de 58+ de daño puesta: el unico requisito obligatorio del primer paso ya " +
 					"esta cumplido"); break;
-				case 197: Capturar("guia-43-calabazas-mourningwood-vencer"); break;
-				case 198: MarcarMourningWoodDerrotadoDeMentira(); break;
-				case 199: QuitarArmaDeLaMochila(); break;
-				case 200: ComprobarPasoOpcional("LunaDeCalabazas", "ArmaParaPumpking",
+				case 205: Capturar("guia-45-calabazas-mourningwood-vencer"); break;
+				case 206: MarcarMourningWoodDerrotadoDeMentira(); break;
+				case 207: QuitarArmaDeLaMochila(); break;
+				case 208: ComprobarPasoOpcional("LunaDeCalabazas", "ArmaParaPumpking",
 					"Mourning Wood ya superado (downedHalloweenTree=true a mano): tercer paso del " +
 					"mismo tramo, sin arma todavia en la mochila"); break;
-				case 201: Capturar("guia-44-calabazas-pumpking-preparativos"); break;
-				case 202: PonerArmaConDano(63); break;
-				case 203: VolcarEstadoDelJugador("con arma contra Pumpking"); break;
-				case 204: ComprobarPasoOpcional("LunaDeCalabazas", "VencerAPumpking",
+				case 209: Capturar("guia-46-calabazas-pumpking-preparativos"); break;
+				case 210: PonerArmaConDano(63); break;
+				case 211: VolcarEstadoDelJugador("con arma contra Pumpking"); break;
+				case 212: ComprobarPasoOpcional("LunaDeCalabazas", "VencerAPumpking",
 					"arma de 63+ de daño puesta: el unico requisito obligatorio del tercer paso ya " +
 					"esta cumplido"); break;
-				case 205: Capturar("guia-45-calabazas-pumpking-vencer"); break;
-				case 206: MarcarPumpkingDerrotadoDeMentira(); break;
-				case 207: QuitarArmaDeLaMochila(); break;
+				case 213: Capturar("guia-47-calabazas-pumpking-vencer"); break;
+				case 214: MarcarPumpkingDerrotadoDeMentira(); break;
+				case 215: QuitarArmaDeLaMochila(); break;
 
-				case 208: ComprobarPasoOpcional("LunaHelada", "ArmaParaEverscream",
+				case 216: ComprobarPasoOpcional("LunaHelada", "ArmaParaEverscream",
 					"LunaDeCalabazas ya superada del todo (downedHalloweenTree y downedHalloweenKing " +
 					"ambos a true a mano): el siguiente opcional por Orden es LunaHelada (73)"); break;
-				case 209: Capturar("guia-46-helada-everscream-preparativos"); break;
-				case 210: PonerArmaConDano(58); break;
-				case 211: VolcarEstadoDelJugador("con arma contra Everscream"); break;
-				case 212: ComprobarPasoOpcional("LunaHelada", "VencerAEverscream",
+				case 217: Capturar("guia-48-helada-everscream-preparativos"); break;
+				case 218: PonerArmaConDano(58); break;
+				case 219: VolcarEstadoDelJugador("con arma contra Everscream"); break;
+				case 220: ComprobarPasoOpcional("LunaHelada", "VencerAEverscream",
 					"arma de 58+ de daño puesta: el unico requisito obligatorio del primer paso ya " +
 					"esta cumplido"); break;
-				case 213: Capturar("guia-47-helada-everscream-vencer"); break;
-				case 214: MarcarEverscreamDerrotadoDeMentira(); break;
-				case 215: QuitarArmaDeLaMochila(); break;
-				case 216: ComprobarPasoOpcional("LunaHelada", "ArmaParaSantaNK1",
+				case 221: Capturar("guia-49-helada-everscream-vencer"); break;
+				case 222: MarcarEverscreamDerrotadoDeMentira(); break;
+				case 223: QuitarArmaDeLaMochila(); break;
+				case 224: ComprobarPasoOpcional("LunaHelada", "ArmaParaSantaNK1",
 					"Everscream ya superado (downedChristmasTree=true a mano): tercer paso del mismo " +
 					"tramo, sin arma todavia en la mochila"); break;
-				case 217: Capturar("guia-48-helada-santank-preparativos"); break;
-				case 218: PonerArmaConDano(66); break;
-				case 219: VolcarEstadoDelJugador("con arma contra Santa-NK1"); break;
-				case 220: ComprobarPasoOpcional("LunaHelada", "VencerASantaNK1",
+				case 225: Capturar("guia-50-helada-santank-preparativos"); break;
+				case 226: PonerArmaConDano(66); break;
+				case 227: VolcarEstadoDelJugador("con arma contra Santa-NK1"); break;
+				case 228: ComprobarPasoOpcional("LunaHelada", "VencerASantaNK1",
 					"arma de 66+ de daño puesta: el unico requisito obligatorio del tercer paso ya " +
 					"esta cumplido"); break;
-				case 221: Capturar("guia-49-helada-santank-vencer"); break;
-				case 222: MarcarSantaNK1DerrotadoDeMentira(); break;
-				case 223: QuitarArmaDeLaMochila(); break;
-				case 224: ComprobarPasoOpcional("LunaHelada", "ArmaParaIceQueen",
+				case 229: Capturar("guia-51-helada-santank-vencer"); break;
+				case 230: MarcarSantaNK1DerrotadoDeMentira(); break;
+				case 231: QuitarArmaDeLaMochila(); break;
+				case 232: ComprobarPasoOpcional("LunaHelada", "ArmaParaIceQueen",
 					"Santa-NK1 ya superado (downedChristmasSantank=true a mano): quinto paso del " +
 					"mismo tramo, sin arma todavia en la mochila"); break;
-				case 225: Capturar("guia-50-helada-icequeen-preparativos"); break;
-				case 226: PonerArmaConDano(62); break;
-				case 227: VolcarEstadoDelJugador("con arma contra la Reina de Hielo"); break;
-				case 228: ComprobarPasoOpcional("LunaHelada", "VencerAIceQueen",
+				case 233: Capturar("guia-52-helada-icequeen-preparativos"); break;
+				case 234: PonerArmaConDano(62); break;
+				case 235: VolcarEstadoDelJugador("con arma contra la Reina de Hielo"); break;
+				case 236: ComprobarPasoOpcional("LunaHelada", "VencerAIceQueen",
 					"arma de 62+ de daño puesta: el unico requisito obligatorio del quinto paso ya " +
 					"esta cumplido"); break;
-				case 229: Capturar("guia-51-helada-icequeen-vencer"); break;
-				case 230: MarcarIceQueenDerrotadaDeMentira(); break;
-				case 231: QuitarArmaDeLaMochila(); break;
-
-				case 232: ComprobarPasoOpcional("EjercitoD2", "ArmaParaElEjercitoD2",
-					"LunaHelada ya superada del todo (las tres banderas a true a mano): el siguiente " +
-					"opcional por Orden es EjercitoD2 (74)"); break;
-				case 233: Capturar("guia-52-d2-preparativos"); break;
-				case 234: PonerArmaConDano(65); break;
-				case 235: VolcarEstadoDelJugador("con arma contra Betsy"); break;
-				case 236: ComprobarPasoOpcional("EjercitoD2", "VencerAlEjercitoD2",
-					"arma de 65+ de daño puesta: el unico requisito obligatorio del primer paso ya " +
-					"esta cumplido"); break;
-				case 237: Capturar("guia-53-d2-vencer"); break;
-				case 238: MarcarD2DerrotadoDeMentira(); break;
+				case 237: Capturar("guia-53-helada-icequeen-vencer"); break;
+				case 238: MarcarIceQueenDerrotadaDeMentira(); break;
 				case 239: QuitarArmaDeLaMochila(); break;
 
-				case 240: ComprobarLosOchoOpcionalesNuevosDesaparecen(); break;
-				case 241: Capturar("guia-54-todos-los-opcionales-superados"); break;
-				case 242: RestaurarTodosLosOpcionalesRestantes(); break;
+				case 240: ComprobarPasoOpcional("EjercitoD2", "ArmaParaElEjercitoD2",
+					"LunaHelada ya superada del todo (las tres banderas a true a mano): el siguiente " +
+					"opcional por Orden es EjercitoD2 (74)"); break;
+				case 241: Capturar("guia-54-d2-preparativos"); break;
+				case 242: PonerArmaConDano(65); break;
+				case 243: VolcarEstadoDelJugador("con arma contra Betsy"); break;
+				case 244: ComprobarPasoOpcional("EjercitoD2", "VencerAlEjercitoD2",
+					"arma de 65+ de daño puesta: el unico requisito obligatorio del primer paso ya " +
+					"esta cumplido"); break;
+				case 245: Capturar("guia-55-d2-vencer"); break;
+				case 246: MarcarD2DerrotadoDeMentira(); break;
+				case 247: QuitarArmaDeLaMochila(); break;
+
+				case 248: ComprobarLosNueveOpcionalesNuevosDesaparecen(); break;
+				case 249: Capturar("guia-56-todos-los-opcionales-superados"); break;
+				case 250: RestaurarTodosLosOpcionalesRestantes(); break;
 				default: Terminar(); break;
 			}
 		}
@@ -696,14 +716,16 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedGoblins = true;
 			NPC.downedFrost = true;
 
-			// Los cuatro tramos opcionales nuevos de ESTA sesion (Piratas Orden 19, Luna de
-			// Calabazas 72, Luna Helada 73, Antiguo Ejercito D2 74) se marcan SUPERADOS desde ya,
-			// por el mismo motivo que los cuatro de arriba: Piratas (19) esta por delante de
-			// ReinaAbeja (25) en el Orden, asi que sin esto interferiria con los pasos 1-182 de
-			// este arnes (case122 y case145 esperan "ReinaAbeja" como siguiente opcional pendiente,
-			// no "Piratas"). Sus propios bloques dedicados, al final de la prueba, las ponen en
-			// false, las comprueban de verdad y las devuelven a su valor ORIGINAL al terminar.
+			// Los cinco tramos opcionales nuevos de ESTA sesion y la anterior (Piratas Orden 19,
+			// Locura Marciana 71, Luna de Calabazas 72, Luna Helada 73, Antiguo Ejercito D2 74) se
+			// marcan SUPERADOS desde ya, por el mismo motivo que los cuatro de arriba: Piratas (19)
+			// esta por delante de ReinaAbeja (25) en el Orden, asi que sin esto interferiria con los
+			// pasos 1-182 de este arnes (case122 y case145 esperan "ReinaAbeja" como siguiente
+			// opcional pendiente, no "Piratas"). Sus propios bloques dedicados, al final de la
+			// prueba, las ponen en false, las comprueban de verdad y las devuelven a su valor
+			// ORIGINAL al terminar.
 			_downedPiratasOriginal = NPC.downedPirates;
+			_downedMartiansOriginal = NPC.downedMartians;
 			_downedHalloweenTreeOriginal = NPC.downedHalloweenTree;
 			_downedHalloweenKingOriginal = NPC.downedHalloweenKing;
 			_downedChristmasTreeOriginal = NPC.downedChristmasTree;
@@ -712,6 +734,7 @@ namespace TerrakeepMod.Common.Guia
 			_downedDD2Original = Main.LocalPlayer.downedDD2EventAnyDifficulty;
 			_downedQueenSlimeOriginal = NPC.downedQueenSlime;
 			NPC.downedPirates = true;
+			NPC.downedMartians = true;
 			NPC.downedHalloweenTree = true;
 			NPC.downedHalloweenKing = true;
 			NPC.downedChristmasTree = true;
@@ -1961,22 +1984,22 @@ namespace TerrakeepMod.Common.Guia
 		}
 
 		// -------------------------------------------------------------------------------------
-		// Los cuatro tramos opcionales nuevos de ESTA sesion: Piratas, Luna de Calabazas,
-		// Luna Helada y Antiguo Ejercito D2
+		// Los cinco tramos opcionales nuevos de ESTA sesion y la anterior: Piratas, Locura
+		// Marciana, Luna de Calabazas, Luna Helada y Antiguo Ejercito D2
 		// -------------------------------------------------------------------------------------
 
-		/// <summary>Pone las siete banderas nuevas de esta sesion en false (estaban en true desde
-		/// <see cref="Arrancar"/> para no interferir con el resto de la prueba) y remarca superados
-		/// otra vez los cuatro opcionales tempranos que <see cref="RestaurarEventosDeInvasionTempranos"/>
-		/// acaba de devolver a su valor real, por el mismo motivo que ya explica
-		/// <see cref="PrepararEventosDeInvasionTempranos"/>.
+		/// <summary>Pone las ocho banderas nuevas de esta sesion y la anterior en false (estaban en
+		/// true desde <see cref="Arrancar"/> para no interferir con el resto de la prueba) y remarca
+		/// superados otra vez los cuatro opcionales tempranos que
+		/// <see cref="RestaurarEventosDeInvasionTempranos"/> acaba de devolver a su valor real, por
+		/// el mismo motivo que ya explica <see cref="PrepararEventosDeInvasionTempranos"/>.
 		/// <para />
 		/// Ademas marca superados temporalmente ReinaAbeja (Orden 25) e InicioModoDificil (Orden 45):
-		/// los dos caen ENTRE Piratas (19) y LunaDeCalabazas (72), y como no los toca ningun otro
-		/// paso de este bloque, "siguiente opcional pendiente" los elegiria a ELLOS en vez de a los
-		/// tramos nuevos en cuanto Piratas quedara superado - se vio de verdad en la primera pasada
-		/// de este mismo bloque (el log marcaba "NO CUADRA": esperado LunaDeCalabazas, real
-		/// ReinaAbeja). Se devuelven a su valor original en
+		/// los dos caen ENTRE Piratas (19) y LocuraMarciana (71)/LunaDeCalabazas (72), y como no los
+		/// toca ningun otro paso de este bloque, "siguiente opcional pendiente" los elegiria a ELLOS
+		/// en vez de a los tramos nuevos en cuanto Piratas quedara superado - se vio de verdad en la
+		/// primera pasada de este mismo bloque (el log marcaba "NO CUADRA": esperado LunaDeCalabazas,
+		/// real ReinaAbeja). Se devuelven a su valor original en
 		/// <see cref="RestaurarTodosLosOpcionalesRestantes"/>.</summary>
 		private static void PrepararOpcionalesRestantes()
 		{
@@ -1988,6 +2011,7 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedQueenSlime = true;
 
 			NPC.downedPirates = false;
+			NPC.downedMartians = false;
 			NPC.downedHalloweenTree = false;
 			NPC.downedHalloweenKing = false;
 			NPC.downedChristmasTree = false;
@@ -1995,12 +2019,13 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedChristmasIceQueen = false;
 			Main.LocalPlayer.downedDD2EventAnyDifficulty = false;
 
-			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - preparados los cuatro tramos " +
-				"opcionales nuevos de esta sesion: downedPirates=false, downedHalloweenTree=false, " +
-				"downedHalloweenKing=false, downedChristmasTree=false, downedChristmasSantank=false, " +
-				"downedChristmasIceQueen=false, downedDD2EventAnyDifficulty=false (a mano). Los cuatro " +
-				"opcionales tempranos (ReySlime/Deerclops/EjercitoGoblin/LegionDeEscarcha) Y ReinaAbeja/" +
-				"InicioModoDificil (Orden 25/45, entre Piratas y LunaDeCalabazas) remarcados superados " +
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - preparados los cinco tramos " +
+				"opcionales nuevos de esta sesion y la anterior: downedPirates=false, " +
+				"downedMartians=false, downedHalloweenTree=false, downedHalloweenKing=false, " +
+				"downedChristmasTree=false, downedChristmasSantank=false, downedChristmasIceQueen=false, " +
+				"downedDD2EventAnyDifficulty=false (a mano). Los cuatro opcionales tempranos " +
+				"(ReySlime/Deerclops/EjercitoGoblin/LegionDeEscarcha) Y ReinaAbeja/InicioModoDificil " +
+				"(Orden 25/45, entre Piratas y LocuraMarciana/LunaDeCalabazas) remarcados superados " +
 				"para no interferir.");
 		}
 
@@ -2008,6 +2033,17 @@ namespace TerrakeepMod.Common.Guia
 		{
 			NPC.downedPirates = true;
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - NPC.downedPirates puesto a " +
+				"true a mano. Se restaura al terminar.");
+		}
+
+		/// <summary>Igual que las otras tres invasiones, se marca a mano con el mismo campo que
+		/// enciende <c>Main.UpdateInvasion_Inner</c> al llegar <c>invasionSize</c> a cero - aqui no
+		/// hay ademas ningun objeto de invocacion que probar, asi que este bloque no toca ningun
+		/// objeto en la mochila del jugador.</summary>
+		private static void MarcarLocuraMarcianaDerrotadaDeMentira()
+		{
+			NPC.downedMartians = true;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - NPC.downedMartians puesto a " +
 				"true a mano. Se restaura al terminar.");
 		}
 
@@ -2062,19 +2098,18 @@ namespace TerrakeepMod.Common.Guia
 				"restaura al terminar.");
 		}
 
-		/// <summary>Comprueba que los OCHO opcionales de esta prueba (los cuatro ya verificados mas
-		/// arriba y los cuatro nuevos de este bloque) desaparecen todos juntos de la hoja de ruta
-		/// una vez superados, y que el objetivo opcional salta hasta JefesOpcionalesTardios (Orden
-		/// 75, el UNICO opcional que sigue de verdad pendiente: ReinaAbeja e InicioModoDificil,
-		/// Orden 25 y 45, se remarcaron superados a proposito en
-		/// <see cref="PrepararOpcionalesRestantes"/> para que no se colaran por delante de los
-		/// tramos nuevos).</summary>
-		private static void ComprobarLosOchoOpcionalesNuevosDesaparecen()
+		/// <summary>Comprueba que los NUEVE opcionales de esta prueba (los cuatro ya verificados mas
+		/// arriba y los cinco de este bloque) desaparecen todos juntos de la hoja de ruta una vez
+		/// superados, y que el objetivo opcional salta hasta JefesOpcionalesTardios (Orden 75, el
+		/// UNICO opcional que sigue de verdad pendiente: ReinaAbeja e InicioModoDificil, Orden 25 y
+		/// 45, se remarcaron superados a proposito en <see cref="PrepararOpcionalesRestantes"/> para
+		/// que no se colaran por delante de los tramos nuevos).</summary>
+		private static void ComprobarLosNueveOpcionalesNuevosDesaparecen()
 		{
 			List<TramoGuia> porDelante = EstadoGuia.TramosPorDelante(null);
 			bool tieneReySlime = false, tieneGoblin = false, tieneDeerclops = false, tieneLegion = false,
-				tienePiratas = false, tieneCalabazas = false, tieneHelada = false, tieneD2 = false,
-				tieneReinaAbeja = false, tieneInicio = false, tieneOpcionalesTardios = false;
+				tienePiratas = false, tieneMarciana = false, tieneCalabazas = false, tieneHelada = false,
+				tieneD2 = false, tieneReinaAbeja = false, tieneInicio = false, tieneOpcionalesTardios = false;
 			for (int i = 0; i < porDelante.Count; i++) {
 				switch (porDelante[i].Clave) {
 					case "ReySlime": tieneReySlime = true; break;
@@ -2082,6 +2117,7 @@ namespace TerrakeepMod.Common.Guia
 					case "Deerclops": tieneDeerclops = true; break;
 					case "LegionDeEscarcha": tieneLegion = true; break;
 					case "Piratas": tienePiratas = true; break;
+					case "LocuraMarciana": tieneMarciana = true; break;
 					case "LunaDeCalabazas": tieneCalabazas = true; break;
 					case "LunaHelada": tieneHelada = true; break;
 					case "EjercitoD2": tieneD2 = true; break;
@@ -2091,36 +2127,36 @@ namespace TerrakeepMod.Common.Guia
 				}
 			}
 			bool ok = !tieneReySlime && !tieneGoblin && !tieneDeerclops && !tieneLegion && !tienePiratas &&
-				!tieneCalabazas && !tieneHelada && !tieneD2 && !tieneReinaAbeja && !tieneInicio &&
-				tieneOpcionalesTardios;
-			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - con los ocho opcionales de esta " +
+				!tieneMarciana && !tieneCalabazas && !tieneHelada && !tieneD2 && !tieneReinaAbeja &&
+				!tieneInicio && tieneOpcionalesTardios;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - con los nueve opcionales de esta " +
 				"prueba superados, hoja de ruta: ReySlime=" + tieneReySlime + ", EjercitoGoblin=" +
 				tieneGoblin + ", Deerclops=" + tieneDeerclops + ", LegionDeEscarcha=" + tieneLegion +
-				", Piratas=" + tienePiratas + ", LunaDeCalabazas=" + tieneCalabazas + ", LunaHelada=" +
-				tieneHelada + ", EjercitoD2=" + tieneD2 + ", ReinaAbeja=" + tieneReinaAbeja +
-				", InicioModoDificil=" + tieneInicio + " (los diez deben ser false: los ocho de esta " +
-				"prueba ya superados de verdad, ReinaAbeja/InicioModoDificil remarcados superados a " +
-				"proposito por PrepararOpcionalesRestantes), JefesOpcionalesTardios=" +
-				tieneOpcionalesTardios + " (debe seguir true: nunca se ha tocado) " +
-				(ok ? "-> OK." : "-> NO CUADRA."));
+				", Piratas=" + tienePiratas + ", LocuraMarciana=" + tieneMarciana + ", LunaDeCalabazas=" +
+				tieneCalabazas + ", LunaHelada=" + tieneHelada + ", EjercitoD2=" + tieneD2 +
+				", ReinaAbeja=" + tieneReinaAbeja + ", InicioModoDificil=" + tieneInicio +
+				" (los once deben ser false: los nueve de esta prueba ya superados de verdad, " +
+				"ReinaAbeja/InicioModoDificil remarcados superados a proposito por " +
+				"PrepararOpcionalesRestantes), JefesOpcionalesTardios=" + tieneOpcionalesTardios +
+				" (debe seguir true: nunca se ha tocado) " + (ok ? "-> OK." : "-> NO CUADRA."));
 
 			TramoGuia tramoOpcional;
 			PasoGuia pasoOpcional = EstadoGuia.PasoOpcionalActual(out tramoOpcional);
 			bool okSiguiente = pasoOpcional != null && tramoOpcional != null &&
 				tramoOpcional.Clave == "JefesOpcionalesTardios" && pasoOpcional.Clave == "ArmaParaFishron";
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - objetivo opcional tras superar " +
-				"los ocho (sin arma en la mochila): \"" +
+				"los nueve (sin arma en la mochila): \"" +
 				(pasoOpcional != null ? tramoOpcional.Clave + "/" + pasoOpcional.Clave : "(ninguno)") +
 				"\", esperado \"JefesOpcionalesTardios/ArmaParaFishron\" (el UNICO opcional que sigue " +
 				"de verdad pendiente de todos los que hay) " + (okSiguiente ? "-> OK." : "-> NO CUADRA."));
 		}
 
-		/// <summary>Devuelve las siete banderas nuevas de esta sesion Y los cuatro opcionales
-		/// tempranos (remarcados superados otra vez por <see cref="PrepararOpcionalesRestantes"/>,
-		/// y nada despues de este bloque vuelve a tocarlos) a su valor ORIGINAL real, capturado en
-		/// <see cref="Arrancar"/>. <see cref="Terminar"/> (el ultimo case de todo el arnes) no
-		/// restaura nada por su cuenta, asi que esto es lo ultimo que deja el mundo de pruebas
-		/// limpio.</summary>
+		/// <summary>Devuelve las ocho banderas nuevas de esta sesion y la anterior Y los cuatro
+		/// opcionales tempranos (remarcados superados otra vez por
+		/// <see cref="PrepararOpcionalesRestantes"/>, y nada despues de este bloque vuelve a
+		/// tocarlos) a su valor ORIGINAL real, capturado en <see cref="Arrancar"/>.
+		/// <see cref="Terminar"/> (el ultimo case de todo el arnes) no restaura nada por su cuenta,
+		/// asi que esto es lo ultimo que deja el mundo de pruebas limpio.</summary>
 		private static void RestaurarTodosLosOpcionalesRestantes()
 		{
 			NPC.downedSlimeKing = _downedSlimeKingOriginal;
@@ -2131,6 +2167,7 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedQueenSlime = _downedQueenSlimeOriginal;
 
 			NPC.downedPirates = _downedPiratasOriginal;
+			NPC.downedMartians = _downedMartiansOriginal;
 			NPC.downedHalloweenTree = _downedHalloweenTreeOriginal;
 			NPC.downedHalloweenKing = _downedHalloweenKingOriginal;
 			NPC.downedChristmasTree = _downedChristmasTreeOriginal;
@@ -2142,11 +2179,12 @@ namespace TerrakeepMod.Common.Guia
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - restaurados los cuatro opcionales " +
 				"tempranos (downedSlimeKing=" + NPC.downedSlimeKing + ", downedDeerclops=" +
 				NPC.downedDeerclops + ", downedGoblins=" + NPC.downedGoblins + ", downedFrost=" +
-				NPC.downedFrost + ") y los cuatro tramos opcionales nuevos de esta sesion a su valor " +
-				"original: downedPirates=" + NPC.downedPirates + ", downedHalloweenTree=" +
-				NPC.downedHalloweenTree + ", downedHalloweenKing=" + NPC.downedHalloweenKing +
-				", downedChristmasTree=" + NPC.downedChristmasTree + ", downedChristmasSantank=" +
-				NPC.downedChristmasSantank + ", downedChristmasIceQueen=" + NPC.downedChristmasIceQueen +
+				NPC.downedFrost + ") y los cinco tramos opcionales nuevos de esta sesion y la anterior " +
+				"a su valor original: downedPirates=" + NPC.downedPirates + ", downedMartians=" +
+				NPC.downedMartians + ", downedHalloweenTree=" + NPC.downedHalloweenTree +
+				", downedHalloweenKing=" + NPC.downedHalloweenKing + ", downedChristmasTree=" +
+				NPC.downedChristmasTree + ", downedChristmasSantank=" + NPC.downedChristmasSantank +
+				", downedChristmasIceQueen=" + NPC.downedChristmasIceQueen +
 				", downedDD2EventAnyDifficulty=" + Main.LocalPlayer.downedDD2EventAnyDifficulty + ".");
 		}
 

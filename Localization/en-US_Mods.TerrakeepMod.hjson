@@ -784,6 +784,7 @@ Guia: {
 		Defensa: Defense: {0} of {1}
 		NpcsPueblo: Villagers in town: {0} of {1}
 		Npc: Living with you: {0}
+		NpcActivo: Active in the world right now: {0}
 		Objeto: Carrying: {0}
 		ObjetoVarios: "{0}: you carry {1} of {2}"
 		ObjetoCualquiera: Any of these ({0}): you carry {1} of {2}
@@ -820,6 +821,7 @@ Guia: {
 		downedChristmasSantank: Defeat Santa-NK1
 		downedChristmasIceQueen: Defeat the Ice Queen
 		downedDD2EventAnyDifficulty: Beat the Old One's Army (any difficulty)
+		downedMartians: Beat the Martian Madness
 	}
 
 	Zona: {
@@ -902,6 +904,11 @@ Guia: {
 		TemploYGolem: {
 			Nombre: The Temple and Golem
 			Resumen: Golem, 15000 health and 26 defense, inside the Jungle Temple.
+		}
+
+		LocuraMarciana: {
+			Nombre: The Martian Madness (optional)
+			Resumen: Another wave invasion, with no summoning item: a Martian Probe triggers it on its own once it spots you, already in Hardmode with Golem defeated.
 		}
 
 		LunaDeCalabazas: {
@@ -1102,6 +1109,18 @@ Guia: {
 			Titulo: Defeat him
 			Porque: NPC.downedGolemBoss is the real flag behind this one: it raises every town NPC's stats one more notch (NPC.cs, BuffTownNPC: +15% damage and +8 defense to town NPCs, the same bump Plantera, the Empress of Light or the Cultist give), and it leaves the Temple clear right before you turn to the last optional fights and, after that, the Lunatic Cultist himself by the Dungeon.
 			Como: Fight inside the Temple room, with room to circle the stone pillars: they shield you from its area attacks while you wait for an opening.
+		}
+
+		PrepararLocuraMarciana: {
+			Titulo: A weapon fit for the best-armoured enemy
+			Porque: The Martian Officer is the toughest common enemy of the tree's four invasions: 50 defense, 75 damage and 300 health (NPC.cs, type==383) - ahead of the Pirate Captain's 30, Mister Stabby's 26 and the Goblin Warrior's 8. With the usual formula, 60 damage lands useful hits.
+			Como: Unlike the Goblin Army, the Frost Legion or the Pirates, this invasion has no summoning item: a Martian Probe shows up on its own, by chance, once you are in Hardmode with Golem already defeated, far from the world's spawn point. As soon as it spots you and manages to flee without being killed, it starts the invasion by itself - killing it before it escapes does not trigger it.
+		}
+
+		VencerALaLocuraMarciana: {
+			Titulo: Defeat it (optional)
+			Porque: NPC.downedMartians does not unlock anything mandatory: it is an optional extra, just like the Goblin Army, the Frost Legion and the Pirates. It turns on through the same mechanism as the other three invasions (Main.UpdateInvasion_Inner, once the enemy count reaches zero), not by killing a single boss: the saucer itself (Core, Turret and Cannon, NPCID 395/393/394) is the toughest piece, but this is an invasion with many enemies, not a fight against just one.
+			Como: Same as the other three invasions: a chokepoint near your base works better than fighting in the open. The saucer is not a single enemy: it is six NPCs fighting together (NPC.cs, type==395 spawns 393/394/392 alongside itself when it appears), a 10000-health Core escorted by two 5000-health Turrets and two 3500-health Cannons - spreading damage across all of them is safer than ignoring them to rush the Core.
 		}
 
 		ArmaParaMourningWood: {
