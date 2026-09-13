@@ -839,6 +839,11 @@ T += [
      "Defeating any of the three mechanical bosses (The Destroyer, The Twins or Skeletron Prime)"),
     ("Guia.Bandera.downedPlantBoss", "Derrotar a Plantera", "Defeat Plantera"),
     ("Guia.Bandera.downedGolemBoss", "Derrotar al Golem", "Defeat Golem"),
+    ("Guia.Bandera.downedAncientCultist", "Derrotar al Cultista Lunático",
+     "Defeat the Lunatic Cultist"),
+    ("Guia.Bandera.downedTowers", "Derrotar a las cuatro torres celestiales",
+     "Defeat all four celestial towers"),
+    ("Guia.Bandera.downedMoonlord", "Derrotar al Señor de la Luna", "Defeat the Moon Lord"),
 
     # --- zonas -------------------------------------------------------------------------------
     ("Guia.Zona.Superficie", "la superficie", "the surface"),
@@ -1074,6 +1079,60 @@ T += [
     ("Guia.Paso.VencerAlGolem.Como",
      "Pelea dentro de la sala del Templo, con espacio para rodear los pilares de piedra: te protegen de sus golpes de área mientras esperas la abertura.",
      "Fight inside the Temple room, with room to circle the stone pillars: they shield you from its area attacks while you wait for an opening."),
+
+    # --- pasos del undecimo tramo: el Cultista Lunatico y las cuatro torres -------------------
+    ("Guia.Paso.ArmaParaElCultista.Titulo", "Un arma capaz del último guardián",
+     "A weapon fit for the last guardian"),
+    ("Guia.Paso.ArmaParaElCultista.Porque",
+     "El Cultista Lunático tiene 50 de daño, 42 de defensa (la más alta de todo el prehardmode y el hardmode hasta ahora) y 32000 de vida (NPC.cs, type==439). Con la fórmula de siempre, 65 de daño deja golpes útiles: por debajo de eso, gran parte de cada golpe se la come su defensa y apenas se nota.",
+     "The Lunatic Cultist has 50 damage, 42 defense (the highest of any boss so far, pre- or post-Hardmode) and 32000 health (NPC.cs, type==439). With the usual formula, 65 damage lands useful hits: below that, most of each hit gets eaten by his defense and barely registers."),
+    ("Guia.Paso.ArmaParaElCultista.Como",
+     "Se le encuentra junto a la entrada de la Mazmorra, rodeado de cuatro seguidores que lo protegen. Mátalos a los cuatro primero: en cuanto caen, el propio Cultista aparece solo.",
+     "He is found by the Dungeon entrance, surrounded by four followers that protect him. Kill all four first: as soon as they fall, the Cultist himself appears on his own."),
+
+    ("Guia.Paso.VencerAlCultista.Titulo", "Derrotarlo", "Defeat him"),
+    ("Guia.Paso.VencerAlCultista.Porque",
+     "Aquí no hay término medio: el mismo código que marca NPC.downedAncientCultist al morir llama en la misma línea a WorldGen.TriggerLunarApocalypse() (NPC.cs, case 439). Derrotarlo ENCIENDE el evento de las cuatro torres en el acto, sin previo aviso ni margen para prepararte después: hazlo con todo ya listo para lo que viene.",
+     "There is no middle ground here: the same code that sets NPC.downedAncientCultist on death calls WorldGen.TriggerLunarApocalypse() on the very same line (NPC.cs, case 439). Beating him TURNS ON the four-tower event immediately, with no warning and no room to prepare afterwards: do this only once you are ready for what follows."),
+    ("Guia.Paso.VencerAlCultista.Como",
+     "Sus hechizos giran a tu alrededor y detonan: muévete en círculos amplios en vez de en línea recta para no quedarte encerrado dentro de uno.",
+     "His spells orbit you and detonate: move in wide circles instead of straight lines so you do not end up boxed in by one."),
+
+    ("Guia.Paso.PrepararLasTorres.Titulo", "Aguantar cuatro asedios seguidos",
+     "Surviving four sieges in a row"),
+    ("Guia.Paso.PrepararLasTorres.Porque",
+     "Las cuatro torres (Solar, Vórtice, Nébula y Polvo Estelar) comparten 20 de defensa y 20000 de vida cada una (NPC.cs) y no atacan por sí mismas: el peligro real son las oleadas de enemigos de su color que invocan sin descanso mientras sigan en pie, algunos con hasta 100 de daño por golpe. No es un jefe, son cuatro asedios seguidos: 75 de daño ya deja golpes útiles contra la torre y contra lo que suelta.",
+     "The four towers (Solar, Vortex, Nebula and Stardust) share 20 defense and 20000 health each (NPC.cs) and do not attack on their own: the real danger is the endless waves of same-colored enemies they summon while still standing, some hitting for up to 100 damage. This is not one boss, it is four sieges back to back: 75 damage already lands useful hits on the tower and on what it throws at you."),
+    ("Guia.Paso.PrepararLasTorres.Como",
+     "El evento empieza solo al matar al Cultista: las cuatro torres aparecen a la vez, una por cada punto cardinal lejos de tu base. Puedes ir de una a otra en el orden que quieras y hasta dejarlo a medias; sus escudos se debilitan matando a los enemigos que invocan.",
+     "The event starts on its own once the Cultist dies: all four towers appear at once, one toward each compass direction away from your base. You can go from one to another in any order, and even leave it half-finished; their shields weaken as you kill the enemies they summon."),
+
+    ("Guia.Paso.VencerALasTorres.Titulo", "Derrotar a las cuatro", "Defeat all four"),
+    ("Guia.Paso.VencerALasTorres.Porque",
+     "NPC.downedTowers no se enciende con una: exige downedTowerSolar Y downedTowerVortex Y downedTowerNebula Y downedTowerStardust juntas (NPC.cs, la propiedad calculada). Las cuatro sueltan fragmentos de su color, y esos fragmentos son lo único que fabrica el Sello Celestial: sin las cuatro no hay forma de invocar al Señor de la Luna.",
+     "NPC.downedTowers does not flip with just one: it requires downedTowerSolar AND downedTowerVortex AND downedTowerNebula AND downedTowerStardust together (NPC.cs, the computed property). All four drop fragments of their color, and those fragments are the only way to craft the Celestial Sigil: without all four there is no way to summon the Moon Lord."),
+    ("Guia.Paso.VencerALasTorres.Como",
+     "No hace falta derrotarlas en la misma sesión: el evento se puede retomar más tarde si toca retirarse. Guarda los fragmentos de cada una hasta tener los cuatro colores para el Sello Celestial.",
+     "You do not need to beat them all in one sitting: the event can be picked back up later if you need to retreat. Save the fragments from each one until you have all four colors for the Celestial Sigil."),
+
+    # --- pasos del duodecimo y ultimo tramo: el Señor de la Luna -------------------------------
+    ("Guia.Paso.ArmaParaMoonLord.Titulo", "El final: un arma para 145000 de vida repartida",
+     "The finale: a weapon for 145000 health spread across three parts"),
+    ("Guia.Paso.ArmaParaMoonLord.Porque",
+     "El Señor de la Luna se pelea en tres piezas con sus propios números (NPC.cs): el núcleo (type==398) tiene 70 de defensa y 50000 de vida PROPIA y no recibe ni un rasguño hasta que caen sus dos manos (type==397, 40 de defensa y 25000 de vida cada una) y la cabeza (type==396, 50 de defensa y 45000 de vida) - más de 145000 de vida en total repartida entre las tres. Con la fórmula de siempre, 90 de daño deja golpes útiles en las tres, y la vida máxima cuenta tanto como el arma: sus rayos y las caídas de meteoro perdonan poco margen de error.",
+     "The Moon Lord fights in three pieces with their own numbers (NPC.cs): the core (type==398) has 70 defense and 50000 health of its OWN and takes no damage at all until both hands (type==397, 40 defense and 25000 health each) and the head (type==396, 50 defense and 45000 health) go down - over 145000 total health split between the three. With the usual formula, 90 damage lands useful hits on all three, and max health matters as much as the weapon: its lasers and meteor strikes leave very little room for error."),
+    ("Guia.Paso.ArmaParaMoonLord.Como",
+     "Fabrica el Sello Celestial con fragmentos de las cuatro torres en un Yunque de Mithril u Orichalco y úsalo para invocarlo. Construye antes una plataforma alta y despejada, lejos de bloques sólidos: sus manos y su cabeza descienden desde el cielo y necesitas sitio para esquivar en las cuatro direcciones.",
+     "Craft the Celestial Sigil with fragments from all four towers at a Mythril or Orichalcum Anvil and use it to summon him. Build a tall, clear platform beforehand, away from solid blocks: his hands and head descend from the sky and you need room to dodge in every direction."),
+
+    ("Guia.Paso.VencerAMoonLord.Titulo", "Derrotarlo: el final de esta guía",
+     "Defeat him: the end of this guide"),
+    ("Guia.Paso.VencerAMoonLord.Porque",
+     "NPC.downedMoonlord es la última bandera de la progresión vanilla: no hay ningún jefe de historia principal después de él. A partir de aquí el juego sigue abierto (Duque Pezhongo, la Emperatriz de la Luz, la pesca y el resto del contenido opcional si te quedó algo suelto), pero la ruta obligatoria que empezó con el Ojo de Cthulhu termina exactamente aquí.",
+     "NPC.downedMoonlord is the last flag in vanilla's main progression: there is no story boss after him. From here the game stays open (Duke Fishron, the Empress of Light, fishing and whatever optional content you left loose), but the mandatory path that started with the Eye of Cthulhu ends right here."),
+    ("Guia.Paso.VencerAMoonLord.Como",
+     "Golpea el núcleo mientras las manos y la cabeza siguen vivas y no le harás nada: destrúyelas primero, empezando por las manos, que son las que te agarran y te acercan a su boca.",
+     "Hit the core while the hands and head are still alive and it does nothing: destroy them first, starting with the hands, since those are what grab you and pull you toward his mouth."),
 ]
 
 KEYBINDS = [

@@ -789,6 +789,9 @@ Guia: {
 		downedMechBossAny: Derrotar a cualquiera de los tres mecánicos (Destructor, Gemelos o Esqueletron Prime)
 		downedPlantBoss: Derrotar a Plantera
 		downedGolemBoss: Derrotar al Golem
+		downedAncientCultist: Derrotar al Cultista Lunático
+		downedTowers: Derrotar a las cuatro torres celestiales
+		downedMoonlord: Derrotar al Señor de la Luna
 	}
 
 	Zona: {
@@ -970,6 +973,42 @@ Guia: {
 			Titulo: Derrotarlo
 			Porque: NPC.downedGolemBoss es la bandera real de este cierre: sube un escalón más el equipo de todos los vecinos del pueblo (NPC.cs, BuffTownNPC: +15% de daño y +8 de defensa a los NPC del pueblo, el mismo salto que dan Plantera, la Emperatriz de la Luz o el Cultista) y dejas el Templo despejado justo antes de plantearte los últimos opcionales y, después, al propio Cultista Lunático junto a la Mazmorra.
 			Como: Pelea dentro de la sala del Templo, con espacio para rodear los pilares de piedra: te protegen de sus golpes de área mientras esperas la abertura.
+		}
+
+		ArmaParaElCultista: {
+			Titulo: Un arma capaz del último guardián
+			Porque: El Cultista Lunático tiene 50 de daño, 42 de defensa (la más alta de todo el prehardmode y el hardmode hasta ahora) y 32000 de vida (NPC.cs, type==439). Con la fórmula de siempre, 65 de daño deja golpes útiles: por debajo de eso, gran parte de cada golpe se la come su defensa y apenas se nota.
+			Como: Se le encuentra junto a la entrada de la Mazmorra, rodeado de cuatro seguidores que lo protegen. Mátalos a los cuatro primero: en cuanto caen, el propio Cultista aparece solo.
+		}
+
+		VencerAlCultista: {
+			Titulo: Derrotarlo
+			Porque: Aquí no hay término medio: el mismo código que marca NPC.downedAncientCultist al morir llama en la misma línea a WorldGen.TriggerLunarApocalypse() (NPC.cs, case 439). Derrotarlo ENCIENDE el evento de las cuatro torres en el acto, sin previo aviso ni margen para prepararte después: hazlo con todo ya listo para lo que viene.
+			Como: Sus hechizos giran a tu alrededor y detonan: muévete en círculos amplios en vez de en línea recta para no quedarte encerrado dentro de uno.
+		}
+
+		PrepararLasTorres: {
+			Titulo: Aguantar cuatro asedios seguidos
+			Porque: Las cuatro torres (Solar, Vórtice, Nébula y Polvo Estelar) comparten 20 de defensa y 20000 de vida cada una (NPC.cs) y no atacan por sí mismas: el peligro real son las oleadas de enemigos de su color que invocan sin descanso mientras sigan en pie, algunos con hasta 100 de daño por golpe. No es un jefe, son cuatro asedios seguidos: 75 de daño ya deja golpes útiles contra la torre y contra lo que suelta.
+			Como: El evento empieza solo al matar al Cultista: las cuatro torres aparecen a la vez, una por cada punto cardinal lejos de tu base. Puedes ir de una a otra en el orden que quieras y hasta dejarlo a medias; sus escudos se debilitan matando a los enemigos que invocan.
+		}
+
+		VencerALasTorres: {
+			Titulo: Derrotar a las cuatro
+			Porque: NPC.downedTowers no se enciende con una: exige downedTowerSolar Y downedTowerVortex Y downedTowerNebula Y downedTowerStardust juntas (NPC.cs, la propiedad calculada). Las cuatro sueltan fragmentos de su color, y esos fragmentos son lo único que fabrica el Sello Celestial: sin las cuatro no hay forma de invocar al Señor de la Luna.
+			Como: No hace falta derrotarlas en la misma sesión: el evento se puede retomar más tarde si toca retirarse. Guarda los fragmentos de cada una hasta tener los cuatro colores para el Sello Celestial.
+		}
+
+		ArmaParaMoonLord: {
+			Titulo: El final: un arma para 145000 de vida repartida
+			Porque: El Señor de la Luna se pelea en tres piezas con sus propios números (NPC.cs): el núcleo (type==398) tiene 70 de defensa y 50000 de vida PROPIA y no recibe ni un rasguño hasta que caen sus dos manos (type==397, 40 de defensa y 25000 de vida cada una) y la cabeza (type==396, 50 de defensa y 45000 de vida) - más de 145000 de vida en total repartida entre las tres. Con la fórmula de siempre, 90 de daño deja golpes útiles en las tres, y la vida máxima cuenta tanto como el arma: sus rayos y las caídas de meteoro perdonan poco margen de error.
+			Como: Fabrica el Sello Celestial con fragmentos de las cuatro torres en un Yunque de Mithril u Orichalco y úsalo para invocarlo. Construye antes una plataforma alta y despejada, lejos de bloques sólidos: sus manos y su cabeza descienden desde el cielo y necesitas sitio para esquivar en las cuatro direcciones.
+		}
+
+		VencerAMoonLord: {
+			Titulo: Derrotarlo: el final de esta guía
+			Porque: NPC.downedMoonlord es la última bandera de la progresión vanilla: no hay ningún jefe de historia principal después de él. A partir de aquí el juego sigue abierto (Duque Pezhongo, la Emperatriz de la Luz, la pesca y el resto del contenido opcional si te quedó algo suelto), pero la ruta obligatoria que empezó con el Ojo de Cthulhu termina exactamente aquí.
+			Como: Golpea el núcleo mientras las manos y la cabeza siguen vivas y no le harás nada: destrúyelas primero, empezando por las manos, que son las que te agarran y te acercan a su boca.
 		}
 	}
 }

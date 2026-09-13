@@ -382,16 +382,108 @@
       "orden": 11,
       "ambito": "vanilla",
       "jefeFinal": 439,
-      "implementado": false,
-      "pasos": []
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "ArmaParaElCultista",
+          "zona": "Mazmorra",
+          "capa": "superficie",
+          "jefe": 439,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==439 (Cultista Lunatico): daño 50, defensa 42, vida 32000. Con daño-defensa*0.5 (minimo 1), 65 de daño deja golpes utiles.",
+              "tipo": "dano_arma",
+              "valor": 65
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerAlCultista",
+          "zona": "Mazmorra",
+          "capa": "superficie",
+          "jefe": 439,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, case 439 (muerte del jefe): SetEventFlagCleared(ref downedAncientCultist,...) y WorldGen.TriggerLunarApocalypse() en la misma linea - matarlo dispara el evento de las cuatro torres directamente, no hace falta nada mas.",
+              "tipo": "bandera",
+              "bandera": "downedAncientCultist"
+            }
+          ]
+        },
+        {
+          "clave": "PrepararLasTorres",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 493,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs: las cuatro torres (Solar=517, Vortex=422, Nebula=507, Stardust=493) comparten defensa 20 y 20000 de vida cada una, y no atacan de forma directa (daño 0): el peligro real son las oleadas de enemigos de su color que invocan sin parar mientras siga en pie, algunos con hasta 100 de daño por golpe. 75 de daño deja golpes utiles contra las torres Y contra sus oleadas.",
+              "tipo": "dano_arma",
+              "valor": 75
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerALasTorres",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 493,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs: la propiedad downedTowers exige downedTowerSolar Y downedTowerVortex Y downedTowerNebula Y downedTowerStardust juntas - las cuatro, no basta con una.",
+              "tipo": "bandera",
+              "bandera": "downedTowers"
+            }
+          ]
+        }
+      ]
     },
     {
       "clave": "MoonLord",
       "orden": 12,
       "ambito": "vanilla",
       "jefeFinal": 398,
-      "implementado": false,
-      "pasos": []
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "ArmaParaMoonLord",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 398,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs: el nucleo (type==398) tiene 70 de defensa y 50000 de vida propia y NO recibe daño hasta que caen las dos manos (type==397, 40 de defensa/25000 de vida cada una) y la cabeza (type==396, 50 de defensa/45000 de vida) - mas de 145000 de vida repartida en total. Con daño-defensa*0.5 (minimo 1), 90 de daño deja golpes utiles en las tres piezas.",
+              "tipo": "dano_arma",
+              "valor": 90
+            },
+            {
+              "_fuente": "Player.statLifeMax2: 500 de vida es el maximo real del juego (10 cristales + 14 frutos de la vida), y es el listón que de verdad hace falta para aguantar sus laser y sus caidas de meteoro sin que un solo error acabe la partida.",
+              "tipo": "vida_maxima",
+              "valor": 500,
+              "recomendado": true
+            },
+            {
+              "_fuente": "ItemID.cs: Sello Celestial=3601. Se fabrica con fragmentos de las cuatro torres en un Yunque de Mithril/Orichalco y lo invoca al usarlo.",
+              "tipo": "objeto",
+              "id": 3601,
+              "cantidad": 1,
+              "recomendado": true
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerAMoonLord",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "jefe": 398,
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedMoonlord" }
+          ]
+        }
+      ]
     }
   ]
 }

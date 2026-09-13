@@ -61,6 +61,12 @@ namespace TerrakeepMod.Common.Guia
 		private static bool _downedMechBossAnyOriginal;
 		private static bool _downedPlantBossOriginal;
 		private static bool _downedGolemBossOriginal;
+		private static bool _downedAncientCultistOriginal;
+		private static bool _downedTowerSolarOriginal;
+		private static bool _downedTowerVortexOriginal;
+		private static bool _downedTowerNebulaOriginal;
+		private static bool _downedTowerStardustOriginal;
+		private static bool _downedMoonlordOriginal;
 		private static readonly List<int> _npcsCreados = new List<int>();
 
 		/// <summary>Tipos de NPC del pueblo que ya vivian en el mundo de prueba y que la prueba
@@ -343,10 +349,53 @@ namespace TerrakeepMod.Common.Guia
 				case 94: Capturar("guia-20-templo-vencer"); break;
 				case 95: MarcarGolemDerrotadoDeMentira(); break;
 
-				case 96: ComprobarSinObjetivo(); break;
-				case 97: Capturar("guia-21-todo-lo-implementado-hecho"); break;
+				// --- noveno tramo implementado: el Cultista Lunatico y las cuatro torres ---------
+				case 96: QuitarArmaDeLaMochila(); break;
+				case 97: ComprobarPaso("ArmaParaElCultista",
+					"downedGolemBoss=true a mano (el siguiente tramo implementado es el Cultista y " +
+					"las torres) y sin arma todavia en la mochila"); break;
+				case 98: Capturar("guia-22-cultista-preparativos"); break;
+				case 99: PonerArmaConDano(65); break;
+				case 100: VolcarEstadoDelJugador("con arma contra el Cultista"); break;
+				case 101: ComprobarPaso("VencerAlCultista",
+					"arma de 65+ de daño puesta: el unico requisito obligatorio del primer paso ya " +
+					"esta cumplido, asi que el paso siguiente pasa a ser el actual"); break;
+				case 102: ComprobarLecturaDeJefeDelTramoActual("Cultista Lunatico"); break;
+				case 103: Capturar("guia-23-cultista-vencer"); break;
+				case 104: MarcarCultistaDerrotadoDeMentira(); break;
 
-				case 98: RestaurarTramosNuevos(); break;
+				case 105: QuitarArmaDeLaMochila(); break;
+				case 106: ComprobarPaso("PrepararLasTorres",
+					"downedAncientCultist=true a mano (tercer paso del mismo tramo: las torres) y " +
+					"sin arma todavia en la mochila"); break;
+				case 107: Capturar("guia-24-torres-preparativos"); break;
+				case 108: PonerArmaConDano(75); break;
+				case 109: VolcarEstadoDelJugador("con arma contra las torres"); break;
+				case 110: ComprobarPaso("VencerALasTorres",
+					"arma de 75+ de daño puesta: el unico requisito obligatorio del tercer paso ya " +
+					"esta cumplido, asi que el cuarto paso pasa a ser el actual"); break;
+				case 111: Capturar("guia-25-torres-vencer"); break;
+				case 112: MarcarTorresDerrotadasDeMentira(); break;
+
+				// --- decimo y ultimo tramo implementado: Moon Lord --------------------------------
+				case 113: QuitarArmaDeLaMochila(); break;
+				case 114: ComprobarPaso("ArmaParaMoonLord",
+					"downedTowers=true a mano (el siguiente tramo implementado es Moon Lord) y sin " +
+					"arma todavia en la mochila"); break;
+				case 115: Capturar("guia-26-moonlord-preparativos"); break;
+				case 116: PonerArmaConDano(90); break;
+				case 117: VolcarEstadoDelJugador("con arma contra Moon Lord"); break;
+				case 118: ComprobarPaso("VencerAMoonLord",
+					"arma de 90+ de daño puesta: el unico requisito obligatorio del primer paso ya " +
+					"esta cumplido, asi que el paso siguiente pasa a ser el actual"); break;
+				case 119: ComprobarLecturaDeJefeDelTramoActual("Moon Lord"); break;
+				case 120: Capturar("guia-27-moonlord-vencer"); break;
+				case 121: MarcarMoonLordDerrotadoDeMentira(); break;
+
+				case 122: ComprobarSinObjetivo(); break;
+				case 123: Capturar("guia-28-todo-lo-implementado-hecho"); break;
+
+				case 124: RestaurarTramosNuevos(); break;
 				default: Terminar(); break;
 			}
 		}
@@ -383,6 +432,12 @@ namespace TerrakeepMod.Common.Guia
 			_downedMechBossAnyOriginal = NPC.downedMechBossAny;
 			_downedPlantBossOriginal = NPC.downedPlantBoss;
 			_downedGolemBossOriginal = NPC.downedGolemBoss;
+			_downedAncientCultistOriginal = NPC.downedAncientCultist;
+			_downedTowerSolarOriginal = NPC.downedTowerSolar;
+			_downedTowerVortexOriginal = NPC.downedTowerVortex;
+			_downedTowerNebulaOriginal = NPC.downedTowerNebula;
+			_downedTowerStardustOriginal = NPC.downedTowerStardust;
+			_downedMoonlordOriginal = NPC.downedMoonlord;
 			NPC.downedBoss1 = false;
 
 			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Personaje, "autoprueba de la Guia");
@@ -608,14 +663,36 @@ namespace TerrakeepMod.Common.Guia
 				if (porDelante[i].Clave == "PreOjo" || porDelante[i].Clave == "MaldadDelMundo" ||
 					porDelante[i].Clave == "Esqueletron" || porDelante[i].Clave == "MuroDeCarne" ||
 					porDelante[i].Clave == "Mecanicos" || porDelante[i].Clave == "Plantera" ||
-					porDelante[i].Clave == "TemploYGolem") {
+					porDelante[i].Clave == "TemploYGolem" || porDelante[i].Clave == "EventosLunares" ||
+					porDelante[i].Clave == "MoonLord") {
 					haySuperado = true;
 				}
 			}
-			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - hoja de ruta con todo cerrado: " +
-				claves + " " + (!haySuperado
-					? "-> OK: ninguno de los siete tramos ya superados vuelve a aparecer."
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - hoja de ruta con todo cerrado (camino " +
+				"obligatorio entero, incluido Moon Lord): " + claves + " " + (!haySuperado
+					? "-> OK: ninguno de los nueve tramos ya superados vuelve a aparecer."
 					: "-> NO CUADRA: hay un tramo ya superado en \"lo que viene despues\"."));
+
+			// Comprueba el arreglo REAL de esta misma sesion (visto primero en una captura, no en
+			// el log: con Moon Lord cerrado la columna derecha se quedaba completamente en blanco,
+			// escondiendo los tres tramos opcionales sin implementar - ReinaAbeja, InicioModoDificil,
+			// JefesOpcionalesTardios - justo el "sentirse perdido en contenido opcional" que no se
+			// puede permitir). Los tres deben seguir en la hoja de ruta AUNQUE su Orden ya haya
+			// quedado atras, porque al no estar implementados no hay bandera real con la que
+			// decidir si estan superados.
+			bool tieneReinaAbeja = false, tieneInicioModoDificil = false, tieneJefesOpcionales = false;
+			for (int i = 0; i < porDelante.Count; i++) {
+				if (porDelante[i].Clave == "ReinaAbeja") tieneReinaAbeja = true;
+				if (porDelante[i].Clave == "InicioModoDificil") tieneInicioModoDificil = true;
+				if (porDelante[i].Clave == "JefesOpcionalesTardios") tieneJefesOpcionales = true;
+			}
+			bool tresPresentes = tieneReinaAbeja && tieneInicioModoDificil && tieneJefesOpcionales;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - los tres tramos opcionales sin " +
+				"implementar (ReinaAbeja=" + tieneReinaAbeja + ", InicioModoDificil=" +
+				tieneInicioModoDificil + ", JefesOpcionalesTardios=" + tieneJefesOpcionales + ") " +
+				(tresPresentes
+					? "-> OK: los tres siguen en la hoja de ruta pese a que su Orden ya quedo atras."
+					: "-> NO CUADRA: falta al menos uno de los tres opcionales en \"lo que viene despues\"."));
 		}
 
 		// -------------------------------------------------------------------------------------
@@ -969,7 +1046,45 @@ namespace TerrakeepMod.Common.Guia
 				"NPC.cs case 245). Se restaura al terminar.");
 		}
 
-		/// <summary>Deshace TODO lo que han tocado los pasos 37-95: las banderas nuevas, el mundo y
+		/// <summary>Marca al Cultista Lunatico como derrotado SIN pelearlo. A proposito NO se llama
+		/// a <c>WorldGen.TriggerLunarApocalypse()</c> (lo que hace el motor real en el mismo caso):
+		/// eso encenderia el evento de verdad sobre el mundo de pruebas. Solo se toca la bandera
+		/// que lee la guia, igual que el resto de los "EnFalso" de este arnes.</summary>
+		private static void MarcarCultistaDerrotadoDeMentira()
+		{
+			NPC.downedAncientCultist = true;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - NPC.downedAncientCultist puesto " +
+				"a true a mano (la bandera real que enciende NPC.SetEventFlagCleared al morir el " +
+				"Cultista, NPC.cs case 439 - la misma linea llama tambien a " +
+				"WorldGen.TriggerLunarApocalypse(), que aqui NO se ejecuta a proposito para no " +
+				"encender el evento de verdad sobre el mundo de pruebas). Se restaura al terminar.");
+		}
+
+		/// <summary>Marca las cuatro torres celestiales como derrotadas SIN pelearlas, para
+		/// comprobar que <c>downedTowers</c> (la propiedad calculada que exige las cuatro juntas)
+		/// cierra el tramo.</summary>
+		private static void MarcarTorresDerrotadasDeMentira()
+		{
+			NPC.downedTowerSolar = true;
+			NPC.downedTowerVortex = true;
+			NPC.downedTowerNebula = true;
+			NPC.downedTowerStardust = true;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - las cuatro downedTower* " +
+				"puestas a true a mano. NPC.downedTowers (la propiedad calculada) ahora: " +
+				NPC.downedTowers + ". Se restaura al terminar.");
+		}
+
+		/// <summary>Marca a Moon Lord como derrotado SIN pelearlo, para comprobar el cierre del
+		/// ultimo tramo del camino obligatorio.</summary>
+		private static void MarcarMoonLordDerrotadoDeMentira()
+		{
+			NPC.downedMoonlord = true;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - NPC.downedMoonlord puesto a " +
+				"true a mano (la bandera real que enciende NPC.SetEventFlagCleared al morir Moon " +
+				"Lord, NPC.cs case 398). Se restaura al terminar.");
+		}
+
+		/// <summary>Deshace TODO lo que han tocado los pasos 37-121: las banderas nuevas, el mundo y
 		/// el inventario, ademas de los NPC creados en este segundo bloque de la prueba.</summary>
 		private static void RestaurarTramosNuevos()
 		{
@@ -982,6 +1097,12 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedMechBossAny = _downedMechBossAnyOriginal;
 			NPC.downedPlantBoss = _downedPlantBossOriginal;
 			NPC.downedGolemBoss = _downedGolemBossOriginal;
+			NPC.downedAncientCultist = _downedAncientCultistOriginal;
+			NPC.downedTowerSolar = _downedTowerSolarOriginal;
+			NPC.downedTowerVortex = _downedTowerVortexOriginal;
+			NPC.downedTowerNebula = _downedTowerNebulaOriginal;
+			NPC.downedTowerStardust = _downedTowerStardustOriginal;
+			NPC.downedMoonlord = _downedMoonlordOriginal;
 
 			Player jugador = Main.LocalPlayer;
 			jugador.inventory[0] = new Item();
@@ -997,13 +1118,14 @@ namespace TerrakeepMod.Common.Guia
 			}
 			_npcsCreados.Clear();
 
-			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - restaurado tras la maldad del " +
-				"mundo, Esqueletron, el Muro de Carne, los mecanicos, Plantera y el Golem: downedBoss1=" +
-				NPC.downedBoss1 + ", downedBoss2=" + NPC.downedBoss2 + ", downedBoss3=" + NPC.downedBoss3 +
-				", shadowOrbSmashed=" + Terraria.WorldGen.shadowOrbSmashed + ", hardMode=" + Main.hardMode +
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - restaurado tras el camino " +
+				"obligatorio entero: downedBoss1=" + NPC.downedBoss1 + ", downedBoss2=" + NPC.downedBoss2 +
+				", downedBoss3=" + NPC.downedBoss3 + ", shadowOrbSmashed=" +
+				Terraria.WorldGen.shadowOrbSmashed + ", hardMode=" + Main.hardMode +
 				", downedMechBoss1=" + NPC.downedMechBoss1 + ", downedMechBossAny=" + NPC.downedMechBossAny +
 				", downedPlantBoss=" + NPC.downedPlantBoss + ", downedGolemBoss=" + NPC.downedGolemBoss +
-				", NPC de prueba retirados=" + quitados + ".");
+				", downedAncientCultist=" + NPC.downedAncientCultist + ", downedTowers=" + NPC.downedTowers +
+				", downedMoonlord=" + NPC.downedMoonlord + ", NPC de prueba retirados=" + quitados + ".");
 		}
 
 		private static void Restaurar()

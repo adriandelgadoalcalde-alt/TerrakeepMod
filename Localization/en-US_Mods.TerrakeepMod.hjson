@@ -789,6 +789,9 @@ Guia: {
 		downedMechBossAny: Defeating any of the three mechanical bosses (The Destroyer, The Twins or Skeletron Prime)
 		downedPlantBoss: Defeat Plantera
 		downedGolemBoss: Defeat Golem
+		downedAncientCultist: Defeat the Lunatic Cultist
+		downedTowers: Defeat all four celestial towers
+		downedMoonlord: Defeat the Moon Lord
 	}
 
 	Zona: {
@@ -970,6 +973,42 @@ Guia: {
 			Titulo: Defeat him
 			Porque: NPC.downedGolemBoss is the real flag behind this one: it raises every town NPC's stats one more notch (NPC.cs, BuffTownNPC: +15% damage and +8 defense to town NPCs, the same bump Plantera, the Empress of Light or the Cultist give), and it leaves the Temple clear right before you turn to the last optional fights and, after that, the Lunatic Cultist himself by the Dungeon.
 			Como: Fight inside the Temple room, with room to circle the stone pillars: they shield you from its area attacks while you wait for an opening.
+		}
+
+		ArmaParaElCultista: {
+			Titulo: A weapon fit for the last guardian
+			Porque: The Lunatic Cultist has 50 damage, 42 defense (the highest of any boss so far, pre- or post-Hardmode) and 32000 health (NPC.cs, type==439). With the usual formula, 65 damage lands useful hits: below that, most of each hit gets eaten by his defense and barely registers.
+			Como: He is found by the Dungeon entrance, surrounded by four followers that protect him. Kill all four first: as soon as they fall, the Cultist himself appears on his own.
+		}
+
+		VencerAlCultista: {
+			Titulo: Defeat him
+			Porque: There is no middle ground here: the same code that sets NPC.downedAncientCultist on death calls WorldGen.TriggerLunarApocalypse() on the very same line (NPC.cs, case 439). Beating him TURNS ON the four-tower event immediately, with no warning and no room to prepare afterwards: do this only once you are ready for what follows.
+			Como: His spells orbit you and detonate: move in wide circles instead of straight lines so you do not end up boxed in by one.
+		}
+
+		PrepararLasTorres: {
+			Titulo: Surviving four sieges in a row
+			Porque: The four towers (Solar, Vortex, Nebula and Stardust) share 20 defense and 20000 health each (NPC.cs) and do not attack on their own: the real danger is the endless waves of same-colored enemies they summon while still standing, some hitting for up to 100 damage. This is not one boss, it is four sieges back to back: 75 damage already lands useful hits on the tower and on what it throws at you.
+			Como: The event starts on its own once the Cultist dies: all four towers appear at once, one toward each compass direction away from your base. You can go from one to another in any order, and even leave it half-finished; their shields weaken as you kill the enemies they summon.
+		}
+
+		VencerALasTorres: {
+			Titulo: Defeat all four
+			Porque: NPC.downedTowers does not flip with just one: it requires downedTowerSolar AND downedTowerVortex AND downedTowerNebula AND downedTowerStardust together (NPC.cs, the computed property). All four drop fragments of their color, and those fragments are the only way to craft the Celestial Sigil: without all four there is no way to summon the Moon Lord.
+			Como: You do not need to beat them all in one sitting: the event can be picked back up later if you need to retreat. Save the fragments from each one until you have all four colors for the Celestial Sigil.
+		}
+
+		ArmaParaMoonLord: {
+			Titulo: The finale: a weapon for 145000 health spread across three parts
+			Porque: The Moon Lord fights in three pieces with their own numbers (NPC.cs): the core (type==398) has 70 defense and 50000 health of its OWN and takes no damage at all until both hands (type==397, 40 defense and 25000 health each) and the head (type==396, 50 defense and 45000 health) go down - over 145000 total health split between the three. With the usual formula, 90 damage lands useful hits on all three, and max health matters as much as the weapon: its lasers and meteor strikes leave very little room for error.
+			Como: Craft the Celestial Sigil with fragments from all four towers at a Mythril or Orichalcum Anvil and use it to summon him. Build a tall, clear platform beforehand, away from solid blocks: his hands and head descend from the sky and you need room to dodge in every direction.
+		}
+
+		VencerAMoonLord: {
+			Titulo: Defeat him: the end of this guide
+			Porque: NPC.downedMoonlord is the last flag in vanilla's main progression: there is no story boss after him. From here the game stays open (Duke Fishron, the Empress of Light, fishing and whatever optional content you left loose), but the mandatory path that started with the Eye of Cthulhu ends right here.
+			Como: Hit the core while the hands and head are still alive and it does nothing: destroy them first, starting with the hands, since those are what grab you and pull you toward his mouth.
 		}
 	}
 }
