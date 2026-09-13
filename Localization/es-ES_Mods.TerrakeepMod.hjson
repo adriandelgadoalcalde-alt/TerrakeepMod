@@ -728,6 +728,16 @@ Historial: {
 	Rehecho: Terrakeep ha rehecho: {0}
 	NadaQueDeshacer: Terrakeep no tiene nada que deshacer.
 	NadaQueRehacer: Terrakeep no tiene nada que rehacer.
+
+	Ranura: {
+		Colocar: Colocar "{0}"
+		Quitar: Quitar "{0}"
+		Cambiar: Cambiar "{0}" por "{1}"
+		Cantidad: Cantidad de "{0}": {1} -> {2}
+		Favorito: Marcar "{0}" como favorito
+		QuitarFavorito: Quitar "{0}" de favoritos
+		Generico: Cambiar "{0}"
+	}
 }
 
 Prefijos.MejorPrefijo: Mejor prefijo posible: {0}

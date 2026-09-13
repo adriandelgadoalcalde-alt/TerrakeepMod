@@ -6331,3 +6331,117 @@ entero más todo el contenido opcional que tiene un hito real y medible, y docum
 - sin fingir - los pocos casos donde ese hito no existe de verdad en el motor. Esta es la última
 pieza de este encargo.
 antes de escribir el paso "arma y prepárate".
+## 13-sep-2026 (continuación 4) — Encargo nuevo del usuario: cuatro piezas grandes (undo general,
+## sincronización con Terrakeep, gestión de loadouts, vista de completitud). Primera: el undo/redo
+## general tenía un agujero real - el arrastre con el ratón nunca pasaba por el historial
+
+Encargo de esta sesión (con libertad de diseño total, "como si fueras un arquitecto de
+software"): cuatro piezas nuevas para el mod en vivo. Antes de construir nada, la instrucción
+pedía verificar de verdad el estado de cada una contra el código real, no suponer que hacía falta
+partir de cero. Empezando por la primera ("undo/redo general: pila de acciones deshacer/rehacer
+real, no solo recargar desde disco"): WS7 (6-sep-2026) ya dejó el historial construido y con UI en
+Ajustes, así que la primera tarea real era auditar la COBERTURA real, no reescribir el sistema.
+
+### El hallazgo: SlotObjetoVanilla nunca pasaba por el historial
+
+UI/SlotObjetoVanilla.cs es la única pieza que dibuja y gestiona TODAS las ranuras reales del mod
+(inventario, equipo, hucha, caja, forja, bóveda, y la propia rejilla de destino de Librería - su
+propio comentario de clase ya lo decía: "es la pieza que WS1 y siguientes van a reutilizar tal
+cual para todos los slots"). Su DrawSelf llamaba a ItemSlot.Handle(_inventario, _contexto,
+_indice) DIRECTAMENTE, sin envolver - cada workstream envolvió sus acciones programáticas propias
+(editor de cantidad, editor de prefijo, "colocar desde el catálogo" de Librería) pero ninguno tocó
+nunca esta clase. La propia ContenidoLibreria.ColocarEnRanura lo dejaba dicho en su comentario,
+sin que nadie se diera cuenta de la implicación: "jugando, lo que se usa es exactamente el mismo
+ItemSlot.Handle a través de SlotObjetoVanilla" - es decir, la acción MÁS común de todo el mod
+(arrastrar un objeto con el ratón) nunca quedaba deshacible, solo las acciones con botón propio.
+Confirmado leyendo el código, no solo suponiéndolo.
+
+### El bug real que habría salido de envolver esto a lo simple (encontrado ANTES de escribir una
+### sola línea de producción, pensando el diseño, no jugando a probar y ver qué pasa)
+
+Envolver ItemSlot.Handle con Historial.CambiarObjetos a secas (vigilando solo la ranura) parecía
+la solución obvia, pero un vistazo al ItemSlot.cs real decompilado (692-1080) enseña que un clic
+normal casi nunca mueve el objeto SOLO dentro de la ranura: lo intercambia con Main.mouseItem (lo
+que se lleva "en la mano"), y un Ctrl+clic de papelera rápida (por defecto de vanilla -
+Options.DisableLeftShiftTrashCan=true de fábrica, confirmado en el código, así que es Ctrl y no
+Mayús) lo manda a Player.trashItem. Ninguno de los dos es una ranura de ningún array. Con solo la
+ranura vigilada, "deshacer" el SEGUNDO clic de un arrastre (soltar) habría vaciado la ranura
+destino sin devolver el objeto a ningún sitio - el objeto desaparece de verdad, ni duplicado ni
+conservado, justo lo que WS7 prometió que nunca pasaría ("como mucho pisa un cambio ajeno, pero
+siempre deja un estado coherente"). Con otras rutas de ItemSlot.OverrideLeftClick (cofre real
+abierto, menú de Reforjar/Guía/Investigar) el objeto puede ir a un TERCER sitio que tampoco es
+ninguna celda vigilable sin más - ahí no se intentó cubrir todo: se añadió una guarda
+(HayOtroContenedorAbierto) que, si detecta cualquiera de esos estados, ejecuta el ItemSlot.Handle
+de siempre SIN envolver (ni mejor ni peor que antes de este arreglo, nunca un riesgo real de
+duplicar o perder el objeto). Nuestro panel es a pantalla completa y ninguno de esos menús debería
+estar abierto a la vez, pero la guarda cuesta cuatro comprobaciones y cierra la duda por completo.
+
+### La pieza nueva: Historial.CambiarObjetoDeSlotConCeldas
+
+Common/Undo/Historial.cs: una "celda" (Historial.CeldaDeObjeto) es un objeto suelto que no vive en
+ningún array - un getter y un setter, nada más. El método nuevo toma la foto de la ranura Y de las
+celdas a la vez (antes y después), y si CUALQUIERA de las dos cambió, registra UNA sola entrada de
+historial que las aplica juntas y atómicamente al deshacer/rehacer. Se le pasa además una función
+Func<Item, Item, string> etiqueta porque, a diferencia de CambiarObjetos, no se sabe si el clic
+real va a coger, soltar, apilar, intercambiar o marcar favorito hasta que ItemSlot.Handle ya ha
+corrido - SlotObjetoVanilla.EtiquetaCambio cubre los cinco casos reales comparando la ranura
+antes/después. De paso, SnapshotDeObjetos.MismoContenidoQue se refactorizó para reutilizar un
+comparador MismoContenido(Item, Item) estático (mismos cuatro campos: type/stack/prefix/favorited,
+con "los dos vacíos" tratado como "iguales" de forma explícita) - lo usan tanto las ranuras de
+array como las celdas sueltas.
+
+UI/SlotObjetoVanilla.cs: ManejarConHistorial (antes private, ahora internal para que la autoprueba
+la llame tal cual) sustituye la llamada directa a ItemSlot.Handle, vigilando Main.mouseItem y
+Player.trashItem como celdas.
+
+### Verificación real, en el juego real (no "debería funcionar")
+
+Common/Undo/AutopruebaDeshacerArrastre.cs (gatillada por TERRAKEEP_AUTOTEST_ARRASTRE,
+scripts/verificar-deshacer-arrastre.ps1, mismo sandbox que WS7): simula el clic real rellenando
+Main.mouseLeft/mouseLeftRelease (y Main.keyState con Ctrl para la papelera) exactamente como ya
+hace ContenidoLibreria.ColocarEnRanura, y llama al código de PRODUCCIÓN exacto
+(SlotObjetoVanilla.ManejarConHistorial), no una copia. Dos escenarios:
+
+- Arrastrar (coger de la ranura 5, soltar en la 9) y deshacer dos veces: el paso crítico es
+  ARRASTRE/4, deshacer el "soltar" - con el código viejo el objeto habría desaparecido del todo;
+  con el arreglo, log real: inventory[9]=vacio, mano="Espada corta de cobre" x1 | OK: la ranura
+  destino volvio a quedar vacia y el objeto volvio a la MANO (no desaparecio). Deshacer otra vez
+  devuelve el objeto EXACTAMENTE a la ranura 5 (ARRASTRE/5, "sin duplicarse ni perderse"), y
+  rehacer x2 lo vuelve a dejar en la 9 (ARRASTRE/6).
+- Ctrl+clic de papelera rápida y deshacer: PAPELERA/2 confirma que se va a Player.trashItem de
+  verdad; PAPELERA/3 confirma que deshacer lo devuelve a la ranura Y deja la papelera vacía
+  ("sin duplicarse").
+
+Las dos pasadas en verde, "OK: encontrado AUTOPRUEBA ARRASTRE: terminada en el log, sin ningún
+FALLO". dotnet compiló limpio (0 errores, 89 avisos - los mismos de siempre, CS1701 de
+Newtonsoft.Json contra System.Runtime, ya documentados en sesiones previas, no nuevos).
+
+### Un obstáculo real de entorno por el camino (autonomía técnica, sin el usuario delante)
+
+La primera pasada del arnés se quedó colgada sin ningún error, log cortado justo después de
+"Mods actualizados: HEROsMod (HERO's Mod) v0.4.18 -> v0.4.18.1". Investigado contra el tModLoader
+decompilado (ModLoader/UI/Interface.cs ~206, ModLoader/Core/ModOrganizer.cs ~342):
+ModOrganizer.DetectModChangesForInfoMessage compara los mods de Steam Workshop actuales contra
+<SavePath>\LastLaunchedMods.txt (que SOLO existe si un lanzamiento anterior llegó a guardarlo) y,
+si algo cambió de versión desde la última vez, Interface.cs muestra una pantalla informativa real
+que exige un clic para continuar - -skipselect no la salta, así que sin nadie delante el proceso
+se queda ahí para siempre. El archivo del sandbox de WS7 tenía HEROsMod 0.4.18 (versión vieja);
+Steam había actualizado el mod a 0.4.18.1 de fondo entre sesiones. Arreglo real, sin tocar nada
+del usuario: se borró LastLaunchedMods.txt del sandbox (si el archivo no existe,
+DetectModChangesForInfoMessage devuelve vacío sin comprobar nada, línea 344 del propio método) y
+se añadió el mismo borrado, con el porqué completo en un comentario, a
+scripts/verificar-deshacer-arrastre.ps1 ANTES de cada lanzamiento - así no vuelve a colgarse
+aunque Steam actualice otro mod de Workshop entre sesiones futuras. Vale también para
+scripts/verificar-ws7.ps1 y cualquier otro script que reutilice este mismo sandbox si algún día se
+cuelga igual (no se tocó ese script en esta sesión, para no mezclar cambios de áreas distintas -
+queda anotado aquí).
+
+### Dónde seguir
+
+Undo/redo general: la pieza concreta de esta sesión (cobertura del arrastre) está terminada y
+verificada. El resto del encargo de cuatro piezas sigue en marcha en la misma sesión, sin cortar:
+2) investigar qué sincronización real tiene sentido con Terrakeep (escritorio); 3) gestión de
+loadouts ampliada sobre Player.Loadouts (nativo, 3 slots fijos sin nombre - confirmado en
+EquipmentLoadout.cs/Player.cs decompilados); 4) vista de completitud (bestiario/logros/colección/
+jefes) reutilizando datos reales ya existentes (Common/Investigacion, banderas NPC.downed* que ya
+usa la Guía).

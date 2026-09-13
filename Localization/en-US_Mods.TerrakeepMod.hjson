@@ -728,6 +728,16 @@ Historial: {
 	Rehecho: Terrakeep redid: {0}
 	NadaQueDeshacer: Terrakeep has nothing to undo.
 	NadaQueRehacer: Terrakeep has nothing to redo.
+
+	Ranura: {
+		Colocar: Place "{0}"
+		Quitar: Remove "{0}"
+		Cambiar: Swap "{0}" for "{1}"
+		Cantidad: Quantity of "{0}": {1} -> {2}
+		Favorito: Mark "{0}" as favorite
+		QuitarFavorito: Remove "{0}" from favorites
+		Generico: Change "{0}"
+	}
 }
 
 Prefijos.MejorPrefijo: Best possible prefix: {0}

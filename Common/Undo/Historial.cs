@@ -97,13 +97,27 @@ namespace TerrakeepMod.Common.Undo
 			}
 
 			for (int k = 0; k < _copias.Length; k++) {
-				Item a = _copias[k];
-				Item b = otro._copias[k];
-				if (a.type != b.type || a.stack != b.stack || a.prefix != b.prefix || a.favorited != b.favorited) {
+				if (!MismoContenido(_copias[k], otro._copias[k])) {
 					return false;
 				}
 			}
 			return true;
+		}
+
+		/// <summary>
+		/// Los mismos cuatro campos que compara <see cref="MismoContenidoQue"/>, pero para dos
+		/// <see cref="Item"/> sueltos (no ranuras de un array). La usa tambien
+		/// <see cref="Historial.CambiarObjetoDeSlotConCeldas"/> para las "celdas" auxiliares que no
+		/// viven en ningun array (<c>Main.mouseItem</c>, <c>Player.trashItem</c>...).
+		/// </summary>
+		public static bool MismoContenido(Item a, Item b)
+		{
+			bool aVacio = a == null || a.IsAir;
+			bool bVacio = b == null || b.IsAir;
+			if (aVacio || bVacio) {
+				return aVacio == bVacio;
+			}
+			return a.type == b.type && a.stack == b.stack && a.prefix == b.prefix && a.favorited == b.favorited;
 		}
 
 		/// <summary>Resumen legible para el log de pruebas. No se usa en la interfaz.</summary>
@@ -191,6 +205,119 @@ namespace TerrakeepMod.Common.Undo
 				indices[i] = i;
 			}
 			return CambiarObjetos(etiqueta, destino, indices, edicion);
+		}
+
+		/// <summary>
+		/// Una "celda" de un unico objeto que NO vive en ningun array: <c>Main.mouseItem</c> (lo
+		/// que se lleva cogido con el raton) o <c>Player.trashItem</c> (la papelera de vanilla),
+		/// por ejemplo. A diferencia de <see cref="SnapshotDeObjetos"/> no hay una referencia
+		/// estable a la que apuntar - cada campo hay que leerlo y escribirlo por su cuenta.
+		/// </summary>
+		public sealed class CeldaDeObjeto
+		{
+			public readonly Func<Item> Leer;
+			public readonly Action<Item> Escribir;
+
+			public CeldaDeObjeto(Func<Item> leer, Action<Item> escribir)
+			{
+				Leer = leer;
+				Escribir = escribir;
+			}
+		}
+
+		/// <summary>
+		/// Igual que <see cref="CambiarObjetos"/> para UNA sola ranura de un array, pero cubriendo
+		/// ADEMAS una o mas <paramref name="celdas"/> auxiliares, y sin etiqueta fija (se deriva de
+		/// como quedo la ranura, con una funcion que recibe el objeto de antes y el de despues).
+		/// <para />
+		/// <b>Por que hacia falta esto y no bastaba con la ranura sola (hallazgo real, no un
+		/// gusto de diseño).</b> <c>ItemSlot.Handle</c> casi nunca mueve un objeto SOLO dentro de
+		/// la ranura que se le pasa: un clic normal lo intercambia con <c>Main.mouseItem</c> (lo
+		/// que llevas "en la mano"), y un Mayus+clic de la papelera rapida lo manda a
+		/// <c>Player.trashItem</c> - los dos son campos sueltos, no ranuras de ningun array, y
+		/// <c>ItemSlot.cs</c> real (decompilado, 692-1080) los toca DIRECTAMENTE, nunca a traves
+		/// del array que se le paso. Si el historial solo vigilara la ranura, "deshacer" un
+		/// SEGUNDO clic (soltar en la ranura B lo que se cogio de la ranura A) devolveria la
+		/// ranura B a estar vacia sin devolver el objeto a ningun sitio - el objeto desaparece de
+		/// verdad, no queda "como estaba", que es justo lo que WS7 prometio que nunca pasaria.
+		/// Envolver tambien <c>Main.mouseItem</c> y <c>Player.trashItem</c> en la misma foto hace
+		/// que deshacer cualquier clic devuelva TODO a donde estaba, mano y papelera incluidas.
+		/// </summary>
+		/// <returns>true si se registro la entrada; false si <paramref name="edicion"/> no cambio
+		/// nada (no se ensucia el historial con entradas vacias).</returns>
+		public static bool CambiarObjetoDeSlotConCeldas(Item[] destino, int indice,
+			CeldaDeObjeto[] celdas, Func<Item, Item, string> etiqueta, Action edicion)
+		{
+			if (edicion == null) {
+				throw new ArgumentNullException("edicion");
+			}
+			if (etiqueta == null) {
+				throw new ArgumentNullException("etiqueta");
+			}
+			if (celdas == null) {
+				celdas = new CeldaDeObjeto[0];
+			}
+
+			Item antesItem = destino[indice] != null ? destino[indice].Clone() : new Item();
+			SnapshotDeObjetos antesSlot = SnapshotDeObjetos.Tomar(destino, indice);
+			Item[] antesCeldas = ClonarCeldas(celdas);
+
+			edicion();
+
+			SnapshotDeObjetos despuesSlot = SnapshotDeObjetos.Tomar(destino, indice);
+			Item[] despuesCeldas = ClonarCeldas(celdas);
+
+			bool cambioAlgo = !antesSlot.MismoContenidoQue(despuesSlot);
+			for (int k = 0; !cambioAlgo && k < celdas.Length; k++) {
+				cambioAlgo = !SnapshotDeObjetos.MismoContenido(antesCeldas[k], despuesCeldas[k]);
+			}
+			if (!cambioAlgo) {
+				return false;
+			}
+
+			Item despuesItem = destino[indice] != null ? destino[indice].Clone() : new Item();
+			string texto = etiqueta(antesItem, despuesItem);
+
+			EstadoRanuraConCeldas antes = new EstadoRanuraConCeldas(antesSlot, antesCeldas, celdas);
+			EstadoRanuraConCeldas despues = new EstadoRanuraConCeldas(despuesSlot, despuesCeldas, celdas);
+
+			Pila.Registrar(new EntradaSnapshot<EstadoRanuraConCeldas>(
+				texto, antes, despues, (EstadoRanuraConCeldas estado) => estado.Aplicar()));
+			return true;
+		}
+
+		private static Item[] ClonarCeldas(CeldaDeObjeto[] celdas)
+		{
+			Item[] copia = new Item[celdas.Length];
+			for (int k = 0; k < celdas.Length; k++) {
+				Item leido = celdas[k].Leer();
+				copia[k] = leido != null ? leido.Clone() : new Item();
+			}
+			return copia;
+		}
+
+		/// <summary>Foto conjunta de una ranura de array MAS sus celdas auxiliares, para poder
+		/// aplicar las dos cosas atomicamente al deshacer o rehacer.</summary>
+		private sealed class EstadoRanuraConCeldas
+		{
+			private readonly SnapshotDeObjetos _slot;
+			private readonly Item[] _celdas;
+			private readonly CeldaDeObjeto[] _definicionCeldas;
+
+			public EstadoRanuraConCeldas(SnapshotDeObjetos slot, Item[] celdas, CeldaDeObjeto[] definicionCeldas)
+			{
+				_slot = slot;
+				_celdas = celdas;
+				_definicionCeldas = definicionCeldas;
+			}
+
+			public void Aplicar()
+			{
+				_slot.Aplicar();
+				for (int k = 0; k < _celdas.Length; k++) {
+					_definicionCeldas[k].Escribir(_celdas[k].Clone());
+				}
+			}
 		}
 
 		/// <summary>

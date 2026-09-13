@@ -78,6 +78,7 @@ namespace TerrakeepMod.Common.Undo
 			}
 
 			ComprobarAtajos();
+			AutopruebaDeshacerArrastre.Avanzar();
 		}
 
 		/// <summary>

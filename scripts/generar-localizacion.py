@@ -762,6 +762,17 @@ T += [
      "Terrakeep has nothing to undo."),
     ("Historial.NadaQueRehacer", "Terrakeep no tiene nada que rehacer.",
      "Terrakeep has nothing to redo."),
+    # Rotulos AUTOMATICOS de SlotObjetoVanilla.EtiquetaCambio: cubren arrastrar/soltar/apilar/
+    # favorito sobre CUALQUIER ranura real del mod (inventario, equipo, hucha, caja, forja,
+    # boveda, destino de Libreria) - antes de esto, esa era la unica accion del panel que no
+    # quedaba deshacible (ver el comentario real de ManejarConHistorial en SlotObjetoVanilla.cs).
+    ("Historial.Ranura.Colocar", "Colocar \"{0}\"", "Place \"{0}\""),
+    ("Historial.Ranura.Quitar", "Quitar \"{0}\"", "Remove \"{0}\""),
+    ("Historial.Ranura.Cambiar", "Cambiar \"{0}\" por \"{1}\"", "Swap \"{0}\" for \"{1}\""),
+    ("Historial.Ranura.Cantidad", "Cantidad de \"{0}\": {1} -> {2}", "Quantity of \"{0}\": {1} -> {2}"),
+    ("Historial.Ranura.Favorito", "Marcar \"{0}\" como favorito", "Mark \"{0}\" as favorite"),
+    ("Historial.Ranura.QuitarFavorito", "Quitar \"{0}\" de favoritos", "Remove \"{0}\" from favorites"),
+    ("Historial.Ranura.Generico", "Cambiar \"{0}\"", "Change \"{0}\""),
 
     # ---------------------------------------------------------------- prefijos
     ("Prefijos.MejorPrefijo", "Mejor prefijo posible: {0}", "Best possible prefix: {0}"),
