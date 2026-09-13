@@ -831,12 +831,16 @@ T += [
     ("Guia.Bandera.shadowOrbSmashed",
      "Haber roto ya una Esfera Oscura o un Corazón Carmesí",
      "Having already broken a Shadow Orb or Crimson Heart"),
+    ("Guia.Bandera.hardMode",
+     "Que el mundo entre en Modo Difícil (derrotar al Muro de Carne)",
+     "Getting the world into Hardmode (defeating the Wall of Flesh)"),
 
     # --- zonas -------------------------------------------------------------------------------
     ("Guia.Zona.Superficie", "la superficie", "the surface"),
     ("Guia.Zona.Subterraneo", "el subsuelo", "the underground"),
     ("Guia.Zona.Cavernas", "las cavernas", "the caverns"),
     ("Guia.Zona.Mazmorra", "la entrada de la Mazmorra", "the Dungeon entrance"),
+    ("Guia.Zona.Infierno", "el Infierno", "the Underworld"),
 
     # --- tramos ------------------------------------------------------------------------------
     ("Guia.Tramo.PreOjo.Nombre", "Antes del primer jefe", "Before the first boss"),
@@ -990,6 +994,25 @@ T += [
     ("Guia.Paso.VencerAEsqueletron.Como",
      "Pelea cerca de la entrada de la Mazmorra, nunca dentro de ella: si amanece antes de matarlo, se cura de golpe entero y hay que empezar de cero.",
      "Fight near the Dungeon entrance, never inside it: if dawn arrives before he dies, he heals back to full instantly and you have to start over."),
+
+    # --- pasos del quinto tramo: el Muro de Carne (paso a Hardmode) ---------------------------
+    ("Guia.Paso.ArmaParaElMuro.Titulo", "Un arma para un jefe con muchísima más vida",
+     "A weapon for a boss with a lot more health"),
+    ("Guia.Paso.ArmaParaElMuro.Porque",
+     "El Muro de Carne tiene 8000 de vida (NPC.cs, bloque type==113), con 50 de daño y 12 de defensa en el cuerpo; su ojo (type==114) pega igual de fuerte pero sin nada de defensa. Con la fórmula de siempre, un arma de 25 de daño le quita bastante más de la mitad a cada golpe, y hace falta ese salto: no es solo más vida que Esqueletron, es una pelea CRONOMETRADA que avanza sola hacia ti por un pasillo del Infierno, así que alargarla de más no es una opción.",
+     "The Wall of Flesh has 8000 health (NPC.cs, the type==113 block), with 50 damage and 12 defense on the body; its eye (type==114) hits just as hard with no defense at all. With the usual formula, a 25 damage weapon takes off well over half its defense on every hit, and that jump matters: it is not just more health than Skeletron, it is a TIMED fight that keeps advancing on you down an Underworld corridor on its own, so dragging it out is not really an option."),
+    ("Guia.Paso.ArmaParaElMuro.Como",
+     "Cualquier arma fundida con Piedra Infernal ya cumple de sobra. Una Poción de Piel de Obsidiana te libra del fuego de la lava mientras dura, y el Muñeco Vudú del Guía, lanzado a la lava, es la forma práctica de invocarlo sin tener que empujarlo tú mismo.",
+     "Any weapon forged with Hellstone already clears this easily. An Obsidian Skin Potion keeps the lava's fire off you while it lasts, and the Guide's Voodoo Doll, thrown into lava, is the practical way to summon it without having to shove him in yourself."),
+
+    ("Guia.Paso.VencerAlMuro.Titulo", "Derrotarlo: el mundo cambia para siempre",
+     "Defeat it: the world changes forever"),
+    ("Guia.Paso.VencerAlMuro.Porque",
+     "Aquí no hay medias tintas: al morir, NPC.cs llama a WorldGen.StartHardmode(), que pone Main.hardMode a true y no tiene marcha atrás en esta partida. A partir de ahí todo sube de golpe (enemigos nuevos y más duros por todo el mundo, incluido en zonas que ya dabas por seguras), pero también se abre lo que hace falta para seguir: minerales de Hardmode al romper Altares Demoniacos o Carmesíes con un mazo, y el camino a los tres jefes mecánicos.",
+     "There is no middle ground here: on death, NPC.cs calls WorldGen.StartHardmode(), which sets Main.hardMode to true with no way back in this save. From that point everything jumps at once (new, tougher enemies across the whole world, including areas you already thought were safe), but it also opens up what you need to keep going: Hardmode ores from smashing Demon or Crimson Altars with a hammer, and the path to the three mechanical bosses."),
+    ("Guia.Paso.VencerAlMuro.Como",
+     "Construye un puente largo y llano sobre la lava antes de invocarlo: el Muro avanza solo hacia ti, así que necesitas sitio para retroceder disparando en vez de terreno irregular que te frene. La boca es su parte más débil; el ojo, la más resistente.",
+     "Build a long, flat bridge over the lava before summoning it: the Wall advances on you by itself, so you need room to back away while shooting instead of uneven ground that slows you down. The mouth is its weakest part; the eye is its toughest."),
 ]
 
 KEYBINDS = [

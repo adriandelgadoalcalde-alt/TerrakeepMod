@@ -785,6 +785,7 @@ Guia: {
 		downedBoss2: Derrotar al Devorador de Mundos o al Cerebro de Cthulhu
 		downedBoss3: Derrotar a Esqueletron
 		shadowOrbSmashed: Haber roto ya una Esfera Oscura o un Corazón Carmesí
+		hardMode: Que el mundo entre en Modo Difícil (derrotar al Muro de Carne)
 	}
 
 	Zona: {
@@ -792,6 +793,7 @@ Guia: {
 		Subterraneo: el subsuelo
 		Cavernas: las cavernas
 		Mazmorra: la entrada de la Mazmorra
+		Infierno: el Infierno
 	}
 
 	Tramo: {
@@ -915,6 +917,18 @@ Guia: {
 			Titulo: Derrotarlo
 			Porque: NPC.downedBoss3 es la bandera que de verdad importa aquí: en cuanto pasa a true, los Guardianes de la Mazmorra (pensados solo para bloquear la entrada antes de tiempo, con un daño altísimo) dejan de aparecer, y el Sastre se muda a vivir contigo.
 			Como: Pelea cerca de la entrada de la Mazmorra, nunca dentro de ella: si amanece antes de matarlo, se cura de golpe entero y hay que empezar de cero.
+		}
+
+		ArmaParaElMuro: {
+			Titulo: Un arma para un jefe con muchísima más vida
+			Porque: El Muro de Carne tiene 8000 de vida (NPC.cs, bloque type==113), con 50 de daño y 12 de defensa en el cuerpo; su ojo (type==114) pega igual de fuerte pero sin nada de defensa. Con la fórmula de siempre, un arma de 25 de daño le quita bastante más de la mitad a cada golpe, y hace falta ese salto: no es solo más vida que Esqueletron, es una pelea CRONOMETRADA que avanza sola hacia ti por un pasillo del Infierno, así que alargarla de más no es una opción.
+			Como: Cualquier arma fundida con Piedra Infernal ya cumple de sobra. Una Poción de Piel de Obsidiana te libra del fuego de la lava mientras dura, y el Muñeco Vudú del Guía, lanzado a la lava, es la forma práctica de invocarlo sin tener que empujarlo tú mismo.
+		}
+
+		VencerAlMuro: {
+			Titulo: Derrotarlo: el mundo cambia para siempre
+			Porque: Aquí no hay medias tintas: al morir, NPC.cs llama a WorldGen.StartHardmode(), que pone Main.hardMode a true y no tiene marcha atrás en esta partida. A partir de ahí todo sube de golpe (enemigos nuevos y más duros por todo el mundo, incluido en zonas que ya dabas por seguras), pero también se abre lo que hace falta para seguir: minerales de Hardmode al romper Altares Demoniacos o Carmesíes con un mazo, y el camino a los tres jefes mecánicos.
+			Como: Construye un puente largo y llano sobre la lava antes de invocarlo: el Muro avanza solo hacia ti, así que necesitas sitio para retroceder disparando en vez de terreno irregular que te frene. La boca es su parte más débil; el ojo, la más resistente.
 		}
 	}
 }

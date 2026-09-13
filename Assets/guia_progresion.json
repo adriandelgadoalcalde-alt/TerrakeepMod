@@ -202,8 +202,50 @@
       "orden": 5,
       "ambito": "vanilla",
       "jefeFinal": 113,
-      "implementado": false,
-      "pasos": []
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "ArmaParaElMuro",
+          "zona": "Infierno",
+          "capa": "infierno",
+          "jefe": 113,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==113 (cuerpo): daño 50, defensa 12, vida 8000. type==114 (ojo): daño 50, defensa 0, vida 8000. Con daño-defensa*0.5 (minimo 1), 25 de daño deja golpes utiles contra los dos sin alargar una pelea con mucha mas vida que Esqueletron.",
+              "tipo": "dano_arma",
+              "valor": 25
+            },
+            {
+              "_fuente": "ItemID.ObsidianSkinPotion=288: inmuniza contra el fuego de la lava mientras dura.",
+              "tipo": "objeto",
+              "id": 288,
+              "cantidad": 1,
+              "recomendado": true
+            },
+            {
+              "_fuente": "NPC.cs, case 22 (Guia): Collision.LavaCollision(position,...) -> SpawnWOF(position). El Muñeco Vudú del Guia (ItemID.GuideVoodooDoll=267) lanzado a la lava es la forma practica de conseguirlo sin arriesgar al propio Guia a pie.",
+              "tipo": "objeto",
+              "id": 267,
+              "cantidad": 1,
+              "recomendado": true
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerAlMuro",
+          "zona": "Infierno",
+          "capa": "infierno",
+          "jefe": 113,
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, case 113 (muerte): WorldGen.StartHardmode() pone Main.hardMode a true. No hay marcha atras: es la unica bandera real de este cierre.",
+              "tipo": "bandera",
+              "bandera": "hardMode"
+            }
+          ]
+        }
+      ]
     },
     {
       "clave": "InicioModoDificil",

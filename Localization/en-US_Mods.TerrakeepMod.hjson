@@ -785,6 +785,7 @@ Guia: {
 		downedBoss2: Defeat the Eater of Worlds or the Brain of Cthulhu
 		downedBoss3: Defeat Skeletron
 		shadowOrbSmashed: Having already broken a Shadow Orb or Crimson Heart
+		hardMode: Getting the world into Hardmode (defeating the Wall of Flesh)
 	}
 
 	Zona: {
@@ -792,6 +793,7 @@ Guia: {
 		Subterraneo: the underground
 		Cavernas: the caverns
 		Mazmorra: the Dungeon entrance
+		Infierno: the Underworld
 	}
 
 	Tramo: {
@@ -915,6 +917,18 @@ Guia: {
 			Titulo: Defeat him
 			Porque: NPC.downedBoss3 is the flag that actually matters here: as soon as it flips to true, the Dungeon Guardians (meant only to block the entrance before its time, with absurd damage) stop spawning, and the Clothier moves in with you.
 			Como: Fight near the Dungeon entrance, never inside it: if dawn arrives before he dies, he heals back to full instantly and you have to start over.
+		}
+
+		ArmaParaElMuro: {
+			Titulo: A weapon for a boss with a lot more health
+			Porque: The Wall of Flesh has 8000 health (NPC.cs, the type==113 block), with 50 damage and 12 defense on the body; its eye (type==114) hits just as hard with no defense at all. With the usual formula, a 25 damage weapon takes off well over half its defense on every hit, and that jump matters: it is not just more health than Skeletron, it is a TIMED fight that keeps advancing on you down an Underworld corridor on its own, so dragging it out is not really an option.
+			Como: Any weapon forged with Hellstone already clears this easily. An Obsidian Skin Potion keeps the lava's fire off you while it lasts, and the Guide's Voodoo Doll, thrown into lava, is the practical way to summon it without having to shove him in yourself.
+		}
+
+		VencerAlMuro: {
+			Titulo: Defeat it: the world changes forever
+			Porque: There is no middle ground here: on death, NPC.cs calls WorldGen.StartHardmode(), which sets Main.hardMode to true with no way back in this save. From that point everything jumps at once (new, tougher enemies across the whole world, including areas you already thought were safe), but it also opens up what you need to keep going: Hardmode ores from smashing Demon or Crimson Altars with a hammer, and the path to the three mechanical bosses.
+			Como: Build a long, flat bridge over the lava before summoning it: the Wall advances on you by itself, so you need room to back away while shooting instead of uneven ground that slows you down. The mouth is its weakest part; the eye is its toughest.
 		}
 	}
 }

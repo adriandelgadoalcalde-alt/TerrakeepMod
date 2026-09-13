@@ -56,6 +56,7 @@ namespace TerrakeepMod.Common.Guia
 		private static bool _downedBoss2Original;
 		private static bool _downedBoss3Original;
 		private static bool _shadowOrbSmashedOriginal;
+		private static bool _hardModeOriginal;
 		private static readonly List<int> _npcsCreados = new List<int>();
 
 		/// <summary>Tipos de NPC del pueblo que ya vivian en el mundo de prueba y que la prueba
@@ -268,10 +269,31 @@ namespace TerrakeepMod.Common.Guia
 				case 56: ComprobarLecturaDeJefeDelTramoActual("Esqueletron"); break;
 				case 57: Capturar("guia-9-esqueletron"); break;
 				case 58: MatarAEsqueletronEnFalso(); break;
-				case 59: ComprobarSinObjetivo(); break;
-				case 60: Capturar("guia-10-todo-lo-implementado-hecho"); break;
 
-				case 61: RestaurarTramosNuevos(); break;
+				// --- quinto tramo implementado: el Muro de Carne (paso a Hardmode) --------------
+				// El arma de case53 (20+ de daño) sigue en la mochila y por su rango (20 a 40) puede
+				// bastar por casualidad para el umbral de 25 de "ArmaParaElMuro": se quita aqui,
+				// igual que se hizo entre la maldad del mundo y Esqueletron, para comprobar de
+				// verdad que el paso es el que toca ANTES de tener arma.
+				case 59: PrepararMuroDeCarne(); break;
+				case 60: QuitarArmaDeLaMochila(); break;
+				case 61: ComprobarPaso("ArmaParaElMuro",
+					"downedBoss3=true a mano (el siguiente tramo implementado es el Muro de Carne) " +
+					"y sin arma todavia en la mochila"); break;
+				case 62: Capturar("guia-11-muro-preparativos"); break;
+				case 63: PonerArmaConDano(25); break;
+				case 64: VolcarEstadoDelJugador("con arma contra el Muro de Carne"); break;
+				case 65: ComprobarPaso("VencerAlMuro",
+					"arma de 25+ de daño puesta: el unico requisito obligatorio del primer paso ya " +
+					"esta cumplido, asi que el paso siguiente pasa a ser el actual"); break;
+				case 66: ComprobarLecturaDeJefeDelTramoActual("Muro de Carne"); break;
+				case 67: Capturar("guia-12-muro-vencer"); break;
+				case 68: PasarAModoDificilDeMentira(); break;
+
+				case 69: ComprobarSinObjetivo(); break;
+				case 70: Capturar("guia-13-todo-lo-implementado-hecho"); break;
+
+				case 71: RestaurarTramosNuevos(); break;
 				default: Terminar(); break;
 			}
 		}
@@ -303,6 +325,7 @@ namespace TerrakeepMod.Common.Guia
 			_downedBoss2Original = NPC.downedBoss2;
 			_downedBoss3Original = NPC.downedBoss3;
 			_shadowOrbSmashedOriginal = Terraria.WorldGen.shadowOrbSmashed;
+			_hardModeOriginal = Main.hardMode;
 			NPC.downedBoss1 = false;
 
 			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Personaje, "autoprueba de la Guia");
@@ -526,13 +549,13 @@ namespace TerrakeepMod.Common.Guia
 				}
 				claves.Append(porDelante[i].Clave);
 				if (porDelante[i].Clave == "PreOjo" || porDelante[i].Clave == "MaldadDelMundo" ||
-					porDelante[i].Clave == "Esqueletron") {
+					porDelante[i].Clave == "Esqueletron" || porDelante[i].Clave == "MuroDeCarne") {
 					haySuperado = true;
 				}
 			}
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - hoja de ruta con todo cerrado: " +
 				claves + " " + (!haySuperado
-					? "-> OK: ninguno de los tres tramos ya superados vuelve a aparecer."
+					? "-> OK: ninguno de los cuatro tramos ya superados vuelve a aparecer."
 					: "-> NO CUADRA: hay un tramo ya superado en \"lo que viene despues\"."));
 		}
 
@@ -827,7 +850,31 @@ namespace TerrakeepMod.Common.Guia
 				"mano. Se restaura al terminar.");
 		}
 
-		/// <summary>Deshace TODO lo que han tocado los pasos 37-59: las banderas nuevas, el mundo y
+		/// <summary>Deja el mundo listo para el Muro de Carne: fuerza <c>Main.hardMode</c> a false
+		/// por si el mundo sintetico de pruebas ya lo traia puesto, para partir de un estado
+		/// conocido igual que <see cref="PrepararMaldadDelMundo"/>.</summary>
+		private static void PrepararMuroDeCarne()
+		{
+			Main.hardMode = false;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - preparado el tramo del Muro de " +
+				"Carne: Main.hardMode=false (a mano, por si el mundo de pruebas ya lo traia puesto).");
+		}
+
+		/// <summary>Pone <c>Main.hardMode</c> a true SIN pelear al Muro de Carne de verdad, para
+		/// comprobar el cierre del quinto tramo. El motor real lo hace desde
+		/// <c>WorldGen.StartHardmode()</c> (NPC.cs, case 113 de la muerte del jefe), que convierte
+		/// medio mundo de golpe; aqui solo se marca la bandera que la guia lee, igual que las demas
+		/// pruebas "EnFalso" de este arnes marcan solo la bandera de jefe sin simular el combate
+		/// entero.</summary>
+		private static void PasarAModoDificilDeMentira()
+		{
+			Main.hardMode = true;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - Main.hardMode puesto a true a " +
+				"mano (la bandera real que enciende WorldGen.StartHardmode al morir el Muro de Carne, " +
+				"NPC.cs case 113). Se restaura al terminar.");
+		}
+
+		/// <summary>Deshace TODO lo que han tocado los pasos 37-68: las banderas nuevas, el mundo y
 		/// el inventario, ademas de los NPC creados en este segundo bloque de la prueba.</summary>
 		private static void RestaurarTramosNuevos()
 		{
@@ -835,6 +882,7 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedBoss2 = _downedBoss2Original;
 			NPC.downedBoss3 = _downedBoss3Original;
 			Terraria.WorldGen.shadowOrbSmashed = _shadowOrbSmashedOriginal;
+			Main.hardMode = _hardModeOriginal;
 
 			Player jugador = Main.LocalPlayer;
 			jugador.inventory[0] = new Item();
@@ -851,8 +899,9 @@ namespace TerrakeepMod.Common.Guia
 			_npcsCreados.Clear();
 
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - restaurado tras la maldad del " +
-				"mundo y Esqueletron: downedBoss1=" + NPC.downedBoss1 + ", downedBoss2=" + NPC.downedBoss2 +
-				", downedBoss3=" + NPC.downedBoss3 + ", shadowOrbSmashed=" + Terraria.WorldGen.shadowOrbSmashed +
+				"mundo, Esqueletron y el Muro de Carne: downedBoss1=" + NPC.downedBoss1 + ", downedBoss2=" +
+				NPC.downedBoss2 + ", downedBoss3=" + NPC.downedBoss3 + ", shadowOrbSmashed=" +
+				Terraria.WorldGen.shadowOrbSmashed + ", hardMode=" + Main.hardMode +
 				", NPC de prueba retirados=" + quitados + ".");
 		}
 
