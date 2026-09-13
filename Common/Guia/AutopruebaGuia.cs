@@ -71,6 +71,8 @@ namespace TerrakeepMod.Common.Guia
 		private static bool _downedQueenBeeOriginal;
 		private static bool _downedSlimeKingOriginal;
 		private static bool _downedDeerclopsOriginal;
+		private static bool _downedGoblinsOriginal;
+		private static bool _downedFrostOriginal;
 		private static int _dungeonXOriginal;
 		private static Vector2 _posicionOriginal;
 		private static readonly List<int> _npcsCreados = new List<int>();
@@ -414,8 +416,9 @@ namespace TerrakeepMod.Common.Guia
 				// para la seccion "Objetivo opcional") y se devuelven a su valor original al final.
 				case 126: PrepararOpcionalesTempranos(); break;
 				case 127: ComprobarPasoOpcional("ReySlime", "ArmaParaElReySlime",
-					"ningun opcional sin superar todavia: ReySlime es el de menor Orden (5) de todos " +
-					"los tramos opcionales, por delante incluso de PreOjo (10)"); break;
+					"ningun opcional sin superar todavia (EjercitoGoblin y LegionDeEscarcha siguen " +
+					"remarcados desde Arrancar()): ReySlime es el de menor Orden (5) de todos los " +
+					"tramos opcionales, por delante incluso de PreOjo (10)"); break;
 				case 128: Capturar("guia-29-reyslime-preparativos"); break;
 				case 129: PonerArmaConDano(12); break;
 				case 130: VolcarEstadoDelJugador("con arma contra el Rey Slime"); break;
@@ -427,8 +430,9 @@ namespace TerrakeepMod.Common.Guia
 				case 134: MarcarReySlimeDerrotadoDeMentira(); break;
 				case 135: QuitarArmaDeLaMochila(); break;
 				case 136: ComprobarPasoOpcional("Deerclops", "ArmaParaDeerclops",
-					"ReySlime ya superado (downedSlimeKing=true a mano): el siguiente opcional por " +
-					"Orden es Deerclops (15), por delante todavia de ReinaAbeja (25)"); break;
+					"ReySlime ya superado (downedSlimeKing=true a mano) y EjercitoGoblin (Orden 12) " +
+					"sigue remarcado desde Arrancar(): el siguiente opcional por Orden es Deerclops " +
+					"(15), por delante todavia de LegionDeEscarcha (17) y ReinaAbeja (25)"); break;
 				case 137: Capturar("guia-31-deerclops-preparativos"); break;
 				case 138: PonerArmaConDano(16); break;
 				case 139: VolcarEstadoDelJugador("con arma contra Deerclops"); break;
@@ -480,6 +484,41 @@ namespace TerrakeepMod.Common.Guia
 				case 161: Capturar("guia-35-brujula-mapa-vanilla"); break;
 				case 162: VolverAlPanelDesdeElMapa(); break;
 				case 163: RestaurarEscenarioBrujula(); break;
+
+				// --- los otros dos tramos opcionales de esta sesion: Ejercito Goblin y Legion de
+				// Escarcha (Orden 12 y 17, dos invasiones por oleadas en vez de un jefe unico -
+				// jefeFinal=0 a proposito, ver el .json). ReySlime y Deerclops se remarcan
+				// SUPERADOS otra vez aqui (RestaurarOpcionalesTempranos los habia devuelto a su
+				// valor real, probablemente false) para que no interfieran con este bloque, igual
+				// que ya hizo Arrancar() con los cuatro al principio.
+				case 164: PrepararEventosDeInvasionTempranos(); break;
+				case 165: ComprobarPasoOpcional("EjercitoGoblin", "ArmaParaElEjercitoGoblin",
+					"ReySlime y Deerclops remarcados superados otra vez: el siguiente opcional " +
+					"pendiente por Orden es EjercitoGoblin (12), por delante de LegionDeEscarcha " +
+					"(17) y ReinaAbeja (25)"); break;
+				case 166: Capturar("guia-36-goblin-preparativos"); break;
+				case 167: PonerArmaConDano(15); break;
+				case 168: VolcarEstadoDelJugador("con arma contra el Ejercito Goblin"); break;
+				case 169: ComprobarPasoOpcional("EjercitoGoblin", "VencerAlEjercitoGoblin",
+					"arma de 15+ de daño puesta: el unico requisito obligatorio del primer paso ya " +
+					"esta cumplido, asi que el paso siguiente pasa a ser el objetivo opcional"); break;
+				case 170: Capturar("guia-37-goblin-vencer"); break;
+				case 171: MarcarEjercitoGoblinDerrotadoDeMentira(); break;
+				case 172: QuitarArmaDeLaMochila(); break;
+				case 173: ComprobarPasoOpcional("LegionDeEscarcha", "ArmaParaLaLegionDeEscarcha",
+					"EjercitoGoblin ya superado (downedGoblins=true a mano): el siguiente opcional " +
+					"por Orden es LegionDeEscarcha (17), por delante todavia de ReinaAbeja (25)"); break;
+				case 174: Capturar("guia-38-legion-preparativos"); break;
+				case 175: PonerArmaConDano(28); break;
+				case 176: VolcarEstadoDelJugador("con arma contra la Legion de Escarcha"); break;
+				case 177: ComprobarPasoOpcional("LegionDeEscarcha", "VencerALaLegionDeEscarcha",
+					"arma de 28+ de daño puesta: el unico requisito obligatorio del primer paso ya " +
+					"esta cumplido, asi que el paso siguiente pasa a ser el objetivo opcional"); break;
+				case 178: Capturar("guia-39-legion-vencer"); break;
+				case 179: MarcarLegionDeEscarchaDerrotadaDeMentira(); break;
+				case 180: QuitarArmaDeLaMochila(); break;
+				case 181: ComprobarLosCuatroOpcionalesTempranosDesaparecen(); break;
+				case 182: RestaurarEventosDeInvasionTempranos(); break;
 				default: Terminar(); break;
 			}
 		}
@@ -525,16 +564,21 @@ namespace TerrakeepMod.Common.Guia
 			_downedQueenBeeOriginal = NPC.downedQueenBee;
 			NPC.downedBoss1 = false;
 
-			// ReySlime y Deerclops (los dos tramos opcionales nuevos de esta sesion, Orden 5 y 15,
-			// los mas bajos de todos los opcionales) se marcan SUPERADOS desde ya: asi no interfieren
-			// con ningun paso 1-125 de este arnes (que ya daban por buenos "ReinaAbeja"/
-			// "InicioModoDificil"/"JefesOpcionalesTardios" como los opcionales de menor Orden sin
-			// superar). Su propio bloque dedicado, al final de la prueba, los pone en false, los
-			// comprueba de verdad y los devuelve a su valor ORIGINAL (no a "true") al terminar.
+			// ReySlime, EjercitoGoblin, Deerclops y LegionDeEscarcha (los cuatro tramos opcionales
+			// nuevos de esta sesion, Orden 5/12/15/17 - los mas bajos de todos los opcionales) se
+			// marcan SUPERADOS desde ya: asi no interfieren con ningun paso 1-149 de este arnes (que
+			// ya daban por buenos "ReinaAbeja"/"InicioModoDificil"/"JefesOpcionalesTardios" como los
+			// opcionales de menor Orden sin superar). Sus propios bloques dedicados, al final de la
+			// prueba, los ponen en false, los comprueban de verdad y los devuelven a su valor
+			// ORIGINAL (no a "true") al terminar.
 			_downedSlimeKingOriginal = NPC.downedSlimeKing;
 			_downedDeerclopsOriginal = NPC.downedDeerclops;
+			_downedGoblinsOriginal = NPC.downedGoblins;
+			_downedFrostOriginal = NPC.downedFrost;
 			NPC.downedSlimeKing = true;
 			NPC.downedDeerclops = true;
+			NPC.downedGoblins = true;
+			NPC.downedFrost = true;
 
 			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Personaje, "autoprueba de la Guia");
 		}
@@ -1682,6 +1726,99 @@ namespace TerrakeepMod.Common.Guia
 				"restaurado: banderas de jefe devueltas a su valor real, MarcadoresGuia limpiado. " +
 				"El mapa revelado durante la prueba se queda asi (es el mundo sintetico de pruebas, " +
 				"no hay forma de \"des-revelar\" en la API del motor).");
+		}
+
+		// -------------------------------------------------------------------------------------
+		// Los otros dos tramos opcionales: Ejercito Goblin y Legion de Escarcha
+		// -------------------------------------------------------------------------------------
+
+		/// <summary>Deja el escenario listo para probar EjercitoGoblin/LegionDeEscarcha: los
+		/// remarca en false (estaban en true desde Arrancar()) y vuelve a poner ReySlime/Deerclops
+		/// en true (RestaurarOpcionalesTempranos los habia devuelto a su valor real, casi
+		/// seguro false) para que no se cuelen por delante en el orden.</summary>
+		private static void PrepararEventosDeInvasionTempranos()
+		{
+			NPC.downedSlimeKing = true;
+			NPC.downedDeerclops = true;
+			NPC.downedGoblins = false;
+			NPC.downedFrost = false;
+
+			// PanelExploracionSystem.VerEnElMapa (reutilizado en SaltarAlMapaVanillaEnElMarcador,
+			// mas arriba) deja su PROPIO "_volverAlPanelAlCerrarMapa" pendiente. Ese flag disparo su
+			// propio ComprobarVueltaDelMapa un fotograma despues del de esta prueba y reabrio el
+			// panel en la pestaña EXPLORACION, no Guia - visto en las capturas reales (guia-36..39
+			// enseñaban la pestaña equivocada con el log en verde, porque ContenidoGuia.PanelActual
+			// no depende de que pestaña este visible). Para cuando se llega aqui ese flag de un solo
+			// disparo ya se ha consumido, asi que reabrir la pestaña Guia otra vez es definitivo.
+			GuiaSystem.AbrirPanel("autoprueba de la Guia: forzar la pestaña Guía tras la brujula");
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - preparado el escenario de las " +
+				"dos invasiones: ReySlime y Deerclops remarcados a true (a mano, para que no " +
+				"interfieran), downedGoblins=false, downedFrost=false. Pestaña forzada de nuevo a Guía.");
+		}
+
+		private static void MarcarEjercitoGoblinDerrotadoDeMentira()
+		{
+			NPC.downedGoblins = true;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - NPC.downedGoblins puesto a " +
+				"true a mano. Se restaura al terminar.");
+		}
+
+		private static void MarcarLegionDeEscarchaDerrotadaDeMentira()
+		{
+			NPC.downedFrost = true;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - NPC.downedFrost puesto a " +
+				"true a mano (el nombre real del campo, no \"downedFrostLegion\"). Se restaura al " +
+				"terminar.");
+		}
+
+		/// <summary>Comprueba que los CUATRO opcionales tempranos (ReySlime, EjercitoGoblin,
+		/// Deerclops, LegionDeEscarcha) desaparecen de la hoja de ruta una vez superados, y que el
+		/// objetivo opcional salta correctamente hasta ReinaAbeja (Orden 25, el siguiente
+		/// pendiente).</summary>
+		private static void ComprobarLosCuatroOpcionalesTempranosDesaparecen()
+		{
+			List<TramoGuia> porDelante = EstadoGuia.TramosPorDelante(null);
+			bool tieneReySlime = false, tieneGoblin = false, tieneDeerclops = false,
+				tieneLegion = false, tieneReinaAbeja = false;
+			for (int i = 0; i < porDelante.Count; i++) {
+				if (porDelante[i].Clave == "ReySlime") tieneReySlime = true;
+				if (porDelante[i].Clave == "EjercitoGoblin") tieneGoblin = true;
+				if (porDelante[i].Clave == "Deerclops") tieneDeerclops = true;
+				if (porDelante[i].Clave == "LegionDeEscarcha") tieneLegion = true;
+				if (porDelante[i].Clave == "ReinaAbeja") tieneReinaAbeja = true;
+			}
+			bool ok = !tieneReySlime && !tieneGoblin && !tieneDeerclops && !tieneLegion && tieneReinaAbeja;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - con los cuatro opcionales " +
+				"tempranos superados, hoja de ruta: ReySlime=" + tieneReySlime + ", EjercitoGoblin=" +
+				tieneGoblin + ", Deerclops=" + tieneDeerclops + ", LegionDeEscarcha=" + tieneLegion +
+				" (los cuatro deben ser false, ya superados), ReinaAbeja=" + tieneReinaAbeja +
+				" (debe seguir true, no se ha tocado) " + (ok ? "-> OK." : "-> NO CUADRA."));
+
+			TramoGuia tramoOpcional;
+			PasoGuia pasoOpcional = EstadoGuia.PasoOpcionalActual(out tramoOpcional);
+			bool okSiguiente = pasoOpcional != null && tramoOpcional != null &&
+				tramoOpcional.Clave == "ReinaAbeja" && pasoOpcional.Clave == "ArmaParaLaReina";
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - objetivo opcional tras superar " +
+				"los cuatro tempranos (sin arma en la mochila): \"" +
+				(pasoOpcional != null ? tramoOpcional.Clave + "/" + pasoOpcional.Clave : "(ninguno)") +
+				"\", esperado \"ReinaAbeja/ArmaParaLaReina\" " + (okSiguiente ? "-> OK." : "-> NO CUADRA."));
+		}
+
+		/// <summary>Devuelve ReySlime, EjercitoGoblin, Deerclops y LegionDeEscarcha a su valor
+		/// ORIGINAL real (capturado en <see cref="Arrancar"/>), y limpia la mochila.</summary>
+		private static void RestaurarEventosDeInvasionTempranos()
+		{
+			NPC.downedSlimeKing = _downedSlimeKingOriginal;
+			NPC.downedDeerclops = _downedDeerclopsOriginal;
+			NPC.downedGoblins = _downedGoblinsOriginal;
+			NPC.downedFrost = _downedFrostOriginal;
+			Main.LocalPlayer.inventory[0] = new Item();
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - restaurados los cuatro " +
+				"opcionales tempranos a su valor original: downedSlimeKing=" + NPC.downedSlimeKing +
+				", downedDeerclops=" + NPC.downedDeerclops + ", downedGoblins=" + NPC.downedGoblins +
+				", downedFrost=" + NPC.downedFrost + ".");
 		}
 
 		private static void Restaurar()

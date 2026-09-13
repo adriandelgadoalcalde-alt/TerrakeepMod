@@ -150,6 +150,92 @@
     },
 
     {
+      "clave": "EjercitoGoblin",
+      "orden": 12,
+      "ambito": "vanilla",
+      "opcional": true,
+      "jefeFinal": 0,
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "ArmaParaElEjercitoGoblin",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs: el Guerrero Goblin (type==28), el mas duro de los comunes del evento, tiene 25 de daño, 8 de defensa y 110 de vida. Con daño-defensa*0.5 (minimo 1), 15 de daño deja golpes utiles contra toda la oleada.",
+              "tipo": "dano_arma",
+              "valor": 15
+            },
+            {
+              "_fuente": "Main.CanStartInvasion: usar el Estandarte de Batalla Goblin exige ConsumedLifeCrystals>=5 (200 de vida ya USADA de verdad, el mismo hito que PreOjo/CristalesDeVida) y que no haya ya otra invasion en marcha.",
+              "tipo": "cristales_vida",
+              "valor": 5,
+              "recomendado": true
+            },
+            {
+              "_fuente": "ItemID.cs: Estandarte de Batalla Goblin=361. Usado en la superficie, invoca la invasion al instante; alternativa a esperar a que aparezca sola (solo puede pasar tras derrotar a un jefe).",
+              "tipo": "objeto",
+              "id": 361,
+              "cantidad": 1,
+              "recomendado": true
+            }
+          ]
+        },
+        {
+          "clave": "VencerAlEjercitoGoblin",
+          "zona": "Superficie",
+          "capa": "superficie",
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedGoblins" }
+          ]
+        }
+      ]
+    },
+    {
+      "clave": "LegionDeEscarcha",
+      "orden": 17,
+      "ambito": "vanilla",
+      "opcional": true,
+      "jefeFinal": 0,
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "ArmaParaLaLegionDeEscarcha",
+          "zona": "Nieve",
+          "capa": "superficie",
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs: Mister Estocada (type==144), el mas duro de los tres tipos del evento, tiene 65 de daño, 26 de defensa y 240 de vida - con coldDamage=true, aplica frio extra ademas del golpe. Con daño-defensa*0.5 (minimo 1), 28 de daño deja golpes utiles.",
+              "tipo": "dano_arma",
+              "valor": 28
+            },
+            {
+              "_fuente": "Main.CanStartInvasion: usar la Bola de Nieve de Cristal exige el mismo ConsumedLifeCrystals>=5 que el Estandarte Goblin, y que no haya ya otra invasion en marcha.",
+              "tipo": "cristales_vida",
+              "valor": 5,
+              "recomendado": true
+            },
+            {
+              "_fuente": "ItemID.cs: Bola de Nieve de Cristal=602. Usada en cualquier sitio, invoca la legion al instante.",
+              "tipo": "objeto",
+              "id": 602,
+              "cantidad": 1,
+              "recomendado": true
+            }
+          ]
+        },
+        {
+          "clave": "VencerALaLegionDeEscarcha",
+          "zona": "Nieve",
+          "capa": "superficie",
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedFrost" }
+          ]
+        }
+      ]
+    },
+    {
       "clave": "Deerclops",
       "orden": 15,
       "ambito": "vanilla",

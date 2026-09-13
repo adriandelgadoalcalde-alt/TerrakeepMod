@@ -68,7 +68,10 @@ namespace TerrakeepMod.Common.Guia
 				{ "savedMech", () => NPC.savedMech },
 				{ "savedWizard", () => NPC.savedWizard },
 				{ "downedPirates", () => NPC.downedPirates },
-				{ "downedMartians", () => NPC.downedMartians }
+				{ "downedMartians", () => NPC.downedMartians },
+				// NPC.cs: "downedFrost" (no "downedFrostLegion") es el nombre real del campo que
+				// enciende la Legion de Escarcha al derrotarla.
+				{ "downedFrost", () => NPC.downedFrost }
 			};
 		}
 

@@ -893,6 +893,16 @@ T += [
      "Casa, mineral, cristales de vida y cuatro vecinos, hasta el Ojo de Cthulhu.",
      "A house, ore, life crystals and four villagers, up to the Eye of Cthulhu."),
 
+    ("Guia.Tramo.EjercitoGoblin.Nombre", "El Ejército Goblin (opcional)", "The Goblin Army (optional)"),
+    ("Guia.Tramo.EjercitoGoblin.Resumen",
+     "Una invasión por oleadas, no un jefe único. Se puede invocar en cuanto uses 5 cristales de vida, incluso antes del Ojo de Cthulhu.",
+     "A wave invasion, not a single boss. It can be summoned as soon as you have used 5 life crystals, even before the Eye of Cthulhu."),
+
+    ("Guia.Tramo.LegionDeEscarcha.Nombre", "La Legión de Escarcha (opcional)", "The Frost Legion (optional)"),
+    ("Guia.Tramo.LegionDeEscarcha.Resumen",
+     "Otra invasión por oleadas, con los mismos requisitos que el Ejército Goblin. Sus tres tipos de enemigo aplican frío además del golpe.",
+     "Another wave invasion, with the same requirements as the Goblin Army. Its three enemy types apply cold on top of the hit."),
+
     ("Guia.Tramo.Deerclops.Nombre", "Deerclops (opcional)", "Deerclops (optional)"),
     ("Guia.Tramo.Deerclops.Resumen",
      "7000 de vida, en el bioma de nieve. Solo aparece de noche, durante una tormenta, y sin ningún otro peligro activo cerca.",
@@ -1044,6 +1054,42 @@ T += [
     ("Guia.Paso.VencerADeerclops.Como",
      "Golpea el suelo y lanza pinchos de hielo en línea recta desde ambos lados: una arena elevada, lejos del suelo que pisa, evita la mayoría de sus ataques.",
      "It slams the ground and shoots ice spikes in straight lines from both sides: an elevated arena, away from the ground it stands on, avoids most of its attacks."),
+
+    # --- pasos del tramo opcional del Ejercito Goblin -------------------------------------------
+    ("Guia.Paso.ArmaParaElEjercitoGoblin.Titulo", "Un arma que aguante una oleada entera",
+     "A weapon that can survive a whole wave"),
+    ("Guia.Paso.ArmaParaElEjercitoGoblin.Porque",
+     "No es un jefe único: son varias oleadas de goblins distintos (peones, ladrones, guerreros, hechiceros, arqueros) a la vez. El Guerrero Goblin es el más duro de los comunes, con 25 de daño y solo 8 de defensa - lo que de verdad pide este tramo es aguante frente a varios enemigos encima tuya a la vez, no perforar una defensa alta.",
+     "It is not a single boss: it is several waves of different goblins at once (peons, thieves, warriors, sorcerers, archers). The Goblin Warrior is the toughest common one, with 25 damage and only 8 defense - what this actually demands is stamina against several enemies at once, not piercing high defense."),
+    ("Guia.Paso.ArmaParaElEjercitoGoblin.Como",
+     "Necesitas haber usado ya 5 cristales de vida (200 de vida real) para poder invocarla tú mismo - es la misma condición que exige el propio juego, no un capricho de esta guía. Un arma de área o que atraviese varios enemigos rinde mejor que una que solo pega de uno en uno.",
+     "You need to have already used 5 life crystals (200 real health) before you can summon it yourself - that is the game's own real condition, not a whim of this guide. An area weapon or one that pierces several enemies works better than one that only hits one at a time."),
+
+    ("Guia.Paso.VencerAlEjercitoGoblin.Titulo", "Derrotarla (opcional)", "Defeat it (optional)"),
+    ("Guia.Paso.VencerAlEjercitoGoblin.Porque",
+     "NPC.downedGoblins no bloquea el camino obligatorio, pero abre la tienda del Duende Mecánico (si ya vive contigo) y es la puerta para rescatar al Tinkerer Goblin cautivo bajo tierra.",
+     "NPC.downedGoblins does not block the mandatory path, but it unlocks the Mechanic's shop (if she already lives with you) and is the door to rescuing the captive Goblin Tinkerer underground."),
+    ("Guia.Paso.VencerAlEjercitoGoblin.Como",
+     "Pelea cerca de tu base, con pasillos estrechos y trampas: las oleadas vienen de los dos lados a la vez, y un cuello de botella vale más que espacio abierto.",
+     "Fight near your base, with narrow corridors and traps: the waves come from both sides at once, and a bottleneck is worth more than open space."),
+
+    # --- pasos del tramo opcional de la Legion de Escarcha ---------------------------------------
+    ("Guia.Paso.ArmaParaLaLegionDeEscarcha.Titulo", "Un arma capaz de aguantar el frío de otra oleada",
+     "A weapon that can weather another wave's cold"),
+    ("Guia.Paso.ArmaParaLaLegionDeEscarcha.Porque",
+     "Otra invasión por oleadas, con los mismos tres tipos de enemigo repitiéndose. Mister Estocada es el más duro, con 65 de daño y 26 de defensa, y los tres aplican frío además del golpe directo - el peligro real es que ese frío se acumula si no rompes el ritmo.",
+     "Another wave invasion, with the same three enemy types repeating. Mister Stabby is the toughest, with 65 damage and 26 defense, and all three apply cold on top of the direct hit - the real danger is that cold stacking up if you never break the rhythm."),
+    ("Guia.Paso.ArmaParaLaLegionDeEscarcha.Como",
+     "Misma condición que el Ejército Goblin: 5 cristales de vida ya usados antes de poder invocarla tú mismo. Una fuente de calor o un buff contra el frío ayuda más aquí que en casi cualquier otro tramo.",
+     "Same condition as the Goblin Army: 5 life crystals already used before you can summon it yourself. A heat source or an anti-cold buff helps more here than in almost any other stretch."),
+
+    ("Guia.Paso.VencerALaLegionDeEscarcha.Titulo", "Derrotarla (opcional)", "Defeat it (optional)"),
+    ("Guia.Paso.VencerALaLegionDeEscarcha.Porque",
+     "NPC.downedFrost no abre ningún camino obligatorio - es puramente un extra navideño. Lo que suelta (piezas de la armadura de Duende Travieso, el Bastón de Nieve) es un trofeo temprano más que una necesidad.",
+     "NPC.downedFrost does not unlock anything mandatory - it is purely a Christmas-themed bonus. What it drops (pieces of the Frost Legion armor, the Snowball Cannon) is an early trophy more than a necessity."),
+    ("Guia.Paso.VencerALaLegionDeEscarcha.Como",
+     "Igual que el Ejército Goblin: un cuello de botella cerca de tu base rinde mejor que pelear a campo abierto contra las dos direcciones a la vez.",
+     "Same as the Goblin Army: a bottleneck near your base works better than fighting in the open against both directions at once."),
 
     # --- pasos del segundo tramo: la maldad del mundo (Devorador / Cerebro) ------------------
     ("Guia.Paso.ArmaContraLaMaldad.Titulo", "Un arma que aguante muchos golpes seguidos",

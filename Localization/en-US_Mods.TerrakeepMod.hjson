@@ -835,6 +835,16 @@ Guia: {
 			Resumen: A house, ore, life crystals and four villagers, up to the Eye of Cthulhu.
 		}
 
+		EjercitoGoblin: {
+			Nombre: The Goblin Army (optional)
+			Resumen: A wave invasion, not a single boss. It can be summoned as soon as you have used 5 life crystals, even before the Eye of Cthulhu.
+		}
+
+		LegionDeEscarcha: {
+			Nombre: The Frost Legion (optional)
+			Resumen: Another wave invasion, with the same requirements as the Goblin Army. Its three enemy types apply cold on top of the hit.
+		}
+
 		Deerclops: {
 			Nombre: Deerclops (optional)
 			Resumen: 7000 health, in the snow biome. It only appears at night, during a storm, with no other danger active nearby.
@@ -955,6 +965,30 @@ Guia: {
 			Titulo: Defeat it (optional)
 			Porque: NPC.downedDeerclops does not unlock anything on the mandatory path - it is purely a bonus, imported from the Don't Starve Together universe. What it drops (the Deerclops Eye, the Deer Thing pet) is an early trophy more than a necessity.
 			Como: It slams the ground and shoots ice spikes in straight lines from both sides: an elevated arena, away from the ground it stands on, avoids most of its attacks.
+		}
+
+		ArmaParaElEjercitoGoblin: {
+			Titulo: A weapon that can survive a whole wave
+			Porque: It is not a single boss: it is several waves of different goblins at once (peons, thieves, warriors, sorcerers, archers). The Goblin Warrior is the toughest common one, with 25 damage and only 8 defense - what this actually demands is stamina against several enemies at once, not piercing high defense.
+			Como: You need to have already used 5 life crystals (200 real health) before you can summon it yourself - that is the game's own real condition, not a whim of this guide. An area weapon or one that pierces several enemies works better than one that only hits one at a time.
+		}
+
+		VencerAlEjercitoGoblin: {
+			Titulo: Defeat it (optional)
+			Porque: NPC.downedGoblins does not block the mandatory path, but it unlocks the Mechanic's shop (if she already lives with you) and is the door to rescuing the captive Goblin Tinkerer underground.
+			Como: Fight near your base, with narrow corridors and traps: the waves come from both sides at once, and a bottleneck is worth more than open space.
+		}
+
+		ArmaParaLaLegionDeEscarcha: {
+			Titulo: A weapon that can weather another wave's cold
+			Porque: Another wave invasion, with the same three enemy types repeating. Mister Stabby is the toughest, with 65 damage and 26 defense, and all three apply cold on top of the direct hit - the real danger is that cold stacking up if you never break the rhythm.
+			Como: Same condition as the Goblin Army: 5 life crystals already used before you can summon it yourself. A heat source or an anti-cold buff helps more here than in almost any other stretch.
+		}
+
+		VencerALaLegionDeEscarcha: {
+			Titulo: Defeat it (optional)
+			Porque: NPC.downedFrost does not unlock anything mandatory - it is purely a Christmas-themed bonus. What it drops (pieces of the Frost Legion armor, the Snowball Cannon) is an early trophy more than a necessity.
+			Como: Same as the Goblin Army: a bottleneck near your base works better than fighting in the open against both directions at once.
 		}
 
 		ArmaContraLaMaldad: {
