@@ -53,6 +53,9 @@ namespace TerrakeepMod.Common.Guia
 		private static int _espera;
 
 		private static bool _downedBoss1Original;
+		private static bool _downedBoss2Original;
+		private static bool _downedBoss3Original;
+		private static bool _shadowOrbSmashedOriginal;
 		private static readonly List<int> _npcsCreados = new List<int>();
 
 		/// <summary>Tipos de NPC del pueblo que ya vivian en el mundo de prueba y que la prueba
@@ -195,8 +198,17 @@ namespace TerrakeepMod.Common.Guia
 				case 26: Capturar("guia-4-invocar-el-ojo"); break;
 
 				// --- jefe caido -> tramo cerrado ------------------------------------------------
+				// OJO: en este punto el jugador TODAVIA lleva la Furia de estrellas (25 de daño) de
+				// case22, y con MaldadDelMundo ya implementado eso basta por si solo para el unico
+				// requisito obligatorio de su primer paso ("ArmaContraLaMaldad", dano_arma>=20). El
+				// compas no se queda "sin nada pendiente": salta directo al SEGUNDO paso de la
+				// maldad del mundo ("VencerLaMaldad"), que es justo el comportamiento que se quiere
+				// (nunca se pide dos veces lo que ya tienes). Se comprueba eso, no un "(ninguno)".
 				case 27: MatarElOjoEnFalso(); break;
-				case 28: ComprobarSinObjetivo(); break;
+				case 28: ComprobarPaso("VencerLaMaldad",
+					"el Ojo ya cayo (downedBoss1=true) y la Furia de estrellas que llevas desde " +
+					"antes (25 de daño) ya cumple ella sola el unico requisito obligatorio del " +
+					"primer paso de la maldad del mundo, asi que el compas salta directo al segundo"); break;
 				case 29: Capturar("guia-5-tramo-terminado"); break;
 
 				// --- la misma pantalla EN ESPAÑOL ------------------------------------------------
@@ -210,6 +222,56 @@ namespace TerrakeepMod.Common.Guia
 				case 35: CambiarIdioma(IdiomaDeTerrakeep.SeguirElJuego); break;
 
 				case 36: Restaurar(); break;
+
+				// --- segundo tramo implementado: la maldad del mundo (Devorador / Cerebro) ------
+				// El tramo 1 se cierra a mano (downedBoss1=true) para que EstadoGuia.PasoActual
+				// pase al siguiente tramo IMPLEMENTADO. ReinaAbeja esta entre medias en el .json
+				// pero implementado=false, asi que el catalogo la salta sola: si el paso que
+				// aparece aqui fuera el suyo, seria la señal de que ese filtro se ha roto.
+				case 37: PrepararMaldadDelMundo(); break;
+				case 38: ComprobarPaso("ArmaContraLaMaldad",
+					"downedBoss1=true a mano y nada de la maldad del mundo hecho todavia " +
+					"(y NO \"ReinaAbeja\", que esta implementado=false y el catalogo la salta)"); break;
+				case 39: MarcarEsferaRotaDeMentira(); break;
+				case 40: PonerObjetoDeInvocacion(); break;
+				case 41: ComprobarPaso("ArmaContraLaMaldad",
+					"esfera marcada rota + objeto de invocacion en la mochila: los dos son " +
+					"recomendados, asi que suben la preparacion pero el paso sigue sin cerrarse"); break;
+				case 42: Capturar("guia-7-maldad-preparativos"); break;
+				case 43: PonerArmaConDano(20); break;
+				case 44: VolcarEstadoDelJugador("con arma contra la maldad del mundo"); break;
+				case 45: ComprobarPaso("VencerLaMaldad",
+					"arma de 20+ de daño puesta: el unico requisito obligatorio del primer paso ya " +
+					"esta cumplido, así que el paso siguiente pasa a ser el actual"); break;
+				case 46: ComprobarLecturaDeJefeDelTramoActual("Devorador de Mundos / Cerebro de Cthulhu"); break;
+				case 47: Capturar("guia-8-maldad-vencer"); break;
+				case 48: MatarLaMaldadEnFalso(); break;
+
+				// El arma de case43 (20+ de daño) sigue en la mochila y por si sola ya cumpliria el
+				// unico requisito obligatorio de "ArmaParaEsqueletron" tambien: se quita aqui para
+				// poder comprobar de verdad que ese paso es el que toca ANTES de tener arma, y no
+				// dar por buena una casualidad de la propia prueba.
+				case 49: QuitarArmaDeLaMochila(); break;
+				case 50: ComprobarPaso("ArmaParaEsqueletron",
+					"downedBoss2=true a mano (la maldad del mundo se da por cerrada, el siguiente " +
+					"tramo implementado es Esqueletron) y sin arma todavia en la mochila"); break;
+
+				// --- cuarto tramo implementado: Esqueletron y la Mazmorra ------------------------
+				case 51: CrearAncianoDeMentira(); break;
+				case 52: ComprobarPaso("ArmaParaEsqueletron",
+					"el Anciano ya vive en el mundo: es un requisito recomendado (\"Que viva " +
+					"contigo\"), asi que se ve cumplido en el medidor pero sigue sin cerrar el paso"); break;
+				case 53: PonerArmaConDano(20); break;
+				case 54: VolcarEstadoDelJugador("con arma contra Esqueletron"); break;
+				case 55: ComprobarPaso("VencerAEsqueletron",
+					"arma de 20+ de daño puesta: el primer paso de Esqueletron ya esta cumplido"); break;
+				case 56: ComprobarLecturaDeJefeDelTramoActual("Esqueletron"); break;
+				case 57: Capturar("guia-9-esqueletron"); break;
+				case 58: MatarAEsqueletronEnFalso(); break;
+				case 59: ComprobarSinObjetivo(); break;
+				case 60: Capturar("guia-10-todo-lo-implementado-hecho"); break;
+
+				case 61: RestaurarTramosNuevos(); break;
 				default: Terminar(); break;
 			}
 		}
@@ -238,6 +300,9 @@ namespace TerrakeepMod.Common.Guia
 				(avisos == 0 ? " -> OK: el .json esta limpio." : " -> revisar."));
 
 			_downedBoss1Original = NPC.downedBoss1;
+			_downedBoss2Original = NPC.downedBoss2;
+			_downedBoss3Original = NPC.downedBoss3;
+			_shadowOrbSmashedOriginal = Terraria.WorldGen.shadowOrbSmashed;
 			NPC.downedBoss1 = false;
 
 			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Personaje, "autoprueba de la Guia");
@@ -404,6 +469,36 @@ namespace TerrakeepMod.Common.Guia
 				EstadoGuia.LecturaDeJefe(NPCID.EyeofCthulhu));
 		}
 
+		/// <summary>
+		/// Igual que <see cref="ComprobarLecturaDelJefe"/> pero SIN un tipo de NPC fijo: pregunta al
+		/// propio tramo en pantalla cual es su <c>JefeFinal</c> (ya resuelto por
+		/// <see cref="CatalogoGuia"/> segun corrupcion/carmesi si toca), asi sirve para cualquier
+		/// tramo nuevo sin tener que escribir una copia por jefe.
+		/// </summary>
+		private static void ComprobarLecturaDeJefeDelTramoActual(string etiqueta)
+		{
+			ContenidoGuia contenido = GuiaSystem.PanelActual;
+			if (contenido == null || contenido.TramoEnPantalla == null) {
+				RegistroGuia.Aviso(Terrakeep.LogTag + " AUTOPRUEBA GUIA: no hay tramo en pantalla para " +
+					"leer el jefe de \"" + etiqueta + "\".");
+				return;
+			}
+
+			int tipoJefe = contenido.TramoEnPantalla.JefeFinal;
+			int vida, dano, defensa;
+			bool ok = EvaluadorGuia.StatsDeJefe(tipoJefe, out vida, out dano, out defensa);
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - stats REALES de \"" + etiqueta +
+				"\" en esta partida (ContentSamples + NPC.ScaleStats con Main.GameModeInfo): tipo=" +
+				tipoJefe + " (\"" + EvaluadorGuia.NombreDeNpc(tipoJefe) + "\"), resuelto=" + ok +
+				", vida=" + vida + ", defensa=" + defensa + ", daño=" + dano +
+				". Mundo carmesi=" + Terraria.WorldGen.crimson + ". Modo de esta partida: " +
+				EstadoGuia.MundoActualModo() + ".");
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - lectura que ve el jugador:\n" +
+				EstadoGuia.LecturaDeJefe(tipoJefe));
+		}
+
 		private static void ComprobarSinObjetivo()
 		{
 			ContenidoGuia contenido = GuiaSystem.PanelActual;
@@ -413,10 +508,32 @@ namespace TerrakeepMod.Common.Guia
 			contenido.Reconstruir();
 
 			bool ok = contenido.PasoEnPantalla == null;
-			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - con downedBoss1=true no queda ningun " +
-				"paso pendiente en el tramo implementado: paso en pantalla=" +
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - con todos los tramos IMPLEMENTADOS " +
+				"dados por hechos no queda ningun paso pendiente: paso en pantalla=" +
 				(contenido.PasoEnPantalla != null ? contenido.PasoEnPantalla.Clave : "(ninguno)") + " " +
-				(ok ? "-> OK: el tramo se da por cerrado." : "-> NO CUADRA."));
+				(ok ? "-> OK: se da por cerrado." : "-> NO CUADRA."));
+
+			// Hallazgo real (se vio en una captura, no en el log): con todo cerrado, "lo que viene
+			// despues" volvia a listar los tramos YA SUPERADOS porque el punto de partida era 0.
+			// Se comprueba aqui con nombres, no solo con datos, que ninguno de los tres tramos que
+			// esta prueba acaba de cerrar aparece en la hoja de ruta.
+			System.Collections.Generic.List<TramoGuia> porDelante = EstadoGuia.TramosPorDelante(null);
+			System.Text.StringBuilder claves = new System.Text.StringBuilder();
+			bool haySuperado = false;
+			for (int i = 0; i < porDelante.Count; i++) {
+				if (i > 0) {
+					claves.Append(", ");
+				}
+				claves.Append(porDelante[i].Clave);
+				if (porDelante[i].Clave == "PreOjo" || porDelante[i].Clave == "MaldadDelMundo" ||
+					porDelante[i].Clave == "Esqueletron") {
+					haySuperado = true;
+				}
+			}
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - hoja de ruta con todo cerrado: " +
+				claves + " " + (!haySuperado
+					? "-> OK: ninguno de los tres tramos ya superados vuelve a aparecer."
+					: "-> NO CUADRA: hay un tramo ya superado en \"lo que viene despues\"."));
 		}
 
 		// -------------------------------------------------------------------------------------
@@ -579,6 +696,164 @@ namespace TerrakeepMod.Common.Guia
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - NPC.downedBoss1 puesto a true a mano " +
 				"(la bandera real que enciende NPC.SetEventFlagCleared al morir el Ojo, NPC.cs case 4). " +
 				"Se restaura al terminar.");
+		}
+
+		// -------------------------------------------------------------------------------------
+		// Segundo y cuarto tramo: la maldad del mundo y Esqueletron
+		// -------------------------------------------------------------------------------------
+
+		/// <summary>Cierra el primer tramo a mano (para que la guia pase al siguiente IMPLEMENTADO)
+		/// y deja limpio el estado propio de la maldad del mundo.</summary>
+		private static void PrepararMaldadDelMundo()
+		{
+			NPC.downedBoss1 = true;
+			NPC.downedBoss2 = false;
+			Terraria.WorldGen.shadowOrbSmashed = false;
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - preparado el tramo de la maldad " +
+				"del mundo: downedBoss1=true (a mano), downedBoss2=false, shadowOrbSmashed=false. " +
+				"Mundo carmesi (Terraria.WorldGen.crimson)=" + Terraria.WorldGen.crimson + ".");
+		}
+
+		/// <summary>Pone <c>WorldGen.shadowOrbSmashed</c> a true SIN romper ninguna esfera de
+		/// verdad, para comprobar que la bandera nueva de <see cref="BanderasGuia"/> lee el campo
+		/// real y no un contador propio.</summary>
+		private static void MarcarEsferaRotaDeMentira()
+		{
+			bool antes = Terraria.WorldGen.shadowOrbSmashed;
+			Terraria.WorldGen.shadowOrbSmashed = true;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - WorldGen.shadowOrbSmashed puesto " +
+				"a true a mano (" + antes + " -> " + Terraria.WorldGen.shadowOrbSmashed + "). Lo que lee " +
+				"la bandera \"shadowOrbSmashed\" ahora: " + BanderasGuia.Valor("shadowOrbSmashed") + ".");
+		}
+
+		/// <summary>Mete en la mochila la Comida de Gusano (o la Espina Sangrienta si esa no existe
+		/// en esta version), objetos reales buscados por id, no por nombre.</summary>
+		private static void PonerObjetoDeInvocacion()
+		{
+			int tipo = ItemID.WormFood;
+			if (!ContentSamples.ItemsByType.ContainsKey(tipo)) {
+				tipo = ItemID.BloodySpine;
+			}
+
+			Item objeto = new Item();
+			objeto.SetDefaults(tipo);
+			Main.LocalPlayer.inventory[1] = objeto;
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - objeto de invocacion puesto en la " +
+				"mochila: \"" + objeto.Name + "\" (id " + tipo + "). Lo que cuenta la guia (" +
+				"objeto_cualquiera 70/1331): " +
+				(EstadoJugadorGuia.CuantosLleva(ItemID.WormFood) + EstadoJugadorGuia.CuantosLleva(ItemID.BloodySpine)) + ".");
+		}
+
+		/// <summary>Equipa un arma real, buscada POR DAÑO (no por id fijo), con el mismo daño que
+		/// pide el paso de turno. Sirve para el tramo de la maldad del mundo y para Esqueletron:
+		/// los dos piden 20 de daño obligatorio.</summary>
+		private static void PonerArmaConDano(int minimo)
+		{
+			int tipo = BuscarObjeto(o => o.damage >= minimo && o.damage <= minimo + 20 && !o.accessory &&
+				o.ammo == AmmoID.None && o.pick == 0 && o.axe == 0 && o.hammer == 0 &&
+				o.useStyle != ItemUseStyleID.None);
+
+			if (tipo <= 0) {
+				RegistroGuia.Aviso(Terrakeep.LogTag + " AUTOPRUEBA GUIA: no se encontro ningun arma de " +
+					"al menos " + minimo + " de daño.");
+				return;
+			}
+
+			Item objeto = new Item();
+			objeto.SetDefaults(tipo);
+			Main.LocalPlayer.inventory[0] = objeto;
+
+			string nombre;
+			int dano = EstadoJugadorGuia.DanoDelMejorArma(out nombre);
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - arma puesta en la mochila: \"" +
+				objeto.Name + "\" (Item.damage=" + objeto.damage + "). Lo que lee la guia: \"" + nombre +
+				"\" con " + dano + ".");
+		}
+
+		/// <summary>Vacia la ranura 0 de la mochila. Hace falta entre los dos tramos nuevos: el
+		/// arma de 20+ de daño que pide "ArmaContraLaMaldad" tambien cumple, ella sola,
+		/// "ArmaParaEsqueletron" (el mismo umbral), y sin quitarla de en medio la prueba no
+		/// comprobaria de verdad que ese paso es el que toca antes de tener un arma.</summary>
+		private static void QuitarArmaDeLaMochila()
+		{
+			Main.LocalPlayer.inventory[0] = new Item();
+			string nombre;
+			int dano = EstadoJugadorGuia.DanoDelMejorArma(out nombre);
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - arma quitada de la mochila antes " +
+				"de Esqueletron. Mejor arma que lee la guia ahora: \"" +
+				(string.IsNullOrEmpty(nombre) ? "(ninguna)" : nombre) + "\" con " + dano + ".");
+		}
+
+		/// <summary>Marca la maldad del mundo como derrotada SIN pelearla, para comprobar el cierre
+		/// del segundo tramo y el paso al siguiente tramo IMPLEMENTADO.</summary>
+		private static void MatarLaMaldadEnFalso()
+		{
+			NPC.downedBoss2 = true;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - NPC.downedBoss2 puesto a true a " +
+				"mano (la bandera real que enciende NPC.SetEventFlagCleared al morir el Devorador o el " +
+				"Cerebro). Se restaura al terminar.");
+		}
+
+		/// <summary>Hace aparecer al Anciano de verdad con <c>NPC.NewNPC</c>, para comprobar el
+		/// requisito recomendado "npc" id 37 del tramo de Esqueletron.</summary>
+		private static void CrearAncianoDeMentira()
+		{
+			if (EstadoJugadorGuia.HayNpc(NPCID.OldMan)) {
+				RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - el Anciano ya vivia en el " +
+					"mundo de prueba, no hace falta crearlo.");
+				return;
+			}
+
+			int indice = NPC.NewNPC(new EntitySource_WorldGen("autoprueba de la Guia"),
+				(int)Main.LocalPlayer.position.X, (int)Main.LocalPlayer.position.Y, NPCID.OldMan);
+			if (indice >= 0 && indice < Main.maxNPCs) {
+				Main.npc[indice].homeless = true;
+				_npcsCreados.Add(indice);
+			}
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - Anciano creado de verdad con " +
+				"NPC.NewNPC (id " + NPCID.OldMan + "). HayNpc(37) ahora: " +
+				EstadoJugadorGuia.HayNpc(NPCID.OldMan) + ".");
+		}
+
+		/// <summary>Marca a Esqueletron como derrotado SIN pelearlo, para comprobar el cierre del
+		/// cuarto tramo.</summary>
+		private static void MatarAEsqueletronEnFalso()
+		{
+			NPC.downedBoss3 = true;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - NPC.downedBoss3 puesto a true a " +
+				"mano. Se restaura al terminar.");
+		}
+
+		/// <summary>Deshace TODO lo que han tocado los pasos 37-59: las banderas nuevas, el mundo y
+		/// el inventario, ademas de los NPC creados en este segundo bloque de la prueba.</summary>
+		private static void RestaurarTramosNuevos()
+		{
+			NPC.downedBoss1 = _downedBoss1Original;
+			NPC.downedBoss2 = _downedBoss2Original;
+			NPC.downedBoss3 = _downedBoss3Original;
+			Terraria.WorldGen.shadowOrbSmashed = _shadowOrbSmashedOriginal;
+
+			Player jugador = Main.LocalPlayer;
+			jugador.inventory[0] = new Item();
+			jugador.inventory[1] = new Item();
+
+			int quitados = 0;
+			for (int i = 0; i < _npcsCreados.Count; i++) {
+				int indice = _npcsCreados[i];
+				if (indice >= 0 && indice < Main.maxNPCs && Main.npc[indice] != null && Main.npc[indice].active) {
+					Main.npc[indice].active = false;
+					quitados++;
+				}
+			}
+			_npcsCreados.Clear();
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - restaurado tras la maldad del " +
+				"mundo y Esqueletron: downedBoss1=" + NPC.downedBoss1 + ", downedBoss2=" + NPC.downedBoss2 +
+				", downedBoss3=" + NPC.downedBoss3 + ", shadowOrbSmashed=" + Terraria.WorldGen.shadowOrbSmashed +
+				", NPC de prueba retirados=" + quitados + ".");
 		}
 
 		private static void Restaurar()

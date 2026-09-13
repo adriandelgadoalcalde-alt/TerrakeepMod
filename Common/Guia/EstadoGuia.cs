@@ -45,9 +45,23 @@ namespace TerrakeepMod.Common.Guia
 			List<TramoGuia> tramos = CatalogoGuia.Tramos;
 			for (int i = 0; i < tramos.Count; i++) {
 				TramoGuia t = tramos[i];
-				if (!t.Implementado) {
+				if (!t.Implementado || t.Pasos.Count == 0) {
 					continue;
 				}
+
+				// Un tramo YA SUPERADO no se vuelve a abrir solo porque un paso de mas atras deje
+				// de cumplirse en vivo. Es un caso real, no de laboratorio: te quitas la armadura
+				// del prehardmode al conseguir una mejor, sueltas el arma inicial del inventario...
+				// y todo eso son requisitos de pasos que ya diste por superados hace tiempo. El
+				// ULTIMO paso de cada tramo es, por convencion del propio .json, el que cierra el
+				// tramo de verdad (su requisito suele ser la bandera del jefe, que el motor nunca
+				// pone a false otra vez), asi que si ese ya esta cumplido el tramo entero se da por
+				// hecho sin mirar los de mas atras. Mientras el tramo siga EN CURSO, sí importa cual
+				// de sus pasos anteriores falta, para poder señalar el que toca de verdad.
+				if (EvaluadorGuia.PasoCompletado(t.Pasos[t.Pasos.Count - 1])) {
+					continue;
+				}
+
 				for (int j = 0; j < t.Pasos.Count; j++) {
 					if (!EvaluadorGuia.PasoCompletado(t.Pasos[j])) {
 						tramo = t;
@@ -75,7 +89,26 @@ namespace TerrakeepMod.Common.Guia
 		{
 			List<TramoGuia> salida = new List<TramoGuia>();
 			List<TramoGuia> tramos = CatalogoGuia.Tramos;
-			int desde = actual != null ? actual.Orden : 0;
+
+			int desde;
+			if (actual != null) {
+				desde = actual.Orden;
+			}
+			else {
+				// Sin tramo activo puede ser que no haya partida, o que TODOS los tramos
+				// IMPLEMENTADOS ya esten superados (PasoActual devuelve null en los dos casos). En
+				// el segundo, "lo que viene despues" no puede volver a listar desde el principio -
+				// se vio literalmente en una captura real: con Esqueletron recien cerrado, la hoja
+				// de ruta empezaba otra vez en "Antes del primer jefe". El punto de partida real es
+				// el Orden mas alto entre los tramos implementados (esten o no terminados), no 0.
+				desde = 0;
+				for (int i = 0; i < tramos.Count; i++) {
+					if (tramos[i].Implementado && tramos[i].Orden > desde) {
+						desde = tramos[i].Orden;
+					}
+				}
+			}
+
 			for (int i = 0; i < tramos.Count; i++) {
 				if (tramos[i].Orden > desde) {
 					salida.Add(tramos[i]);

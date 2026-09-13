@@ -115,8 +115,43 @@
       "ambito": "vanilla",
       "jefeFinal": 13,
       "jefeFinalCarmesi": 266,
-      "implementado": false,
-      "pasos": []
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "ArmaContraLaMaldad",
+          "zona": "Cavernas",
+          "capa": "cavernas",
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==13 (Devorador, cabeza de segmento): daño 22, defensa 2, vida 150 por segmento. type==266 (Cerebro): daño 30, defensa 14, vida 1250, con dontTakeDamage=true mientras vivan sus Reptadores. Con daño-defensa*0.5 (minimo 1), 20 de daño de arma deja golpes utiles contra los dos.",
+              "tipo": "dano_arma",
+              "valor": 20
+            },
+            {
+              "_fuente": "WorldGen.shadowOrbSmashed, guardado en el .wld (WorldFile.cs). Solo dice que ya se ha roto UNA, no cuantas: el contador real (shadowOrbCount) es modulo 3 y vuelve a 0 al invocar al jefe.",
+              "tipo": "bandera",
+              "bandera": "shadowOrbSmashed",
+              "recomendado": true
+            },
+            {
+              "_fuente": "ItemID.cs: WormFood=70, BloodySpine=1331. Invocan al jefe al usarlos, alternativa a romper esferas/corazones a ciegas.",
+              "tipo": "objeto_cualquiera",
+              "ids": [70, 1331],
+              "cantidad": 1,
+              "recomendado": true
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerLaMaldad",
+          "zona": "Cavernas",
+          "capa": "cavernas",
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedBoss2" }
+          ]
+        }
+      ]
     },
     {
       "clave": "ReinaAbeja",
@@ -131,8 +166,36 @@
       "orden": 4,
       "ambito": "vanilla",
       "jefeFinal": 35,
-      "implementado": false,
-      "pasos": []
+      "implementado": true,
+      "pasos": [
+        {
+          "clave": "ArmaParaEsqueletron",
+          "zona": "Mazmorra",
+          "capa": "superficie",
+          "requisitos": [
+            {
+              "_fuente": "NPC.cs, type==35: daño 32, defensa 10, vida 4400. Con daño-defensa*0.5 (minimo 1), 20 de daño de arma deja golpes utiles.",
+              "tipo": "dano_arma",
+              "valor": 20
+            },
+            {
+              "_fuente": "NPC.cs, type==37: townNPC=true, siempre presente junto a la Mazmorra. Hablarle de noche reta a luchar contra Esqueletron.",
+              "tipo": "npc",
+              "id": 37,
+              "recomendado": true
+            },
+            { "tipo": "gancho", "recomendado": true }
+          ]
+        },
+        {
+          "clave": "VencerAEsqueletron",
+          "zona": "Mazmorra",
+          "capa": "superficie",
+          "requisitos": [
+            { "tipo": "bandera", "bandera": "downedBoss3" }
+          ]
+        }
+      ]
     },
     {
       "clave": "MuroDeCarne",

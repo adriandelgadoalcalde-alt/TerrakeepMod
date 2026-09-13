@@ -780,12 +780,18 @@ Guia: {
 		GanchoNo: You are not carrying a hook
 	}
 
-	Bandera.downedBoss1: Defeat the Eye of Cthulhu
+	Bandera: {
+		downedBoss1: Defeat the Eye of Cthulhu
+		downedBoss2: Defeat the Eater of Worlds or the Brain of Cthulhu
+		downedBoss3: Defeat Skeletron
+		shadowOrbSmashed: Having already broken a Shadow Orb or Crimson Heart
+	}
 
 	Zona: {
 		Superficie: the surface
 		Subterraneo: the underground
 		Cavernas: the caverns
+		Mazmorra: the Dungeon entrance
 	}
 
 	Tramo: {
@@ -885,6 +891,30 @@ Guia: {
 			Titulo: Summon it yourself instead of waiting
 			Porque: With everything above done the Eye can show up on its own at nightfall, but only one night in three: you can spend several nights ready and have it never come. The Suspicious Looking Eye calls it whenever you want, which is what lets you pick the moment instead of being caught halfway through something.
 			Como: Six lenses at a Demon or Crimson Altar. Lenses drop from the eyes that fly around the surface at night, so they pile up on their own while you get everything else ready.
+		}
+
+		ArmaContraLaMaldad: {
+			Titulo: A weapon that can keep swinging
+			Porque: The same formula as always (you take off damage minus half its defense, minimum 1) weighs less here than against the Eye: each Eater of Worlds segment only has 2 defense, and the Brain of Cthulhu itself has 14, though you cannot touch it until the Creepers around it die. What you do need is stamina: the Eater is dozens of segments doing 22 damage each, and the Brain hits for 30 on direct contact. A short, no-reach weapon leaves you standing still between hits; one with range or that shoots lets you hit and back away.
+			Como: Any ranged or reach weapon from the first tier of ore is plenty. Breaking a Crimson Heart or Shadow Orb by accident already nudges the boss closer; if you would rather pick the moment yourself, Worm Food or the Bloody Spine summon it directly.
+		}
+
+		VencerLaMaldad: {
+			Titulo: Defeat it
+			Porque: There is no new engine condition to check here beyond whether it is already down: the game sets NPC.downedBoss2 when either boss dies (Eater or Brain), and that flag is what really unlocks what comes next: Demon or Crimson Altars start dropping new ore when smashed with a hammer, and the first time the boss dies a meteorite is guaranteed to fall somewhere in the world.
+			Como: The Eater gets cut into pieces: any segment split in half turns into two more worms, so a weapon that pierces in a line (or has a lot of reach) finishes it faster than one that only hits one at a time. The Brain hides behind its Creepers: kill them first and it goes still and vulnerable for a few seconds.
+		}
+
+		ArmaParaEsqueletron: {
+			Titulo: A weapon that can handle his hands
+			Porque: Skeletron has 32 damage and 10 defense (NPC.cs, the type==35 block): with the usual formula, a 20 damage weapon takes 15 off per hit, and it takes quite a few against his 4400 health split between the two hands and the head. His hands spin and hit hard: without reach on your weapon, you will take more than you deal.
+			Como: Any second-tier ore weapon (or a bow with good arrows) already covers it. The Old Man, always by the Dungeon entrance, offers to fight him if you talk to him at night.
+		}
+
+		VencerAEsqueletron: {
+			Titulo: Defeat him
+			Porque: NPC.downedBoss3 is the flag that actually matters here: as soon as it flips to true, the Dungeon Guardians (meant only to block the entrance before its time, with absurd damage) stop spawning, and the Clothier moves in with you.
+			Como: Fight near the Dungeon entrance, never inside it: if dawn arrives before he dies, he heals back to full instantly and you have to start over.
 		}
 	}
 }

@@ -780,12 +780,18 @@ Guia: {
 		GanchoNo: No llevas ningún gancho
 	}
 
-	Bandera.downedBoss1: Derrotar al Ojo de Cthulhu
+	Bandera: {
+		downedBoss1: Derrotar al Ojo de Cthulhu
+		downedBoss2: Derrotar al Devorador de Mundos o al Cerebro de Cthulhu
+		downedBoss3: Derrotar a Esqueletron
+		shadowOrbSmashed: Haber roto ya una Esfera Oscura o un Corazón Carmesí
+	}
 
 	Zona: {
 		Superficie: la superficie
 		Subterraneo: el subsuelo
 		Cavernas: las cavernas
+		Mazmorra: la entrada de la Mazmorra
 	}
 
 	Tramo: {
@@ -885,6 +891,30 @@ Guia: {
 			Titulo: Llamarlo tú, en vez de esperarlo
 			Porque: Cumpliendo todo lo anterior, el Ojo puede aparecer solo al caer la noche, pero sólo una de cada tres noches: puedes pasarte varias noches preparado y sin que llegue. El Vidente Sospechoso lo llama cuando tú quieras, que es lo que te deja elegir el momento en vez de que te pille a medias.
 			Como: Seis lentes en un Altar Demoniaco o Carmesí. Las lentes las sueltan los ojos que vuelan de noche por la superficie, así que salen solas mientras preparas el resto.
+		}
+
+		ArmaContraLaMaldad: {
+			Titulo: Un arma que aguante muchos golpes seguidos
+			Porque: La misma fórmula de siempre (le quitas daño menos la mitad de su defensa, mínimo 1) aquí pesa menos que con el Ojo: cada segmento del Devorador de Mundos solo tiene 2 de defensa, y el propio Cerebro de Cthulhu 14, aunque no puedes tocarlo hasta que mueran los Reptadores que lo rodean. Lo que sí hace falta es aguante: el Devorador son decenas de segmentos con 22 de daño cada uno, y el Cerebro golpea 30 en contacto directo. Un arma corta y sin alcance te deja parado entre golpes; una que llegue lejos o dispare deja pegar y retroceder.
+			Como: Cualquier arma con alcance o a distancia de la primera capa de mineral sirve de sobra. Un Corazón Carmesí o una Esfera Oscura rotos por accidente ya empiezan a acercar al jefe; si prefieres elegir el momento, la Comida de Gusano o la Espina Sangrienta lo invocan directamente.
+		}
+
+		VencerLaMaldad: {
+			Titulo: Derrotarlo
+			Porque: Aquí no hay una condición nueva del motor que comprobar más allá de si ya cayó: el juego marca NPC.downedBoss2 al morir cualquiera de los dos (Devorador o Cerebro), y esa bandera es la que de verdad abre lo que viene después: los Altares Demoniacos o Carmesí empiezan a soltar mineral nuevo al romperse con un mazo, y la primera vez que el jefe muere cae un meteorito seguro en el mundo.
+			Como: El Devorador se corta en trozos: cada segmento partido por la mitad se separa en dos gusanos más, así que un arma que atraviese en línea (o con mucho alcance) acaba antes que una que solo pega de uno en uno. El Cerebro se esconde detrás de sus Reptadores: mátalos primero y se queda quieto y vulnerable unos segundos.
+		}
+
+		ArmaParaEsqueletron: {
+			Titulo: Un arma capaz de aguantar sus manos
+			Porque: Esqueletron tiene 32 de daño y 10 de defensa (NPC.cs, bloque type==35): con la fórmula de siempre, un arma de 20 de daño le quita 15 por golpe, y hacen falta bastantes contra sus 4400 de vida repartidos entre las dos manos y la cabeza. Sus manos giran y golpean fuerte: sin alcance en tu arma, vas a recibir más de lo que das.
+			Como: Cualquier arma de mineral de la segunda capa (o un arco con buenas flechas) ya cumple. El Anciano, siempre junto a la entrada de la Mazmorra, te reta a luchar contra él si le hablas de noche.
+		}
+
+		VencerAEsqueletron: {
+			Titulo: Derrotarlo
+			Porque: NPC.downedBoss3 es la bandera que de verdad importa aquí: en cuanto pasa a true, los Guardianes de la Mazmorra (pensados solo para bloquear la entrada antes de tiempo, con un daño altísimo) dejan de aparecer, y el Sastre se muda a vivir contigo.
+			Como: Pelea cerca de la entrada de la Mazmorra, nunca dentro de ella: si amanece antes de matarlo, se cura de golpe entero y hay que empezar de cero.
 		}
 	}
 }

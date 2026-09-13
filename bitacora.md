@@ -5257,3 +5257,135 @@ registro), `UI/Panel/PanelTerrakeepState.cs` (séptima pestaña + escala adaptat
 primero de la columna derecha (comprobado en la captura, no solo en el log: 40 párrafos frente a
 los 38 de la pasada sin Calamity, que son sus dos líneas), los seis pasos siguen señalando el
 objetivo que toca y ninguna comprobación en rojo. Log en `evidencia\guia-calamity.log.txt`.
+
+## 13-sep-2026 — La Guía: dos tramos más (Devorador/Cerebro y Esqueletron) y un fallo real de progresión que solo salió jugando
+
+Siguiendo la prioridad que dejó la entrada anterior, esta sesión implementa los dos tramos
+siguientes del árbol — **`MaldadDelMundo`** (Devorador de Mundos / Cerebro de Cthulhu, según
+corrupción o carmesí del mundo) y **`Esqueletron`** — con el mismo rigor que `PreOjo`: requisitos
+leídos del motor real, nunca copiados a mano, y verificados llevando el personaje de prueba por
+el tramo entero con `scripts\verificar-guia.ps1`, ampliando el mismo arnés (no uno nuevo).
+
+### Los tramos nuevos, y de dónde sale cada número
+
+Antes de escribir una sola cifra se miró el `NPC.cs` decompilado real de esta versión:
+
+- **Devorador de Mundos** (`type==13`, cabeza/segmento): daño 22, defensa 2, vida 150 **por
+  segmento** (no hay una cifra única "vida total del gusano" en el motor: son decenas de
+  segmentos independientes, y la guía lo dice así en vez de inventarse un total).
+- **Cerebro de Cthulhu** (`type==266`): daño 30, defensa 14, vida 1250, con
+  `dontTakeDamage=true` mientras vivan sus Reptadores alrededor.
+- **Esqueletron** (`type==35`, ya citado en el `.json` desde el primer día): daño 32, defensa 10,
+  vida 4400.
+- **Anciano** (`type==37`): `townNPC=true`, por eso ya cuenta con el tipo de requisito `npc` que
+  ya existía (id 37) sin tocar el evaluador.
+
+No hizo falta ampliar el vocabulario cerrado de tipos de requisito (`cristales_vida`,
+`vida_maxima`, `defensa`, `npcs_pueblo`, `npc`, `objeto`, `objeto_cualquiera`, `dano_arma`,
+`gancho`, `bandera`): los dos tramos nuevos se componen enteros con esos diez. Lo único que se
+amplió fue el CONTENIDO de un tipo que ya existía — `BanderasGuia` gana una entrada nueva,
+`shadowOrbSmashed`, que lee `Terraria.WorldGen.shadowOrbSmashed` (persiste de verdad: se guarda
+en el `.wld`, `WorldFile.cs` líneas 1283/2045/3439, y solo se borra al generar un mundo nuevo). Se
+usa como requisito **recomendado** ("ya has roto una esfera/corazón") y no obligatorio a
+propósito: el contador real que cuenta hasta 3 para invocar solo (`WorldGen.shadowOrbCount`) es
+módulo 3 y vuelve a 0 en cuanto invoca al jefe, así que un "vas 2 de 3" mentiría justo cuando más
+importa — se comprobó en el código antes de descartarlo, no se dio por hecho.
+
+Cada tramo son dos pasos, siguiendo el mismo patrón que cerró `PreOjo` (un paso de "prepárate" con
+el requisito obligatorio real, y un último paso cuyo único requisito obligatorio es la bandera del
+jefe — `downedBoss2` / `downedBoss3`, las dos ya estaban en la tabla desde el primer día):
+
+- `MaldadDelMundo`: **`ArmaContraLaMaldad`** (`dano_arma` ≥20, citando los bloques de arriba;
+  `shadowOrbSmashed` y Cebo de gusanos/Espina dorsal sangrienta —ids 70/1331, verificados en
+  `ItemID.cs`, no adivinados— como recomendados; gancho recomendado) → **`VencerLaMaldad`**
+  (`bandera downedBoss2`).
+- `Esqueletron`: **`ArmaParaEsqueletron`** (`dano_arma` ≥20; el Anciano, `npc` id 37, recomendado;
+  gancho recomendado) → **`VencerAEsqueletron`** (`bandera downedBoss3`).
+
+### El hallazgo real: un tramo ya superado se podía volver a abrir solo
+
+Esto NO se vio leyendo el código, se vio en el primer pase real del arnés ampliado. El plan era
+cerrar `MaldadDelMundo` a mano (`NPC.downedBoss2 = true`) y comprobar que la guía saltaba sola al
+primer paso de `Esqueletron`. En vez de eso, el log dijo que el objetivo seguía siendo
+**"Defensa"** — el SEGUNDO paso de `PreOjo`, un tramo que en teoría llevaba rato cerrado.
+
+La causa, una vez se miró `EstadoGuia.PasoActual`: el bucle recorre cada tramo IMPLEMENTADO y
+devuelve el primer paso cuyo `PasoCompletado` da `false` — y `PasoCompletado` vuelve a leer el
+estado EN VIVO de cada requisito, sin memoria de "esto ya se dio por bueno una vez". El arnés
+había limpiado la armadura y el arma al final del bloque de `PreOjo` (`Restaurar()`, que deja el
+personaje de prueba tal como lo encontró), así que al llegar a los tramos nuevos la defensa real
+volvía a ser 0 — y como el paso "Defensa" de `PreOjo` exige `statDefense >= 11` en vivo, volvía a
+contar como pendiente, sin que le importara que `downedBoss1` siguiera en `true`.
+
+Esto no es un artefacto de la prueba: es un fallo real de diseño que ya existía desde el primer
+día, solo que con un único tramo implementado nunca se había podido observar (con solo `PreOjo`,
+"cerrar el tramo" y "no perder ningún requisito anterior" eran la misma cosa por coincidencia). Un
+jugador real que se quita la armadura inicial al conseguir una mejor, o suelta el arma de partida
+del inventario, habría visto a la guía mandarle otra vez a por 10 de defensa contra un jefe que
+llevaba muerto un buen rato — justo el "esto no funciona de verdad" que este proyecto no se puede
+permitir.
+
+**Arreglo, en `EstadoGuia.PasoActual`:** antes de mirar los pasos de un tramo uno a uno, se
+comprueba si su ÚLTIMO paso ya está completado (por convención del propio `.json`, es el que
+cierra el tramo de verdad — casi siempre la bandera del jefe, que el motor nunca vuelve a poner a
+`false`). Si lo está, el tramo entero se da por hecho y se salta sin mirar los de más atrás.
+Mientras el tramo sigue EN CURSO, sí importa cuál de sus pasos anteriores falta — ahí no cambia
+nada, se sigue pudiendo decir "te falta el arma" con precisión.
+
+Efecto secundario, encontrado con el mismo arnés al re-ejecutar: `EstadoGuia.TramosPorDelante`
+tenía el mismo problema en el caso "no queda ningún tramo implementado por hacer" — con `actual =
+null` usaba `desde = 0` sin más, así que "Lo que viene después" volvía a listar desde el
+principio: **se vio literalmente en la captura `guia-10-todo-lo-implementado-hecho.png`**, con
+"Antes del primer jefe" arriba del todo pese a llevar rato derrotado. Arreglo en la misma función:
+si no hay tramo activo porque todo lo implementado ya está superado (no porque no haya partida),
+el punto de partida es el `Orden` más alto entre los tramos IMPLEMENTADOS, no 0. Verificado con un
+tercer tipo de comprobación en el arnés (no solo "el paso en pantalla es el que toca", también
+"ningún tramo ya cerrado aparece en la hoja de ruta") y con la captura repetida tras el arreglo.
+
+### Verificación real, las dos veces (sin Calamity y con Calamity)
+
+`scripts\verificar-guia.ps1` (sin Calamity) y `scripts\verificar-guia.ps1 -Calamity`: las dos
+pasadas completas, **ninguna comprobación en rojo** (`NO CUADRA` / `EXCEPCION` / `NO COINCIDE` /
+`NO CABE`), incluida la transición de `PreOjo` → `MaldadDelMundo` → `Esqueletron` → "no queda
+nada pendiente" con banderas puestas a mano y sin pelear ningún jefe de verdad. Con Calamity
+cargado el aviso de alcance sigue saliendo primero en la columna derecha y las cifras de los
+jefes nuevos se leen igual de bien (comprobado con un arma distinta a la de la pasada sin
+Calamity — "Bumerán encantado", 21 de daño — para no depender de que sea siempre la misma).
+Capturas reales revisadas a mano (no solo el log en verde, lección ya aprendida en esta misma
+área): `guia-7-maldad-preparativos.png`, `guia-8-maldad-vencer.png`, `guia-9-esqueletron.png` y
+`guia-10-todo-lo-implementado-hecho.png`, en las dos pasadas — sin texto solapado ni cortado, con
+el aviso de Calamity bien colocado encima de "Qué te falta". Logs en `evidencia\guia.log.txt` y
+`evidencia\guia-calamity.log.txt` (sobrescritos con esta pasada; el log anterior, solo de
+`PreOjo`, queda en el historial de git si hace falta consultarlo).
+
+### Alcance de esta sesión
+
+Tocados: `Assets/guia_progresion.json` (dos tramos pasan de `implementado:false` a `true`, cuatro
+pasos y doce requisitos nuevos), `Common/Guia/BanderasGuia.cs` (bandera `shadowOrbSmashed`),
+`Common/Guia/EstadoGuia.cs` (el arreglo real: tramo superado no se reabre, hoja de ruta no repite
+tramos ya hechos), `Common/Guia/AutopruebaGuia.cs` (arnés ampliado con 25 pasos nuevos, del 37 al
+61, más los métodos que cambian el estado real: romper esfera de mentira, poner objeto de
+invocación, quitar/poner arma por daño, matar la maldad/Esqueletron en falso, crear al Anciano),
+`scripts/generar-localizacion.py` + los dos `.hjson` (24 claves nuevas por idioma: 2 banderas, 1
+zona nueva —"la entrada de la Mazmorra"— y 4 pasos completos con título/porqué/cómo en los dos
+idiomas).
+
+### Lo que sigue, con la misma prioridad que dejó la entrada anterior
+
+Quedan por convertir en pasos evaluables, en este orden: `MuroDeCarne` (el punto de no retorno,
+necesita un aviso claro de que el mundo cambia para siempre), `Mecanicos` (los tres jefes
+mecánicos, salto de dificultad grande), `Plantera` + `TemploYGolem` (encadenados por
+`downedMechBossAny`/`downedPlantBoss`), y como opcionales/tardíos `InicioModoDificil`,
+`ReinaAbeja`, `JefesOpcionalesTardios`, `EventosLunares` y `MoonLord`. `ReinaAbeja` en concreto
+merece una nota propia: aunque es opcional, si algún día se implementa habrá que decidir si debe
+seguir apareciendo en la hoja de ruta incluso después de tramos con `Orden` mayor (hoy
+`TramosPorDelante` es puramente lineal por `Orden`, y un tramo opcional saltado desaparecería de
+"lo que viene después" en cuanto se pasa de largo — no es un bug nuevo de esta sesión, es la
+misma simplificación que ya tenía el código, pero conviene decidirlo antes de implementarla para
+no heredar el mismo tipo de sorpresa que costó encontrar hoy).
+
+Sin tocar todavía, siguen pendientes las dos piezas de diseño acordadas (marcadores de mapa
+enganchados a `Common/Exploracion/MarcadoresExploracion.cs`/`CapaMapaExploracion.cs`, y dirección
+horizontal hacia el objetivo) — esta sesión se dedicó entera a los tramos nuevos y al fallo de
+progresión que salió al ampliarlos, que por su naturaleza (un jugador real se podría haber
+encontrado con la guía mandándole hacia atrás) tenía prioridad sobre features nuevas.

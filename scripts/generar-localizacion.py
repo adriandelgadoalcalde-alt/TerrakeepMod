@@ -825,11 +825,18 @@ T += [
     ("Guia.Req.GanchoNo", "No llevas ningún gancho", "You are not carrying a hook"),
 
     ("Guia.Bandera.downedBoss1", "Derrotar al Ojo de Cthulhu", "Defeat the Eye of Cthulhu"),
+    ("Guia.Bandera.downedBoss2", "Derrotar al Devorador de Mundos o al Cerebro de Cthulhu",
+     "Defeat the Eater of Worlds or the Brain of Cthulhu"),
+    ("Guia.Bandera.downedBoss3", "Derrotar a Esqueletron", "Defeat Skeletron"),
+    ("Guia.Bandera.shadowOrbSmashed",
+     "Haber roto ya una Esfera Oscura o un Corazón Carmesí",
+     "Having already broken a Shadow Orb or Crimson Heart"),
 
     # --- zonas -------------------------------------------------------------------------------
     ("Guia.Zona.Superficie", "la superficie", "the surface"),
     ("Guia.Zona.Subterraneo", "el subsuelo", "the underground"),
     ("Guia.Zona.Cavernas", "las cavernas", "the caverns"),
+    ("Guia.Zona.Mazmorra", "la entrada de la Mazmorra", "the Dungeon entrance"),
 
     # --- tramos ------------------------------------------------------------------------------
     ("Guia.Tramo.PreOjo.Nombre", "Antes del primer jefe", "Before the first boss"),
@@ -947,6 +954,42 @@ T += [
     ("Guia.Paso.InvocarElOjo.Como",
      "Seis lentes en un Altar Demoniaco o Carmesí. Las lentes las sueltan los ojos que vuelan de noche por la superficie, así que salen solas mientras preparas el resto.",
      "Six lenses at a Demon or Crimson Altar. Lenses drop from the eyes that fly around the surface at night, so they pile up on their own while you get everything else ready."),
+
+    # --- pasos del segundo tramo: la maldad del mundo (Devorador / Cerebro) ------------------
+    ("Guia.Paso.ArmaContraLaMaldad.Titulo", "Un arma que aguante muchos golpes seguidos",
+     "A weapon that can keep swinging"),
+    ("Guia.Paso.ArmaContraLaMaldad.Porque",
+     "La misma fórmula de siempre (le quitas daño menos la mitad de su defensa, mínimo 1) aquí pesa menos que con el Ojo: cada segmento del Devorador de Mundos solo tiene 2 de defensa, y el propio Cerebro de Cthulhu 14, aunque no puedes tocarlo hasta que mueran los Reptadores que lo rodean. Lo que sí hace falta es aguante: el Devorador son decenas de segmentos con 22 de daño cada uno, y el Cerebro golpea 30 en contacto directo. Un arma corta y sin alcance te deja parado entre golpes; una que llegue lejos o dispare deja pegar y retroceder.",
+     "The same formula as always (you take off damage minus half its defense, minimum 1) weighs less here than against the Eye: each Eater of Worlds segment only has 2 defense, and the Brain of Cthulhu itself has 14, though you cannot touch it until the Creepers around it die. What you do need is stamina: the Eater is dozens of segments doing 22 damage each, and the Brain hits for 30 on direct contact. A short, no-reach weapon leaves you standing still between hits; one with range or that shoots lets you hit and back away."),
+    ("Guia.Paso.ArmaContraLaMaldad.Como",
+     "Cualquier arma con alcance o a distancia de la primera capa de mineral sirve de sobra. Un Corazón Carmesí o una Esfera Oscura rotos por accidente ya empiezan a acercar al jefe; si prefieres elegir el momento, la Comida de Gusano o la Espina Sangrienta lo invocan directamente.",
+     "Any ranged or reach weapon from the first tier of ore is plenty. Breaking a Crimson Heart or Shadow Orb by accident already nudges the boss closer; if you would rather pick the moment yourself, Worm Food or the Bloody Spine summon it directly."),
+
+    ("Guia.Paso.VencerLaMaldad.Titulo", "Derrotarlo", "Defeat it"),
+    ("Guia.Paso.VencerLaMaldad.Porque",
+     "Aquí no hay una condición nueva del motor que comprobar más allá de si ya cayó: el juego marca NPC.downedBoss2 al morir cualquiera de los dos (Devorador o Cerebro), y esa bandera es la que de verdad abre lo que viene después: los Altares Demoniacos o Carmesí empiezan a soltar mineral nuevo al romperse con un mazo, y la primera vez que el jefe muere cae un meteorito seguro en el mundo.",
+     "There is no new engine condition to check here beyond whether it is already down: the game sets NPC.downedBoss2 when either boss dies (Eater or Brain), and that flag is what really unlocks what comes next: Demon or Crimson Altars start dropping new ore when smashed with a hammer, and the first time the boss dies a meteorite is guaranteed to fall somewhere in the world."),
+    ("Guia.Paso.VencerLaMaldad.Como",
+     "El Devorador se corta en trozos: cada segmento partido por la mitad se separa en dos gusanos más, así que un arma que atraviese en línea (o con mucho alcance) acaba antes que una que solo pega de uno en uno. El Cerebro se esconde detrás de sus Reptadores: mátalos primero y se queda quieto y vulnerable unos segundos.",
+     "The Eater gets cut into pieces: any segment split in half turns into two more worms, so a weapon that pierces in a line (or has a lot of reach) finishes it faster than one that only hits one at a time. The Brain hides behind its Creepers: kill them first and it goes still and vulnerable for a few seconds."),
+
+    # --- pasos del cuarto tramo: Esqueletron y la Mazmorra ------------------------------------
+    ("Guia.Paso.ArmaParaEsqueletron.Titulo", "Un arma capaz de aguantar sus manos",
+     "A weapon that can handle his hands"),
+    ("Guia.Paso.ArmaParaEsqueletron.Porque",
+     "Esqueletron tiene 32 de daño y 10 de defensa (NPC.cs, bloque type==35): con la fórmula de siempre, un arma de 20 de daño le quita 15 por golpe, y hacen falta bastantes contra sus 4400 de vida repartidos entre las dos manos y la cabeza. Sus manos giran y golpean fuerte: sin alcance en tu arma, vas a recibir más de lo que das.",
+     "Skeletron has 32 damage and 10 defense (NPC.cs, the type==35 block): with the usual formula, a 20 damage weapon takes 15 off per hit, and it takes quite a few against his 4400 health split between the two hands and the head. His hands spin and hit hard: without reach on your weapon, you will take more than you deal."),
+    ("Guia.Paso.ArmaParaEsqueletron.Como",
+     "Cualquier arma de mineral de la segunda capa (o un arco con buenas flechas) ya cumple. El Anciano, siempre junto a la entrada de la Mazmorra, te reta a luchar contra él si le hablas de noche.",
+     "Any second-tier ore weapon (or a bow with good arrows) already covers it. The Old Man, always by the Dungeon entrance, offers to fight him if you talk to him at night."),
+
+    ("Guia.Paso.VencerAEsqueletron.Titulo", "Derrotarlo", "Defeat him"),
+    ("Guia.Paso.VencerAEsqueletron.Porque",
+     "NPC.downedBoss3 es la bandera que de verdad importa aquí: en cuanto pasa a true, los Guardianes de la Mazmorra (pensados solo para bloquear la entrada antes de tiempo, con un daño altísimo) dejan de aparecer, y el Sastre se muda a vivir contigo.",
+     "NPC.downedBoss3 is the flag that actually matters here: as soon as it flips to true, the Dungeon Guardians (meant only to block the entrance before its time, with absurd damage) stop spawning, and the Clothier moves in with you."),
+    ("Guia.Paso.VencerAEsqueletron.Como",
+     "Pelea cerca de la entrada de la Mazmorra, nunca dentro de ella: si amanece antes de matarlo, se cura de golpe entero y hay que empezar de cero.",
+     "Fight near the Dungeon entrance, never inside it: if dawn arrives before he dies, he heals back to full instantly and you have to start over."),
 ]
 
 KEYBINDS = [

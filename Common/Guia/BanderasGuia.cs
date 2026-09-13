@@ -53,6 +53,15 @@ namespace TerrakeepMod.Common.Guia
 				{ "downedTowers", () => NPC.downedTowers },
 				{ "downedMoonlord", () => NPC.downedMoonlord },
 
+				// --- progreso a medias, no solo "jefe muerto" ------------------------------------
+				// Persiste de verdad: se guarda en el .wld (WorldFile.cs, WorldGen.shadowOrbSmashed)
+				// y solo se borra al crear un mundo nuevo (WorldGen.cs, la funcion que limpia todas
+				// las banderas de una partida al generarla). Sirve para decir "ya has roto una" sin
+				// fingir que se sabe CUANTAS: el contador real, shadowOrbCount, es modulo 3 (vuelve a
+				// 0 en cuanto invoca al jefe), asi que un "vas 2 de 3" dejaria de ser cierto justo
+				// cuando mas importa.
+				{ "shadowOrbSmashed", () => WorldGen.shadowOrbSmashed },
+
 				// --- eventos y rescates que abren cosas ------------------------------------------
 				{ "downedGoblins", () => NPC.downedGoblins },
 				{ "savedGoblin", () => NPC.savedGoblin },
