@@ -5832,3 +5832,256 @@ las dos pasadas cada uno). Lo que queda, en el orden en que conviene abordarlo:
 Nada de lo anterior se ha tocado esta sesión: es la lista real de lo que falta, con los datos ya
 investigados donde los hay, para que la próxima pasada no tenga que releer el NPC.cs desde cero
 para los que ya están aquí (Rey Slime, Deerclops).
+
+## 13-sep-2026 (continuación) — Las dos piezas de diseño (dirección horizontal + marcadores de
+## mapa) y cuatro tramos opcionales más: Rey Slime, Deerclops, Ejército Goblin, Legión de Escarcha
+
+Encargo explícito del coordinador: terminar las dos piezas de diseño que quedaban pendientes desde
+que el árbol obligatorio llegó a Moon Lord (marcadores de mapa e indicador de dirección horizontal)
+y seguir ampliando el contenido opcional con el mismo rigor que el resto del árbol, sin parar a
+pedir confirmación. Las cinco piezas de este bloque se implementaron y verificaron EN EL JUEGO REAL
+una a una, cada una cerrada y comiteada antes de pasar a la siguiente - nunca a medias.
+
+### 1. Rey Slime y Deerclops (los dos jefes opcionales que ya tenían datos reales de la sesión anterior)
+
+Confirmados de nuevo contra `NPC.cs` decompilado (no copiados a ciegas de la nota anterior):
+Rey Slime (`type==50`) 40 de daño/10 de defensa/2000 de vida; Deerclops (`type==668`) 20 de daño
+(`coldDamage=true`)/10 de defensa/7000 de vida. Los objetos de invocación reales se sacaron de
+`Player.SummonItemCheck` (línea ~41813 de `Player.cs`, la función que decide si ya hay un jefe de
+ese tipo vivo antes de dejar reusar el objeto): `SlimeCrown=560` → Rey Slime,
+`DeerThing=5120` → Deerclops - la nota anterior había supuesto mal un "Amuleto Esquimal" que no
+existe en el juego real, corregido aquí con la cita exacta del código.
+
+Dato real adicional, útil para el umbral de `dano_arma`: `Main.AnyPlayerReadyToFightKingSlime()`
+(la condición que de verdad usa el motor para la lluvia de slimes aleatoria) exige
+`ConsumedLifeCrystals>2` y `statDefense>8` - confirma que el Rey Slime está pensado para ANTES
+incluso del tramo `PreOjo`.
+
+**Decisión de arquitectura, la que la sesión anterior dejó pendiente**: en vez de forzar los doce
+`orden` existentes (1..12) a hacer hueco, se renumeraron TODOS a múltiplos de 10 (10..90) - cambio
+puramente mecánico (el orden relativo no cambia, y `EstadoGuia`/`CatalogoGuia` solo comparan
+`Orden` entre sí, nunca su valor absoluto, comprobado con `grep` antes de tocar nada) que deja
+hueco de sobra para insertar tramos intermedios sin repetir este ejercicio cada vez. Rey Slime
+entra en `orden=5` (antes de `PreOjo=10`), Deerclops en `orden=15` (justo después).
+
+### 2. Ejército Goblin y Legión de Escarcha (nuevos esta sesión)
+
+Dos invasiones por oleadas, no un jefe único - `jefeFinal=0` a propósito en el `.json`, con la
+decisión documentada en vez de fingir un jefe que no existe (mismo criterio que ya fijó la
+"Marca Keep"). Verificado en `NPC.cs`: el enemigo más duro de cada oleada es el Guerrero Goblin
+(`type==28`: 25/8/110) y Mister Estocada (`type==144`: 65/26/240, con `coldDamage=true`). Los
+objetos de invocación: `GoblinBattleStandard=361` y `SnowGlobe=602`.
+
+Hallazgo real que mejora el propio requisito: `Main.CanStartInvasion(tipo, ignoreDelay:true)` (la
+función que de verdad comprueba `Player.ItemCheck_UseEventItems` antes de dejar usar cualquiera de
+los dos objetos) exige `ConsumedLifeCrystals>=5` - el MISMO hito que ya usa `PreOjo/CristalesDeVida`
+- y que no haya ya otra invasión en marcha. Se añadió como requisito `recomendado` citando la
+función real, no inventado.
+
+Banderas reales: `downedGoblins` (ya estaba en la tabla, sin usar hasta ahora) y `downedFrost`
+(nueva - el nombre real del campo es `downedFrost`, NO `downedFrostLegion`, fácil de suponer mal).
+
+Orden 12 y 17 (entre `PreOjo=10` y `MaldadDelMundo=20`, con `Deerclops=15` en medio).
+
+### 3. Indicador de dirección horizontal - solo la Mazmorra, y por qué solo ella
+
+`EstadoGuia.Direccion` gana un lado (izquierda/derecha) cuando el paso apunta a la Mazmorra,
+comparando `Main.dungeonX` (campo real del motor, escrito/leído SIN condición alguna en todo
+formato de `.wld` - `WorldFile.cs`, líneas ~1262/2021/3376) contra la posición real del jugador,
+con 100 tiles de tolerancia para no titubear entre lados según un jugador se mueva un paso.
+
+Investigado y descartado A PROPÓSITO extenderlo a Jungla/Templo Lihzahrd/Nieve: `GenVars.jungleOriginX`
+(`WorldBuilding/GenVars.cs`) parecía el equivalente, pero es una variable de PASE DE GENERACIÓN -
+se pone a 0 al empezar `WorldGen.jungle()` (confirmado en `WorldGen.cs`, líneas ~8053-8252) y no
+sobrevive a cargar un mundo YA EXISTENTE en una sesión nueva, que es el caso normal. Usarla habría
+sido una brújula falsa. Documentado en el XMLdoc de `EstadoGuia.LadoHorizontalDelPaso` para que la
+próxima sesión no repita la investigación.
+
+Verificado moviendo al jugador DE VERDAD a los dos lados de un `Main.dungeonX` de prueba
+(`AutopruebaGuia.ComprobarDireccionHorizontalMazmorra`) y comprobando la frase real con el paso
+real `ArmaParaEsqueletron`. Confirmado también en captura real que la frase combinada ("Estás
+donde toca: la entrada de la Mazmorra, a tu derecha") envuelve limpia sin solaparse con nada.
+
+### 4. Marcadores de mapa (la brújula) - la pieza más grande de este bloque
+
+"Brújula de propósito, nunca GPS": cuando el objetivo activo apunta a Mazmorra/Templo
+Lihzahrd/Jungla/Nieve (las únicas cuatro zonas con un sitio real que señalar - las otras cuatro,
+Superficie/Subterráneo/Cavernas/Infierno, son capas enteras del mundo, sin un punto concreto que
+marcar), `Common/Guia/BrujulaGuia.cs` busca esa zona SOLO dentro de lo que el jugador YA tiene
+explorado en su propio mapa (`BuscadorMundo` con `soloExplorado=true`, el mismo motor de búsqueda
+ya maduro de Exploración, en una instancia propia para no pelearse con una búsqueda manual del
+jugador) y dibuja un marcador dorado sobre el mapa real del juego
+(`Common/Exploracion/MarcadoresGuia.cs` + `CapaMapaExploracion` ampliada para dibujar los dos
+conjuntos a la vez). Si no se ha explorado nada de esa zona todavía, NO hay marcador - nunca
+revela un secreto sin explorar, solo recuerda dónde está lo que ya se encontró. `ContenidoGuia`
+enseña una línea de estado (Marcado/Buscando/Sin explorar) para las cuatro zonas con brújula.
+
+Mazmorra y Templo Lihzahrd reutilizan los objetivos YA CATALOGADOS de Exploración (categoría
+"Paredes"), no una copia. Jungla y Nieve se construyen ad-hoc dentro de `BrujulaGuia` (tiles reales
+`TileID.JungleGrass`/`SnowBlock`/`IceBlock`), sin añadirlos al catálogo público de Exploración
+- son un detalle interno de la brújula, no una opción de búsqueda nueva que nadie pidió.
+
+**Verificación real, sin adivinar nada**: el arnés busca la Mazmorra REAL de este mundo en TODO el
+mapa (sin restricción de explorado - el mismo barrido que ya usa Exploración) para saber DÓNDE
+revelar mapa de prueba con `Main.Map.Update` (la misma técnica ya verificada de
+`AutopruebaExploracion.SembrarMapaDePrueba`), en vez de adivinar un área alrededor de
+`Main.dungeonX` y arriesgarse a fallar por la profundidad real. Confirmado que la brújula pasa de
+"sin explorar" a "marcado" en cuanto esa zona real queda explorada, y saltado de verdad al mapa
+vanilla (`PanelExploracionSystem.VerEnElMapa`, la misma llamada de producción del botón "Ver en el
+mapa" de Exploración) para comprobar CON UNA CAPTURA REAL que el rombo dorado se ve dibujado ahí
+- no solo que el log dijera que sí.
+
+**Dos hallazgos reales durante la verificación, los dos arreglados antes de comitear:**
+1. Los objetivos ad-hoc de Jungla/Nieve (tiles de relleno de bioma, sin nombre propio en
+   `Lang.GetMapObjectName` - solo lo tienen los objetos "interesantes") se enseñaban con la clave
+   cruda sin traducir en el tooltip del mapa vanilla. Añadidas
+   `Exploracion.Objetivo.BrujulaJungla`/`BrujulaNieve`.
+2. El propio arnés de pruebas (no el mod): saltar al mapa reutilizando
+   `PanelExploracionSystem.VerEnElMapa` deja el flag interno `_volverAlPanelAlCerrarMapa` de ESE
+   sistema pendiente, que disparaba un fotograma más tarde y reabría el panel en la pestaña
+   Exploración en vez de Guía - visto en las capturas (`guia-36..39` enseñaban la pestaña
+   equivocada con el log en verde, porque `ContenidoGuia.PanelActual` no depende de qué pestaña
+   esté visible). Arreglado forzando la pestaña Guía de nuevo al principio del bloque siguiente
+   del arnés. No afecta a jugadores reales: la Guía no tiene ningún botón de producción que salte
+   al mapa, solo lo hacía este arnés.
+
+### Verificación real de todo el bloque
+
+Cada pieza se compiló y se llevó al personaje de prueba con `scripts\verificar-guia.ps1`, sin
+Calamity y con Calamity cargado, antes de pasar a la siguiente - igual que las sesiones anteriores.
+Estado final del árbol: **16 tramos (16 con requisitos evaluables), 40 pasos, 80 requisitos, 0
+avisos**. Capturas reales revisadas a mano en cada pieza (no solo el log en verde): el compás
+horizontal envolviendo limpio, el marcador dorado en el mapa vanilla de verdad, las cuatro
+secciones "Objetivo opcional" nuevas sin solapes ni texto cortado.
+
+Commits: `f851eca` (Rey Slime + Deerclops), `a22330c` (dirección horizontal), `e8d6501`
+(marcadores de mapa), `69cde3c` (Ejército Goblin + Legión de Escarcha).
+
+### Hallazgo aparte, confirmado pre-existente (no introducido esta sesión, sin tocar)
+
+Las capturas con "no queda nada pendiente en el tramo que la guía sabe medir" (`guia-28`, ya
+existía ANTES de este bloque) muestran el tooltip de la pestaña activa "Guía" superpuesto en la
+esquina superior del cuerpo del panel, en vez de seguir al cursor. Mismo diagnóstico que esta
+bitácora ya dejó escrito para OTRO tooltip en la sesión del `_mouseTextCache`/`DrawInterface_33`
+(ver esa entrada más arriba): en esta sandbox sin ratón físico, `PlayerInput.CurrentInputMode` se
+detecta como mando en vez de ratón, y eso cambia cómo/dónde se posiciona el tooltip de
+`Main.instance.MouseText`. No es un fallo del código de este mod (llama a la misma API pública
+exactamente como vainilla) ni algo introducido en este bloque - se deja documentado y sin tocar,
+consistente con la regla de no perseguir un artefacto del arnés como si fuera un bug real sin
+verificación interactiva primero.
+
+### Contenido opcional restante: datos reales ya investigados, para no repetir trabajo
+
+Con el mismo rigor que arriba, sin implementar todavía - lo que sigue son datos REALES sacados del
+código decompilado, listos para usar directamente:
+
+- **Piratas**: bandera ya en la tabla (`downedPirates`). Objeto de invocación real:
+  `PirateMap=1315`, mismo `Main.CanStartInvasion(3, ignoreDelay:true)` (mismos 5 cristales de
+  vida) que Goblin/Escarcha. El enemigo común más duro es el Capitán Pirata (`NPC.cs`,
+  `type==216`: 70 de daño/30 de defensa/3000 de vida). OJO con un hallazgo real: el "Flying
+  Dutchman" que se suele citar de memoria NO es un NPC de combate con stats propios - `type==491`
+  ("Pirate Ship") tiene `dontTakeDamage=true`, `damage=0`, `lifeMax=50` (es la plataforma/decoración
+  visual, no el jefe que golpea). Igual que Goblin/Frost Legion, no hay un único "jefe" limpio que
+  citar - mismo criterio, `jefeFinal=0`, sin inventar un análogo falso. Orden sugerido: 19 (entre
+  `LegionDeEscarcha=17` y `MaldadDelMundo=20`).
+- **Locura Marciana**: HARDMODE y post-Golem (`downedGolemBoss`), bandera `downedMartians` (ya en
+  la tabla). El jefe real es la Nave Marciana (`NPCID.MartianSaucer=392`, con partes `393`
+  Turret/`394` Cannon/`395` Core - un jefe MULTI-PARTE, más complejo de modelar que uno solo).
+  **A diferencia de los demás, NO hay un objeto de invocación directo**: el evento lo dispara una
+  Sonda Marciana (Martian Probe) que te detecta y escapa - haría falta investigar el NPC/flag real
+  de esa sonda antes de escribir el paso "arma y prepárate", no asumido aquí.
+  Sin investigar más a fondo esta sesión.
+- **Luna de Calabazas**: objeto real `PumpkinMoonMedallion=1844`. Banderas reales confirmadas en
+  `NPC.cs`: `downedHalloweenTree` (Mourning Wood) y `downedHalloweenKing` (Pumpking) - DOS
+  banderas, no una, porque son dos jefes de oleada distintos dentro del mismo evento (parecido al
+  patrón ya usado en `EventosLunares` con el Cultista+Torres). Ninguna de las dos está en
+  `BanderasGuia` todavía.
+- **Luna Helada**: objeto real `NaughtyPresent=1958`. Banderas reales confirmadas en `NPC.cs`:
+  `downedChristmasIceQueen`, `downedChristmasTree` (Everscream), `downedChristmasSantank`
+  (Santa-NK1) - TRES banderas. Ninguna está en `BanderasGuia` todavía.
+- **Antiguo Ejército D2 (DD2)**: distinto de todos los anteriores - su bandera de completado,
+  `downedDD2EventAnyDifficulty`, es un campo de **`Player`**, no de `NPC` (`Player.cs` línea
+  ~2171, escrito a `true` en la línea ~23413 al terminar el evento en cualquier dificultad, y
+  guardado/leído sin condición en el `.plr` - líneas ~55965/56464). `BanderasGuia.Construir()` hoy
+  solo tiene lambdas que leen `NPC`/`WorldGen`/`Main`; añadir esta bandera es el primer caso que
+  necesita leer `Main.LocalPlayer` en su lugar - trivial (`() => Main.LocalPlayer != null &&
+  Main.LocalPlayer.downedDD2EventAnyDifficulty`), pero hay que tenerlo presente al tocar la tabla.
+  Se invoca hablando con el Anciano (Old Man) en el Altar de la Driada, no con un objeto - falta
+  investigar el NPC/mecanismo real del Altar antes de escribir el paso.
+- **Eclipse Solar y Luna de Sangre**: comprobado que NO existe una bandera de "completado" para
+  ninguno de los dos - son eventos por TIEMPO/probabilidad (duran hasta el amanecer o hasta que se
+  usa un objeto para cancelarlos), no algo que se "derrote" una vez y quede guardado. Decisión:
+  **no son tramos** - forzar una bandera falsa aquí sería exactamente el "análogo falso solo por
+  completar la lista" que prohíbe la Marca Keep. Si algún día se quiere dar seguimiento, sería
+  como contenido informativo (qué son, cómo se activan/desactivan), nunca como un tramo con
+  bandera de cierre.
+
+### Decisiones "Marca Keep" sobre el resto del contenido opcional pedido (documentadas, no forzadas)
+
+- **Pesca y misiones del Pescador**: SÍ tiene una señal de progreso real y medible -
+  `Player.anglerQuestsFinished` (contador real, guardado en el `.plr`) es justo el tipo de dato
+  que ya usa este modelo (cristales de vida, etc.). Candidato razonable a una sección propia de la
+  Guía en el futuro (no investigado más a fondo esta sesión: falta confirmar los umbrales reales
+  que el juego usa para desbloquear el título "Pescador" / la armadura del Pescador / el acceso a
+  ítems de fin de partida).
+- **Mascotas y monturas**: decisión — **no les hace falta un tramo de la Guía**. No hay una
+  "siguiente mascota/montura" objetiva (son cientos, coleccionables, sin orden natural), y este
+  mod YA tiene una herramienta real y mejor para esto: la pestaña **Librería**, que ya cataloga y
+  deja soltar cualquier objeto del juego (mascotas y monturas incluidas) por nombre/categoría. Un
+  tramo de la Guía sería un peor duplicado de una función que ya existe.
+- **Sistema de Pilones**: decisión — **no le hace falta un tramo**. Es infraestructura continua
+  (depende de cuántos NPC vivan en cada zona y su felicidad, no de un hito puntual que se completa
+  una vez), no progresión medible con una bandera de cierre real.
+- **Semillas secretas conocidas**: decisión — **ya está cubierto, sin trabajo pendiente**.
+  `Common/Exploracion/MundoActual.cs` (`SemillasSecretas`, ya escrito en sesiones anteriores de
+  WS6) ya lee y enseña las ocho semillas reales del motor (`Main.drunkWorld`, `getGoodWorld`,
+  `tenthAnniversaryWorld`, `notTheBeesWorld`, `dontStarveWorld`, `remixWorld`, `noTrapsWorld`,
+  `zenithWorld`) en la pestaña Exploración. No hace falta repetirlo en la Guía.
+- **Mercader Ambulante**: decisión — **no le hace falta un tramo**. Es un NPC aleatorio diario sin
+  bandera de progreso real que marcar; nada que la Guía pueda medir con el mismo rigor que el
+  resto del árbol.
+- **Biomas opcionales de exploración** (Selva, Mazmorra, Océano, Desierto, Nieve,
+  Corrupción/Carmesí, Sagrado, Inframundo, islas flotantes): decisión — **no les hace falta un
+  tramo de la Guía además de lo que ya existe**. `Common/Exploracion/` ya los cubre de verdad
+  (categorías de búsqueda, mapa, marcadores), y esta misma sesión los ha reforzado más todavía
+  desde el lado de la Guía: la brújula (punto 4 de arriba) ya da seguimiento real a Mazmorra,
+  Templo Lihzahrd, Jungla y Nieve en cuanto un tramo de la Guía los menciona como zona. Océano,
+  Desierto, Corrupción/Carmesí, Sagrado, Inframundo e islas flotantes no tienen ningún tramo de la
+  Guía que los cite como zona todavía (ningún paso del árbol apunta ahí), así que la brújula no
+  tiene nada que resolver para ellos hoy - si algún día un tramo nuevo los usa como Zona, extender
+  `BrujulaGuia.ObjetivoParaZona` es mecánico (mismo patrón que Jungla/Nieve).
+
+### Dónde seguir (para la próxima pasada, sin releer nada a ciegas)
+
+Todo lo de este bloque (las dos piezas de diseño + cuatro tramos opcionales nuevos) está
+**terminado y verificado**. Lo que queda, con los datos reales ya listos arriba para no repetir
+la investigación:
+
+1. **Piratas** es el más fácil de los que faltan: mismos objeto/gate que Goblin/Escarcha, un solo
+   enemigo común de referencia (Capitán Pirata), sin jefe único (`jefeFinal=0`, igual que los
+   otros dos). Seguir el mismo patrón de `.json` + localización + bloque de `AutopruebaGuia` que
+   ya usan Rey Slime/Deerclops/Goblin/Escarcha (Arrancar() tendría que pre-marcar también este
+   quinto tramo como superado desde el principio, junto a los otros cuatro).
+2. **Luna de Calabazas** y **Luna Helada** necesitan DOS y TRES banderas nuevas en `BanderasGuia`
+   respectivamente (nombres reales ya confirmados arriba) antes de poder escribir sus tramos -
+   son más parecidos en estructura a `EventosLunares` (varios jefes de oleada seguidos en el mismo
+   tramo) que a Goblin/Escarcha/Piratas (un solo paso de "vencer").
+3. **Antiguo Ejército D2** necesita primero un cambio pequeño pero real en `BanderasGuia.Construir()`:
+   es la primera bandera que lee `Player` en vez de `NPC`/`WorldGen`/`Main` - el patrón de la tabla
+   (`Dictionary<string, Func<bool>>`) ya lo admite sin cambios de diseño, solo hace falta la lambda
+   nueva. Falta investigar el mecanismo real de invocación (hablar con el Anciano en el Altar de
+   la Driada) antes de escribir el paso "arma y prepárate".
+4. **Locura Marciana** es la más compleja de las que faltan: jefe multi-parte (Nave/Torreta/Cañón/
+   Núcleo) y sin objeto de invocación directo (lo dispara una Sonda Marciana al detectarte) - hace
+   falta investigar ese mecanismo real antes de escribir nada.
+5. **Eclipse Solar** y **Luna de Sangre**: decisión ya tomada (arriba) de que NO son tramos por no
+   tener bandera de cierre real. Si el coordinador pide igualmente darles seguimiento, sería como
+   contenido informativo aparte, nunca forzando una bandera falsa.
+6. **Pesca/Pescador**: el único de los "no-tramo" de arriba que SÍ merece investigarse más -
+   `Player.anglerQuestsFinished` es un dato real y medible, candidato razonable a una sección
+   propia de la Guía (no necesariamente el modelo de "tramo con jefe final") si el coordinador lo
+   pide.
+7. **Mascotas/monturas, Pilones, Mercader Ambulante**: decisión ya tomada (arriba) de que no les
+   hace falta ningún trabajo nuevo en la Guía - documentado el porqué, no forzado.
+8. **Semillas secretas**: ya cubierto por `MundoActual.SemillasSecretas` (Exploración) - sin
+   trabajo pendiente.
