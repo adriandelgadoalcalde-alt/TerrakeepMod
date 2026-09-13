@@ -1,85 +1,189 @@
-# Evidencia de espaciado (recuadro naranja + pestaña Buffs) - 2026-09-07 14:37:14
-[14:37:14.709] AUTOPRUEBA ESPACIADO: 82 pasos en cola. Resolucion de partida 1280x720.
-[14:37:14.710] AUTOPRUEBA ESPACIADO - buffs de prueba puestos: 30 (CountBuffs=29). Nombre mas largo real="Regeneración de maná" (id 6, 178px sin escalar), forzado ademas a 1999224000 ticks (9255 h 40 min, el caso real del reporte del usuario) - el caso mas exigente para la fila.
-[14:37:14.896] AUTOPRUEBA ESPACIADO - resolucion pedida 1600x900 -> real tras SetDisplayMode: 1600x900, UIScale=1.
-[14:37:15.409] AUTOPRUEBA ESPACIADO - idioma pedido es -> cultura activa ahora: es-ES (cambio real=False).
-[14:37:15.777] AUTOPRUEBA ESPACIADO/aviso (1600x900/es) - caja en x=821 y=450 508x148 (interior 492 px de ancho). Ultima linea ("Deshacer") top=551, alto real del texto YA partido=39,4 -> borde inferior del texto=590 vs borde inferior de la caja=598 -> OK: el texto cabe dentro del recuadro. Boton confirmar en y=608 -> OK: no se solapa.
-[14:37:15.949] AUTOPRUEBA ESPACIADO/aviso - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\aviso-1600x900-es.png" (1600x900)
-[14:37:16.287] AUTOPRUEBA ESPACIADO/buffs (1600x900/es) - 27 filas activas + 100 filas de resultados medidas -> OK, nada recortado ni solapado. Columna Activos=264px (50% sin tope seria 520px), Añadir=786px, pestaña=1060px.
-[14:37:16.459] AUTOPRUEBA ESPACIADO/buffs (1600x900/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-1600x900-es.png" (1600x900)
-[14:37:16.614] AUTOPRUEBA ESPACIADO/carpetas-buffs (1600x900/es) - camino abierto (1 niveles): "Offensivo (18)"
-[14:37:16.969] AUTOPRUEBA ESPACIADO/carpetas-buffs (1600x900/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-carpetas-1600x900-es.png" (1600x900)
-[14:37:17.305] AUTOPRUEBA ESPACIADO/builds (1600x900/es) - 10 pildoras medidas -> OK, ninguna recorta su texto.
-[14:37:17.471] AUTOPRUEBA ESPACIADO/builds (1600x900/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\builds-1600x900-es.png" (1600x900)
-[14:37:17.634] AUTOPRUEBA ESPACIADO/libreria (1600x900/es) - camino abierto (2 niveles): "Mascotas, Monturas, Herramientas" > "Mascotas de Jefes" -> RutaActual="Librería > Mascotas, Monturas, Herramientas > Mascotas de Jefes" (63 caracteres).
-[14:37:17.965] AUTOPRUEBA ESPACIADO/libreria (1600x900/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\libreria-1600x900-es.png" (1600x900)
-[14:37:18.121] AUTOPRUEBA ESPACIADO/investigacion (1600x900/es) - camino abierto (2 niveles): "Mascotas, Monturas, Herramientas" > "Mascotas de Jefes"
-[14:37:18.472] AUTOPRUEBA ESPACIADO/investigacion (1600x900/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\investigacion-1600x900-es.png" (1600x900)
-[14:37:18.647] AUTOPRUEBA ESPACIADO - idioma pedido en -> cultura activa ahora: en-US (cambio real=True).
-[14:37:18.993] AUTOPRUEBA ESPACIADO/aviso (1600x900/en) - caja en x=821 y=450 508x128 (interior 492 px de ancho). Ultima linea ("Deshacer") top=551, alto real del texto YA partido=19.7 -> borde inferior del texto=570 vs borde inferior de la caja=578 -> OK: el texto cabe dentro del recuadro. Boton confirmar en y=588 -> OK: no se solapa.
-[14:37:19.157] AUTOPRUEBA ESPACIADO/aviso - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\aviso-1600x900-en.png" (1600x900)
-[14:37:19.497] AUTOPRUEBA ESPACIADO/buffs (1600x900/en) - 27 filas activas + 100 filas de resultados medidas -> OK, nada recortado ni solapado. Columna Activos=264px (50% sin tope seria 520px), Añadir=786px, pestaña=1060px.
-[14:37:19.669] AUTOPRUEBA ESPACIADO/buffs (1600x900/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-1600x900-en.png" (1600x900)
-[14:37:19.823] AUTOPRUEBA ESPACIADO/carpetas-buffs (1600x900/en) - camino abierto (1 niveles): "Offensive (18)"
-[14:37:20.176] AUTOPRUEBA ESPACIADO/carpetas-buffs (1600x900/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-carpetas-1600x900-en.png" (1600x900)
-[14:37:20.511] AUTOPRUEBA ESPACIADO/builds (1600x900/en) - 10 pildoras medidas -> OK, ninguna recorta su texto.
-[14:37:20.674] AUTOPRUEBA ESPACIADO/builds (1600x900/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\builds-1600x900-en.png" (1600x900)
-[14:37:20.830] AUTOPRUEBA ESPACIADO/libreria (1600x900/en) - camino abierto (1 niveles): "Potions (regeneration)" -> RutaActual="Library > Potions (regeneration)" (32 caracteres).
-[14:37:25.141] AUTOPRUEBA ESPACIADO/libreria (1600x900/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\libreria-1600x900-en.png" (1600x900)
-[14:37:26.336] AUTOPRUEBA ESPACIADO/investigacion (1600x900/en) - camino abierto (1 niveles): "Potions (regeneration)"
-[14:37:27.086] AUTOPRUEBA ESPACIADO/investigacion (1600x900/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\investigacion-1600x900-en.png" (1600x900)
-[14:37:27.830] AUTOPRUEBA ESPACIADO - resolucion pedida 1280x720 -> real tras SetDisplayMode: 1280x720, UIScale=1.
-[14:37:30.515] AUTOPRUEBA ESPACIADO - idioma pedido es -> cultura activa ahora: es-ES (cambio real=True).
-[14:37:32.227] AUTOPRUEBA ESPACIADO/aviso (1280x720/es) - caja en x=661 y=371 508x148 (interior 492 px de ancho). Ultima linea ("Deshacer") top=472, alto real del texto YA partido=39,4 -> borde inferior del texto=512 vs borde inferior de la caja=520 -> OK: el texto cabe dentro del recuadro. Boton confirmar en y=530 -> OK: no se solapa.
-[14:37:33.341] AUTOPRUEBA ESPACIADO/aviso - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\aviso-1280x720-es.png" (1280x720)
-[14:37:35.385] AUTOPRUEBA ESPACIADO/buffs (1280x720/es) - 27 filas activas + 100 filas de resultados medidas -> OK, nada recortado ni solapado. Columna Activos=264px (50% sin tope seria 520px), Añadir=786px, pestaña=1060px.
-[14:37:35.852] AUTOPRUEBA ESPACIADO/buffs (1280x720/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-1280x720-es.png" (1280x720)
-[14:37:36.334] AUTOPRUEBA ESPACIADO/carpetas-buffs (1280x720/es) - camino abierto (1 niveles): "Offensivo (18)"
-[14:37:36.802] AUTOPRUEBA ESPACIADO/carpetas-buffs (1280x720/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-carpetas-1280x720-es.png" (1280x720)
-[14:37:37.141] AUTOPRUEBA ESPACIADO/builds (1280x720/es) - 10 pildoras medidas -> OK, ninguna recorta su texto.
-[14:37:37.270] AUTOPRUEBA ESPACIADO/builds (1280x720/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\builds-1280x720-es.png" (1280x720)
-[14:37:37.433] AUTOPRUEBA ESPACIADO/libreria (1280x720/es) - camino abierto (2 niveles): "Mascotas, Monturas, Herramientas" > "Mascotas de Jefes" -> RutaActual="Librería > Mascotas, Monturas, Herramientas > Mascotas de Jefes" (63 caracteres).
-[14:37:37.716] AUTOPRUEBA ESPACIADO/libreria (1280x720/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\libreria-1280x720-es.png" (1280x720)
-[14:37:37.872] AUTOPRUEBA ESPACIADO/investigacion (1280x720/es) - camino abierto (2 niveles): "Mascotas, Monturas, Herramientas" > "Mascotas de Jefes"
-[14:37:38.176] AUTOPRUEBA ESPACIADO/investigacion (1280x720/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\investigacion-1280x720-es.png" (1280x720)
-[14:37:38.344] AUTOPRUEBA ESPACIADO - idioma pedido en -> cultura activa ahora: en-US (cambio real=True).
-[14:37:38.698] AUTOPRUEBA ESPACIADO/aviso (1280x720/en) - caja en x=661 y=371 508x128 (interior 492 px de ancho). Ultima linea ("Deshacer") top=472, alto real del texto YA partido=19.7 -> borde inferior del texto=492 vs borde inferior de la caja=500 -> OK: el texto cabe dentro del recuadro. Boton confirmar en y=510 -> OK: no se solapa.
-[14:37:38.814] AUTOPRUEBA ESPACIADO/aviso - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\aviso-1280x720-en.png" (1280x720)
-[14:37:39.153] AUTOPRUEBA ESPACIADO/buffs (1280x720/en) - 27 filas activas + 100 filas de resultados medidas -> OK, nada recortado ni solapado. Columna Activos=264px (50% sin tope seria 520px), Añadir=786px, pestaña=1060px.
-[14:37:39.278] AUTOPRUEBA ESPACIADO/buffs (1280x720/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-1280x720-en.png" (1280x720)
-[14:37:39.432] AUTOPRUEBA ESPACIADO/carpetas-buffs (1280x720/en) - camino abierto (1 niveles): "Offensive (18)"
-[14:37:39.740] AUTOPRUEBA ESPACIADO/carpetas-buffs (1280x720/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-carpetas-1280x720-en.png" (1280x720)
-[14:37:40.076] AUTOPRUEBA ESPACIADO/builds (1280x720/en) - 10 pildoras medidas -> OK, ninguna recorta su texto.
-[14:37:40.191] AUTOPRUEBA ESPACIADO/builds (1280x720/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\builds-1280x720-en.png" (1280x720)
-[14:37:40.347] AUTOPRUEBA ESPACIADO/libreria (1280x720/en) - camino abierto (1 niveles): "Potions (regeneration)" -> RutaActual="Library > Potions (regeneration)" (32 caracteres).
-[14:37:40.632] AUTOPRUEBA ESPACIADO/libreria (1280x720/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\libreria-1280x720-en.png" (1280x720)
-[14:37:40.789] AUTOPRUEBA ESPACIADO/investigacion (1280x720/en) - camino abierto (1 niveles): "Potions (regeneration)"
-[14:37:41.087] AUTOPRUEBA ESPACIADO/investigacion (1280x720/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\investigacion-1280x720-en.png" (1280x720)
-[14:37:41.248] AUTOPRUEBA ESPACIADO - resolucion pedida 800x720-minimo -> real tras SetDisplayMode: 800x720, UIScale=1.
-[14:37:41.782] AUTOPRUEBA ESPACIADO - idioma pedido es -> cultura activa ahora: es-ES (cambio real=True).
-[14:37:42.127] AUTOPRUEBA ESPACIADO/aviso (800x720-minimo/es) - caja en x=414 y=371 359x169 (interior 343 px de ancho). Ultima linea ("Deshacer") top=493, alto real del texto YA partido=39,4 -> borde inferior del texto=533 vs borde inferior de la caja=541 -> OK: el texto cabe dentro del recuadro. Boton confirmar en y=551 -> OK: no se solapa.
-[14:37:42.219] AUTOPRUEBA ESPACIADO/aviso - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\aviso-800x720-minimo-es.png" (800x720)
-[14:37:42.556] AUTOPRUEBA ESPACIADO/buffs (800x720-minimo/es) - 27 filas activas + 100 filas de resultados medidas -> OK, nada recortado ni solapado. Columna Activos=264px (50% sin tope seria 364px), Añadir=474px, pestaña=748px.
-[14:37:42.650] AUTOPRUEBA ESPACIADO/buffs (800x720-minimo/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-800x720-minimo-es.png" (800x720)
-[14:37:42.804] AUTOPRUEBA ESPACIADO/carpetas-buffs (800x720-minimo/es) - camino abierto (1 niveles): "Offensivo (18)"
-[14:37:43.082] AUTOPRUEBA ESPACIADO/carpetas-buffs (800x720-minimo/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-carpetas-800x720-minimo-es.png" (800x720)
-[14:37:43.418] AUTOPRUEBA ESPACIADO/builds (800x720-minimo/es) - 10 pildoras medidas -> OK, ninguna recorta su texto.
-[14:37:43.502] AUTOPRUEBA ESPACIADO/builds (800x720-minimo/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\builds-800x720-minimo-es.png" (800x720)
-[14:37:43.659] AUTOPRUEBA ESPACIADO/libreria (800x720-minimo/es) - camino abierto (2 niveles): "Mascotas, Monturas, Herramientas" > "Mascotas de Jefes" -> RutaActual="Librería > Mascotas, Monturas, Herramientas > Mascotas de Jefes" (63 caracteres).
-[14:37:43.918] AUTOPRUEBA ESPACIADO/libreria (800x720-minimo/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\libreria-800x720-minimo-es.png" (800x720)
-[14:37:44.074] AUTOPRUEBA ESPACIADO/investigacion (800x720-minimo/es) - camino abierto (2 niveles): "Mascotas, Monturas, Herramientas" > "Mascotas de Jefes"
-[14:37:44.348] AUTOPRUEBA ESPACIADO/investigacion (800x720-minimo/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\investigacion-800x720-minimo-es.png" (800x720)
-[14:37:44.516] AUTOPRUEBA ESPACIADO - idioma pedido en -> cultura activa ahora: en-US (cambio real=True).
-[14:37:44.870] AUTOPRUEBA ESPACIADO/aviso (800x720-minimo/en) - caja en x=414 y=371 359x169 (interior 343 px de ancho). Ultima linea ("Deshacer") top=493, alto real del texto YA partido=39.4 -> borde inferior del texto=533 vs borde inferior de la caja=541 -> OK: el texto cabe dentro del recuadro. Boton confirmar en y=551 -> OK: no se solapa.
-[14:37:44.958] AUTOPRUEBA ESPACIADO/aviso - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\aviso-800x720-minimo-en.png" (800x720)
-[14:37:45.294] AUTOPRUEBA ESPACIADO/buffs (800x720-minimo/en) - 27 filas activas + 100 filas de resultados medidas -> OK, nada recortado ni solapado. Columna Activos=264px (50% sin tope seria 364px), Añadir=474px, pestaña=748px.
-[14:37:45.388] AUTOPRUEBA ESPACIADO/buffs (800x720-minimo/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-800x720-minimo-en.png" (800x720)
-[14:37:45.541] AUTOPRUEBA ESPACIADO/carpetas-buffs (800x720-minimo/en) - camino abierto (1 niveles): "Offensive (18)"
-[14:37:45.815] AUTOPRUEBA ESPACIADO/carpetas-buffs (800x720-minimo/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-carpetas-800x720-minimo-en.png" (800x720)
-[14:37:46.151] AUTOPRUEBA ESPACIADO/builds (800x720-minimo/en) - 10 pildoras medidas -> OK, ninguna recorta su texto.
-[14:37:46.234] AUTOPRUEBA ESPACIADO/builds (800x720-minimo/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\builds-800x720-minimo-en.png" (800x720)
-[14:37:46.389] AUTOPRUEBA ESPACIADO/libreria (800x720-minimo/en) - camino abierto (1 niveles): "Potions (regeneration)" -> RutaActual="Library > Potions (regeneration)" (32 caracteres).
-[14:37:46.642] AUTOPRUEBA ESPACIADO/libreria (800x720-minimo/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\libreria-800x720-minimo-en.png" (800x720)
-[14:37:46.798] AUTOPRUEBA ESPACIADO/investigacion (800x720-minimo/en) - camino abierto (1 niveles): "Potions (regeneration)"
-[14:37:47.066] AUTOPRUEBA ESPACIADO/investigacion (800x720-minimo/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\investigacion-800x720-minimo-en.png" (800x720)
-[14:37:47.219] AUTOPRUEBA ESPACIADO COMPLETA.
+# Evidencia de espaciado (recuadro naranja + pestaña Buffs) - 2026-09-13 19:05:07
+[19:05:07.218] AUTOPRUEBA ESPACIADO: 192 pasos en cola. Resolucion de partida 1280x720.
+[19:05:07.219] AUTOPRUEBA ESPACIADO - buffs de prueba puestos: 30 (CountBuffs=29). Nombre mas largo real="Regeneración de maná" (id 6, 178px sin escalar), forzado ademas a 1999224000 ticks (9255 h 40 min, el caso real del reporte del usuario) - el caso mas exigente para la fila.
+[19:05:07.401] AUTOPRUEBA ESPACIADO - Inventario/Almacenes/Equipo poblados con objetos reales.
+[19:05:07.585] AUTOPRUEBA ESPACIADO - historial de deshacer preparado: 2 entrada(s), PuedeDeshacer=True, PuedeRehacer=True.
+[19:05:07.772] AUTOPRUEBA ESPACIADO - resolucion pedida 1600x900 -> real tras SetDisplayMode: 1600x900, UIScale=1.
+[19:05:08.284] AUTOPRUEBA ESPACIADO - idioma pedido es -> cultura activa ahora: es-ES (cambio real=False).
+[19:05:08.652] AUTOPRUEBA ESPACIADO/aviso (1600x900/es) - caja en x=821 y=464 508x148 (interior 492 px de ancho). Ultima linea ("Deshacer") top=565, alto real del texto YA partido=39,4 -> borde inferior del texto=604 vs borde inferior de la caja=612 -> OK: el texto cabe dentro del recuadro. Boton confirmar en y=622 -> OK: no se solapa.
+[19:05:08.825] AUTOPRUEBA ESPACIADO/aviso - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\aviso-1600x900-es.png" (1600x900)
+[19:05:09.175] AUTOPRUEBA ESPACIADO/buffs (1600x900/es) - 27 filas activas + 100 filas de resultados medidas -> OK, nada recortado ni solapado. Columna Activos=264px (50% sin tope seria 520px), Añadir=786px, pestaña=1060px.
+[19:05:09.351] AUTOPRUEBA ESPACIADO/buffs (1600x900/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-1600x900-es.png" (1600x900)
+[19:05:09.505] AUTOPRUEBA ESPACIADO/carpetas-buffs (1600x900/es) - camino abierto (1 niveles): "Offensivo (18)"
+[19:05:09.863] AUTOPRUEBA ESPACIADO/carpetas-buffs (1600x900/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-carpetas-1600x900-es.png" (1600x900)
+[19:05:10.209] AUTOPRUEBA ESPACIADO/builds (1600x900/es) - 10 pildoras medidas -> OK, ninguna recorta su texto.
+[19:05:10.376] AUTOPRUEBA ESPACIADO/builds (1600x900/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\builds-1600x900-es.png" (1600x900)
+[19:05:10.541] AUTOPRUEBA ESPACIADO/libreria (1600x900/es) - camino abierto (2 niveles): "Mascotas, Monturas, Herramientas" > "Mascotas de Jefes" -> RutaActual="Librería > Mascotas, Monturas, Herramientas > Mascotas de Jefes" (63 caracteres).
+[19:05:10.869] AUTOPRUEBA ESPACIADO/libreria (1600x900/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\libreria-1600x900-es.png" (1600x900)
+[19:05:11.027] AUTOPRUEBA ESPACIADO/investigacion (1600x900/es) - camino abierto (2 niveles): "Mascotas, Monturas, Herramientas" > "Mascotas de Jefes"
+[19:05:11.378] AUTOPRUEBA ESPACIADO/investigacion (1600x900/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\investigacion-1600x900-es.png" (1600x900)
+[19:05:11.714] AUTOPRUEBA ESPACIADO/equipo (1600x900/es) - 48 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:11.888] AUTOPRUEBA ESPACIADO/equipo (1600x900/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\equipo-1600x900-es.png" (1600x900)
+[19:05:12.223] AUTOPRUEBA ESPACIADO/inventario (1600x900/es) - 30 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:12.388] AUTOPRUEBA ESPACIADO/inventario (1600x900/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\inventario-1600x900-es.png" (1600x900)
+[19:05:12.727] AUTOPRUEBA ESPACIADO/almacenes (1600x900/es) - 31 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:12.887] AUTOPRUEBA ESPACIADO/almacenes (1600x900/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\almacenes-1600x900-es.png" (1600x900)
+[19:05:13.226] AUTOPRUEBA ESPACIADO/desbloqueos (1600x900/es) - 20 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:13.390] AUTOPRUEBA ESPACIADO/desbloqueos (1600x900/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\desbloqueos-1600x900-es.png" (1600x900)
+[19:05:13.729] AUTOPRUEBA ESPACIADO/apariencia (1600x900/es) - 35 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:13.892] AUTOPRUEBA ESPACIADO/apariencia (1600x900/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\apariencia-1600x900-es.png" (1600x900)
+[19:05:14.231] AUTOPRUEBA ESPACIADO/ajustes (1600x900/es) - 14 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:14.381] AUTOPRUEBA ESPACIADO/ajustes (1600x900/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\ajustes-1600x900-es.png" (1600x900)
+[19:05:14.720] AUTOPRUEBA ESPACIADO/mapa (1600x900/es) - 17 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:14.866] AUTOPRUEBA ESPACIADO/mapa (1600x900/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\mapa-1600x900-es.png" (1600x900)
+[19:05:15.206] AUTOPRUEBA ESPACIADO/busqueda (1600x900/es) - objetivo "Cobre" seleccionado=True, busqueda lanzada.
+[19:05:18.405] AUTOPRUEBA ESPACIADO/busqueda (1600x900/es) - 181 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:18.579] AUTOPRUEBA ESPACIADO/busqueda (1600x900/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\busqueda-1600x900-es.png" (1600x900)
+[19:05:18.767] AUTOPRUEBA ESPACIADO - idioma pedido en -> cultura activa ahora: en-US (cambio real=True).
+[19:05:19.111] AUTOPRUEBA ESPACIADO/aviso (1600x900/en) - caja en x=821 y=464 508x128 (interior 492 px de ancho). Ultima linea ("Deshacer") top=565, alto real del texto YA partido=19.7 -> borde inferior del texto=584 vs borde inferior de la caja=592 -> OK: el texto cabe dentro del recuadro. Boton confirmar en y=602 -> OK: no se solapa.
+[19:05:19.278] AUTOPRUEBA ESPACIADO/aviso - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\aviso-1600x900-en.png" (1600x900)
+[19:05:19.616] AUTOPRUEBA ESPACIADO/buffs (1600x900/en) - 27 filas activas + 100 filas de resultados medidas -> OK, nada recortado ni solapado. Columna Activos=264px (50% sin tope seria 520px), Añadir=786px, pestaña=1060px.
+[19:05:19.791] AUTOPRUEBA ESPACIADO/buffs (1600x900/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-1600x900-en.png" (1600x900)
+[19:05:19.954] AUTOPRUEBA ESPACIADO/carpetas-buffs (1600x900/en) - camino abierto (1 niveles): "Offensive (18)"
+[19:05:20.313] AUTOPRUEBA ESPACIADO/carpetas-buffs (1600x900/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-carpetas-1600x900-en.png" (1600x900)
+[19:05:20.650] AUTOPRUEBA ESPACIADO/builds (1600x900/en) - 10 pildoras medidas -> OK, ninguna recorta su texto.
+[19:05:20.814] AUTOPRUEBA ESPACIADO/builds (1600x900/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\builds-1600x900-en.png" (1600x900)
+[19:05:20.979] AUTOPRUEBA ESPACIADO/libreria (1600x900/en) - camino abierto (1 niveles): "Potions (regeneration)" -> RutaActual="Library > Potions (regeneration)" (32 caracteres).
+[19:05:21.302] AUTOPRUEBA ESPACIADO/libreria (1600x900/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\libreria-1600x900-en.png" (1600x900)
+[19:05:21.457] AUTOPRUEBA ESPACIADO/investigacion (1600x900/en) - camino abierto (1 niveles): "Potions (regeneration)"
+[19:05:21.804] AUTOPRUEBA ESPACIADO/investigacion (1600x900/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\investigacion-1600x900-en.png" (1600x900)
+[19:05:22.143] AUTOPRUEBA ESPACIADO/equipo (1600x900/en) - 48 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:22.317] AUTOPRUEBA ESPACIADO/equipo (1600x900/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\equipo-1600x900-en.png" (1600x900)
+[19:05:22.665] AUTOPRUEBA ESPACIADO/inventario (1600x900/en) - 30 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:22.829] AUTOPRUEBA ESPACIADO/inventario (1600x900/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\inventario-1600x900-en.png" (1600x900)
+[19:05:23.167] AUTOPRUEBA ESPACIADO/almacenes (1600x900/en) - 31 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:23.326] AUTOPRUEBA ESPACIADO/almacenes (1600x900/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\almacenes-1600x900-en.png" (1600x900)
+[19:05:23.665] AUTOPRUEBA ESPACIADO/desbloqueos (1600x900/en) - 20 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:23.829] AUTOPRUEBA ESPACIADO/desbloqueos (1600x900/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\desbloqueos-1600x900-en.png" (1600x900)
+[19:05:24.168] AUTOPRUEBA ESPACIADO/apariencia (1600x900/en) - 35 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:24.330] AUTOPRUEBA ESPACIADO/apariencia (1600x900/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\apariencia-1600x900-en.png" (1600x900)
+[19:05:24.669] AUTOPRUEBA ESPACIADO/ajustes (1600x900/en) - 14 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:24.816] AUTOPRUEBA ESPACIADO/ajustes (1600x900/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\ajustes-1600x900-en.png" (1600x900)
+[19:05:25.155] AUTOPRUEBA ESPACIADO/mapa (1600x900/en) - 17 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:25.301] AUTOPRUEBA ESPACIADO/mapa (1600x900/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\mapa-1600x900-en.png" (1600x900)
+[19:05:25.636] AUTOPRUEBA ESPACIADO/busqueda (1600x900/en) - objetivo "Cobre" seleccionado=False, busqueda lanzada.
+[19:05:28.839] AUTOPRUEBA ESPACIADO/busqueda (1600x900/en) - 181 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:29.011] AUTOPRUEBA ESPACIADO/busqueda (1600x900/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\busqueda-1600x900-en.png" (1600x900)
+[19:05:29.170] AUTOPRUEBA ESPACIADO - resolucion pedida 1280x720 -> real tras SetDisplayMode: 1280x720, UIScale=1.
+[19:05:29.703] AUTOPRUEBA ESPACIADO - idioma pedido es -> cultura activa ahora: es-ES (cambio real=True).
+[19:05:30.049] AUTOPRUEBA ESPACIADO/aviso (1280x720/es) - caja en x=661 y=385 508x148 (interior 492 px de ancho). Ultima linea ("Deshacer") top=486, alto real del texto YA partido=39,4 -> borde inferior del texto=526 vs borde inferior de la caja=534 -> OK: el texto cabe dentro del recuadro. Boton confirmar en y=544 -> OK: no se solapa.
+[19:05:30.171] AUTOPRUEBA ESPACIADO/aviso - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\aviso-1280x720-es.png" (1280x720)
+[19:05:30.508] AUTOPRUEBA ESPACIADO/buffs (1280x720/es) - 27 filas activas + 100 filas de resultados medidas -> OK, nada recortado ni solapado. Columna Activos=264px (50% sin tope seria 520px), Añadir=786px, pestaña=1060px.
+[19:05:30.637] AUTOPRUEBA ESPACIADO/buffs (1280x720/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-1280x720-es.png" (1280x720)
+[19:05:30.791] AUTOPRUEBA ESPACIADO/carpetas-buffs (1280x720/es) - camino abierto (1 niveles): "Offensivo (18)"
+[19:05:31.105] AUTOPRUEBA ESPACIADO/carpetas-buffs (1280x720/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-carpetas-1280x720-es.png" (1280x720)
+[19:05:31.444] AUTOPRUEBA ESPACIADO/builds (1280x720/es) - 10 pildoras medidas -> OK, ninguna recorta su texto.
+[19:05:31.560] AUTOPRUEBA ESPACIADO/builds (1280x720/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\builds-1280x720-es.png" (1280x720)
+[19:05:31.719] AUTOPRUEBA ESPACIADO/libreria (1280x720/es) - camino abierto (2 niveles): "Mascotas, Monturas, Herramientas" > "Mascotas de Jefes" -> RutaActual="Librería > Mascotas, Monturas, Herramientas > Mascotas de Jefes" (63 caracteres).
+[19:05:32.007] AUTOPRUEBA ESPACIADO/libreria (1280x720/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\libreria-1280x720-es.png" (1280x720)
+[19:05:32.162] AUTOPRUEBA ESPACIADO/investigacion (1280x720/es) - camino abierto (2 niveles): "Mascotas, Monturas, Herramientas" > "Mascotas de Jefes"
+[19:05:32.463] AUTOPRUEBA ESPACIADO/investigacion (1280x720/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\investigacion-1280x720-es.png" (1280x720)
+[19:05:32.802] AUTOPRUEBA ESPACIADO/equipo (1280x720/es) - 48 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:32.930] AUTOPRUEBA ESPACIADO/equipo (1280x720/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\equipo-1280x720-es.png" (1280x720)
+[19:05:33.268] AUTOPRUEBA ESPACIADO/inventario (1280x720/es) - 30 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:33.390] AUTOPRUEBA ESPACIADO/inventario (1280x720/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\inventario-1280x720-es.png" (1280x720)
+[19:05:33.729] AUTOPRUEBA ESPACIADO/almacenes (1280x720/es) - 31 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:33.841] AUTOPRUEBA ESPACIADO/almacenes (1280x720/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\almacenes-1280x720-es.png" (1280x720)
+[19:05:34.184] AUTOPRUEBA ESPACIADO/desbloqueos (1280x720/es) - 20 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:34.300] AUTOPRUEBA ESPACIADO/desbloqueos (1280x720/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\desbloqueos-1280x720-es.png" (1280x720)
+[19:05:34.644] AUTOPRUEBA ESPACIADO/apariencia (1280x720/es) - 35 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:34.760] AUTOPRUEBA ESPACIADO/apariencia (1280x720/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\apariencia-1280x720-es.png" (1280x720)
+[19:05:35.098] AUTOPRUEBA ESPACIADO/ajustes (1280x720/es) - 14 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:35.203] AUTOPRUEBA ESPACIADO/ajustes (1280x720/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\ajustes-1280x720-es.png" (1280x720)
+[19:05:35.538] AUTOPRUEBA ESPACIADO/mapa (1280x720/es) - 17 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:35.637] AUTOPRUEBA ESPACIADO/mapa (1280x720/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\mapa-1280x720-es.png" (1280x720)
+[19:05:35.973] AUTOPRUEBA ESPACIADO/busqueda (1280x720/es) - objetivo "Cobre" seleccionado=True, busqueda lanzada.
+[19:05:39.176] AUTOPRUEBA ESPACIADO/busqueda (1280x720/es) - 181 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:39.305] AUTOPRUEBA ESPACIADO/busqueda (1280x720/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\busqueda-1280x720-es.png" (1280x720)
+[19:05:39.479] AUTOPRUEBA ESPACIADO - idioma pedido en -> cultura activa ahora: en-US (cambio real=True).
+[19:05:39.825] AUTOPRUEBA ESPACIADO/aviso (1280x720/en) - caja en x=661 y=385 508x128 (interior 492 px de ancho). Ultima linea ("Deshacer") top=486, alto real del texto YA partido=19.7 -> borde inferior del texto=506 vs borde inferior de la caja=514 -> OK: el texto cabe dentro del recuadro. Boton confirmar en y=524 -> OK: no se solapa.
+[19:05:39.946] AUTOPRUEBA ESPACIADO/aviso - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\aviso-1280x720-en.png" (1280x720)
+[19:05:40.283] AUTOPRUEBA ESPACIADO/buffs (1280x720/en) - 26 filas activas + 100 filas de resultados medidas -> OK, nada recortado ni solapado. Columna Activos=264px (50% sin tope seria 520px), Añadir=786px, pestaña=1060px.
+[19:05:40.412] AUTOPRUEBA ESPACIADO/buffs (1280x720/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-1280x720-en.png" (1280x720)
+[19:05:40.566] AUTOPRUEBA ESPACIADO/carpetas-buffs (1280x720/en) - camino abierto (1 niveles): "Offensive (18)"
+[19:05:40.879] AUTOPRUEBA ESPACIADO/carpetas-buffs (1280x720/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-carpetas-1280x720-en.png" (1280x720)
+[19:05:41.218] AUTOPRUEBA ESPACIADO/builds (1280x720/en) - 10 pildoras medidas -> OK, ninguna recorta su texto.
+[19:05:41.339] AUTOPRUEBA ESPACIADO/builds (1280x720/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\builds-1280x720-en.png" (1280x720)
+[19:05:41.498] AUTOPRUEBA ESPACIADO/libreria (1280x720/en) - camino abierto (1 niveles): "Potions (regeneration)" -> RutaActual="Library > Potions (regeneration)" (32 caracteres).
+[19:05:41.785] AUTOPRUEBA ESPACIADO/libreria (1280x720/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\libreria-1280x720-en.png" (1280x720)
+[19:05:41.941] AUTOPRUEBA ESPACIADO/investigacion (1280x720/en) - camino abierto (1 niveles): "Potions (regeneration)"
+[19:05:42.241] AUTOPRUEBA ESPACIADO/investigacion (1280x720/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\investigacion-1280x720-en.png" (1280x720)
+[19:05:42.581] AUTOPRUEBA ESPACIADO/equipo (1280x720/en) - 48 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:42.708] AUTOPRUEBA ESPACIADO/equipo (1280x720/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\equipo-1280x720-en.png" (1280x720)
+[19:05:43.047] AUTOPRUEBA ESPACIADO/inventario (1280x720/en) - 30 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:43.165] AUTOPRUEBA ESPACIADO/inventario (1280x720/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\inventario-1280x720-en.png" (1280x720)
+[19:05:43.503] AUTOPRUEBA ESPACIADO/almacenes (1280x720/en) - 31 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:43.617] AUTOPRUEBA ESPACIADO/almacenes (1280x720/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\almacenes-1280x720-en.png" (1280x720)
+[19:05:43.956] AUTOPRUEBA ESPACIADO/desbloqueos (1280x720/en) - 20 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:44.072] AUTOPRUEBA ESPACIADO/desbloqueos (1280x720/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\desbloqueos-1280x720-en.png" (1280x720)
+[19:05:44.410] AUTOPRUEBA ESPACIADO/apariencia (1280x720/en) - 35 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:44.532] AUTOPRUEBA ESPACIADO/apariencia (1280x720/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\apariencia-1280x720-en.png" (1280x720)
+[19:05:44.870] AUTOPRUEBA ESPACIADO/ajustes (1280x720/en) - 14 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:44.973] AUTOPRUEBA ESPACIADO/ajustes (1280x720/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\ajustes-1280x720-en.png" (1280x720)
+[19:05:45.311] AUTOPRUEBA ESPACIADO/mapa (1280x720/en) - 17 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:45.411] AUTOPRUEBA ESPACIADO/mapa (1280x720/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\mapa-1280x720-en.png" (1280x720)
+[19:05:45.750] AUTOPRUEBA ESPACIADO/busqueda (1280x720/en) - objetivo "Cobre" seleccionado=False, busqueda lanzada.
+[19:05:48.949] AUTOPRUEBA ESPACIADO/busqueda (1280x720/en) - 181 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:49.078] AUTOPRUEBA ESPACIADO/busqueda (1280x720/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\busqueda-1280x720-en.png" (1280x720)
+[19:05:49.236] AUTOPRUEBA ESPACIADO - resolucion pedida 800x720-minimo -> real tras SetDisplayMode: 800x720, UIScale=1.
+[19:05:49.776] AUTOPRUEBA ESPACIADO - idioma pedido es -> cultura activa ahora: es-ES (cambio real=True).
+[19:05:50.115] AUTOPRUEBA ESPACIADO/aviso (800x720-minimo/es) - caja en x=414 y=385 359x169 (interior 343 px de ancho). Ultima linea ("Deshacer") top=507, alto real del texto YA partido=39,4 -> borde inferior del texto=547 vs borde inferior de la caja=555 -> OK: el texto cabe dentro del recuadro. Boton confirmar en y=565 -> OK: no se solapa.
+[19:05:50.210] AUTOPRUEBA ESPACIADO/aviso - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\aviso-800x720-minimo-es.png" (800x720)
+[19:05:50.547] AUTOPRUEBA ESPACIADO/buffs (800x720-minimo/es) - 26 filas activas + 100 filas de resultados medidas -> OK, nada recortado ni solapado. Columna Activos=264px (50% sin tope seria 364px), Añadir=474px, pestaña=748px.
+[19:05:50.645] AUTOPRUEBA ESPACIADO/buffs (800x720-minimo/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-800x720-minimo-es.png" (800x720)
+[19:05:50.798] AUTOPRUEBA ESPACIADO/carpetas-buffs (800x720-minimo/es) - camino abierto (1 niveles): "Offensivo (18)"
+[19:05:51.080] AUTOPRUEBA ESPACIADO/carpetas-buffs (800x720-minimo/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-carpetas-800x720-minimo-es.png" (800x720)
+[19:05:51.419] AUTOPRUEBA ESPACIADO/builds (800x720-minimo/es) - 10 pildoras medidas -> OK, ninguna recorta su texto.
+[19:05:51.504] AUTOPRUEBA ESPACIADO/builds (800x720-minimo/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\builds-800x720-minimo-es.png" (800x720)
+[19:05:51.662] AUTOPRUEBA ESPACIADO/libreria (800x720-minimo/es) - camino abierto (2 niveles): "Mascotas, Monturas, Herramientas" > "Mascotas de Jefes" -> RutaActual="Librería > Mascotas, Monturas, Herramientas > Mascotas de Jefes" (63 caracteres).
+[19:05:51.925] AUTOPRUEBA ESPACIADO/libreria (800x720-minimo/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\libreria-800x720-minimo-es.png" (800x720)
+[19:05:52.080] AUTOPRUEBA ESPACIADO/investigacion (800x720-minimo/es) - camino abierto (2 niveles): "Mascotas, Monturas, Herramientas" > "Mascotas de Jefes"
+[19:05:52.352] AUTOPRUEBA ESPACIADO/investigacion (800x720-minimo/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\investigacion-800x720-minimo-es.png" (800x720)
+[19:05:52.691] AUTOPRUEBA ESPACIADO/equipo (800x720-minimo/es) - 48 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:52.784] AUTOPRUEBA ESPACIADO/equipo (800x720-minimo/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\equipo-800x720-minimo-es.png" (800x720)
+[19:05:53.120] AUTOPRUEBA ESPACIADO/inventario (800x720-minimo/es) - 30 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:53.209] AUTOPRUEBA ESPACIADO/inventario (800x720-minimo/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\inventario-800x720-minimo-es.png" (800x720)
+[19:05:53.545] AUTOPRUEBA ESPACIADO/almacenes (800x720-minimo/es) - 31 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:53.629] AUTOPRUEBA ESPACIADO/almacenes (800x720-minimo/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\almacenes-800x720-minimo-es.png" (800x720)
+[19:05:53.968] AUTOPRUEBA ESPACIADO/desbloqueos (800x720-minimo/es) - 20 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:54.059] AUTOPRUEBA ESPACIADO/desbloqueos (800x720-minimo/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\desbloqueos-800x720-minimo-es.png" (800x720)
+[19:05:54.395] AUTOPRUEBA ESPACIADO/apariencia (800x720-minimo/es) - 35 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:54.482] AUTOPRUEBA ESPACIADO/apariencia (800x720-minimo/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\apariencia-800x720-minimo-es.png" (800x720)
+[19:05:54.820] AUTOPRUEBA ESPACIADO/ajustes (800x720-minimo/es) - 14 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:54.899] AUTOPRUEBA ESPACIADO/ajustes (800x720-minimo/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\ajustes-800x720-minimo-es.png" (800x720)
+[19:05:55.236] AUTOPRUEBA ESPACIADO/mapa (800x720-minimo/es) - 17 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:55.308] AUTOPRUEBA ESPACIADO/mapa (800x720-minimo/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\mapa-800x720-minimo-es.png" (800x720)
+[19:05:55.644] AUTOPRUEBA ESPACIADO/busqueda (800x720-minimo/es) - objetivo "Cobre" seleccionado=True, busqueda lanzada.
+[19:05:58.846] AUTOPRUEBA ESPACIADO/busqueda (800x720-minimo/es) - 181 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:05:58.944] AUTOPRUEBA ESPACIADO/busqueda (800x720-minimo/es) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\busqueda-800x720-minimo-es.png" (800x720)
+[19:05:59.118] AUTOPRUEBA ESPACIADO - idioma pedido en -> cultura activa ahora: en-US (cambio real=True).
+[19:05:59.464] AUTOPRUEBA ESPACIADO/aviso (800x720-minimo/en) - caja en x=414 y=385 359x169 (interior 343 px de ancho). Ultima linea ("Deshacer") top=507, alto real del texto YA partido=39.4 -> borde inferior del texto=547 vs borde inferior de la caja=555 -> OK: el texto cabe dentro del recuadro. Boton confirmar en y=565 -> OK: no se solapa.
+[19:05:59.554] AUTOPRUEBA ESPACIADO/aviso - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\aviso-800x720-minimo-en.png" (800x720)
+[19:05:59.891] AUTOPRUEBA ESPACIADO/buffs (800x720-minimo/en) - 26 filas activas + 100 filas de resultados medidas -> OK, nada recortado ni solapado. Columna Activos=264px (50% sin tope seria 364px), Añadir=474px, pestaña=748px.
+[19:05:59.987] AUTOPRUEBA ESPACIADO/buffs (800x720-minimo/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-800x720-minimo-en.png" (800x720)
+[19:06:00.141] AUTOPRUEBA ESPACIADO/carpetas-buffs (800x720-minimo/en) - camino abierto (1 niveles): "Offensive (18)"
+[19:06:00.422] AUTOPRUEBA ESPACIADO/carpetas-buffs (800x720-minimo/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\buffs-carpetas-800x720-minimo-en.png" (800x720)
+[19:06:00.758] AUTOPRUEBA ESPACIADO/builds (800x720-minimo/en) - 10 pildoras medidas -> OK, ninguna recorta su texto.
+[19:06:00.841] AUTOPRUEBA ESPACIADO/builds (800x720-minimo/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\builds-800x720-minimo-en.png" (800x720)
+[19:06:00.998] AUTOPRUEBA ESPACIADO/libreria (800x720-minimo/en) - camino abierto (1 niveles): "Potions (regeneration)" -> RutaActual="Library > Potions (regeneration)" (32 caracteres).
+[19:06:01.252] AUTOPRUEBA ESPACIADO/libreria (800x720-minimo/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\libreria-800x720-minimo-en.png" (800x720)
+[19:06:01.408] AUTOPRUEBA ESPACIADO/investigacion (800x720-minimo/en) - camino abierto (1 niveles): "Potions (regeneration)"
+[19:06:01.677] AUTOPRUEBA ESPACIADO/investigacion (800x720-minimo/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\investigacion-800x720-minimo-en.png" (800x720)
+[19:06:02.014] AUTOPRUEBA ESPACIADO/equipo (800x720-minimo/en) - 48 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:06:02.106] AUTOPRUEBA ESPACIADO/equipo (800x720-minimo/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\equipo-800x720-minimo-en.png" (800x720)
+[19:06:02.445] AUTOPRUEBA ESPACIADO/inventario (800x720-minimo/en) - 30 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:06:02.533] AUTOPRUEBA ESPACIADO/inventario (800x720-minimo/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\inventario-800x720-minimo-en.png" (800x720)
+[19:06:02.870] AUTOPRUEBA ESPACIADO/almacenes (800x720-minimo/en) - 31 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:06:02.956] AUTOPRUEBA ESPACIADO/almacenes (800x720-minimo/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\almacenes-800x720-minimo-en.png" (800x720)
+[19:06:03.293] AUTOPRUEBA ESPACIADO/desbloqueos (800x720-minimo/en) - 20 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:06:03.381] AUTOPRUEBA ESPACIADO/desbloqueos (800x720-minimo/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\desbloqueos-800x720-minimo-en.png" (800x720)
+[19:06:03.717] AUTOPRUEBA ESPACIADO/apariencia (800x720-minimo/en) - 35 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:06:03.803] AUTOPRUEBA ESPACIADO/apariencia (800x720-minimo/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\apariencia-800x720-minimo-en.png" (800x720)
+[19:06:04.139] AUTOPRUEBA ESPACIADO/ajustes (800x720-minimo/en) - 14 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:06:04.214] AUTOPRUEBA ESPACIADO/ajustes (800x720-minimo/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\ajustes-800x720-minimo-en.png" (800x720)
+[19:06:04.554] AUTOPRUEBA ESPACIADO/mapa (800x720-minimo/en) - 17 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:06:04.624] AUTOPRUEBA ESPACIADO/mapa (800x720-minimo/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\mapa-800x720-minimo-en.png" (800x720)
+[19:06:04.959] AUTOPRUEBA ESPACIADO/busqueda (800x720-minimo/en) - objetivo "Cobre" seleccionado=False, busqueda lanzada.
+[19:06:08.161] AUTOPRUEBA ESPACIADO/busqueda (800x720-minimo/en) - 181 elemento(s) con texto medido(s) -> OK, nada desborda ni se solapa.
+[19:06:08.260] AUTOPRUEBA ESPACIADO/busqueda (800x720-minimo/en) - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepEspaciado\terrakeep-capturas\busqueda-800x720-minimo-en.png" (800x720)
+[19:06:08.414] AUTOPRUEBA ESPACIADO COMPLETA.

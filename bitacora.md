@@ -5389,3 +5389,197 @@ enganchados a `Common/Exploracion/MarcadoresExploracion.cs`/`CapaMapaExploracion
 horizontal hacia el objetivo) — esta sesión se dedicó entera a los tramos nuevos y al fallo de
 progresión que salió al ampliarlos, que por su naturaleza (un jugador real se podría haber
 encontrado con la guía mandándole hacia atrás) tenía prioridad sobre features nuevas.
+
+## 13-sep-2026 (más tarde) — Auditoría de espaciado para TODO el mod, no solo la Guía
+
+Encargo explícito del usuario: auditar que **ningún texto sea más grande que su caja, que no se
+solape texto/cajas/opciones, que todo tenga su espacio y su sitio** en TODO TerrakeepMod — el
+editor de personaje, el catálogo de objetos, un hipotético "árbol de habilidades" y cualquier otra
+pantalla, no solo la Guía en Tiempo Real de la sesión de hoy. Con el mismo rigor ya usado en este
+mod: capturas reales del back buffer, medidas con la fuente real, en español e inglés, con y sin
+Calamity.
+
+### Lo primero: qué ya estaba cubierto y qué no
+
+Antes de tocar nada se leyó `Common/Panel/AutopruebaEspaciado.cs` (el arnés que ya existía desde el
+7-sep, `scripts/verificar-espaciado.ps1`) y el resto de arneses (`AutopruebaPersonaje`,
+`AutopruebaExploracion`, `AutopruebaColumnasBuffs`, etc.). Ya cubrían con medición real: el
+recuadro naranja de Exploración › "Este mundo", la pestaña Buffs completa, Builds, y capturas
+(sin medición dedicada) de Libería/Investigación. **Sin cubrir con medición real ni capturas
+revisadas**: Personaje › Equipo/Inventario/Almacenes/Desbloqueos/Apariencia, toda el área de
+Ajustes, y Exploración › Mapa/Búsqueda. No existe ningún "árbol de habilidades" en TerrakeepMod
+(no hay equivalente real en Terraria/tModLoader a ese concepto de otros juegos) — se documenta
+aquí en vez de forzar un análogo falso, mismo criterio que la regla de la "Marca Keep".
+
+### El arnés, ampliado (no uno nuevo)
+
+`Common/Panel/AutopruebaEspaciado.cs` gana:
+- **Un auditor genérico** (`AuditarArbol`): recorre TODO el árbol de una pantalla con
+  `ExecuteRecursively`, mide cada `EtiquetaTk`/`BotonTk` con texto contra su propia caja
+  (`FontAssets.MouseText.Value.MeasureString(...) * Escala` vs `GetDimensions().Width`, con la
+  MISMA geometría ya dibujada — `MaxWidth` por defecto es `StyleDimension.Fill`, así que un ancho
+  fijo declarado se recorta solo al hueco real del padre si es más pequeño, confirmado leyendo
+  `UIElement.cs` decompilado) y comprueba solapamiento por PARES entre hermanos que comparten el
+  mismo padre directo (nunca contra un antepasado: eso sería "el hijo cabe dentro del padre", que
+  es contención normal). Complementa, no sustituye, a las comprobaciones específicas que ya
+  existían donde las había.
+- Se abren y miden con este auditor, en las mismas 3 resoluciones × 2 idiomas que ya usaba el
+  arnés (1600×900, 1280×720, 800×720 el mínimo real): las cinco pestañas de Personaje que
+  faltaban, toda Ajustes, y Mapa/Búsqueda de Exploración.
+- Contenido REALISTA, no vacío: `PoblarPersonajeDePrueba` reutiliza
+  `AutopruebaPersonaje.PoblarInventario/PoblarAlmacenes/PoblarEquipo` (esos tres métodos pasan de
+  `private` a `internal` para esto, sin duplicar la lógica) para dejar objetos de verdad puestos;
+  `PrepararAjustesDePrueba` deja dos entradas reales en el historial de deshacer (para medir los
+  botones "Deshacer: ‹etiqueta›"/"Rehacer: ‹etiqueta›" con su texto largo real, no el estado
+  vacío); `PrepararBusqueda` lanza una búsqueda real de "Cobre" (mismo objetivo que ya usaba
+  `AutopruebaExploracion`, existe en cualquier mundo) para que la lista de resultados tenga filas
+  reales que medir.
+- `EtiquetaTk` gana un accesor público `Escala` (antes solo interna) para que el auditor mida con
+  la MISMA escala con la que se dibuja, no una supuesta.
+
+`scripts/verificar-espaciado.ps1` gana `-Calamity` (mismo patrón que `verificar-guia.ps1`) y ahora
+también comprueba `FALLO` (no solo `NO CUADRA`/`EXCEPCION`) al final, para que un solape o
+desborde real tumbe el script en rojo igual que ya hacía la Guía.
+
+### Un obstáculo real del entorno, resuelto (regla de autonomía técnica)
+
+Las dos primeras pasadas (900s y luego 2400s de margen) se quedaron colgadas para siempre en
+`Finding Mods...`, sin llegar nunca a escribir la evidencia. Diagnosticado leyendo
+`Interface.cs`/`ModOrganizer.cs` REALES decompilados (no supuesto): tModLoader compara los mods
+del Workshop (`HEROsMod`/`CalamityMod`, aunque estén DESHABILITADOS en el sandbox — la
+comparación mira la carpeta Workshop entera, no `enabled.json`) contra `LastLaunchedMods.txt`, y
+si detecta que cambiaron desde el último lanzamiento (`HEROsMod` se actualizó el 8-sep, y el
+sandbox de espaciado venía de una pasada anterior a esa fecha) abre un diálogo modal ("Mod
+Changes since last launch") que exige un CLIC real para continuar — el mismo tipo de bloqueo que
+ya documentaba el `CLAUDE.md` de este proyecto para el aviso de audio. Sin nadie delante, el
+cliente se quedaba esperando ese clic para siempre. Arreglo real en
+`scripts/verificar-espaciado.ps1`: la misma clave que usa el propio menú del juego
+(`Main.Configuration.Put("ShowNewUpdatedModsInfo", ...)`, confirmado en `ModLoader.cs`
+decompilado) se escribe a `false` en el `config.json` del sandbox antes de lanzar — es
+exactamente lo que haría un jugador real para no volver a ver ese aviso, aplicado solo a este
+sandbox de pruebas. Commit y nota aquí antes de reintentar, como pide la regla de autonomía
+técnica; no hizo falta instalar nada, solo diagnosticar con el código real.
+
+### Los fallos reales encontrados (todos con captura revisada a mano, no solo el log)
+
+Primera pasada completa del arnés ampliado: **30 líneas en rojo** (repetidas por resolución/
+idioma, pero de 8 causas raíz distintas). Cada una se verificó de verdad mirando la captura antes
+de arreglar — dos de ellas (los solapes "en caja, pero el texto real es corto y no llega a
+tocarse") se dejaron arregladas igualmente porque el hueco declarado seguía siendo una
+inconsistencia real, aunque esta vez no rompiera nada a la vista; el resto sí eran visibles en la
+captura:
+
+1. **"Dinero" de la cabecera de Personaje, roto de verdad.** `CabeceraPersonaje.ConstruirDinero`
+   declaraba una caja de 520px fija que nadie había medido contra dinero real. Con un personaje
+   realista (inventario Y los cuatro almacenes con monedas) el texto mide ~650px: en la captura
+   a 800×720 se leía literalmente cortado a media palabra, encima de "Ahora: ... vida, ... maná"
+   ("...1 almace[CORTE]da y maná)"). Arreglo en dos pasos (el primero abrió un solape nuevo, visto
+   en la SIGUIENTE pasada del propio arnés — la razón de por qué hay una pasada 4 y una 5): ahora
+   el texto se envuelve a dos líneas (`EtiquetaTk.PartirEnLineas`) dentro del ancho real de la
+   fila MENOS el hueco real del botón "Llenar vida y maná" que comparte esa fila, y
+   `CabeceraPersonaje`/`ContenidoPersonaje.AltoCabecera` suben de 90 a 110px para dejarle sitio
+   real a la segunda línea.
+2. **"Camiseta interior" pisando su propia muestra de color, en Apariencia.** `FilaColorTk`
+   reservaba 124px fijos entre el rótulo y la muestra de color, medidos solo a ojo. En español
+   "Camiseta interior" es el rótulo más largo de las siete filas y se leía prácticamente encima
+   del recuadro negro — visible en la captura, con un contraste claro contra las otras seis filas
+   (que sí dejaban hueco). Arreglo con el mismo criterio que ya usa
+   `PanelTerrakeepState.AjustarEscalaDeLasPestanas` para la barra de pestañas: una escala COMÚN a
+   las siete filas (no una por fila, para que las cortas no se vean más grandes que las largas),
+   calculada cada fotograma con la fuente real y bajada solo lo justo para que la más larga quepa.
+3. **Equipo especial pisando el selector de Conjunto, en Personaje › Equipo.** Tres fallos con la
+   misma raíz: `PestanaEquipo` colocaba el título de la columna de equipo especial
+   ("Equipo especial") en la MISMA banda vertical que los tres botones "Conjunto N" de arriba, sin
+   comprobar que no se tocaran en horizontal; el rótulo de cada fila de equipo se declaraba con
+   240px de caja mientras el cálculo de la anchura de columna reservaba solo 170
+   (`AnchoRotuloFila`, ya medido para el caso real más largo); y la leyenda de columnas de la
+   izquierda ("Columnas: equipado · vanidad · tinte", 340px) no se tenía en cuenta al calcular
+   dónde empezaba la columna derecha. Arreglado bajando el título de "Equipo especial" a una banda
+   vertical propia (6px libres bajo los botones — `ArribaRejilla` sube de 68 a 78 para dejarle
+   sitio), igualando el rótulo de fila a `AnchoRotuloFila` en los dos sitios, y calculando el
+   inicio de la columna derecha con `Math.Max` entre el ancho real de la rejilla y el de la
+   leyenda.
+4. **La cabecera de Exploración, con dos fallos.** "Estás en el tile..." y "Mapa del juego listo"
+   se solapaban 4px SIEMPRE (Top fijos demasiado juntos, sin relación con la resolución); y a
+   800×720 el título "Exploración del mundo" y la línea de mundo ("TerrakeepPrueba · Pequeño ·
+   Clásico") tenían cajas declaradas (640/700px fijos) más anchas que el hueco real que dejaba la
+   columna derecha. Arreglado subiendo "Mapa del juego listo" 6px y dando a las dos cajas de la
+   izquierda un ancho en PORCENTAJE hasta donde empieza la columna derecha, en vez de un número
+   fijo nunca medido; `CabeceraExploracion`/`ContenidoExploracion.AltoCabecera` suben de 84 a 98px
+   para que la columna derecha (ahora con más separación vertical) siga cabiendo dentro del marco.
+5. **El detalle de resultados de Búsqueda, cortado a 800×720.** "13.718 tiles encontrados en
+   20.170.801 mirados..." (una frase larga y realista, con separadores de miles) medía 529px en
+   una caja ya recortada por el motor a 406px reales (`MaxWidth` = ancho real de la columna
+   derecha, no el 640 fijo declarado). Arreglado envolviendo el texto con
+   `EtiquetaTk.PartirEnLineas` contra el ancho real de la columna (medido cada fotograma, depende
+   de idioma y resolución) y bajando la barra de progreso/la lista de resultados lo que haga falta
+   según cuántas líneas ocupe de verdad (`PestanaBusqueda.ReflowDerecha`, nuevo).
+6. **"Papelera"/"Seleccionar" con las cajas tocándose**, en el mini-panel compartido
+   (`PanelHerramientasLibreriaTk`, usado en Equipo/Inventario/Almacenes): la caja declarada de
+   "Papelera" medía 70px pero el siguiente elemento empezaba en 64 — 6px de solape de CAJA
+   (el texto real, más corto, no llegaba a tocarse de verdad, pero la inconsistencia entre los dos
+   números era real). Arreglado moviendo el segundo grupo a 74px.
+7. **"Variante / género" muy justo contra el botón "<"**, en el selector genérico `SelectorTk`
+   (usado en la cabecera de Personaje y en Apariencia): en español, más largo que "Variant /
+   gender", casi tocaba el botón siguiente. No llegaba a solaparse de forma medible con la fuente
+   real, pero quedaba sin margen. `SelectorTk.DrawSelf` ahora autoajusta la escala del rótulo
+   (nunca sube de 0,8, baja solo si de verdad no cabe) igual que ya hacían otros widgets de este
+   mod.
+
+### Verificación real, tres pasadas más tras los arreglos
+
+- **Pasada 4** (tras arreglar 1-7 salvo el propio arreglo de "Dinero"): confirmó los siete arreglos
+  pero destapó un fallo NUEVO — el primer intento de "Dinero" (ensancharlo a toda la fila) quitó
+  el desborde pero abrió un solape con el botón "Llenar vida y maná", que comparte esa misma fila
+  (30 líneas en rojo, las 24 combinaciones pestaña×idioma×resolución de Personaje que comparten
+  cabecera, más las 6 que ya se habían visto de Exploración pero que en realidad seguían sin
+  arreglar del todo — visto ANTES de darlo por bueno, no después). Arreglo real: el descrito en el
+  punto 1 de arriba (envolver a dos líneas + subir la cabecera a 110px).
+- **Pasada 5**: **0 líneas en rojo**, `Ninguna comprobacion en rojo.` del propio script, en las 3
+  resoluciones × 2 idiomas × (Aviso, Buffs, Buffs-carpetas, Builds, Librería, Investigación,
+  Equipo, Inventario, Almacenes, Desbloqueos, Apariencia, Ajustes, Mapa, Búsqueda) = 84 capturas
+  reales, revisadas a mano las de mayor riesgo (Equipo, Inventario, Apariencia, Ajustes, Búsqueda,
+  Mapa) confirmando visualmente cada arreglo: "Dinero" en dos líneas limpias sin tocar el botón,
+  "Camiseta interior" con el mismo hueco que las otras seis filas, "Equipo especial" claramente
+  por debajo de los botones de Conjunto, el detalle de Búsqueda envuelto sin solaparse con la
+  lista de resultados.
+- **Con Calamity cargado** (`-Calamity`, mismo patrón que `verificar-guia.ps1` — confirmado que
+  cargó de verdad: categorías reales como "Calamity Mod (mod) › Otros (311)" y "Calamity Mod
+  Music" en Librería/Investigación/carpetas de Buffs): **0 líneas en rojo** también, en las
+  mismas 6 combinaciones. Captura revisada a mano de Builds con las dos píldoras de fuente
+  (Vanilla/Calamity) y las tres etapas con sus nombres largos reales
+  ("Hardmode temprano (antes de los jefes mecánicos)", etc.) — todo cabe limpio.
+
+Logs completos en `evidencia/espaciado.log.txt` y `evidencia/espaciado-calamity.log.txt`
+(sobrescritos con la pasada 5 y la pasada con Calamity respectivamente — las pasadas 1-4
+intermedias no se guardan aparte, quedan en el historial de git si hiciera falta reconstruirlas).
+84 capturas reales en `evidencia/espaciado-capturas/` (sin Calamity) y otras 84 en
+`evidencia/espaciado-capturas-calamity/` (con Calamity).
+
+### Lo que NO se encontró roto (comprobado, no asumido)
+
+Inventario, Almacenes y Desbloqueos ya venían bien de la ronda de rediseño de WS1 (el mini-panel
+`PanelHerramientasLibreriaTk` consolidado): solo cargaron el fallo 6 de arriba, compartido con
+Equipo por ser el mismo widget. Los checkboxes largos de Desbloqueos
+("Antorchas de bioma desbloqueadas/activadas") SÍ se sospecharon por su longitud al leer el
+código, pero la captura real los descartó: caben con margen de sobra — se comprobó antes de tocar
+nada, siguiendo la lección ya aprendida en este proyecto de no "arreglar" algo sin verlo roto en
+una captura real primero.
+
+### Alcance
+
+Tocados: `Common/Panel/AutopruebaEspaciado.cs` (auditor genérico + 8 pantallas nuevas cubiertas),
+`Common/Personaje/AutopruebaPersonaje.cs` (tres métodos de `private` a `internal`),
+`UI/Personaje/Widgets/EtiquetaTk.cs` (accesor `Escala`), `UI/Personaje/CabeceraPersonaje.cs` +
+`UI/Personaje/ContenidoPersonaje.cs` (arreglo de "Dinero", cabecera 90→110px),
+`UI/Personaje/PestanaEquipo.cs` (arreglo de la columna de equipo especial, `ArribaRejilla`
+68→78px), `UI/Personaje/PestanaApariencia.cs` + `UI/Personaje/Widgets/FilaColorTk.cs` (escala
+común de las siete filas de color), `UI/Personaje/Widgets/SelectorTk.cs` (autoajuste de escala),
+`UI/Exploracion/CabeceraExploracion.cs` + `UI/Exploracion/ContenidoExploracion.cs` (anchos en
+porcentaje, cabecera 84→98px), `UI/Exploracion/PestanaBusqueda.cs` (envoltorio del detalle +
+`ReflowDerecha`), `UI/Libreria/Widgets/PanelHerramientasLibreriaTk.cs` (hueco real entre
+Papelera/Seleccionar), `scripts/verificar-espaciado.ps1` (`-Calamity`, comprobación de `FALLO`,
+arreglo del diálogo modal bloqueante), `evidencia/espaciado*.log.txt` y las dos carpetas de
+capturas. No se ha tocado nada de `Common/Guia/` ni de los tramos de progresión pendientes
+(`MuroDeCarne`, `Mecanicos`) — fuera del alcance de esta auditoría, encargo de otra sesión en
+curso.
