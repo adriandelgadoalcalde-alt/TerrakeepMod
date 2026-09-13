@@ -5250,3 +5250,10 @@ registro), `UI/Panel/PanelTerrakeepState.cs` (séptima pestaña + escala adaptat
 `UI/Personaje/Widgets/BotonTk.cs` (`EscalaTexto` escribible),
 `scripts/generar-localizacion.py` + los dos `.hjson` (162 claves nuevas por idioma) y
 `.gitignore`. Commit `4335eb2`.
+
+### Comprobado también CON Calamity cargado
+
+`scripts\verificar-guia.ps1 -Calamity`: `Calamity cargado=True`, el aviso de alcance sale el
+primero de la columna derecha (comprobado en la captura, no solo en el log: 40 párrafos frente a
+los 38 de la pasada sin Calamity, que son sus dos líneas), los seis pasos siguen señalando el
+objetivo que toca y ninguna comprobación en rojo. Log en `evidencia\guia-calamity.log.txt`.
