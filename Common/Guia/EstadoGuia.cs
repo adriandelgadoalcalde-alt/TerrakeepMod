@@ -233,8 +233,10 @@ namespace TerrakeepMod.Common.Guia
 		}
 
 		/// <summary>
-		/// La linea de direccion del paso: el bioma/zona y, si el paso apunta a una capa concreta,
-		/// si hay que bajar, subir o ya estas en ella. Todo con las fronteras reales del mundo.
+		/// La linea de direccion del paso: el bioma/zona, si el paso apunta a una capa concreta si
+		/// hay que bajar/subir o ya estas en ella, y (solo para la Mazmorra, ver
+		/// <see cref="LadoHorizontalDelPaso"/>) si esta a tu izquierda o a tu derecha. Todo con
+		/// fronteras y posiciones REALES del motor, nunca una coordenada.
 		/// </summary>
 		public static string Direccion(PasoGuia paso)
 		{
@@ -243,17 +245,66 @@ namespace TerrakeepMod.Common.Guia
 			}
 
 			string zona = paso.ZonaLegible;
+			string baseTexto;
 			if (paso.Capa == CapaMundo.Cualquiera || !EstadoJugadorGuia.HayPartida) {
-				return zona;
+				baseTexto = zona;
+			}
+			else {
+				CapaMundo aqui = EstadoJugadorGuia.CapaDelJugador();
+				if (aqui == paso.Capa) {
+					baseTexto = Idiomas.Texto("Guia.Direccion.YaEstas", zona);
+				}
+				else {
+					baseTexto = aqui < paso.Capa
+						? Idiomas.Texto("Guia.Direccion.Baja", zona)
+						: Idiomas.Texto("Guia.Direccion.Sube", zona);
+				}
 			}
 
-			CapaMundo aqui = EstadoJugadorGuia.CapaDelJugador();
-			if (aqui == paso.Capa) {
-				return Idiomas.Texto("Guia.Direccion.YaEstas", zona);
+			string lado = LadoHorizontalDelPaso(paso);
+			return lado == null ? baseTexto : Idiomas.Texto("Guia.Direccion.ConLado", baseTexto, lado);
+		}
+
+		/// <summary>Tolerancia, en tiles, por debajo de la cual no se dice "izquierda" ni "derecha":
+		/// ya estas lo bastante cerca en horizontal como para que un lado no signifique nada util
+		/// (y para que el aviso no titubee entre los dos según te muevas un paso).</summary>
+		private const float ToleranciaHorizontalTiles = 100f;
+
+		/// <summary>
+		/// Izquierda/derecha REAL hacia el objetivo del paso, o null si no hay ninguna posicion
+		/// fiable del motor para ese paso (la inmensa mayoria de zonas: ver el porque abajo).
+		/// </summary>
+		/// <remarks>
+		/// <b>Por que solo la Mazmorra, de momento.</b> <c>Main.dungeonX</c> es un campo REAL del
+		/// motor, fijado por el propio generador de mundo y guardado/leido sin condicion alguna en
+		/// todo formato de <c>.wld</c> (<c>WorldFile.cs</c>, escritura en la linea ~1262, lectura en
+		/// ~2021 y ~3376): un ancla horizontal exacta y siempre disponible para cualquier mundo,
+		/// nuevo o viejo. La Jungla, el Templo Lihzahrd y el bioma de Nieve NO tienen un equivalente:
+		/// <c>GenVars.jungleOriginX</c> (<c>WorldBuilding/GenVars.cs</c>) existe, pero es una
+		/// variable de PASE DE GENERACION - se pone a 0 al empezar `WorldGen.jungle()` y solo vale
+		/// mientras el mundo se esta generando en ESTE proceso; en un mundo ya existente que se
+		/// carga en una sesion nueva (el caso normal) esa clase ni siquiera se ha tocado, asi que
+		/// leerla mentiria. Confirmarlo con el codigo real de <c>WorldGen.cs</c> (lineas ~8053-8252)
+		/// evito construir una brujula horizontal falsa sobre un dato que no sobrevive a cerrar el
+		/// juego. La forma honesta de saber donde esta la Jungla/Nieve en un mundo YA CARGADO es
+		/// muestrear tiles de verdad (el mismo patron de bajo nivel que ya usa
+		/// <see cref="Common.Exploracion.BuscadorMundo"/> con <c>Main.tile.GetData&lt;T&gt;()</c>),
+		/// cacheando el resultado una vez por partida en vez de cada fotograma - trabajo real,
+		/// pendiente y documentado en la bitacora, no un vacio por descuido.
+		/// </remarks>
+		private static string LadoHorizontalDelPaso(PasoGuia paso)
+		{
+			if (paso.Zona != "Mazmorra" || !EstadoJugadorGuia.HayPartida) {
+				return null;
 			}
-			return aqui < paso.Capa
-				? Idiomas.Texto("Guia.Direccion.Baja", zona)
-				: Idiomas.Texto("Guia.Direccion.Sube", zona);
+
+			float difTiles = Main.dungeonX - EstadoJugadorGuia.Jugador.Center.X / 16f;
+			if (System.Math.Abs(difTiles) <= ToleranciaHorizontalTiles) {
+				return null;
+			}
+			return difTiles < 0f
+				? Idiomas.Texto("Guia.Direccion.Izquierda")
+				: Idiomas.Texto("Guia.Direccion.Derecha");
 		}
 
 		/// <summary>

@@ -750,6 +750,9 @@ Guia: {
 		YaEstas: You are where you need to be: {0}
 		Baja: Downwards, in {0}
 		Sube: Upwards, in {0}
+		ConLado: "{0}, {1}"
+		Izquierda: to your left
+		Derecha: to your right
 	}
 
 	Modo: {

@@ -750,6 +750,9 @@ Guia: {
 		YaEstas: Estás donde toca: {0}
 		Baja: Hacia abajo, en {0}
 		Sube: Hacia arriba, en {0}
+		ConLado: "{0}, {1}"
+		Izquierda: a tu izquierda
+		Derecha: a tu derecha
 	}
 
 	Modo: {

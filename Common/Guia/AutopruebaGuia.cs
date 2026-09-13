@@ -70,6 +70,8 @@ namespace TerrakeepMod.Common.Guia
 		private static bool _downedQueenBeeOriginal;
 		private static bool _downedSlimeKingOriginal;
 		private static bool _downedDeerclopsOriginal;
+		private static int _dungeonXOriginal;
+		private static Vector2 _posicionOriginal;
 		private static readonly List<int> _npcsCreados = new List<int>();
 
 		/// <summary>Tipos de NPC del pueblo que ya vivian en el mundo de prueba y que la prueba
@@ -442,6 +444,14 @@ namespace TerrakeepMod.Common.Guia
 				// Arrancar()) para deshacer el cierre del camino obligatorio que hizo
 				// PrepararOpcionalesTempranos solo para las capturas de este bloque.
 				case 147: RestaurarTramosNuevos(); break;
+
+				// --- direccion horizontal real (izquierda/derecha), la otra pieza de diseño ------
+				// pendiente del encargo. Solo cubre la Mazmorra por ahora (Main.dungeonX es el unico
+				// ancla horizontal real y siempre disponible del motor - ver el porque completo en
+				// EstadoGuia.LadoHorizontalDelPaso). Se prueba con el paso real "ArmaParaEsqueletron"
+				// (Zona=Mazmorra), moviendo al jugador de verdad a los dos lados de dungeonX.
+				case 148: ComprobarDireccionHorizontalMazmorra(); break;
+				case 149: RestaurarDireccionHorizontal(); break;
 				default: Terminar(); break;
 			}
 		}
@@ -1418,6 +1428,83 @@ namespace TerrakeepMod.Common.Guia
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - restaurados los dos opcionales " +
 				"tempranos a su valor original: downedSlimeKing=" + NPC.downedSlimeKing +
 				", downedDeerclops=" + NPC.downedDeerclops + ".");
+		}
+
+		// -------------------------------------------------------------------------------------
+		// Direccion horizontal real (izquierda/derecha), solo Mazmorra por ahora
+		// -------------------------------------------------------------------------------------
+
+		/// <summary>Primer paso del catalogo con esa clave, en cualquier tramo. Lo usa la prueba de
+		/// direccion horizontal para coger un paso real (Zona=Mazmorra) sin depender de en que
+		/// tramo este activa la guia ahora mismo.</summary>
+		private static PasoGuia BuscarPaso(string clave)
+		{
+			List<TramoGuia> tramos = CatalogoGuia.Tramos;
+			for (int i = 0; i < tramos.Count; i++) {
+				for (int j = 0; j < tramos[i].Pasos.Count; j++) {
+					if (tramos[i].Pasos[j].Clave == clave) {
+						return tramos[i].Pasos[j];
+					}
+				}
+			}
+			return null;
+		}
+
+		/// <summary>
+		/// Mueve al jugador de verdad a los dos lados de <c>Main.dungeonX</c> (con un valor de
+		/// prueba propio, para no depender de donde haya generado la Mazmorra el mundo sintetico) y
+		/// comprueba que <see cref="EstadoGuia.Direccion"/> dice el lado real que toca, usando el
+		/// paso real "ArmaParaEsqueletron" (Zona=Mazmorra, el mismo dato que ve el jugador en la
+		/// guia real, no un paso de mentira construido para la prueba).
+		/// </summary>
+		private static void ComprobarDireccionHorizontalMazmorra()
+		{
+			_dungeonXOriginal = Main.dungeonX;
+			_posicionOriginal = Main.LocalPlayer.position;
+
+			PasoGuia paso = BuscarPaso("ArmaParaEsqueletron");
+			if (paso == null) {
+				RegistroGuia.Aviso(Terrakeep.LogTag + " AUTOPRUEBA GUIA: no se encontro el paso " +
+					"\"ArmaParaEsqueletron\" para probar la direccion horizontal.");
+				return;
+			}
+
+			Main.dungeonX = 1000;
+
+			// El jugador 500 tiles a la IZQUIERDA de la Mazmorra: tiene que decir "a tu derecha".
+			Main.LocalPlayer.position = new Vector2((Main.dungeonX - 500) * 16f, Main.LocalPlayer.position.Y);
+			string siEstaALaIzquierda = EstadoGuia.Direccion(paso);
+			bool okDerecha = siEstaALaIzquierda.Contains(Idiomas.Texto("Guia.Direccion.Derecha"));
+
+			// El jugador 500 tiles a la DERECHA: tiene que decir "a tu izquierda".
+			Main.LocalPlayer.position = new Vector2((Main.dungeonX + 500) * 16f, Main.LocalPlayer.position.Y);
+			string siEstaALaDerecha = EstadoGuia.Direccion(paso);
+			bool okIzquierda = siEstaALaDerecha.Contains(Idiomas.Texto("Guia.Direccion.Izquierda"));
+
+			// El jugador justo en la columna de la Mazmorra: dentro de la tolerancia, no debe decir
+			// ningun lado (evita que el aviso titubee entre izquierda/derecha por un paso de nada).
+			Main.LocalPlayer.position = new Vector2(Main.dungeonX * 16f, Main.LocalPlayer.position.Y);
+			string siEstaEncima = EstadoGuia.Direccion(paso);
+			bool okSinLado = !siEstaEncima.Contains(Idiomas.Texto("Guia.Direccion.Derecha")) &&
+				!siEstaEncima.Contains(Idiomas.Texto("Guia.Direccion.Izquierda"));
+
+			bool ok = okDerecha && okIzquierda && okSinLado;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - direccion horizontal real " +
+				"(Main.dungeonX=" + Main.dungeonX + " a mano, paso \"ArmaParaEsqueletron\"): jugador 500 " +
+				"tiles a la izquierda de la Mazmorra -> \"" + siEstaALaIzquierda + "\" (debe contener \"" +
+				Idiomas.Texto("Guia.Direccion.Derecha") + "\"); jugador 500 tiles a la derecha -> \"" +
+				siEstaALaDerecha + "\" (debe contener \"" + Idiomas.Texto("Guia.Direccion.Izquierda") +
+				"\"); jugador justo en la columna de la Mazmorra -> \"" + siEstaEncima +
+				"\" (no debe decir ningun lado, dentro de la tolerancia) " +
+				(ok ? "-> OK." : "-> NO CUADRA."));
+		}
+
+		private static void RestaurarDireccionHorizontal()
+		{
+			Main.dungeonX = _dungeonXOriginal;
+			Main.LocalPlayer.position = _posicionOriginal;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - restaurados Main.dungeonX (" +
+				Main.dungeonX + ") y la posicion real del jugador tras la prueba de direccion horizontal.");
 		}
 
 		private static void Restaurar()
