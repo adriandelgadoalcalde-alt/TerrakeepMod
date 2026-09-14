@@ -98,6 +98,7 @@ namespace TerrakeepMod.Common.Panel
 			AutopruebaPanelUnico.Avanzar();
 			AutopruebaIdiomas.Avanzar();
 			AutopruebaTooltipObjeto.Avanzar();
+			AutopruebaTooltipPestana.Avanzar();
 			AutopruebaEspaciado.Avanzar();
 
 			ComprobarAtajos();

@@ -95,7 +95,12 @@ namespace TerrakeepMod.Common.Panel
 					// encabezado y la lista no se solapan). La captura automática de cada hito real
 					// no pasa por aquí ni por esta lista - ver CapturaDePantalla.GuardarHito.
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
-						Hitos.AutopruebaHitos.Variable));
+						Hitos.AutopruebaHitos.Variable))
+					// Tooltip de pestaña con fondo propio (arreglo del 14-sep-2026, ver bitacora.md):
+					// necesita su propia captura para demostrar que ya no se mezcla con el contenido
+					// de detras a ventana pequeña.
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
+						AutopruebaTooltipPestana.Variable));
 			}
 		}
 

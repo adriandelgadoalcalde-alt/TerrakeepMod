@@ -6925,3 +6925,102 @@ confirmar que lo ya arreglado sigue arreglado.
   cuadro de búsqueda de la Librería) - no cerrado hoy, recomendación dejada para una ronda futura.
 - No se ha tocado ningún tramo de la lógica de la Guía (fuera del alcance salvo bug visual real
   dentro de ellos, y no se encontró ninguno).
+
+## 14-sep-2026 (noche) — Tooltip de pestaña inactiva: fondo propio, en vez de documentar el límite
+
+Retomo el hallazgo de arriba (tooltip de pestaña sin panel de fondo, tapando contenido a ventana
+pequeña, 5 capturas reales) con el encargo explícito de decidir - no solo documentar - y construir
+la opción elegida, verificada con captura real. Checklist maestro: `Downloads\KeepQA\
+PENDIENTES-CIERRE-14SEP.md`, punto 1.
+
+**Decisión, con criterio de diseño ya concedido**: sustituir el tooltip vainilla
+(`Main.instance.MouseText`) de `BotonTk` (pestañas, píldoras, acciones - todos los botones del
+mod que usan `Ayuda`) por uno con fondo propio, reutilizando la MISMA técnica de marco de 9 trozos
+(`Utils.DrawSplicedPanel` + `Images/UI/PanelBackground`/`PanelBorder`) que `BotonTk` ya usa para
+dibujarse A SÍ MISMO. Comprobado primero que la premisa era cierta y no un supuesto: busqué en
+TODO el mod (`grep MouseText\(` en `*.cs`) y confirmé que **ningún** tooltip del mod lleva fondo
+propio todavía - los seis sitios que usan `Main.instance.MouseText` (`BotonTk`, `AlternadorTk`,
+`FilaCarpetaTk`, `FilaCarpetaBuffTk`, `IconoHudTerrakeep`, el tooltip de objeto de
+`PanelTerrakeepState`) son vainilla puro. Y decompilando `Main.MouseTextInner` real
+(`tModLoader.dll` instalado, vía `ilspycmd`) confirmé que la "caja opaca detrás de tooltips"
+(`Main.SettingsEnabled_OpaqueBoxBehindTooltips`) SOLO se dibuja dentro de
+`MouseText_DrawItemTooltip` (el tooltip de un OBJETO) - un tooltip de texto suelto como el de una
+pestaña NUNCA lleva panel en vainilla, ni con esa opción activada. Alcance de la corrección:
+**solo `BotonTk`** (arregla pestañas Y de paso unifica el resto de tooltips de botón, sin tocar
+los otros cinco sitios sueltos - fuera del hallazgo original, otra ronda si hace falta).
+
+### Construcción
+
+- `UI/Personaje/Widgets/BotonTk.cs`: `DrawSelf` ya no llama a `Main.instance.MouseText(ayuda)`;
+  guarda el texto en un campo estático `_tooltipPendiente`. Nuevo método estático
+  `DibujarTooltipPendiente(SpriteBatch)`: mide las líneas reales (`FontAssets.MouseText`), dibuja
+  fondo + borde con el mismo `Utils.DrawSplicedPanel` que usa el marco del propio botón, clampa a
+  pantalla (mismo criterio que `Main.MouseTextInner`) y pinta el texto (primera línea blanca,
+  resto en `EstiloTk.TextoSuave` - el mismo gris que ya usa el pie del panel para texto
+  secundario). Se consume solo (se pone a `null`) al dibujarse.
+- `UI/Panel/PanelTerrakeepState.cs`: `Draw` llama a `BotonTk.DibujarTooltipPendiente(spriteBatch)`
+  DESPUÉS de `base.Draw` - mismo motivo y mismo patrón que `DibujarTooltipDeObjeto`/
+  `DibujarObjetoEnRaton` ya establecidos ahí: la barra de pestañas se dibuja PRIMERO en el árbol,
+  así que sin aplazar esto el tooltip quedaría POR DEBAJO de cualquier fila dibujada después -
+  exactamente el problema que se está arreglando, al revés.
+- `UI/Personaje/Widgets/EstiloTk.cs`: nueva constante `FondoTooltip` (mismo azul oscuro de
+  `FondoCaja`, algo más opaco: un tooltip flota sobre CUALQUIER color de fondo del mundo/HUD
+  detrás, necesita más cobertura que una caja fija del panel).
+
+### Verificación en el juego real - captura real, con dos obstáculos reales resueltos
+
+Arnés nuevo: `Common/Panel/AutopruebaTooltipPestana.cs` (`TERRAKEEP_AUTOTEST_TOOLTIP_PESTANA`) +
+`scripts/verificar-tooltip-pestana.ps1`. Reproduce el escenario EXACTO del hallazgo original
+(800x720, el mínimo real del motor): abre el panel en Personaje, fuerza el ratón de PANTALLA
+sobre la primera pestaña inactiva de la barra (`Librería`) y pide una captura real del back
+buffer (`CapturaDePantalla`, ya existente).
+
+**Obstáculo 1 (bloqueaba el lanzamiento entero)**: el sandbox `tModLoader-TerrakeepWS0` no tenía
+`ShowNewUpdatedModsInfo=false` en su `config.json` (a diferencia del sandbox propio de
+`verificar-espaciado.ps1`, que sí lo pone) - el cliente se quedaba colgado en "Finding Mods..."
+esperando un clic real en el diálogo "Mod Changes since last launch" (mismo obstáculo ya
+documentado ahí). Resuelto aplicando el mismo parche de `config.json` dentro de mi script.
+
+**Obstáculo 2 (bug real de mi propio arnés, no del arreglo de producción)**: la primera pasada
+compiló y corrió entera pero la captura NO mostraba ningún tooltip. Causa real, no supuesta:
+`IsMouseHovering` (lo que lee `BotonTk.DrawSelf`) no se recalcula en `Draw`, se fija UNA vez por
+fotograma dentro de `UserInterface.Update -> GetMousePosition() -> hit-test`, que corre ANTES de
+que `PanelTerrakeepState.Draw` (donde reafirmaba `Main.mouseX`/`Main.mouseY`, calcando el patrón
+ya usado por `AutopruebaTooltipObjeto`) llegara a ejecutarse - la entrada real (polling) pisa el
+valor forzado en medio, igual que la nota larga de `AutopruebaTooltipObjeto.ReafirmarRaton` ya
+documentaba para OTRO caso. Ese patrón sirve para un `ContainsPoint` manual dentro de `DrawSelf`
+(caso de `SlotObjetoVanilla`), pero no para `IsMouseHovering`, que se decide antes. Arreglado
+llamando DIRECTAMENTE a `pestana.MouseOver(new UIMouseEvent(...))` - el mismo método público que
+dispara el motor real - en vez de intentar ganar la carrera del fotograma; mismo principio que ya
+usa `AutopruebaPersonaje.ComprobarDeslizadorColor` con `LeftMouseDown`. `Main.mouseX`/`mouseY` se
+siguen reafirmando en `Draw` aparte, para que la POSICIÓN del tooltip (que sí lee esos dos campos
+directamente) aparezca junto a la pestaña real y no en una esquina.
+
+**Resultado, log real (`client.log`)**:
+```
+AUTOPRUEBA TOOLTIP PESTAÑA - raton de PANTALLA puesto en x=163 y=76 sobre la pestaña "Librería"
+(rectangulo real x=119 y=61 87x30), MouseOver disparado a mano (IsMouseHovering=True), 20
+fotogramas antes de pedir la captura.
+AUTOPRUEBA TOOLTIP PESTAÑA - IsMouseHovering=True justo antes de capturar - captura real del back
+buffer guardada en ".../terrakeep-capturas/tooltip-pestana-fondo-800x720-minimo.png"
+```
+
+Captura real: `evidencia/tooltip-pestana-fondo/tooltip-pestana-fondo-800x720-minimo.png` -
+tooltip de dos líneas con caja azul oscura y borde claro, delimitado con claridad de la fila
+"Nombre"/"Ahora: vida" de debajo, sin mezclar letras con el fondo. Comparado a mano contra
+`evidencia/espaciado-capturas/ajustes-800x720-minimo-en.png` (el "antes" real del hallazgo: texto
+blanco suelto ilegible, mezclado letra a letra con "Follow the game"/los botones de idioma) - la
+diferencia es clara e inequívoca.
+
+### Compilación
+
+`scripts/compilar.ps1`, 0 errores, `.tmod` generado en las dos pasadas (con y sin el arreglo del
+hover forzado).
+
+### Commit
+
+`UI/Personaje/Widgets/BotonTk.cs`, `UI/Personaje/Widgets/EstiloTk.cs`,
+`UI/Panel/PanelTerrakeepState.cs`, `Common/Panel/AutopruebaTooltipPestana.cs` (nuevo),
+`Common/Panel/PanelTerrakeepSystem.cs` (enganche de `Avanzar`), `Common/Panel/
+CapturaDePantalla.cs` (variable nueva en `Permitida`), `scripts/verificar-tooltip-pestana.ps1`
+(nuevo), `evidencia/tooltip-pestana-fondo/` (captura real), `bitacora.md`.

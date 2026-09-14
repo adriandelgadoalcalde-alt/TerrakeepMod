@@ -532,11 +532,20 @@ namespace TerrakeepMod.UI.Panel
 			// que garantiza que nada se cuela en medio. Con la autopreuba apagada (variable de
 			// entorno sin poner) esta llamada no hace nada.
 			AutopruebaTooltipObjeto.ReafirmarRaton();
+			AutopruebaTooltipPestana.ReafirmarRaton();
 
 			base.Draw(spriteBatch);
 
 			DibujarObjetoEnRaton(spriteBatch);
 			DibujarTooltipDeObjeto();
+
+			// El tooltip de un BotonTk (pestañas, pildoras, acciones) con fondo propio - mismo
+			// motivo que los dos de arriba: se aplaza hasta aqui para quedar encima de TODO el
+			// arbol, barra de pestañas incluida. Arregla el hallazgo KeepQA del 14-sep-2026 (ver
+			// bitacora.md): el tooltip vainilla de la barra de pestañas, sin panel de fondo,
+			// tapaba contenido real a ventana pequeña.
+			BotonTk.DibujarTooltipPendiente(spriteBatch);
+
 			RegistrarMedidasUnaVez();
 		}
 

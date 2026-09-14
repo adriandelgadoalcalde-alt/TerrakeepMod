@@ -33,6 +33,13 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// <c>Images/UI/PanelBorder</c> del propio juego, no con un rectangulo propio.</summary>
 		public static readonly Color BordeSobre = new Color(200, 220, 255);
 
+		/// <summary>Fondo de un tooltip flotante con panel propio (ver <c>BotonTk.
+		/// DibujarTooltipPendiente</c>). Un poco mas opaco que <see cref="FondoCaja"/>: a
+		/// diferencia de una caja fija del panel, este flota sobre el mundo/HUD del juego detras,
+		/// que puede ser cualquier color, asi que necesita mas cobertura para seguir siendo
+		/// legible siempre.</summary>
+		public static readonly Color FondoTooltip = new Color(28, 36, 68) * 0.96f;
+
 		/// <summary>Color del texto secundario (etiquetas, unidades, avisos suaves).</summary>
 		public static readonly Color TextoSuave = new Color(190, 200, 225);
 

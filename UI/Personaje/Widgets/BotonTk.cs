@@ -2,6 +2,7 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using ReLogic.Content;
+using ReLogic.Graphics;
 using Terraria;
 using Terraria.Audio;
 using Terraria.GameContent;
@@ -84,6 +85,15 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 
 		private static Asset<Texture2D> _texturaFondo;
 		private static Asset<Texture2D> _texturaBorde;
+
+		/// <summary>
+		/// Texto pendiente de dibujar como tooltip CON FONDO PROPIO, fijado por
+		/// <see cref="DrawSelf"/> de quien tenga el raton encima este fotograma. null si nadie lo
+		/// ha pedido. Se consume (se pone a null) en cuanto <see cref="DibujarTooltipPendiente"/>
+		/// lo dibuja, asi que si nadie lo vuelve a pedir el fotograma siguiente, desaparece solo -
+		/// igual que el tooltip vainilla al apartar el raton.
+		/// </summary>
+		private static string _tooltipPendiente;
 
 		private string _texto;
 		private float _escalaTexto;
@@ -318,7 +328,19 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 				Main.LocalPlayer.mouseInterface = true;
 				string ayuda = Ayuda != null ? Ayuda() : null;
 				if (!string.IsNullOrEmpty(ayuda)) {
-					Main.instance.MouseText(ayuda);
+					// NO se llama a Main.instance.MouseText: confirmado en el codigo real de
+					// Main.MouseTextInner (tModLoader.dll instalado, via ilspycmd) que la caja
+					// opaca de fondo SOLO se dibuja dentro de MouseText_DrawItemTooltip (el
+					// tooltip de un OBJETO) - un tooltip de texto suelto como este nunca lleva
+					// panel, ni con "caja opaca detras de tooltips" activado en las opciones del
+					// jugador. Sin fondo, y con dos lineas (descripcion + atajo, mas alto de lo
+					// normal), tapaba contenido real del panel a ventana pequeña: hallazgo KeepQA
+					// del 14-sep-2026 (bitacora.md), cinco capturas reales. Se guarda aqui y se
+					// dibuja DESPUES de todo el arbol en DibujarTooltipPendiente (mismo patron ya
+					// usado por PanelTerrakeepState.DibujarTooltipDeObjeto), con el mismo marco de
+					// 9 trozos que este boton usa para si mismo - asi el limite entre "esto es un
+					// tooltip" y "esto es contenido del panel" queda claro, en vez de mezclarse.
+					_tooltipPendiente = ayuda;
 				}
 			}
 
@@ -337,6 +359,98 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 
 			Color color = Habilitado ? Color.White : new Color(150, 150, 150);
 			Utils.DrawBorderString(spriteBatch, _texto, posicion, color, escala);
+		}
+
+		/// <summary>
+		/// Dibuja, si alguien lo pidio este fotograma, el tooltip de un <see cref="BotonTk"/> con
+		/// fondo propio (el mismo marco de 9 trozos y las mismas texturas, <c>PanelBackground</c>/
+		/// <c>PanelBorder</c>, que ya usa este boton para su propio cuerpo - no una caja inventada
+		/// aparte). Hay que llamarlo DESPUES de que todo el arbol de UI haya terminado de dibujarse
+		/// (en <c>PanelTerrakeepState.Draw</c>, despues de <c>base.Draw</c>), exactamente el mismo
+		/// motivo por el que <c>DibujarTooltipDeObjeto</c> tambien se aplaza a ese punto: la barra
+		/// de pestañas se dibuja PRIMERO en el arbol (esta arriba del todo), asi que si el tooltip
+		/// se dibujara dentro del propio <see cref="DrawSelf"/> del boton quedaria por DEBAJO de
+		/// cualquier fila que el panel dibuje despues - el mismo problema de tapar contenido que
+		/// esto viene a arreglar, solo que al reves.
+		/// <para />
+		/// Sigue "tapando" lo que haya debajo en la zona que ocupa - es un tooltip flotante junto
+		/// al raton, ese es su trabajo en cualquier interfaz, incluida la vainilla - pero ahora con
+		/// un borde y un fondo solido que marcan con claridad donde empieza y donde acaba, en vez
+		/// de mezclar sus letras con lo que hay detras.
+		/// </summary>
+		public static void DibujarTooltipPendiente(SpriteBatch spriteBatch)
+		{
+			string texto = _tooltipPendiente;
+			_tooltipPendiente = null; // Consumido: si nadie lo vuelve a pedir, no se dibuja nada el fotograma que viene.
+			if (string.IsNullOrEmpty(texto)) {
+				return;
+			}
+
+			CargarTexturas();
+
+			string[] lineas = texto.Split('\n');
+			DynamicSpriteFont fuente = FontAssets.MouseText.Value;
+			const float relleno = 8f;
+			const float espacioEntreLineas = 2f;
+
+			Vector2[] tamanos = new Vector2[lineas.Length];
+			float anchoMax = 0f;
+			float altoTotal = 0f;
+			for (int i = 0; i < lineas.Length; i++) {
+				tamanos[i] = fuente.MeasureString(lineas[i]);
+				anchoMax = Math.Max(anchoMax, tamanos[i].X);
+				altoTotal += tamanos[i].Y;
+				if (i > 0) {
+					altoTotal += espacioEntreLineas;
+				}
+			}
+
+			float anchoCaja = anchoMax + relleno * 2f;
+			float altoCaja = altoTotal + relleno * 2f;
+
+			// Mismo desplazamiento base (mouseX/Y + 14) que usa Main.MouseTextInner, mas un poco
+			// para dejar sitio al propio cursor del juego.
+			float x = Main.mouseX + 20f;
+			float y = Main.mouseY + 20f;
+
+			// Mismo clamp de pantalla que hace Main.MouseTextInner: nunca se sale del area jugable.
+			if (x + anchoCaja > Main.screenWidth) {
+				x = Main.screenWidth - anchoCaja;
+			}
+			if (y + altoCaja > Main.screenHeight) {
+				y = Main.screenHeight - altoCaja;
+			}
+			if (x < 0f) {
+				x = 0f;
+			}
+			if (y < 0f) {
+				y = 0f;
+			}
+
+			if (_texturaFondo != null) {
+				Utils.DrawSplicedPanel(spriteBatch, _texturaFondo.Value, (int)x, (int)y,
+					(int)anchoCaja, (int)altoCaja, MargenMarco, MargenMarco, MargenMarco, MargenMarco,
+					EstiloTk.FondoTooltip);
+			}
+			if (_texturaBorde != null) {
+				Utils.DrawSplicedPanel(spriteBatch, _texturaBorde.Value, (int)x, (int)y,
+					(int)anchoCaja, (int)altoCaja, MargenMarco, MargenMarco, MargenMarco, MargenMarco,
+					EstiloTk.BordeSobre);
+			}
+
+			// La primera linea (la descripcion) en blanco, igual que cualquier tooltip vainilla; la
+			// segunda en adelante (el atajo de teclado) en el mismo gris suave que ya usa el resto
+			// del panel para texto secundario (ver EtiquetaTk.ColorTexto en ConstruirPie).
+			float cursorY = y + relleno;
+			for (int i = 0; i < lineas.Length; i++) {
+				Color color = i == 0 ? Color.White : EstiloTk.TextoSuave;
+				Utils.DrawBorderString(spriteBatch, lineas[i], new Vector2(x + relleno, cursorY), color, 1f);
+				cursorY += tamanos[i].Y + espacioEntreLineas;
+			}
+
+			// Mismo motivo que el resto de sitios que dibujan encima del raton: sin esto el clic
+			// atravesaria el tooltip y llegaria al mundo (atacar, colocar bloques) mientras se lee.
+			Main.LocalPlayer.mouseInterface = true;
 		}
 
 		/// <summary>
