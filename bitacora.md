@@ -6797,3 +6797,20 @@ nada, y dejar un panel sencillo para verlas.
 El texto de `MedirLaBarraDeSietePestanas` en `AutopruebaGuia.cs` decía "7" a mano en el log; se
 cambió a contar de verdad (`total`) en vez de tocar el número la próxima vez que crezca la barra -
 ya pasó una vez (6→7 con la Guía) y ha vuelto a pasar ahora (7→8 con el Álbum).
+
+## 14-sep-2026 (madrugada) - `Assets/best_prefix.json` resincronizado con el arreglo MP-01 de
+## Terrakeep, encontrado durante el `repaso-familia` de KeepQA
+
+`Assets/best_prefix.json` de este repo es una copia manual byte a byte de
+`Terrakeep.App/Assets/calamity/best_prefix_tml.json` (repo aparte, `Terrasavr-Native`) - lo
+documenta la propia cabecera de `scripts/generar-mejor-prefijo.py` ("se copia tal cual"). El
+arreglo MP-01 de la sesión de los 7 bugs de Terrakeep de esta misma noche (Coin Gun, id 905, antes
+sin "mejor prefijo" calculado por un filtro `damage<=0` incorrecto) regeneró la tabla fuente pero
+la copia aquí no se había rehecho. Encontrado durante el `repaso-familia` de KeepQA (diff
+estructural clave a clave contra la fuente real: la entrada `"905"` era la única discrepancia).
+Corregido con una copia directa del archivo real; confirmado idéntico byte a byte con
+`Downloads\KeepQA\src\integridad\compararDespliegue.js`. Se ha añadido además un caso de
+regresión permanente en KeepQA (`terrakeep-terrakeepmod-best-prefix-json-desincronizado`) que
+compara los dos archivos byte a byte, así que una futura regeneración que se olvide de la copia
+hará fallar la regresión, no solo este caso puntual. Detalle completo en
+`Downloads\KeepQA\bitacora.md`.
