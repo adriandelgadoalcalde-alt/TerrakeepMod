@@ -1,6 +1,8 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Newtonsoft.Json;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
@@ -14,6 +16,7 @@ using TerrakeepMod.UI.Guia;
 using TerrakeepMod.UI.Hitos;
 using TerrakeepMod.UI.Investigacion;
 using TerrakeepMod.UI.Libreria;
+using TerrakeepMod.UI.Libreria.Widgets;
 using TerrakeepMod.UI.Personaje;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -782,6 +785,245 @@ namespace TerrakeepMod.UI.Panel
 			return _contenidoActual.GetType().Name + ": " + elementos + " elementos, " + ranuras +
 				" ranuras de objeto, " + botones + " botones; area x=" + (int)dim.X + " y=" + (int)dim.Y +
 				" " + (int)dim.Width + "x" + (int)dim.Height;
+		}
+
+		// =========================================================================================
+		// SOLO ARNES DE PRUEBAS (KeepQA V2.0, Fase 1, 14-sep-2026): mismo "Motor 3" ya construido y
+		// validado en TModLoaderMod (commit 68684d5, "QA: extractor de orden_z/capa (Motor 3
+		// tModLoader/UIElement)") - ver TModLoaderMod\UI\TrainerPanelState.cs, VolcarGeometriaJson,
+		// para el razonamiento completo de por que UIElement.Children (la lista que recorre
+		// DrawChildren, sin ningun Sort/ZIndex - confirmado en
+		// Downloads\tModLoader-Decompiled\tModLoader\Terraria\UI\UIElement.cs) ya es el orden de
+		// pintado real, sin instrumentar nada. Aqui SOLO se porta el extractor al arbol real de ESTE
+		// panel (marco/pestañas/pie/contenido de area/capa de superposicion), que es distinto del de
+		// TModLoaderMod (columnas de toggles/multiplicadores) - la pieza que compara (KeepQA
+		// verificarCapas.js/verificarGeometria.js) no se toca ni se reimplementa.
+		// =========================================================================================
+
+		/// <summary>Profundidad maxima al recorrer el contenido de la pestaña abierta. Recorte de
+		/// seguridad real, no teorico: la Libreria puede tener ~8000 objetos cargados
+		/// (ArbolLibreria/RejillaSlots), y un volcado sin limite de un catalogo de ese tamaño no
+		/// aporta nada nuevo a verificarGeometria.js/verificarCapas.js (que ya comparan por GRUPO,
+		/// no elemento a elemento) y si un coste real de E/S y de JSON.</summary>
+		private const int ProfundidadMaximaGeometria = 4;
+
+		/// <summary>Tope de hijos volcados por contenedor, mismo motivo que
+		/// <see cref="ProfundidadMaximaGeometria"/>.</summary>
+		private const int HijosMaximosPorContenedorGeometria = 60;
+
+		/// <summary>
+		/// Vuelca la geometria REAL en pixeles de pantalla de todo el panel - el mismo contrato
+		/// <c>{id, tipo, padre_id, x, y, ancho, alto, grupo?, capa?, orden_z?}</c> que ya consumen
+		/// <c>verificarGeometria.js</c>/<c>verificarAlineacion.js</c>/<c>verificarCapas.js</c> de
+		/// KeepQA (ver <c>Downloads\KeepQA\PATRONES.md</c>, "Motor 3: tModLoader/UIElement", y
+		/// <c>Downloads\KeepQA\src\capas\verificarCapas.js</c> para el vocabulario cerrado de
+		/// <c>capa</c>). No instrumenta nada nuevo: SOLO lee <see cref="UIElement.GetDimensions"/>
+		/// y <see cref="OrdenZDe"/> (indice real dentro de <c>UIElement.Children</c> del padre
+		/// real) del arbol que ya existe.
+		/// </summary>
+		public string VolcarGeometriaJson()
+		{
+			var elementos = new List<Dictionary<string, object>>();
+			if (_marco == null) {
+				return "[]";
+			}
+
+			var idsUsados = new HashSet<string>();
+
+			void Agregar(string id, string tipo, string padreId, UIElement elemento, string grupo, string capa)
+			{
+				CalculatedStyle caja = elemento.GetDimensions();
+				var d = new Dictionary<string, object> {
+					["id"] = id,
+					["tipo"] = tipo,
+					// null de verdad (nunca ""): verificarGeometria.js solo salta la comprobacion de
+					// contencion cuando padre_id es exactamente null/undefined en el JSON - ver el
+					// mismo comentario en TModLoaderMod\UI\TrainerPanelState.cs.
+					["padre_id"] = padreId,
+					["x"] = caja.X,
+					["y"] = caja.Y,
+					["ancho"] = caja.Width,
+					["alto"] = caja.Height,
+				};
+				if (grupo != null) {
+					d["grupo"] = grupo;
+				}
+				if (capa != null) {
+					d["capa"] = capa;
+				}
+				int? ordenZ = OrdenZDe(elemento);
+				if (ordenZ.HasValue) {
+					d["orden_z"] = ordenZ.Value;
+				}
+				elementos.Add(d);
+			}
+
+			Agregar("marco", "panel", null, _marco, null, "panel");
+
+			int i = 0;
+			foreach (UIElement hijo in _marco.Children) {
+				i++;
+				string id, tipo, grupo, capa;
+				bool esContenedorDeArea = ReferenceEquals(hijo, _contenedor);
+
+				if (ReferenceEquals(hijo, _botonCerrar)) {
+					id = "boton_cerrar"; tipo = "boton"; grupo = null; capa = "controles";
+				}
+				else if (hijo is BotonTk botonPestana && _botonesPestana.Contains(botonPestana)) {
+					int indicePestana = _botonesPestana.IndexOf(botonPestana);
+					id = "pestana_" + (indicePestana >= 0 && indicePestana < ClavesDeArea.Length
+						? ClavesDeArea[indicePestana].ToLowerInvariant()
+						: "idx" + indicePestana);
+					tipo = "pestana"; grupo = "pestanas"; capa = "navegacion";
+				}
+				else if (esContenedorDeArea) {
+					id = "contenedor_area"; tipo = "contenedor"; grupo = null; capa = null;
+				}
+				else if (ReferenceEquals(hijo, _capaSuperposicion)) {
+					id = "capa_superposicion"; tipo = "overlay"; grupo = null; capa = "overlay";
+				}
+				else {
+					// Titulo y linea de ayuda del pie: EtiquetaTk locales a ConstruirTitulo/
+					// ConstruirPie, sin campo propio - se identifican por posicion generica, honesto
+					// dado que no hay confusion posible (son los 2 unicos "otros" hijos directos del
+					// marco).
+					id = "marco_otro_" + i; tipo = "texto"; grupo = "marco_textos"; capa = "contenido";
+				}
+
+				string idFinal = id;
+				int sufijoMarco = 1;
+				while (!idsUsados.Add(idFinal)) {
+					idFinal = id + "_" + (++sufijoMarco);
+				}
+
+				Agregar(idFinal, tipo, "marco", hijo, grupo, capa);
+
+				if (esContenedorDeArea) {
+					VolcarHijosRecursivo(hijo, idFinal, 0, Agregar, idsUsados);
+				}
+			}
+
+			return JsonConvert.SerializeObject(elementos);
+		}
+
+		/// <summary>Recorre el contenido de la pestaña abierta (heterogeneo: cada una de las ocho
+		/// areas monta widgets distintos - ranuras, botones, texto, barras, iconos...) de forma
+		/// GENERICA, con el mismo tope de profundidad/hijos que documentan
+		/// <see cref="ProfundidadMaximaGeometria"/>/<see cref="HijosMaximosPorContenedorGeometria"/>.
+		/// La clasificacion de <c>capa</c> es una aproximacion honesta por tipo de widget
+		/// (<see cref="ClasificarCapa"/>) - si un tipo no encaja en el vocabulario cerrado de
+		/// <c>verificarCapas.js</c>, se omite el campo en vez de forzar uno que no es cierto (Marca
+		/// Keep: "documentar con claridad lo que de verdad no aplica, nunca forzar un analogo
+		/// falso").</summary>
+		private static void VolcarHijosRecursivo(UIElement contenedor, string padreId, int profundidad,
+			Action<string, string, string, UIElement, string, string> agregar, HashSet<string> idsUsados)
+		{
+			if (profundidad >= ProfundidadMaximaGeometria) {
+				return;
+			}
+
+			int i = 0;
+			foreach (UIElement hijo in contenedor.Children) {
+				i++;
+				if (i > HijosMaximosPorContenedorGeometria) {
+					break;
+				}
+
+				string tipo = TipoDeWidget(hijo);
+				string capa = ClasificarCapa(hijo);
+
+				string idBase = padreId + "_" + tipo + "_" + i;
+				string id = idBase;
+				int sufijo = 1;
+				while (!idsUsados.Add(id)) {
+					id = idBase + "_" + (++sufijo);
+				}
+
+				agregar(id, tipo, padreId, hijo, null, capa);
+				VolcarHijosRecursivo(hijo, id, profundidad + 1, agregar, idsUsados);
+			}
+		}
+
+		/// <summary>Nombre de tipo ASCII corto, en minusculas, para el campo "tipo" del JSON - el
+		/// nombre real de la clase de C#, sin adornos.</summary>
+		private static string TipoDeWidget(UIElement elemento)
+		{
+			return elemento.GetType().Name.ToLowerInvariant();
+		}
+
+		/// <summary>
+		/// Aproximacion honesta de <c>capa</c> (vocabulario cerrado de
+		/// <c>Downloads\KeepQA\src\capas\verificarCapas.js</c>: fondo/decoracion/panel/contenido/
+		/// controles/navegacion/overlay/modal/primer_plano) a partir del TIPO de widget - nunca de su
+		/// contenido, que varia por area. Devuelve null (campo omitido) para cualquier tipo que no
+		/// encaje de verdad, en vez de forzar una clasificacion falsa.
+		/// </summary>
+		private static string ClasificarCapa(UIElement elemento)
+		{
+			switch (elemento) {
+				// Subtipos concretos de UIPanel PRIMERO: un switch de patrones de tipo comprueba
+				// los "case" en orden y se queda con el primero que encaje, asi que si "UIPanel _"
+				// fuera antes, CampoTextoTk/AlternadorTk (ambos heredan de UIPanel) nunca llegarian
+				// a clasificarse como "controles" - quedarian atrapados como "panel", que no es lo
+				// que son de verdad.
+				case CapaSuperposicionTk _:
+					return "overlay";
+				case BotonTk _:
+				case SlotObjetoVanilla _:
+				case DeslizadorTk _:
+				case AlternadorTk _:
+				case CampoTextoTk _:
+				case EditorCantidadTk _:
+				case SlotPapeleraTk _:
+				case SlotSeleccionTk _:
+				case SlotCatalogoBuild _:
+				case SlotCatalogoLibreria _:
+				case SlotMuestraInvestigacion _:
+				case EditorPrefijoTk _:
+					return "controles";
+				case EtiquetaTk _:
+				case UIText _:
+				case BarraProgresoTk _:
+				case MedidorPreparacionTk _:
+				case IconoBuffTk _:
+				case ParrafoTk _:
+				case FilaRequisitoTk _:
+				case MunecoTk _:
+					return "contenido";
+				// UIPanel generico (marcos/tarjetas sin widget propio) va DESPUES de todos los
+				// subtipos concretos de arriba, nunca antes - ver el comentario del principio de
+				// este switch.
+				case UIPanel _:
+					return "panel";
+				default:
+					return null;
+			}
+		}
+
+		/// <summary>Indice REAL (0-based) de <paramref name="elemento"/> dentro de la lista de hijos
+		/// de su padre REAL (<see cref="UIElement.Children"/>, la propiedad publica que envuelve la
+		/// lista privada <c>Elements</c> que <c>DrawChildren</c> recorre para pintar, sin ordenar por
+		/// ningun otro campo). Mayor indice = insertado mas tarde = pintado mas tarde = mas al frente
+		/// (algoritmo del pintor), exactamente el contrato de <c>orden_z</c> que espera
+		/// <c>verificarCapas.js</c>. Mismo metodo, literal, que
+		/// <c>TModLoaderMod\UI\TrainerPanelState.cs.OrdenZDe</c> - portado sin cambios porque
+		/// <c>UIElement.Children</c>/<c>Parent</c> son identicos en los dos mods (mismo tModLoader).
+		/// Devuelve null si el elemento no tiene padre (la raiz) o ya no aparece en la lista de su
+		/// padre.</summary>
+		private static int? OrdenZDe(UIElement elemento)
+		{
+			UIElement padre = elemento.Parent;
+			if (padre == null) {
+				return null;
+			}
+			int idx = 0;
+			foreach (UIElement hijo in padre.Children) {
+				if (ReferenceEquals(hijo, elemento)) {
+					return idx;
+				}
+				idx++;
+			}
+			return null;
 		}
 	}
 }

@@ -259,6 +259,33 @@ namespace TerrakeepMod.Common.Panel
 
 			Linea("VISTA " + ruta + " [" + _idiomaActual + "]: " + textos.Count +
 				" cadenas visibles. " + CapturaDePantalla.Guardar("idioma-" + _idiomaActual + "-" + ruta));
+
+			VolcarGeometriaSiToca(panel, ruta);
+		}
+
+		/// <summary>
+		/// KeepQA V2.0, Fase 1 (14-sep-2026): mismo Motor 3 que ya uso TModLoaderMod
+		/// (<c>Localizacion\IdiomaSystem.cs</c>, commit 68684d5) - vuelca
+		/// <see cref="PanelTerrakeepState.VolcarGeometriaJson"/> a la MISMA carpeta que ya usan las
+		/// capturas de esta vista, para que <c>verificarGeometria.js</c>/<c>verificarAlineacion.js</c>/
+		/// <c>verificarCapas.js</c> de KeepQA puedan correr sin necesitar un extractor propio. Solo
+		/// escribe el archivo si <see cref="CapturaDePantalla.Permitida"/> ya es true (la variable de
+		/// esta autoprueba encendida): jugando normal no se escribe nada, igual que la captura.
+		/// </summary>
+		private static void VolcarGeometriaSiToca(PanelTerrakeepState panel, string ruta)
+		{
+			try {
+				string carpeta = Path.Combine(Main.SavePath, CapturaDePantalla.Carpeta);
+				Directory.CreateDirectory(carpeta);
+				string rutaJson = Path.Combine(carpeta, "geometria-" + _idiomaActual + "-" + ruta + ".json");
+				File.WriteAllText(rutaJson, panel.VolcarGeometriaJson());
+				Linea("VISTA " + ruta + " [" + _idiomaActual + "]: geometria volcada en \"" +
+					Path.GetFileName(rutaJson) + "\".");
+			}
+			catch (Exception e) {
+				Linea("VISTA " + ruta + " [" + _idiomaActual + "]: volcado de geometria fallido: " +
+					e.GetType().Name + ": " + e.Message);
+			}
 		}
 
 		private static void Anadir(List<string> destino, string texto)

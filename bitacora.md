@@ -7068,3 +7068,107 @@ tocar) - la pantalla nativa "Mod Info" de tModLoader ya la toma de `build.txt` s
 
 `build.txt` (versión + `buildIgnore`), `scripts/limpiar-tmod.ps1` (nuevo). El borrado de las
 carpetas `bin-*/obj-*` no aparece en el commit: nunca estuvieron trackeadas (`.gitignore`).
+
+## 14-sep-2026 (tarde) — KeepQA V2.0 Fase 1: extractor de capas/orden_z portado desde TModLoaderMod
+
+Encargo real de KeepQA V2.0 (`Downloads\KeepQA\v2\PROPUESTA-UNIFICADA.md`, Fase 2/4: "portar el
+extractor de capas de TModLoaderMod también a TerrakeepMod"). Mismo "Motor 3" ya construido y
+validado allí (commit `68684d5`): `UIElement.Children` (la lista que recorre `DrawChildren`, sin
+ningún `Sort`/`ZIndex` - confirmado otra vez contra
+`Downloads\tModLoader-Decompiled\tModLoader\Terraria\UI\UIElement.cs`) ya es el orden de pintado
+real y basta con LEERLO, nunca instrumentar nada. No se reimplementa ninguna lógica de
+comparación: `verificarGeometria.js`/`verificarCapas.js` de KeepQA se usan tal cual.
+
+**Diferencia real frente a TModLoaderMod**: el árbol de `PanelTerrakeepState` no es el mismo (marco
+único + barra de 8 pestañas + una de 8 áreas de contenido HETEROGÉNEAS, cada una con sus propios
+widgets - `ContenidoPersonaje`, `ContenidoLibreria`... - frente a las dos columnas fijas de
+toggles/multiplicadores del trainer). `VolcarGeometriaJson()` (nuevo, en `UI/Panel/
+PanelTerrakeepState.cs`) por tanto:
+
+- Clasifica los hijos DIRECTOS de `_marco` por identidad de referencia (`_botonCerrar`,
+  `_botonesPestana`, `_contenedor`, `_capaSuperposicion`) - sin campos nuevos que exponer, todos ya
+  existían.
+- Para el contenido de la pestaña abierta (heterogéneo, imposible de enumerar a mano para las 8
+  áreas) usa un recorrido GENÉRICO y recursivo (`VolcarHijosRecursivo`), con dos recortes de
+  seguridad reales y documentados en el propio código: profundidad máxima 4 y 60 hijos por
+  contenedor - la Librería puede tener miles de objetos cargados (`ArbolLibreria`/`RejillaSlots`,
+  ~8000 con Calamity) y un volcado sin límite no aporta nada nuevo a unos verificadores que ya
+  comparan por GRUPO, no elemento a elemento.
+- `capa` se aproxima por TIPO de widget (`ClasificarCapa`, switch de patrones) contra el vocabulario
+  cerrado de `verificarCapas.js` (fondo/decoracion/panel/contenido/controles/navegacion/overlay/
+  modal/primer_plano) - nunca se fuerza una clasificación que no encaja: `IconoObjetoTk`/
+  `IconoResultado` se descartaron del switch al comprobar que son clases `static` (dibujan, no son
+  nodos del árbol de `UIElement`) y `CampoTextoTk`/`AlternadorTk` (ambos heredan de `UIPanel`) se
+  colocaron ANTES del `case UIPanel _:` genérico - un switch de patrones de tipo se queda con el
+  PRIMER caso que encaja, así que el orden importa de verdad, no es cosmético.
+- `OrdenZDe` es el mismo método, literal, que ya usa `TrainerPanelState.cs` de TModLoaderMod (índice
+  real dentro de `Children` del padre real) - portado sin cambios porque `UIElement.Children`/
+  `Parent` son idénticos en los dos mods (mismo tModLoader instalado).
+
+**Enganche real** (no una autoprueba nueva, se reutiliza la que YA recorre las 11 vistas × 2
+idiomas): `Common/Panel/AutopruebaIdiomas.cs`, método nuevo `VolcarGeometriaSiToca`, llamado justo
+después de cada captura de pantalla en `Recoger()` - mismo patrón exacto que
+`Localizacion\IdiomaSystem.cs` de TModLoaderMod: escribe `geometria-<idioma>-<vista>.json` en la
+MISMA carpeta que ya usan las capturas (`Autoprueba.CapturaDePantalla.Carpeta` - aquí
+`Common\Panel\CapturaDePantalla.Carpeta`), protegido con try/catch propio (nunca aborta la
+autoprueba si el volcado falla).
+
+### Compilación
+
+`scripts\compilar.ps1`: **0 errores** en las dos fases (`dotnet build` de validación + `-build` real
+con el Roslyn interno de tModLoader), `TerrakeepMod.tmod` generado (584.255 bytes).
+
+### Verificación real, con un obstáculo real encontrado y resuelto en el camino
+
+Lanzado `scripts\verificar-idiomas.ps1` (cliente gráfico real, `TERRAKEEP_AUTOTEST_IDIOMAS=1`)
+contra el sandbox `tModLoader-TerrakeepIdiomas`. **Primer intento: el cliente se quedaba
+indefinidamente en la pantalla de splash** ("Terraria: Coming soon to a computer near you", CPU
+prácticamente plana, `Responding=True`) sin cargar nunca el mundo. Diagnosticado leyendo
+`client.log`: se paraba justo después de `"Mod Changes since last launch: Updated Mods: HEROsMod
+(HERO's Mod) v0.4.18 -> v0.4.18.1"` - confirmado contra el código real decompilado
+(`Terraria/ModLoader/UI/Interface.cs:206-268`, `ModOrganizer.DetectModChangesForInfoMessage`) que
+esto dispara una pantalla `infoMessage.Show(...)` DENTRO del propio juego (no un diálogo nativo de
+Windows - comprobado enumerando todas las ventanas visibles del sistema, solo existía la ventana
+SDL del propio juego) que exige un clic para continuar, y por tanto bloquea cualquier automatización
+sin simulación de input. Causa real: `LastLaunchedMods.txt` (dentro de `Main.SavePath`, o sea del
+propio sandbox) llevaba fecha del 6-sep-2026, de una sesión anterior, y comparaba contra el estado
+ACTUAL de la carpeta real de Workshop del usuario (`HEROsMod`/`CalamityMod`, actualizados desde
+entonces) - el mismo obstáculo, y el mismo arreglo, que ya documentaba `medirFps.js` de KeepQA
+("Restos de una sesión anterior real del propio sandbox que atascan el arranque en una pantalla que
+pide un clic"). **Arreglo**: borrar `LastLaunchedMods.txt` del sandbox antes de lanzar (sin archivo,
+`DetectModChangesForInfoMessage` devuelve `null` de inmediato, Paso 2 del código real citado arriba)
+- con eso el cliente entró limpio, sin pantalla de confirmación, en el primer intento siguiente.
+
+**Evidencia real tras el arreglo** (`terrakeep-idiomas-evidencia.log`, 22 vistas = 11 × 2 idiomas,
+todas con volcado):
+```
+[16:53:37.888] [Terrakeep] VISTA Personaje-0 [es]: geometria volcada en "geometria-es-Personaje-0.json".
+...
+[16:53:58.597] [Terrakeep] VISTA Investigacion [en]: geometria volcada en "geometria-en-Investigacion.json".
+```
+Ni una sola línea de "volcado de geometría fallido" en las 22 vistas.
+
+**Validado contra las piezas compartidas de KeepQA** (mismo criterio que TModLoaderMod), sobre
+`geometria-es-Personaje-7.json` (la vista "Buffs", la más cargada: 55 elementos, `orden_z`/`capa`
+reales en todos los nodos del marco):
+- `verificarCapas.js`: **RESULTADO: OK** (0 inversiones de capa reales; 4 pares comparables, 202
+  sin solape, 40 sin datos suficientes de `capa`/`orden_z` - honesto, no todo elemento tiene una
+  `capa` clasificada).
+- `verificarGeometria.js`: **RESULTADO: REVISAR** (1 contención rota, 2 consistencias de grupo, 6
+  solapes) - confirma que el extractor SÍ detecta cosas reales, no solo produce ceros. Dos de los
+  hallazgos son diseño intencional documentado en el propio código (`contenedor_area`/
+  `capa_superposicion` se solapan A PROPÓSITO - ver el comentario de `OnInitialize` en
+  `PanelTerrakeepState.cs` sobre por qué la capa de superposición ocupa la misma franja que el
+  contenedor). El resto (un `MedidorPreparacionTk` que se sale 9px por abajo de su fila en la
+  pestaña de Completitud, la ayuda del pie solapando el botón "Cerrar", dos pares de etiquetas
+  vecinas solapadas en Completitud) son candidatos REALES sin triar - mismo criterio que el resto
+  de la familia ("un hallazgo puede ser un bug real O un diseño intencional, MIRA la captura antes
+  de decidir"): quedan anotados aquí para que el propio proyecto los revise cuando le toque, no se
+  han tocado en esta ronda (fuera del alcance de "portar el extractor", que es lo que pedía la
+  Fase 1).
+
+### Commit
+
+`UI/Panel/PanelTerrakeepState.cs` (extractor `VolcarGeometriaJson`/`VolcarHijosRecursivo`/
+`ClasificarCapa`/`OrdenZDe`, nuevo), `Common/Panel/AutopruebaIdiomas.cs` (enganche
+`VolcarGeometriaSiToca`), `bitacora.md`.
