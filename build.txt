@@ -1,6 +1,6 @@
 displayName = Terrakeep
 author = IncrediBad
-version = 0.2.0
+version = 0.3.0
 # El repositorio ya es publico (8-sep-2026) - homepage real, para que el boton "Visitar sitio
 # web del mod" de UIModInfo (solo aparece si hay url, codigo real del tModLoader instalado)
 # lleve de verdad al proyecto en vez de a la portada de GitHub a secas, que era lo que habia
@@ -32,4 +32,17 @@ dllReferences = Terrakeep.Core
 # de cosas que a quien instale el mod no le sirven de nada. ModCompile.PackageMod empaqueta
 # TODO lo que no descarte IgnoreResource, asi que la unica forma de dejarlos fuera es nombrarlos
 # aqui.
-buildIgnore = *.csproj, *.user, *.md, .git\*, .vs\*, .idea\*, obj\*, bin\*, Properties\*, scripts\*, evidencia\*
+#
+# bin-*, obj-* y *.pdb añadidos el 14-sep-2026 (hallazgo real de KeepQA): ModCompile.
+# IgnoreCompletely (tModLoader.dll real, decompilado con ilspycmd) solo descarta rutas que
+# empiezan LITERALMENTE por "bin\"/"obj\" - las carpetas de salida ALTERNATIVAS que dejan las
+# verificaciones al compilar con -p:BaseOutputPath aparte (bin-checkDebug\, obj-guia\..., ya
+# en .gitignore, nunca parte del mod) no coinciden con ese prefijo exacto y se colaban enteras
+# dentro del .tmod publicado (project.assets.json, *.nuget.cache, rutas absolutas de esta
+# maquina...). El .pdb tampoco lo descarta ninguna regla: ModCompile.Build lo añade siempre que
+# RoslynCompile lo genere (codigo real, sin ninguna opcion de "Release sin simbolos" - no es un
+# ajuste de Configuration que se pueda tocar, tModLoader no expone ese concepto en su propio
+# -build), asi que la unica forma real de dejarlo fuera del paquete distribuible es nombrarlo
+# aqui. El *.pdb de esta lista es documentacion de intencion, no una exclusion real: ver
+# scripts\limpiar-tmod.ps1 (paso aparte tras compilar, necesario de verdad).
+buildIgnore = *.csproj, *.user, *.md, .git\*, .vs\*, .idea\*, obj\*, bin\*, bin-*, obj-*, *.pdb, Properties\*, scripts\*, evidencia\*

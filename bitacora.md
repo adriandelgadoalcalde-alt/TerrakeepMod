@@ -7024,3 +7024,47 @@ hover forzado).
 `Common/Panel/PanelTerrakeepSystem.cs` (enganche de `Avanzar`), `Common/Panel/
 CapturaDePantalla.cs` (variable nueva en `Permitida`), `scripts/verificar-tooltip-pestana.ps1`
 (nuevo), `evidencia/tooltip-pestana-fondo/` (captura real), `bitacora.md`.
+
+## 14-sep-2026 (noche) — .tmod limpio de verdad, subida de versión
+
+Punto 2 y 3 del checklist de cierre. Hallazgo real de KeepQA de esta noche: el `.tmod`
+distribuible llevaba símbolos de depuración y restos de builds sueltas. Investigado con el
+código REAL de `ModCompile.cs`/`TmodFile.cs` (`tModLoader.dll` instalado, decompilado con
+`ilspycmd` - nunca supuesto), dos causas distintas:
+
+1. **`ModCompile.IgnoreCompletely`** solo descarta rutas que empiezan LITERALMENTE por
+   `"bin\"`/`"obj\"`. Las carpetas de salida alternativas de sesiones de verificación pasadas
+   (`bin-checkDebug\`, `obj-guia\`, `obj-verif-espaciado\`... - ya en `.gitignore`, nunca parte
+   del mod, dejadas por `-p:BaseOutputPath` aparte para no pelearse con un `bin\` bloqueado por
+   el juego abierto) no coinciden con ese prefijo exacto y se colaban enteras: `project.assets.
+   json`, `*.nuget.cache`, rutas absolutas de esta máquina. **Arreglo real, dos partes**:
+   borradas las carpetas sueltas (basura local, 0 archivos trackeados en git) y añadidas
+   `bin-*, obj-*` a `buildIgnore` en `build.txt`, para que no vuelvan a colarse si una sesión
+   futura deja alguna otra suelta.
+2. **El `.pdb` no pasa por `buildIgnore` en absoluto**: `ModCompile.Build` lo añade a mano,
+   sin condición, en cuanto `RoslynCompile` lo genera (código real: SIEMPRE lo genera, no hay
+   ningún ajuste de `Configuration`/"Release sin símbolos" que `tModLoader` exponga en su
+   propio `-build` - confirmado, no hay ninguna vía de config para esto). Construida la única
+   vía real: `Downloads\KeepQA\src\empaquetado-tmod\limpiar-tmod.js` (nuevo, herramienta
+   compartida de la familia), que reescribe el `.tmod` ya compilado quitando las entradas que
+   coincidan (por defecto `*.pdb`) con un hash SHA1 recalculado siguiendo EXACTAMENTE el
+   formato real de `TmodFile.Save()` (decompilado) - no un zip a medias. `scripts\
+   limpiar-tmod.ps1` (nuevo) lo invoca sobre el `.tmod` ya compilado.
+
+**Verificado de verdad, no solo con el propio lector**: tras `compilar.ps1` + `limpiar-tmod.ps1`,
+`node tmod-extract.js` confirma el contenido limpio (19 → 18 archivos, sin `.pdb` ni carpetas
+sueltas, 581.326 → 479.318 bytes) y `verificar-en-juego.ps1 -Servidor` carga el `.tmod` YA
+LIMPIO en un servidor dedicado real: `"[Terrakeep] Mod cargado. Prueba de humo de Terrakeep.Core:
+GameItem(Id=3389).IsEmpty=False..."` - el hash recalculado a mano es válido de verdad para el
+motor real, no solo para mi propio lector.
+
+**Versión**: subida de `0.2.0` a `0.3.0` (salto de minor: tooltip con fondo propio + el propio
+arreglo de empaquetado, no un cambio incompatible). Sin pantalla "Acerca de"/versión propia en
+el panel (comprobado: único sitio que la muestra es `AppVersion` de `SincronizacionEscritorio.cs`,
+que ya lee `Terrakeep.Instance.Version` en vivo del ensamblado, sin número escrito a mano que
+tocar) - la pantalla nativa "Mod Info" de tModLoader ya la toma de `build.txt` sola.
+
+### Commit
+
+`build.txt` (versión + `buildIgnore`), `scripts/limpiar-tmod.ps1` (nuevo). El borrado de las
+carpetas `bin-*/obj-*` no aparece en el commit: nunca estuvieron trackeadas (`.gitignore`).
