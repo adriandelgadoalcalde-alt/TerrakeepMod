@@ -7254,3 +7254,61 @@ arreglado antes de reintentar - regla de la casa respetada):
 - `Common/Panel/RegistroPanel.cs` (arreglo: también escribe el archivo de evidencia cuando
   `AutopruebaSoak` está activa, no solo `AutopruebaPanelUnico`).
 - `Downloads\KeepQA\src\rendimiento\soakTModLoader.js` (nuevo, repo KeepQA aparte).
+
+---
+
+## 14-sep-2026 (noche) — KeepQA V2.0, Fase 5: intento de baseline visual real, bloqueado por un
+## cuelgue real del cliente gráfico (obstáculo de entorno, no del mod)
+
+Encargo: cerrar el hueco de Fase 5 de KeepQA (`v2/PROPUESTA-UNIFICADA.md`) generando baseline
+visual real para TerrakeepMod vía `scripts\verificar-panel-unico.ps1` (que ya lanza
+`AutopruebaPanelUnico` con `CapturaDePantalla.Guardar()` real, `GetBackBufferData`), guardando 2-3
+capturas reales con `gestorBaseline.guardar('terrakeepmod', <pantalla>, ..., {confirmar:true})`.
+
+**No se consiguió cerrar - tres intentos reales, los dos últimos con el MISMO fallo**:
+
+1. **Intento 1** (`-SegundosEspera 240`): compiló bien (`.tmod` real, 585179 bytes), el cliente
+   gráfico SÍ arrancó y SÍ progresó (`client.log` real llegó a "Finding Mods..." y "Mod Changes
+   since last launch"), pero `terrakeep-panel-evidencia.log` nunca apareció dentro de los 240s -
+   el cliente se quedó cargando mods más tiempo del esperado (causa real no aislada del todo:
+   pudo ser simplemente que 240s no bastaban esta vez). El script mató su propio proceso al
+   agotar el tiempo (comportamiento correcto, sin residuos).
+2. **Intento 2** (`-SegundosEspera 420`, tras confirmar `Get-Process`/`Get-CimInstance` vacíos
+   antes de lanzar): esta vez el cliente se quedó COLGADO DE VERDAD, mucho antes de "Finding
+   Mods" - el `client.log` se detuvo en seco justo después de `[FNA]: Hook
+   System.Runtime.Loader...` y no avanzó ni una línea más en los 7 minutos completos de espera
+   (confirmado con un bucle de sondeo real cada 5-8s, no solo "parecía colgado"). Justo antes de
+   colgarse, el log mostraba algo que el intento 1 NO tenía: `Microsoft.Xna.Framework.Audio.
+   NoAudioHardwareException` / `"No audio hardware found. Disabling all audio."` - una diferencia
+   real de entorno entre los dos intentos, no un cambio de código (nada se tocó en el mod entre
+   medias).
+3. **Diagnóstico antes de un tercer intento** (regla de la casa: entender antes de repetir a
+   ciegas): `query session` mostró la sesión 1 (`adrian`, donde corre este agente) como `Desc`
+   (desconectada) y la sesión `console` como `Conn` - el mismo patrón ya documentado en la
+   memoria del usuario para el cuelgue en negro de Don't Starve Together
+   (`reference_tscon-reconexion-limitaciones`). Los dispositivos de audio del sistema seguían
+   `OK` a nivel de Windows (`Win32_SoundDevice`), así que no es que falte hardware de verdad -
+   es la sesión desconectada la que se lo esconde al proceso. **Matiz real que complica el
+   diagnóstico simple**: esta MISMA sesión de trabajo ya había lanzado el cliente gráfico con
+   éxito varias veces hoy (barrido de idiomas de TModLoaderMod a las 18:33/18:34, y el soak de 6
+   minutos de este propio proyecto en la entrada de Fase 6 justo arriba) bajo, presumiblemente,
+   el mismo estado de sesión desconectada - así que "sesión Desc" por sí sola no garantiza el
+   cuelgue, solo lo hace más probable en algún momento de la tarde/noche.
+4. **Intento 3** (`-SegundosEspera 300`, tras confirmar de nuevo cero procesos huérfanos): **el
+   cliente se colgó exactamente en el mismo punto que el intento 2** (mismo `NoAudioHardware
+   Exception`, mismo corte seco justo tras el mismo `Hook` de FNA, confirmado con el mismo bucle
+   de sondeo). Dos fallos reales seguidos con la MISMA causa observable - por la regla de la casa
+   ("si algo falla dos veces seguidas, parar y anotarlo, no insistir en bucle") se paró aquí, sin
+   un cuarto intento. Proceso colgado matado a mano (`Stop-Process -Force` sobre el PID real,
+   confirmado sin residuos con `Get-CimInstance` vacío después).
+
+**Conclusión honesta**: el mecanismo de captura en sí (`CapturaDePantalla.cs` +
+`AutopruebaPanelUnico` + `verificar-panel-unico.ps1`) sigue siendo válido y ya demostrado hoy
+mismo en otro contexto (el soak de 23 ciclos de arriba SÍ abrió y cerró el panel con éxito real
+muchas veces) - el bloqueo de esta ronda es de ENTORNO (degradación de la sesión de escritorio
+remota a medida que avanza la noche, el mismo límite ya documentado para StarvekeepMod), no del
+código del mod ni del arnés de KeepQA. **No se generó ningún baseline nuevo de TerrakeepMod en
+esta ronda** - queda pendiente para una sesión con la sesión de escritorio en estado `Conn` desde
+el principio (memoria del usuario: "hace falta reiniciar Windows de verdad, no basta con `tscon`
+otra vez" - no intentado aquí por ser una acción más invasiva que lo que cubre la autonomía
+técnica de una tarea de QA).
