@@ -1111,7 +1111,7 @@ Guia: {
 
 		ArmaParaEsqueletron: {
 			Titulo: A weapon that can handle his hands
-			Porque: Skeletron has 32 damage and 10 defense (NPC.cs, the type==35 block): with the usual formula, a 20 damage weapon takes 15 off per hit, and it takes quite a few against his 4400 health split between the two hands and the head. His hands spin and hit hard: without reach on your weapon, you will take more than you deal.
+			Porque: Skeletron's head has 32 damage and 10 defense (NPC.cs, the type==35 block): with the usual formula, a 20 damage weapon takes 15 off per hit, and it takes quite a few against its 4400 health - that's the head alone. Each hand (type==36) has its own separate health pool, 600 each, so the full fight adds up to around 5600 health split between the two hands and the head, not 4400. His hands spin and hit hard: without reach on your weapon, you will take more than you deal.
 			Como: Any second-tier ore weapon (or a bow with good arrows) already covers it. The Old Man, always by the Dungeon entrance, offers to fight him if you talk to him at night.
 		}
 

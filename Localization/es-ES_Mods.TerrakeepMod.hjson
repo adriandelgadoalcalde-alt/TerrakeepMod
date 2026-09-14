@@ -1111,7 +1111,7 @@ Guia: {
 
 		ArmaParaEsqueletron: {
 			Titulo: Un arma capaz de aguantar sus manos
-			Porque: Esqueletron tiene 32 de daño y 10 de defensa (NPC.cs, bloque type==35): con la fórmula de siempre, un arma de 20 de daño le quita 15 por golpe, y hacen falta bastantes contra sus 4400 de vida repartidos entre las dos manos y la cabeza. Sus manos giran y golpean fuerte: sin alcance en tu arma, vas a recibir más de lo que das.
+			Porque: Esqueletron tiene 32 de daño y 10 de defensa en la cabeza (NPC.cs, bloque type==35): con la fórmula de siempre, un arma de 20 de daño le quita 15 por golpe, y hacen falta bastantes contra sus 4400 de vida - eso es solo la cabeza. Cada mano (type==36) tiene su propia vida aparte, 600, así que en total hay cerca de 5600 de vida repartidos entre las dos manos y la cabeza, no 4400. Sus manos giran y golpean fuerte: sin alcance en tu arma, vas a recibir más de lo que das.
 			Como: Cualquier arma de mineral de la segunda capa (o un arco con buenas flechas) ya cumple. El Anciano, siempre junto a la entrada de la Mazmorra, te reta a luchar contra él si le hablas de noche.
 		}
 

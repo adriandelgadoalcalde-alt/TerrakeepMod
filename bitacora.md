@@ -7365,3 +7365,59 @@ Settings).
 ### Archivos tocados
 Ninguno del mod en esta ronda - solo ejecución del arnés ya existente y escritura en
 `Downloads\KeepQA\baselines\terrakeepmod\`.
+
+---
+
+## 15-sep-2026 — Repaso integral con el arsenal de KeepQA: auditoría de exactitud de la Guía
+
+Petición explícita del usuario: revisar si el contenido REAL del panel Guía (jefes, biomas,
+eventos, mecánicas) estaba suficientemente curado en sus explicaciones. Detalle completo del
+alcance, metodología y verificación en `Downloads\KeepQA\REPASO-INTEGRAL-15SEP\
+REPASO-TMODLOADER.md` - aquí solo el resumen y los archivos tocados.
+
+Se leyeron las 1384 líneas de `Localization/es-ES_Mods.TerrakeepMod.hjson` (sección `Guia`, 26
+tramos, 52 pasos) y se verificaron contra `Downloads\tModLoader-Decompiled\tModLoader\Terraria\
+NPC.cs` (rama 1.4.4.9) las cifras de vida/daño/defensa citadas para ~24 jefes. Veredicto honesto:
+el contenido YA estaba muy bien curado (redacción específica citando su fuente en el código,
+ninguna generalidad vacía) - no había que "inventar más texto", había que encontrar los errores
+puntuales reales. Se encontraron dos:
+
+**H1 - Esqueletron, cifra de vida incorrecta**: el texto decía "4400 de vida repartidos entre las
+dos manos y la cabeza". Falso: 4400 es `lifeMax` del tipo 35 (la CABEZA sola, confirmado en
+`NPC.cs`); cada mano es el tipo 36 con 600 de vida PROPIA y SEPARADA. Total real ~5600, no 4400.
+Es la única cita de todo el árbol que mezclaba mal sus propias fuentes (el resto de jefes
+multi-parte - Muro de Carne, Golem, Destructor, Señor de la Luna - sí separan bien cada parte).
+Arreglado en `es-ES` y `en-US_Mods.TerrakeepMod.hjson`, clave `Guia.Paso.ArmaParaEsqueletron.
+Porque`.
+
+**H2 - Esqueletron, sin "Lectura del jefe" en vivo**: a los dos pasos del tramo le faltaba el
+campo `"jefe": 35` en `Assets/guia_progresion.json` que SÍ tienen los otros 19 tramos de jefe
+único del árbol. Sin ese campo, `PasoGuia.Jefe` queda a 0 y el panel nunca muestra la lectura en
+vivo de vida/daño/defensa reales (vía `EvaluadorGuia.StatsDeJefe`) para el único jefe principal
+no opcional de todo el árbol sin ese dato. No hay ninguna razón de diseño documentada para la
+exclusión (a diferencia de la Maldad del Mundo, ambigua entre dos jefes, o las cuatro invasiones
+por oleadas, sin un único NPC representable) - era una laguna real. Arreglado siguiendo el mismo
+patrón que `MuroDeCarne`/`TemploYGolem` (jefe representativo, ignorando la parte secundaria).
+
+Verificación real antes de comitear: `JSON.parse` sobre `guia_progresion.json` (sin errores, 21
+tramos; cruce automatizado confirma que solo quedan sin `jefe` los 5 pasos legítimamente sin un
+único NPC representable), `hjson.parse` sobre los dos `.hjson` editados (ambos OK), y compilación
+COMPLETA real con el compilador de tModLoader (`scripts\verificar-guia.ps1 -SoloCompilar`,
+comprobado antes que no hubiera ninguna ventana de juego en primer plano): 0 errores, `.tmod`
+empaquetado (585299 bytes), solo los avisos ya conocidos (`CS1701` de Newtonsoft.Json,
+`WARN: Image loading failed` de `icon_small.png` por stderr nativo). No se relanzó el cliente
+gráfico completo: `AutopruebaGuia` solo cubre el tramo pre-Ojo por diseño, así que no habría
+ejercitado el tramo Esqueletron de todas formas; el cambio reutiliza un mecanismo (`StatsDeJefe`)
+ya probado en producción por otros tramos, así que el riesgo residual es bajo pero la captura real
+en juego del panel de Esqueletron queda como siguiente paso si se quiere cerrar del todo.
+
+TModLoaderMod (el trainer) revisado por si tenía un equivalente narrativo que auditar: no lo
+tiene de forma honesta (es un panel de cheats/ajustes, sin texto explicativo de mecánicas) - se
+documenta en vez de forzar un análogo falso.
+
+### Archivos tocados
+- `Assets/guia_progresion.json` (campo `"jefe": 35` en los dos pasos de Esqueletron).
+- `Localization/es-ES_Mods.TerrakeepMod.hjson` y `en-US_Mods.TerrakeepMod.hjson` (texto de
+  `Guia.Paso.ArmaParaEsqueletron.Porque` corregido en los dos idiomas).
+- `Downloads\KeepQA\REPASO-INTEGRAL-15SEP\REPASO-TMODLOADER.md` (repo aparte, KeepQA): informe
+  completo en formato de 10 campos.

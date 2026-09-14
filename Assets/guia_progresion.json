@@ -413,6 +413,7 @@
           "clave": "ArmaParaEsqueletron",
           "zona": "Mazmorra",
           "capa": "superficie",
+          "jefe": 35,
           "requisitos": [
             {
               "_fuente": "NPC.cs, type==35: daño 32, defensa 10, vida 4400. Con daño-defensa*0.5 (minimo 1), 20 de daño de arma deja golpes utiles.",
@@ -432,6 +433,7 @@
           "clave": "VencerAEsqueletron",
           "zona": "Mazmorra",
           "capa": "superficie",
+          "jefe": 35,
           "requisitos": [
             { "tipo": "bandera", "bandera": "downedBoss3" }
           ]
