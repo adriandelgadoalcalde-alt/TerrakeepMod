@@ -35,7 +35,14 @@ namespace TerrakeepMod.Common.Panel
 
 		private static void EscribirEnArchivo(string linea)
 		{
-			if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaPanelUnico.Variable))) {
+			// KeepQA V2.0, Fase 6, Bloque B (14-sep-2026): AutopruebaSoak tambien necesita esta
+			// evidencia en archivo (Node la sondea desde fuera para saber cuando ha empezado/
+			// terminado la sesion de soak, igual que ya hacia AutopruebaPanelUnico via
+			// verificar-panel-unico.ps1) - se añade su variable a la comprobacion sin tocar el
+			// comportamiento de AutopruebaPanelUnico.
+			bool panelActivo = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaPanelUnico.Variable));
+			bool soakActivo = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaSoak.Variable));
+			if (!panelActivo && !soakActivo) {
 				return;
 			}
 

@@ -7172,3 +7172,85 @@ reales en todos los nodos del marco):
 `UI/Panel/PanelTerrakeepState.cs` (extractor `VolcarGeometriaJson`/`VolcarHijosRecursivo`/
 `ClasificarCapa`/`OrdenZDe`, nuevo), `Common/Panel/AutopruebaIdiomas.cs` (enganche
 `VolcarGeometriaSiToca`), `bitacora.md`.
+
+---
+
+## 14-sep-2026 (KeepQA V2.0, Fase 6, Bloque B) - `AutopruebaSoak`: sesión real de estrés/soak con servidor dedicado + cliente gráfico único
+
+Encargo real: `Downloads\KeepQA\v2\PROPUESTA-UNIFICADA.md`, Fase 6, Bloque B - reutilizar el
+servidor dedicado real de TerrakeepMod (ya usado en `probarMultijugador.js`/`lanzarServidor.js`)
+para una sesión CORTA pero real de estrés/soak, repitiendo alguna acción real vía las
+`Autoprueba*` ya existentes, con muestreo de `Get-Process` cada 15-30s y la serie completa
+guardada como artefacto.
+
+**Por qué un cliente gráfico y no basta el servidor dedicado a secas**: `PanelTerrakeepSystem.
+UpdateUI` (el hook del que cuelgan TODAS las autopruebas del panel) empieza con `if (Main.dedServ)
+return;` - el panel es UI, no existe en el proceso headless. El servidor dedicado real SOLO aporta
+aquí la parte de "sesión de red sostenida" (RAM/CPU del proceso que de verdad sirve la partida);
+el cliente es quien ejecuta la acción repetida.
+
+**`Common/Panel/AutopruebaSoak.cs`** (nuevo): activada por `TERRAKEEP_AUTOTEST_SOAK=1`, abre y
+cierra el panel único repetidamente reutilizando EXACTAMENTE los mismos métodos de producción que
+ya usa `AutopruebaPanelUnico` (`PanelTerrakeepSystem.AbrirEnArea`/`CerrarPanel`), nunca lógica de
+apertura/cierre propia. A diferencia de `AutopruebaPanelUnico` (una pasada FIJA de 37 pasos que
+termina sola), esta se mantiene en bucle por TIEMPO REAL (`DateTime.UtcNow`, no fotogramas - una
+sesión de red puede tener fotogramas irregulares por lag/carga de chunks) hasta agotar
+`TERRAKEEP_SOAK_MINUTOS` (defecto 6); el espaciado FINO dentro de un mismo ciclo (medio segundo
+con el panel realmente dibujado antes de cerrarlo) sí usa fotogramas, igual que el resto de
+autopruebas. Intervalo entre ciclos configurable con `TERRAKEEP_SOAK_INTERVALO_S` (defecto 15).
+Enganchada en `PanelTerrakeepSystem.UpdateUI` junto al resto de `Avanzar()` de autopruebas.
+
+**Bug real encontrado y arreglado de paso**: `RegistroPanel.EscribirEnArchivo` (el volcado a
+`terrakeep-panel-evidencia.log` dentro del sandbox, que un arnés externo sondea para saber cuándo
+ha empezado/terminado algo) solo escribía si `TERRAKEEP_AUTOTEST_PANEL` estaba puesta - la
+variable de `AutopruebaPanelUnico`, no la de `AutopruebaSoak`. Con solo `TERRAKEEP_AUTOTEST_SOAK=1`
+puesta, el archivo NUNCA se creaba (el mensaje sí llegaba a `client.log` vía `Logger.Info`, pero
+ningún arnés externo puede fiarse de ese log global compartido - ver el motivo real documentado en
+la cabecera del propio `RegistroPanel.cs`). Arreglado añadiendo `AutopruebaSoak.Variable` a la
+misma comprobación, sin tocar el comportamiento de `AutopruebaPanelUnico`.
+
+**`Downloads\KeepQA\src\rendimiento\soakTModLoader.js`** (nuevo, repo KeepQA): orquesta la sesión
+completa reutilizando `src/motor-servidor-dedicado/lanzarServidor.js` (servidor dedicado real,
+puerto propio 7815) y lanzando UN cliente gráfico real conectado por `-j`/`-plr` (mismo mecanismo
+de conexión directa ya validado por `probarMultijugador.js` con dos clientes - aquí basta uno).
+Muestrea `Get-Process` del servidor Y del cliente cada `--intervalo-muestreo-s` (defecto 20)
+durante toda la sesión, y guarda la serie temporal COMPLETA (no solo el resumen) como artefacto
+real vía `runId.js` (Fase 2).
+
+**Bug real encontrado y arreglado en el propio script Node**: la búsqueda del PID real del cliente
+(`Get-CimInstance Win32_Process ... -like '*<ruta del sandbox>*'`) duplicaba a mano las barras
+invertidas de la ruta antes de meterla en el patrón `-like` de PowerShell - `-like` NO trata la
+barra invertida como carácter especial (no hace falta escaparla, a diferencia de un regex), así
+que el patrón acababa buscando DOBLES barras que nunca aparecen en la `CommandLine` real. El
+cliente real estaba vivo y con la ruta correcta, pero el sondeo nunca lo encontraba (confirmado a
+mano con `Get-CimInstance` directo, comparando el PID real contra lo que el script decía "no
+encontrado"). Arreglado quitando el escape innecesario - la ruta va tal cual.
+
+### Ejecutado de verdad, con evidencia real (no simulada)
+
+Sesión real completa de 6 minutos (tras un primer intento fallido por el bug de arriba, parado y
+arreglado antes de reintentar - regla de la casa respetada):
+
+- Servidor dedicado real (puerto 7815) + cliente gráfico real conectado por red, ambos
+  muestreados cada 20s (19 muestras cada uno): servidor RAM 666,0→653,3 MB (sin crecimiento, de
+  hecho bajó -12,7 MB), CPU acumulada 15,5s; cliente RAM 799,3→721,6 MB (sin crecimiento, -77,8
+  MB), CPU acumulada 13,1s - **ninguno de los dos procesos muestra indicio de fuga en esta
+  sesión**.
+- **23 ciclos reales de abrir/cerrar el panel** confirmados por el log real del cliente
+  (`terrakeep-panel-evidencia.log`, copiado al artefacto), marca `AUTOPRUEBA SOAK COMPLETA` vista
+  al final de la sesión (cierre limpio, sin panel colgado abierto).
+- **El servidor sobrevivió la sesión completa** (`servidorSobrevivioTodaLaSesion: true`),
+  `veredictoRun: "PASS"`. Artefactos completos (series de servidor y cliente + log de evidencia +
+  `informe.json`) en `Downloads\KeepQA\artifacts\runs\2026-09-14T17-17-40_tmodloadermod_soak\`.
+- Limpieza confirmada de verdad tras la sesión: sin ningún proceso `dotnet.exe` de tModLoader
+  vivo (`Get-CimInstance` vacío), sandbox de KeepQA (`tModLoader-KeepQA`/`tModLoader-KeepQA-Soak`)
+  intacto para la próxima ronda (mismo criterio que el resto de piezas de rendimiento de la
+  familia - se reutiliza, no se borra).
+
+### Archivos tocados
+
+- `Common/Panel/AutopruebaSoak.cs` (nuevo).
+- `Common/Panel/PanelTerrakeepSystem.cs` (engancha `AutopruebaSoak.Avanzar()`).
+- `Common/Panel/RegistroPanel.cs` (arreglo: también escribe el archivo de evidencia cuando
+  `AutopruebaSoak` está activa, no solo `AutopruebaPanelUnico`).
+- `Downloads\KeepQA\src\rendimiento\soakTModLoader.js` (nuevo, repo KeepQA aparte).

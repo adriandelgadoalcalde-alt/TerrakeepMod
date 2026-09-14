@@ -100,6 +100,10 @@ namespace TerrakeepMod.Common.Panel
 			AutopruebaTooltipObjeto.Avanzar();
 			AutopruebaTooltipPestana.Avanzar();
 			AutopruebaEspaciado.Avanzar();
+			// KeepQA V2.0, Fase 6, Bloque B: sesion de estres/soak real (abrir/cerrar el panel
+			// repetidamente durante minutos) - inactiva por defecto, mismo patron de variable de
+			// entorno que el resto de autopruebas de esta lista.
+			AutopruebaSoak.Avanzar();
 
 			ComprobarAtajos();
 
