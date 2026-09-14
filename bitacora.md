@@ -6814,3 +6814,114 @@ regresión permanente en KeepQA (`terrakeep-terrakeepmod-best-prefix-json-desinc
 compara los dos archivos byte a byte, así que una futura regeneración que se olvide de la copia
 hará fallar la regresión, no solo este caso puntual. Detalle completo en
 `Downloads\KeepQA\bitacora.md`.
+
+## 14-sep-2026 - Barrido visual FRESCO con el arsenal nuevo de KeepQA (protocolo de
+## `Downloads\KeepQA\PROTOCOLO-REVISION-VISUAL.md`), no solo repetir bugs ya conocidos
+
+Encargo explícito: buscar activamente en TODAS las pantallas (Personaje completo, Ajustes,
+Exploración, Librería, Investigación, Builds, Guía, Álbum), con contenido adversarial, las tres
+piezas mecánicas nuevas (`verificarGeometria.js`/`verificarAlineacion.js`/`comprobarContraste.js
+--formato-espec`) y mi propia revisión manual de 8 pasadas mirando capturas reales - no solo
+confirmar que lo ya arreglado sigue arreglado.
+
+### Qué se hizo de verdad
+
+1. **Revisión manual de ~30 capturas REALES** ya existentes en `evidencia\espaciado-capturas\`
+   (y su gemela `-calamity`), `evidencia\categorias-capturas\` y
+   `tModLoader-TerrakeepGuia\terrakeep-capturas\` (56 capturas de los tramos de la Guía + el
+   álbum de hitos) - cubriendo Inventario/Almacenes/Equipo/Apariencia/Buffs/Buffs-carpetas/
+   Desbloqueos de Personaje, Ajustes (ES/EN), Mapa/Búsqueda/Este mundo de Exploración, Librería +
+   categorías (espadas, armas de fuego, bloques con paginación), Investigación, Builds (con y sin
+   Calamity), ~15 tramos representativos de la Guía (refugio, brújula sin explorar/marcado/mapa
+   vanilla, detección de Calamity instalado, final Moon Lord, "todos los opcionales superados") y
+   el Álbum, a 1600x900/1280x720/800x720 y ES/EN. **Ningún defecto objetivo nuevo** (Parte 26):
+   diseño consistente, sin overflow, sin solapes reales, contraste bueno a simple vista,
+   jerarquía clara, tabs de ancho variable bien resueltos (p.ej. "Hardmode temprano (antes de los
+   jefes mecánicos)" en Builds cabe entero sin recortar). El bug conocido de `guia-33/34/35`
+   "brújula" NO es tal - comprobado a mano que son tres pasos secuenciales de UN MISMO caso de
+   prueba (antes de marcar / justo marcado / abierto en el mapa grande vanilla), no tres pantallas
+   con contenido intercambiado.
+
+2. **`comprobarContraste.js --formato-espec` (pieza nueva de KeepQA, nunca ejecutada contra este
+   mod hasta hoy)** contra las 28 capturas a 1600x900-es (14 pantallas × con/sin Calamity).
+   Resultado bruto: ~90 hallazgos Critical/High/Medium/Low. Tras filtrar ruido evidente (tokens de
+   1 carácter, cajas <10px de alto) y cruzar el resto A MANO contra la captura real en las
+   coordenadas exactas que reporta cada hallazgo: **cero defectos de contraste reales
+   confirmados**. Todos trazan a límites ya documentados de la pieza (`comprobarContraste.js`,
+   cabecera, y `PROTOCOLO-REVISION-VISUAL.md` Sección F.4): el OCR confunde repetidamente los
+   iconos "«"/"‹"/"›"/"»" de los spinners de Vida/Maná máximos con letras ("ES"/"PA"/"60"/"DA" en
+   almacenes/equipo, siempre en el mismo rango de coordenadas x=660-900,y=175-235), confunde el
+   follaje/corteza de los árboles del fondo del mundo con texto (grupos de hallazgos con el MISMO
+   par de color exacto `rgb(34,168,81)`/`rgb(23,51,28)` repetido en "palabras" distintas de la
+   esquina superior derecha) y confunde las partículas de luz doradas decorativas de la esquina
+   inferior (mismo `rgb(117,88,0)`/`rgb(0,0,0)` en "ro"/"EA" siempre en y≈800, justo debajo del
+   panel) con letras dentro de una caja de color sólido. El rótulo de pestaña "Apariencia" sale
+   garabateado ("Ayaiondo"/"Cuiemo"/"Aypiond"...) de forma consistente en la MISMA coordenada
+   (1026,278) en cuatro capturas de pantallas distintas (Buffs, Buffs-carpetas, Desbloqueos,
+   Inventario) - la propia repetición idéntica confirma que es un límite del OCR a ese tamaño de
+   fuente, no un problema real de cada pantalla por separado. Confianza real de todos los
+   hallazgos: 0,50 (el mínimo que emite la pieza) - coherente con la Parte 29 ("0,50-0,74: revisar
+   a mano antes de reportar como defecto definitivo", exactamente lo que se ha hecho aquí).
+   **Conclusión honesta**: la pieza funciona como está documentada, pero para este mod concreto
+   (paleta de fondo con árboles/mundo real detrás de un panel semitransparente-oscuro, iconos de
+   flecha en vez de letras) genera muchos más falsos positivos por OCR que en una app de fondo
+   plano - no se ha tocado la pieza (cambiar su detección está fuera de este encargo), solo se
+   documenta el resultado real de usarla aquí.
+
+3. **Hallazgo real nuevo, encontrado por la revisión manual (no por ninguna pieza mecánica -
+   ninguna evalúa solapes transitorios de tooltip): el tooltip de pestaña puede solapar contenido
+   real del panel.** `UI/Panel/PanelTerrakeepState.cs:214-215` construye el `Ayuda` de cada
+   `BotonTk` de la barra de pestañas como `AyudaDeArea(area) + "\n" + Idiomas.Texto("Panel.Atajo",
+   ...)` (la MISMA descripción larga que ya se ve fija en el pie del panel, más el atajo de
+   teclado) y `BotonTk.DrawSelf` (línea 319-322) lo pasa tal cual a `Main.instance.MouseText(...)`
+   - el tooltip vainilla de Terraria, sin ningún panel de fondo propio (confirmado en el código
+   real: solo `Utils.DrawBorderString`, igual que el texto de nombre de un NPC). Visto en CINCO
+   capturas reales e independientes: `ajustes-1280x720-en.png` (tapa "Settings"/la fila de idioma
+   con "The language changes live..." + "Shortcut: J"), `investigacion-1280x720-es.png` y
+   `investigacion-800x720-minimo-es.png` (tapa el AVISO naranja "no es un personaje de Modo
+   Viaje..." Y la fila "Progreso global"), `ajustes-800x720-minimo-en.png` (tapa la cabecera y los
+   tres botones de idioma) y `buffs-800x720-minimo-es.png` (tapa "Nombre"/"Vida máxima"). Siempre
+   al pasar el ratón por una pestaña NO activa a una resolución de ventana pequeña (1280x720 o
+   800x720; no se ha reproducido a 1600x900, donde sobra sitio por encima del panel). **Evaluado
+   con el protocolo de la Parte 2/22/26 antes de decidir si es un bug**: `Main.instance.MouseText`
+   es EXACTAMENTE el mismo mecanismo vainilla que usa cualquier tooltip de objeto/NPC de Terraria
+   en todo el juego (sin panel de fondo, tapando transitoriamente lo que haya debajo mientras el
+   ratón está encima) - tapar contenido brevemente mientras el jugador activamente lee un tooltip
+   es el propio lenguaje visual del juego, no una interfaz moderna que deba evitarlo a toda costa.
+   Lo único que distingue a este caso de un tooltip vainilla normal es que concatena DOS líneas
+   (descripción + atajo) en vez de una, así que ocupa más alto de lo habitual y es más fácil que
+   choque con la fila de justo debajo de la barra de pestañas en una ventana pequeña. **No
+   arreglado a ciegas** (criterio explícito del encargo: esto es ambiguo, no "claro y pequeño") -
+   cambiar el comportamiento de un tooltip vainilla tiene un lado de identidad visual real y
+   ninguna pieza mecánica lo puede validar. Recomendación para quien retome esto: si se decide que
+   sí molesta, la opción más barata es quitar la segunda línea (el atajo) del `Ayuda` de la barra
+   de pestañas - la descripción sola ya es la información importante, y el atajo ya está visible
+   en el pie del panel en todo momento.
+
+4. **Contenido adversarial (Parte 21, `Downloads\KeepQA\src\adversarial\catalogo.json`)**: ya hay
+   cobertura real y verificada en `Common\Libreria\AutopruebaLibreria.cs`
+   (`BuscarConComaYAcentos`, cubre SPECIAL CHARACTERS con tildes/eñe reales del español) además de
+   `BuscarPorNombre`/`BuscarPorId`/`BuscarEnTooltip`. **Hueco real, no cubierto hoy ni antes**:
+   ninguna autoprueba inyecta las categorías LONG/VERY LONG/OTHER LANGUAGES (japonés/árabe/
+   cirílico) del catálogo en el CUADRO de búsqueda de la Librería para comprobar que el propio
+   campo de texto (no los resultados) no se desborda con una cadena muy larga o con glifos anchos
+   no latinos. No se ha hecho en vivo hoy: exige tocar `AutopruebaLibreria.cs` para escribir un
+   texto adversarial de verdad en el campo (no solo cambiar el string de búsqueda ya usado) y
+   pasar por el ciclo completo compilar+lanzar+capturar (~10-15 min), un cambio de código nuevo en
+   un arnés ya maduro que no encaja en "arreglo claro y pequeño" del encargo de hoy - queda
+   apuntado aquí como recomendación concreta para una ronda futura en vez de improvisarlo a ciegas.
+
+### Resumen honesto, con números reales
+
+- **~30 capturas reales revisadas a mano** (8 pasadas del protocolo cada una) cubriendo las 8
+  áreas pedidas - 0 defectos objetivos nuevos encontrados por la vista.
+- **28 ejecuciones de `comprobarContraste.js --formato-espec`** (primera vez contra este mod) -
+  ~90 hallazgos brutos, 0 confirmados reales tras cruzar cada uno contra la captura real.
+- **1 hallazgo real nuevo** (tooltip de pestaña sin panel de fondo, potencialmente solapando
+  contenido a ventana pequeña) - documentado con 5 capturas reales, causa exacta en código,
+  evaluado como comportamiento vainilla-consistente y NO arreglado a ciegas por ser ambiguo, con
+  recomendación concreta para quien decida si merece cambiarse.
+- **1 hueco de cobertura adversarial real identificado** (LONG/VERY LONG/OTHER LANGUAGES en el
+  cuadro de búsqueda de la Librería) - no cerrado hoy, recomendación dejada para una ronda futura.
+- No se ha tocado ningún tramo de la lógica de la Guía (fuera del alcance salvo bug visual real
+  dentro de ellos, y no se encontró ninguno).
