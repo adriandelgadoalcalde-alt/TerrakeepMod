@@ -7312,3 +7312,56 @@ esta ronda** - queda pendiente para una sesión con la sesión de escritorio en 
 el principio (memoria del usuario: "hace falta reiniciar Windows de verdad, no basta con `tscon`
 otra vez" - no intentado aquí por ser una acción más invasiva que lo que cubre la autonomía
 técnica de una tarea de QA).
+
+---
+
+## 14-sep-2026 (noche, continuación) — KeepQA V2.0, Fase 5: baseline real conseguido con la sesión
+## `Activo` de verdad, tras un cuelgue adicional distinto (no `NoAudioHardwareException`) en el
+## primer intento de esta misma ronda
+
+El usuario confirmó EN VIVO que estaba usando el PC con normalidad (Windows App abierto) justo
+antes de esta ronda. Comprobado `query session` (sesión 1 `adrian` → **`Activo`**) y sin ningún
+`dotnet.exe` de tModLoader colgado antes de lanzar nada.
+
+**Intento 1** (`-SegundosEspera 300`, este ya sería el 4º intento real contando la ronda anterior):
+compiló bien (0 errores), el cliente **NO mostró `NoAudioHardwareException` esta vez** (diferencia
+real frente a los dos cuelgues de la ronda anterior, coherente con la sesión ahora `Activo`), y
+avanzó más lejos que nunca: `Finding Mods...` → `Mod Changes since last launch:` (detecta la
+actualización de `HEROsMod` en el Workshop). Pero **el log se quedó congelado exactamente en esa
+línea durante los 300s completos de espera** (confirmado con sondeo real cada 20s sobre el tamaño
+de `client.log`, no solo "parecía colgado") - un síntoma DISTINTO del de la ronda anterior (ni
+audio ni un cuelgue tan temprano), así que no aplicaba todavía la regla de "mismo síntoma dos veces
+seguidas, parar". Proceso colgado matado por el propio script al agotar el tiempo, sin residuos
+(confirmado después con `Get-CimInstance`).
+
+**Intento 2** (mismo comando, `-SegundosEspera 500`, sesión limpia otra vez): **ÉXITO REAL** -
+`OK: encontrado 'AUTOPRUEBA PANEL COMPLETA' en el log.`, código de salida 0, a los 342s reales.
+Capturas reales y con contenido dejadas en `terrakeep-capturas\` (`pestana-0-character.png`,
+`pestana-2-builds.png`, `pestana-5-settings.png` y el resto de pestañas/animaciones/apariencia),
+confirmadas a ojo una a una antes de promoverlas - panel de Terrakeep real, en inglés (idioma del
+juego en ese lanzamiento), sin nada negro ni en blanco. **El mismo comando, sin cambiar nada, pasó
+de congelarse en seco a completar la batería entera dos intentos después** - indicio de que el
+intento 1 sí era un cuelgue real puntual (no un bug determinista del panel ni del arnés), y no algo
+que un tercer intento con el mismo timeout fuera a arreglar por sí solo; alargar la espera
+(300s → 500s) fue lo que permitió comprobarlo de verdad en vez de suponerlo.
+
+**Hipótesis planteada y no confirmada para el intento 1**: podría tratarse de un diálogo nativo de
+tModLoader ("mods actualizados", con un botón OK) esperando un clic que el arnés no da, bloqueando
+el hilo principal justo después de `Mod Changes since last launch:` - encaja con el punto exacto del
+cuelgue. No se pudo confirmar ni descartar con captura real porque el intento 1 ya se había matado
+cuando se planteó la hipótesis, y el intento 2 tuvo éxito sin necesitar ningún clic (mismo mod
+recién actualizado, mismo Workshop). **Queda como sospecha razonable, no como hecho verificado** -
+si un futuro intento se vuelve a colgar en el mismo punto exacto, comprobar con una captura real
+(`PrintWindow`, mismo mecanismo que `CapturaDePantalla.cs`) si hay un diálogo de "mods actualizados"
+esperando un clic en OK, y si lo hay, dar el clic real (`PostMessage`/coordenadas sobre la captura)
+en vez de solo esperar más tiempo - anotado también en la sección de patrones de automatización de
+tModLoader para no repetir la investigación desde cero.
+
+**Baseline de KeepQA cerrado con esta evidencia real**: 3 pantallas promovidas con
+`gestorBaseline.js guardar terrakeepmod ... --confirmar --commit c32e749 --idioma en` -
+`panel-personaje` (pestaña Character), `panel-builds` (pestaña Builds), `panel-settings` (pestaña
+Settings).
+
+### Archivos tocados
+Ninguno del mod en esta ronda - solo ejecución del arnés ya existente y escritura en
+`Downloads\KeepQA\baselines\terrakeepmod\`.
