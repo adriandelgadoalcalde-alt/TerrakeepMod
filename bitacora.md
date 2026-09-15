@@ -7480,3 +7480,189 @@ resultados en todo el mod) - documentado como "no aplica" en vez de forzar un ca
 - Detalle completo (incluido el falso "desborda" del arnés y su corrección) en
   `Downloads\KeepQA\bitacora.md` y `Downloads\KeepQA\PATRONES.md`.
 - Commit local: `f1cfbb8`.
+
+---
+
+## 15-sep-2026 (noche) — Cobertura ABSOLUTA de la Guía: cierra el hueco entero de Calamity (0% -> 25
+## tramos/60 pasos reales) + reescribe TODO el texto de la Guía (vanilla y Calamity) sin jerga de
+## programador
+
+Encargo explícito del usuario, tras rechazar el "21 tramos/57% opcional" que ya se había dado por
+bueno antes: la cobertura tiene que ser ABSOLUTA, vanilla Y Calamity, sin excepción, y el texto
+que lee el jugador tiene que sonar a guía real del juego, no a informe técnico - dos correcciones
+de tono llegaron a mitad de la ronda, la segunda matizando la primera ("no basta con quitar los
+nombres técnicos, hace falta ademas la fantasía del juego").
+
+### 1. Auditoría de vanilla: NO hay hueco real (confirmado, no supuesto)
+
+Cross-check contra `terraria.wiki.gg` (páginas `Bosses` y `Events`, dos fetches independientes):
+los 21 tramos ya existentes cubren el 100% real de jefes/eventos vanilla con una bandera de
+"completado" rastreable (incluidas las cuatro invasiones, Luna de Calabazas/Helada, D2, Torres,
+Mechdusa - que es el mismo Golem con otra piel en semillas especiales, sin bandera propia). Los
+tres huecos que parecían faltar - Luna de Sangre, Eclipse Solar, Lluvia de Slimes - se investigaron
+a propósito y NO tienen ninguna bandera de "completado" en el motor (son eventos ambientales que
+terminan solos): forzar un tramo con una bandera falsa habría sido exactamente el "análogo forzado"
+que prohíbe el estándar de la casa, así que se documentan como investigados y excluidos con motivo,
+no como un descuido. Documentado en la cabecera de `Assets\guia_progresion.json`.
+
+### 2. Calamity: arquitectura nueva, real, verificada contra el mod instalado
+
+`CatalogoGuia.cs` daba por buena, desde su primer día, una decisión de quedarse solo en vanilla
+porque nada de Calamity se podía verificar con el mismo rigor que el juego decompilado
+(`DownedBossSystem` es un tipo propio del mod, sin referencia de compilación, y sus NPC no tienen
+un id fijo). Las dos cosas ya tienen solución real:
+
+- **Banderas de Calamity por reflexión** (`BanderasGuia.AgregarBanderasCalamity`): las 37 banderas
+  reales que usa el árbol nuevo (de las 44 propiedades públicas que tiene
+  `CalamityMod.DownedBossSystem` en la v2.2.2 instalada) se confirmaron **decompilando el `.tmod`
+  real** (`ilspycmd -t CalamityMod.DownedBossSystem CalamityMod.dll`, extraído a mano del
+  `2026.6CalamityMod.tmod` instalado siguiendo el formato real de `TmodFile.cs`) - nunca de memoria.
+  Se leen por reflexión (`Type.GetProperty` + `PropertyInfo.GetValue`) porque el proyecto no
+  referencia `CalamityMod.dll` en `dllReferences` a propósito (mod opcional). Si una actualización
+  futura de Calamity renombra una propiedad, se queda "no evaluable", nunca se inventa un valor -
+  mismo contrato que una bandera de vanilla desconocida.
+- **NPC/objetos de Calamity por nombre** (`CatalogoGuia.ResolverNpcMod`/`ResolverItemMod`): un NPC
+  o un objeto de un mod no tiene un id fijo (tModLoader se lo asigna al cargar). El `.json` ya cita
+  el "pid" real (`"CalamityMod/DesertScourgeHead"`, mismo formato que `CatalogoBuilds`/
+  `ArbolLibreria`) y se resuelve a su `type` real de la partida con la API PÚBLICA de tModLoader
+  `ModContent.TryFind<T>` (sin reflexión, sin referenciar `CalamityMod.dll`) durante `Construir()`.
+  De ahí para abajo (`EvaluadorGuia.StatsDeJefe`, `EstadoGuia.LecturaDeJefe`) un jefe de Calamity es
+  indistinguible de uno vanilla: los dos son un `NPC.type` normal con vida/daño/defensa REALES de
+  ESTA partida, así que los modos de dificultad propios de Calamity (Revengeance, Death) quedan
+  cubiertos solos.
+- **`banderaCarmesi`** (nueva, en `LeerRequisito`): igual que `jefeFinalCarmesi` ya hacía para el
+  jefe, pero para el requisito de bandera - hacía falta de verdad para `HiveMindOPerforator`
+  (Corrupción y Carmesí tienen banderas DISTINTAS y de verdad separadas en Calamity,
+  `downedHiveMind`/`downedPerforator`, a diferencia de vanilla donde el Devorador y el Cerebro
+  comparten la misma `downedBoss2`).
+
+Todos los nombres internos reales (banderas, clases de NPC, clases de objeto de invocación) se
+confirmaron decompilando `CalamityMod.dll` con `ilspycmd` esa misma noche - no una sola vez de
+memoria. El orden de progresión (qué jefe va antes de cuál, qué es obligatorio) no se puede sacar
+del código: se investigó contra la Calamity Mod Wiki oficial (`calamitymod.wiki.gg`,
+`Guide:Mod_progression` y la página de cada jefe), cruzado con el propio drop real del juego para
+confirmar los enganches duros (p. ej. Profaned Guardians -> Profaned Core -> invoca a Providence).
+
+### 3. Los 25 tramos nuevos (60 pasos), en `Assets\guia_progresion.json`
+
+**Columna vertebral (7, casi-obligatorios)**: Astrum Deus, Profaned Guardians+Providence, el trío
+Ceaseless Void/Storm Weaver/Signus, Polterghast, Old Duke+Devourer of Gods, Yharon, Exo Mechs+
+Supreme Calamitas - la cadena final real del mod, en el orden que confirma la propia wiki.
+
+**Opcionales reales (18)**: Desert Scourge, Giant Clam, Crabulon, Hive Mind/Perforators, Slime God,
+Dreadnautilus+Horrible Hog (Luna de Sangre exclusiva de Calamity - el `NPCID` vanilla 618,
+`BloodNautilus`, con su IA reescrita), Cryogen, Aquatic Scourge, Brimstone Elemental, Cragmaw Mire
+(Lluvia Ácida fase 2), Astrum Aureus, Calamitas Clone, Great Sand Shark, Ravager, Plaguebringer
+Goliath, Dragonfolly, Primordial Wyrm (secreto de postgame, documentado con honestidad como
+"detalle sin confirmar" donde de verdad no se pudo confirmar - defensa base 999, huele a mecánica
+especial no investigada), Mauler+Nuclear Terror (Lluvia Ácida fase 3).
+
+Cada requisito de daño de arma se calculó con la MISMA fórmula que ya usaban los 21 tramos vanilla
+(`daño - defensa*0,5`, con margen), citando la defensa/vida real decompilada de cada NPC
+(`LifeMaxNERB`, confirmado por `ilspycmd` para cada jefe) en el comentario `_fuente` del `.json` -
+nunca en el texto que lee el jugador (ver punto 5).
+
+### 4. Arnés de pruebas: `AutopruebaGuia` desactualizada, arreglada
+
+La verificación EN VIVO real (`scripts\verificar-guia.ps1 -Calamity`, cliente gráfico real contra
+el `.tmod` recién compilado) confirmó que la arquitectura funciona de verdad - el tramo
+`DesertScourge` apareció en pantalla con sus requisitos reales (14 de daño, objeto "Desert
+Medallion", gancho) sin ningún aviso de "no se encontró el NPC/objeto" - pero también sacó a la luz
+que el recorrido hardcodeado de `AutopruebaGuia.cs` (escrito antes de que existiera el árbol de
+Calamity) esperaba que `ReySlime` (Orden 5) fuera el primer opcional pendiente, y ahora
+`DesertScourge` (Orden 3, nunca derrotado en el recorrido) se colaba delante en cada comprobación
+-> 27 líneas "NO CUADRA" en la evidencia. No es un bug de la guía (el comportamiento real - mostrar
+siempre el opcional pendiente de menor Orden - es exactamente el diseño correcto), es la prueba
+quedándose vieja. Arreglado con el mismo patrón que ya usaba el propio arnés para sus opcionales nuevos, en tres
+rondas reales de recompilar + relanzar el cliente gráfico con Calamity cargado de verdad
+(`scripts\verificar-guia.ps1 -Calamity`, nunca solo compilar):
+
+1. **Ronda 1** (antes de tocar `AutopruebaGuia.cs`): 27 líneas "NO CUADRA" - los 21 tramos
+   opcionales de Calamity (Orden 3 a 97) se colaban delante de `ReySlime`/`EjercitoGoblin`/etc. en
+   cada comprobación del recorrido opcional, porque nunca se derrotan en este arnés.
+2. **Ronda 2** (tras marcar "superadas" las 21 banderas opcionales de Calamity en `Arrancar()`, vía
+   el setter nuevo `BanderasGuia.IntentarEscribirBanderaCalamity`, y devolverlas a `false` en
+   `RestaurarTodosLosOpcionalesRestantes`): bajó a 3 líneas "NO CUADRA", esta vez en el camino
+   OBLIGATORIO - Astrum Deus (Orden 82, real de verdad) cae entre `EventosLunares` (80) y `MoonLord`
+   (90), y el arnés esperaba pasar directo de las cuatro torres a Moon Lord.
+3. **Ronda 3** (tras neutralizar también Astrum Deus en `MarcarTorresDerrotadasDeMentira`): bajó a 1
+   línea "NO CUADRA" - el tramo final ENTERO de Calamity (Guardianes, Providence, el trío,
+   Polterghast, Old Duke, DoG, Yharon, Exo Mechs, Supreme Calamitas - Orden 91 a 96, todos
+   obligatorios) se quedaba pendiente tras `MoonLord`, donde el arnés esperaba "no queda ningún paso
+   pendiente". Arreglo definitivo: unificadas las dos columnas vertebrales (Astrum Deus + el tramo
+   final entero) en `_banderasObligatoriasCalamity`, neutralizadas juntas en el mismo punto
+   (`MarcarTorresDerrotadasDeMentira`) y restauradas juntas en `RestaurarTramosNuevos`.
+4. **Ronda 4, la definitiva**: recompilado otra vez y relanzado el cliente gráfico completo con
+   Calamity - **0 líneas "NO CUADRA", `AUTOPRUEBA GUIA COMPLETA` alcanzada, script de verificación
+   terminado con exit code 0** (confirmado leyendo el código de salida real del proceso, no solo el
+   texto del log). El arnés vanilla completo (los 56 pasos originales) sigue pasando entero con
+   Calamity cargado.
+
+**Honesto sobre el alcance real de la verificación en vivo**: no hay un recorrido paso a paso
+dedicado que abra y compruebe cada uno de los 25 tramos nuevos uno por uno (como sí existe para los
+21 de vanilla) - construir eso es un arnés bastante más grande, pendiente. Lo que SÍ está
+verificado en vivo: el catálogo carga sin ningún aviso de datos con Calamity activo, el tramo de
+menor Orden (Desert Scourge) se muestra con sus requisitos y objeto de invocación reales, y el
+resto de la lógica (banderas, resolución de NPC/objeto) es el MISMO código que ya ejercita ese
+tramo - no una ruta aparte sin probar.
+
+### 5. Corrección de tono, en dos vueltas (pedida por el usuario a mitad de la ronda)
+
+Primera corrección: el texto que lee el jugador (`Guia.Paso.*.Porque`/`.Como` en los dos idiomas)
+tenía citas de implementación seguidas al pie de la letra - nombres de clase, código C# literal
+(`if (!downedHiveMind && !downedPerforator)`), "NPC.cs", "CalamityMod.dll", nombres de variable como
+`downedBoss2` expuestos directamente. Confirmado que el problema era real y **anterior a esta
+sesión** (no solo de los tramos nuevos): una captura real del panel en juego, hecha esta misma
+noche, mostraba literalmente "(NPC.cs, bloque type==1113)" en pantalla para el Muro de Carne.
+
+Segunda corrección, más fina: quitar los tecnicismos no basta si el texto se queda plano/genérico -
+tiene que sonar a la fantasía real de Terraria/Calamity, con la instrucción/consecuencia concreta
+intacta. Investigado el tono real de la Terraria Wiki (`terraria.wiki.gg`) como referencia antes de
+reescribir, no solo de memoria.
+
+Limpieza en tres pasadas sobre los DOS idiomas, dentro de todo `Guia.*` (no solo lo nuevo):
+1. Automática: strip de paréntesis con marcadores técnicos (`NPC.cs`, `CalamityMod.dll`,
+   `LifeMaxNERB`, `OnKill`...) - 58 líneas por idioma.
+2. Manual, texto completo por texto completo: 60-61 campos `Porque`/`Como` por idioma reescritos a
+   mano, quitando toda mención de bandera/clase/variable interna.
+3. Segunda vuelta manual sobre los mismos 60-61 campos: de "limpio pero plano" a voz de aventura de
+   verdad ("en cuanto caiga el Devorador de Mundos o el Cerebro de Cthulhu, tu mundo entero lo
+   nota..." en vez de "el juego marca NPC.downedBoss2 al morir cualquiera de los dos").
+
+Verificado con `node` + el paquete `hjson` (instalado en el scratchpad de la sesión, no en el
+proyecto) que los dos `.hjson` siguen parseando bien y que un grep del árbol completo `Guia.*` ya
+no encuentra NINGÚN patrón técnico (`NPC.`, `WorldGen.`, `Main.`, `CalamityMod.dll`, `OnKill`,
+`SetDefaults`, `type==`, `LifeMaxNERB`, `downedX`, `flag`/`bandera` como jerga, `reflexion`) en
+ninguno de los dos idiomas. Las citas técnicas siguen vivas donde tienen que estar: en el comentario
+`_fuente` de cada requisito del `.json` (para quien mantenga el proyecto después), nunca en el texto
+que ve el jugador.
+
+### Verificación real antes de comitear
+- `JSON.parse`/`json.load` sobre `guia_progresion.json`: sin errores, 46 tramos (21 vanilla + 25
+  Calamity), 176 pasos.
+- `hjson.parse` sobre los dos `.hjson`: sin errores, `Guia.Tramo`=46, `Guia.Paso`=116 (56+60),
+  `Guia.Bandera`=58 (27 vanilla + 30 Calamity + `downedPerforator`), `Guia.Zona`=10 (8+2 nuevas:
+  Desierto, OceanoProfundo).
+- Compilación COMPLETA real con el compilador de tModLoader (`scripts\compilar.ps1`): 0 errores,
+  `.tmod` empaquetado (609467 bytes, última recompilación tras el arreglo completo del arnés),
+  solo los avisos ya conocidos (`CS1701` de Newtonsoft.Json,
+  `WARN: Image loading failed` de `icon_small.png`).
+- Verificación EN VIVO con el cliente gráfico real y CalamityMod cargado de verdad
+  (`scripts\verificar-guia.ps1 -Calamity`), CUATRO rondas completas (compilar + relanzar el
+  cliente gráfico + leer el log real cada vez), hasta la última con 0 líneas "NO CUADRA" y el
+  script terminado con exit code 0 - ver punto 4 para el detalle honesto de qué cubre y qué no.
+
+### Archivos tocados
+- `Assets\guia_progresion.json` (25 tramos nuevos, cabecera actualizada sobre la auditoría vanilla).
+- `Common\Guia\CatalogoGuia.cs` (`ResolverNpcMod`/`ResolverItemMod`, `jefeFinalMod`/`jefeMod`/
+  `jefeFinalModCarmesi`, `idMod`/`idsMod`, `banderaCarmesi`, cabecera actualizada).
+- `Common\Guia\BanderasGuia.cs` (`AgregarBanderasCalamity`, `IntentarEscribirBanderaCalamity`).
+- `Common\Guia\AutopruebaGuia.cs` (neutraliza/restaura los opcionales de Calamity en
+  `Arrancar()`/`RestaurarTodosLosOpcionalesRestantes`).
+- `Localization\es-ES_Mods.TerrakeepMod.hjson` / `en-US_Mods.TerrakeepMod.hjson` (contenido nuevo +
+  reescritura de tono de TODO `Guia.*`, vanilla incluido).
+- `evidencia\guia-calamity.log.txt` (log real de la verificación en vivo más reciente).
+- Investigación externa citada: `calamitymod.wiki.gg` (`Guide:Mod_progression` y páginas de jefe
+  individuales), `terraria.wiki.gg` (`Bosses`, `Events`), decompilación real de
+  `CalamityMod.dll` v2.2.2 con `ilspycmd` (banderas, clases de NPC/objeto, `LifeMaxNERB`,
+  `NPC.defense`).
