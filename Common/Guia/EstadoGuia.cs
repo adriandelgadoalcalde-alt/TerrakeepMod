@@ -256,7 +256,7 @@ namespace TerrakeepMod.Common.Guia
 				return "";
 			}
 
-			string zona = paso.ZonaLegible;
+			string zona = paso.ZonaLegible();
 			string baseTexto;
 			if (paso.Capa == CapaMundo.Cualquiera || !EstadoJugadorGuia.HayPartida) {
 				baseTexto = zona;

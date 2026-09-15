@@ -58,7 +58,7 @@ namespace TerrakeepMod.Common.Completitud
 					resumen.Hecho++;
 				}
 				else {
-					resumen.Faltan.Add(tramo.Nombre);
+					resumen.Faltan.Add(tramo.Nombre());
 				}
 			}
 			return resumen;

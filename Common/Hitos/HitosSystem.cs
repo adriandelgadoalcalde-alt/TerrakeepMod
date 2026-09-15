@@ -113,7 +113,7 @@ namespace TerrakeepMod.Common.Hitos
 				_superadoAntes.TryGetValue(t.Clave, out superadoAntes);
 
 				if (superadoAhora && !superadoAntes) {
-					string resultado = AlbumHitos.Registrar(t.Clave, t.Nombre);
+					string resultado = AlbumHitos.Registrar(t.Clave, t.Nombre());
 					RegistroHitos.Linea(Terrakeep.LogTag + " " + resultado);
 				}
 

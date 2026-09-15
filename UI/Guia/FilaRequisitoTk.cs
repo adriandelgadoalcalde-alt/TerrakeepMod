@@ -62,7 +62,7 @@ namespace TerrakeepMod.UI.Guia
 
 		private string Crudo(ResultadoRequisito estado)
 		{
-			string texto = estado.Linea ?? "";
+			string texto = estado.Linea() ?? "";
 			if (_requisito != null && _requisito.Recomendado) {
 				texto += " " + Idiomas.Texto("Guia.Req.Recomendado");
 			}

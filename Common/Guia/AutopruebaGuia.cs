@@ -934,7 +934,7 @@ namespace TerrakeepMod.Common.Guia
 			}
 
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - objetivo actual: \"" + clave +
-				"\" (\"" + (paso != null ? paso.Titulo : "-") + "\"), esperado \"" + claveEsperada +
+				"\" (\"" + (paso != null ? paso.Titulo() : "-") + "\"), esperado \"" + claveEsperada +
 				"\" porque " + porque + " " + (ok ? "-> OK" : "-> NO CUADRA") +
 				". Preparacion " + (int)(preparacion * 100f + 0.5f) + "% (" + cumplidos + "/" + total +
 				" obligatorios). Direccion: \"" + (paso != null ? EstadoGuia.Direccion(paso) : "-") + "\".");
@@ -954,7 +954,7 @@ namespace TerrakeepMod.Common.Guia
 				ResultadoRequisito estado = filas[i].Estado();
 				RegistroGuia.Linea(Terrakeep.LogTag + "   requisito " + (i + 1) + "/" + filas.Count + ": [" +
 					(estado.NoEvaluable ? "?" : (estado.Cumplido ? "HECHO" : "FALTA")) + "] " +
-					estado.Linea + " (" + estado.Actual + "/" + estado.Pedido +
+					estado.Linea() + " (" + estado.Actual + "/" + estado.Pedido +
 					(estado.Requisito != null && estado.Requisito.Recomendado ? ", recomendado" : "") + ")");
 			}
 		}
@@ -1605,7 +1605,7 @@ namespace TerrakeepMod.Common.Guia
 			float preparacion = paso != null ? EvaluadorGuia.Preparacion(paso, out cumplidos, out total) : 0f;
 
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - objetivo OPCIONAL: \"" + tramoClave + "/" +
-				clave + "\" (\"" + (paso != null ? paso.Titulo : "-") + "\"), esperado \"" + tramoEsperado + "/" +
+				clave + "\" (\"" + (paso != null ? paso.Titulo() : "-") + "\"), esperado \"" + tramoEsperado + "/" +
 				claveEsperada + "\" porque " + porque + " " + (ok ? "-> OK" : "-> NO CUADRA") +
 				". Preparacion " + (int)(preparacion * 100f + 0.5f) + "% (" + cumplidos + "/" + total +
 				" obligatorios).");
@@ -1617,7 +1617,7 @@ namespace TerrakeepMod.Common.Guia
 					RegistroGuia.Linea(Terrakeep.LogTag + "   requisito opcional " + (i + 1) + "/" +
 						resultados.Count + ": [" +
 						(estado.NoEvaluable ? "?" : (estado.Cumplido ? "HECHO" : "FALTA")) + "] " +
-						estado.Linea + " (" + estado.Actual + "/" + estado.Pedido +
+						estado.Linea() + " (" + estado.Actual + "/" + estado.Pedido +
 						(estado.Requisito != null && estado.Requisito.Recomendado ? ", recomendado" : "") + ")");
 				}
 			}
@@ -2409,7 +2409,7 @@ namespace TerrakeepMod.Common.Guia
 				_colaCalamity.Enqueue(() => ComprobarPasoDelTramoCalamity(t, pasoArma));
 				_colaCalamity.Enqueue(() => Capturar("guia-calamity-" + t.Clave + "-" + pasoArma.Clave));
 				_colaCalamity.Enqueue(() => PonerArmaConDano(danoPedido));
-				_colaCalamity.Enqueue(() => VolcarEstadoDelJugador("contra " + t.Nombre));
+				_colaCalamity.Enqueue(() => VolcarEstadoDelJugador("contra " + t.Nombre()));
 				_colaCalamity.Enqueue(() => ComprobarPasoDelTramoCalamity(t, pasoVencer));
 				if (jefe > 0) {
 					_colaCalamity.Enqueue(() => ComprobarLecturaDeJefeGenerica(jefe,
