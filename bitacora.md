@@ -7666,3 +7666,47 @@ que ve el jugador.
   individuales), `terraria.wiki.gg` (`Bosses`, `Events`), decompilación real de
   `CalamityMod.dll` v2.2.2 con `ilspycmd` (banderas, clases de NPC/objeto, `LifeMaxNERB`,
   `NPC.defense`).
+
+### Obstáculo real resuelto con autonomía técnica: el diálogo "Mod Changes since last launch" podía
+### colgar `verificar-guia.ps1` sin ningún error visible - causa real encontrada y arreglo real, sin
+### depender de ningún clic
+
+Aviso del usuario a mitad de la ronda: al lanzar tModLoader puede salir un diálogo real de "mods
+actualizados" que exige un clic en "OK" para que el arranque siga - si nadie lo da, el proceso se
+queda colgado ahí sin ningún error, y ya había quedado como sospecha sin confirmar en una ronda
+anterior (14-sep-2026, cuelgue real justo después de "Mod Changes since last launch:" en el log).
+
+Investigado a fondo en el código decompilado en vez de suponer (`Terraria\ModLoader\UI\Interface.cs`,
+`Terraria\ModLoader\Core\ModOrganizer.cs`, `Terraria\ModLoader\ModLoader.cs`): el diálogo es un
+`UIInfoMessage` de verdad (`infoMessage.Show(...)`, botón "OK"/"Continuar de todos modos") que sale
+cuando `ModOrganizer.DetectModChangesForInfoMessage` detecta que algún mod de Workshop (en este
+harness, casi siempre `CalamityMod.tmod`, que el propio script copia de la carpeta `Mods` real cada
+vez, con la versión que tenga en ese momento) tiene distinta versión que la última vez que ESE
+sandbox arrancó con éxito (comparado contra `Main.SavePath\LastLaunchedMods.txt`).
+
+**La solución real, sin tocar ningún clic**: `"ShowNewUpdatedModsInfo"` es un ajuste YA EXISTENTE de
+tModLoader, persistido en `config.json` (`Terraria.ModLoader.ModLoader.showNewUpdatedModsInfo`,
+leído/escrito con `Main.Configuration.Get`/`Put` - el mismo ajuste que el jugador puede apagar a
+mano en Ajustes del juego) - con él a `false`, `DetectModChangesForInfoMessage` devuelve vacío en su
+primerísima línea sin ni siquiera comprobar si hay cambios, así que el diálogo nunca puede salir,
+pase lo que pase con las versiones de los mods.
+
+**Arreglo aplicado**: `scripts\verificar-guia.ps1` fuerza `"ShowNewUpdatedModsInfo": false` en el
+`config.json` del sandbox ANTES de cada lanzamiento (crea la clave si el archivo no la trae
+todavía), así que no depende de que un lanzamiento anterior ya lo hubiera desactivado a mano.
+Verificado con una ronda completa real tras el arreglo: el paso nuevo se ejecuta y lo deja escrito
+en el log (`ShowNewUpdatedModsInfo forzado a false...`), la corrida entera llega a `AUTOPRUEBA GUIA
+COMPLETA` con 0 líneas "NO CUADRA" y el script termina con exit code 0 - sin ningún cuelgue, sin
+necesitar ningún clic de nadie.
+
+**Alcance real de este arreglo**: solo se tocó `TerrakeepMod\scripts\verificar-guia.ps1`, el único
+script de este repositorio que lanza el cliente gráfico completo. El resto de la familia "Keep"
+(StarvekeepMod, TerrakeepTrainer...) tiene sus propios arneses con el mismo patrón de sandbox de
+tModLoader/DST y podría toparse con el mismo síntoma - queda anotado aquí para que una sesión futura
+en esos repos no tenga que volver a investigarlo desde cero: mismo ajuste (`ShowNewUpdatedModsInfo`
+en su `config.json`), mismo arreglo.
+
+### Archivos tocados (este arreglo)
+- `scripts\verificar-guia.ps1` (fuerza `ShowNewUpdatedModsInfo=false` antes de cada lanzamiento).
+- `C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\config.json` (parcheado a
+  mano una vez, y ya lo mantiene el propio script de ahora en adelante).

@@ -64,6 +64,29 @@ Write-Host "OK: $tmod ($((Get-Item $tmod).Length) bytes)" -ForegroundColor Green
 
 if ($SoloCompilar) { return }
 
+# ---- 1.5 Desactivar el dialogo real de "Mod Changes since last launch" -------------------
+# Hallazgo real (15-sep-2026, ver bitacora.md): ese dialogo (Terraria.ModLoader.UI.Interface,
+# ModOrganizer.DetectModChangesForInfoMessage) es un UIInfoMessage de verdad que exige un clic en
+# "OK"/"Continuar de todos modos" para que el arranque siga - si nadie lo da, el proceso se queda
+# colgado ahi sin ningun error visible (mismo sintoma que ya documento una ronda anterior como
+# sospecha sin confirmar). Sale cuando el mod Workshop instalado (typicamente CalamityMod, que este
+# script SIEMPRE copia de la carpeta Mods real, no de un espejo fijo) tiene distinta version que la
+# ultima vez que TAL sandbox arranco con exito (comparado contra Main.SavePath\LastLaunchedMods.txt).
+# La solucion real, sin tocar ningun clic: "ShowNewUpdatedModsInfo" es un ajuste YA EXISTENTE y
+# persistido en config.json (Terraria.ModLoader.ModLoader.showNewUpdatedModsInfo, leido/escrito con
+# Main.Configuration.Get/Put) - con el a "false" el motor ni siquiera comprueba si hay cambios
+# (ModOrganizer.DetectModChangesForInfoMessage vuelve vacio en la primera linea). Se fuerza aqui,
+# ANTES de cada lanzamiento, por si el config.json del sandbox no existe todavia o lo trae a "true".
+$configSandbox = Join-Path $sandbox 'config.json'
+if (Test-Path $configSandbox) {
+	$json = Get-Content $configSandbox -Raw -Encoding UTF8 | ConvertFrom-Json
+	$json | Add-Member -NotePropertyName 'ShowNewUpdatedModsInfo' -NotePropertyValue $false -Force
+	($json | ConvertTo-Json -Depth 10) | Out-File $configSandbox -Encoding utf8
+} else {
+	'{"ShowNewUpdatedModsInfo": false}' | Out-File $configSandbox -Encoding utf8
+}
+Write-Host "== ShowNewUpdatedModsInfo forzado a false en $configSandbox (evita el dialogo de mods actualizados) ==" -ForegroundColor DarkGray
+
 # ---- 2. Mods habilitados en el sandbox ----------------------------------------------------
 if ($Calamity) {
 	$origen = Get-ChildItem (Join-Path $env:USERPROFILE 'Documents\My Games\Terraria\tModLoader\Mods') -Filter '*CalamityMod.tmod' |
