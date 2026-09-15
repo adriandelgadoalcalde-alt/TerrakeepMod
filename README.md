@@ -7,6 +7,9 @@ tModLoader, sobre lo que ya tienes cargado. No abre ni toca ningún `.plr`/`.wld
 directamente sobre el personaje y el mundo de la sesión, y todo lo que hace se puede deshacer
 con Ctrl+Z.
 
+> Preparación técnica para publicarlo en el Steam Workshop de tModLoader: ver
+> [`PUBLICAR-WORKSHOP.md`](PUBLICAR-WORKSHOP.md).
+
 ## Cómo se abre
 
 Un único panel, tecla **K** (reasignable en Ajustes > Controles del propio juego) o el icono de

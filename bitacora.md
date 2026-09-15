@@ -7976,3 +7976,32 @@ scripts\compilar.ps1 despues, para dejar el .tmod real recompilado en la carpeta
   texto ya resuelto, con parentesis nuevos.
 - lib/Terrakeep.Core.dll actualizado con el commit hermano de Terrasavr-Native.
 - evidencia/guia-calamity.log.txt, .tmod real recompilado.
+
+## 16-sep-2026 - Preparación técnica para Steam Workshop (D1 de la I+D de Fable, extendida a tModLoader)
+
+A diferencia de los mods de DST (ver bitácoras de StarvekeepMod/Starvekeep-Traduccion-ES esta
+misma noche), tModLoader SÍ publica desde dentro del propio juego: Workshop → Develop Mods →
+Publish. Investigado contra la documentación oficial (`tmodloader.app/docs/publishing-mods.html`,
+wiki de `tModLoader/tModLoader`). `build.txt`/`description.txt` ya estaban listos de antes
+(homepage real desde el 8-sep-2026); faltaban los dos archivos que solo hacen falta para la
+ficha del Workshop, no para jugar:
+
+- `icon_workshop.png` (nuevo): la documentación oficial exige hasta 512×512 (480×480 mínimo)
+  para la ficha del Workshop, distinto de `icon.png` (80×80, el que se ve dentro del juego).
+  Generado a partir del `icon.png` real (mismo hexágono "T") con remuestreo de calidad en vez
+  del vecino-más-cercano que la propia documentación recomienda para sprites de píxeles - este
+  icono es arte plano, no pixel art, así que sale más limpio. Verificado 512×512 RGBA real tras
+  generarlo.
+- `description_workshop.txt` (nuevo): la ficha del Workshop usa un archivo APARTE de
+  `description.txt` (que es la que se ve dentro del juego, en texto plano), con BBCode de Steam.
+  Redactado a partir del contenido real y ya verificado de `description.txt`, sin inventar
+  ninguna función nueva.
+- Hallazgo de la investigación, para que quede constancia: la propia documentación oficial avisa
+  de que la cuenta de Steam necesita haber gastado al menos 5 USD para no caer en las
+  restricciones de cuenta limitada al publicar - condición de la cuenta del usuario, no del mod,
+  no comprobable ni solucionable desde aquí.
+- No se ha relanzado tModLoader para llegar a la pantalla real de Publish: exige la sesión de
+  Steam ya autenticada del usuario y es un menú nunca recorrido por los arneses existentes de
+  `scripts\` (que verifican menús de ANTES de Workshop). Documentado como límite real en
+  `PUBLICAR-WORKSHOP.md` (nuevo).
+- Sin `git push`. Commit local en este repo.

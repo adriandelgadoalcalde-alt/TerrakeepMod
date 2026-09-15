@@ -1,0 +1,27 @@
+[h1][b]Terrakeep[/b][/h1]
+Editor completo de personaje y mundo que funciona [b]DENTRO[/b] de la partida, sobre lo que ya tienes cargado. No abre archivos ni toca los .plr/.wld: escribe en vivo sobre el personaje y el mundo de la sesión, y todo lo que hace se puede deshacer con Ctrl+Z.
+
+Un solo panel (tecla [b]K[/b]) con ocho pestañas, todas con la interfaz nativa de Terraria:
+
+[list]
+[*][b]Personaje[/b] - inventario, hucha/caja fuerte/forja/bóveda, los tres conjuntos de equipo, buffs, apariencia (peinado, variante, tintes y los siete colores) y los 13 desbloqueos permanentes.
+[*][b]Librería[/b] - catálogo navegable de TODOS los objetos de la partida, incluidos los de cualquier mod instalado (vanilla y Calamity), con buscador (coma = o, espacio = y, #id, .texto). Coge un objeto del catálogo y suéltalo en cualquier contenedor real.
+[*][b]Builds[/b] - equipo recomendado por etapa y clase, con "ya lo tienes" y auto-equipar. Si no tienes un objeto de la build, lo crea directamente desde la Librería con su mejor prefijo real para esa build (vanilla o Calamity).
+[*][b]Investigación[/b] - cuánto llevas investigado de cada carpeta en Modo Viaje, y cómo completarlo o quitarlo, pasando por la API oficial del juego.
+[*][b]Exploración[/b] - mini-mapa navegable con las texturas reales del juego, búsqueda de minerales, gemas, tesoros, cofres, NPC, líquidos y paredes por todo el mundo, y cambio de dificultad en vivo con salvaguardas.
+[*][b]Ajustes[/b] - idioma (Español / English) en vivo, historial de deshacer y rehacer, y la lista real de atajos de teclado.
+[*][b]Guía[/b] - brújula de progresión en tiempo real, vanilla Y Calamity (46 tramos, 176 pasos), con el objetivo de ahora mismo, por qué hace falta, cómo conseguirlo, requisitos con números reales de la partida, y un marcador dorado en el mapa cuando el objetivo tiene un sitio real que señalar.
+[*][b]Álbum[/b] - la lista de capturas automáticas de hito, una por cada tramo de la Guía que cierras de verdad jugando, más reciente primero.
+[/list]
+
+Es una herramienta local: no añade contenido al juego, no hace falta sincronizarla en multijugador (side = NoSync) y no cambia nada de la partida por su cuenta salvo lo que tú pidas desde el panel.
+
+[b]Compatibilidad:[/b] funciona en vanilla y con Calamity Mod cargado a la vez - la Guía, la Librería y las Builds detectan Calamity automáticamente y añaden sus propios tramos y objetos sin dejar de cubrir el juego base.
+
+[hr]
+
+[b]Terrakeep[/b] also has a full desktop companion app (character/world file editor, outside the game) at the project's homepage below. This mod is the in-game half of the same tool, in Spanish and English.
+
+[hr]
+
+Código fuente y documentación completa: [url=https://github.com/adriandelgadoalcalde-alt/TerrakeepMod]github.com/adriandelgadoalcalde-alt/TerrakeepMod[/url]
