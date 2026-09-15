@@ -855,6 +855,19 @@ namespace TerrakeepMod.UI.Panel
 				if (ordenZ.HasValue) {
 					d["orden_z"] = ordenZ.Value;
 				}
+				// KeepQA - verificarBordeViewport.js (15-sep-2026): un UIList real SIEMPRE tiene
+				// OverflowHidden=true (constructor de UIList.cs del motor) y recorta su contenido a su
+				// propio GetInnerDimensions() - el area real visible, medida desde el borde superior
+				// izquierdo de la caja del propio UIList (que aqui no tiene padding propio en ningun
+				// uso real de la familia, verificado por grep de SetPadding contra las variables UIList
+				// del mod: solo se le pone padding al UIPanel que lo ENVUELVE, nunca al UIList mismo -
+				// asi que GetInnerDimensions() y GetDimensions() coinciden en tamaño y el campo
+				// "viewportAlto" resultante es exacto para el contrato de verificarBordeViewport.js,
+				// que mide el borde del viewport como V.y + viewportAlto). Ver
+				// Downloads\tModLoader-Decompiled\tModLoader\Terraria\GameContent\UI\Elements\UIList.cs.
+				if (elemento is UIList listaConScroll) {
+					d["viewportAlto"] = listaConScroll.GetInnerDimensions().Height;
+				}
 				elementos.Add(d);
 			}
 
@@ -940,7 +953,75 @@ namespace TerrakeepMod.UI.Panel
 				}
 
 				agregar(id, tipo, padreId, hijo, null, capa);
-				VolcarHijosRecursivo(hijo, id, profundidad + 1, agregar, idsUsados);
+
+				// KeepQA - verificarBordeViewport.js (15-sep-2026): un UIList real envuelve sus filas
+				// en un UIInnerList privado (UIList.cs del motor: "internal UIElement _innerList",
+				// unico hijo real de UIList.Children, cuyo unico trabajo es mover su propio Top segun
+				// la barra de scroll - no es un nivel semantico del arbol). Si se dejara recorrer por
+				// el camino generico de aqui abajo, las filas reales quedarian con padre_id apuntando
+				// al wrapper interno en vez de al propio UIList, y verificarBordeViewport.js (que solo
+				// empareja hijos DIRECTOS por padre_id) nunca las encontraria. Se salta ese nivel a
+				// proposito y se recorren los items reales directamente.
+				if (hijo is UIList listaHijo) {
+					VolcarFilasUIList(listaHijo, id, profundidad + 1, agregar, idsUsados);
+				}
+				else {
+					VolcarHijosRecursivo(hijo, id, profundidad + 1, agregar, idsUsados);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Caso especial de <see cref="VolcarHijosRecursivo"/> para un <see cref="UIList"/> real: en
+		/// vez de descender por su unico hijo real del arbol (el <c>UIInnerList</c> privado del
+		/// motor, transparente para este contrato), recorre directamente <c>UIList._items</c> (campo
+		/// PUBLICO real del motor - lista ordenada de filas, la misma que <c>RecalculateChildren</c>
+		/// usa para apilarlas) con <paramref name="padreId"/> apuntando al PROPIO UIList. Solo vuelca
+		/// las filas REALMENTE visibles en este instante (interseccion con
+		/// <see cref="UIElement.GetInnerDimensions"/> del propio UIList - el mismo chequeo AABB que
+		/// hace <c>UIInnerList.DrawChildren</c> del motor para decidir que fila pintar de verdad),
+		/// mismo criterio que el arnes WPF de Terrakeep (solo vuelca los
+		/// <c>ItemContainerGenerator</c> ya REALIZADOS) - para que esto cace el bug real hace falta
+		/// llamar primero a algo que desplace la lista hasta el final (<c>UIList.ViewPosition =
+		/// float.MaxValue</c>) y dejar pasar al menos un fotograma de <c>Draw</c> real (el motor
+		/// mueve el wrapper interno en <c>UIList.DrawSelf</c>, no al fijar <c>ViewPosition</c>).
+		/// </summary>
+		private static void VolcarFilasUIList(UIList lista, string padreId, int profundidad,
+			Action<string, string, string, UIElement, string, string> agregar, HashSet<string> idsUsados)
+		{
+			if (profundidad >= ProfundidadMaximaGeometria) {
+				return;
+			}
+
+			CalculatedStyle viewport = lista.GetInnerDimensions();
+			float viewportArriba = viewport.Y;
+			float viewportAbajo = viewport.Y + viewport.Height;
+
+			int i = 0;
+			foreach (UIElement fila in lista._items) {
+				i++;
+				if (i > HijosMaximosPorContenedorGeometria) {
+					break;
+				}
+
+				CalculatedStyle caja = fila.GetDimensions();
+				bool visible = caja.Y + caja.Height > viewportArriba && caja.Y < viewportAbajo;
+				if (!visible) {
+					continue;
+				}
+
+				string tipo = TipoDeWidget(fila);
+				string capa = ClasificarCapa(fila);
+
+				string idBase = padreId + "_fila_" + i;
+				string id = idBase;
+				int sufijo = 1;
+				while (!idsUsados.Add(id)) {
+					id = idBase + "_" + (++sufijo);
+				}
+
+				agregar(id, tipo, padreId, fila, "uilist_filas_" + padreId, capa);
+				VolcarHijosRecursivo(fila, id, profundidad + 1, agregar, idsUsados);
 			}
 		}
 

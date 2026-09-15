@@ -145,6 +145,15 @@ namespace TerrakeepMod.Common.Libreria
 				case 21: CapturarTrasScroll(); break;             // captura 2 (ya desplazado)
 				case 22: CapturarYPulsarPrefijo(); break;
 				case 23: ComprobarPapeleraDesdeLibreria(); break;
+				// KeepQA - verificarBordeViewport.js (15-sep-2026): cierra el hueco de cobertura
+				// documentado en PATRONES.md ("tampoco se ha cableado esta pieza en TerrakeepMod
+				// todavia") para la rejilla de resultados de la Libreria (UIList real, la misma
+				// categoria de widget que dejo pasar el bug real de StarvekeepMod). Dos pasos: uno
+				// prepara la busqueda amplia y desplaza al final (el desplazamiento visual solo se
+				// aplica en el Draw del fotograma siguiente), el otro - ya con eso dibujado - vuelca
+				// la geometria real con el campo viewportAlto nuevo.
+				case 24: PrepararBusquedaViewport(); break;
+				case 25: VolcarViewportLibreria(); break;
 				default:
 					Registrar("AUTOPRUEBA WS3 COMPLETA. Todos los pasos ejecutados sin excepciones.");
 					_terminada = true;
@@ -1224,6 +1233,64 @@ namespace TerrakeepMod.Common.Libreria
 
 			// Se deja limpio para no dejar basura visible el resto de la sesion.
 			jugador.trashItem = new Item();
+		}
+
+		/// <summary>
+		/// Paso 24 - busqueda amplia (mismo termino "es" que ya uso el arnes hermano de Terrakeep-WPF
+		/// para su Biblioteca, ver <c>Terrakeep.App.Tests\AuditoriaViewportScroll.cs</c>: 2+ caracteres
+		/// para no chocar con la gramatica real que ignora terminos de menos de 2, y muy comun en
+		/// nombres en español) para llenar <c>ContenidoLibreria._listaResultados</c> con hasta el tope
+		/// real de 100 resultados, y desplazarla al final YA - el desplazamiento visual solo se aplica
+		/// en el Draw del fotograma siguiente (UIList.DrawSelf), asi que el volcado real va en el paso
+		/// de despues, tras los ~12 fotogramas de espera que ya mete <see cref="Actualizar"/> entre
+		/// pasos.
+		/// </summary>
+		private static void PrepararBusquedaViewport()
+		{
+			Contenido.IrALaRaiz();
+			Contenido.FijarBusqueda("es");
+			Contenido.DesplazarResultadosAlFinalParaQA();
+
+			Registrar("Paso 24 - busqueda amplia \"es\" para el volcado de viewport: "
+				+ Contenido.TotalCasados + " objetos casan, " + Contenido.SlotsResultado.Count
+				+ " enseñados (tope real 100). Rejilla de resultados Y arbol de carpetas desplazados "
+				+ "al final (UIList.ViewPosition = float.MaxValue en los dos) - se aplicara en el "
+				+ "Draw del fotograma que viene.");
+		}
+
+		/// <summary>
+		/// Paso 25 - con la rejilla YA dibujada desplazada al final (paso 24, ~12 fotogramas de por
+		/// medio), vuelca la geometria real del panel completo con
+		/// <see cref="PanelTerrakeepState.VolcarGeometriaJson"/> (ya trae <c>viewportAlto</c> para
+		/// cualquier <c>UIList</c> real, extractor ampliado esta misma noche) a la MISMA carpeta que
+		/// las capturas de esta autoprueba - mismo patron que
+		/// <c>Common\Panel\AutopruebaIdiomas.cs.VolcarGeometriaSiToca</c> - y guarda la captura
+		/// correspondiente. El volcado en si NO comprueba nada (solo escribe el JSON): la
+		/// verificacion real la hace <c>verificarBordeViewport.js</c> de KeepQA sobre este archivo,
+		/// fuera del proceso del juego.
+		/// </summary>
+		private static void VolcarViewportLibreria()
+		{
+			PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
+			if (panel == null) {
+				Registrar("Paso 25 - PanelTerrakeepState.Panel es null, se omite el volcado.");
+				return;
+			}
+
+			Registrar("Paso 25 - " + CapturaDePantalla.Guardar("ws3-viewport-libreria-final"));
+
+			try {
+				string carpeta = System.IO.Path.Combine(Main.SavePath, CapturaDePantalla.Carpeta);
+				System.IO.Directory.CreateDirectory(carpeta);
+				string rutaJson = System.IO.Path.Combine(carpeta, "geometria-viewport-libreria.json");
+				System.IO.File.WriteAllText(rutaJson, panel.VolcarGeometriaJson());
+				Registrar("Paso 25 - geometria (con viewportAlto real de la UIList de resultados) "
+					+ "volcada en \"" + System.IO.Path.GetFileName(rutaJson) + "\" ("
+					+ System.IO.Path.GetDirectoryName(rutaJson) + ").");
+			}
+			catch (Exception e) {
+				Registrar("Paso 25 - volcado de geometria fallido: " + e.GetType().Name + ": " + e.Message);
+			}
 		}
 
 		// =========================================================================================

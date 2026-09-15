@@ -141,6 +141,29 @@ namespace TerrakeepMod.UI.Libreria
 			get { return _totalCasados; }
 		}
 
+		/// <summary>
+		/// SOLO ARNES DE PRUEBAS (KeepQA, 15-sep-2026): desplaza AMBAS listas con scroll real de la
+		/// Libreria hasta el final DE VERDAD (mismo patron que <c>ScrollViewer.ScrollToEnd()</c> del
+		/// arnes hermano de Terrakeep-WPF) - la rejilla de resultados (<c>_listaResultados</c>) Y el
+		/// arbol de carpetas de primer nivel (<c>_listaCarpetas</c>, que con las 10 carpetas raiz
+		/// reales tampoco cabe entera en su columna - visto la primera vez que se corrio esta misma
+		/// autoprueba: quedaba SIN desplazar, en su posicion inicial, y aun asi "desbordaba" contra
+		/// verificarBordeViewport.js porque la carpeta 10ª no cabe sin scroll; desplazarla tambien
+		/// aqui es lo honesto, para probarla en el estado real que el contrato de esa pieza espera en
+		/// vez de dejar un "desborda" que solo significa "hace falta scroll", no un bug). En los dos
+		/// casos, <c>UIList.ViewPosition</c> reenvia a <c>UIScrollbar.ViewPosition</c>, que ya recorta
+		/// ("clampa") al maximo real con <c>float.MaxValue</c>, asi que no hace falta conocer
+		/// <c>GetTotalHeight()</c> de antemano. El desplazamiento visual (mover el wrapper interno)
+		/// solo se aplica en el <c>DrawSelf</c> del propio UIList, en el fotograma que viene - quien
+		/// llame a esto tiene que dejar pasar al menos un <c>Draw</c> real antes de volcar geometria
+		/// con <see cref="TerrakeepMod.UI.Panel.PanelTerrakeepState.VolcarGeometriaJson"/>.
+		/// </summary>
+		public void DesplazarResultadosAlFinalParaQA()
+		{
+			_listaResultados.ViewPosition = float.MaxValue;
+			_listaCarpetas.ViewPosition = float.MaxValue;
+		}
+
 		/// <summary>Nombre del contenedor de destino seleccionado.</summary>
 		public string NombreDestino {
 			get { return Destinos[_destinoActual].Nombre; }
