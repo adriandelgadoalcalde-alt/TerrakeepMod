@@ -742,8 +742,48 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedChristmasIceQueen = true;
 			Main.LocalPlayer.downedDD2EventAnyDifficulty = true;
 
+			// Los tramos opcionales de Calamity (15-sep-2026), con Orden mas bajo que casi todos los
+			// opcionales de vanilla de arriba (DesertScourge=3, GiantClam=4, Crabulon=6...), se
+			// marcan SUPERADOS por el MISMO motivo exacto que los bloques de arriba: este recorrido
+			// se escribio antes de que existiera el arbol de Calamity, y sin esto DesertScourge (el
+			// de menor Orden de TODOS los opcionales del juego, vanilla y Calamity) se colaria como
+			// "el opcional pendiente" delante de ReySlime en cuanto el mod detecta Calamity cargado.
+			// Se restauran al final, en RestaurarTramosNuevos, igual que los demas. No hay un bloque
+			// dedicado que recorra y comprueba cada tramo de Calamity uno a uno (a diferencia de los
+			// de vanilla): la cobertura EN VIVO de Calamity en esta sesion se limito a comprobar que
+			// el catalogo carga sin avisos y que sus jefes/objetos resuelven de verdad contra el mod
+			// instalado (ver bitacora.md, 15-sep-2026) - ampliar este arnes a un recorrido paso a
+			// paso de los 25 tramos nuevos queda pendiente.
+			if (CatalogoGuia.HayCalamity) {
+				foreach (string bandera in _banderasOpcionalesCalamity) {
+					BanderasGuia.IntentarEscribirBanderaCalamity(bandera, true);
+				}
+			}
+
 			PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Personaje, "autoprueba de la Guia");
 		}
+
+		/// <summary>Las banderas de los tramos OPCIONALES de Calamity (ver <see cref="Arrancar"/> y
+		/// <see cref="RestaurarTramosNuevos"/>). No incluye las de la columna vertebral
+		/// (Astrum Deus, Providence...), que no son opcionales y no interfieren con el recorrido de
+		/// vanilla de este arnes.</summary>
+		private static readonly string[] _banderasOpcionalesCalamity = {
+			"downedDesertScourge", "downedCLAM", "downedCrabulon", "downedHiveMind", "downedPerforator",
+			"downedSlimeGod", "downedDreadnautilus", "downedHorribleHog", "downedCryogen",
+			"downedAquaticScourge", "downedBrimstoneElemental", "downedCragmawMire", "downedAstrumAureus",
+			"downedCalamitasClone", "downedGSS", "downedRavager", "downedPlaguebringer", "downedDragonfolly",
+			"downedPrimordialWyrm", "downedMauler", "downedNuclearTerror"
+		};
+
+		/// <summary>Las banderas de la columna vertebral OBLIGATORIA de Calamity (Astrum Deus y todo
+		/// el tramo final: Guardianes, Providence, el trio, Polterghast, Old Duke, DoG, Yharon, Exo
+		/// Mechs, Supreme Calamitas). Ver <see cref="MarcarTorresDerrotadasDeMentira"/> y
+		/// <see cref="RestaurarTramosNuevos"/>.</summary>
+		private static readonly string[] _banderasObligatoriasCalamity = {
+			"downedAstrumDeus", "downedGuardians", "downedProvidence", "downedCeaselessVoid",
+			"downedStormWeaver", "downedSignus", "downedPolterghast", "downedBoomerDuke", "downedDoG",
+			"downedYharon", "downedExoMechs", "downedCalamitas"
+		};
 
 		/// <summary>Entra en la Guia por la ruta de produccion: un clic real en su pestaña.</summary>
 		private static void AbrirLaPestanaConClicReal()
@@ -1376,6 +1416,21 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedTowerVortex = true;
 			NPC.downedTowerNebula = true;
 			NPC.downedTowerStardust = true;
+
+			// Toda la columna vertebral OBLIGATORIA de Calamity (15-sep-2026: Astrum Deus, Orden 82,
+			// entre EventosLunares y MoonLord; y el tramo final entero, Orden 91-96, DESPUES de
+			// MoonLord) se neutraliza aqui de una vez, en el mismo punto donde ya se neutralizan las
+			// torres: sin esto, el camino obligatorio de este arnes (escrito antes de que existiera
+			// Calamity) se desviaria a "PrepararAstrumDeus" en vez de seguir a "ArmaParaMoonLord", Y
+			// el cierre final ("no queda ningun paso pendiente" tras Moon Lord) encontraria
+			// "ArmaParaGuardianes" todavia pendiente - dos sintomas del mismo problema que
+			// Arrancar() ya resolvio para los opcionales. Se restaura entera en RestaurarTramosNuevos.
+			if (CatalogoGuia.HayCalamity) {
+				foreach (string bandera in _banderasObligatoriasCalamity) {
+					BanderasGuia.IntentarEscribirBanderaCalamity(bandera, true);
+				}
+			}
+
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - las cuatro downedTower* " +
 				"puestas a true a mano. NPC.downedTowers (la propiedad calculada) ahora: " +
 				NPC.downedTowers + ". Se restaura al terminar.");
@@ -1457,6 +1512,14 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedTowerStardust = _downedTowerStardustOriginal;
 			NPC.downedMoonlord = _downedMoonlordOriginal;
 			NPC.downedQueenBee = _downedQueenBeeOriginal;
+
+			// Columna vertebral obligatoria de Calamity - ver el porque en
+			// MarcarTorresDerrotadasDeMentira.
+			if (CatalogoGuia.HayCalamity) {
+				foreach (string bandera in _banderasObligatoriasCalamity) {
+					BanderasGuia.IntentarEscribirBanderaCalamity(bandera, false);
+				}
+			}
 
 			Player jugador = Main.LocalPlayer;
 			jugador.inventory[0] = new Item();
@@ -2180,6 +2243,14 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedChristmasIceQueen = _downedChristmasIceQueenOriginal;
 			Main.LocalPlayer.downedDD2EventAnyDifficulty = _downedDD2Original;
 			Main.LocalPlayer.inventory[0] = new Item();
+
+			// Los opcionales de Calamity que Arrancar() marco superados a mano (nunca lo estaban de
+			// verdad en este mundo de pruebas recien creado) vuelven a false, sin excepcion.
+			if (CatalogoGuia.HayCalamity) {
+				foreach (string bandera in _banderasOpcionalesCalamity) {
+					BanderasGuia.IntentarEscribirBanderaCalamity(bandera, false);
+				}
+			}
 
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - restaurados los cuatro opcionales " +
 				"tempranos (downedSlimeKing=" + NPC.downedSlimeKing + ", downedDeerclops=" +

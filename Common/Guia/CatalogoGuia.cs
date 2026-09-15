@@ -18,27 +18,40 @@ namespace TerrakeepMod.Common.Guia
 	/// <c>.tmod</c> se cierra, cosa que pasa al terminar la carga del mod.
 	/// </para>
 	/// <para>
-	/// <b>La decision sobre Calamity, y por que es esta.</b> Con Calamity cargado la progresion de
-	/// Terraria cambia de arriba abajo: no es "unos cuantos jefes mas", es otro arbol. Su
-	/// <c>DownedBossSystem</c> decompilado tiene <b>43 banderas</b> de jefe propias
-	/// (<c>downedDesertScourge</c>, <c>downedHiveMind</c>, <c>downedPerforator</c>,
-	/// <c>downedProvidence</c>, <c>downedExoMechs</c>...), el primer jefe deja de ser el Ojo de
-	/// Cthulhu, y encima el mod mete sus propios modos de dificultad (Revengeance, Death) que
-	/// cambian las cifras con las que se mide si estas preparado. Nada de eso se puede verificar
-	/// con el mismo rigor que lo de vanilla leyendo el juego decompilado: son datos de diseño del
-	/// mod, no condiciones del motor.
+	/// <b>Calamity, actualizado el 15-sep-2026: ya tiene su propio arbol, no solo el hueco para
+	/// el.</b> La decision original (ver el historial de git de este comentario si hace falta el
+	/// texto exacto) fue quedarse solo en vanilla porque nada de Calamity se podia verificar con
+	/// el mismo rigor que el juego decompilado: <c>DownedBossSystem</c> es un tipo PROPIO del mod,
+	/// sin referencia de compilacion (<c>build.txt</c> no trae <c>CalamityMod</c> en
+	/// <c>dllReferences</c> a proposito, es un mod OPCIONAL de la partida) y sus NPC no tienen un
+	/// id fijo como los de vanilla. Las dos cosas ya tienen solucion real, no un parche:
+	/// <list type="bullet">
+	/// <item>Las <b>37 banderas</b> de jefe que usa este arbol (de las 44 propiedades publicas
+	/// que tiene <c>CalamityMod.DownedBossSystem</c> en la version 2.2.2 instalada - confirmado
+	/// DECOMPILANDO el <c>.tmod</c> real con <c>ilspycmd</c>, no de memoria) se leen por REFLEXION
+	/// en <see cref="BanderasGuia.AgregarBanderasCalamity"/>, con el mismo contrato honesto que
+	/// cualquier bandera desconocida: si una actualizacion de Calamity renombra una, se queda "no
+	/// evaluable", nunca se inventa un valor.</item>
+	/// <item>Los NPC y objetos de Calamity que usa el <c>.json</c> (jefes, objetos de invocacion)
+	/// se citan por su "pid" real (<c>"CalamityMod/NombreInterno"</c>, el mismo formato que ya usan
+	/// <c>CatalogoBuilds</c>/<c>ArbolLibreria</c>) y se resuelven a su <c>type</c> real de ESTA
+	/// partida con la API publica <c>ModContent.TryFind</c> - ver <see cref="ResolverNpcMod"/> y
+	/// <see cref="ResolverItemMod"/>. De ahi para abajo (<c>EvaluadorGuia.StatsDeJefe</c>,
+	/// <c>EstadoGuia.LecturaDeJefe</c>) un jefe de Calamity es indistinguible de uno vanilla: los
+	/// dos son un <c>NPC.type</c> normal, con su vida/daño/defensa REALES de esta partida leidos
+	/// en vivo (nunca una cifra copiada de la wiki), asi que los propios modos de dificultad de
+	/// Calamity (Revengeance, Death) quedan cubiertos solos, sin logica aparte.</item>
+	/// </list>
+	/// El orden de progresion (que jefe va antes de cual, que es obligatorio y que es opcional) sí
+	/// viene de fuera del motor -no hay forma de decompilarlo, es una decision de diseño del mod-
+	/// y se investigo contra la Calamity Mod Wiki oficial (<c>calamitymod.wiki.gg</c>,
+	/// <c>Guide:Mod_progression</c> y la pagina de cada jefe) cruzada con el propio codigo
+	/// decompilado para confirmar que jefe destraba a cual (p. ej. Profaned Guardians->Providence,
+	/// confirmado tanto en la wiki como en el drop real de <c>ProfanedCore</c>). Detalle completo
+	/// de la investigacion y de cada hueco cerrado en bitacora.md, 15-sep-2026.
 	/// <para />
-	/// Asi que esta primera fase se queda <b>en vanilla, y lo dice</b>. La Guia detecta Calamity
-	/// igual que ya lo hace <c>CatalogoMejorPrefijo</c> (<c>ModLoader.HasMod("CalamityMod")</c>)
-	/// y avisa en el panel de que lo que esta leyendo es la progresion de vanilla, en vez de
-	/// enseñar un orden que con ese mod puesto seria <b>falso</b>. Inventarse un arbol de
-	/// Calamity a medias seria exactamente el "analogo falso solo por completar la lista" que el
-	/// estandar de la marca prohibe.
-	/// <para />
-	/// Lo que si se ha hecho desde el primer dia es dejar el camino abierto: <see cref="AmbitoGuia"/>
-	/// existe en el modelo, el <c>.json</c> ya lo lleva por tramo, y <see cref="Tramos"/> filtra
-	/// por el. Añadir Calamity sera añadir tramos al <c>.json</c> y banderas a
-	/// <see cref="BanderasGuia"/>, no reescribir el cerebro.
+	/// <see cref="AmbitoGuia"/> ya existia desde el primer dia para esto exactamente: el modelo no
+	/// ha cambiado, solo se ha rellenado con datos reales.
 	/// </para>
 	/// </remarks>
 	public static class CatalogoGuia
@@ -182,12 +195,22 @@ namespace TerrakeepMod.Common.Guia
 				Opcional = Booleano(nodo, "opcional", false)
 			};
 
+			// "jefeFinalMod" resuelve un NPC de un mod (Calamity) por nombre - ver ResolverNpcMod.
+			int jefeFinalMod = ResolverNpcMod(Cadena(nodo, "jefeFinalMod"));
+			if (jefeFinalMod > 0) {
+				tramo.JefeFinal = jefeFinalMod;
+			}
+
 			// El jefe que cierra el tramo de la maldad del mundo depende del mundo REAL, no de una
 			// preferencia: Terraria genera corrupcion o carmesi (WorldGen.crimson) y ahi cambia el
 			// jefe. Se lee del juego, no se supone.
 			int carmesi = Entero(nodo, "jefeFinalCarmesi", 0);
 			if (carmesi > 0 && Terraria.WorldGen.crimson) {
 				tramo.JefeFinal = carmesi;
+			}
+			int carmesiMod = ResolverNpcMod(Cadena(nodo, "jefeFinalModCarmesi"));
+			if (carmesiMod > 0 && Terraria.WorldGen.crimson) {
+				tramo.JefeFinal = carmesiMod;
 			}
 
 			JArray pasos = nodo["pasos"] as JArray;
@@ -221,6 +244,12 @@ namespace TerrakeepMod.Common.Guia
 				Capa = Capa(Cadena(nodo, "capa")),
 				Jefe = Entero(nodo, "jefe", 0)
 			};
+
+			// "jefeMod" resuelve un NPC de un mod (Calamity) por nombre - ver ResolverNpcMod.
+			int jefeMod = ResolverNpcMod(Cadena(nodo, "jefeMod"));
+			if (jefeMod > 0) {
+				paso.Jefe = jefeMod;
+			}
 
 			JArray requisitos = nodo["requisitos"] as JArray;
 			bool hayObligatorio = false;
@@ -264,11 +293,41 @@ namespace TerrakeepMod.Common.Guia
 				Recomendado = Booleano(nodo, "recomendado", false)
 			};
 
+			// "banderaCarmesi": igual que "jefeFinalCarmesi" en el tramo, para una bandera de
+			// requisito que cambia segun Corrupcion/Carmesi (p. ej. HiveMindOPerforator de
+			// Calamity: downedHiveMind en Corrupcion, downedPerforator en Carmesi - las DOS
+			// existen de verdad, a diferencia de vanilla, donde downedBoss2 es una unica bandera
+			// compartida por el Devorador y el Cerebro).
+			string banderaCarmesi = Cadena(nodo, "banderaCarmesi");
+			if (!string.IsNullOrEmpty(banderaCarmesi) && Terraria.WorldGen.crimson) {
+				requisito.Bandera = banderaCarmesi;
+			}
+
 			JArray ids = nodo["ids"] as JArray;
 			if (ids != null) {
 				List<int> lista = new List<int>();
 				foreach (JToken t in ids) {
 					lista.Add((int)t);
+				}
+				requisito.Ids = lista.ToArray();
+			}
+
+			// "idMod"/"idsMod" resuelven un objeto de un mod (Calamity) por nombre, igual que
+			// "jefeMod" con los NPC - ver ResolverItemMod. Se AÑADEN a los "id"/"ids" de vanilla
+			// que ya hubiera (nunca los reemplazan), asi que un requisito puede mezclar objetos
+			// vanilla y de mod en la misma lista de "objeto_cualquiera".
+			int idMod = ResolverItemMod(Cadena(nodo, "idMod"));
+			if (idMod > 0) {
+				requisito.Id = idMod;
+			}
+			JArray idsMod = nodo["idsMod"] as JArray;
+			if (idsMod != null) {
+				List<int> lista = requisito.Ids != null ? new List<int>(requisito.Ids) : new List<int>();
+				foreach (JToken t in idsMod) {
+					int resuelto = ResolverItemMod(t.ToString());
+					if (resuelto > 0) {
+						lista.Add(resuelto);
+					}
 				}
 				requisito.Ids = lista.ToArray();
 			}
@@ -340,6 +399,91 @@ namespace TerrakeepMod.Common.Guia
 		{
 			JToken token = nodo[clave];
 			return token == null || token.Type == JTokenType.Null ? porDefecto : (bool)token;
+		}
+
+		/// <summary>
+		/// Resuelve un NPC de un mod por su "pid" real (formato "NombreDelMod/NombreInterno", el
+		/// mismo que ya usan <c>CatalogoBuilds</c>/<c>ArbolLibreria</c>) al <c>NPC.type</c> real que
+		/// tiene ESTA partida.
+		/// </summary>
+		/// <remarks>
+		/// <b>Por que hace falta esto y no basta con un int en el .json, como en vanilla.</b> Un
+		/// NPC de Calamity NO tiene un id fijo: tModLoader se lo asigna en cuanto el mod carga, y
+		/// ese numero puede cambiar entre partidas (segun que otros mods esten instalados y en que
+		/// orden carguen). Guardar un int a pelo en el <c>.json</c> apuntaria a un NPC distinto -o a
+		/// ninguno- segun la partida. <c>ModContent.TryFind&lt;ModNPC&gt;</c> es la API PUBLICA real
+		/// de tModLoader para esto (<c>Terraria.ModLoader.ModContent.cs</c> decompilado): busca la
+		/// plantilla por su nombre de mod + nombre interno, sin que este proyecto necesite
+		/// referenciar <c>CalamityMod.dll</c> en el <c>.csproj</c> (a diferencia de las banderas de
+		/// <see cref="BanderasGuia"/>, que si hacen falta por reflexion porque leen un campo PROPIO
+		/// de Calamity, no del propio tModLoader).
+		/// <para />
+		/// Se llama una vez por tramo/paso durante <see cref="Construir"/>, con el <c>.tmod</c> de
+		/// Calamity ya cargado del todo (PostSetupContent, igual que el resto del catalogo) - el
+		/// resultado queda cacheado en <see cref="TramoGuia.JefeFinal"/>/<see cref="PasoGuia.Jefe"/>
+		/// como un int normal, y de ahi para abajo (<c>EvaluadorGuia.StatsDeJefe</c>,
+		/// <c>EstadoGuia.LecturaDeJefe</c>) no hay ninguna diferencia entre un jefe vanilla y uno de
+		/// mod: los dos son <c>ContentSamples.NpcsByNetId[tipo]</c> como cualquier otro.
+		/// </remarks>
+		private static int ResolverNpcMod(string pid)
+		{
+			if (string.IsNullOrEmpty(pid)) {
+				return 0;
+			}
+
+			int barra = pid.IndexOf('/');
+			if (barra < 0) {
+				_avisos.Add("jefeMod/jefeFinalMod mal formado (falta \"Mod/NombreInterno\"): \"" + pid + "\"");
+				return 0;
+			}
+
+			string nombreMod = pid.Substring(0, barra);
+			string nombreInterno = pid.Substring(barra + 1);
+
+			// Sin el mod instalado no es un aviso: es justo lo esperable en una partida sin
+			// Calamity, y CatalogoGuia.Tramos ya filtra estos tramos fuera en ese caso.
+			if (!ModLoader.HasMod(nombreMod)) {
+				return 0;
+			}
+
+			ModNPC encontrado;
+			if (!ModContent.TryFind(nombreMod, nombreInterno, out encontrado) || encontrado == null) {
+				_avisos.Add("no se encontro el NPC \"" + pid + "\" (¿nombre interno cambiado en una " +
+					"actualizacion del mod?)");
+				return 0;
+			}
+
+			return encontrado.Type;
+		}
+
+		/// <summary>Igual que <see cref="ResolverNpcMod"/> pero para un objeto (<c>ModItem</c>).</summary>
+		private static int ResolverItemMod(string pid)
+		{
+			if (string.IsNullOrEmpty(pid)) {
+				return 0;
+			}
+
+			int barra = pid.IndexOf('/');
+			if (barra < 0) {
+				_avisos.Add("idMod/idsMod mal formado (falta \"Mod/NombreInterno\"): \"" + pid + "\"");
+				return 0;
+			}
+
+			string nombreMod = pid.Substring(0, barra);
+			string nombreInterno = pid.Substring(barra + 1);
+
+			if (!ModLoader.HasMod(nombreMod)) {
+				return 0;
+			}
+
+			ModItem encontrado;
+			if (!ModContent.TryFind(nombreMod, nombreInterno, out encontrado) || encontrado == null) {
+				_avisos.Add("no se encontro el objeto \"" + pid + "\" (¿nombre interno cambiado en una " +
+					"actualizacion del mod?)");
+				return 0;
+			}
+
+			return encontrado.Type;
 		}
 
 		public static void Descargar()
