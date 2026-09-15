@@ -7421,3 +7421,62 @@ documenta en vez de forzar un análogo falso.
   `Guia.Paso.ArmaParaEsqueletron.Porque` corregido en los dos idiomas).
 - `Downloads\KeepQA\REPASO-INTEGRAL-15SEP\REPASO-TMODLOADER.md` (repo aparte, KeepQA): informe
   completo en formato de 10 campos.
+
+## 15-sep-2026 (noche, más tarde) — `viewportAlto` real para `UIList` (KeepQA
+## `verificarBordeViewport.js`) + WS3 desplaza de verdad la rejilla de resultados y el árbol de
+## carpetas de la Librería
+
+Encargo de KeepQA (repo hermano): cerrar el hueco de cobertura que la pieza nueva
+`verificarBordeViewport.js` (nacida esa misma noche, motivada por un bug real de StarvekeepMod)
+dejó escrito con honestidad al nacer - "tampoco se ha cableado en TerrakeepMod todavía, revisar
+primero el código real de `UIList`".
+
+**Investigado el código real antes de tocar nada** (decompilado, nunca supuesto):
+`Downloads\tModLoader-Decompiled\tModLoader\Terraria\GameContent\UI\Elements\UIList.cs` - `UIList`
+tiene `OverflowHidden=true` de fábrica y envuelve sus filas reales en un `UIInnerList` PRIVADO del
+motor (`internal UIElement _innerList`, único hijo real de `UIList.Children`) cuyo único trabajo es
+mover su propio `Top` según `UIScrollbar.GetValue()` en `DrawSelf` - no es un nivel semántico del
+árbol. El campo público real que expone las filas de verdad es `UIList._items` (`public
+List<UIElement> _items`).
+
+**Extractor** (`UI\Panel\PanelTerrakeepState.cs`): `VolcarGeometriaJson` ahora rellena
+`viewportAlto = UIList.GetInnerDimensions().Height` para cualquier `UIList` del árbol (ningún
+`UIList` real del mod lleva padding propio, verificado por grep - `GetInnerDimensions()` coincide
+en tamaño con `GetDimensions()`, así que el campo es exacto). `VolcarHijosRecursivo` ahora
+detecta un `UIList` y, en vez de descender por su `_innerList` interno, recorre
+`UIList._items` directamente (`VolcarFilasUIList`, método nuevo) con `padre_id` apuntando al
+propio `UIList` - y filtra solo las filas cuyo rectángulo intersecta con el viewport real (mismo
+chequeo AABB que hace `UIInnerList.DrawChildren` del motor para decidir qué pintar de verdad).
+
+**Arnés** (`Common\Libreria\AutopruebaLibreria.cs`, WS3, pasos 24/25 nuevos): búsqueda amplia
+("es", 478 objetos casan, 100 mostrados - tope real) y desplazamiento de verdad
+(`UIList.ViewPosition = float.MaxValue`, vía el helper nuevo
+`ContenidoLibreria.DesplazarResultadosAlFinalParaQA`) tanto de la rejilla de resultados como del
+árbol de carpetas de primer nivel, antes de volcar geometría (`geometria-viewport-libreria.json`)
+y capturar (`ws3-viewport-libreria-final.png`).
+
+**Verificación real, con un bug de ARNÉS (no de UI) cazado y corregido por el camino**: la primera
+pasada (solo la rejilla de resultados desplazada) dio `hueco=-30px, DESBORDA` en el árbol de
+carpetas - la captura real mostró que las 10 carpetas raíz de verdad no caben en su columna sin
+scroll (la 10ª, "tModLoader (mod)", queda fuera; hay scrollbar visible para eso) y esa lista
+sencillamente NO se había desplazado todavía en esta autoprueba - la precondición que
+`verificarBordeViewport.js` exige (volcado con la lista YA al final) no se cumplía, así que el
+"desborda" no era un bug de la UI real. Corregido desplazando también el árbol de carpetas;
+revalidado con el juego real: `hueco=+4px` (árbol) y `hueco=+2px` (rejilla), los dos "apropiado",
+`RESULTADO: OK` - confirmado con captura real (la 10ª carpeta ya visible, con aire real antes del
+borde).
+
+**Estado final**: sin bug de UI real en TerrakeepMod esta ronda (esperable, el motor no se había
+tocado desde la ronda anterior de esa misma noche) - la pieza queda construida y verificada contra
+dos casos reales positivos (ninguno sintético). `TModLoaderMod` (el trainer) revisado y confirmado
+SIN ningún widget con scroll real (grep de `UIScrollbar`/`ViewPosition`/`OverflowHidden`: 0
+resultados en todo el mod) - documentado como "no aplica" en vez de forzar un caso sintético.
+
+### Archivos tocados
+- `UI\Panel\PanelTerrakeepState.cs` (extractor: `viewportAlto`, `VolcarFilasUIList`).
+- `UI\Libreria\ContenidoLibreria.cs` (`DesplazarResultadosAlFinalParaQA`, nuevo).
+- `Common\Libreria\AutopruebaLibreria.cs` (pasos 24/25, WS3).
+- `evidencia\ws3-libreria.log.txt` (evidencia real de la corrida final).
+- Detalle completo (incluido el falso "desborda" del arnés y su corrección) en
+  `Downloads\KeepQA\bitacora.md` y `Downloads\KeepQA\PATRONES.md`.
+- Commit local: `f1cfbb8`.
