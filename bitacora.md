@@ -7919,3 +7919,60 @@ Detalle completo de la investigación y de las herramientas nuevas en `Downloads
   Supreme Calamitas. Las 6 corregidas en `Localizations-ES_Mods.TerrakeepMod.hjson` (solo texto,
   ninguna clave ni estructura tocada) y reverificadas: la herramienta ya no las encuentra.
 - Commit local en este repo con las 6 correcciones de texto.
+
+
+## 16-sep-2026 - Un solo cerebro de Guia (T1): EvaluadorGuia.cs pasa a llamar a Terrakeep.Core
+
+Encargo de I+D (I+D-PROXIMOS-PASOS-FAMILIA-KEEP.md, recomendacion T1/hallazgo H3): dos
+evaluadores de Guia independientes (aqui y en Terrakeep.Core/Guia/GuideEvaluator.cs) con las
+mismas funciones (Fraccion, Contar, Preparacion, PasoCompletado, el despacho de requisitos)
+escritas dos veces y sincronizadas solo de memoria - el mismo problema que el lado DST ya resolvio
+ejecutando el Lua real del mod en vez de reimplementar la logica en C#. Aqui no hay nada que
+interpretar, asi que la forma real es un unico motor compartido detras de una interfaz pequena de
+"fuente de estado", tal como propuso el propio documento.
+
+**Diseno.** Nuevo en Terrakeep.Core.Guia (repo hermano Terrasavr-Native): IGuideStateProvider (la
+fuente de estado: capacidades Has* + los datos/consultas que el despacho necesita),
+GuideEvaluationEngine (el despacho + la aritmetica, MOVIDOS aqui tal cual, una sola vez) y
+DesktopGuideStateProvider (la mitad de escritorio, con la misma logica que antes tenia
+GuideEvaluator.cs como metodos privados). GuideEvaluator.cs queda como adaptador con su API
+publica intacta (cero cambios en GuideViewModel.cs de Terrakeep).
+
+En este mod: ProveedorEstadoGuiaMod.cs nuevo implementa IGuideStateProvider leyendo el juego en
+vivo via EstadoJugadorGuia/BanderasGuia (sus cuatro capacidades son siempre true:
+EstadoJugadorGuia ya se degrada sola a ceros/false sin partida activa, igual que antes).
+EvaluadorGuia.cs pasa a ser una fachada que reenvia a GuideEvaluationEngine - StatsDeJefe,
+NombreDeObjeto, NombreDeNpc se quedan tal cual (nunca fueron aritmetica duplicada: Terrakeep.Core
+no puede escalar stats de un NPC sin el motor cargado). El modelo (TipoRequisito/RequisitoGuia/
+PasoGuia/TramoGuia/AmbitoGuia/CapaMundo/ResultadoRequisito) pasa a ser el mismo tipo que ya usaba
+Terrakeep.Core via alias de tipo GLOBALES en ModeloGuia.cs (C# 10+, LangVersion=12.0 ya fijado en
+el .csproj) - asi CatalogoGuia.cs y casi todo el resto del mod no cambian ni una linea. Lo unico
+que si cambio: los sitios que leian texto YA RESUELTO (paso.Titulo, tramo.Nombre, estado.Linea...)
+- Core no puede tener eso (no conoce idioma), asi que ahora son metodos de extension en
+TextosGuiaMod.cs nuevo (mismo nombre, con parentesis) en EstadoGuia.cs, EstadoCompletitud.cs,
+HitosSystem.cs, ContenidoGuia.cs, FilaRequisitoTk.cs y AutopruebaGuia.cs.
+
+**Verificacion real, sin atajos.** scriptsctualizar-core.ps1 (Core recompilado, DLL copiado a
+lib\) -> dotnet build -p:BuildMod=false en verde -> scriptserificar-guia.ps1 -Calamity
+completo: compilo con el Roslyn real de tModLoader (0 errores, solo los CS1701 benignos de
+siempre), empaqueto el .tmod, lanzo el cliente real y recorrio EN VIVO los 46 tramos (21 de
+vanilla + 25 de Calamity) -> AUTOPRUEBA GUIA COMPLETA, avisos de datos: 0, 0 comprobaciones en
+rojo, capturas reales de cada tramo (evidencia\guia-calamity.log.txt). Mismo comportamiento
+exacto que antes del refactor - esto es arquitectura, no un cambio de que dice la Guia.
+scripts\compilar.ps1 despues, para dejar el .tmod real recompilado en la carpeta Mods de verdad
+(632971 bytes).
+
+### Archivos tocados
+
+- Common/Guia/EvaluadorGuia.cs: pierde el despacho/aritmetica duplicados, pasa a ser fachada +
+  StatsDeJefe/NombreDeObjeto/NombreDeNpc (sin tocar).
+- Common/Guia/ModeloGuia.cs: de definir sus propios tipos a alias de tipo globales hacia
+  Terrakeep.Core.Guia.
+- Common/Guia/ProveedorEstadoGuiaMod.cs (nuevo): IGuideStateProvider sobre el juego en vivo.
+- Common/Guia/TextosGuiaMod.cs (nuevo): Titulo()/Porque()/Como()/ZonaLegible() (en PasoGuia),
+  Nombre()/Resumen() (en TramoGuia), Linea() (en ResultadoRequisito).
+- Common/Guia/EstadoGuia.cs, Common/Completitud/EstadoCompletitud.cs, Common/Hitos/HitosSystem.cs,
+  UI/Guia/ContenidoGuia.cs, UI/Guia/FilaRequisitoTk.cs, Common/Guia/AutopruebaGuia.cs: llamadas a
+  texto ya resuelto, con parentesis nuevos.
+- lib/Terrakeep.Core.dll actualizado con el commit hermano de Terrasavr-Native.
+- evidencia/guia-calamity.log.txt, .tmod real recompilado.
