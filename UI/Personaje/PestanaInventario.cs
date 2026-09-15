@@ -58,9 +58,23 @@ namespace TerrakeepMod.UI.Personaje
 			RejillaSlots.Rejilla(this, inventario, PersonajeVivo.PrimerSlotMunicion, 4,
 				ItemSlot.Context.InventoryAmmo, 4, Escala, derecha, 24f + paso + 36f);
 
+			// Bug real reportado por el usuario con captura de su partida (16-sep-2026): esta nota
+			// tenia una caja de 900px de ancho desde x=0, y el mini-panel "Editar objeto" de la
+			// derecha (PanelHerramientasLibreriaTk, x >= `derecha`, 156px de alto) empieza MAS
+			// ARRIBA de la nota (arribaOcupacion + 34 = 2*paso + 104 = ~202px) y termina por debajo
+			// de ella (~358px, con la nota en ~278-298px): el texto real (~100 caracteres a 0.75,
+			// bastante mas ancho que los ~518px libres a la izquierda del panel) cruzaba por encima
+			// de la fila "cantidad / Aplicar" del editor. La autoprueba de espaciado no lo cazo
+			// porque solo comparaba texto contra texto HERMANO (mismo padre directo), y el panel de
+			// herramientas es un contenedor sin texto propio - ver AuditarArbol, regla 3 nueva.
+			// Arreglo: la nota se limita al hueco real que queda a la izquierda del panel y se parte
+			// en las lineas que hagan falta con la fuente REAL (mismo patron que PestanaMundo.
+			// RecalcularAviso), en vez de recortarla o moverla debajo del panel (a 800x720 ya no
+			// cabria ahi). Debajo de la mochila no hay nada mas, asi que dos o tres lineas caben.
+			float anchoNota = derecha - 12f;
 			EtiquetaTk ayuda = new EtiquetaTk(
-				() => Idiomas.Texto("Personaje.Inventario.Nota"),
-				0.75f, 900f, 20f);
+				() => EtiquetaTk.PartirEnLineas(Idiomas.Texto("Personaje.Inventario.Nota"), anchoNota, 0.75f),
+				0.75f, anchoNota, 60f);
 			ayuda.ColorTexto = EstiloTk.TextoSuave;
 			ayuda.Left.Set(0f, 0f);
 			ayuda.Top.Set(24f + 5f * paso + 10f, 0f);

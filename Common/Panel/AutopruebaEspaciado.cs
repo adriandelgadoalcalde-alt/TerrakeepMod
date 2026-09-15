@@ -913,13 +913,92 @@ namespace TerrakeepMod.Common.Panel
 				}
 			}
 
+			// --- Regla 3 (16-sep-2026): texto contra BLOQUE hermano que contiene texto ---------
+			// Bug real que las dos reglas de arriba dejaron pasar hasta que el usuario lo vio en su
+			// propia partida: la nota de ayuda de Personaje/Inventario cruzaba por encima del
+			// mini-panel "Editar objeto". La regla 2 solo compara textos que comparten el MISMO padre
+			// directo, y ese mini-panel es un contenedor (PanelHerramientasLibreriaTk) sin texto
+			// propio: ni el contenedor entraba en `medibles`, ni sus etiquetas internas ("Editar
+			// objeto", "Cantidad", "Aplicar"...) eran hermanas de la nota - el par nunca se comparaba,
+			// por construccion. Es una clase entera de bug, no un caso suelto: cualquier texto que
+			// invada un panel vecino con contenido queda invisible para una comparacion que solo mira
+			// hermanos directos. Aqui, para cada texto medible M, se miran los hermanos de M que NO
+			// son medibles pero que contienen al menos un texto medible en su subarbol (un bloque con
+			// contenido real, no un fondo decorativo sin texto - ese filtro es lo que evita el falso
+			// positivo de "etiqueta sobre su propio fondo"), y se compara la caja de M contra la caja
+			// del bloque entero Y contra cada texto de dentro. Un solape con el bloque ya cuenta como
+			// fallo aunque no toque letra: es exactamente lo que el jugador ve como "se solapa".
+			var esMedible = new HashSet<UIElement>();
+			foreach (var m in medibles) {
+				esMedible.Add(m.Elemento);
+			}
+			var mediblesDentroDe = new Dictionary<UIElement, List<(UIElement Elemento, string Texto)>>();
+			foreach (var m in medibles) {
+				UIElement ancestro = m.Elemento.Parent;
+				while (ancestro != null && ancestro != raiz) {
+					List<(UIElement Elemento, string Texto)> lista;
+					if (!mediblesDentroDe.TryGetValue(ancestro, out lista)) {
+						lista = new List<(UIElement, string)>();
+						mediblesDentroDe[ancestro] = lista;
+					}
+					lista.Add((m.Elemento, m.Texto));
+					ancestro = ancestro.Parent;
+				}
+			}
+
+			int fallosBloque = 0;
+			foreach (var m in medibles) {
+				UIElement padre = m.Elemento.Parent;
+				if (padre == null) {
+					continue;
+				}
+				CalculatedStyle a = m.Elemento.GetDimensions();
+				if (a.Width <= 0f || a.Height <= 0f) {
+					continue;
+				}
+				foreach (UIElement hermano in padre.Children) {
+					if (hermano == m.Elemento || esMedible.Contains(hermano)) {
+						continue;
+					}
+					List<(UIElement Elemento, string Texto)> dentro;
+					if (!mediblesDentroDe.TryGetValue(hermano, out dentro) || dentro.Count == 0) {
+						continue; // hermano sin texto dentro: fondo/decoracion/slots, no un bloque con contenido
+					}
+					CalculatedStyle b = hermano.GetDimensions();
+					if (b.Width <= 0f || b.Height <= 0f || !SeSolapan(a, b)) {
+						continue;
+					}
+					fallosBloque++;
+					string pisados = "";
+					foreach (var d in dentro) {
+						CalculatedStyle c = d.Elemento.GetDimensions();
+						if (c.Width > 0f && c.Height > 0f && SeSolapan(a, c)) {
+							pisados += (pisados.Length == 0 ? "" : ", ") + "\"" + d.Texto.Replace("\n", " | ") + "\"";
+						}
+					}
+					Registro.Linea("AUTOPRUEBA ESPACIADO/" + contexto + " - FALLO SOLAPE-BLOQUE: \"" +
+						m.Texto.Replace("\n", " | ") + "\" (x=" + (int)a.X + " y=" + (int)a.Y + " " + (int)a.Width + "x" +
+						(int)a.Height + ") invade el bloque hermano " + hermano.GetType().Name + " (x=" + (int)b.X +
+						" y=" + (int)b.Y + " " + (int)b.Width + "x" + (int)b.Height + ", " + dentro.Count +
+						" texto(s) dentro)" + (pisados.Length == 0 ? " sin llegar a pisar letra." : ", pisando: " + pisados + "."));
+				}
+			}
+
 			Registro.Linea("AUTOPRUEBA ESPACIADO/" + contexto + " - " + medibles.Count +
 				" elemento(s) con texto medido(s) -> " +
-				(fallosDesborde + fallosSolape == 0
+				(fallosDesborde + fallosSolape + fallosBloque == 0
 					? "OK, nada desborda ni se solapa"
-					: (fallosDesborde + " desborde(s), " + fallosSolape + " solape(s)")) + ".");
+					: (fallosDesborde + " desborde(s), " + fallosSolape + " solape(s), " + fallosBloque + " solape(s) de bloque")) + ".");
 
-			return fallosDesborde + fallosSolape;
+			return fallosDesborde + fallosSolape + fallosBloque;
+		}
+
+		/// <summary>Mismo criterio de solape que la regla 2 (medio pixel de tolerancia por los
+		/// redondeos del motor), sacado a un metodo para que las reglas 2 y 3 no puedan divergir.</summary>
+		private static bool SeSolapan(CalculatedStyle a, CalculatedStyle b)
+		{
+			return a.X < b.X + b.Width - 0.5f && a.X + a.Width - 0.5f > b.X &&
+				a.Y < b.Y + b.Height - 0.5f && a.Y + a.Height - 0.5f > b.Y;
 		}
 
 		private static void Terminar()
