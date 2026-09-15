@@ -7896,3 +7896,26 @@ mano.
 - `scripts\verificar-guia.ps1` (`SegundosEspera` por defecto, 300 → 600).
 - `evidencia\guia-calamity.log.txt` (log real de la corrida final, limpia).
 - `.tmod` recompilado hacia la carpeta `Mods` real del usuario (612608 bytes).
+
+## 15-sep-2026 - Verificación de calidad del español con la maquinaria de Starvekeep-Traduccion-ES (TR1)
+
+Encargo de I+D (`KeepQA4\I+D-PROXIMOS-PASOS-FAMILIA-KEEP.md`, TR1): comprobar si la maquinaria
+de corpus de Starvekeep-Traduccion-ES sirve para verificar la calidad del español ya escrito en
+`Localization\{es-ES,en-US}_Mods.TerrakeepMod.hjson`, tras la reescritura de tono de esta noche.
+Detalle completo de la investigación y de las herramientas nuevas en `Downloads\KeepQAitacora.md`
+(entrada de la misma fecha). Resumen para esta bitácora:
+
+- Primera ejecución real de `KeepQA\src\localizacion\comprobarLocalizacion.js` contra los dos
+  `.hjson` (existía desde antes, nunca se había invocado): 1109 claves es / 1110 en, **1 huérfana
+  real** - `Keybinds/AbrirAlbum.DisplayName` está comentada en es-ES y su valor en en-US quedó sin
+  traducir ("Abrir Album" en el fichero inglés). NO se ha tocado ese bloque (está comentado a
+  propósito y no está claro si el keybind está cableado a código) - queda pendiente de una
+  decisión del usuario, no es un arreglo de texto.
+- Herramienta nueva `KeepQA\src\corpusuditarCalidadEs.js` (anglicismos, latinoamericanismos,
+  ortografía por patrones) encontró **6 tildes reales** que faltaban en el texto de Guía
+  reescrito esta noche: "mucho mas" → "mucho más" (x4, tramos de Calamitas Clone,
+  Dreadnautilus/Horrible Hog, lluvia ácida y Supreme Calamitas), "sólo" con tilde obsoleta → "solo"
+  (x2, Moon Lord y El Ojo - norma RAE 2010), y de paso "actua" → "actúa" en el mismo tramo de
+  Supreme Calamitas. Las 6 corregidas en `Localizations-ES_Mods.TerrakeepMod.hjson` (solo texto,
+  ninguna clave ni estructura tocada) y reverificadas: la herramienta ya no las encuentra.
+- Commit local en este repo con las 6 correcciones de texto.

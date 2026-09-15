@@ -1029,7 +1029,7 @@ Guia: {
 
 		MoonLord: {
 			Nombre: El Señor de la Luna
-			Resumen: El final: 50000 de vida sólo el núcleo, y 70 de defensa.
+			Resumen: El final: 50000 de vida solo el núcleo, y 70 de defensa.
 		}
 
 		DesertScourge: {
@@ -1059,7 +1059,7 @@ Guia: {
 
 		DreadnautilusYHorribleHog: {
 			Nombre: Dreadnautilus y Horrible Hog (opcional, Calamity)
-			Resumen: Dos rarezas exclusivas de la Luna de Sangre: un BloodNautilus reescrito por Calamity y un cerdo salvaje mucho mas duro de lo normal.
+			Resumen: Dos rarezas exclusivas de la Luna de Sangre: un BloodNautilus reescrito por Calamity y un cerdo salvaje mucho más duro de lo normal.
 		}
 
 		Cryogen: {
@@ -1089,7 +1089,7 @@ Guia: {
 
 		CalamitasClone: {
 			Nombre: Calamitas Clone (opcional, Calamity)
-			Resumen: 30000-46875 de vida, en cualquier sitio. Del nivel de Plantera; no confundir con Supreme Calamitas, mucho mas adelante.
+			Resumen: 30000-46875 de vida, en cualquier sitio. Del nivel de Plantera; no confundir con Supreme Calamitas, mucho más adelante.
 		}
 
 		GreatSandShark: {
@@ -1191,7 +1191,7 @@ Guia: {
 
 		InvocarElOjo: {
 			Titulo: Llamarlo tú, en vez de esperarlo
-			Porque: Cumpliendo todo lo anterior, el Ojo puede aparecer solo al caer la noche, pero sólo una de cada tres noches: puedes pasarte varias noches preparado y sin que llegue. El Vidente Sospechoso lo llama cuando tú quieras, que es lo que te deja elegir el momento en vez de que te pille a medias.
+			Porque: Cumpliendo todo lo anterior, el Ojo puede aparecer solo al caer la noche, pero solo una de cada tres noches: puedes pasarte varias noches preparado y sin que llegue. El Vidente Sospechoso lo llama cuando tú quieras, que es lo que te deja elegir el momento en vez de que te pille a medias.
 			Como: Seis lentes en un Altar Demoniaco o Carmesí. Las lentes las sueltan los ojos que vuelan de noche por la superficie, así que salen solas mientras preparas el resto.
 		}
 
@@ -1708,7 +1708,7 @@ Guia: {
 		VencerALluviaAcida3: {
 			Titulo: Derrotar a cualquiera de los dos (opcional)
 			Porque: Ninguno de los dos bloquea nada obligatorio: son los minibosses que trae la fase final de la Lluvia Ácida, del mismo calibre que Old Duke y el Devourer of Gods.
-			Como: Los dos son mucho mas rapidos y agresivos que Cragmaw Mire: mantener movilidad constante importa mas que buscar el hueco perfecto.
+			Como: Los dos son mucho más rápidos y agresivos que Cragmaw Mire: mantener movilidad constante importa más que buscar el hueco perfecto.
 		}
 
 		PrepararAstrumDeus: {
@@ -1845,7 +1845,7 @@ Guia: {
 
 		ArmaParaSupremeCalamitas: {
 			Titulo: El arma final de todo el arbol
-			Porque: Supreme Witch, Calamitas tiene 100 de defensa y 750000-1150000 de vida. La propia wiki la describe como que "actua actualmente como jefe final junto a los Exo Mechs" - distinta de Calamitas Clone (mucho mas temprana, nivel Plantera).
+			Porque: Supreme Witch, Calamitas tiene 100 de defensa y 750000-1150000 de vida. La propia wiki la describe como que "actúa actualmente como jefe final junto a los Exo Mechs" - distinta de Calamitas Clone (mucho más temprana, nivel Plantera).
 			Como: Las Cenizas de Calamidad se usan en el Altar de los Malditos para invocarla.
 		}
 
