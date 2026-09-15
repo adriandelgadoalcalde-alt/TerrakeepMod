@@ -15,8 +15,13 @@
 param(
 	[switch]$Calamity,
 	[switch]$SoloCompilar,
-	[int]$SegundosEspera = 300
+	[int]$SegundosEspera = 600
 )
+# SegundosEspera subido de 300 a 600 (15-sep-2026): con -Calamity, AutopruebaGuia ahora ademas
+# recorre EN VIVO los 25 tramos nuevos de Calamity (60 pasos, ~330 acciones a 14 fotogramas cada
+# una) despues del recorrido de vanilla - sigue terminando bastante antes del limite en la practica
+# (el bucle de espera corta en cuanto encuentra "AUTOPRUEBA GUIA COMPLETA"), pero el margen antiguo
+# se quedaba justo.
 
 $ErrorActionPreference = 'Stop'
 

@@ -95,6 +95,17 @@ namespace TerrakeepMod.Common.Guia
 		private static Vector2 _posicionOriginal;
 		private static readonly List<int> _npcsCreados = new List<int>();
 
+		// --- recorrido EN VIVO de los 25 tramos nuevos de Calamity (18 opcionales + 7 de la columna
+		// vertebral, 60 pasos), 15-sep-2026 (ronda de ampliacion del arnes): JefesOpcionalesTardios
+		// (Orden 75) es el UNICO tramo opcional de vanilla cuya bandera no tenia ya un campo
+		// "_xOriginal" mas arriba (downedFishron/downedEmpressOfLight) - los demas se reutilizan tal
+		// cual. Ver PrepararRecorridoCalamityCompleto/RestaurarRecorridoCalamityCompleto mas abajo.
+		private static bool _downedFishronOriginal;
+		private static bool _downedEmpressOfLightOriginal;
+		private static Queue<Action> _colaCalamity;
+		private static readonly List<TramoGuia> _tramosCalamityRecorridos = new List<TramoGuia>();
+		private static int _pasosCalamityComprobados;
+
 		/// <summary>Tipos de NPC del pueblo que ya vivian en el mundo de prueba y que la prueba
 		/// retira para partir de un estado conocido. Se vuelven a crear en <see cref="Restaurar"/>.</summary>
 		private static readonly List<int> _vecinosRetirados = new List<int>();
@@ -655,6 +666,24 @@ namespace TerrakeepMod.Common.Guia
 				case 248: ComprobarLosNueveOpcionalesNuevosDesaparecen(); break;
 				case 249: Capturar("guia-56-todos-los-opcionales-superados"); break;
 				case 250: RestaurarTodosLosOpcionalesRestantes(); break;
+
+				// --- recorrido EN VIVO de los 25 tramos nuevos de Calamity, uno a uno (15-sep-2026,
+				// ronda de ampliacion del arnes: hasta aqui, esos 25 tramos solo se neutralizaban a
+				// mano en Arrancar()/MarcarTorresDerrotadasDeMentira para no estorbar al resto de la
+				// prueba, sin comprobar ninguno de verdad - ver la bitacora de esa noche). Son
+				// demasiados (18 opcionales + 7 de la columna vertebral, 60 pasos) para repetir a mano
+				// el patron de un case por paso que usa el resto de este arnes sin que el archivo se
+				// vuelva inmanejable, asi que este bloque lo GENERA desde los propios datos de
+				// CatalogoGuia.Tramos: el mismo "arma primero, vencer despues" que ya siguen TODOS los
+				// pares de pasos reales del .json (confirmado leyendolos uno a uno antes de escribir
+				// esto), con las mismas comprobaciones (ComprobarPaso/ComprobarPasoOpcional segun el
+				// tramo sea vertebral u opcional, lectura de jefe, capturas) que ya usa el resto del
+				// arnes para sus propios tramos. Si algun paso no siguiera ese patron, se dice en el
+				// log en vez de fingir una comprobacion que no toca - ver EncolarTramoCalamity.
+				case 251: PrepararRecorridoCalamityCompleto(); break;
+				case 252: AvanzarRecorridoCalamityCompleto(); break;
+				case 253: ComprobarRecorridoCalamityCompletoTerminado(); break;
+				case 254: RestaurarRecorridoCalamityCompleto(); break;
 				default: Terminar(); break;
 			}
 		}
@@ -748,12 +777,16 @@ namespace TerrakeepMod.Common.Guia
 			// se escribio antes de que existiera el arbol de Calamity, y sin esto DesertScourge (el
 			// de menor Orden de TODOS los opcionales del juego, vanilla y Calamity) se colaria como
 			// "el opcional pendiente" delante de ReySlime en cuanto el mod detecta Calamity cargado.
-			// Se restauran al final, en RestaurarTramosNuevos, igual que los demas. No hay un bloque
-			// dedicado que recorra y comprueba cada tramo de Calamity uno a uno (a diferencia de los
-			// de vanilla): la cobertura EN VIVO de Calamity en esta sesion se limito a comprobar que
-			// el catalogo carga sin avisos y que sus jefes/objetos resuelven de verdad contra el mod
-			// instalado (ver bitacora.md, 15-sep-2026) - ampliar este arnes a un recorrido paso a
-			// paso de los 25 tramos nuevos queda pendiente.
+			// Se restauran al final, en RestaurarTramosNuevos, igual que los demas.
+			//
+			// El recorrido paso a paso de verdad de los 25 tramos nuevos (18 opcionales + 7 de la
+			// columna vertebral, 60 pasos) vive aparte, al FINAL de este arnes (cases 251-254:
+			// PrepararRecorridoCalamityCompleto/AvanzarRecorridoCalamityCompleto/
+			// ComprobarRecorridoCalamityCompletoTerminado/RestaurarRecorridoCalamityCompleto), despues
+			// de que el resto de la prueba (vanilla entera + el cierre de los nueve opcionales nuevos
+			// de esta sesion) haya devuelto el mundo a un estado limpio. Se generan desde los propios
+			// datos de CatalogoGuia.Tramos en vez de a mano, tramo por tramo: son demasiados para eso
+			// sin que este archivo se vuelva inmanejable.
 			if (CatalogoGuia.HayCalamity) {
 				foreach (string bandera in _banderasOpcionalesCalamity) {
 					BanderasGuia.IntentarEscribirBanderaCalamity(bandera, true);
@@ -2262,6 +2295,275 @@ namespace TerrakeepMod.Common.Guia
 				NPC.downedChristmasTree + ", downedChristmasSantank=" + NPC.downedChristmasSantank +
 				", downedChristmasIceQueen=" + NPC.downedChristmasIceQueen +
 				", downedDD2EventAnyDifficulty=" + Main.LocalPlayer.downedDD2EventAnyDifficulty + ".");
+		}
+
+		// -------------------------------------------------------------------------------------
+		// Recorrido EN VIVO de los 25 tramos nuevos de Calamity (18 opcionales + 7 vertebrales)
+		// -------------------------------------------------------------------------------------
+
+		/// <summary>
+		/// Deja el mundo de pruebas en el punto de partida que hace falta para recorrer los 25 tramos
+		/// nuevos de Calamity uno a uno: el camino obligatorio Y los doce tramos opcionales de vanilla,
+		/// TODOS superados a mano (para que ninguno se cuele por delante de Calamity por su Orden -
+		/// p.ej. ReySlime=5 cae entre DesertScourge=3 y GiantClam=4), y las 33 banderas propias de
+		/// Calamity (21 opcionales + 12 vertebrales) en false: exactamente donde ya las dejaron
+		/// <see cref="RestaurarTramosNuevos"/> (case125) y <see cref="RestaurarTodosLosOpcionalesRestantes"/>
+		/// (case250) sin que nada de este bloque las haya vuelto a tocar todavia. Encola despues, con
+		/// <see cref="EncolarTramoCalamity"/>, una accion por cada micro-paso de los 25 tramos.
+		/// </summary>
+		private static void PrepararRecorridoCalamityCompleto()
+		{
+			_colaCalamity = new Queue<Action>();
+			_tramosCalamityRecorridos.Clear();
+			_pasosCalamityComprobados = 0;
+
+			if (!CatalogoGuia.HayCalamity) {
+				RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - Calamity no esta cargado en " +
+					"esta corrida: se salta el recorrido paso a paso de sus 25 tramos nuevos (solo " +
+					"tiene sentido lanzado con verificar-guia.ps1 -Calamity).");
+				return;
+			}
+
+			NPC.downedBoss1 = true;
+			NPC.downedBoss2 = true;
+			NPC.downedBoss3 = true;
+			Main.hardMode = true;
+			NPC.downedMechBoss1 = true;
+			NPC.downedMechBossAny = true;
+			NPC.downedPlantBoss = true;
+			NPC.downedGolemBoss = true;
+			NPC.downedAncientCultist = true;
+			NPC.downedTowerSolar = true;
+			NPC.downedTowerVortex = true;
+			NPC.downedTowerNebula = true;
+			NPC.downedTowerStardust = true;
+			NPC.downedMoonlord = true;
+
+			_downedFishronOriginal = NPC.downedFishron;
+			_downedEmpressOfLightOriginal = NPC.downedEmpressOfLight;
+			NPC.downedSlimeKing = true;
+			NPC.downedDeerclops = true;
+			NPC.downedGoblins = true;
+			NPC.downedFrost = true;
+			NPC.downedPirates = true;
+			NPC.downedQueenBee = true;
+			NPC.downedQueenSlime = true;
+			NPC.downedMartians = true;
+			NPC.downedHalloweenTree = true;
+			NPC.downedHalloweenKing = true;
+			NPC.downedChristmasTree = true;
+			NPC.downedChristmasSantank = true;
+			NPC.downedChristmasIceQueen = true;
+			Main.LocalPlayer.downedDD2EventAnyDifficulty = true;
+			NPC.downedFishron = true;
+			NPC.downedEmpressOfLight = true;
+			Main.LocalPlayer.inventory[0] = new Item();
+
+			List<TramoGuia> tramos = CatalogoGuia.Tramos.FindAll(t => t.Ambito == AmbitoGuia.Calamity);
+			_tramosCalamityRecorridos.AddRange(tramos);
+
+			int totalPasos = 0;
+			for (int i = 0; i < tramos.Count; i++) {
+				totalPasos += tramos[i].Pasos.Count;
+				EncolarTramoCalamity(tramos[i]);
+			}
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - preparado el recorrido EN VIVO de " +
+				tramos.Count + " tramos nuevos de Calamity (" + totalPasos + " pasos): camino " +
+				"obligatorio de vanilla y los doce tramos opcionales de vanilla, todos superados a " +
+				"mano; las 33 banderas propias de Calamity, todas en false. Cola de acciones: " +
+				_colaCalamity.Count + ".");
+		}
+
+		/// <summary>
+		/// Encola las acciones de UN tramo de Calamity, procesando sus pasos DE DOS EN DOS: el par
+		/// real "arma" (<c>dano_arma</c> obligatorio) + "vencer" (<c>bandera</c> obligatoria) que
+		/// siguen sin excepcion los 60 pasos de los 25 tramos nuevos (comprobado leyendo
+		/// <c>Assets/guia_progresion.json</c> entero antes de escribir esto, no de memoria) - el mismo
+		/// patron que ya prueba a mano cada bloque "ArmaParaX"/"VencerAX" de vanilla mas arriba. Un
+		/// tramo con mas de un par (la columna vertebral: el trio, ProfanedGuardians+Providence,
+		/// OldDuke+DoG, ExoMechs+SupremeCalamitas) encola varios pares seguidos, uno detras de otro.
+		/// </summary>
+		private static void EncolarTramoCalamity(TramoGuia tramo)
+		{
+			for (int j = 0; j + 1 < tramo.Pasos.Count; j += 2) {
+				PasoGuia pasoArma = tramo.Pasos[j];
+				PasoGuia pasoVencer = tramo.Pasos[j + 1];
+				RequisitoGuia reqArma = pasoArma.Requisitos.Find(r => !r.Recomendado);
+				RequisitoGuia reqVencer = pasoVencer.Requisitos.Find(r => !r.Recomendado);
+
+				if (reqArma == null || reqArma.Tipo != TipoRequisito.DanoArma ||
+					reqVencer == null || reqVencer.Tipo != TipoRequisito.Bandera) {
+					_colaCalamity.Enqueue(() => RegistroGuia.Aviso(Terrakeep.LogTag +
+						" AUTOPRUEBA GUIA - el par de pasos \"" + pasoArma.Clave + "\"/\"" +
+						pasoVencer.Clave + "\" (tramo " + tramo.Clave + ") no sigue el patron " +
+						"arma+vencer que espera el recorrido generico: se salta, revisar a mano."));
+					continue;
+				}
+
+				TramoGuia t = tramo;
+				int danoPedido = reqArma.Valor;
+				string bandera = reqVencer.Bandera;
+				int jefe = pasoVencer.Jefe != 0 ? pasoVencer.Jefe : t.JefeFinal;
+
+				_colaCalamity.Enqueue(() => ComprobarPasoDelTramoCalamity(t, pasoArma));
+				_colaCalamity.Enqueue(() => Capturar("guia-calamity-" + t.Clave + "-" + pasoArma.Clave));
+				_colaCalamity.Enqueue(() => PonerArmaConDano(danoPedido));
+				_colaCalamity.Enqueue(() => VolcarEstadoDelJugador("contra " + t.Nombre));
+				_colaCalamity.Enqueue(() => ComprobarPasoDelTramoCalamity(t, pasoVencer));
+				if (jefe > 0) {
+					_colaCalamity.Enqueue(() => ComprobarLecturaDeJefeGenerica(jefe,
+						t.Clave + "/" + pasoVencer.Clave));
+				}
+				_colaCalamity.Enqueue(() => Capturar("guia-calamity-" + t.Clave + "-" + pasoVencer.Clave));
+				_colaCalamity.Enqueue(() => MarcarBanderaCalamityDeVerdad(bandera, t.Clave, pasoVencer.Clave));
+				_colaCalamity.Enqueue(() => QuitarArmaDeLaMochila());
+				_colaCalamity.Enqueue(() => { _pasosCalamityComprobados += 2; });
+			}
+		}
+
+		/// <summary>Igual que <see cref="ComprobarPaso"/>/<see cref="ComprobarPasoOpcional"/>, pero
+		/// eligiendo cual de las dos llamar segun si el tramo es de la columna vertebral (obligatorio,
+		/// <see cref="TramoGuia.Opcional"/>=false) o uno de los 18 opcionales.</summary>
+		private static void ComprobarPasoDelTramoCalamity(TramoGuia tramo, PasoGuia pasoEsperado)
+		{
+			if (tramo.Opcional) {
+				ComprobarPasoOpcional(tramo.Clave, pasoEsperado.Clave,
+					"recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional " +
+					tramo.Clave + ", Orden " + tramo.Orden + ")");
+			}
+			else {
+				ComprobarPaso(pasoEsperado.Clave,
+					"recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral " +
+					tramo.Clave + ", Orden " + tramo.Orden + ")");
+			}
+		}
+
+		/// <summary>Igual que <see cref="ComprobarLecturaDeJefeDelTramoActual"/>/
+		/// <see cref="ComprobarLecturaDeJefeOpcional"/>, pero con el tipo de NPC ya resuelto a mano
+		/// (sirve para los tramos vertebrales, que <see cref="ComprobarLecturaDeJefeOpcional"/> no
+		/// sabria leer porque solo mira <see cref="EstadoGuia.PasoOpcionalActual"/>).</summary>
+		private static void ComprobarLecturaDeJefeGenerica(int tipoJefe, string etiqueta)
+		{
+			int vida, dano, defensa;
+			bool ok = EvaluadorGuia.StatsDeJefe(tipoJefe, out vida, out dano, out defensa);
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - stats REALES de \"" + etiqueta +
+				"\" en esta partida (ContentSamples + NPC.ScaleStats con Main.GameModeInfo): tipo=" +
+				tipoJefe + " (\"" + EvaluadorGuia.NombreDeNpc(tipoJefe) + "\"), resuelto=" + ok +
+				", vida=" + vida + ", defensa=" + defensa + ", daño=" + dano + ". Modo de esta " +
+				"partida: " + EstadoGuia.MundoActualModo() + ".");
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - lectura que ve el jugador:\n" +
+				EstadoGuia.LecturaDeJefe(tipoJefe));
+		}
+
+		/// <summary>Escribe DE VERDAD (por reflexion, via <see cref="BanderasGuia.IntentarEscribirBanderaCalamity"/>)
+		/// la bandera real que cierra un paso "VencerAX" de Calamity, sin pelear al jefe.</summary>
+		private static void MarcarBanderaCalamityDeVerdad(string bandera, string tramoClave, string pasoClave)
+		{
+			bool escrita = BanderasGuia.IntentarEscribirBanderaCalamity(bandera, true);
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - " + tramoClave + "/" + pasoClave +
+				": bandera real \"" + bandera + "\" puesta a true por reflexion contra " +
+				"CalamityMod.DownedBossSystem (" +
+				(escrita ? "escrita -> OK" : "NO SE PUDO ESCRIBIR -> revisar") +
+				"). Valor que lee ahora la guia: " + BanderasGuia.Valor(bandera) + ".");
+		}
+
+		/// <summary>Ejecuta UNA accion de la cola por fotograma (misma granularidad que el resto del
+		/// arnes) hasta vaciarla, reutilizando <c>_repetir</c> para que <see cref="Paso"/> vuelva a
+		/// llamar a este mismo case en el siguiente fotograma en vez de avanzar.</summary>
+		private static void AvanzarRecorridoCalamityCompleto()
+		{
+			if (_colaCalamity == null || _colaCalamity.Count == 0) {
+				return;
+			}
+
+			Action accion = _colaCalamity.Dequeue();
+			accion();
+
+			if (_colaCalamity.Count > 0) {
+				_repetir = true;
+			}
+		}
+
+		/// <summary>Cierre del recorrido: la cola tiene que haberse vaciado y, con los 25 tramos
+		/// nuevos de Calamity superados de verdad y el camino obligatorio+opcional de vanilla
+		/// superado a mano, no debe quedar NINGUN objetivo obligatorio pendiente.</summary>
+		private static void ComprobarRecorridoCalamityCompletoTerminado()
+		{
+			if (!CatalogoGuia.HayCalamity) {
+				return;
+			}
+
+			bool colaVacia = _colaCalamity == null || _colaCalamity.Count == 0;
+			PasoGuia pendienteObligatorio = EstadoGuia.PasoActual();
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - recorrido de los " +
+				_tramosCalamityRecorridos.Count + " tramos nuevos de Calamity terminado: " +
+				_pasosCalamityComprobados + " pasos comprobados, cola vacia=" + colaVacia +
+				", objetivo obligatorio restante=" +
+				(pendienteObligatorio != null ? pendienteObligatorio.Clave : "(ninguno)") + " " +
+				(colaVacia && pendienteObligatorio == null
+					? "-> OK: los 25 tramos nuevos de Calamity quedan superados de verdad."
+					: "-> NO CUADRA."));
+		}
+
+		/// <summary>Devuelve TODO lo que ha tocado el recorrido completo de Calamity a su valor
+		/// ORIGINAL: las 33 banderas propias del mod y los veintiun flags de vanilla que
+		/// <see cref="PrepararRecorridoCalamityCompleto"/> forzo a true para poder aislar el
+		/// recorrido.</summary>
+		private static void RestaurarRecorridoCalamityCompleto()
+		{
+			if (!CatalogoGuia.HayCalamity) {
+				return;
+			}
+
+			foreach (string bandera in _banderasOpcionalesCalamity) {
+				BanderasGuia.IntentarEscribirBanderaCalamity(bandera, false);
+			}
+			foreach (string bandera in _banderasObligatoriasCalamity) {
+				BanderasGuia.IntentarEscribirBanderaCalamity(bandera, false);
+			}
+
+			NPC.downedBoss1 = _downedBoss1Original;
+			NPC.downedBoss2 = _downedBoss2Original;
+			NPC.downedBoss3 = _downedBoss3Original;
+			Main.hardMode = _hardModeOriginal;
+			NPC.downedMechBoss1 = _downedMechBoss1Original;
+			NPC.downedMechBossAny = _downedMechBossAnyOriginal;
+			NPC.downedPlantBoss = _downedPlantBossOriginal;
+			NPC.downedGolemBoss = _downedGolemBossOriginal;
+			NPC.downedAncientCultist = _downedAncientCultistOriginal;
+			NPC.downedTowerSolar = _downedTowerSolarOriginal;
+			NPC.downedTowerVortex = _downedTowerVortexOriginal;
+			NPC.downedTowerNebula = _downedTowerNebulaOriginal;
+			NPC.downedTowerStardust = _downedTowerStardustOriginal;
+			NPC.downedMoonlord = _downedMoonlordOriginal;
+
+			NPC.downedSlimeKing = _downedSlimeKingOriginal;
+			NPC.downedDeerclops = _downedDeerclopsOriginal;
+			NPC.downedGoblins = _downedGoblinsOriginal;
+			NPC.downedFrost = _downedFrostOriginal;
+			NPC.downedPirates = _downedPiratasOriginal;
+			NPC.downedQueenBee = _downedQueenBeeOriginal;
+			NPC.downedQueenSlime = _downedQueenSlimeOriginal;
+			NPC.downedMartians = _downedMartiansOriginal;
+			NPC.downedHalloweenTree = _downedHalloweenTreeOriginal;
+			NPC.downedHalloweenKing = _downedHalloweenKingOriginal;
+			NPC.downedChristmasTree = _downedChristmasTreeOriginal;
+			NPC.downedChristmasSantank = _downedChristmasSantankOriginal;
+			NPC.downedChristmasIceQueen = _downedChristmasIceQueenOriginal;
+			Main.LocalPlayer.downedDD2EventAnyDifficulty = _downedDD2Original;
+			NPC.downedFishron = _downedFishronOriginal;
+			NPC.downedEmpressOfLight = _downedEmpressOfLightOriginal;
+
+			Main.LocalPlayer.inventory[0] = new Item();
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - restaurado tras el recorrido " +
+				"completo de Calamity: las 33 banderas propias del mod (21 opcionales + 12 " +
+				"vertebrales) y los veintiun flags de vanilla que este bloque forzo a true, todos " +
+				"devueltos a su valor ORIGINAL.");
 		}
 
 		private static void Restaurar()

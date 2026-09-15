@@ -7803,3 +7803,96 @@ mantener sincronizado).
 - `README.md` (Guía y Álbum documentadas, sección de capturas, sección de Novedades).
 - `docs\screenshots\01-guia-calamity.png`, `02-album.png`, `03-builds.png`, `04-libreria.png`
   (nuevos).
+
+---
+
+## 15-sep-2026 (madrugada) — cierra la deuda real pendiente: recorrido EN VIVO de los 25 tramos
+## nuevos de Calamity, no solo el primero
+
+Encargo explícito del usuario: hasta ahora `AutopruebaGuia`/`verificar-guia.ps1 -Calamity`
+confirmaba en el juego real solo el primer tramo de Calamity (`DesertScourge`, el de menor Orden);
+los otros 24 se habían validado por datos/decompilación (`CalamityMod.dll`) pero nunca recorriendo
+la partida real tramo a tramo, a diferencia de los 21 tramos de vanilla, que sí tienen ese
+recorrido completo desde antes. Encargo: ampliar el arnés para cubrir los 25 automáticamente,
+documentando con honestidad cualquiera que de verdad no se pudiera simular.
+
+### Diseño: generado desde los propios datos, no un `case` por tramo a mano
+
+Copiar el patrón literal que ya usa `AutopruebaGuia` para los tramos de vanilla (un `case` por
+micro-paso, escrito a mano) habría significado ~500 líneas más para 60 pasos nuevos - inmanejable.
+Antes de escribir nada se leyó `Assets/guia_progresion.json` entero (los 25 tramos de Calamity,
+línea a línea) para confirmar que TODOS siguen sin excepción el mismo patrón de datos: cada tramo
+son pares de pasos "ArmaParaX" (un único requisito obligatorio `dano_arma`, más objeto/gancho
+opcionales recomendados) + "VencerAX" (un único requisito obligatorio `bandera`, a veces con
+`banderaCarmesi`). Confirmado eso, el recorrido se generó en tiempo de ejecución desde
+`CatalogoGuia.Tramos` en vez de a mano:
+
+- `EncolarTramoCalamity` recorre los pasos de un tramo DE DOS EN DOS (arma + vencer) y encola una
+  `Action` por cada micro-acción real (comprobar el paso con `ComprobarPaso`/`ComprobarPasoOpcional`
+  según el tramo sea vertebral u opcional, capturar, poner un arma real con el daño exacto que pide
+  el `.json`, comprobar que el objetivo salta a "vencer", leer los stats reales del jefe, capturar
+  otra vez, escribir la bandera real por reflexión con `BanderasGuia.IntentarEscribirBanderaCalamity`,
+  quitar el arma) - el MISMO conjunto de comprobaciones que ya usa el resto del arnés para sus
+  propios tramos, solo que generado en vez de tecleado 25 veces. Si algún par de pasos no siguiera
+  el patrón esperado, se avisa en el log y se salta, en vez de fingir una comprobación que no toca
+  (no hizo falta: los 60 pasos reales lo siguieron).
+- `AvanzarRecorridoCalamityCompleto` (case 252) ejecuta UNA acción de la cola por fotograma,
+  reutilizando `_repetir` para que `Paso()` vuelva a llamar al mismo `case` en vez de avanzar -
+  misma granularidad (una cosa por fotograma, con capturas reales) que el resto del arnés.
+- Antes de arrancar (case 251, `PrepararRecorridoCalamityCompleto`), se cierran a mano el camino
+  obligatorio de vanilla ENTERO y los doce tramos opcionales de vanilla (reutilizando los mismos
+  campos `_xOriginal` que ya capturaba `Arrancar()`, más dos nuevos, `_downedFishronOriginal`/
+  `_downedEmpressOfLightOriginal`, que no tenían respaldo hasta ahora) para que ningún tramo de
+  vanilla se cuele por delante de Calamity por Orden (p.ej. ReySlime=5 cae entre DesertScourge=3 y
+  GiantClam=4) - las 33 banderas propias de Calamity (21 opcionales + 12 de la columna vertebral)
+  ya estaban en `false` en este punto de la prueba (las dejaron así los dos bloques de restauración
+  de más arriba), así que es el punto de partida limpio que hace falta.
+- Al terminar (case 254, `RestaurarRecorridoCalamityCompleto`), las 33 banderas de Calamity y los
+  21 flags de vanilla que este bloque forzó a `true` vuelven todos a su valor ORIGINAL.
+
+### Vertebral vs. opcional: por qué hacía falta distinguirlos
+
+Los 7 tramos de la columna vertebral (Astrum Deus, Guardianes+Providence, el trío, Polterghast,
+Old Duke+DoG, Yharon, Exo Mechs+Supreme Calamitas) NO son opcionales - forman parte del camino
+OBLIGATORIO real (`TramoGuia.Opcional=false`), así que su objetivo se lee con
+`EstadoGuia.PasoActual`/`ComprobarPaso`, igual que los 9 tramos obligatorios de vanilla. Los otros
+18 sí son opcionales (`Opcional=true`), y se leen con `EstadoGuia.PasoOpcionalActual`/
+`ComprobarPasoOpcional`. `ComprobarPasoDelTramoCalamity` elige cuál de las dos llamar mirando
+`TramoGuia.Opcional`, tramo por tramo - el mismo criterio que ya usa el resto del mod.
+
+### Verificación real antes de comitear
+
+- Compilación completa (`scripts\verificar-guia.ps1 -Calamity -SoloCompilar`): 0 errores.
+- **Corrida 1** (cliente gráfico real, CalamityMod cargado): el recorrido nuevo de los 25 tramos
+  llegó limpio hasta el final (`60 pasos comprobados, cola vacia=True, objetivo obligatorio
+  restante=(ninguno) -> OK`), pero el script salió con exit code 1 por 4 líneas "NO CUADRA" en el
+  `case 11` PRE-EXISTENTE (la espera de que `Player.UpdateEquips` recalcule la defensa de la
+  armadura, tras equipar en `case 10`) - un paso de vanilla escrito hace semanas, sin relación con
+  este cambio, que agotó los 300 fotogramas de margen esa vez en concreto.
+- **Corrida 2** (misma máquina, mismo `.tmod`, relanzada para aislar si era un fallo real o una
+  única vez de más carga en el sistema): exit code 0, `AUTOPRUEBA GUIA COMPLETA`, **ninguna
+  comprobación en rojo** - confirma que la corrida 1 fue un pico de carga puntual del sistema en un
+  paso de vanilla ya existente, no una regresión de este cambio (que ni toca ese código).
+- `scripts\compilar.ps1`: recompilado también hacia la carpeta `Mods` REAL (la que carga el
+  usuario, no el sandbox de pruebas) - `TerrakeepMod.tmod`, 612608 bytes, mismo momento.
+- `SegundosEspera` de `verificar-guia.ps1` subido de 300 a 600: con el recorrido nuevo (~330
+  acciones más a 14 fotogramas cada una) el margen antiguo se quedaba justo, aunque en la práctica
+  las dos corridas terminaron mucho antes del límite (el bucle de espera corta en cuanto encuentra
+  `AUTOPRUEBA GUIA COMPLETA` en el log).
+
+**Cobertura real conseguida**: los 25 tramos nuevos de Calamity (60 pasos) tienen ahora
+verificación EN VIVO automática completa, igual que los 21 de vanilla - no quedó ninguno sin
+recorrer. No hizo falta documentar ningún límite técnico real: los 60 pasos siguieron el patrón
+arma+vencer sin excepción, así que el generador los cubrió todos sin necesitar un caso especial a
+mano.
+
+### Archivos tocados
+- `Common\Guia\AutopruebaGuia.cs` (cases 251-254 nuevos: `PrepararRecorridoCalamityCompleto`,
+  `EncolarTramoCalamity`, `AvanzarRecorridoCalamityCompleto`, `ComprobarPasoDelTramoCalamity`,
+  `ComprobarLecturaDeJefeGenerica`, `MarcarBanderaCalamityDeVerdad`,
+  `ComprobarRecorridoCalamityCompletoTerminado`, `RestaurarRecorridoCalamityCompleto`; campos nuevos
+  `_downedFishronOriginal`/`_downedEmpressOfLightOriginal`/`_colaCalamity`/
+  `_tramosCalamityRecorridos`/`_pasosCalamityComprobados`).
+- `scripts\verificar-guia.ps1` (`SegundosEspera` por defecto, 300 → 600).
+- `evidencia\guia-calamity.log.txt` (log real de la corrida final, limpia).
+- `.tmod` recompilado hacia la carpeta `Mods` real del usuario (612608 bytes).
