@@ -1,6 +1,6 @@
 Terrakeep es un editor completo de personaje y mundo que funciona DENTRO de la partida, sobre lo que ya tienes cargado. No abre archivos ni toca los .plr/.wld: escribe en vivo sobre el personaje y el mundo de la sesion, y todo lo que hace se puede deshacer con Ctrl+Z.
 
-Un solo panel (tecla K) con seis pestañas, todas con la interfaz nativa de Terraria:
+Un solo panel (tecla K) con ocho pestañas, todas con la interfaz nativa de Terraria:
 
 - Personaje: inventario, hucha/caja fuerte/forja/boveda, los tres conjuntos de equipo, buffs, apariencia (peinado, variante, tintes y los siete colores) y los 13 desbloqueos permanentes.
 
@@ -14,10 +14,14 @@ Un solo panel (tecla K) con seis pestañas, todas con la interfaz nativa de Terr
 
 - Ajustes: idioma (Español / English) en vivo, historial de deshacer y rehacer, y la lista real de atajos de teclado.
 
+- Guia: brujula de progresion en tiempo real, vanilla Y Calamity (46 tramos, 176 pasos), con el objetivo de ahora mismo, por que hace falta y como conseguirlo, requisitos con numeros reales de la partida, y un marcador dorado en el mapa cuando el objetivo tiene un sitio real que señalar.
+
+- Album: la lista de capturas automaticas de hito, una por cada tramo de la Guia que cierras de verdad jugando, mas reciente primero.
+
 Es una herramienta local: no añade contenido al juego, no hace falta sincronizarla en multijugador y no cambia nada de la partida por su cuenta.
 
 ---
 
 Terrakeep is a full character and world editor that runs INSIDE the game, on whatever you already have loaded. It never opens files: it writes live to the session's player and world, and anything it does can be undone with Ctrl+Z.
 
-One panel (K key) with six tabs, all built with Terraria's own native UI: Character, Library, Builds, Research, Exploration and Settings. Available in Spanish and English.
+One panel (K key) with eight tabs, all built with Terraria's own native UI: Character, Library, Builds, Research, Exploration, Settings, Guide (a real-time progression compass covering vanilla and Calamity) and Album (automatic milestone screenshots). Available in Spanish and English.

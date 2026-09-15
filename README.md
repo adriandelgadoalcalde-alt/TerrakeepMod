@@ -12,9 +12,20 @@ con Ctrl+Z.
 Un único panel, tecla **K** (reasignable en Ajustes > Controles del propio juego) o el icono de
 Terrakeep junto al bestiario y los emotes, con el inventario abierto.
 
+## Capturas
+
+<p align="center">
+  <img src="docs/screenshots/01-guia-calamity.png" width="49%" alt="Pestaña Guía con Calamity instalado, mostrando el objetivo actual y la hoja de ruta" />
+  <img src="docs/screenshots/02-album.png" width="49%" alt="Pestaña Álbum con las capturas automáticas de cada hito cerrado" />
+</p>
+<p align="center">
+  <img src="docs/screenshots/03-builds.png" width="49%" alt="Pestaña Builds con el selector Vanilla/Calamity y las tres columnas de armadura, armas y accesorios" />
+  <img src="docs/screenshots/04-libreria.png" width="49%" alt="Pestaña Librería navegando la carpeta Mascotas de Jefes" />
+</p>
+
 ## Qué hace
 
-Seis pestañas, todas con la interfaz nativa de Terraria (sin ninguna ventana externa):
+Ocho pestañas, todas con la interfaz nativa de Terraria (sin ninguna ventana externa):
 
 - **Personaje** - inventario, hucha/caja fuerte/forja/bóveda, los tres conjuntos de equipo (con
   editor de cantidad y papelera reales), buffs (con árbol de carpetas navegable), apariencia
@@ -38,6 +49,24 @@ Seis pestañas, todas con la interfaz nativa de Terraria (sin ninguna ventana ex
   avisos claros de sus riesgos reales.
 - **Ajustes** - idioma (Español/English) en vivo sin reiniciar, historial de deshacer/rehacer,
   y la lista real de atajos de teclado.
+- **Guía** - brújula de progresión en tiempo real, la pestaña más nueva del panel. Cubre **el
+  juego entero**: 46 tramos y 176 pasos, los 21 tramos vanilla (jefes y eventos, del Ojo de
+  Cthulhu a la Luna de Escarcha) y, si tienes Calamity instalado, 25 tramos más propios del mod
+  (desde el Desert Scourge hasta Supreme Calamitas) que se suman encima de la progresión vanilla
+  sin sustituirla. Para el objetivo de ahora mismo te dice **qué es, hacia dónde cae** (con una
+  brújula dorada real sobre el mapa del juego cuando hay un sitio concreto que señalar - mazmorra,
+  templo, jungla, nieve -, y una dirección en vertical cuando no lo hay), un **medidor de
+  preparación** con los requisitos que de verdad te faltan (arma con el daño mínimo real,
+  accesorios recomendados, vida/maná mínimos...), el **por qué** (qué mecánica del juego hay
+  detrás, contado como lo contaría la propia wiki, nunca con jerga de programador) y el **cómo**.
+  A la derecha, la **lectura del jefe** (su vida, defensa y daño reales de tu partida y tu
+  dificultad) y la **hoja de ruta** de lo que viene después. Todo se lee en vivo de tu personaje y
+  tu mundo, fotograma a fotograma - equípate algo o mata a un jefe con el panel abierto y se nota
+  al instante.
+- **Álbum** - el diario visual de tu progreso: en cuanto cierras de verdad un tramo de la Guía
+  (obligatorio u opcional) jugando, se dispara sola una captura real de pantalla que queda listada
+  aquí con su nombre y su fecha, sin que tengas que acordarte de pulsar nada. Pulsa una entrada
+  para abrir la captura a tamaño real con el visor de imágenes de tu sistema.
 
 Es una herramienta puramente local: no añade contenido al juego, no hace falta sincronizarla en
 multijugador y no cambia nada de la partida por su cuenta.
@@ -68,6 +97,23 @@ escribe en vivo sobre los objetos reales del juego (`Main.LocalPlayer`, `Main.ti
 Toda la interfaz está construida con los bloques nativos de Terraria (`IngameFancyUI`,
 `UIPanel`, `UIList`, `ItemSlot` reutilizado tal cual de vanilla) - sin ninguna ventana ni
 tecnología externa al juego.
+
+## Novedades
+
+### 0.4.0 (15-sep-2026)
+
+- **Cobertura absoluta de la Guía**: 25 tramos nuevos de Calamity (60 pasos), sobre los 21 tramos
+  vanilla que ya existían - la progresión del panel cubre ahora el juego entero, con o sin
+  Calamity instalado. Arquitectura nueva y verificada contra el `.tmod` real de Calamity (banderas
+  de jefe por reflexión, NPC/objetos de invocación resueltos por su nombre real en tiempo de
+  carga), nunca supuesta.
+- **Reescritura completa de tono** de todo el texto que lee el jugador en la Guía (español e
+  inglés, vanilla incluido): fuera nombres de clase, código C# literal y variables internas que se
+  habían colado en pantalla; dentro, la misma voz de aventura que usa la propia Terraria Wiki.
+- Verificado en vivo con el cliente gráfico real y Calamity cargado
+  (`scripts\verificar-guia.ps1 -Calamity`): compila sin errores, `AUTOPRUEBA GUIA COMPLETA`, 0
+  comprobaciones en rojo.
+- Versión del mod: `0.3.0` → `0.4.0`.
 
 ## Autoría y créditos
 

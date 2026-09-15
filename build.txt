@@ -1,6 +1,6 @@
 displayName = Terrakeep
 author = IncrediBad
-version = 0.3.0
+version = 0.4.0
 # El repositorio ya es publico (8-sep-2026) - homepage real, para que el boton "Visitar sitio
 # web del mod" de UIModInfo (solo aparece si hay url, codigo real del tModLoader instalado)
 # lleve de verdad al proyecto en vez de a la portada de GitHub a secas, que era lo que habia
@@ -45,4 +45,7 @@ dllReferences = Terrakeep.Core
 # -build), asi que la unica forma real de dejarlo fuera del paquete distribuible es nombrarlo
 # aqui. El *.pdb de esta lista es documentacion de intencion, no una exclusion real: ver
 # scripts\limpiar-tmod.ps1 (paso aparte tras compilar, necesario de verdad).
-buildIgnore = *.csproj, *.user, *.md, .git\*, .vs\*, .idea\*, obj\*, bin\*, bin-*, obj-*, *.pdb, Properties\*, scripts\*, evidencia\*
+#
+# docs\* añadido el 15-sep-2026: capturas reales del README (docs\screenshots\), documentacion
+# pura, cero uso en tiempo de ejecucion - mismo motivo que scripts\/evidencia\.
+buildIgnore = *.csproj, *.user, *.md, .git\*, .vs\*, .idea\*, obj\*, bin\*, bin-*, obj-*, *.pdb, Properties\*, scripts\*, evidencia\*, docs\*

@@ -7710,3 +7710,96 @@ en su `config.json`), mismo arreglo.
 - `scripts\verificar-guia.ps1` (fuerza `ShowNewUpdatedModsInfo=false` antes de cada lanzamiento).
 - `C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\config.json` (parcheado a
   mano una vez, y ya lo mantiene el propio script de ahora en adelante).
+
+
+---
+
+## 15-sep-2026 (cierre de la noche) — Verificación de cierre: recompilación, capturas frescas de la
+## Guía con Calamity, versión 0.4.0 y README real con las 8 áreas
+
+Encargo de cierre de la ronda de esta noche (ver la entrada anterior, "Cobertura ABSOLUTA de la
+Guía"): confirmar que lo construido compila y funciona de verdad, subir la versión, y dejar el
+`README.md` a la altura de lo que el panel hace hoy - hasta ahora decía "seis pestañas" y no
+mencionaba ni Guía ni Álbum en absoluto, pese a que `AreaTerrakeep` tiene 8 valores reales
+(`Personaje=0, Libreria=1, Builds=2, Investigacion=3, Exploracion=4, Ajustes=5, Guia=6, Album=7`).
+
+### 1. Recompilación real, dos veces
+
+`scripts\compilar.ps1` (compilador de dos fases de verdad, nunca `dotnet build` a secas - ver la
+cabecera del propio script): **0 errores** las dos veces.
+
+- Primera pasada (antes de tocar nada): `.tmod` de 609467 bytes, IDÉNTICO en tamaño al que ya
+  estaba instalado en `Mods\TerrakeepMod.tmod` (mismo hash de contenido, solo cambiaba la fecha de
+  compilación) - confirma que el `.tmod` instalado ya reflejaba de verdad el trabajo de la ronda
+  anterior, sin nada pendiente de recompilar.
+- Segunda pasada (tras subir la versión en `build.txt` y añadir `docs\*` a `buildIgnore`):
+  609967 bytes. Verificado con `node tmod-extract.js` (desde
+  `Downloads\Terrasavr-Win\Terrasavr-Calamity-Beta\resources\app\`, la herramienta real de
+  inspección de `.tmod` que ya documenta el `CLAUDE.md` de este repo): 19 archivos dentro,
+  `Version: 0.4.0`, y **`docs\` no aparece por ningún lado** - la carpeta nueva de capturas del
+  README queda fuera del paquete distribuible, igual que ya pasaba con `scripts\`/`evidencia\`.
+
+### 2. Capturas reales frescas: `scripts\verificar-guia.ps1 -Calamity`
+
+Ronda completa del arnés gráfico real (recompila + lanza el cliente contra el sandbox aislado +
+recorre el tramo vanilla completo con Calamity cargado): **exit code 0, `AUTOPRUEBA GUIA
+COMPLETA`, ninguna comprobación en rojo**. 70 capturas reales del back buffer en
+`tModLoader-TerrakeepGuia\terrakeep-capturas\` (fuera del repo, como documenta el propio script).
+
+Antes de lanzarlo, comprobada la ventana en primer plano por `user32.dll` (`GetForegroundWindow`)
+para no interrumpir una partida real del usuario si hubiera alguna - salió la del propio cliente
+de pruebas anterior, nada que proteger.
+
+Entre las 70 capturas, dos con contenido especialmente relevante para el README:
+- `guia-34-brujula-marcado.png`: la pestaña Guía real, con la brújula del mapa ya marcada y, en la
+  columna derecha, el aviso real "Tienes Calamity instalado" con la explicación de cómo se suma la
+  progresión de Calamity encima de la vanilla - confirma en pantalla, sin montaje, que el trabajo
+  de esta noche está de verdad ahí.
+- `hitos-1-album.png`: la pestaña Álbum real, con 47 capturas de hito ya listadas (fecha + nombre
+  del tramo cerrado) - la otra mitad del titular de esta noche que el README tampoco mencionaba.
+
+### 3. Corrección honesta: no existe pantalla de "Acerca de"/créditos en el panel
+
+El encargo original hablaba de "una pantalla de changelog dentro del panel". Comprobado a fondo
+(grep de "changelog"/"acerca de"/"version"/"creditos" por todo el proyecto + lectura completa de
+`UI\Ajustes\ContenidoAjustes.cs`): esa pestaña solo tiene idioma, deshacer/rehacer y la lista de
+atajos. **No existe ninguna pantalla así de verdad**, así que no se inventó una - el análogo real y
+honesto que sí existe es subir `version` en `build.txt` (contenido grande: se justifica un salto de
+versión menor, no un parche) y documentarlo como entrada de verdad en una sección "Novedades" del
+propio `README.md` (se descartó crear un `CHANGELOG.md` aparte: con una sola entrada real hasta
+ahora, meterlo en el propio README es más fácil de encontrar y no añade un archivo más que
+mantener sincronizado).
+
+### 4. Cambios de contenido
+
+- `build.txt`: `version = 0.3.0` → `0.4.0`. `buildIgnore` con `docs\*` añadido (mismo motivo que
+  `scripts\*`/`evidencia\*`: documentación pura, cero uso en tiempo de ejecución).
+- `description.txt` (los dos idiomas): "seis pestañas"/"six tabs" → **ocho**, con Guía y Álbum
+  descritas con el mismo nivel de detalle que las otras seis - se había quedado desactualizada
+  desde que Guía y Álbum se añadieron al panel.
+- `README.md`:
+  - `## Qué hace` reescrito de seis a ocho pestañas, con Guía y Álbum descritas a fondo (qué
+    cubren los 46 tramos/176 pasos, la brújula del mapa, el medidor de preparación, el por qué/
+    cómo, la lectura del jefe, la hoja de ruta; y el disparo automático de capturas del Álbum).
+  - `## Capturas` nueva, con 4 imágenes reales (nunca montajes): las dos ya citadas de la Guía y
+    el Álbum (las protagonistas de esta noche) más `builds-1600x900-es.png` (Builds con el
+    selector Vanilla/Calamity, capturado el 13-sep) y `libreria-1600x900-es.png` (Librería
+    navegando "Mascotas de Jefes", mismo día) - reutilizadas de `evidencia\espaciado-capturas-
+    calamity\` en vez de regenerar todo el juego para eso, tal y como pedía el encargo.
+  - `## Novedades` nueva, con la entrada real de la versión 0.4.0.
+  - Copiadas a `docs\screenshots\01-guia-calamity.png` / `02-album.png` / `03-builds.png` /
+    `04-libreria.png` (carpeta nueva, mismo patrón de nombrado numerado que ya usa el repo hermano
+    `Downloads\TerrakeepTrainer\docs\screenshots\`).
+
+### Verificación real antes de comitear
+- Compilación completa dos veces con `scripts\compilar.ps1`: 0 errores las dos veces.
+- `node tmod-extract.js` sobre el `.tmod` final: `Version: 0.4.0`, 19 archivos, sin `docs\` dentro.
+- `scripts\verificar-guia.ps1 -Calamity`: exit code 0, `AUTOPRUEBA GUIA COMPLETA`, sin
+  comprobaciones en rojo.
+
+### Archivos tocados
+- `build.txt` (versión, `buildIgnore`).
+- `description.txt` (ocho pestañas, los dos idiomas).
+- `README.md` (Guía y Álbum documentadas, sección de capturas, sección de Novedades).
+- `docs\screenshots\01-guia-calamity.png`, `02-album.png`, `03-builds.png`, `04-libreria.png`
+  (nuevos).
