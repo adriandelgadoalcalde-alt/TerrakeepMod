@@ -804,7 +804,7 @@ Guia: {
 	ObjetivoOpcionalEnTramo: "{0}: {1}"
 	LoQueViene: Lo que viene después
 	AvisoCalamityTitulo: Tienes Calamity instalado
-	AvisoCalamity: Con Calamity la progresión cambia de arriba abajo: otros jefes, otro orden y otras cifras. Esta guía todavía es la de Terraria a secas, así que úsala como referencia de vanilla y no como el orden completo de tu partida. El árbol de Calamity está pendiente, y se dice en vez de inventárselo.
+	AvisoCalamity: Con Calamity la progresion cambia de arriba abajo: otros jefes, otro orden y otras cifras. Esta guia YA incluye el arbol propio de Calamity (mas abajo, en la hoja de ruta y en los objetivos opcionales) ademas del de Terraria a secas - Calamity no elimina la progresion vanilla, solo le añade la suya encima. Los tramos con "(Calamity)" en el nombre son los suyos; el resto sigue siendo el mismo camino de siempre.
 
 	Direccion: {
 		YaEstas: Estás donde toca: {0}
@@ -880,6 +880,37 @@ Guia: {
 		downedChristmasIceQueen: Derrotar a la Reina de Hielo
 		downedDD2EventAnyDifficulty: Superar el Antiguo Ejército D2 (cualquier dificultad)
 		downedMartians: Superar la Locura Marciana
+		downedDesertScourge: Derrotar al Desert Scourge
+		downedCLAM: Derrotar al Giant Clam
+		downedCrabulon: Derrotar a Crabulon
+		downedHiveMind: Derrotar a The Hive Mind o The Perforators
+		downedPerforator: Derrotar a The Perforators
+		downedSlimeGod: Derrotar a The Slime God
+		downedDreadnautilus: Derrotar al Dreadnautilus o al Horrible Hog
+		downedCryogen: Derrotar a Cryogen
+		downedAquaticScourge: Derrotar al Aquatic Scourge
+		downedBrimstoneElemental: Derrotar al Brimstone Elemental
+		downedCragmawMire: Derrotar a Cragmaw Mire
+		downedAstrumAureus: Derrotar a Astrum Aureus
+		downedCalamitasClone: Derrotar a Calamitas Clone
+		downedGSS: Derrotar al Great Sand Shark
+		downedRavager: Derrotar a Ravager
+		downedPlaguebringer: Derrotar a The Plaguebringer Goliath
+		downedDragonfolly: Derrotar a Dragonfolly
+		downedPrimordialWyrm: Derrotar al Primordial Wyrm
+		downedMauler: Derrotar a Mauler o a Nuclear Terror
+		downedAstrumDeus: Derrotar a Astrum Deus
+		downedGuardians: Derrotar a los Profaned Guardians
+		downedProvidence: Derrotar a Providence
+		downedCeaselessVoid: Derrotar a Ceaseless Void
+		downedStormWeaver: Derrotar a Storm Weaver
+		downedSignus: Derrotar a Signus
+		downedPolterghast: Derrotar a Polterghast
+		downedBoomerDuke: Derrotar a The Old Duke
+		downedDoG: Derrotar a The Devourer of Gods
+		downedYharon: Derrotar a Yharon
+		downedExoMechs: Derrotar a los tres Exo Mechs
+		downedCalamitas: Derrotar a Supreme Witch, Calamitas
 	}
 
 	Zona: {
@@ -891,6 +922,8 @@ Guia: {
 		Jungla: la jungla subterránea
 		TemploLihzahrd: el Templo de la Selva
 		Nieve: el bioma de nieve
+		Desierto: el Desierto
+		OceanoProfundo: el Sunken Sea
 	}
 
 	Tramo: {
@@ -998,6 +1031,131 @@ Guia: {
 			Nombre: El Señor de la Luna
 			Resumen: El final: 50000 de vida sólo el núcleo, y 70 de defensa.
 		}
+
+		DesertScourge: {
+			Nombre: El Desert Scourge (opcional, Calamity)
+			Resumen: 4000-5000 de vida, en el Desierto. El primer jefe opcional de Calamity, pensado incluso antes del Ojo de Cthulhu.
+		}
+
+		GiantClam: {
+			Nombre: El Giant Clam (opcional, Calamity)
+			Resumen: 10 de defensa (35 en Modo Dificil), en el Sunken Sea. Solo aparece tras derrotar al Desert Scourge.
+		}
+
+		Crabulon: {
+			Nombre: Crabulon (opcional, Calamity)
+			Resumen: 3500-4400 de vida, en Hongos Luminosos. Pensado para justo despues del Ojo de Cthulhu.
+		}
+
+		HiveMindOPerforator: {
+			Nombre: The Hive Mind / The Perforators (opcional, Calamity)
+			Resumen: Segun tu mundo: Hive Mind (Corrupcion, 5000-7000 de vida) o Perforators (Carmesi, 4000-5750). Justo despues de la maldad de tu mundo.
+		}
+
+		SlimeGod: {
+			Nombre: The Slime God (opcional, Calamity)
+			Resumen: Dos Paladines que se fusionan en un nucleo final. El ultimo gran opcional de prehardmode, justo despues de Esqueletron.
+		}
+
+		DreadnautilusYHorribleHog: {
+			Nombre: Dreadnautilus y Horrible Hog (opcional, Calamity)
+			Resumen: Dos rarezas exclusivas de la Luna de Sangre: un BloodNautilus reescrito por Calamity y un cerdo salvaje mucho mas duro de lo normal.
+		}
+
+		Cryogen: {
+			Nombre: Cryogen (opcional, Calamity)
+			Resumen: 25000-48000 de vida, en el bioma de Nieve. El primer jefe de Modo Dificil propio de Calamity.
+		}
+
+		AquaticScourge: {
+			Nombre: Aquatic Scourge (opcional, Calamity)
+			Resumen: 80000-96000 de vida, en el Sulphurous Sea. Su derrota desbloquea la fase 2 de la Lluvia Acida.
+		}
+
+		BrimstoneElemental: {
+			Nombre: Brimstone Elemental (opcional, Calamity)
+			Resumen: 30000-49200 de vida, en el Infierno. Uno de los tres opcionales de early hardmode de Calamity.
+		}
+
+		LluviaAcidaCragmawMire: {
+			Nombre: Lluvia Acida: Cragmaw Mire (opcional, Calamity)
+			Resumen: Miniboss del evento Lluvia Acida, fase 2. Solo aparece tras derrotar al Aquatic Scourge.
+		}
+
+		AstrumAureus: {
+			Nombre: Astrum Aureus (opcional, Calamity)
+			Resumen: 75000-120000 de vida y 40 de defensa, en la Infeccion Astral. No confundir con Astrum Deus, mas adelante.
+		}
+
+		CalamitasClone: {
+			Nombre: Calamitas Clone (opcional, Calamity)
+			Resumen: 30000-46875 de vida, en cualquier sitio. Del nivel de Plantera; no confundir con Supreme Calamitas, mucho mas adelante.
+		}
+
+		GreatSandShark: {
+			Nombre: Great Sand Shark (opcional, Calamity)
+			Resumen: 9200-11000 de vida, en el Desierto. Miniboss opcional para despues de Plantera.
+		}
+
+		Ravager: {
+			Nombre: Ravager (opcional, Calamity)
+			Resumen: 30000-54000 de vida, cerca del Templo de la Selva. Pensado en dificultad para el nivel del Golem.
+		}
+
+		Plaguebringer: {
+			Nombre: The Plaguebringer Goliath (opcional, Calamity)
+			Resumen: 70000-105000 de vida, en la Jungla. La fuerza de la Plaga que se instala tras el Golem.
+		}
+
+		Dragonfolly: {
+			Nombre: Dragonfolly (opcional, Calamity)
+			Resumen: 150000-225000 de vida, en la Jungla. Pensado para poco despues del Señor de la Luna.
+		}
+
+		PrimordialWyrm: {
+			Nombre: Primordial Wyrm (opcional y secreto, Calamity)
+			Resumen: 2500000-3000000 de vida. Jefe oculto de postgame muy avanzado; detalle de invocacion sin confirmar.
+		}
+
+		LluviaAcidaTier3: {
+			Nombre: Lluvia Acida: Mauler y Nuclear Terror (opcional, Calamity)
+			Resumen: Minibosses del evento Lluvia Acida, fase 3. Solo aparecen tras derrotar a Polterghast.
+		}
+
+		AstrumDeus: {
+			Nombre: Astrum Deus
+			Resumen: 150000-240000 de vida. Desbloquea el Mineral Astral. Pensado para justo despues del Cultista, antes del Señor de la Luna.
+		}
+
+		ProfanedGuardiansYProvidence: {
+			Nombre: Los Guardianes Profanos y Providence
+			Resumen: Los Guardianes (80000-120000 de vida) dan el Nucleo Profano; Providence (250000-375000) es el arranque real del postgame de Calamity.
+		}
+
+		TrioPostProvidence: {
+			Nombre: El trio de Providence: Ceaseless Void, Storm Weaver y Signus
+			Resumen: Tres jefes (50000-380000 de vida cada uno) que Providence desbloquea. Muy recomendados antes de Polterghast.
+		}
+
+		Polterghast: {
+			Nombre: Polterghast
+			Resumen: 280000-420000 de vida, en la Mazmorra (postgame). Muy recomendado tras el trio de Providence.
+		}
+
+		OldDukeYDoG: {
+			Nombre: The Old Duke y The Devourer of Gods
+			Resumen: Old Duke (400000-600000 de vida) entre Polterghast y DoG; The Devourer of Gods (750000-900000) tras el trio de Providence y Polterghast.
+		}
+
+		Yharon: {
+			Nombre: Yharon, Dragon of Rebirth
+			Resumen: 1000000-1560000 de vida, en el Templo de la Selva de postgame. Tras el Devourer of Gods, antes del ultimo tramo.
+		}
+
+		ExoMechsYSupremeCalamitas: {
+			Nombre: Exo Mechs y Supreme Witch, Calamitas: el final
+			Resumen: Ares, Thanatos y Artemis&Apollo (1000000-1495000 cada uno) y Supreme Calamitas (750000-1150000). El final actual de Calamity.
+		}
 	}
 
 	Paso: {
@@ -1039,25 +1197,25 @@ Guia: {
 
 		ArmaParaElReySlime: {
 			Titulo: Cualquier arma, aunque sea de la primera capa
-			Porque: El Rey Slime tiene 40 de daño, solo 10 de defensa y 2000 de vida (NPC.cs, type==50) - menos vida que el Ojo de Cthulhu, y se puede derrotar incluso ANTES que él. No bloquea nada del camino obligatorio, pero es el primer jefe de verdad con el que probarte, y suelta la Corona de Slime, que lo vuelve a invocar cuando quieras.
+			Porque: El Rey Slime tiene 40 de daño, solo 10 de defensa y 2000 de vida - menos vida que el Ojo de Cthulhu, y se puede derrotar incluso ANTES que él. No bloquea nada del camino obligatorio, pero es el primer jefe de verdad con el que probarte, y suelta la Corona de Slime, que lo vuelve a invocar cuando quieras.
 			Como: Aparece solo, muy de vez en cuando, con lluvia de slimes en la superficie. La Corona de Slime lo llama al instante si prefieres elegir tú el momento.
 		}
 
 		VencerAlReySlime: {
 			Titulo: Derrotarlo (opcional)
-			Porque: NPC.downedSlimeKing no abre ningún camino obligatorio - es puramente un extra, pensado para tan pronto que ni siquiera hace falta esperar al Ojo. Lo que suelta (la Corona, el Compañero Slime Real) es un trofeo temprano más que una necesidad.
+			Porque: Nadie te obliga a plantarle cara: es el primer trofeo de verdad del juego, tan accesible que ni siquiera hace falta esperar al Ojo de Cthulhu. Lo que deja caer -la Corona, el Compañero Slime Real- es más un premio de coleccionista que una necesidad.
 			Como: Salta hacia ti y suelta slimes más pequeños sin parar: una arena con plataformas para esquivar el salto vale más que espacio llano.
 		}
 
 		ArmaParaDeerclops: {
 			Titulo: Un arma capaz de aguantar el frío
-			Porque: Deerclops tiene 20 de daño, 10 de defensa y 7000 de vida (NPC.cs, type==668), pero su daño lleva el flag coldDamage: además del golpe, aplica un debuff de frío extra que hace más dura la pelea de lo que sugiere su daño base. No bloquea nada, pero es de los pocos jefes que puede aparecer solo, sin que tú elijas el momento.
-			Como: Solo aparece de noche, durante una tormenta, dentro del bioma de nieve y sin ningún otro peligro activo cerca (Main.cs: la condición real que comprueba el juego). El Deer Thing lo invoca al instante si prefieres no esperar a que se den todas esas condiciones a la vez.
+			Porque: Deerclops trae 20 de daño, 10 de defensa y 7000 de vida, pero el frío que deja tras cada golpe sigue mordiendo después de que te aparte: la pelea pesa más de lo que sugiere ese daño base. No bloquea nada del camino, pero es de los pocos jefes que puede plantarse en tu partida sin que tú decidas cuándo.
+			Como: Solo sale de la ventisca en noches de tormenta, dentro del bioma de nieve, y solo si no hay ningún otro peligro cerca. El Trasto de Ciervo lo llama al instante si prefieres no quedarte esperando a que el tiempo se ponga de tu parte.
 		}
 
 		VencerADeerclops: {
 			Titulo: Derrotarlo (opcional)
-			Porque: NPC.downedDeerclops no abre ningún camino obligatorio - es puramente un extra, importado del universo de Don't Starve Together. Lo que suelta (el Ojo de Deerclops, la mascota Deer Thing) es un trofeo temprano más que una necesidad.
+			Porque: No te abre ningún camino obligatorio: es un visitante de otro mundo, traído directamente de Don't Starve Together. Lo que deja atrás -su Ojo, la mascota Trasto de Ciervo- es más recuerdo de trofeo que necesidad real.
 			Como: Golpea el suelo y lanza pinchos de hielo en línea recta desde ambos lados: una arena elevada, lejos del suelo que pisa, evita la mayoría de sus ataques.
 		}
 
@@ -1069,7 +1227,7 @@ Guia: {
 
 		VencerAlEjercitoGoblin: {
 			Titulo: Derrotarla (opcional)
-			Porque: NPC.downedGoblins no bloquea el camino obligatorio, pero abre la tienda del Duende Mecánico (si ya vive contigo) y es la puerta para rescatar al Tinkerer Goblin cautivo bajo tierra.
+			Porque: Rechazar la invasión no bloquea el camino obligatorio, pero abre el mostrador del Duende Mecánico (si ya vive contigo) y es la única forma de dar con el Tinkerer Goblin, prisionero en algún túnel bajo tus pies.
 			Como: Pelea cerca de tu base, con pasillos estrechos y trampas: las oleadas vienen de los dos lados a la vez, y un cuello de botella vale más que espacio abierto.
 		}
 
@@ -1081,19 +1239,19 @@ Guia: {
 
 		VencerALaLegionDeEscarcha: {
 			Titulo: Derrotarla (opcional)
-			Porque: NPC.downedFrost no abre ningún camino obligatorio - es puramente un extra navideño. Lo que suelta (piezas de la armadura de Duende Travieso, el Bastón de Nieve) es un trofeo temprano más que una necesidad.
+			Porque: Rechazarla no te abre ningún camino obligatorio: es puramente un capricho navideño. Lo que dejan caer -piezas de la armadura de Duende Travieso, el Bastón de Nieve- es más recuerdo de fiestas que necesidad real.
 			Como: Igual que el Ejército Goblin: un cuello de botella cerca de tu base rinde mejor que pelear a campo abierto contra las dos direcciones a la vez.
 		}
 
 		ArmaParaLosPiratas: {
 			Titulo: Un arma capaz de un enemigo mucho más blindado
-			Porque: El Capitán Pirata es el enemigo común más duro de las tres invasiones por oleadas: 70 de daño y 30 de defensa (NPC.cs, type==216), muy por encima de los 8 del Guerrero Goblin o los 26 de Mister Estocada. Cuidado con una idea equivocada muy extendida: el "Flying Dutchman" que se suele citar como el jefe del evento no es un enemigo real (NPC.cs, type==491: dontTakeDamage=true, daño 0) - es solo la nave, decorativa.
+			Porque: El Capitán Pirata es el enemigo común más duro de las tres invasiones por oleadas: 70 de daño y 30 de defensa, muy por encima de los 8 del Guerrero Goblin o los 26 de Mister Estocada. Cuidado con una idea equivocada muy extendida: el "Flying Dutchman" que se suele citar como el jefe del evento no es un enemigo real - es solo la nave, decorativa.
 			Como: Misma condición que el Ejército Goblin y la Legión de Escarcha: 5 cristales de vida ya usados antes de poder invocarla tú mismo con el Mapa Pirata.
 		}
 
 		VencerALosPiratas: {
 			Titulo: Derrotarlos (opcional)
-			Porque: NPC.downedPirates no abre ningún camino obligatorio: es un extra opcional, igual que el Ejército Goblin y la Legión de Escarcha. Lo que de verdad cambia es lo que sueltan sus enemigos, únicamente mientras dura la invasión: el Capitán Pirata puede soltar el Cañón de Monedas o el báculo de invocación Pirata (ItemDropDatabase.cs, RegisterToNPC(216,...): items 905/855/854/2584/3033/672).
+			Porque: Rechazarlos no te abre ningún camino obligatorio: otro extra, igual que el Ejército Goblin y la Legión de Escarcha. Lo que de verdad importa es el saqueo mientras dura el abordaje: el Capitán Pirata puede soltar el Cañón de Monedas o su propio báculo de invocación.
 			Como: Igual que el Ejército Goblin: un cuello de botella cerca de tu base rinde mejor que pelear a campo abierto contra las dos direcciones a la vez.
 		}
 
@@ -1105,236 +1263,596 @@ Guia: {
 
 		VencerLaMaldad: {
 			Titulo: Derrotarlo
-			Porque: Aquí no hay una condición nueva del motor que comprobar más allá de si ya cayó: el juego marca NPC.downedBoss2 al morir cualquiera de los dos (Devorador o Cerebro), y esa bandera es la que de verdad abre lo que viene después: los Altares Demoniacos o Carmesí empiezan a soltar mineral nuevo al romperse con un mazo, y la primera vez que el jefe muere cae un meteorito seguro en el mundo.
+			Porque: En cuanto caiga el Devorador de Mundos o el Cerebro de Cthulhu, tu mundo entero lo nota: los Altares Demoniacos o Carmesíes empiezan a soltar mineral nuevo al romperse con un mazo, y el cielo mismo te avisa de la primera victoria con un meteorito que cae seguro.
 			Como: El Devorador se corta en trozos: cada segmento partido por la mitad se separa en dos gusanos más, así que un arma que atraviese en línea (o con mucho alcance) acaba antes que una que solo pega de uno en uno. El Cerebro se esconde detrás de sus Reptadores: mátalos primero y se queda quieto y vulnerable unos segundos.
 		}
 
 		ArmaParaEsqueletron: {
 			Titulo: Un arma capaz de aguantar sus manos
-			Porque: Esqueletron tiene 32 de daño y 10 de defensa en la cabeza (NPC.cs, bloque type==35): con la fórmula de siempre, un arma de 20 de daño le quita 15 por golpe, y hacen falta bastantes contra sus 4400 de vida - eso es solo la cabeza. Cada mano (type==36) tiene su propia vida aparte, 600, así que en total hay cerca de 5600 de vida repartidos entre las dos manos y la cabeza, no 4400. Sus manos giran y golpean fuerte: sin alcance en tu arma, vas a recibir más de lo que das.
+			Porque: Esqueletron tiene 32 de daño y 10 de defensa en la cabeza: con la fórmula de siempre, un arma de 20 de daño le quita 15 por golpe, y hacen falta bastantes contra sus 4400 de vida - eso es solo la cabeza. Cada mano tiene su propia vida aparte, 600, así que en total hay cerca de 5600 de vida repartidos entre las dos manos y la cabeza, no 4400. Sus manos giran y golpean fuerte: sin alcance en tu arma, vas a recibir más de lo que das.
 			Como: Cualquier arma de mineral de la segunda capa (o un arco con buenas flechas) ya cumple. El Anciano, siempre junto a la entrada de la Mazmorra, te reta a luchar contra él si le hablas de noche.
 		}
 
 		VencerAEsqueletron: {
 			Titulo: Derrotarlo
-			Porque: NPC.downedBoss3 es la bandera que de verdad importa aquí: en cuanto pasa a true, los Guardianes de la Mazmorra (pensados solo para bloquear la entrada antes de tiempo, con un daño altísimo) dejan de aparecer, y el Sastre se muda a vivir contigo.
+			Porque: En cuanto cae, la Mazmorra baja la guardia: los Guardianes que la vigilaban para que nadie entrara antes de tiempo -con un daño pensado para hacerte retroceder- dejan de aparecer, y el Sastre hace las maletas para mudarse contigo.
 			Como: Pelea cerca de la entrada de la Mazmorra, nunca dentro de ella: si amanece antes de matarlo, se cura de golpe entero y hay que empezar de cero.
 		}
 
 		ArmaParaElMuro: {
 			Titulo: Un arma para un jefe con muchísima más vida
-			Porque: El Muro de Carne tiene 8000 de vida (NPC.cs, bloque type==113), con 50 de daño y 12 de defensa en el cuerpo; su ojo (type==114) pega igual de fuerte pero sin nada de defensa. Con la fórmula de siempre, un arma de 25 de daño le quita bastante más de la mitad a cada golpe, y hace falta ese salto: no es solo más vida que Esqueletron, es una pelea CRONOMETRADA que avanza sola hacia ti por un pasillo del Infierno, así que alargarla de más no es una opción.
+			Porque: El Muro de Carne tiene 8000 de vida, con 50 de daño y 12 de defensa en el cuerpo; su ojo pega igual de fuerte pero sin nada de defensa. Con la fórmula de siempre, un arma de 25 de daño le quita bastante más de la mitad a cada golpe, y hace falta ese salto: no es solo más vida que Esqueletron, es una pelea CRONOMETRADA que avanza sola hacia ti por un pasillo del Infierno, así que alargarla de más no es una opción.
 			Como: Cualquier arma fundida con Piedra Infernal ya cumple de sobra. Una Poción de Piel de Obsidiana te libra del fuego de la lava mientras dura, y el Muñeco Vudú del Guía, lanzado a la lava, es la forma práctica de invocarlo sin tener que empujarlo tú mismo.
 		}
 
 		VencerAlMuro: {
 			Titulo: Derrotarlo: el mundo cambia para siempre
-			Porque: Aquí no hay medias tintas: al morir, NPC.cs llama a WorldGen.StartHardmode(), que pone Main.hardMode a true y no tiene marcha atrás en esta partida. A partir de ahí todo sube de golpe (enemigos nuevos y más duros por todo el mundo, incluido en zonas que ya dabas por seguras), pero también se abre lo que hace falta para seguir: minerales de Hardmode al romper Altares Demoniacos o Carmesíes con un mazo, y el camino a los tres jefes mecánicos.
+			Porque: Aquí no hay medias tintas: en cuanto muere, tu mundo entero cruza al Modo Difícil, y no hay vuelta atrás en esta partida. A partir de ahí todo sube de golpe -enemigos nuevos y más duros hasta en zonas que ya dabas por seguras- pero también se abre lo que necesitas para seguir: minerales nuevos al romper Altares Demoniacos o Carmesíes con un mazo, y el camino a los tres jefes mecánicos.
 			Como: Construye un puente largo y llano sobre la lava antes de invocarlo: el Muro avanza solo hacia ti, así que necesitas sitio para retroceder disparando en vez de terreno irregular que te frene. La boca es su parte más débil; el ojo, la más resistente.
 		}
 
 		ArmaParaLosMecanicos: {
 			Titulo: Un arma capaz de un jefe de Hardmode de verdad
-			Porque: Los tres suben el listón de golpe (NPC.cs): los Gemelos tienen 10 de defensa con 20000 y 23000 de vida, Esqueletron Prime 24 de defensa con 28000, y el Destructor su cabeza sin defensa pero el cuerpo y la cola a 30 y 35, con 80000 de vida repartidos en decenas de segmentos. Con la fórmula de siempre, un arma de 40 de daño deja golpes útiles contra los tres sin que la pelea se eternice, y esa vida tan alta es la razón: un arma floja aquí no pierde la pelea de golpe, la alarga hasta que un error la pierde por ti.
+			Porque: Los tres suben el listón de golpe: los Gemelos tienen 10 de defensa con 20000 y 23000 de vida, Esqueletron Prime 24 de defensa con 28000, y el Destructor su cabeza sin defensa pero el cuerpo y la cola a 30 y 35, con 80000 de vida repartidos en decenas de segmentos. Con la fórmula de siempre, un arma de 40 de daño deja golpes útiles contra los tres sin que la pelea se eternice, y esa vida tan alta es la razón: un arma floja aquí no pierde la pelea de golpe, la alarga hasta que un error la pierde por ti.
 			Como: Cualquier arma de mineral de Hardmode temprano (Cobalto/Paladio o superior) ya cumple. Se invocan de noche con un objeto concreto cada uno: Ojo Mecánico para los Gemelos, Gusano Mecánico para el Destructor, Cráneo Mecánico para Esqueletron Prime. No hace falta pelear a los tres a la vez ni en un orden fijo.
 		}
 
 		VencerAUnMecanico: {
 			Titulo: Derrotar a uno de los tres
-			Porque: El juego marca NPC.downedMechBossAny al morir cualquiera de los tres, y esa es la bandera que de verdad abre lo siguiente: mineral de Hardmode nuevo (Mithril u Oricalco) y el empujón real para que Plantera merezca la pena. No hace falta derrotarlos a los tres para seguir adelante, aunque el equipo completo de los tres es el mejor que hay antes de Plantera.
+			Porque: En cuanto cae cualquiera de los tres, el mundo responde: aparece mineral nuevo (Mithril u Oricalco) y por fin tienes el empuje real para que Plantera merezca la pena. No hace falta tumbar a los tres para seguir adelante, aunque el equipo completo que dejan es lo mejor que vas a tener antes de Plantera.
 			Como: Los Gemelos y Esqueletron Prime vuelan y persiguen: un arena elevada con plataformas ayuda más que el suelo. El Destructor es un gusano larguísimo: un arma que atraviese en línea recta acaba con más de un segmento por disparo.
 		}
 
 		ArmaParaPlantera: {
 			Titulo: Un arma que aguante DOS peleas seguidas
-			Porque: Plantera tiene 50 de daño, 14 de defensa y 30000 de vida (NPC.cs, type==262), pero el número que de verdad importa aquí no es la defensa: en cuanto baja de la mitad de su vida se enrabia, acelera y persigue mucho más deprisa por toda la jungla. No es un jefe más duro de atravesar, es DOS peleas distintas seguidas, y la segunda te puede acorralar si no tienes con qué mantener el ritmo. 45 de daño ya se nota, pero aquí compensa más una buena movilidad que un número mayor.
+			Porque: Plantera tiene 50 de daño, 14 de defensa y 30000 de vida, pero el número que de verdad importa aquí no es la defensa: en cuanto baja de la mitad de su vida se enrabia, acelera y persigue mucho más deprisa por toda la jungla. No es un jefe más duro de atravesar, es DOS peleas distintas seguidas, y la segunda te puede acorralar si no tienes con qué mantener el ritmo. 45 de daño ya se nota, pero aquí compensa más una buena movilidad que un número mayor.
 			Como: Rompe un bulbo de Plantera en la jungla subterránea para invocarla; solo aparecen tras derrotar a cualquiera de los tres mecánicos. Despeja un pasillo largo antes de romperlo: la segunda fase persigue en línea recta y la jungla natural está demasiado cerrada para esquivar.
 		}
 
 		VencerAPlantera: {
 			Titulo: Derrotarla
-			Porque: NPC.downedPlantBoss es la bandera que de verdad importa: al ponerse a true por primera vez, la puerta de piedra del Templo de la Selva deja de estar sellada (NPC.cs, case 262 de la muerte del jefe) y el Ciborg se muda a vivir contigo. También suelta las semillas de Clorofita, la base de todo el mineral que viene después.
+			Porque: La primera vez que cae, la puerta de piedra del Templo de la Selva se abre para siempre y el Ciborg se muda a vivir contigo. También deja caer semillas de Clorofita, la semilla -literal- de todo el mineral que viene después.
 			Como: Pelea en el pasillo que despejaste, nunca en la jungla cerrada: sus tentáculos y semillas persiguen mejor entre árboles apretados que en un corredor limpio.
 		}
 
 		ArmaParaElTemplo: {
 			Titulo: Un arma para las tres fases del Golem
-			Porque: El Golem pelea en tres fases con números distintos (NPC.cs): el cuerpo (type==245) tiene 72 de daño, 26 de defensa y 15000 de vida; al romper los dos puños, la cabeza queda suelta (type==249) con 32 de defensa y 80 de daño, y hasta entonces NO recibe daño (dontTakeDamage=true). Con la fórmula de siempre, 55 de daño deja golpes útiles en las tres fases sin que la última, la más dura, se haga eterna.
+			Porque: El Golem pelea en tres fases con números distintos: el cuerpo tiene 72 de daño, 26 de defensa y 15000 de vida; al romper los dos puños, la cabeza queda suelta con 32 de defensa y 80 de daño, y hasta entonces NO recibe daño (dontTakeDamage=true). Con la fórmula de siempre, 55 de daño deja golpes útiles en las tres fases sin que la última, la más dura, se haga eterna.
 			Como: La puerta de piedra del Templo se abre sola en cuanto Plantera muere. Dentro, las trampas y cofres del Templo sueltan Células de Poder Lihzahrd: úsalas en el Altar Lihzahrd para invocarlo. Rompe primero los dos puños; mientras vivan, la cabeza no se puede dañar.
 		}
 
 		VencerAlGolem: {
 			Titulo: Derrotarlo
-			Porque: NPC.downedGolemBoss es la bandera real de este cierre: sube un escalón más el equipo de todos los vecinos del pueblo (NPC.cs, BuffTownNPC: +15% de daño y +8 de defensa a los NPC del pueblo, el mismo salto que dan Plantera, la Emperatriz de la Luz o el Cultista) y dejas el Templo despejado justo antes de plantearte los últimos opcionales y, después, al propio Cultista Lunático junto a la Mazmorra.
+			Porque: Con él en el suelo, hasta el último vecino del pueblo sube su oferta un escalón, y el Templo queda despejado justo antes de plantearte los últimos opcionales y, después, encarar al Cultista Lunático junto a la Mazmorra.
 			Como: Pelea dentro de la sala del Templo, con espacio para rodear los pilares de piedra: te protegen de sus golpes de área mientras esperas la abertura.
 		}
 
 		PrepararLocuraMarciana: {
 			Titulo: Un arma capaz del enemigo mejor blindado
-			Porque: El Oficial Marciano es el enemigo común más blindado de las cuatro invasiones del árbol: 50 de defensa, 75 de daño y 300 de vida (NPC.cs, type==383) - por delante de los 30 del Capitán Pirata, los 26 de Mister Estocada y los 8 del Guerrero Goblin. Con la fórmula de siempre, 60 de daño deja golpes útiles.
+			Porque: El Oficial Marciano es el enemigo común más blindado de las cuatro invasiones del árbol: 50 de defensa, 75 de daño y 300 de vida - por delante de los 30 del Capitán Pirata, los 26 de Mister Estocada y los 8 del Guerrero Goblin. Con la fórmula de siempre, 60 de daño deja golpes útiles.
 			Como: A diferencia del Ejército Goblin, la Legión de Escarcha o los Piratas, esta invasión no tiene objeto de invocación: una Sonda Marciana aparece sola, por probabilidad, en Modo Difícil y con el Golem ya derrotado, lejos del punto de aparición del mundo. En cuanto te detecta y logra huir sin que la mates, arranca la invasión ella sola - matarla antes de que escape no la dispara.
 		}
 
 		VencerALaLocuraMarciana: {
 			Titulo: Derrotarla (opcional)
-			Porque: NPC.downedMartians no abre ningún camino obligatorio: es un extra opcional, igual que el Ejército Goblin, la Legión de Escarcha y los Piratas. Se enciende con el mismo mecanismo que las otras tres invasiones (Main.UpdateInvasion_Inner, al llegar la cuenta de enemigos a cero), no al matar un único jefe: el propio platillo (Núcleo, Torreta y Cañón, NPCID 395/393/394) es la pieza más dura, pero es una invasión con muchos enemigos, no una pelea contra uno solo.
-			Como: Igual que las otras tres invasiones: un cuello de botella cerca de tu base rinde mejor que pelear a campo abierto. El platillo no es un solo enemigo: son seis NPC luchando juntos (NPC.cs, type==395 al aparecer crea también 393/394/392), un Núcleo de 10000 de vida escoltado por dos Torretas de 5000 y dos Cañones de 3500 cada uno - repartir el daño entre ellos es más seguro que ignorarlos para ir directo al Núcleo.
+			Porque: Rechazar la invasión no abre ningún camino obligatorio: un extra más, igual que el Ejército Goblin, la Legión de Escarcha y los Piratas. Se da por superada cuando barres la oleada entera, no al derribar un único objetivo: el propio platillo (Núcleo, Torreta y Cañón) es la pieza más dura, pero esto es una guerra contra un ejército, no un duelo contra uno solo.
+			Como: Igual que las otras tres invasiones: un cuello de botella cerca de tu base rinde mejor que pelear a campo abierto. El platillo no es un solo enemigo: son seis NPC luchando juntos, un Núcleo de 10000 de vida escoltado por dos Torretas de 5000 y dos Cañones de 3500 cada uno - repartir el daño entre ellos es más seguro que ignorarlos para ir directo al Núcleo.
 		}
 
 		ArmaParaMourningWood: {
 			Titulo: Un arma para el primero de los dos jefes del evento
-			Porque: Mourning Wood tiene 120 de daño, 34 de defensa y 14000 de vida (NPC.cs, type==325) y llega en la quinta oleada de la Luna de Calabazas, la primera de las dos que hay que superar.
+			Porque: Mourning Wood tiene 120 de daño, 34 de defensa y 14000 de vida y llega en la quinta oleada de la Luna de Calabazas, la primera de las dos que hay que superar.
 			Como: Solo se puede invocar de noche y si no hay ya otro evento de oleadas en marcha. Un espacio cerrado con pasillos estrechos ayuda tanto contra él como contra el resto de la oleada.
 		}
 
 		VencerAMourningWood: {
 			Titulo: Derrotarlo (opcional)
-			Porque: NPC.downedHalloweenTree no es la bandera de cierre del evento entero: solo marca a este primer jefe como caído. La Luna de Calabazas sigue hasta la novena oleada, donde llega Pumpking.
+			Porque: Tumbarlo no cierra la noche entera: solo marca al primero de los dos jefes como caído. La Luna de Calabazas sigue hasta la novena oleada, cuando por fin llega Pumpking.
 			Como: Lanza troncos en llamas a distancia: no te quedes quieto en su línea de tiro.
 		}
 
 		ArmaParaPumpking: {
 			Titulo: Un arma para el jefe que cierra el evento
-			Porque: Pumpking tiene 50 de daño, 40 de defensa y 26000 de vida (NPC.cs, type==327) - menos daño por golpe que Mourning Wood, pero casi el doble de vida y más defensa.
+			Porque: Pumpking tiene 50 de daño, 40 de defensa y 26000 de vida - menos daño por golpe que Mourning Wood, pero casi el doble de vida y más defensa.
 			Como: Llega en la novena oleada, ya con Mourning Wood superado: no hace falta volver a usar el Medallón, el evento sigue solo si aguantas hasta entonces.
 		}
 
 		VencerAPumpking: {
 			Titulo: Derrotarlo: cierra el evento
-			Porque: NPC.downedHalloweenKing marca la Luna de Calabazas como superada del todo. Suelta su propio equipo exclusivo, distinto del de Mourning Wood.
+			Porque: Con él caído, la Luna de Calabazas se cierra del todo. Deja su propio botín exclusivo, distinto del de Mourning Wood.
 			Como: Vuela y dispara calabazas explosivas a distancia: el combate es casi todo aéreo, un gancho ayuda a seguirle el ritmo.
 		}
 
 		ArmaParaEverscream: {
 			Titulo: Un arma para el primero de los tres jefes del evento
-			Porque: Everscream tiene 110 de daño, 38 de defensa y 13000 de vida (NPC.cs, type==344) y llega en la tercera oleada de la Luna Helada, la primera de las tres que hay que superar.
+			Porque: Everscream tiene 110 de daño, 38 de defensa y 13000 de vida y llega en la tercera oleada de la Luna Helada, la primera de las tres que hay que superar.
 			Como: Solo se puede invocar de noche y si no hay ya otro evento de oleadas en marcha. Igual que con la Luna de Calabazas, un cuello de botella cerca de tu base ayuda contra toda la oleada.
 		}
 
 		VencerAEverscream: {
 			Titulo: Derrotarlo (opcional)
-			Porque: NPC.downedChristmasTree solo marca a este primer jefe como caído: la Luna Helada sigue hasta la décima oleada, donde llega la Reina de Hielo, pasando antes por Santa-NK1.
+			Porque: Tumbarlo solo marca al primero de los tres como caído: la Luna Helada sigue hasta la décima oleada, cuando llega la Reina de Hielo, con Santa-NK1 esperando a mitad de camino.
 			Como: Dispara ráfagas de proyectiles helados a distancia, parecido a Mourning Wood pero con más cadencia.
 		}
 
 		ArmaParaSantaNK1: {
 			Titulo: Un arma para el segundo jefe: el más blindado de los tres
-			Porque: Santa-NK1 tiene 120 de daño, 56 de defensa y 18000 de vida (NPC.cs, type==346) - la defensa más alta de los tres jefes del evento, muy por encima de los 38 de Everscream y la Reina de Hielo.
+			Porque: Santa-NK1 tiene 120 de daño, 56 de defensa y 18000 de vida - la defensa más alta de los tres jefes del evento, muy por encima de los 38 de Everscream y la Reina de Hielo.
 			Como: Llega en la sexta oleada. Dispara regalos explosivos y ráfagas de ametralladora en línea recta: moverte en diagonal esquiva más que retroceder en línea.
 		}
 
 		VencerASantaNK1: {
 			Titulo: Derrotarlo (opcional)
-			Porque: NPC.downedChristmasSantank marca al segundo jefe como caído. Queda uno: la Reina de Hielo, la última y con más vida de los tres.
+			Porque: Con él caído, van dos de tres. Queda la Reina de Hielo, la última en llegar y la más resistente de todas.
 			Como: Es un tanque casi estático: rinde mejor un arma con mucho alcance o que dispare que una cuerpo a cuerpo.
 		}
 
 		ArmaParaIceQueen: {
 			Titulo: Un arma para el jefe que cierra el evento
-			Porque: La Reina de Hielo tiene 120 de daño, 38 de defensa y 34000 de vida (NPC.cs, type==345) - la más alta de los tres jefes del evento - y coldDamage=true, aplica frío extra además del golpe directo.
+			Porque: La Reina de Hielo tiene 120 de daño, 38 de defensa y 34000 de vida - la más alta de los tres jefes del evento - y coldDamage=true, aplica frío extra además del golpe directo.
 			Como: Llega en la décima oleada, con Everscream y Santa-NK1 ya superados: el evento sigue solo, sin volver a usar el Regalo Travieso. Una fuente de calor o un buff contra el frío ayuda aquí más que en ningún otro tramo.
 		}
 
 		VencerAIceQueen: {
 			Titulo: Derrotarla: cierra el evento
-			Porque: NPC.downedChristmasIceQueen marca la Luna Helada como superada del todo, el evento por oleadas más largo de los dos (diez oleadas hasta que aparece, frente a las nueve de la Luna de Calabazas).
+			Porque: Con ella en el suelo, la Luna Helada se cierra del todo: el más largo de los dos eventos por oleadas, diez rondas hasta que aparece, frente a las nueve de la Luna de Calabazas.
 			Como: Dispara ráfagas de cristales de hielo en abanico: moverte en círculos amplios deja menos huecos que retroceder en línea recta.
 		}
 
 		ArmaParaElEjercitoD2: {
 			Titulo: Un arma capaz de un asedio entero
-			Porque: Betsy, el jefe que cierra cada asedio, tiene 80 de daño, 38 de defensa y 50000 de vida (NPC.cs, type==551). No es solo ella: cada asedio son varias oleadas de enemigos propios del evento (goblins, wyverns, magos oscuros...) antes de que aparezca.
+			Porque: Betsy, el jefe que cierra cada asedio, tiene 80 de daño, 38 de defensa y 50000 de vida. No es solo ella: cada asedio son varias oleadas de enemigos propios del evento (goblins, wyverns, magos oscuros...) antes de que aparezca.
 			Como: Se invoca con clic derecho sobre el Soporte del Cristal de Eternia (una estructura que fabricas y colocas tú) llevando el Cristal de Eternia en el inventario (Player.cs, ~línea 30670): se consume al usarlo, igual que el resto de objetos de invocación de esta guía.
 		}
 
 		VencerAlEjercitoD2: {
 			Titulo: Superar los tres asedios (opcional)
-			Porque: Player.downedDD2EventAnyDifficulty se enciende al terminar el evento en CUALQUIER dificultad (Media/Alta/Para Expertos), no hace falta la más dura para que la guía lo dé por hecho - aunque el mejor equipo sale de la dificultad más alta que te veas capaz de aguantar.
+			Porque: Aguantar los tres asedios en CUALQUIER dificultad (Media, Alta o Para Expertos) ya cuenta como una victoria - no hace falta la más dura, aunque el mejor botín espera en la dificultad más alta que te atrevas a resistir.
 			Como: Protege el Cristal de Eternia, no solo a ti mismo: si cae, el asedio termina en derrota aunque tú sigas vivo. Construir pasillos estrechos alrededor del cristal, con trampas, ayuda más que pelear a cuerpo descubierto.
 		}
 
 		ArmaParaElCultista: {
 			Titulo: Un arma capaz del último guardián
-			Porque: El Cultista Lunático tiene 50 de daño, 42 de defensa (la más alta de todo el prehardmode y el hardmode hasta ahora) y 32000 de vida (NPC.cs, type==439). Con la fórmula de siempre, 65 de daño deja golpes útiles: por debajo de eso, gran parte de cada golpe se la come su defensa y apenas se nota.
+			Porque: El Cultista Lunático tiene 50 de daño, 42 de defensa (la más alta de todo el prehardmode y el hardmode hasta ahora) y 32000 de vida. Con la fórmula de siempre, 65 de daño deja golpes útiles: por debajo de eso, gran parte de cada golpe se la come su defensa y apenas se nota.
 			Como: Se le encuentra junto a la entrada de la Mazmorra, rodeado de cuatro seguidores que lo protegen. Mátalos a los cuatro primero: en cuanto caen, el propio Cultista aparece solo.
 		}
 
 		VencerAlCultista: {
 			Titulo: Derrotarlo
-			Porque: Aquí no hay término medio: el mismo código que marca NPC.downedAncientCultist al morir llama en la misma línea a WorldGen.TriggerLunarApocalypse() (NPC.cs, case 439). Derrotarlo ENCIENDE el evento de las cuatro torres en el acto, sin previo aviso ni margen para prepararte después: hazlo con todo ya listo para lo que viene.
+			Porque: Aquí no hay término medio: en cuanto cae, el cielo se abre y las cuatro torres lunares llegan en el acto, sin previo aviso ni margen para prepararte después. Ve con todo listo, porque lo que sigue no espera.
 			Como: Sus hechizos giran a tu alrededor y detonan: muévete en círculos amplios en vez de en línea recta para no quedarte encerrado dentro de uno.
 		}
 
 		PrepararLasTorres: {
 			Titulo: Aguantar cuatro asedios seguidos
-			Porque: Las cuatro torres (Solar, Vórtice, Nébula y Polvo Estelar) comparten 20 de defensa y 20000 de vida cada una (NPC.cs) y no atacan por sí mismas: el peligro real son las oleadas de enemigos de su color que invocan sin descanso mientras sigan en pie, algunos con hasta 100 de daño por golpe. No es un jefe, son cuatro asedios seguidos: 75 de daño ya deja golpes útiles contra la torre y contra lo que suelta.
+			Porque: Las cuatro torres (Solar, Vórtice, Nébula y Polvo Estelar) comparten 20 de defensa y 20000 de vida cada una y no atacan por sí mismas: el peligro real son las oleadas de enemigos de su color que invocan sin descanso mientras sigan en pie, algunos con hasta 100 de daño por golpe. No es un jefe, son cuatro asedios seguidos: 75 de daño ya deja golpes útiles contra la torre y contra lo que suelta.
 			Como: El evento empieza solo al matar al Cultista: las cuatro torres aparecen a la vez, una por cada punto cardinal lejos de tu base. Puedes ir de una a otra en el orden que quieras y hasta dejarlo a medias; sus escudos se debilitan matando a los enemigos que invocan.
 		}
 
 		VencerALasTorres: {
 			Titulo: Derrotar a las cuatro
-			Porque: NPC.downedTowers no se enciende con una: exige downedTowerSolar Y downedTowerVortex Y downedTowerNebula Y downedTowerStardust juntas (NPC.cs, la propiedad calculada). Las cuatro sueltan fragmentos de su color, y esos fragmentos son lo único que fabrica el Sello Celestial: sin las cuatro no hay forma de invocar al Señor de la Luna.
+			Porque: No basta con una: las cuatro tienen que caer para dar el asedio por superado. Cada una suelta fragmentos de su color, y esos fragmentos son el único material del que sale el Sello Celestial: sin las cuatro torres en el suelo, no hay forma de invocar al Señor de la Luna.
 			Como: No hace falta derrotarlas en la misma sesión: el evento se puede retomar más tarde si toca retirarse. Guarda los fragmentos de cada una hasta tener los cuatro colores para el Sello Celestial.
 		}
 
 		ArmaParaMoonLord: {
 			Titulo: El final: un arma para 145000 de vida repartida
-			Porque: El Señor de la Luna se pelea en tres piezas con sus propios números (NPC.cs): el núcleo (type==398) tiene 70 de defensa y 50000 de vida PROPIA y no recibe ni un rasguño hasta que caen sus dos manos (type==397, 40 de defensa y 25000 de vida cada una) y la cabeza (type==396, 50 de defensa y 45000 de vida) - más de 145000 de vida en total repartida entre las tres. Con la fórmula de siempre, 90 de daño deja golpes útiles en las tres, y la vida máxima cuenta tanto como el arma: sus rayos y las caídas de meteoro perdonan poco margen de error.
+			Porque: El Señor de la Luna se pelea en tres piezas con sus propios números: el núcleo tiene 70 de defensa y 50000 de vida PROPIA y no recibe ni un rasguño hasta que caen sus dos manos y la cabeza - más de 145000 de vida en total repartida entre las tres. Con la fórmula de siempre, 90 de daño deja golpes útiles en las tres, y la vida máxima cuenta tanto como el arma: sus rayos y las caídas de meteoro perdonan poco margen de error.
 			Como: Fabrica el Sello Celestial con fragmentos de las cuatro torres en un Yunque de Mithril u Orichalco y úsalo para invocarlo. Construye antes una plataforma alta y despejada, lejos de bloques sólidos: sus manos y su cabeza descienden desde el cielo y necesitas sitio para esquivar en las cuatro direcciones.
 		}
 
 		VencerAMoonLord: {
 			Titulo: Derrotarlo: el final de esta guía
-			Porque: NPC.downedMoonlord es la última bandera de la progresión vanilla: no hay ningún jefe de historia principal después de él. A partir de aquí el juego sigue abierto (Duque Pezhongo, la Emperatriz de la Luz, la pesca y el resto del contenido opcional si te quedó algo suelto), pero la ruta obligatoria que empezó con el Ojo de Cthulhu termina exactamente aquí.
+			Porque: Con él caído, la historia principal llega a su final: no hay ningún otro jefe esperándote después. A partir de aquí el mundo sigue abierto -el Duque Pezhongo, la Emperatriz de la Luz, la pesca y lo que te haya quedado suelto- pero el camino que empezó la primera noche que viste al Ojo de Cthulhu termina exactamente aquí.
 			Como: Golpea el núcleo mientras las manos y la cabeza siguen vivas y no le harás nada: destrúyelas primero, empezando por las manos, que son las que te agarran y te acercan a su boca.
 		}
 
 		ArmaParaLaReina: {
 			Titulo: Un arma cualquiera de la primera capa
-			Porque: La Reina Abeja tiene 30 de daño, 3400 de vida y solo 8 de defensa (NPC.cs, type==222) - menos incluso que el Ojo de Cthulhu. No bloquea nada del camino obligatorio, pero suelta equipo (el Aguijón Abeja, la armadura de Abeja) que adelanta el resto del prehardmode de verdad si la pillas pronto.
+			Porque: La Reina Abeja tiene 30 de daño, 3400 de vida y solo 8 de defensa - menos incluso que el Ojo de Cthulhu. No bloquea nada del camino obligatorio, pero suelta equipo (el Aguijón Abeja, la armadura de Abeja) que adelanta el resto del prehardmode de verdad si la pillas pronto.
 			Como: Vive en las Colmenas de la jungla (superficie o subterránea). Rompe una larva de abeja reina para invocarla, o usa una Abeemination si prefieres elegir el momento tú mismo.
 		}
 
 		VencerALaReina: {
 			Titulo: Derrotarla (opcional)
-			Porque: NPC.downedQueenBee no abre ningún camino obligatorio - es puramente un extra. Lo que sí suelta (Aguijón Abeja, Honeycomb, la armadura de Abeja) es de lo mejor que hay disponible tan pronto en la partida.
+			Porque: No te abre ningún camino obligatorio: es puro extra. Pero lo que deja caer -el Aguijón Abeja, Honeycomb, la armadura de Abeja- es de lo mejor que vas a encontrar tan pronto en la partida.
 			Como: Vuela errática y dispara abejas y proyectiles punzantes en línea recta: un pasillo horizontal despejado dentro de la colmena es más seguro que perseguirla entre los túneles de cera.
 		}
 
 		ArmaParaLaReinaSlime: {
 			Titulo: Un arma de mineral de Hardmode ya fundida
-			Porque: La Reina Slime tiene 60 de daño, 26 de defensa y 18000 de vida (NPC.cs, type==657) - un primer filtro razonable nada más entrar en Hardmode. No bloquea nada, pero es la primera prueba real de que el mineral nuevo (Cobalto/Paladio) ya vale para algo.
+			Porque: La Reina Slime tiene 60 de daño, 26 de defensa y 18000 de vida - un primer filtro razonable nada más entrar en Hardmode. No bloquea nada, pero es la primera prueba real de que el mineral nuevo (Cobalto/Paladio) ya vale para algo.
 			Como: Solo se puede invocar de NOCHE y dentro del bioma Sagrado, con el Cristal de la Reina Slime. Salta muy alto: una arena con varias plataformas ayuda más que el suelo llano.
 		}
 
 		VencerALaReinaSlime: {
 			Titulo: Derrotarla (opcional)
-			Porque: NPC.downedQueenSlime no bloquea el camino a los mecánicos ni a nada obligatorio. Suelta el Ala Real Cristalina, un vuelo temprano de Hardmode muy por encima de lo que hay antes de ella.
+			Porque: No bloquea el camino a los mecánicos ni a nada obligatorio. Deja caer el Ala Real Cristalina, un vuelo que te adelanta años luz a lo que había disponible antes de que ella apareciera.
 			Como: Sus ataques son casi todos cuerpo a cuerpo y saltos: mantener las distancias con un arma a distancia o mágica es más seguro que pelear cuerpo a cuerpo contra sus caídas.
 		}
 
 		ArmaParaFishron: {
 			Titulo: El arma más exigente antes de la luna
-			Porque: El Duque Pezhongo tiene 100 de daño, 50 de defensa y 60000 de vida (NPC.cs, type==370) - el daño más alto de todo el árbol hasta el propio Moon Lord. Es opcional del todo, pero mucha gente lo considera más difícil que el Cultista o incluso que las torres: no hay atajo aquí, hace falta equipo de verdad.
+			Porque: El Duque Pezhongo tiene 100 de daño, 50 de defensa y 60000 de vida - el daño más alto de todo el árbol hasta el propio Moon Lord. Es opcional del todo, pero mucha gente lo considera más difícil que el Cultista o incluso que las torres: no hay atajo aquí, hace falta equipo de verdad.
 			Como: Se invoca pescando con un Gusano Trufado en el océano (izquierda o derecha del mundo). Pelea sobre agua abierta y llana: sus fases finales llenan el aire y el agua de proyectiles y necesitas sitio en las tres dimensiones para esquivar.
 		}
 
 		VencerAFishron: {
 			Titulo: Derrotarlo (opcional)
-			Porque: NPC.downedFishron no abre nada del camino obligatorio. Suelta el Cañón de Cavajabón y el resto de su equipo, de lo mejor que hay disponible antes de la luna, junto con acceso a la pesca de tesoros del Duque.
+			Porque: No abre nada del camino obligatorio. Deja el Cañón de Cavajabón y el resto de su equipo, de lo mejor que hay disponible antes de la luna, además de abrirte la pesca de tesoros que solo él sabe dónde esconder.
 			Como: Cambia de patrón varias veces según baja de vida: lo que esquivas en la primera fase no sirve en la última. Mantén el movimiento constante en vez de plantarte en un sitio fijo.
 		}
 
 		ArmaParaLaEmperatriz: {
 			Titulo: Un arma para la vida más alta de los opcionales
-			Porque: La Emperatriz de la Luz tiene 80 de daño, 50 de defensa y 70000 de vida (NPC.cs, type==636) - la vida más alta de todos los jefes opcionales tardíos. Además NO recibe daño (dontTakeDamage) salvo en las condiciones de luz correctas: pelear de noche la vuelve muchísimo más agresiva a propósito, como castigo por no respetar su horario.
+			Porque: La Emperatriz de la Luz tiene 80 de daño, 50 de defensa y 70000 de vida - la vida más alta de todos los jefes opcionales tardíos. Además NO recibe daño (dontTakeDamage) salvo en las condiciones de luz correctas: pelear de noche la vuelve muchísimo más agresiva a propósito, como castigo por no respetar su horario.
 			Como: Ataca a la Luciérnaga Prismática, una criatura inofensiva que aparece en el Sagrado de día, para invocarla. Pelea DE DÍA la primera vez: de noche es mucho más dura y no perdona errores.
 		}
 
 		VencerALaEmperatriz: {
 			Titulo: Derrotarla (opcional)
-			Porque: NPC.downedEmpressOfLight no bloquea nada obligatorio. Suelta algunas de las mejores alas y accesorios de movilidad de toda la progresión, útiles incluso contra el propio Moon Lord.
+			Porque: No bloquea nada obligatorio. Deja caer algunas de las mejores alas y accesorios de movilidad de toda la partida, útiles hasta en la pelea contra el propio Señor de la Luna.
 			Como: Vuela en patrones circulares y deja rastros de proyectiles que se quedan flotando: aléjate en línea recta después de cada ráfaga en vez de intentar esquivar dentro de la nube que deja atrás.
+		}
+
+		ArmaParaDesertScourge: {
+			Titulo: Cualquier arma con algo de alcance
+			Porque: El Desert Scourge tiene 4 de defensa y entre 4000 y 5000 de vida segun el modo - menos vida que el Ojo de Cthulhu. Es intencionadamente el primer jefe opcional de Calamity, pensado para antes o justo despues del Rey Slime.
+			Como: Aparece solo si pasas tiempo en el Desierto o el Desierto subterraneo, sobre todo de noche. El Medallon del Desierto lo invoca al instante si prefieres elegir tu el momento.
+		}
+
+		VencerADesertScourge: {
+			Titulo: Derrotarlo (opcional)
+			Porque: No te abre ningún camino obligatorio: es el reto opcional más temprano de todo lo que trae Calamity. Deja materiales para la primera tanda de armas y armadura propias del mod.
+			Como: Se mueve en linea recta hacia ti bajo la arena: mantente en el aire o sobre una plataforma alta para esquivar sus embestidas.
+		}
+
+		PrepararGiantClam: {
+			Titulo: Cualquier arma, y haber derrotado ya al Desert Scourge
+			Porque: El Giant Clam tiene 10 de defensa en prehardmode (35 en Modo Difícil, la misma criatura pero curtida) y solo se deja ver, RARA vez, nadando por el Sunken Sea - y solo después de que hayas dejado atrás al Desert Scourge, por eso este tramo llega justo detrás.
+			Como: No tiene objeto de invocacion: nada mas que explorar el Sunken Sea (bajo el Oceano, mas alla de la Cripta Carmesi/Corrupta submarina) hasta que aparezca uno nadando.
+		}
+
+		VencerAGiantClam: {
+			Titulo: Derrotarlo (opcional)
+			Porque: Es puro extra: el primer miniboss de verdad que guarda el Sunken Sea. Hay una versión de Modo Difícil bastante más curtida (35 de defensa) que suelta mejor botín - la misma criatura, no un tramo aparte.
+			Como: Ataca embistiendo en linea recta bajo el agua: un respirador o pocion de respiracion acuatica evita que el aire se convierta en el problema real de la pelea.
+		}
+
+		ArmaParaCrabulon: {
+			Titulo: Un arma capaz de perforar su caparazon
+			Porque: Crabulon tiene 8 de defensa y 3500-4400 de vida - un pelin mas duro que el Rey Slime, pensado para justo despues del Ojo de Cthulhu.
+			Como: El Decapodita brota solo, muy de vez en cuando, en el bioma de Hongos Luminosos. El Decapodita Sprout lo invoca al instante si tienes uno en la mochila.
+		}
+
+		VencerACrabulon: {
+			Titulo: Derrotarlo (opcional)
+			Porque: No bloquea nada del camino obligatorio. Deja caer la primera tanda de equipo propio de Calamity, útil para el resto del prehardmode.
+			Como: Salta hacia ti y dispara esporas en arco: mantente en movimiento horizontal en vez de plantarte, sus esporas cubren una franja ancha si te quedas quieto.
+		}
+
+		ArmaParaHiveMindOPerforator: {
+			Titulo: Un arma que aguante una pelea larga
+			Porque: Igual que el Devorador de Mundos y el Cerebro de Cthulhu en vanilla, tu mundo decide cuál de los dos monstruos de Calamity te toca enfrentar: The Hive Mind en Corrupción (8 de defensa, 5000-7000 de vida) o The Perforators en Carmesí (4 de defensa, 4000-5750 de vida) - cualquiera de los dos vale para seguir adelante.
+			Como: Rompe un Hive Tumor (Corrupcion) o un Perforator Cyst (Carmesi) para invocarlo la primera vez; despues, Teratoma o Cebo de Gusanos Sangriento lo repiten.
+		}
+
+		VencerAHiveMindOPerforator: {
+			Titulo: Derrotarlo (opcional)
+			Porque: No bloquea nada obligatorio en Calamity (a diferencia de vanilla, donde su equivalente SÍ hace falta antes del Muro de Carne). Aquí es un reto de verdad opcional, pensado para justo después de que te enfrentes a la maldad de tu mundo.
+			Como: Las dos versiones lanzan enjambres de enemigos menores sin parar: prioriza despejar el espacio cercano antes que centrarte solo en el jefe.
+		}
+
+		ArmaParaSlimeGod: {
+			Titulo: Un arma capaz de dos fases seguidas
+			Porque: The Slime God empieza como dos Paladines (Crimulan y Ebonian) que se fusionan en el nucleo final. Pensado por la propia wiki para justo despues de Esqueletron, el ultimo tramo importante de prehardmode de Calamity.
+			Como: El Overloaded Sludge lo invoca en cualquier sitio. Prepara curacion para dos fases distintas: los Paladines primero, el nucleo fusionado despues.
+		}
+
+		VencerASlimeGod: {
+			Titulo: Derrotarlo (opcional)
+			Porque: No bloquea nada obligatorio: es el último gran reto opcional antes del Muro de Carne. Deja el equipo tope de prehardmode de Calamity, lo mejor que vas a llevar puesto antes de cruzar al Modo Difícil.
+			Como: Los dos Paladines se potencian entre si mientras vivan los dos: prioriza rematar a uno rapido en vez de repartir el daño por igual.
+		}
+
+		PrepararDreadnautilus: {
+			Titulo: Estar listo para una Luna de Sangre
+			Porque: Calamity le da un giro siniestro a esa pesca rara e inofensiva que en vanilla es el BloodNautilus: bajo una Luna de Sangre se convierte en un miniboss de verdad. El Horrible Hog es la otra sorpresa de la misma noche: un cerdo salvaje corriente que, por algún motivo, ha crecido mucho más de lo normal - suelto desde que derrotas al Ojo de Cthulhu.
+			Como: Ninguno de los dos tiene objeto de invocacion de verdad: solo aparecen durante una Luna de Sangre real. Un anillo/reloj de Luna de Sangre o esperar la aleatoria de cada noche es la unica via.
+		}
+
+		VencerADreadnautilusYHorribleHog: {
+			Titulo: Derrotar a cualquiera de los dos (opcional)
+			Porque: Ninguno de los dos bloquea nada obligatorio: son las dos curiosidades que la Luna de Sangre de Calamity guarda para quien se atreva a salir esa noche, pensadas para el mismo tramo que Esqueletron y el Slime God.
+			Como: El Dreadnautilus nada en linea recta y muerde fuerte para prehardmode; el Horrible Hog embiste en tierra. Los dos se pueden esquivar con plataformas y distancia.
+		}
+
+		ArmaParaCryogen: {
+			Titulo: Tu primer arma de Modo Dificil de Calamity
+			Porque: Cryogen tiene 15 de defensa y 25000-48000 de vida - el primer jefe hardmode PROPIO de Calamity, pensado para el mismo momento que los mecanicos de vanilla.
+			Como: La Llave Criogenica lo invoca en el bioma de Nieve. Con la opcion "Early Hardmode Progression Rework" activada, su material de crafteo pide un pico de Mithril o mejor - sin ella, se puede intentar nada mas entrar en Modo Dificil.
+		}
+
+		VencerACryogen: {
+			Titulo: Derrotarlo (opcional)
+			Porque: No bloquea nada del camino obligatorio de Calamity, pero te abre la primera tanda de verdad de equipo hardmode del mod - vale la pena antes de ir a por los mecánicos.
+			Como: Alterna entre varias fases de proyectiles helados: los patrones son predecibles, pero se acumulan rapido si no mantienes distancia.
+		}
+
+		ArmaParaAquaticScourge: {
+			Titulo: Un arma que aguante un gusano largo
+			Porque: Aquatic Scourge tiene 10 de defensa y 80000-96000 de vida - mucha mas vida que Cryogen, pero menos defensa. Su derrota desbloquea la fase 2 del evento Lluvia Acida.
+			Como: El Marisco (Seafood) lo invoca en cualquier sitio, o aparece rarisimamente solo en el Sulphurous Sea.
+		}
+
+		VencerAAquaticScourge: {
+			Titulo: Derrotarlo (opcional)
+			Porque: No bloquea el camino obligatorio, pero SÍ hace que el cielo se ponga peor: desbloquea la segunda fase de la Lluvia Ácida de Calamity, y con ella la posibilidad de que aparezca el Cragmaw Mire.
+			Como: Es un gusano segmentado largisimo: como el Devorador de Mundos de vanilla, cada segmento cuenta como un golpe, asi que un arma de area rinde mas que una de un solo objetivo.
+		}
+
+		ArmaParaBrimstoneElemental: {
+			Titulo: Un arma capaz de un jefe defensivo
+			Porque: Brimstone Elemental tiene 15 de defensa y 30000-49200 de vida, en la franja de early hardmode junto a Cryogen y Aquatic Scourge.
+			Como: El Idolo Chamuscado lo invoca en cualquier sitio. Es aconsejable pelear en un espacio abierto: invoca brazos secundarios alrededor suyo.
+		}
+
+		VencerABrimstoneElemental: {
+			Titulo: Derrotarlo (opcional)
+			Porque: No bloquea nada obligatorio: uno más del trío opcional de early hardmode que ofrece Calamity, junto a Cryogen y Aquatic Scourge - el orden entre los tres da igual, elige el tuyo.
+			Como: Sus brazos secundarios disparan sin parar mientras el nucleo central se queda quieto: rematarlos primero reduce muchisimo la cantidad de proyectiles en pantalla.
+		}
+
+		PrepararLluviaAcida2: {
+			Titulo: Estar listo para la Lluvia Acida (fase 2)
+			Porque: Cragmaw Mire es un miniboss que puede aparecer durante el evento Lluvia Acida en cuanto llegas a 115 puntos de progreso - y ese umbral solo se desbloquea tras derrotar al Aquatic Scourge.
+			Como: La Lluvia Acida empieza sola, por probabilidad, o al instante con una Lagrima Caustica. Se cancela si no matas nada en 4 minutos seguidos.
+		}
+
+		VencerACragmawMire: {
+			Titulo: Derrotarlo (opcional)
+			Porque: No bloquea nada obligatorio: un miniboss extra que la Lluvia Ácida trae consigo, pensado para la misma franja que Brimstone Elemental.
+			Como: Se mueve rapido bajo el agua acida: cuidado con el propio ambiente, no solo con el enemigo, la lluvia acida daña por su cuenta.
+		}
+
+		ArmaParaAstrumAureus: {
+			Titulo: Un arma capaz de defensa alta
+			Porque: Astrum Aureus tiene 40 de defensa (mas que cualquier opcional anterior de Calamity) y 75000-120000 de vida, en la Infeccion Astral - el bioma que va apareciendo solo en Modo Dificil.
+			Como: El Fragmento Astral lo invoca dentro de la Infeccion Astral.
+		}
+
+		VencerAAstrumAureus: {
+			Titulo: Derrotarlo (opcional)
+			Porque: No bloquea nada obligatorio por sí solo, aunque te adelanta materiales útiles para el resto de hardmode. No lo confundas con Astrum Deus (más adelante, y ese sí casi obligatorio): dos monstruos distintos que solo comparten nombre.
+			Como: Su defensa alta hace que un arma floja se note mucho: si los golpes parecen no hacer nada, es la defensa, no que juegues mal.
+		}
+
+		ArmaParaCalamitasClone: {
+			Titulo: Un arma a la altura de Plantera
+			Porque: Calamitas Clone tiene 25 de defensa y 30000-46875 de vida - la propia wiki la sitúa "a un nivel similar a Plantera", recomendada tras los tres jefes mecanicos.
+			Como: El Ojo de la Desolacion la invoca en cualquier sitio.
+		}
+
+		VencerACalamitasClone: {
+			Titulo: Derrotarlo (opcional)
+			Porque: No bloquea nada obligatorio, pero deja equipo a la altura de Plantera - vale la pena afrontarlo en la misma franja. No lo confundas con Supreme Calamitas, un jefe final completamente distinto que espera mucho más adelante, pese al nombre casi idéntico.
+			Como: Dispara aros de fuego que cubren casi toda la pantalla: mira los huecos en el patron antes de que se cierre, no intentes esquivar dentro de el.
+		}
+
+		ArmaParaGreatSandShark: {
+			Titulo: Un arma capaz de un miniboss post-Plantera
+			Porque: Great Sand Shark es un miniboss opcional del Desierto, pensado para despues de Plantera.
+			Como: El Nucleo de Tormenta de Arena lo invoca en el Desierto, o mata 10 tiburones de arena durante una tormenta para que aparezca solo.
+		}
+
+		VencerAGreatSandShark: {
+			Titulo: Derrotarlo (opcional)
+			Porque: No bloquea nada obligatorio: un depredador extra que el Desierto esconde para quien vuelva por esa zona después de Plantera.
+			Como: Nada rapido bajo la arena y sale a embestir: quedarte en el aire, fuera de la arena, lo obliga a saltar hacia ti en vez de perseguirte a ciegas.
+		}
+
+		ArmaParaRavager: {
+			Titulo: Un arma pensada para el nivel del Golem
+			Porque: Ravager tiene 55 de defensa y 30000-54000 de vida - la propia wiki lo describe como "pensado en dificultad para estar a la altura del Golem", aunque se puede invocar antes si tienes valor.
+			Como: El Silbato de la Muerte lo invoca en cualquier sitio, pero necesita un ingrediente que solo sale de la version de Modo Dificil del Templo de la Selva.
+		}
+
+		VencerARavager: {
+			Titulo: Derrotarlo (opcional)
+			Porque: No bloquea nada obligatorio, pero es la puerta de entrada a la Plaga que empieza a cubrir la Jungla después del Golem - vale la pena antes de ir a por Plaguebringer Goliath.
+			Como: Sus cuatro partes (cabeza, cuerpo, dos garras) atacan por separado: concentra el daño en la cabeza, el resto pierde fuerza cuando cae.
+		}
+
+		ArmaParaPlaguebringer: {
+			Titulo: Un arma capaz de un jefe post-Golem
+			Porque: The Plaguebringer Goliath tiene 50 de defensa y 70000-105000 de vida - la propia wiki la describe como "la fuerza central de la plaga que se instala en la Jungla tras la derrota del Golem".
+			Como: El Abombination la invoca en la Jungla o Jungla subterranea.
+		}
+
+		VencerAPlaguebringer: {
+			Titulo: Derrotarlo (opcional)
+			Porque: No bloquea nada obligatorio, pero suelta las riendas del resto de la Plaga sobre la Jungla -enemigos y recursos nuevos- para lo que queda de hardmode.
+			Como: Alterna fases de vuelo y de tierra con ataques muy distintos: no asumas que el patron que ya viste sigue valiendo al cambiar de fase.
+		}
+
+		ArmaParaDragonfolly: {
+			Titulo: Un arma del nivel de justo tras la luna
+			Porque: Dragonfolly tiene 40 de defensa y 150000-225000 de vida - la propia wiki lo situa "pensado para pelearse poco despues de derrotar al Señor de la Luna", aunque ya se puede desde el Cultista.
+			Como: El Feromona Exotica lo invoca en la Jungla.
+		}
+
+		VencerADragonfolly: {
+			Titulo: Derrotarlo (opcional)
+			Porque: No bloquea nada obligatorio: un opcional de la franja posterior a la luna, pensado para asomarte justo después del Señor de la Luna aunque nada te obliga a ello.
+			Como: Vuela erraticamente por toda la pantalla y suelta huevos que eclosionan en enemigos menores: revienta los huevos rapido antes de que se acumulen.
+		}
+
+		ArmaParaPrimordialWyrm: {
+			Titulo: Un arma de nivel muy avanzado de postgame
+			Porque: El Primordial Wyrm carga entre 2.500.000 y 3.000.000 de vida y una defensa tan descomunal que huele a truco escondido en la pelea, no a resistencia normal y ya está. No hemos podido confirmar el detalle exacto de esa mecánica ni cómo se le despierta: se enseña con honestidad como el secreto de postgame que es, sin inventarse el resto.
+			Como: Contenido oculto/opcional de muy tarde en la partida, sin ubicacion ni invocacion confirmadas todavia. Investigar en el juego real o en la wiki antes de prometer mas detalle.
+		}
+
+		VencerAPrimordialWyrm: {
+			Titulo: Derrotarlo (opcional, secreto)
+			Porque: No bloquea nada obligatorio: es un secreto de postgame muy avanzado, de los que casi nadie llega a ver. Se documenta su existencia con honestidad en vez de fingir un detalle que no hemos podido confirmar.
+			Como: Sin datos confirmados de su patron de ataque en esta sesion - toma precauciones de fin de partida (equipo completo, curacion abundante) antes de intentarlo.
+		}
+
+		PrepararLluviaAcida3: {
+			Titulo: Estar listo para la Lluvia Acida (fase 3)
+			Porque: Mauler y Nuclear Terror son los dos minibosses de la fase 3 (140 puntos) del evento Lluvia Acida - desbloqueada tras derrotar a Polterghast, la misma fase en la que puede aparecer The Old Duke.
+			Como: La Lluvia Acida empieza sola o con una Lagrima Caustica; con Polterghast ya derrotado, la fase 3 puede llegar a soltar cualquiera de los dos.
+		}
+
+		VencerALluviaAcida3: {
+			Titulo: Derrotar a cualquiera de los dos (opcional)
+			Porque: Ninguno de los dos bloquea nada obligatorio: son los minibosses que trae la fase final de la Lluvia Ácida, del mismo calibre que Old Duke y el Devourer of Gods.
+			Como: Los dos son mucho mas rapidos y agresivos que Cragmaw Mire: mantener movilidad constante importa mas que buscar el hueco perfecto.
+		}
+
+		PrepararAstrumDeus: {
+			Titulo: Un arma capaz del jefe que abre el mineral Astral
+			Porque: Astrum Deus tiene 20 de defensa y 150000-240000 de vida. La Calamity Mod Wiki confirma que "debe ser derrotado para poder minar el Mineral Astral" y que esta pensado para justo despues del Cultista Lunatico, antes del Señor de la Luna.
+			Como: Coloca un Faro Astral (mueble) y haz clic derecho de noche con un Corazon de Titan o un Nucleo Estelar en el inventario para invocarlo - no es un objeto que se "use" directamente.
+		}
+
+		VencerAAstrumDeus: {
+			Titulo: Derrotarlo
+			Porque: Con él caído, el Mineral Astral por fin se puede minar - un material real de progresión, no solo un trofeo. Es lo más cerca que tiene Calamity de exigirte algo antes del Señor de la Luna, aunque técnicamente se puede seguir sin él.
+			Como: Es un gusano largo con dos cabezas independientes: cada una cuenta aparte para el daño total, como el Devorador de Mundos pero con doble frente.
+		}
+
+		ArmaParaGuardianes: {
+			Titulo: Un arma capaz de tres guardianes a la vez
+			Porque: Los Profaned Guardians son tres jefes que luchan JUNTOS. La wiki confirma que "hace falta matarlos para conseguir el Profaned Core, que invoca a Providence" - el unico requisito de invocacion realmente DURO de todo el postgame de Calamity.
+			Como: El Fragmento Profano los invoca en el Sagrado o el Infierno.
+		}
+
+		VencerAGuardianes: {
+			Titulo: Derrotarlos
+			Porque: Con los tres en el suelo, te dejan el Profaned Core: la ÚNICA llave real para invocar a Providence - sáltate este paso y no hay otra forma de llegar hasta ella.
+			Como: Los tres se potencian entre si: el Comandante es el mas resistente, pero centrarte solo en el deja vivos a los otros dos disparando sin parar.
+		}
+
+		ArmaParaProvidence: {
+			Titulo: Un arma de nivel final de Calamity
+			Porque: Providence, the Profaned Goddess tiene 50 de defensa y 250000-375000 de vida - el verdadero arranque del postgame de Calamity, justo despues del Señor de la Luna en la progresion real (no antes, pese a lo que sugiere de memoria el nombre "Goddess").
+			Como: El Nucleo Profano (el drop de los Guardianes) la invoca en el Sagrado o el Infierno.
+		}
+
+		VencerAProvidence: {
+			Titulo: Derrotarla
+			Porque: Con ella caída, se abre el resto del postgame de Calamity: deja el Mark of Providence, la marca que invoca a Ceaseless Void, Storm Weaver y Signus - muy recomendable hacerlo antes de plantarles cara a esos tres, aunque nada te lo impide si decides saltártelo.
+			Como: Cambia de fase segun su propio daño acumulado, no segun el tuyo: cada fase tiene un patron de proyectiles distinto, y todas se pueden repetir si la pierdes de vuelta a la anterior.
+		}
+
+		ArmaParaCeaselessVoid: {
+			Titulo: Un arma de nivel postgame
+			Porque: Ceaseless Void tiene 80 de defensa y 50000-78000 de vida - de los tres jefes que abre Providence, el que menos vida tiene pero mas defensa.
+			Como: El Mark of Providence (drop de Providence) invoca a cualquiera de los tres. Muy recomendado hacerlo tras Providence, aunque tecnicamente no lo exige.
+		}
+
+		VencerACeaselessVoid: {
+			Titulo: Derrotarlo
+			Porque: Junto a Storm Weaver y Signus, dejarlo atrás allana el terreno para Polterghast - muy recomendable, aunque nada te obliga a pasar por aquí antes.
+			Como: Crea un agujero negro central que atrae proyectiles: usalo a tu favor para limpiar el area en vez de solo esquivarlo.
+		}
+
+		ArmaParaStormWeaver: {
+			Titulo: Un arma capaz de un gusano de defensa muy alta
+			Porque: Storm Weaver tiene 150 de defensa - la mas alta de todo este tramo, muy por delante de Ceaseless Void (80) y Signus (60).
+			Como: El Mark of Providence lo invoca en el cielo/espacio.
+		}
+
+		VencerAStormWeaver: {
+			Titulo: Derrotarlo
+			Porque: Junto a Ceaseless Void y Signus, dejarlo atrás allana el terreno para Polterghast. Storm Weaver y Signus comparten algo más que el vecindario -están relacionados de verdad- aunque enfrentarte a uno no te exige haber tumbado al otro.
+			Como: Es un gusano segmentado volador: como con Aquatic Scourge, un arma de area rinde mas que apuntar a un solo segmento.
+		}
+
+		ArmaParaSignus: {
+			Titulo: Un arma equilibrada para el tercero del trio
+			Porque: Signus, Envoy of the Devourer tiene 60 de defensa y 250000-380000 de vida - el tercero de los jefes que abre Providence.
+			Como: El Mark of Providence lo invoca en el Infierno.
+		}
+
+		VencerASignus: {
+			Titulo: Derrotarlo
+			Porque: Con él caído, se cierra el trío que Providence dejó abierto. Con los tres en el suelo -este, Ceaseless Void y Storm Weaver- llevas encima el mejor equipo posible antes de Polterghast, aunque de nuevo ninguno de los tres es un requisito estricto para seguir.
+			Como: Se teletransporta sin parar por toda la pantalla dejando estelas cosmicas: no persigas la estela, anticipa donde va a reaparecer.
+		}
+
+		ArmaParaPolterghast: {
+			Titulo: Un arma de nivel muy avanzado de postgame
+			Porque: Polterghast tiene 90 de defensa y 280000-420000 de vida. La wiki confirma que se puede pelear antes de cualquier jefe postgame, pero que "se recomienda muchisimo" derrotar antes a Storm Weaver, Ceaseless Void y Signus.
+			Como: La primera vez hace falta matar 30 Phantom Spirits dentro de la Mazmorra (ya en postgame) para que aparezca. Despues, el Necroplasmic Beacon lo repite directamente.
+		}
+
+		VencerAPolterghast: {
+			Titulo: Derrotarlo
+			Porque: Con él caído, la Lluvia Ácida desata su tercera fase (Mauler, Nuclear Terror y The Old Duke), y es un paso recomendado antes de ir a por Old Duke o el Devourer of Gods.
+			Como: Se vuelve intangible por fases y solo se puede golpear en ciertos momentos: guarda tus ataques mas fuertes para cuando este solido de verdad.
+		}
+
+		ArmaParaOldDuke: {
+			Titulo: Un arma de nivel avanzado de postgame
+			Porque: The Old Duke tiene 90 de defensa y 400000-600000 de vida - convive con el Duque Pezhongo de vanilla, no lo sustituye (confirmado: comparten estilo de pelea pero son NPC distintos). La wiki lo situa textualmente "entre Polterghast y The Devourer of Gods".
+			Como: Aparece en la fase 3 de la Lluvia Acida (tras Polterghast), o pescando con un Bloodworm en el Sulphurous Sea ya en postgame.
+		}
+
+		VencerAOldDuke: {
+			Titulo: Derrotarlo
+			Porque: Se recomienda dejarlo en el fondo del mar antes de ir a por el Devourer of Gods, aunque el juego no te obliga a seguir ese orden.
+			Como: Cambia de forma varias veces durante la pelea, cada una con ataques distintos: no bajes la guardia entre transformaciones, el cambio en si no da tregua.
+		}
+
+		ArmaParaDoG: {
+			Titulo: Un arma de nivel final de Calamity
+			Porque: The Devourer of Gods tiene 50 de defensa pero 750000-900000 de vida - mas del doble que Polterghast. La wiki confirma que esta "pensado para pelearse despues de Storm Weaver, Ceaseless Void, Signus y Polterghast".
+			Como: El Cosmic Worm lo invoca en cualquier sitio.
+		}
+
+		VencerADoG: {
+			Titulo: Derrotarlo
+			Porque: Con él caído, se abren las Barras de Cosmilite: un material real que necesitas para gran parte del equipo de final de partida, no un simple trofeo para presumir.
+			Como: Es el gusano mas largo y rapido de todo el arbol: un arma de area con buen alcance importa mas aqui que en cualquier otro segmentado anterior.
+		}
+
+		ArmaParaYharon: {
+			Titulo: Un arma capaz del penultimo tramo de Calamity
+			Porque: Yharon, Dragon of Rebirth tiene 90 de defensa y 1000000-1560000 de vida - casi el doble que el Devourer of Gods. La wiki confirma que esta "pensado para pelearse despues de The Devourer of Gods".
+			Como: El Huevo de Yharon (obtenido tras completar el Templo de la Selva de postgame) lo invoca.
+		}
+
+		VencerAYharon: {
+			Titulo: Derrotarlo
+			Porque: Con él caído, se abre paso al último tramo de todo Calamity: los Exo Mechs y Supreme Calamitas, dos amenazas pensadas para afrontarse casi a la vez.
+			Como: Se cura si le dejas demasiado tiempo entre fases sin bajarle mas vida: manten la presion constante en vez de repartir el daño con pausas largas.
+		}
+
+		ArmaParaExoMechs: {
+			Titulo: El arma mas fuerte que tengas
+			Porque: Los Exo Mechs se luchan JUNTOS bajo el control de Draedon, en una batalla de varias fases - tu eliges por cual empezar, los otros dos se suman despues.
+			Como: Se construye "El Descifrador" (Decryption Computer + Celula de Enfriamiento Cuantico Aurica) y se habla con Draedon para empezar - no es un objeto que se use directamente.
+		}
+
+		VencerAExoMechs: {
+			Titulo: Derrotar a los tres
+			Porque: Se da la batalla por ganada en cuanto cae el primero de los tres mechs, porque los tres luchan juntos desde el principio - en la práctica, acabas con los tres en la misma sesión de combate.
+			Como: Cada mech tiene su propio patron: Ares dispara laseres fijos, Thanatos es un gusano volador, Artemis y Apollo cazan en pareja. Aprende los tres antes de intentarlo, aparecen juntos.
+		}
+
+		ArmaParaSupremeCalamitas: {
+			Titulo: El arma final de todo el arbol
+			Porque: Supreme Witch, Calamitas tiene 100 de defensa y 750000-1150000 de vida. La propia wiki la describe como que "actua actualmente como jefe final junto a los Exo Mechs" - distinta de Calamitas Clone (mucho mas temprana, nivel Plantera).
+			Como: Las Cenizas de Calamidad se usan en el Altar de los Malditos para invocarla.
+		}
+
+		VencerASupremeCalamitas: {
+			Titulo: Derrotarla: el final del arbol de Calamity
+			Porque: Con ella caída, se cierra todo el árbol de Calamity tal y como está hoy - junto a los Exo Mechs, el propio mod la trata como su final de verdad.
+			Como: Cambia de fase con patrones muy distintos entre si: no hay un truco unico que valga para toda la pelea, cada fase exige su propia lectura.
 		}
 	}
 }
