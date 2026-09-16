@@ -62,6 +62,24 @@ Get-Process -Id $p.Id -ErrorAction SilentlyContinue | Stop-Process -Force -Error
 Get-Process dotnet -ErrorAction SilentlyContinue |
 	Where-Object { $_.Path -like "$tmlDir*" } | Stop-Process -Force -ErrorAction SilentlyContinue
 
+# Evidencia CON NOMBRE en el repo (16-sep-2026, KeepQA S1 - AUDITORIA-SESGOS-16SEP.md: "Conjuntos"
+# era una de las 3 pestañas de TerrakeepMod sin ninguna evidencia nombrada en evidencia\, aunque
+# esta autoprueba existia y dejaba capturas... en el sandbox, donde ningun inventario las ve).
+# Mismo patron que verificar-espaciado.ps1: el log real y las capturas del sandbox, copiados.
+$repo = Split-Path -Parent $PSScriptRoot
+if (Test-Path $log) {
+	$lineas = Select-String -Path $log -Pattern '\[Terrakeep\]' | ForEach-Object { $_.Line }
+	$lineas | Out-File (Join-Path $repo 'evidencia\conjuntos.log.txt') -Encoding utf8
+	Write-Host "Log [Terrakeep] copiado a evidencia\conjuntos.log.txt ($($lineas.Count) lineas)." -ForegroundColor DarkGray
+}
+$capturas = Join-Path $sandbox 'terrakeep-capturas'
+if (Test-Path $capturas) {
+	$destinoCapturas = Join-Path $repo 'evidencia\conjuntos-capturas'
+	New-Item -ItemType Directory -Force -Path $destinoCapturas | Out-Null
+	Copy-Item (Join-Path $capturas 'conjuntos-*.png') $destinoCapturas -Force -ErrorAction SilentlyContinue
+	Write-Host "Capturas conjuntos-*.png copiadas a evidencia\conjuntos-capturas\." -ForegroundColor DarkGray
+}
+
 Write-Host ''
 if ($encontrado) {
 	$falla = Select-String -Path $log -Pattern 'FALLO' -SimpleMatch -ErrorAction SilentlyContinue

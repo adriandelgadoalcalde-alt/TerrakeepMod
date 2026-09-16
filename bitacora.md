@@ -8155,3 +8155,46 @@ Texto (los dos .hjson, es-ES y en-US, mismas correcciones):
 En toda la auditoria no aparecio ninguna bandera mal escrita ni inexistente: el propio arnes
 confirma "avisos de datos: 0" y 0 requisitos no evaluables con partida real, asi que la causa de
 lo que vio el usuario no esta en los nombres de bandera del .json.
+
+## 16-sep-2026 (mañana) - KeepQA S1+S2: evidencia con nombre de Conjuntos/Completitud/Hitos y par antes/despues del tooltip de objeto
+
+Encargo de cierre de `Downloads\KeepQA\AUDITORIA-SESGOS-16SEP.md` para toda la familia. Aqui, dos
+huecos reales: (S1) Conjuntos, Completitud e Hitos tenian `Autoprueba*.cs` real pero NINGUNA
+evidencia con nombre en `evidencia\` (las capturas se quedaban en el sandbox WS7, donde el
+inventario de cobertura de KeepQA no las ve; Hitos ni siquiera tenia script que la lanzara); (S2)
+el tooltip de objeto (bug real del 14-sep) solo dejaba log, sin ningun volcado del estado con el
+raton encima.
+
+- `scripts/verificar-conjuntos.ps1`, `scripts/verificar-completitud.ps1`: copian el log real
+  `[Terrakeep]` a `evidencia\conjuntos.log.txt`/`completitud.log.txt` y las capturas del sandbox a
+  `evidencia\conjuntos-capturas\`/`completitud-capturas\` (mismo patron que verificar-espaciado).
+- `scripts/verificar-hitos.ps1` (nuevo): lanza `TERRAKEEP_AUTOTEST_HITOS`; copia antes el album REAL
+  del sandbox de la Guia (`tModLoader-TerrakeepGuia\terrakeep-hitos`, 1155 hitos reales) al WS7,
+  porque con el album vacio el paso 3 daria "NO CUADRA" sin decir nada de la pestaña. Pasada real:
+  clic real en "Álbum" OK, "Actualizar"/"Abrir carpeta"/lista sin solapes (numeros reales),
+  1155 entradas montadas = 1155 en album.json. Evidencia: `evidencia\hitos.log.txt` +
+  `hitos-capturas\hitos-1-album.png`.
+- `Common/Panel/AutopruebaTooltipObjeto.cs`: por zona, volcado de geometria del panel
+  (`PanelTerrakeepState.VolcarGeometriaJson`) ANTES de mover el raton y DESPUES de que el motor
+  rellene el tooltip -> `transicion-hover-<zona>-antes/despues.json` + captura
+  `tooltip-hover-<zona>.png`. `CapturaDePantalla.Permitida` incluye ahora esta autoprueba (no
+  podia capturar). El rectangulo del tooltip vainilla NO se añade al volcado a proposito: lo
+  pinta el motor (`MouseText`) fuera del arbol `UIElement`, y reimplementar `MouseTextInner` solo
+  para medirlo seria un analogo forzado - lo que se juzga (con `--sin-cambio`) es que el hover no
+  mueve, agranda ni oculta nada del panel; que el tooltip se pinta lo demuestran el log
+  (`HoverItem.type`/`hoverItemName` OK en las 4 zonas) y la captura (mirada: "Bloque de tierra
+  (250) / Se puede colocar / Material" sobre la ranura 2).
+- `scripts/verificar-tooltip-objeto.ps1` (nuevo; hasta hoy la autoprueba se lanzaba a mano): copia
+  log/capturas/pares a `evidencia\tooltip-objeto-transiciones\` y pasa cada par por
+  `Downloads\KeepQA\src\transicion\verificarTransicion.js` (pieza compartida nueva, S2) con canario
+  de la pieza y canario del extractor (antes contra si mismo -> `sin_efecto`). Pasada real: 4/4
+  pares OK.
+- `scripts\compilar.ps1` (compilador real de tModLoader): 0 errores, `.tmod` 756.953 B.
+- `node Downloads\KeepQA\src\cobertura-pantallas\verificarCoberturaPantallas.js --proyecto
+  TerrakeepMod`: **19/19 pantallas con evidencia** (antes 16/19).
+- Limite honesto: el par de SCROLL (UIList al final) no se ha cableado aqui - exigia un paso nuevo
+  en el switch de `AutopruebaLibreria.cs` (tocado por otra sesion esta noche); el volcado "final"
+  para `verificarBordeViewport.js` sigue existiendo (paso 25).
+- Visto de paso en el log del sandbox WS7 (sin Calamity): 36 avisos "Guia: AVISO de datos -
+  bandera desconocida downedX" en los pasos de Calamity. No es de este encargo; para quien
+  retome la Guia: decidir si con `Calamity cargado=False` esos avisos deben silenciarse.

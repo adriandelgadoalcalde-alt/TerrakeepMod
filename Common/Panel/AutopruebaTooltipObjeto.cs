@@ -56,6 +56,11 @@ namespace TerrakeepMod.Common.Panel
 		private static string _zonaEnPrueba;
 		private static SlotObjetoVanilla _slotEnPrueba;
 
+		/// <summary>Geometria REAL del panel (PanelTerrakeepState.VolcarGeometriaJson) tomada en
+		/// <see cref="PonerRatonSobre"/> ANTES de mover el raton - la mitad "antes" del par que
+		/// consume Downloads\KeepQA\src\transicion\verificarTransicion.js (16-sep-2026, sesgo S2).</summary>
+		private static string _geometriaAntesDelHover;
+
 		/// <summary>true mientras se este comprobando un hover: <see cref="ReafirmarRaton"/> pisa
 		/// <see cref="_mouseObjetivoX"/>/<see cref="_mouseObjetivoY"/> sobre Main.mouseX/Main.mouseY
 		/// en CADA fotograma mientras dura. Ver la nota larga en <see cref="ReafirmarRaton"/>.</summary>
@@ -265,6 +270,18 @@ namespace TerrakeepMod.Common.Panel
 			_objetoEsperado = encontrado.ObjetoActual;
 			_slotEnPrueba = encontrado;
 
+			// Par antes/despues para KeepQA (S2): la geometria del panel ENTERO con el raton aun
+			// fuera. Se toma aqui, antes de escribir Main.mouseX/mouseY, y se escribe a disco junto
+			// con el "despues" en ComprobarHover.
+			try {
+				_geometriaAntesDelHover = panel.VolcarGeometriaJson();
+			}
+			catch (Exception e) {
+				_geometriaAntesDelHover = null;
+				RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA TOOLTIP (" + zona +
+					"): volcado de geometria 'antes' fallido: " + e.GetType().Name + ": " + e.Message);
+			}
+
 			CalculatedStyle dim = encontrado.GetDimensions();
 			int x = (int)(dim.X + dim.Width / 2f);
 			int y = (int)(dim.Y + dim.Height / 2f);
@@ -327,6 +344,55 @@ namespace TerrakeepMod.Common.Panel
 				", slot.ContainsPoint(MouseScreen)=" + contains + "," + dimActual +
 				" playerInventory=" + Main.playerInventory +
 				", inFancyUI=" + Main.inFancyUI + "]");
+
+			VolcarParDeTransicionHover();
+		}
+
+		/// <summary>
+		/// KeepQA S2 (16-sep-2026): escribe el par antes/despues de la geometria del panel alrededor
+		/// del hover en <c>&lt;guardado&gt;/terrakeep-capturas/transicion-hover-&lt;zona&gt;-antes.json</c> /
+		/// <c>-despues.json</c>, mas una captura real del fotograma con el tooltip pintado. La
+		/// verificacion la hace fuera del juego <c>verificarTransicion.js --transicion hover
+		/// --sin-cambio</c> (scripts\verificar-tooltip-objeto.ps1).
+		/// <para />
+		/// Por que <c>--sin-cambio</c> y no un elemento "tooltip" en el volcado: el tooltip de objeto
+		/// lo pinta el MOTOR (<c>Main.MouseText</c>/<c>DrawPendingMouseText</c>, capa 33 vainilla),
+		/// fuera del arbol <c>UIElement</c> del panel - su rectangulo no es un dato del mod, y
+		/// reimplementar el calculo de <c>MouseTextInner</c> solo para medirlo seria justo la clase de
+		/// "analogo forzado" que no se hace. Lo que SI es medible y honesto: que pasar el raton por una
+		/// ranura no mueve, agranda ni oculta NADA del panel (un hover que reordena el layout es un
+		/// bug obvio a simple vista). Que el tooltip se pinta de verdad lo demuestra el log de arriba
+		/// (Main.HoverItem/hoverItemName) y la captura.
+		/// </summary>
+		private static void VolcarParDeTransicionHover()
+		{
+			PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
+			if (panel == null || _geometriaAntesDelHover == null) {
+				RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA TOOLTIP (" + _zonaEnPrueba +
+					"): sin panel o sin geometria 'antes', se omite el par de transicion.");
+				return;
+			}
+
+			string zona = (_zonaEnPrueba ?? "zona").ToLowerInvariant().Replace('/', '-').Replace(' ', '-');
+			try {
+				string carpeta = System.IO.Path.Combine(Main.SavePath, CapturaDePantalla.Carpeta);
+				System.IO.Directory.CreateDirectory(carpeta);
+				string rutaAntes = System.IO.Path.Combine(carpeta, "transicion-hover-" + zona + "-antes.json");
+				string rutaDespues = System.IO.Path.Combine(carpeta, "transicion-hover-" + zona + "-despues.json");
+				System.IO.File.WriteAllText(rutaAntes, _geometriaAntesDelHover);
+				System.IO.File.WriteAllText(rutaDespues, panel.VolcarGeometriaJson());
+				RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA TOOLTIP (" + _zonaEnPrueba +
+					") - par de transicion hover escrito: \"" + System.IO.Path.GetFileName(rutaAntes) + "\" y \"" +
+					System.IO.Path.GetFileName(rutaDespues) + "\" en " + carpeta + ". " +
+					CapturaDePantalla.Guardar("tooltip-hover-" + zona));
+			}
+			catch (Exception e) {
+				RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA TOOLTIP (" + _zonaEnPrueba +
+					"): escritura del par de transicion fallida: " + e.GetType().Name + ": " + e.Message);
+			}
+			finally {
+				_geometriaAntesDelHover = null;
+			}
 		}
 
 		/// <summary>Aparta el raton de pantalla de cualquier ranura del panel (una esquina fuera del

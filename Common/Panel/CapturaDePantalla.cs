@@ -100,7 +100,12 @@ namespace TerrakeepMod.Common.Panel
 					// necesita su propia captura para demostrar que ya no se mezcla con el contenido
 					// de detras a ventana pequeña.
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
-						AutopruebaTooltipPestana.Variable));
+						AutopruebaTooltipPestana.Variable))
+					// Tooltip de OBJETO (16-sep-2026, KeepQA S2): hasta hoy esta autoprueba solo dejaba
+					// log; ahora deja tambien captura y los pares de geometria antes/despues del hover
+					// para verificarTransicion.js (ver AutopruebaTooltipObjeto.ComprobarHover).
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
+						AutopruebaTooltipObjeto.Variable));
 			}
 		}
 
