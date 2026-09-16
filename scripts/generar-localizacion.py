@@ -17,6 +17,14 @@ comillas que no hacen falta y separa los bloques con una linea en blanco), asi q
 que sale de aqui y el que deja el juego se ven distintos aunque digan exactamente lo mismo. Lo
 que se comitea es el del JUEGO, para que "git status" quede limpio despues de jugar: se ejecuta
 este script, se lanza el mod una vez, y se comitea lo que quede.
+
+AVISO (16-sep-2026): la seccion "Guia" (Guia.Tramo.*, Guia.Paso.*, Guia.Bandera.*, Guia.Req.*)
+se autora DIRECTAMENTE en los dos .hjson desde el 15-sep-2026 (reescritura de tono, los 25
+tramos de Calamity, la auditoria de exactitud contra el codigo decompilado del 16-sep) y la
+tabla T de abajo se quedo atras en ese bloque. NO volver a ejecutar este script sin portar antes
+esos textos a T, o pisaria correcciones reales (altares/Pwnhammer, tres mecanicos, oleadas de las
+Lunas, Emperatriz de noche...). Los .hjson son la fuente de verdad de la Guia; Terrakeep de
+escritorio los consume via scripts\sync-guia-desde-terrakeepmod.ps1 del repo hermano.
 """
 import io, os, json, collections
 

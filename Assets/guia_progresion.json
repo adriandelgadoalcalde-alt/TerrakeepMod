@@ -16,7 +16,9 @@
     "algo que la guia sepa medir. Ver bitacora.md para el desglose y las prioridades.",
     "",
     "Calamity: 25 tramos (60 pasos) anadidos el 15-sep-2026, investigados contra calamitymod.wiki.gg y verificados decompilando CalamityMod.dll v2.2.2 instalado con ilspycmd (banderas reales de CalamityMod.DownedBossSystem, clases reales de NPC/objeto). \"jefeFinalMod\"/\"jefeMod\" y \"idMod\"/\"idsMod\" resuelven un NPC/objeto de un mod por su pid (\"CalamityMod/NombreInterno\") al type real de la partida via ModContent.TryFind - ver CatalogoGuia.ResolverNpcMod/ResolverItemMod. Vanilla auditado el mismo dia contra terraria.wiki.gg (paginas Bosses y Events, dos fuentes cruzadas): sus 21 tramos ya cubren el 100% real de jefes/eventos con bandera de completado - Luna de Sangre, Eclipse Solar y Lluvia de Slimes se investigaron y se dejan fuera a proposito (confirmado en la wiki: son eventos ambientales sin ninguna bandera de \"completado\", nunca un descuido).",
-    "que añadirlo sea DATOS y no reescribir el cerebro. Ver la cabecera de CatalogoGuia.cs."
+    "que añadirlo sea DATOS y no reescribir el cerebro. Ver la cabecera de CatalogoGuia.cs.",
+    "",
+    "AUDITORIA DE EXACTITUD (16-sep-2026), paso a paso contra el codigo decompilado real (tModLoader 1.4.4.9 en Downloads\\tModLoader-Decompiled\\tModLoader y CalamityMod v2.2.2 en ...\\CalamityMod) y terraria.wiki.gg / calamitymod.wiki.gg como contraste. Correcciones de ESTRUCTURA que salieron de ahi (las de texto viven en los .hjson): (1) Piratas y Legion de Escarcha pasan de prehardmode (orden 19/17) a Modo Dificil (orden 44/43) con requisito real hardMode - el Mapa Pirata solo cae en hardmode (ItemDropDatabase, Conditions.PirateMap) y la invasion natural exige hardMode && altarCount>0 (Main.cs:83223); el Globo de Nieve solo sale de un Regalo abierto en hardmode (ItemDropDatabase.RegisterPresent, Conditions.IsHardmode, 1/15). (2) El cierre de Mecanicos pasa de downedMechBossAny a downedMechBossAll: los bulbos de Plantera exigen downedMechBoss1 && 2 && 3 (WorldGen.cs:68792), no 'cualquiera'. (3) Ceaseless Void se invoca en la Mazmorra, no en las cavernas (MarkofProvidence.UseItem: ZoneDungeon). (4) Crabulon baja al subsuelo: el Decapodita Sprout solo se usa en Hongos Luminosos por debajo de la superficie (DecapoditaSprout.CanUseItem). El resto de hallazgos van citados en la _fuente de cada requisito."
   ],
   "tramos": [
     {
@@ -213,7 +215,7 @@
               "recomendado": true
             },
             {
-              "_fuente": "ItemID.cs: Estandarte de Batalla Goblin=361. Usado en la superficie, invoca la invasion al instante; alternativa a esperar a que aparezca sola (solo puede pasar tras derrotar a un jefe).",
+              "_fuente": "ItemID.cs: Estandarte de Batalla Goblin=361. Usado en la superficie, invoca la invasion al instante; alternativa a esperar a que aparezca sola - la natural exige WorldGen.shadowOrbSmashed (haber roto ya una Esfera Oscura/Corazon Carmesi) y sale con 1/3 cada amanecer mientras no se haya derrotado nunca (Main.cs:83209-83216), no 'tras derrotar a un jefe'.",
               "tipo": "objeto",
               "id": 361,
               "cantidad": 1,
@@ -236,7 +238,7 @@
     },
     {
       "clave": "LegionDeEscarcha",
-      "orden": 17,
+      "orden": 43,
       "ambito": "vanilla",
       "opcional": true,
       "jefeFinal": 0,
@@ -248,18 +250,23 @@
           "capa": "superficie",
           "requisitos": [
             {
-              "_fuente": "NPC.cs: Mister Estocada (type==144), el mas duro de los tres tipos del evento, tiene 65 de daño, 26 de defensa y 240 de vida - con coldDamage=true, aplica frio extra ademas del golpe. Con daño-defensa*0.5 (minimo 1), 28 de daño deja golpes utiles.",
+              "_fuente": "Auditoria 16-sep-2026: este tramo estaba en prehardmode (orden 17) y es de MODO DIFICIL. La Legion no aparece nunca sola (Main.UpdateTime_StartDay solo lanza Goblins y Piratas por su cuenta); solo la invoca el Globo de Nieve (602), que unicamente sale de un Regalo (1869) abierto ya en hardmode: ItemDropDatabase.RegisterPresent, ItemDropRule.ByCondition(new Conditions.IsHardmode(), 602, 15) - 1/15 por regalo, y los Regalos los suelta cualquier enemigo 1/13 solo durante la Navidad (RegisterGlobalRules, Conditions.XmasPresentDrop, 15-31 de diciembre).",
+              "tipo": "bandera",
+              "bandera": "hardMode"
+            },
+            {
+              "_fuente": "NPC.cs, type==144 (Mister Estocada), el mas duro de los tres tipos del evento: 65 de daño, 26 de defensa y 240 de vida, coldDamage=true (aplica frio extra ademas del golpe). Con daño-defensa*0.5 (minimo 1), 28 de daño deja golpes utiles.",
               "tipo": "dano_arma",
               "valor": 28
             },
             {
-              "_fuente": "Main.CanStartInvasion: usar la Bola de Nieve de Cristal exige el mismo ConsumedLifeCrystals>=5 que el Estandarte Goblin, y que no haya ya otra invasion en marcha.",
+              "_fuente": "Main.CanStartInvasion (Main.cs:82189-82208): usar el Globo de Nieve exige el mismo ConsumedLifeCrystals>=5 que el Estandarte Goblin, y que no haya ya otra invasion en marcha.",
               "tipo": "cristales_vida",
               "valor": 5,
               "recomendado": true
             },
             {
-              "_fuente": "ItemID.cs: Bola de Nieve de Cristal=602. Usada en cualquier sitio, invoca la legion al instante.",
+              "_fuente": "ItemID.cs: Globo de Nieve=602 (nombre real en es-ES: 'Globo de nieve'). Usado en cualquier sitio, invoca la legion al instante. No hay otra forma de que aparezca.",
               "tipo": "objeto",
               "id": 602,
               "cantidad": 1,
@@ -295,12 +302,12 @@
           "jefe": 668,
           "requisitos": [
             {
-              "_fuente": "NPC.cs, type==668: daño 20 (coldDamage=true, aplica Frostburn extra), defensa 10, vida 7000.",
+              "_fuente": "NPC.cs, type==668 (linea 12571): daño 20 (coldDamage=true, aplica Frostburn extra), defensa 10, vida 7000.",
               "tipo": "dano_arma",
               "valor": 16
             },
             {
-              "_fuente": "Player.cs, SummonItemCheck (linea ~41813): ItemID.DeerThing=5120 invoca a Deerclops (type 668) al usarlo. Alternativa a esperar a que aparezca solo (Main.cs: solo durante una tormenta, justo tras el atardecer, con el jugador en ZoneSnow y sin peligro cerca - NPC.AnyDanger).",
+              "_fuente": "Player.cs, ItemCheck_UseBossSpawners (linea 43557): ItemID.DeerThing=5120 invoca a Deerclops (type 668) al usarlo, y solo con ZoneSnow. Alternativa a esperar a que aparezca solo: Main.cs:82838-82848, en la rama de NOCHE, cuando time cruza 16200 (o sea a MEDIANOCHE, no 'tras el atardecer'), con raining (ventisca en la nieve), jugador en ZoneSnow, en la superficie, sin vecinos cerca (townNPCs==0), con statLifeMax2>=200 o statDefense>=9, sin peligro cerca (NPC.AnyDanger) - y si ya se derroto una vez, solo 1 de cada 4 noches.",
               "tipo": "objeto",
               "id": 5120,
               "cantidad": 1,
@@ -328,7 +335,7 @@
     },
     {
       "clave": "Piratas",
-      "orden": 19,
+      "orden": 44,
       "ambito": "vanilla",
       "opcional": true,
       "jefeFinal": 0,
@@ -340,12 +347,17 @@
           "capa": "superficie",
           "requisitos": [
             {
+              "_fuente": "Auditoria 16-sep-2026: este tramo estaba en prehardmode (orden 19) y es de MODO DIFICIL por partida doble. La invasion natural: Main.cs:83223, 'invasionType == 0 && hardMode && WorldGen.altarCount > 0' (hace falta hardmode Y haber roto ya un altar; 1/30 cada dia hasta la primera victoria, 1/60 despues). El Mapa Pirata (1315): ItemDropDatabase.RegisterGlobalRules, ByCondition(new Conditions.PirateMap(), 1315, 100) - lo sueltan los enemigos del Oceano solo en hardmode. Y el propio Guia lo dice en el juego: Main.cs:51295, helpText 205 exige hardMode.",
+              "tipo": "bandera",
+              "bandera": "hardMode"
+            },
+            {
               "_fuente": "NPC.cs, type==216: el Capitan Pirata, el mas duro de los comunes del evento, tiene 70 de daño, 30 de defensa y 3000 de vida - mucha mas defensa que el Guerrero Goblin (8) o Mister Estocada (26). OJO: el 'Flying Dutchman' que se suele citar de memoria (type==491, Pirate Ship) NO es un enemigo de combate real - tiene dontTakeDamage=true y damage=0, es solo la plataforma visual.",
               "tipo": "dano_arma",
               "valor": 35
             },
             {
-              "_fuente": "Main.CanStartInvasion(3,...): usar el Mapa Pirata exige ConsumedLifeCrystals>=5, el mismo hito que el Ejercito Goblin y la Legion de Escarcha.",
+              "_fuente": "Main.CanStartInvasion(3,...) (Main.cs:82189-82208): usar el Mapa Pirata exige ConsumedLifeCrystals>=5, el mismo hito que el Ejercito Goblin y la Legion de Escarcha.",
               "tipo": "cristales_vida",
               "valor": 5,
               "recomendado": true
@@ -386,7 +398,7 @@
           "capa": "cavernas",
           "requisitos": [
             {
-              "_fuente": "NPC.cs, type==13 (Devorador, cabeza de segmento): daño 22, defensa 2, vida 150 por segmento. type==266 (Cerebro): daño 30, defensa 14, vida 1250, con dontTakeDamage=true mientras vivan sus Reptadores. Con daño-defensa*0.5 (minimo 1), 20 de daño de arma deja golpes utiles contra los dos.",
+              "_fuente": "NPC.cs SetDefaults: Devorador de Mundos, cabeza type==13 (linea 3978) daño 22 / defensa 2, cuerpo type==14 (3997) daño 13 / defensa 4, cola type==15 (4017) daño 11 / defensa 8, 150 de vida CADA segmento. Cerebro type==266 (7560): daño 30, defensa 14, vida 1250, con dontTakeDamage=true desde SetDefaults mientras vivan sus Reptadores (type==267: 100 de vida, 20 de daño, 10 de defensa). Con daño-defensa*0.5 (minimo 1), 20 de daño de arma deja golpes utiles contra los dos.",
               "tipo": "dano_arma",
               "valor": 20
             },
@@ -418,6 +430,7 @@
           "capa": "cavernas",
           "requisitos": [
             {
+              "_fuente": "NPC.cs:85444-85455, case 13/14/15/266 con boss=true: SetEventFlagCleared(ref downedBoss2) y WorldGen.spawnMeteor=true seguro la primera vez (!downedBoss2), 1/2 las siguientes; ademas Main.cs:82945 tira 1/50 cada noche con downedBoss2. LO QUE NO ABRE (auditoria 16-sep-2026, reportado por el usuario jugando): los altares. WorldGen.SmashAltar (WorldGen.cs:42691) devuelve sin hacer nada si !Main.hardMode, y Player.cs:45912 hiere al jugador (statLife/2) al golpear el tile 26 con hammer<80 o sin hardmode - el unico martillo de 80% antes de los de hardmode es el Gran martillo (Pwnhammer, 367), drop 100% del Muro de Carne (ItemDropDatabase.RegisterBoss_WOF). Lo que SI abre de verdad: el Tabernero pasa a poder rescatarse (DD2Event.ReadyToFindBartender => NPC.downedBoss2) y con el la dificultad 1 del Antiguo Ejercito; y el material del jefe (Endemoniado/Carmesi + Escamas de las sombras/Muestras de tejido) da el Pico de pesadilla (65%) / Pico mortifero (70%), los primeros que pican Piedra infernal (Player.cs:55016 exige pickPower>=65 para el tile 58).",
               "tipo": "bandera",
               "bandera": "downedBoss2"
             }
@@ -529,7 +542,7 @@
           "jefe": 113,
           "requisitos": [
             {
-              "_fuente": "NPC.cs, type==113 (cuerpo): daño 50, defensa 12, vida 8000. type==114 (ojo): daño 50, defensa 0, vida 8000. Con daño-defensa*0.5 (minimo 1), 25 de daño deja golpes utiles contra los dos sin alargar una pelea con mucha mas vida que Esqueletron.",
+              "_fuente": "NPC.cs, type==113 (cuerpo/boca, linea 5453): daño 50, defensa 12, vida 8000. type==114 (ojos, 5471): daño 50, defensa 0, vida 8000 (compartida). OJO: los ojos son la parte SIN defensa, la boca la blindada - el texto lo tenia al reves hasta el 16-sep-2026. Con daño-defensa*0.5 (minimo 1), 25 de daño deja golpes utiles contra los dos sin alargar una pelea con mucha mas vida que Esqueletron.",
               "tipo": "dano_arma",
               "valor": 25
             },
@@ -560,7 +573,7 @@
           "jefe": 113,
           "requisitos": [
             {
-              "_fuente": "NPC.cs, case 113 (muerte): WorldGen.StartHardmode() pone Main.hardMode a true. No hay marcha atras: es la unica bandera real de este cierre.",
+              "_fuente": "NPC.cs, case 113 (muerte): WorldGen.StartHardmode() pone Main.hardMode a true. No hay marcha atras: es la unica bandera real de este cierre. Suelta ademas el Gran martillo (Pwnhammer, 367) al 100% fuera de experto (ItemDropDatabase.RegisterBoss_WOF, linea 585), el primer martillo de 80% que rompe altares (Player.cs:45912, WorldGen.SmashAltar). Con Calamity y su opcion de servidor EarlyHardmodeProgressionRework (DefaultValue true, CalamityServerConfig.cs:34-35) el reparto cambia: ILChanges.PreventSmashAltarCode salta SmashAltar y el altar suelta 4 Almas de la noche (CalamityGlobalTile.cs:247-250); Cobalto/Paladio brotan al morir el Muro (WorldgenManagementSystem.ModifyHardmodeTasks, SpawnOre 107/221) y Mithril, Adamantita y Lingotes sagrados los sueltan los mecanicos (DropHelper.MythrilCondition = downedMechBossAny, AdamantiteCondition = dos mecanicos, HallowedBarsCondition = los tres).",
               "tipo": "bandera",
               "bandera": "hardMode"
             }
@@ -588,7 +601,7 @@
               "valor": 30
             },
             {
-              "_fuente": "ItemID.cs: Cristal de la Reina Slime=4988. Se usa de noche dentro del bioma Sagrado para invocarla.",
+              "_fuente": "ItemID.cs: Cristal gelatinoso (QueenSlimeCrystal)=4988, se encuentra en el Sagrado subterraneo, no se fabrica. Player.cs:43541-43555: la unica condicion de uso es ZoneHallow - a CUALQUIER hora, no 'de noche' como decia esta guia hasta el 16-sep-2026.",
               "tipo": "objeto",
               "id": 4988,
               "cantidad": 1,
@@ -656,9 +669,9 @@
           "jefe": 134,
           "requisitos": [
             {
-              "_fuente": "NPC.cs: SetEventFlagCleared enciende downedMechBossAny al morir cualquiera de los tres (case 125/126, case 127 via boss, case 134). Es la bandera real que sube el mineral de Hardmode y adelanta Plantera; no hace falta matar a los tres para seguir, aunque el mejor equipo sale de matarlos todos.",
+              "_fuente": "Auditoria 16-sep-2026: hasta hoy este cierre pedia downedMechBossAny ('con uno basta') y era FALSO como puerta a Plantera. WorldGen.cs:68792 (crecimiento de los bulbos de Plantera, tile 238): 'Main.hardMode && NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3 && genRand.Next(60) == 0' - hacen falta LOS TRES. La bandera compuesta downedMechBossAll la resuelven BanderasGuia (mod) y GuideFlags (escritorio) igual que Condition.DownedMechBossAll del propio juego (Condition.cs:207). Lo que si abre UNO solo (downedMechBossAny, NPC.cs:85421/85467/85474): las Frutas de la vida (WorldGen.cs:68820), el Eclipse Solar (Main.cs:83170, 1/20 al amanecer), la dificultad 2 del Antiguo Ejercito (DD2Event.ReadyForTier2) y la Steampunker. El 'mineral nuevo' NO sale de aqui en vanilla: Mithril/Oricalco los da el segundo altar roto (WorldGen.SmashAltar, altarCount%3==1).",
               "tipo": "bandera",
-              "bandera": "downedMechBossAny"
+              "bandera": "downedMechBossAll"
             }
           ]
         }
@@ -678,7 +691,7 @@
           "jefe": 262,
           "requisitos": [
             {
-              "_fuente": "NPC.cs, type==262: daño 50, defensa 14, vida 30000. Tiene DOS fases (a partir de la mitad de la vida se enrabia, acelera y persigue mas rapido: NPC.cs, el frame de type==262 cambia con life<=lifeMax/2), asi que lo que pide de verdad no es atravesar defensa sino aguantar el ritmo entero sin que la segunda fase te pille sin salida.",
+              "_fuente": "NPC.cs, type==262 (linea 7501): daño 50, defensa 14, vida 30000. Tiene DOS fases (a partir de la mitad de la vida se enrabia, acelera y persigue mas rapido: NPC.cs, el frame de type==262 cambia con life<=lifeMax/2), asi que lo que pide de verdad no es atravesar defensa sino aguantar el ritmo entero sin que la segunda fase te pille sin salida. Los bulbos que la invocan solo crecen con los TRES mecanicos derrotados (WorldGen.cs:68792).",
               "tipo": "dano_arma",
               "valor": 45
             },
@@ -716,12 +729,12 @@
           "jefe": 245,
           "requisitos": [
             {
-              "_fuente": "NPC.cs, type==245 (cuerpo): daño 72, defensa 26, vida 15000. La cabeza suelta (type==249, tras destruir los dos puños) sube a 32 de defensa y 80 de daño, y no recibe daño mientras vivan los puños (dontTakeDamage=true). Con daño-defensa*0.5 (minimo 1), 55 de daño deja golpes utiles contra las tres fases.",
+              "_fuente": "NPC.cs SetDefaults: cuerpo type==245 (linea 7283) daño 72, defensa 26, vida 15000; cabeza montada type==246 (7299) daño 64, defensa 20, vida 25000; cabeza suelta type==249 (7327) daño 80, defensa 32, vida 16000; puños 247/248 aparte. QUIEN NO RECIBE DAÑO: AI_045_Golem (NPC.cs:14573-14589) pone 'dontTakeDamage = flag' con flag = 'hay un NPC type 246 vivo' - es el CUERPO el invulnerable mientras la cabeza siga montada, no la cabeza mientras vivan los puños (eso decia esta guia hasta el 16-sep-2026 y era falso). Con daño-defensa*0.5 (minimo 1), 55 de daño deja golpes utiles contra las tres piezas.",
               "tipo": "dano_arma",
               "valor": 55
             },
             {
-              "_fuente": "ItemID.cs: Celula de Poder Lihzahrd=1293. Se usa en el Altar Lihzahrd, dentro del Templo, para invocar al Golem; sale de las trampas y cofres del Templo.",
+              "_fuente": "ItemID.cs: Celula de poder de lihzahrd=1293. Se usa en el Altar de lihzahrd, dentro del Templo, para invocar al Golem. Sale de los cofres del Templo y de sus enemigos: ItemDropDatabase.cs:970-972, RegisterToMultipleNPCs(ItemDropRule.Common(1293, 50), {198, 199, 226}) = Lihzahrd, Serpiente voladora y Lihzahrd a cuatro patas, 1/50 cada uno - no 'de las trampas'.",
               "tipo": "objeto",
               "id": 1293,
               "cantidad": 1,
@@ -807,7 +820,7 @@
           "jefe": 325,
           "requisitos": [
             {
-              "_fuente": "NPC.cs, type==325: Mourning Wood, el primer jefe de oleada del evento (aparece en la oleada 5), tiene 120 de daño, 34 de defensa y 14000 de vida.",
+              "_fuente": "NPC.cs, type==325 (linea 8237): Mourning Wood, el primer jefe de oleada del evento, tiene 120 de daño, 34 de defensa y 14000 de vida. Aparece por primera vez en la oleada 6, no en la 5: NPC.SpawnNPC (NPC.cs:88954, 'case 6' del switch sobre waveNumber es el primero que puede crear el 325) y el aviso de oleada CheckProgressPumpkinMoon (NPC.cs:84573, GetInvasionWaveText(6, 325, ...)). Coincide con terraria.wiki.gg/wiki/Pumpkin_Moon (fila 6).",
               "tipo": "dano_arma",
               "valor": 58
             },
@@ -843,7 +856,7 @@
           "jefe": 327,
           "requisitos": [
             {
-              "_fuente": "NPC.cs, type==327: Pumpking, el jefe final del evento (aparece en la oleada 9), tiene 50 de daño, 40 de defensa y 26000 de vida - mas vida que Mourning Wood pese a golpear mas flojo.",
+              "_fuente": "NPC.cs, type==327 (linea 8264): Pumpking, el jefe final del evento, tiene 50 de daño, 40 de defensa y 26000 de vida - mas vida que Mourning Wood pese a golpear mas flojo. Aparece por primera vez en la oleada 10, no en la 9: NPC.cs:88942 ('case 10' del switch sobre waveNumber) y el aviso GetInvasionWaveText(10, 327, ...) en NPC.cs:84586. Coincide con terraria.wiki.gg/wiki/Pumpkin_Moon (fila 10).",
               "tipo": "dano_arma",
               "valor": 63
             },
@@ -882,7 +895,7 @@
           "jefe": 344,
           "requisitos": [
             {
-              "_fuente": "NPC.cs, type==344: Everscream, el primer jefe de oleada del evento (aparece en la oleada 3), tiene 110 de daño, 38 de defensa y 13000 de vida.",
+              "_fuente": "NPC.cs, type==344 (linea 8476): Everscream, el primer jefe de oleada del evento, tiene 110 de daño, 38 de defensa y 13000 de vida. Aparece por primera vez en la oleada 4, no en la 3: NPC.cs:88848 ('case 4' de SpawnNPC es el primero que crea el 344) y el aviso GetInvasionWaveText(4, 344, ...) en NPC.cs:84417.",
               "tipo": "dano_arma",
               "valor": 58
             },
@@ -918,7 +931,7 @@
           "jefe": 346,
           "requisitos": [
             {
-              "_fuente": "NPC.cs, type==346: Santa-NK1 (aparece en la oleada 6) tiene 120 de daño, 56 de defensa y 18000 de vida - la defensa mas alta de los tres jefes de oleada del evento.",
+              "_fuente": "NPC.cs, type==346 (linea 8507): Santa-NK1 tiene 120 de daño, 56 de defensa y 18000 de vida - la defensa mas alta de los tres jefes de oleada del evento. Aparece por primera vez en la oleada 7, no en la 6: NPC.cs:88839 ('case 7') y GetInvasionWaveText(7, 346, ...) en NPC.cs:84426.",
               "tipo": "dano_arma",
               "valor": 66
             },
@@ -947,7 +960,7 @@
           "jefe": 345,
           "requisitos": [
             {
-              "_fuente": "NPC.cs, type==345: la Reina de Hielo, jefe final del evento (aparece en la oleada 10), tiene 120 de daño, 38 de defensa y 34000 de vida (la mas alta de los tres) y coldDamage=true, aplica frio extra ademas del golpe.",
+              "_fuente": "NPC.cs, type==345 (linea 8490): la Reina de Hielo, jefe final del evento, tiene 120 de daño, 38 de defensa y 34000 de vida (la mas alta de los tres) y coldDamage=true, aplica frio extra ademas del golpe. Aparece por primera vez en la oleada 11, no en la 10: NPC.cs:88827 ('case 11') y GetInvasionWaveText(11, 345, ...) en NPC.cs:84438.",
               "tipo": "dano_arma",
               "valor": 62
             },
@@ -986,12 +999,12 @@
           "jefe": 551,
           "requisitos": [
             {
-              "_fuente": "NPC.cs, type==551 (DD2Betsy), el jefe final de cada asedio: 80 de daño, 38 de defensa y 50000 de vida.",
+              "_fuente": "NPC.cs, type==551 (DD2Betsy, linea 11638): 80 de daño, 38 de defensa y 50000 de vida. NO es 'el jefe de cada asedio': DD2Event.cs:204-206, SummonBetsy() solo se llama con 'currentWave == 7 && OngoingDifficulty == 3' - unicamente en la oleada final de la dificultad 3. Las dificultades se abren por progreso real: ReadyForTier2 => hardMode && downedMechBossAny, ReadyForTier3 => hardMode && downedGolemBoss (DD2Event.cs:98-120).",
               "tipo": "dano_arma",
               "valor": 65
             },
             {
-              "_fuente": "ItemID.cs: Cristal de Eternia=3828. Player.cs (~linea 30670): clic derecho sobre el Soporte del Cristal de Eternia (tile 466, del objeto DD2ElderCrystalStand=3816) con el Cristal en el inventario lo consume e invoca el asedio (DD2Event.SummonCrystal), siempre que no haya ya un asedio en marcha ni sea Luna de Calabazas/Helada.",
+              "_fuente": "ItemID.cs: Cristal eternia=3828 y Stand de cristal eternia=3816. Ninguno se fabrica: los dos los VENDE el Tabernero (NPCShopDatabase.cs:802 y :817, tienda del NPC 550) por Medallas del Defensor. El Tabernero aparece inconsciente para rescatarlo en cuanto DD2Event.ReadyToFindBartender (= NPC.downedBoss2, DD2Event.cs:61; NPC.cs:87704, 1/80). Player.cs (~linea 30670): clic derecho sobre el Stand (tile 466) con el Cristal en el inventario lo consume e invoca el asedio (DD2Event.SummonCrystal), siempre que no haya ya un asedio en marcha ni sea Luna de Calabazas/Helada.",
               "tipo": "objeto",
               "id": 3828,
               "cantidad": 1,
@@ -1069,7 +1082,7 @@
           "jefe": 636,
           "requisitos": [
             {
-              "_fuente": "NPC.cs, type==636: daño 80, defensa 50, vida 70000 - la mas alta de todos los opcionales tardios. No recibe daño (dontTakeDamage) salvo en condiciones concretas de dia/noche.",
+              "_fuente": "NPC.cs, type==636 (linea 12311): daño 80, defensa 50, vida 70000 - la mas alta de todos los opcionales tardios. NO tiene ningun dontTakeDamage (eso decia esta guia hasta el 16-sep-2026 y era falso): lo que tiene es NPC.ShouldEmpressBeEnraged() (NPC.cs:47058-47085), que fuera del mundo remix devuelve Main.dayTime - de DIA esta enfurecida y sus golpes son letales; de NOCHE es la pelea normal. Matarla enfurecida de verdad (Conditions.EmpressOfLightIsGenuinelyEnraged) suelta la Terraprisma (5005) al 100% (ItemDropDatabase.RegisterBoss_HallowBoss, linea 346-347). Se invoca matando a la Crisopa prismatica (NPC 661), que solo aparece en la superficie del Sagrado, de noche antes de medianoche (time < 16200) y con Plantera derrotada (NPC.cs:89524-89526).",
               "tipo": "dano_arma",
               "valor": 75
             },
@@ -1181,13 +1194,13 @@
               "valor": 90
             },
             {
-              "_fuente": "Player.statLifeMax2: 500 de vida es el maximo real del juego (10 cristales + 14 frutos de la vida), y es el listón que de verdad hace falta para aguantar sus laser y sus caidas de meteoro sin que un solo error acabe la partida.",
+              "_fuente": "Player.statLifeMax: 500 de vida es el maximo real del juego sin accesorios - 100 de base + 15 Cristales de vida (hasta 400; Main.cs:51487 comprueba ConsumedLifeCrystals == 15) + 20 Frutas de la vida (hasta 500; ConsumedLifeFruit < 20 en la misma linea) - y es el liston que de verdad hace falta para aguantar sus laser y sus caidas de meteoro sin que un solo error acabe la partida.",
               "tipo": "vida_maxima",
               "valor": 500,
               "recomendado": true
             },
             {
-              "_fuente": "ItemID.cs: Sello Celestial=3601. Se fabrica con fragmentos de las cuatro torres en un Yunque de Mithril/Orichalco y lo invoca al usarlo.",
+              "_fuente": "ItemID.cs: Sello celestial=3601. Recipe.cs:14516-14525: 12 Fragmentos solares (3458) + 12 de vortice (3456) + 12 de nebulosa (3457) + 12 de polvo estelar (3459), requiredTile 412 = Manipulador antiguo (LunarCraftingStation), NO un yunque de Mithril/Oricalco como decia esta guia hasta el 16-sep-2026. Lo invoca al usarlo.",
               "tipo": "objeto",
               "id": 3601,
               "cantidad": 1,
@@ -1236,7 +1249,7 @@
               "idMod": "CalamityMod/DesertMedallion",
               "cantidad": 1,
               "recomendado": true,
-              "_fuente": "CalamityMod.dll, Items.SummonItems.DesertMedallion: su UseItem invoca DesertScourgeHead directamente."
+              "_fuente": "CalamityMod, Items/SummonItems/DesertMedallion.cs: CanUseItem exige player.ZoneDesert y su UseItem invoca DesertScourgeHead directamente. DesertScourgeHead.cs NO define SpawnChance (auditoria 16-sep-2026): el jefe no aparece nunca solo, el medallon es la unica via."
             },
             {
               "tipo": "gancho",
@@ -1313,8 +1326,8 @@
       "pasos": [
         {
           "clave": "ArmaParaCrabulon",
-          "zona": "Superficie",
-          "capa": "superficie",
+          "zona": "Subterraneo",
+          "capa": "subterraneo",
           "jefeMod": "CalamityMod/Crabulon",
           "requisitos": [
             {
@@ -1327,7 +1340,7 @@
               "idMod": "CalamityMod/DecapoditaSprout",
               "cantidad": 1,
               "recomendado": true,
-              "_fuente": "CalamityMod.dll, Items.SummonItems.DecapoditaSprout: su UseItem invoca a Crabulon directamente."
+              "_fuente": "CalamityMod, Items/SummonItems/DecapoditaSprout.cs:37: CanUseItem exige player.ZoneGlowshroom Y estar por debajo de la superficie (position.Y/16 > Main.worldSurface) - por eso este paso vive en el subsuelo desde el 16-sep-2026. Crabulon.cs NO define SpawnChance: no brota solo, el Sprout es la unica via."
             },
             {
               "tipo": "gancho",
@@ -1337,8 +1350,8 @@
         },
         {
           "clave": "VencerACrabulon",
-          "zona": "Superficie",
-          "capa": "superficie",
+          "zona": "Subterraneo",
+          "capa": "subterraneo",
           "jefeMod": "CalamityMod/Crabulon",
           "requisitos": [
             {
@@ -1377,7 +1390,7 @@
               ],
               "cantidad": 1,
               "recomendado": true,
-              "_fuente": "CalamityMod.dll: Teratoma invoca HiveMind, BloodyWormFood invoca PerforatorHive - alternativa a romper un tumor/quiste a ciegas."
+              "_fuente": "CalamityMod: Teratoma.cs:38 (CanUseItem exige ZoneCorrupt) invoca HiveMind; BloodyWormFood.cs:38 (exige ZoneCrimson) invoca PerforatorHive - alternativa a romper un Hive Tumor/Perforator Cyst a ciegas (NPCs/HiveMind/HiveTumor.cs y NPCs/Perforator/PerforatorCyst.cs, los nombres reales en v2.2.2)."
             },
             {
               "tipo": "gancho",
@@ -1462,7 +1475,7 @@
             {
               "tipo": "dano_arma",
               "valor": 20,
-              "_fuente": "Bandera real \"downedDreadnautilus\" (NPC vanilla 618 con IA sobrescrita por CalamityMod.NPCs.VanillaNPCAIOverrides.MiniBosses.DreadnautilusAI)."
+              "_fuente": "Bandera real \"downedDreadnautilus\" (NPC vanilla 618 con IA sobrescrita por CalamityMod.NPCs.VanillaNPCAIOverrides.MiniBosses.DreadnautilusAI). OJO: el Nautilo terrible vanilla ya es un miniboss de verdad, no una 'pesca inofensiva': NPC.cs type==618 (linea 12038) daño 55, defensa 24, vida 7000. El Horrible Hog (NPCs/NormalNPCs/HorribleHog/HorribleHog.cs:2977-2985) solo aparece con Main.bloodMoon && NPC.downedBoss1."
             },
             {
               "tipo": "bandera",
@@ -1514,7 +1527,7 @@
               "idMod": "CalamityMod/CryoKey",
               "cantidad": 1,
               "recomendado": true,
-              "_fuente": "CalamityMod.dll, Items.SummonItems.CryoKey: su UseItem invoca a Cryogen."
+              "_fuente": "CalamityMod, Items/SummonItems/CryoKey.cs: CanUseItem exige player.ZoneSnow; receta real (AddRecipes, linea 99-102): 50 bloques de hielo (grupo AnyIceBlock) + 5 Almas de luz (520) + 5 Almas de noche (521) + 8 Essence of Eleum, en un yunque (tile 16). No pide ningun pico de Mithril - eso decia esta guia hasta el 16-sep-2026 sin respaldo en el codigo."
             },
             {
               "tipo": "gancho",
@@ -1560,7 +1573,7 @@
               "idMod": "CalamityMod/Seafood",
               "cantidad": 1,
               "recomendado": true,
-              "_fuente": "CalamityMod.dll, Items.SummonItems.Seafood: su UseItem invoca a AquaticScourgeHead."
+              "_fuente": "CalamityMod, Items/SummonItems/Seafood.cs:38: CanUseItem exige player.Calamity().ZoneSulphur - solo en el Mar Sulfuroso, no 'en cualquier sitio'. AquaticScourgeHead.cs:767-779 si tiene SpawnChance natural, tambien en ZoneSulphur y dentro del agua."
             },
             {
               "tipo": "gancho",
@@ -1606,7 +1619,7 @@
               "idMod": "CalamityMod/CharredIdol",
               "cantidad": 1,
               "recomendado": true,
-              "_fuente": "CalamityMod.dll, Items.SummonItems.CharredIdol: su UseItem invoca al Brimstone Elemental."
+              "_fuente": "CalamityMod, Items/SummonItems/CharredIdol.cs:40: CanUseItem exige player.Calamity().ZoneCalamity (los Riscos de Azufre, dentro del Infierno) - no 'en cualquier sitio'. Comportamiento real (calamitymod.wiki.gg/wiki/Brimstone_Elemental): tres fases -deriva con teletransportes, embestidas con bolas de fuego, y capullo (cierra los petalos, sube muchisimo la defensa y dispara anillos de dardos)-; NO invoca 'brazos secundarios' (eso decia esta guia hasta el 16-sep-2026)."
             },
             {
               "tipo": "gancho",
@@ -1650,7 +1663,7 @@
             {
               "tipo": "bandera",
               "bandera": "downedAquaticScourge",
-              "_fuente": "Umbral real de progreso de la Lluvia Acida: la fase 2 (115 puntos, donde aparece Cragmaw Mire) exige haber derrotado ya al Aquatic Scourge.",
+              "_fuente": "CalamityMod, Events/AcidRainEvent.cs: la fase la deciden banderas, no puntos - NeededEnemyKills (linea 78-93) devuelve 110 (base), 135 con downedAquaticScourge o 170 con downedPolterghast, multiplicado por log(jugadores+e-1) (x1 con un jugador), y la tabla de minibosses PossibleMinibossesAS (Cragmaw Mire) solo entra con downedAquaticScourge (linea 413/432). El evento solo puede empezar con downedBoss1 || hardMode || downedAquaticScourge || downedPolterghast (linea 230) y se corta si pasan 9000 ticks (2 min 30 s) sin matar nada (linea 271-276), no '4 minutos'.",
               "recomendado": true
             },
             {
@@ -1697,7 +1710,7 @@
               "idMod": "CalamityMod/AstralChunk",
               "cantidad": 1,
               "recomendado": true,
-              "_fuente": "CalamityMod.dll, Items.SummonItems.AstralChunk: su UseItem invoca a Astrum Aureus."
+              "_fuente": "CalamityMod, Items/SummonItems/AstralChunk.cs:47: CanUseItem exige player.Calamity().ZoneAstral (dentro de la Infeccion Astral). Su UseItem invoca a Astrum Aureus."
             },
             {
               "tipo": "gancho",
@@ -1835,7 +1848,7 @@
               "idMod": "CalamityMod/DeathWhistle",
               "cantidad": 1,
               "recomendado": true,
-              "_fuente": "CalamityMod.dll, Items.SummonItems.DeathWhistle: su UseItem invoca a Ravager."
+              "_fuente": "CalamityMod, Items/SummonItems/DeathWhistle.cs: CanUseItem no exige bioma; receta real (linea 56): 15 Fragmentos de tablilla solar (2766, los sueltan los Lihzahrd/Serpientes voladoras del Templo) + 25 Ladrillos de lihzahrd (1101), en un Altar Demoniaco/Carmesi (tile 26)."
             },
             {
               "tipo": "gancho",
@@ -1965,7 +1978,7 @@
             {
               "tipo": "dano_arma",
               "valor": 150,
-              "_fuente": "NPC real: vida 2500000-3000000 (LifeMaxNERB). Defensa base 999 sin confirmar su mecanica exacta - umbral aproximado, no derivado de la formula habitual."
+              "_fuente": "NPC real: vida 2500000-3000000 (LifeMaxNERB). Auditoria 16-sep-2026, ya confirmado: Systems/WorldMiscUpdateSystem.cs:552-560, TrySpawnAEoW - aparece encima del jugador cuando esta en el Abismo (modPlayer.ZoneAbyss) con el debuff Estado caotico (player.chaosState, el de la Vara de la discordia) activo y no hay ya uno vivo. Segun calamitymod.wiki.gg/wiki/Primordial_Wyrm: 100 de defensa en la cabeza con un 40% de reduccion de daño, 42 segmentos de cuerpo que no reciben daño, y se enfurece fuera de la 4a capa del Abismo - de ahi el umbral aproximado."
             },
             {
               "tipo": "gancho",
@@ -2007,7 +2020,7 @@
             {
               "tipo": "bandera",
               "bandera": "downedPolterghast",
-              "_fuente": "Umbral real de progreso de la Lluvia Acida: la fase 3 (140 puntos, Mauler/Nuclear Terror/Old Duke) exige haber derrotado ya a Polterghast.",
+              "_fuente": "CalamityMod, Events/AcidRainEvent.cs:83-85 y :417-436: con downedPolterghast la tabla de minibosses pasa a PossibleMinibossesPolter (Mauler, Nuclear Terror) y NeededEnemyKills sube a 170 (con un jugador); el Old Duke se invoca en esa misma fase cuando el progreso llega al final (linea 313, AccumulatedKillPoints == 1). No hay ningun umbral de '140 puntos'.",
               "recomendado": true
             },
             {
@@ -2096,7 +2109,7 @@
               "idMod": "CalamityMod/ProfanedShard",
               "cantidad": 1,
               "recomendado": true,
-              "_fuente": "CalamityMod.dll, Items.SummonItems.ProfanedShard: su UseItem invoca al trio de guardianes."
+              "_fuente": "CalamityMod, Items/SummonItems/ProfanedShard.cs:40: CanUseItem exige player.ZoneHallow || player.ZoneUnderworldHeight. Su UseItem invoca al trio de guardianes."
             },
             {
               "tipo": "gancho",
@@ -2133,7 +2146,7 @@
               "idMod": "CalamityMod/ProfanedCore",
               "cantidad": 1,
               "recomendado": true,
-              "_fuente": "CalamityMod.dll, Items.SummonItems.ProfanedCore: su UseItem invoca a Providence."
+              "_fuente": "CalamityMod, Items/SummonItems/ProfanedCore.cs:41: CanUseItem exige player.ZoneHallow || player.ZoneUnderworldHeight. Su UseItem invoca a Providence."
             },
             {
               "tipo": "gancho",
@@ -2164,8 +2177,8 @@
       "pasos": [
         {
           "clave": "ArmaParaCeaselessVoid",
-          "zona": "Cavernas",
-          "capa": "cavernas",
+          "zona": "Mazmorra",
+          "capa": "superficie",
           "jefeMod": "CalamityMod/CeaselessVoid",
           "requisitos": [
             {
@@ -2178,7 +2191,7 @@
               "idMod": "CalamityMod/MarkofProvidence",
               "cantidad": 1,
               "recomendado": true,
-              "_fuente": "CalamityMod.dll, Items.SummonItems.MarkofProvidence: drop de Providence, invoca a los tres jefes de este tramo."
+              "_fuente": "CalamityMod, Items/SummonItems/MarkofProvidence.cs (LegacyName RuneofCos/RuneofKos): drop 100% de Providence la primera vez (Providence.cs:2463) y ademas fabricable (3 Lingotes de luminita + 40 Unholy Essence + 5 Fragmentos solares, yunque de Mithril). UseItem (linea 57-72) decide el jefe por donde estes: ZoneDungeon -> Ceaseless Void, ZoneUnderworldHeight -> Signus, ZoneSkyHeight -> Storm Weaver. Por eso este paso vive en la Mazmorra desde el 16-sep-2026, no en las cavernas."
             },
             {
               "tipo": "gancho",
@@ -2188,8 +2201,8 @@
         },
         {
           "clave": "VencerACeaselessVoid",
-          "zona": "Cavernas",
-          "capa": "cavernas",
+          "zona": "Mazmorra",
+          "capa": "superficie",
           "jefeMod": "CalamityMod/CeaselessVoid",
           "requisitos": [
             {
@@ -2422,7 +2435,7 @@
               "idMod": "CalamityMod/YharonEgg",
               "cantidad": 1,
               "recomendado": true,
-              "_fuente": "CalamityMod.dll, Items.SummonItems.YharonEgg: su UseItem invoca a Yharon."
+              "_fuente": "CalamityMod, Items/SummonItems/YharonEgg.cs (LegacyName ChickenEgg/JungleDragonEgg): CanUseItem no exige bioma; receta real (linea 65): 10 Life Alloy + 15 Effulgent Feather en el Manipulador antiguo (tile 134). Las plumas las suelta Dragonfolly (Dragonfolly.cs:1726, 25-30) o sus crias Wild Bumblebirb (5-7): Dragonfolly es en la practica requisito de Yharon. No sale de 'completar el Templo de la Selva' como decia esta guia hasta el 16-sep-2026. calamitymod.wiki.gg/wiki/Yharon: se enfurece si el jugador sale de la Jungla."
             },
             {
               "tipo": "gancho",
@@ -2483,7 +2496,7 @@
             {
               "tipo": "bandera",
               "bandera": "downedExoMechs",
-              "_fuente": "CalamityMod.dll: AresBody/ThanatosHead/Apollo.OnKill ponen DownedBossSystem.downedExoMechs=true junto a su bandera individual."
+              "_fuente": "CalamityMod, NPCs/ExoMechs/Ares/AresBody.cs:2008-2024: al morir cualquiera de los tres se pone su bandera individual (downedThanatos/downedAres/downedArtemisAndApollo) Y downedExoMechs=true - con el primero que caiga ya cuenta."
             }
           ]
         },

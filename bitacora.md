@@ -8060,3 +8060,98 @@ criterio de siempre con sesiones concurrentes en este repo.
 - `lib/Terrakeep.Core.dll`: actualizado con el commit hermano de Terrasavr-Native (T1 corregido).
 - `evidencia/guia-calamity.log.txt`: log real del recorrido de verificacion de esta ronda.
 - `.tmod` real recompilado con `scripts\compilar.ps1` (747838 bytes).
+
+## 16-sep-2026 - Auditoria de EXACTITUD de la Guia, paso a paso, contra el codigo real (encargo nocturno de Fable)
+
+Reporte real del usuario jugando: la guia decia que tras el Devorador/Cerebro "los Altares
+empiezan a soltar mineral nuevo al romperse", y eso es falso (hace falta el Gran martillo del Muro
+de Carne y el mundo en Modo Dificil). A raiz de eso, encargo de corroborar CADA paso de las guias
+de los cuatro proyectos contra fuentes externas. Metodo: cada afirmacion de texto y cada requisito
+del .json contrastados contra el tModLoader 1.4.4.9 y el CalamityMod v2.2.2 decompilados de
+`Downloads\tModLoader-Decompiled\` primero, y terraria.wiki.gg / calamitymod.wiki.gg como
+contraste. La otra sesion en paralelo (bug "no lee el mundo") ya habia corregido
+`VencerLaMaldad.Porque` y se respeto: aqui se reescribio sobre su version con lo que dice el
+codigo.
+
+### Errores reales encontrados y corregidos (46 tramos / 116 pasos revisados)
+Estructura (`Assets\guia_progresion.json`, cada uno con su `_fuente` citando archivo:linea):
+1. **Piratas** (orden 19 -> 44) y **Legion de Escarcha** (17 -> 43): eran tramos de prehardmode y
+   son de Modo Dificil. Mapa pirata solo en hardmode (`ItemDropDatabase`, `Conditions.PirateMap`);
+   invasion natural `hardMode && altarCount > 0` (`Main.cs:83223`). Globo de nieve solo de un
+   Regalo abierto en hardmode (`RegisterPresent`, `Conditions.IsHardmode`, 1 de 15) y los Regalos
+   solo en Navidad (1 de 13, `XmasPresentDrop`). Los dos llevan ahora requisito real `hardMode`.
+2. **Mecanicos**: el cierre exigia `downedMechBossAny` ("con uno basta") y los bulbos de Plantera
+   exigen LOS TRES (`WorldGen.cs:68792`). Bandera compuesta nueva `downedMechBossAll` en
+   `BanderasGuia.cs` (mod) y `GuideFlags.cs` (escritorio), como `Condition.DownedMechBossAll` del
+   propio juego. Lo que si abre uno solo (Frutas de la vida, Eclipse, dificultad 2 del Antiguo
+   Ejercito) va ahora en el texto.
+3. **Ceaseless Void**: zona Cavernas -> Mazmorra (`MarkofProvidence.UseItem`: ZoneDungeon).
+4. **Crabulon**: superficie -> subsuelo (`DecapoditaSprout.CanUseItem` exige Hongos Luminosos
+   por debajo de `worldSurface`).
+
+Texto (los dos .hjson, es-ES y en-US, mismas correcciones):
+- Altares, meteorito, Tabernero y picos tras la maldad del mundo (`SmashAltar` devuelve sin
+  hardmode; `Player.cs:45912` hiere al jugador con martillo <80 o sin hardmode; Pwnhammer al 100%
+  del Muro).
+- Muro de Carne: partes debiles al reves (ojos defensa 0, boca 12); Gran martillo, mas la nota
+  real de Calamity (`EarlyHardmodeProgressionRework`: altares dan Almas de la noche, mineral por
+  jefes).
+- Golem: era "la cabeza no recibe daño mientras vivan los puños"; es el CUERPO mientras la
+  cabeza siga montada (`AI_045_Golem`, `dontTakeDamage = flag`). Celulas: cofres y Lihzahrd o
+  Serpientes voladoras (1 de 50), no "trampas". Golem abre Cultistas, Sonda y dificultad 3.
+- Plantera: "semillas de Clorofita" no existen; suelta la Llave del templo, abre la Mazmorra
+  de hardmode y los cofres de bioma. Bulbos solo con los tres mecanicos.
+- Emperatriz de la Luz: estaba INVERTIDO ("pelea de dia, de noche es mas dura"). De DIA esta
+  enfurecida (`ShouldEmpressBeEnraged` devuelve `Main.dayTime`), de noche es la pelea normal;
+  Terraprisma solo enfurecida. Crisopa prismatica (NPC 661): superficie del Sagrado, de noche
+  antes de medianoche, tras Plantera (`NPC.cs:89524`). Ningun `dontTakeDamage`.
+- Reina Slime: no exige noche (`Player.cs:43541`, solo ZoneHallow); "Ala Real Cristalina" no
+  existe: Sillin gelatinoso, Gancho de Disonancia, Baculo de cuchillas, armadura de asesino.
+- Luna de Calabazas: Mourning Wood oleada 6 (no 5), Pumpking 10 (no 9); Luna Helada:
+  Everscream 4, Santa-NK1 7, Reina de Hielo 11 (no 3, 6 y 10). Codigo y wiki coinciden.
+- Antiguo Ejercito: Betsy solo en la oleada 7 de la dificultad 3 (`DD2Event.cs:204`); Cristal y
+  Stand los vende el Tabernero (`NPCShopDatabase.cs:802` y `:817`), no se fabrican; dificultades
+  por `ReadyForTier2` y `ReadyForTier3`; Tabernero rescatable con `downedBoss2`.
+- Sello celestial: Manipulador antiguo, 12 fragmentos de cada (`Recipe.cs:14516`), no yunque.
+- Deerclops: sale a MEDIANOCHE en ventisca (`Main.cs:82838`), no "tras el atardecer"; drops
+  reales (Hueso del ojo y Chester, Ojombrilla, Lucy...). Duende chapucero = Tinkerer (era el
+  mismo NPC nombrado dos veces). Legion: sus muñecos solo sueltan Bloques de nieve; Papa Noel.
+- Duque Pezhongo: drops reales (Pistola de burbujas, no "Cañon de Cavajabon" ni "Shrimpy
+  Truffle").
+- Vecinos: Enfermera y Demoledor no necesitan al Mercader (`SpawnAllowed_Nurse` y
+  `SpawnAllowed_Demolitionist`).
+- Devorador: defensa 2, 4 y 8 por segmento y 150 de vida cada uno; Cerebro 1250 (`SetDefaults`).
+- Moon Lord: 500 de vida son 15 cristales + 20 frutas (no 10 + 14).
+- Calamity: Desert Scourge y Crabulon NO aparecen solos (sin `SpawnChance`); Seafood solo en el
+  Mar Sulfuroso; Idolo Chamuscado solo en los Riscos de Azufre y Brimstone Elemental no tiene
+  "brazos" (fase de capullo, wiki); Cryo Key: receta real, sin "pico de Mithril"; Lluvia Acida
+  por banderas (110, 135 o 170 enemigos, corte a los 2 min 30 s sin matar - no "115 y 140
+  puntos" ni "4 minutos"); Primordial Wyrm: Abismo + Estado caotico (`TrySpawnAEoW`), ya no
+  "sin confirmar"; Huevo de Yharon: 10 Life Alloy + 15 Effulgent Feather (Dragonfolly), no
+  "completar el Templo"; Silbato de la Muerte: receta real; Dreadnautilus vanilla ya es un
+  miniboss (7000 de vida, 55 de daño, 24 de defensa).
+
+### Infraestructura tocada
+- `Common/Guia/AutopruebaGuia.cs`: `MarcarLosTresMecanicosDerrotadosDeMentira` (marca y restaura
+  `downedMechBoss1`, `2` y `3`), y los bloques de Legion y Piratas remarcan ReinaAbeja y ponen
+  `hardMode` a true mientras se comprueban (devueltos a su valor real antes de las
+  comprobaciones que los esperan). Textos de las expectativas actualizados al orden 43 y 44.
+- `scripts/generar-localizacion.py`: aviso en la cabecera - la seccion Guia se autora en los
+  .hjson desde el 15-sep y la tabla T esta atrasada; no regenerar sin portar antes.
+- `lib/Terrakeep.Core.dll` resincronizado (`actualizar-core.ps1`) con el `GuideFlags.cs` nuevo.
+
+### Verificacion real
+- `scripts\verificar-guia.ps1 -Calamity` DOS veces (antes y despues de resincronizar lib):
+  "avisos de datos: 0", recorrido con Legion (43), Piratas (44) y los tres mecanicos en el log
+  real (`evidencia\guia-calamity.log.txt`), "requisitos [?]: 0", "Ninguna comprobacion en
+  rojo", 191 y 193 s.
+- `.tmod` real recompilado y desplegado (`scripts\compilar.ps1`, 756399 bytes, 02:27:51).
+- Repo hermano Terrasavr-Native: `dotnet test` Terrakeep.Core 556 de 556 y `GUIA_SOLO=1` con
+  personaje y mundo reales: 46 tramos, 0 textos sin resolver, objetivo real "Los tres mecanicos,
+  Derrotar a los tres". Terrakeep.exe reinstalado en `%LocalAppData%\Programs\Terrakeep`.
+- Sin `git push`. Commit local solo de los archivos de esta ronda.
+
+### Para la otra sesion (bug "no lee el mundo")
+En toda la auditoria no aparecio ninguna bandera mal escrita ni inexistente: el propio arnes
+confirma "avisos de datos: 0" y 0 requisitos no evaluables con partida real, asi que la causa de
+lo que vio el usuario no esta en los nombres de bandera del .json.

@@ -49,6 +49,12 @@ namespace TerrakeepMod.Common.Guia
 				{ "downedMechBoss2", () => NPC.downedMechBoss2 },         // Gemelos
 				{ "downedMechBoss3", () => NPC.downedMechBoss3 },         // Esqueletron Prime
 				{ "downedMechBossAny", () => NPC.downedMechBossAny },
+				// Auditoria 16-sep-2026: los bulbos de Plantera exigen los TRES mecanicos
+				// (WorldGen.cs:68792, 'downedMechBoss1 && downedMechBoss2 && downedMechBoss3'),
+				// no "cualquiera". Misma composicion que Condition.DownedMechBossAll del propio
+				// juego (Condition.cs:207); no existe como campo suelto en NPC.cs, por eso se
+				// compone aqui. GuideFlags.cs (Terrakeep de escritorio) la resuelve igual.
+				{ "downedMechBossAll", () => NPC.downedMechBoss1 && NPC.downedMechBoss2 && NPC.downedMechBoss3 },
 				{ "downedPlantBoss", () => NPC.downedPlantBoss },
 				{ "downedGolemBoss", () => NPC.downedGolemBoss },
 				{ "downedFishron", () => NPC.downedFishron },

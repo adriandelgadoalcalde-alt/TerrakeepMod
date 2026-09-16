@@ -71,6 +71,11 @@ namespace TerrakeepMod.Common.Guia
 		private static bool _shadowOrbSmashedOriginal;
 		private static bool _hardModeOriginal;
 		private static bool _downedMechBoss1Original;
+		// Auditoria de la guia (16-sep-2026): el cierre de "Mecanicos" pasa a exigir los TRES
+		// (downedMechBossAll, WorldGen.cs:68792 - los bulbos de Plantera no crecen con uno solo),
+		// asi que el arnes tiene que marcar y restaurar los tres campos, no solo el del Destructor.
+		private static bool _downedMechBoss2Original;
+		private static bool _downedMechBoss3Original;
 		private static bool _downedMechBossAnyOriginal;
 		private static bool _downedPlantBossOriginal;
 		private static bool _downedGolemBossOriginal;
@@ -98,10 +103,10 @@ namespace TerrakeepMod.Common.Guia
 		private static bool _downedChristmasIceQueenOriginal;
 		private static bool _downedDD2Original;
 
-		// ReinaAbeja (Orden 25) e InicioModoDificil (Orden 45) caen ENTRE Piratas (19) y LocuraMarciana
-		// (71)/LunaDeCalabazas (72): el bloque de mas abajo tiene que remarcarlas superadas tambien, o
-		// "siguiente opcional pendiente" las elegiria a ellas en vez de a los tramos nuevos de Orden
-		// mas alto.
+		// ReinaAbeja (Orden 25) e InicioModoDificil (Orden 45) caen ENTRE Piratas (44 desde la
+		// auditoria del 16-sep-2026; antes 19) y LocuraMarciana (71)/LunaDeCalabazas (72): el bloque
+		// de mas abajo tiene que remarcarlas superadas tambien, o "siguiente opcional pendiente" las
+		// elegiria a ellas en vez de a los tramos nuevos de Orden mas alto.
 		private static bool _downedQueenSlimeOriginal;
 		private static int _dungeonXOriginal;
 		private static Vector2 _posicionOriginal;
@@ -369,13 +374,13 @@ namespace TerrakeepMod.Common.Guia
 					"esta cumplido, asi que el paso siguiente pasa a ser el actual"); break;
 				case 75: ComprobarLecturaDeJefeDelTramoActual("Destructor (jefeFinal del tramo)"); break;
 				case 76: Capturar("guia-15-mecanicos-vencer"); break;
-				case 77: MarcarUnMecanicoDerrotadoDeMentira(); break;
+				case 77: MarcarLosTresMecanicosDerrotadosDeMentira(); break;
 
 				// --- septimo tramo implementado: Plantera -----------------------------------------
 				case 78: QuitarArmaDeLaMochila(); break;
 				case 79: ComprobarPaso("ArmaParaPlantera",
-					"downedMechBossAny=true a mano (el siguiente tramo implementado es Plantera) y " +
-					"sin arma todavia en la mochila"); break;
+					"downedMechBoss1/2/3=true a mano (los TRES, WorldGen.cs:68792: el siguiente tramo " +
+					"implementado es Plantera) y sin arma todavia en la mochila"); break;
 				case 80: Capturar("guia-17-plantera-preparativos"); break;
 				case 81: PonerArmaConDano(45); break;
 				case 82: VolcarEstadoDelJugador("con arma contra Plantera"); break;
@@ -459,7 +464,7 @@ namespace TerrakeepMod.Common.Guia
 				case 127: ComprobarPasoOpcional("ReySlime", "ArmaParaElReySlime",
 					"ningun opcional sin superar todavia (EjercitoGoblin y LegionDeEscarcha siguen " +
 					"remarcados desde Arrancar()): ReySlime es el de menor Orden (5) de todos los " +
-					"tramos opcionales, por delante incluso de PreOjo (10)"); break;
+					"tramos opcionales de vanilla, por delante incluso de PreOjo (10)"); break;
 				case 128: Capturar("guia-29-reyslime-preparativos"); break;
 				case 129: PonerArmaConDano(12); break;
 				case 130: VolcarEstadoDelJugador("con arma contra el Rey Slime"); break;
@@ -473,7 +478,7 @@ namespace TerrakeepMod.Common.Guia
 				case 136: ComprobarPasoOpcional("Deerclops", "ArmaParaDeerclops",
 					"ReySlime ya superado (downedSlimeKing=true a mano) y EjercitoGoblin (Orden 12) " +
 					"sigue remarcado desde Arrancar(): el siguiente opcional por Orden es Deerclops " +
-					"(15), por delante todavia de LegionDeEscarcha (17) y ReinaAbeja (25)"); break;
+					"(15), por delante todavia de ReinaAbeja (25) y LegionDeEscarcha (43)"); break;
 				case 137: Capturar("guia-31-deerclops-preparativos"); break;
 				case 138: PonerArmaConDano(16); break;
 				case 139: VolcarEstadoDelJugador("con arma contra Deerclops"); break;
@@ -527,16 +532,23 @@ namespace TerrakeepMod.Common.Guia
 				case 163: RestaurarEscenarioBrujula(); break;
 
 				// --- los otros dos tramos opcionales de esta sesion: Ejercito Goblin y Legion de
-				// Escarcha (Orden 12 y 17, dos invasiones por oleadas en vez de un jefe unico -
+				// Escarcha (Orden 12 y 43, dos invasiones por oleadas en vez de un jefe unico -
 				// jefeFinal=0 a proposito, ver el .json). ReySlime y Deerclops se remarcan
 				// SUPERADOS otra vez aqui (RestaurarOpcionalesTempranos los habia devuelto a su
 				// valor real, probablemente false) para que no interfieran con este bloque, igual
 				// que ya hizo Arrancar() con los cuatro al principio.
+				//
+				// Auditoria 16-sep-2026: la Legion paso de Orden 17 a 43 (es de Modo Dificil: el Globo
+				// de Nieve solo sale de un Regalo abierto en hardmode, ItemDropDatabase.RegisterPresent)
+				// y su primer paso exige ahora la bandera hardMode. Por eso PrepararEventosDeInvasion-
+				// Tempranos remarca ademas ReinaAbeja (25) superada y pone hardMode=true, y
+				// MarcarLegionDeEscarchaDerrotadaDeMentira devuelve ReinaAbeja a su valor real antes
+				// de case181, que la espera como "siguiente opcional pendiente".
 				case 164: PrepararEventosDeInvasionTempranos(); break;
 				case 165: ComprobarPasoOpcional("EjercitoGoblin", "ArmaParaElEjercitoGoblin",
-					"ReySlime y Deerclops remarcados superados otra vez: el siguiente opcional " +
-					"pendiente por Orden es EjercitoGoblin (12), por delante de LegionDeEscarcha " +
-					"(17) y ReinaAbeja (25)"); break;
+					"ReySlime, Deerclops y ReinaAbeja remarcados superados otra vez: el siguiente " +
+					"opcional pendiente por Orden es EjercitoGoblin (12), por delante de " +
+					"LegionDeEscarcha (43)"); break;
 				case 166: Capturar("guia-36-goblin-preparativos"); break;
 				case 167: PonerArmaConDano(15); break;
 				case 168: VolcarEstadoDelJugador("con arma contra el Ejercito Goblin"); break;
@@ -547,8 +559,9 @@ namespace TerrakeepMod.Common.Guia
 				case 171: MarcarEjercitoGoblinDerrotadoDeMentira(); break;
 				case 172: QuitarArmaDeLaMochila(); break;
 				case 173: ComprobarPasoOpcional("LegionDeEscarcha", "ArmaParaLaLegionDeEscarcha",
-					"EjercitoGoblin ya superado (downedGoblins=true a mano): el siguiente opcional " +
-					"por Orden es LegionDeEscarcha (17), por delante todavia de ReinaAbeja (25)"); break;
+					"EjercitoGoblin ya superado (downedGoblins=true a mano) y ReinaAbeja (25) " +
+					"remarcada superada por PrepararEventosDeInvasionTempranos: el siguiente opcional " +
+					"por Orden es LegionDeEscarcha (43, ya en Modo Dificil - hardMode=true a mano)"); break;
 				case 174: Capturar("guia-38-legion-preparativos"); break;
 				case 175: PonerArmaConDano(28); break;
 				case 176: VolcarEstadoDelJugador("con arma contra la Legion de Escarcha"); break;
@@ -562,7 +575,9 @@ namespace TerrakeepMod.Common.Guia
 				case 182: RestaurarEventosDeInvasionTempranos(); break;
 
 				// --- los cinco tramos opcionales nuevos de ESTA sesion y la anterior: Piratas
-				// (Orden 19, un solo paso de "vencer" como Goblin/Escarcha), Locura Marciana (71,
+				// (Orden 44 desde la auditoria del 16-sep-2026 - antes 19; es de Modo Dificil y su
+				// primer paso exige hardMode, que PrepararOpcionalesRestantes pone a true - un solo
+				// paso de "vencer" como Goblin/Escarcha), Locura Marciana (71,
 				// tambien un solo paso de "vencer" pero SIN objeto de invocacion que probar), Luna
 				// de Calabazas (72, dos jefes de oleada propios), Luna Helada (73, tres) y Antiguo
 				// Ejercito D2 (74, la primera bandera de Player). Los cinco se dejaron marcados
@@ -573,7 +588,7 @@ namespace TerrakeepMod.Common.Guia
 				case 184: ComprobarPasoOpcional("Piratas", "ArmaParaLosPiratas",
 					"los ocho opcionales anteriores (ReySlime/Deerclops/EjercitoGoblin/" +
 					"LegionDeEscarcha ya restaurados a su valor real, remarcados superados otra vez " +
-					"aqui) siguen superados: el siguiente opcional pendiente por Orden es Piratas (19)"); break;
+					"aqui) siguen superados: el siguiente opcional pendiente por Orden es Piratas (44)"); break;
 				case 185: Capturar("guia-40-piratas-preparativos"); break;
 				case 186: PonerArmaConDano(35); break;
 				case 187: VolcarEstadoDelJugador("con arma contra los Piratas"); break;
@@ -729,6 +744,8 @@ namespace TerrakeepMod.Common.Guia
 			_shadowOrbSmashedOriginal = Terraria.WorldGen.shadowOrbSmashed;
 			_hardModeOriginal = Main.hardMode;
 			_downedMechBoss1Original = NPC.downedMechBoss1;
+			_downedMechBoss2Original = NPC.downedMechBoss2;
+			_downedMechBoss3Original = NPC.downedMechBoss3;
 			_downedMechBossAnyOriginal = NPC.downedMechBossAny;
 			_downedPlantBossOriginal = NPC.downedPlantBoss;
 			_downedGolemBossOriginal = NPC.downedGolemBoss;
@@ -742,7 +759,8 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedBoss1 = false;
 
 			// ReySlime, EjercitoGoblin, Deerclops y LegionDeEscarcha (los cuatro tramos opcionales
-			// nuevos de esta sesion, Orden 5/12/15/17 - los mas bajos de todos los opcionales) se
+			// nuevos de esta sesion, Orden 5/12/15/43 - la Legion subio a 43 en la auditoria del
+			// 16-sep-2026, los otros tres son los mas bajos de todos los opcionales de vanilla) se
 			// marcan SUPERADOS desde ya: asi no interfieren con ningun paso 1-149 de este arnes (que
 			// ya daban por buenos "ReinaAbeja"/"InicioModoDificil"/"JefesOpcionalesTardios" como los
 			// opcionales de menor Orden sin superar). Sus propios bloques dedicados, al final de la
@@ -757,14 +775,14 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedGoblins = true;
 			NPC.downedFrost = true;
 
-			// Los cinco tramos opcionales nuevos de ESTA sesion y la anterior (Piratas Orden 19,
-			// Locura Marciana 71, Luna de Calabazas 72, Luna Helada 73, Antiguo Ejercito D2 74) se
-			// marcan SUPERADOS desde ya, por el mismo motivo que los cuatro de arriba: Piratas (19)
-			// esta por delante de ReinaAbeja (25) en el Orden, asi que sin esto interferiria con los
-			// pasos 1-182 de este arnes (case122 y case145 esperan "ReinaAbeja" como siguiente
-			// opcional pendiente, no "Piratas"). Sus propios bloques dedicados, al final de la
-			// prueba, las ponen en false, las comprueban de verdad y las devuelven a su valor
-			// ORIGINAL al terminar.
+			// Los cinco tramos opcionales nuevos de ESTA sesion y la anterior (Piratas Orden 44 -
+			// antes 19, subio en la auditoria del 16-sep-2026 -, Locura Marciana 71, Luna de
+			// Calabazas 72, Luna Helada 73, Antiguo Ejercito D2 74) se marcan SUPERADOS desde ya, por
+			// el mismo motivo que los cuatro de arriba: sin esto interferirian con los pasos 1-182 de
+			// este arnes (case122 y case145 esperan "ReinaAbeja" como siguiente opcional pendiente,
+			// y ReinaAbeja/InicioModoDificil se marcan superadas en varios bloques). Sus propios
+			// bloques dedicados, al final de la prueba, las ponen en false, las comprueban de verdad
+			// y las devuelven a su valor ORIGINAL al terminar.
 			_downedPiratasOriginal = NPC.downedPirates;
 			_downedMartiansOriginal = NPC.downedMartians;
 			_downedHalloweenTreeOriginal = NPC.downedHalloweenTree;
@@ -1405,19 +1423,21 @@ namespace TerrakeepMod.Common.Guia
 				"NPC.cs case 113). Se restaura al terminar.");
 		}
 
-		/// <summary>Marca uno de los tres mecanicos (el Destructor) como derrotado SIN pelearlo,
-		/// para comprobar el cierre del sexto tramo. El motor real solo exige UNO de los tres:
-		/// NPC.cs case 134 pone downedMechBoss1 y downedMechBossAny juntos al morir el Destructor,
-		/// y son los mismos dos campos que tocaria matar a cualquiera de los otros dos.</summary>
-		private static void MarcarUnMecanicoDerrotadoDeMentira()
+		/// <summary>Marca los TRES mecanicos como derrotados SIN pelearlos, para comprobar el cierre
+		/// del sexto tramo. Auditoria 16-sep-2026: el cierre real hacia Plantera son los tres
+		/// (WorldGen.cs:68792, los bulbos exigen downedMechBoss1 && 2 && 3), no "uno cualquiera"
+		/// como decia este arnes y la guia hasta hoy. NPC.cs case 134/125-126/127 ponen cada
+		/// campo individual y downedMechBossAny al morir cada uno.</summary>
+		private static void MarcarLosTresMecanicosDerrotadosDeMentira()
 		{
 			NPC.downedMechBoss1 = true;
+			NPC.downedMechBoss2 = true;
+			NPC.downedMechBoss3 = true;
 			NPC.downedMechBossAny = true;
-			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - NPC.downedMechBoss1 y " +
-				"downedMechBossAny puestos a true a mano (la pareja real que enciende " +
-				"NPC.SetEventFlagCleared al morir el Destructor, NPC.cs case 134; matar a los " +
-				"Gemelos o a Esqueletron Prime en su lugar tocaria los mismos dos campos). Se " +
-				"restaura al terminar.");
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - NPC.downedMechBoss1/2/3 y " +
+				"downedMechBossAny puestos a true a mano (los campos reales que enciende " +
+				"NPC.SetEventFlagCleared al morir el Destructor, los Gemelos y Esqueletron Prime; los " +
+				"bulbos de Plantera exigen los tres, WorldGen.cs:68792). Se restaura al terminar.");
 		}
 
 		/// <summary>Marca a Plantera como derrotada SIN pelearla, para comprobar el cierre del
@@ -1550,6 +1570,8 @@ namespace TerrakeepMod.Common.Guia
 			Terraria.WorldGen.shadowOrbSmashed = _shadowOrbSmashedOriginal;
 			Main.hardMode = _hardModeOriginal;
 			NPC.downedMechBoss1 = _downedMechBoss1Original;
+			NPC.downedMechBoss2 = _downedMechBoss2Original;
+			NPC.downedMechBoss3 = _downedMechBoss3Original;
 			NPC.downedMechBossAny = _downedMechBossAnyOriginal;
 			NPC.downedPlantBoss = _downedPlantBossOriginal;
 			NPC.downedGolemBoss = _downedGolemBossOriginal;
@@ -1699,6 +1721,8 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedBoss3 = true;
 			Main.hardMode = true;
 			NPC.downedMechBoss1 = true;
+			NPC.downedMechBoss2 = true;
+			NPC.downedMechBoss3 = true;
 			NPC.downedMechBossAny = true;
 			NPC.downedPlantBoss = true;
 			NPC.downedGolemBoss = true;
@@ -2024,6 +2048,14 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedGoblins = false;
 			NPC.downedFrost = false;
 
+			// Auditoria 16-sep-2026: la Legion de Escarcha es de Modo Dificil (Orden 43, requisito
+			// real hardMode - el Globo de Nieve solo sale de un Regalo abierto en hardmode). Para que
+			// case173 la vea como "siguiente opcional pendiente" hay que remarcar superada a ReinaAbeja
+			// (25, que ahora va por delante) y poner hardMode a true para que case177 pueda cumplir su
+			// primer paso. MarcarLegionDeEscarchaDerrotadaDeMentira devuelve los dos a su valor real.
+			NPC.downedQueenBee = true;
+			Main.hardMode = true;
+
 			// PanelExploracionSystem.VerEnElMapa (reutilizado en SaltarAlMapaVanillaEnElMarcador,
 			// mas arriba) deja su PROPIO "_volverAlPanelAlCerrarMapa" pendiente. Ese flag disparo su
 			// propio ComprobarVueltaDelMapa un fotograma despues del de esta prueba y reabrio el
@@ -2048,9 +2080,17 @@ namespace TerrakeepMod.Common.Guia
 		private static void MarcarLegionDeEscarchaDerrotadaDeMentira()
 		{
 			NPC.downedFrost = true;
+			// Auditoria 16-sep-2026: la Legion vive ahora en Orden 43 (Modo Dificil), por detras de
+			// ReinaAbeja (25). PrepararEventosDeInvasionTempranos la remarco superada para que la
+			// Legion fuera "el siguiente opcional pendiente"; aqui vuelve a su valor real ANTES de
+			// case181 (ComprobarLosCuatroOpcionalesTempranosDesaparecen), que sigue esperando
+			// "ReinaAbeja/ArmaParaLaReina" como siguiente pendiente, igual que siempre.
+			NPC.downedQueenBee = _downedQueenBeeOriginal;
+			Main.hardMode = _hardModeOriginal;
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - NPC.downedFrost puesto a " +
-				"true a mano (el nombre real del campo, no \"downedFrostLegion\"). Se restaura al " +
-				"terminar.");
+				"true a mano (el nombre real del campo, no \"downedFrostLegion\"); downedQueenBee y " +
+				"hardMode devueltos a su valor real (" + NPC.downedQueenBee + "/" + Main.hardMode +
+				"). Se restaura al terminar.");
 		}
 
 		/// <summary>Comprueba que los CUATRO opcionales tempranos (ReySlime, EjercitoGoblin,
@@ -2128,6 +2168,10 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedFrost = true;
 			NPC.downedQueenBee = true;
 			NPC.downedQueenSlime = true;
+			// Auditoria 16-sep-2026: Piratas (Orden 44) exige ahora la bandera real hardMode (Mapa
+			// Pirata solo en hardmode, ItemDropDatabase Conditions.PirateMap; invasion natural
+			// Main.cs:83223). Se restaura en RestaurarTodosLosOpcionalesRestantes.
+			Main.hardMode = true;
 
 			NPC.downedPirates = false;
 			NPC.downedMartians = false;
@@ -2284,6 +2328,7 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedFrost = _downedFrostOriginal;
 			NPC.downedQueenBee = _downedQueenBeeOriginal;
 			NPC.downedQueenSlime = _downedQueenSlimeOriginal;
+			Main.hardMode = _hardModeOriginal;
 
 			NPC.downedPirates = _downedPiratasOriginal;
 			NPC.downedMartians = _downedMartiansOriginal;
@@ -2347,6 +2392,8 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedBoss3 = true;
 			Main.hardMode = true;
 			NPC.downedMechBoss1 = true;
+			NPC.downedMechBoss2 = true;
+			NPC.downedMechBoss3 = true;
 			NPC.downedMechBossAny = true;
 			NPC.downedPlantBoss = true;
 			NPC.downedGolemBoss = true;
@@ -2549,6 +2596,8 @@ namespace TerrakeepMod.Common.Guia
 			NPC.downedBoss3 = _downedBoss3Original;
 			Main.hardMode = _hardModeOriginal;
 			NPC.downedMechBoss1 = _downedMechBoss1Original;
+			NPC.downedMechBoss2 = _downedMechBoss2Original;
+			NPC.downedMechBoss3 = _downedMechBoss3Original;
 			NPC.downedMechBossAny = _downedMechBossAnyOriginal;
 			NPC.downedPlantBoss = _downedPlantBossOriginal;
 			NPC.downedGolemBoss = _downedGolemBossOriginal;

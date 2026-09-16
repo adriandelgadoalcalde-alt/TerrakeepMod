@@ -946,12 +946,12 @@ Guia: {
 
 		LegionDeEscarcha: {
 			Nombre: La Legión de Escarcha (opcional)
-			Resumen: Otra invasión por oleadas, con los mismos requisitos que el Ejército Goblin. Sus tres tipos de enemigo aplican frío además del golpe.
+			Resumen: Otra invasión por oleadas, pero de Modo Difícil y de Navidad: solo la invoca el Globo de nieve, que únicamente sale de los Regalos abiertos después del Muro de Carne. Sus tres tipos de enemigo aplican frío además del golpe.
 		}
 
 		Piratas: {
 			Nombre: Los Piratas (opcional)
-			Resumen: Otra invasión por oleadas, con los mismos requisitos que el Ejército Goblin. Su enemigo más duro, el Capitán Pirata, tiene mucha más defensa que los de las otras dos invasiones.
+			Resumen: Otra invasión por oleadas, ya en Modo Difícil: el Mapa pirata solo lo sueltan los enemigos del océano después del Muro de Carne. Su enemigo más duro, el Capitán pirata, tiene mucha más defensa que los de las otras dos invasiones.
 		}
 
 		Deerclops: {
@@ -981,12 +981,12 @@ Guia: {
 
 		InicioModoDificil: {
 			Nombre: Los primeros pasos del Modo Difícil
-			Resumen: Minerales nuevos rompiendo Altares, y la Reina Slime (18000 de vida) como opcional.
+			Resumen: Minerales nuevos rompiendo Altares con el Gran martillo que suelta el Muro, y la Reina Slime (18000 de vida) como opcional.
 		}
 
 		Mecanicos: {
 			Nombre: Los tres mecánicos
-			Resumen: Destructor 80000, Gemelos 20000 y 23000, Esqueletron Prime 28000 de vida.
+			Resumen: Destructor 80000, Gemelos 20000 y 23000, Esqueletron Prime 28000 de vida. Hacen falta los tres para que broten los bulbos de Plantera.
 		}
 
 		Plantera: {
@@ -1016,7 +1016,7 @@ Guia: {
 
 		EjercitoD2: {
 			Nombre: El Antiguo Ejército D2 (opcional)
-			Resumen: Defiende el Cristal de Eternia de tres asedios seguidos. Betsy, el jefe de cada asedio, tiene 50000 de vida.
+			Resumen: Defiende el Cristal eternia en tres dificultades: la 1 se abre con el Tabernero (tras la maldad de tu mundo), la 2 con un mecánico y la 3 con el Golem. Betsy (50000 de vida) solo aparece al final de la dificultad 3.
 		}
 
 		JefesOpcionalesTardios: {
@@ -1116,7 +1116,7 @@ Guia: {
 
 		PrimordialWyrm: {
 			Nombre: Primordial Wyrm (opcional y secreto, Calamity)
-			Resumen: 2500000-3000000 de vida. Jefe oculto de postgame muy avanzado; detalle de invocacion sin confirmar.
+			Resumen: 2500000-3000000 de vida. Jefe oculto de postgame muy avanzado: vive en el Abismo y aparece al llevar allí el Estado caótico (Vara de la discordia).
 		}
 
 		LluviaAcidaTier3: {
@@ -1151,7 +1151,7 @@ Guia: {
 
 		Yharon: {
 			Nombre: Yharon, Dragon of Rebirth
-			Resumen: 1000000-1560000 de vida, en el Templo de la Selva de postgame. Tras el Devourer of Gods, antes del ultimo tramo.
+			Resumen: 1000000-1560000 de vida, en la Jungla (se enfurece si sales de ella). Tras el Devourer of Gods, antes del ultimo tramo.
 		}
 
 		ExoMechsYSupremeCalamitas: {
@@ -1181,7 +1181,7 @@ Guia: {
 
 		PuebloDeCuatro: {
 			Titulo: Cuatro vecinos
-			Porque: Cuatro es el número exacto que el juego exige para que el Ojo de Cthulhu pueda aparecer solo al caer la noche. Cada vecino además se muda por un motivo concreto: el Mercader con 50 de plata encima de alguien, la Enfermera en cuanto alguien haya usado un cristal de vida y el Mercader ya viva contigo, y el de Demoliciones con una bomba en el inventario y el Mercader también presente.
+			Porque: Cuatro es el número exacto que el juego exige para que el Ojo de Cthulhu pueda aparecer solo al caer la noche. Cada vecino además se muda por un motivo concreto: el Mercader cuando entre todos los jugadores hay 50 de plata, la Enfermera en cuanto alguien haya usado un cristal de vida, y el Demoledor con un explosivo cualquiera en la mochila - ninguno de los dos últimos necesita que el Mercader viva ya contigo.
 			Como: Construye las viviendas primero: un vecino no se muda si no hay una libre y válida, aunque cumplas su condición.
 		}
 
@@ -1212,12 +1212,12 @@ Guia: {
 		ArmaParaDeerclops: {
 			Titulo: Un arma capaz de aguantar el frío
 			Porque: Deerclops trae 20 de daño, 10 de defensa y 7000 de vida, pero el frío que deja tras cada golpe sigue mordiendo después de que te aparte: la pelea pesa más de lo que sugiere ese daño base. No bloquea nada del camino, pero es de los pocos jefes que puede plantarse en tu partida sin que tú decidas cuándo.
-			Como: Solo sale de la ventisca en noches de tormenta, dentro del bioma de nieve, y solo si no hay ningún otro peligro cerca. El Trasto de Ciervo lo llama al instante si prefieres no quedarte esperando a que el tiempo se ponga de tu parte.
+			Como: Solo sale a medianoche, en plena ventisca, dentro del bioma de nieve, sin vecinos ni otro peligro cerca y con 200 de vida o 9 de defensa - y si ya lo has derrotado, solo una de cada cuatro noches. El Trasto de ciervo lo llama al instante (también dentro de la nieve) si prefieres no quedarte esperando a que el tiempo se ponga de tu parte.
 		}
 
 		VencerADeerclops: {
 			Titulo: Derrotarlo (opcional)
-			Porque: No te abre ningún camino obligatorio: es un visitante de otro mundo, traído directamente de Don't Starve Together. Lo que deja atrás -su Ojo, la mascota Trasto de Ciervo- es más recuerdo de trofeo que necesidad real.
+			Porque: No te abre ningún camino obligatorio: es un visitante de otro mundo, traído directamente de Don't Starve Together. Lo que deja atrás -el Hueso del ojo que invoca a Chester, el cofre viviente; la Ojombrilla; y una de sus cuatro armas, Lucy el Hacha entre ellas- es más recuerdo de trofeo que necesidad real.
 			Como: Golpea el suelo y lanza pinchos de hielo en línea recta desde ambos lados: una arena elevada, lejos del suelo que pisa, evita la mayoría de sus ataques.
 		}
 
@@ -1229,26 +1229,26 @@ Guia: {
 
 		VencerAlEjercitoGoblin: {
 			Titulo: Derrotarla (opcional)
-			Porque: Rechazar la invasión no bloquea el camino obligatorio, pero abre el mostrador del Duende Mecánico (si ya vive contigo) y es la única forma de dar con el Tinkerer Goblin, prisionero en algún túnel bajo tus pies.
+			Porque: Rechazar la invasión no bloquea el camino obligatorio, pero es la única forma de que aparezca el Duende chapucero, atado en algún túnel bajo tus pies: libéralo y se muda contigo con su mostrador de reforja y su Taller, el accesorio que combina accesorios.
 			Como: Pelea cerca de tu base, con pasillos estrechos y trampas: las oleadas vienen de los dos lados a la vez, y un cuello de botella vale más que espacio abierto.
 		}
 
 		ArmaParaLaLegionDeEscarcha: {
 			Titulo: Un arma capaz de aguantar el frío de otra oleada
 			Porque: Otra invasión por oleadas, con los mismos tres tipos de enemigo repitiéndose. Mister Estocada es el más duro, con 65 de daño y 26 de defensa, y los tres aplican frío además del golpe directo - el peligro real es que ese frío se acumula si no rompes el ritmo.
-			Como: Misma condición que el Ejército Goblin: 5 cristales de vida ya usados antes de poder invocarla tú mismo. Una fuente de calor o un buff contra el frío ayuda más aquí que en casi cualquier otro tramo.
+			Como: Nunca llega sola: hace falta un Globo de nieve, y ese solo sale (una de cada quince veces) de un Regalo abierto ya en Modo Difícil - y los Regalos los sueltan los enemigos solo en Navidad, del 15 al 31 de diciembre. Con el globo en la mano, la misma condición que el Ejército Goblin: 5 cristales de vida ya usados. Una fuente de calor o un buff contra el frío ayuda más aquí que en casi cualquier otro tramo.
 		}
 
 		VencerALaLegionDeEscarcha: {
 			Titulo: Derrotarla (opcional)
-			Porque: Rechazarla no te abre ningún camino obligatorio: es puramente un capricho navideño. Lo que dejan caer -piezas de la armadura de Duende Travieso, el Bastón de Nieve- es más recuerdo de fiestas que necesidad real.
+			Porque: Rechazarla no te abre ningún camino obligatorio: es puramente un capricho navideño. Sus muñecos de nieve no sueltan más que Bloques de nieve; lo que de verdad cambia es que, con la Legión derrotada y todavía en Navidad, Papá Noel se muda a vivir contigo.
 			Como: Igual que el Ejército Goblin: un cuello de botella cerca de tu base rinde mejor que pelear a campo abierto contra las dos direcciones a la vez.
 		}
 
 		ArmaParaLosPiratas: {
 			Titulo: Un arma capaz de un enemigo mucho más blindado
 			Porque: El Capitán Pirata es el enemigo común más duro de las tres invasiones por oleadas: 70 de daño y 30 de defensa, muy por encima de los 8 del Guerrero Goblin o los 26 de Mister Estocada. Cuidado con una idea equivocada muy extendida: el "Flying Dutchman" que se suele citar como el jefe del evento no es un enemigo real - es solo la nave, decorativa.
-			Como: Misma condición que el Ejército Goblin y la Legión de Escarcha: 5 cristales de vida ya usados antes de poder invocarla tú mismo con el Mapa Pirata.
+			Como: Es cosa del Modo Difícil: el Mapa pirata solo lo sueltan (una de cada cien veces) los enemigos del océano tras el Muro de Carne, y la invasión solo llega sola con el mundo ya en Modo Difícil y al menos un altar roto. Con el mapa, la misma condición que el Ejército Goblin: 5 cristales de vida ya usados.
 		}
 
 		VencerALosPiratas: {
@@ -1259,14 +1259,14 @@ Guia: {
 
 		ArmaContraLaMaldad: {
 			Titulo: Un arma que aguante muchos golpes seguidos
-			Porque: La misma fórmula de siempre (le quitas daño menos la mitad de su defensa, mínimo 1) aquí pesa menos que con el Ojo: cada segmento del Devorador de Mundos solo tiene 2 de defensa, y el propio Cerebro de Cthulhu 14, aunque no puedes tocarlo hasta que mueran los Reptadores que lo rodean. Lo que sí hace falta es aguante: el Devorador son decenas de segmentos con 22 de daño cada uno, y el Cerebro golpea 30 en contacto directo. Un arma corta y sin alcance te deja parado entre golpes; una que llegue lejos o dispare deja pegar y retroceder.
+			Porque: La misma fórmula de siempre (le quitas daño menos la mitad de su defensa, mínimo 1) aquí pesa menos que con el Ojo: los segmentos del Devorador de Mundos tienen entre 2 (cabeza) y 8 (cola) de defensa, y el propio Cerebro de Cthulhu 14, aunque no puedes tocarlo hasta que mueran los Reptadores que lo rodean. Lo que sí hace falta es aguante: el Devorador son decenas de segmentos de 150 de vida, con 22 de daño en la cabeza, y el Cerebro golpea 30 en contacto directo. Un arma corta y sin alcance te deja parado entre golpes; una que llegue lejos o dispare deja pegar y retroceder.
 			Como: Cualquier arma con alcance o a distancia de la primera capa de mineral sirve de sobra. Un Corazón Carmesí o una Esfera Oscura rotos por accidente ya empiezan a acercar al jefe; si prefieres elegir el momento, la Comida de Gusano o la Espina Sangrienta lo invocan directamente.
 		}
 
 		VencerLaMaldad: {
 			Titulo: Derrotarlo
-			Porque: En cuanto caiga el Devorador de Mundos o el Cerebro de Cthulhu, tu mundo entero lo nota: un meteorito cae garantizado en algún punto del mapa, y la Dríade empieza a vender Polvo Vil o Viscoso y a decirte cuánta corrupción o carmesí tiene tu mundo. Romper Altares Demoníacos o Carmesíes para sacar mineral nuevo hace falta el Martillo Sagrado, que solo se consigue derrotando al Muro de Carne más adelante - todavía no aquí, aunque cueste creerlo con el jefe ya en el suelo.
-			Como: El Devorador se corta en trozos: cada segmento partido por la mitad se separa en dos gusanos más, así que un arma que atraviese en línea (o con mucho alcance) acaba antes que una que solo pega de uno en uno. El Cerebro se esconde detrás de sus Reptadores: mátalos primero y se queda quieto y vulnerable unos segundos.
+			Porque: En cuanto caiga el Devorador de Mundos o el Cerebro de Cthulhu, el cielo te avisa de la primera victoria con un meteorito que cae seguro, el Tabernero pasa a poder rescatarse en las cavernas, y con su Endemoniado/Carmesí y sus escamas o muestras de tejido sale el Pico de pesadilla o el Pico mortífero: los primeros que pican Piedra infernal, el camino real al Muro de Carne. Lo que NO abre, aunque se diga mucho: los Altares. Romperlos exige el Gran martillo (el Pwnhammer, que solo suelta el Muro de Carne) y que el mundo ya esté en Modo Difícil; antes de eso el altar no se rompe y te quita la mitad de la vida al golpearlo.
+			Como: El Devorador se corta en trozos: cada segmento partido por la mitad se separa en dos gusanos más, así que un arma que atraviese en línea (o con mucho alcance) acaba antes que una que solo pega de uno en uno. El Cerebro se esconde detrás de sus Reptadores: mátalos todos y pasa a su segunda fase, ya vulnerable hasta el final pero teletransportándose sin parar a tu alrededor.
 		}
 
 		ArmaParaEsqueletron: {
@@ -1289,8 +1289,8 @@ Guia: {
 
 		VencerAlMuro: {
 			Titulo: Derrotarlo: el mundo cambia para siempre
-			Porque: Aquí no hay medias tintas: en cuanto muere, tu mundo entero cruza al Modo Difícil, y no hay vuelta atrás en esta partida. A partir de ahí todo sube de golpe -enemigos nuevos y más duros hasta en zonas que ya dabas por seguras- pero también se abre lo que necesitas para seguir: minerales nuevos al romper Altares Demoniacos o Carmesíes con un mazo, y el camino a los tres jefes mecánicos.
-			Como: Construye un puente largo y llano sobre la lava antes de invocarlo: el Muro avanza solo hacia ti, así que necesitas sitio para retroceder disparando en vez de terreno irregular que te frene. La boca es su parte más débil; el ojo, la más resistente.
+			Porque: Aquí no hay medias tintas: en cuanto muere, tu mundo entero cruza al Modo Difícil, y no hay vuelta atrás en esta partida. A partir de ahí todo sube de golpe -enemigos nuevos y más duros hasta en zonas que ya dabas por seguras- pero también se abre lo que necesitas para seguir: suelta siempre el Gran martillo (Pwnhammer), el único martillo capaz de romper los Altares Demoniacos o Carmesíes, y cada altar roto reparte mineral nuevo por el mundo (Cobalto o Paladio con el primero, Mithril u Oricalco con el segundo, Adamantita o Titanio con el tercero). Con Calamity y su opción "Early Hardmode Progression Rework" (activada por defecto) el reparto cambia: los altares sueltan Almas de la noche, el Cobalto/Paladio brota solo al morir el Muro, y el resto lo sueltan los jefes mecánicos.
+			Como: Construye un puente largo y llano sobre la lava antes de invocarlo: el Muro avanza solo hacia ti, así que necesitas sitio para retroceder disparando en vez de terreno irregular que te frene. Los ojos son su parte sin defensa; la boca, la más blindada.
 		}
 
 		ArmaParaLosMecanicos: {
@@ -1300,32 +1300,32 @@ Guia: {
 		}
 
 		VencerAUnMecanico: {
-			Titulo: Derrotar a uno de los tres
-			Porque: En cuanto cae cualquiera de los tres, el mundo responde: aparece mineral nuevo (Mithril u Oricalco) y por fin tienes el empuje real para que Plantera merezca la pena. No hace falta tumbar a los tres para seguir adelante, aunque el equipo completo que dejan es lo mejor que vas a tener antes de Plantera.
+			Titulo: Derrotar a los tres
+			Porque: Con el primero que cae ya empiezan a brotar las Frutas de la vida en la jungla, puede llegar el Eclipse Solar y se abre la dificultad 2 del Antiguo Ejército. Pero los bulbos de Plantera solo crecen con los TRES mecánicos derrotados: hasta que no caigan el Destructor, los Gemelos y Esqueletron Prime, no hay forma de invocarla. Sus Lingotes sagrados y sus almas dan el mejor equipo que vas a tener antes de ella.
 			Como: Los Gemelos y Esqueletron Prime vuelan y persiguen: un arena elevada con plataformas ayuda más que el suelo. El Destructor es un gusano larguísimo: un arma que atraviese en línea recta acaba con más de un segmento por disparo.
 		}
 
 		ArmaParaPlantera: {
 			Titulo: Un arma que aguante DOS peleas seguidas
 			Porque: Plantera tiene 50 de daño, 14 de defensa y 30000 de vida, pero el número que de verdad importa aquí no es la defensa: en cuanto baja de la mitad de su vida se enrabia, acelera y persigue mucho más deprisa por toda la jungla. No es un jefe más duro de atravesar, es DOS peleas distintas seguidas, y la segunda te puede acorralar si no tienes con qué mantener el ritmo. 45 de daño ya se nota, pero aquí compensa más una buena movilidad que un número mayor.
-			Como: Rompe un bulbo de Plantera en la jungla subterránea para invocarla; solo aparecen tras derrotar a cualquiera de los tres mecánicos. Despeja un pasillo largo antes de romperlo: la segunda fase persigue en línea recta y la jungla natural está demasiado cerrada para esquivar.
+			Como: Rompe un bulbo de Plantera en la jungla subterránea para invocarla; solo brotan con los tres mecánicos derrotados. Despeja un pasillo largo antes de romperlo: la segunda fase persigue en línea recta y la jungla natural está demasiado cerrada para esquivar.
 		}
 
 		VencerAPlantera: {
 			Titulo: Derrotarla
-			Porque: La primera vez que cae, la puerta de piedra del Templo de la Selva se abre para siempre y el Ciborg se muda a vivir contigo. También deja caer semillas de Clorofita, la semilla -literal- de todo el mineral que viene después.
+			Porque: Al caer suelta siempre la Llave del templo, la única que abre la puerta de piedra del Templo de la Selva, y el Ciborg se muda a vivir contigo. Además la Mazmorra se llena de enemigos nuevos (con su Ectoplasma, la base de los eventos lunares de después) y por fin se pueden abrir los cofres de bioma con sus llaves.
 			Como: Pelea en el pasillo que despejaste, nunca en la jungla cerrada: sus tentáculos y semillas persiguen mejor entre árboles apretados que en un corredor limpio.
 		}
 
 		ArmaParaElTemplo: {
 			Titulo: Un arma para las tres fases del Golem
-			Porque: El Golem pelea en tres fases con números distintos: el cuerpo tiene 72 de daño, 26 de defensa y 15000 de vida; al romper los dos puños, la cabeza queda suelta con 32 de defensa y 80 de daño, y hasta entonces NO recibe daño (dontTakeDamage=true). Con la fórmula de siempre, 55 de daño deja golpes útiles en las tres fases sin que la última, la más dura, se haga eterna.
-			Como: La puerta de piedra del Templo se abre sola en cuanto Plantera muere. Dentro, las trampas y cofres del Templo sueltan Células de Poder Lihzahrd: úsalas en el Altar Lihzahrd para invocarlo. Rompe primero los dos puños; mientras vivan, la cabeza no se puede dañar.
+			Porque: El Golem pelea en tres piezas con números distintos: la cabeza montada tiene 64 de daño, 20 de defensa y 25000 de vida; el cuerpo 72 de daño, 26 de defensa y 15000; y cuando la cabeza cae se suelta y vuela por su cuenta con 32 de defensa, 80 de daño y 16000 más. El detalle que decide la pelea: el CUERPO no recibe daño mientras la cabeza siga montada, así que empieza por ella. Con la fórmula de siempre, 55 de daño deja golpes útiles en las tres piezas sin que la última, la más dura, se haga eterna.
+			Como: La puerta de piedra del Templo se abre con la Llave del templo que suelta Plantera. Dentro, los cofres del Templo y sus Lihzahrd y Serpientes voladoras sueltan Células de poder de lihzahrd: úsalas en el Altar de lihzahrd para invocarlo. Destruye primero la cabeza; hasta entonces el cuerpo no se puede dañar, y los puños se pueden ignorar o romper aparte.
 		}
 
 		VencerAlGolem: {
 			Titulo: Derrotarlo
-			Porque: Con él en el suelo, hasta el último vecino del pueblo sube su oferta un escalón, y el Templo queda despejado justo antes de plantearte los últimos opcionales y, después, encarar al Cultista Lunático junto a la Mazmorra.
+			Porque: Con él en el suelo se abre lo que viene después: los Cultistas aparecen por fin junto a la entrada de la Mazmorra (y con ellos el Cultista Lunático), la Sonda Marciana puede empezar a rondar, y se desbloquea la dificultad 3 del Antiguo Ejército, la única con Betsy. Suelta además el Picoserrucho y Caparazones de escarabajo, la base de la armadura de escarabajo.
 			Como: Pelea dentro de la sala del Templo, con espacio para rodear los pilares de piedra: te protegen de sus golpes de área mientras esperas la abertura.
 		}
 
@@ -1343,20 +1343,20 @@ Guia: {
 
 		ArmaParaMourningWood: {
 			Titulo: Un arma para el primero de los dos jefes del evento
-			Porque: Mourning Wood tiene 120 de daño, 34 de defensa y 14000 de vida y llega en la quinta oleada de la Luna de Calabazas, la primera de las dos que hay que superar.
+			Porque: Mourning Wood tiene 120 de daño, 34 de defensa y 14000 de vida y llega en la sexta oleada de la Luna de Calabazas, la primera de las dos que hay que superar.
 			Como: Solo se puede invocar de noche y si no hay ya otro evento de oleadas en marcha. Un espacio cerrado con pasillos estrechos ayuda tanto contra él como contra el resto de la oleada.
 		}
 
 		VencerAMourningWood: {
 			Titulo: Derrotarlo (opcional)
-			Porque: Tumbarlo no cierra la noche entera: solo marca al primero de los dos jefes como caído. La Luna de Calabazas sigue hasta la novena oleada, cuando por fin llega Pumpking.
+			Porque: Tumbarlo no cierra la noche entera: solo marca al primero de los dos jefes como caído. La Luna de Calabazas sigue hasta la décima oleada, cuando por fin llega Pumpking.
 			Como: Lanza troncos en llamas a distancia: no te quedes quieto en su línea de tiro.
 		}
 
 		ArmaParaPumpking: {
 			Titulo: Un arma para el jefe que cierra el evento
 			Porque: Pumpking tiene 50 de daño, 40 de defensa y 26000 de vida - menos daño por golpe que Mourning Wood, pero casi el doble de vida y más defensa.
-			Como: Llega en la novena oleada, ya con Mourning Wood superado: no hace falta volver a usar el Medallón, el evento sigue solo si aguantas hasta entonces.
+			Como: Llega en la décima oleada, ya con Mourning Wood superado: no hace falta volver a usar el Medallón, el evento sigue solo si aguantas hasta entonces.
 		}
 
 		VencerAPumpking: {
@@ -1367,20 +1367,20 @@ Guia: {
 
 		ArmaParaEverscream: {
 			Titulo: Un arma para el primero de los tres jefes del evento
-			Porque: Everscream tiene 110 de daño, 38 de defensa y 13000 de vida y llega en la tercera oleada de la Luna Helada, la primera de las tres que hay que superar.
+			Porque: Everscream tiene 110 de daño, 38 de defensa y 13000 de vida y llega en la cuarta oleada de la Luna Helada, la primera de las tres que hay que superar.
 			Como: Solo se puede invocar de noche y si no hay ya otro evento de oleadas en marcha. Igual que con la Luna de Calabazas, un cuello de botella cerca de tu base ayuda contra toda la oleada.
 		}
 
 		VencerAEverscream: {
 			Titulo: Derrotarlo (opcional)
-			Porque: Tumbarlo solo marca al primero de los tres como caído: la Luna Helada sigue hasta la décima oleada, cuando llega la Reina de Hielo, con Santa-NK1 esperando a mitad de camino.
+			Porque: Tumbarlo solo marca al primero de los tres como caído: la Luna Helada sigue hasta la undécima oleada, cuando llega la Reina de Hielo, con Santa-NK1 esperando a mitad de camino.
 			Como: Dispara ráfagas de proyectiles helados a distancia, parecido a Mourning Wood pero con más cadencia.
 		}
 
 		ArmaParaSantaNK1: {
 			Titulo: Un arma para el segundo jefe: el más blindado de los tres
 			Porque: Santa-NK1 tiene 120 de daño, 56 de defensa y 18000 de vida - la defensa más alta de los tres jefes del evento, muy por encima de los 38 de Everscream y la Reina de Hielo.
-			Como: Llega en la sexta oleada. Dispara regalos explosivos y ráfagas de ametralladora en línea recta: moverte en diagonal esquiva más que retroceder en línea.
+			Como: Llega en la séptima oleada. Dispara regalos explosivos y ráfagas de ametralladora en línea recta: moverte en diagonal esquiva más que retroceder en línea.
 		}
 
 		VencerASantaNK1: {
@@ -1392,24 +1392,24 @@ Guia: {
 		ArmaParaIceQueen: {
 			Titulo: Un arma para el jefe que cierra el evento
 			Porque: La Reina de Hielo tiene 120 de daño, 38 de defensa y 34000 de vida - la más alta de los tres jefes del evento - y coldDamage=true, aplica frío extra además del golpe directo.
-			Como: Llega en la décima oleada, con Everscream y Santa-NK1 ya superados: el evento sigue solo, sin volver a usar el Regalo Travieso. Una fuente de calor o un buff contra el frío ayuda aquí más que en ningún otro tramo.
+			Como: Llega en la undécima oleada, con Everscream y Santa-NK1 ya superados: el evento sigue solo, sin volver a usar el Regalo asqueroso. Una fuente de calor o un buff contra el frío ayuda aquí más que en ningún otro tramo.
 		}
 
 		VencerAIceQueen: {
 			Titulo: Derrotarla: cierra el evento
-			Porque: Con ella en el suelo, la Luna Helada se cierra del todo: el más largo de los dos eventos por oleadas, diez rondas hasta que aparece, frente a las nueve de la Luna de Calabazas.
+			Porque: Con ella en el suelo, la Luna Helada se cierra del todo: el más largo de los dos eventos por oleadas, once rondas hasta que aparece, frente a las diez de la Luna de Calabazas.
 			Como: Dispara ráfagas de cristales de hielo en abanico: moverte en círculos amplios deja menos huecos que retroceder en línea recta.
 		}
 
 		ArmaParaElEjercitoD2: {
 			Titulo: Un arma capaz de un asedio entero
-			Porque: Betsy, el jefe que cierra cada asedio, tiene 80 de daño, 38 de defensa y 50000 de vida. No es solo ella: cada asedio son varias oleadas de enemigos propios del evento (goblins, wyverns, magos oscuros...) antes de que aparezca.
-			Como: Se invoca con clic derecho sobre el Soporte del Cristal de Eternia (una estructura que fabricas y colocas tú) llevando el Cristal de Eternia en el inventario (Player.cs, ~línea 30670): se consume al usarlo, igual que el resto de objetos de invocación de esta guía.
+			Porque: Betsy tiene 80 de daño, 38 de defensa y 50000 de vida, pero solo aparece en la última oleada de la dificultad 3, la que se abre con el Golem derrotado. Antes hay dos dificultades más: la 1, disponible en cuanto rescatas al Tabernero (tras la maldad de tu mundo), y la 2, que se abre con cualquier mecánico caído. Cada una son varias oleadas de enemigos propios del evento (goblins etéreos, wyverns, magos oscuros, ogros...).
+			Como: El Cristal eternia y su Stand no se fabrican: los vende el Tabernero por Medallas del Defensor. Coloca el Stand, y con el Cristal en la mochila haz clic derecho sobre él: se consume y arranca el asedio, siempre que no haya ya otro en marcha ni sea Luna de Calabazas o Helada.
 		}
 
 		VencerAlEjercitoD2: {
-			Titulo: Superar los tres asedios (opcional)
-			Porque: Aguantar los tres asedios en CUALQUIER dificultad (Media, Alta o Para Expertos) ya cuenta como una victoria - no hace falta la más dura, aunque el mejor botín espera en la dificultad más alta que te atrevas a resistir.
+			Titulo: Superar un asedio entero (opcional)
+			Porque: Aguantar hasta la última oleada en CUALQUIERA de las tres dificultades ya cuenta como victoria - no hace falta la más dura, aunque el mejor botín (y Betsy) esperan en la dificultad 3.
 			Como: Protege el Cristal de Eternia, no solo a ti mismo: si cae, el asedio termina en derrota aunque tú sigas vivo. Construir pasillos estrechos alrededor del cristal, con trampas, ayuda más que pelear a cuerpo descubierto.
 		}
 
@@ -1440,7 +1440,7 @@ Guia: {
 		ArmaParaMoonLord: {
 			Titulo: El final: un arma para 145000 de vida repartida
 			Porque: El Señor de la Luna se pelea en tres piezas con sus propios números: el núcleo tiene 70 de defensa y 50000 de vida PROPIA y no recibe ni un rasguño hasta que caen sus dos manos y la cabeza - más de 145000 de vida en total repartida entre las tres. Con la fórmula de siempre, 90 de daño deja golpes útiles en las tres, y la vida máxima cuenta tanto como el arma: sus rayos y las caídas de meteoro perdonan poco margen de error.
-			Como: Fabrica el Sello Celestial con fragmentos de las cuatro torres en un Yunque de Mithril u Orichalco y úsalo para invocarlo. Construye antes una plataforma alta y despejada, lejos de bloques sólidos: sus manos y su cabeza descienden desde el cielo y necesitas sitio para esquivar en las cuatro direcciones.
+			Como: Fabrica el Sello celestial con 12 fragmentos de cada una de las cuatro torres en el Manipulador antiguo (el que suelta el Cultista) y úsalo para invocarlo. Construye antes una plataforma alta y despejada, lejos de bloques sólidos: sus manos y su cabeza descienden desde el cielo y necesitas sitio para esquivar en las cuatro direcciones.
 		}
 
 		VencerAMoonLord: {
@@ -1464,12 +1464,12 @@ Guia: {
 		ArmaParaLaReinaSlime: {
 			Titulo: Un arma de mineral de Hardmode ya fundida
 			Porque: La Reina Slime tiene 60 de daño, 26 de defensa y 18000 de vida - un primer filtro razonable nada más entrar en Hardmode. No bloquea nada, pero es la primera prueba real de que el mineral nuevo (Cobalto/Paladio) ya vale para algo.
-			Como: Solo se puede invocar de NOCHE y dentro del bioma Sagrado, con el Cristal de la Reina Slime. Salta muy alto: una arena con varias plataformas ayuda más que el suelo llano.
+			Como: Se invoca con el Cristal gelatinoso, que se encuentra en el Sagrado subterráneo, y solo dentro del bioma Sagrado - a cualquier hora, de día o de noche. Salta muy alto: una arena con varias plataformas ayuda más que el suelo llano.
 		}
 
 		VencerALaReinaSlime: {
 			Titulo: Derrotarla (opcional)
-			Porque: No bloquea el camino a los mecánicos ni a nada obligatorio. Deja caer el Ala Real Cristalina, un vuelo que te adelanta años luz a lo que había disponible antes de que ella apareciera.
+			Porque: No bloquea el camino a los mecánicos ni a nada obligatorio. Deja caer el Sillín gelatinoso -una montura voladora, un vuelo que te adelanta años luz a lo que había antes-, el Gancho de Disonancia, el Báculo de cuchillas y piezas de la armadura de asesino de cristal.
 			Como: Sus ataques son casi todos cuerpo a cuerpo y saltos: mantener las distancias con un arma a distancia o mágica es más seguro que pelear cuerpo a cuerpo contra sus caídas.
 		}
 
@@ -1481,14 +1481,14 @@ Guia: {
 
 		VencerAFishron: {
 			Titulo: Derrotarlo (opcional)
-			Porque: No abre nada del camino obligatorio. Deja el Cañón de Cavajabón y el resto de su equipo, de lo mejor que hay disponible antes de la luna, además de abrirte la pesca de tesoros que solo él sabe dónde esconder.
+			Porque: No abre nada del camino obligatorio. Deja una de sus cinco armas (Flairón, Tsunami, Tifón de cuchillas, Pistola de burbujas o el Báculo de tempestad) y, una de cada quince veces, las Alas de Fishron: de lo mejor que hay disponible antes de la luna.
 			Como: Cambia de patrón varias veces según baja de vida: lo que esquivas en la primera fase no sirve en la última. Mantén el movimiento constante en vez de plantarte en un sitio fijo.
 		}
 
 		ArmaParaLaEmperatriz: {
 			Titulo: Un arma para la vida más alta de los opcionales
-			Porque: La Emperatriz de la Luz tiene 80 de daño, 50 de defensa y 70000 de vida - la vida más alta de todos los jefes opcionales tardíos. Además NO recibe daño (dontTakeDamage) salvo en las condiciones de luz correctas: pelear de noche la vuelve muchísimo más agresiva a propósito, como castigo por no respetar su horario.
-			Como: Ataca a la Luciérnaga Prismática, una criatura inofensiva que aparece en el Sagrado de día, para invocarla. Pelea DE DÍA la primera vez: de noche es mucho más dura y no perdona errores.
+			Porque: La Emperatriz de la Luz tiene 80 de daño, 50 de defensa y 70000 de vida - la vida más alta de todos los jefes opcionales tardíos. Y tiene una regla propia: de DÍA está enfurecida y cada uno de sus golpes es letal; de NOCHE es la pelea normal. Matarla enfurecida es el reto que premia con la Terraprisma, pero no es la forma de conocerla.
+			Como: Mata a la Crisopa prismática, una criatura inofensiva que solo aparece en la superficie del Sagrado de noche, antes de medianoche y con Plantera ya derrotada. Pelea DE NOCHE la primera vez: de día cada golpe suyo te mata de un toque.
 		}
 
 		VencerALaEmperatriz: {
@@ -1500,7 +1500,7 @@ Guia: {
 		ArmaParaDesertScourge: {
 			Titulo: Cualquier arma con algo de alcance
 			Porque: El Desert Scourge tiene 4 de defensa y entre 4000 y 5000 de vida segun el modo - menos vida que el Ojo de Cthulhu. Es intencionadamente el primer jefe opcional de Calamity, pensado para antes o justo despues del Rey Slime.
-			Como: Aparece solo si pasas tiempo en el Desierto o el Desierto subterraneo, sobre todo de noche. El Medallon del Desierto lo invoca al instante si prefieres elegir tu el momento.
+			Como: No aparece nunca solo: el Medallón del Desierto, usado dentro del Desierto, es la única forma de invocarlo.
 		}
 
 		VencerADesertScourge: {
@@ -1524,7 +1524,7 @@ Guia: {
 		ArmaParaCrabulon: {
 			Titulo: Un arma capaz de perforar su caparazon
 			Porque: Crabulon tiene 8 de defensa y 3500-4400 de vida - un pelin mas duro que el Rey Slime, pensado para justo despues del Ojo de Cthulhu.
-			Como: El Decapodita brota solo, muy de vez en cuando, en el bioma de Hongos Luminosos. El Decapodita Sprout lo invoca al instante si tienes uno en la mochila.
+			Como: No brota solo: el Decapodita Sprout lo invoca, y solo se puede usar dentro de un bioma de Hongos Luminosos que esté bajo tierra, por debajo de la superficie.
 		}
 
 		VencerACrabulon: {
@@ -1559,7 +1559,7 @@ Guia: {
 
 		PrepararDreadnautilus: {
 			Titulo: Estar listo para una Luna de Sangre
-			Porque: Calamity le da un giro siniestro a esa pesca rara e inofensiva que en vanilla es el BloodNautilus: bajo una Luna de Sangre se convierte en un miniboss de verdad. El Horrible Hog es la otra sorpresa de la misma noche: un cerdo salvaje corriente que, por algún motivo, ha crecido mucho más de lo normal - suelto desde que derrotas al Ojo de Cthulhu.
+			Porque: El Nautilo terrible ya es en vanilla un miniboss que se pesca en Luna de Sangre (7000 de vida, 55 de daño, 24 de defensa); Calamity le reescribe la inteligencia entera y lo vuelve mucho más peligroso. El Horrible Hog es la otra sorpresa de la misma noche: un cerdo salvaje corriente que, por algún motivo, ha crecido mucho más de lo normal - solo sale en Luna de Sangre y con el Ojo de Cthulhu ya derrotado.
 			Como: Ninguno de los dos tiene objeto de invocacion de verdad: solo aparecen durante una Luna de Sangre real. Un anillo/reloj de Luna de Sangre o esperar la aleatoria de cada noche es la unica via.
 		}
 
@@ -1572,7 +1572,7 @@ Guia: {
 		ArmaParaCryogen: {
 			Titulo: Tu primer arma de Modo Dificil de Calamity
 			Porque: Cryogen tiene 15 de defensa y 25000-48000 de vida - el primer jefe hardmode PROPIO de Calamity, pensado para el mismo momento que los mecanicos de vanilla.
-			Como: La Llave Criogenica lo invoca en el bioma de Nieve. Con la opcion "Early Hardmode Progression Rework" activada, su material de crafteo pide un pico de Mithril o mejor - sin ella, se puede intentar nada mas entrar en Modo Dificil.
+			Como: La Llave Criogénica lo invoca dentro del bioma de Nieve. Se fabrica en un yunque con 50 bloques de hielo, 5 Almas de luz, 5 Almas de noche y 8 Esencias de Eleum (las sueltan los enemigos de la nieve en Modo Difícil): se puede intentar nada más cruzar al Modo Difícil. Su primera muerte hace brotar el Mineral Criónico en la nieve.
 		}
 
 		VencerACryogen: {
@@ -1584,7 +1584,7 @@ Guia: {
 		ArmaParaAquaticScourge: {
 			Titulo: Un arma que aguante un gusano largo
 			Porque: Aquatic Scourge tiene 10 de defensa y 80000-96000 de vida - mucha mas vida que Cryogen, pero menos defensa. Su derrota desbloquea la fase 2 del evento Lluvia Acida.
-			Como: El Marisco (Seafood) lo invoca en cualquier sitio, o aparece rarisimamente solo en el Sulphurous Sea.
+			Como: El Marisco (Seafood) lo invoca, pero solo dentro del Sulphurous Sea; también puede aparecer solo, rarísimamente, nadando en sus aguas.
 		}
 
 		VencerAAquaticScourge: {
@@ -1596,19 +1596,19 @@ Guia: {
 		ArmaParaBrimstoneElemental: {
 			Titulo: Un arma capaz de un jefe defensivo
 			Porque: Brimstone Elemental tiene 15 de defensa y 30000-49200 de vida, en la franja de early hardmode junto a Cryogen y Aquatic Scourge.
-			Como: El Idolo Chamuscado lo invoca en cualquier sitio. Es aconsejable pelear en un espacio abierto: invoca brazos secundarios alrededor suyo.
+			Como: El Ídolo Chamuscado la invoca, pero solo dentro de los Riscos de Azufre (Brimstone Crag), su bioma en el Infierno. Alterna tres fases: deriva hacia ti teletransportándose, embiste disparando bolas de fuego, y se encierra en su capullo.
 		}
 
 		VencerABrimstoneElemental: {
 			Titulo: Derrotarlo (opcional)
 			Porque: No bloquea nada obligatorio: uno más del trío opcional de early hardmode que ofrece Calamity, junto a Cryogen y Aquatic Scourge - el orden entre los tres da igual, elige el tuyo.
-			Como: Sus brazos secundarios disparan sin parar mientras el nucleo central se queda quieto: rematarlos primero reduce muchisimo la cantidad de proyectiles en pantalla.
+			Como: En su fase de capullo cierra los pétalos, sube muchísimo la defensa y dispara anillos de dardos: no gastes tus mejores ataques ahí, guárdalos para cuando vuelve a abrirse y embiste.
 		}
 
 		PrepararLluviaAcida2: {
 			Titulo: Estar listo para la Lluvia Acida (fase 2)
-			Porque: Cragmaw Mire es un miniboss que puede aparecer durante el evento Lluvia Acida en cuanto llegas a 115 puntos de progreso - y ese umbral solo se desbloquea tras derrotar al Aquatic Scourge.
-			Como: La Lluvia Acida empieza sola, por probabilidad, o al instante con una Lagrima Caustica. Se cancela si no matas nada en 4 minutos seguidos.
+			Porque: Cragmaw Mire es un miniboss que solo entra en la lista de la Lluvia Ácida cuando el Aquatic Scourge ya ha caído: es la bandera de ese jefe, no un contador de puntos, la que cambia la fase del evento (y sube lo que hay que matar de 110 a 135 enemigos para un jugador).
+			Como: La Lluvia Ácida empieza sola, por probabilidad, o al instante con una Lágrima Cáustica - pero solo con el Ojo de Cthulhu ya derrotado o el mundo en Modo Difícil. Se corta sola si pasan dos minutos y medio sin matar nada.
 		}
 
 		VencerACragmawMire: {
@@ -1656,7 +1656,7 @@ Guia: {
 		ArmaParaRavager: {
 			Titulo: Un arma pensada para el nivel del Golem
 			Porque: Ravager tiene 55 de defensa y 30000-54000 de vida - la propia wiki lo describe como "pensado en dificultad para estar a la altura del Golem", aunque se puede invocar antes si tienes valor.
-			Como: El Silbato de la Muerte lo invoca en cualquier sitio, pero necesita un ingrediente que solo sale de la version de Modo Dificil del Templo de la Selva.
+			Como: El Silbato de la Muerte lo invoca en cualquier sitio. Se fabrica en un Altar Demoníaco o Carmesí con 25 Ladrillos de lihzahrd y 15 Fragmentos de tablilla solar, los que sueltan los Lihzahrd y las Serpientes voladoras del Templo.
 		}
 
 		VencerARavager: {
@@ -1691,19 +1691,19 @@ Guia: {
 
 		ArmaParaPrimordialWyrm: {
 			Titulo: Un arma de nivel muy avanzado de postgame
-			Porque: El Primordial Wyrm carga entre 2.500.000 y 3.000.000 de vida y una defensa tan descomunal que huele a truco escondido en la pelea, no a resistencia normal y ya está. No hemos podido confirmar el detalle exacto de esa mecánica ni cómo se le despierta: se enseña con honestidad como el secreto de postgame que es, sin inventarse el resto.
-			Como: Contenido oculto/opcional de muy tarde en la partida, sin ubicacion ni invocacion confirmadas todavia. Investigar en el juego real o en la wiki antes de prometer mas detalle.
+			Porque: El Primordial Wyrm carga entre 2.500.000 y 3.000.000 de vida, 100 de defensa en la cabeza con un 40% de reducción de daño extra, y 42 segmentos de cuerpo que no reciben daño: solo cuenta la cabeza. Es un secreto de postgame del nivel de Supreme Calamitas y los Exo Mechs, y se enfurece fuera de la cuarta capa del Abismo.
+			Como: No tiene objeto de invocación: aparece encima de ti cuando estás en el Abismo con el Estado caótico activo - el debuff que deja la Vara de la discordia al teletransportarte. Baja hasta la cuarta capa antes de provocarlo.
 		}
 
 		VencerAPrimordialWyrm: {
 			Titulo: Derrotarlo (opcional, secreto)
-			Porque: No bloquea nada obligatorio: es un secreto de postgame muy avanzado, de los que casi nadie llega a ver. Se documenta su existencia con honestidad en vez de fingir un detalle que no hemos podido confirmar.
-			Como: Sin datos confirmados de su patron de ataque en esta sesion - toma precauciones de fin de partida (equipo completo, curacion abundante) antes de intentarlo.
+			Porque: No bloquea nada obligatorio: es un secreto de postgame muy avanzado, de los que casi nadie llega a ver, y no exige haber derrotado a Polterghast ni a nadie más - solo bajar al Abismo con el Estado caótico encima.
+			Como: Solo la cabeza recibe daño y en su última fase se vuelve inmune a casi todas las ralentizaciones y congelaciones: equipo completo de fin de partida, curación abundante y un arma que castigue un solo objetivo.
 		}
 
 		PrepararLluviaAcida3: {
 			Titulo: Estar listo para la Lluvia Acida (fase 3)
-			Porque: Mauler y Nuclear Terror son los dos minibosses de la fase 3 (140 puntos) del evento Lluvia Acida - desbloqueada tras derrotar a Polterghast, la misma fase en la que puede aparecer The Old Duke.
+			Porque: Mauler y Nuclear Terror son los dos minibosses de la fase 3 del evento Lluvia Ácida - la que abre la bandera de Polterghast derrotado (170 enemigos para un jugador), la misma fase en la que The Old Duke aparece al llegar al final del evento.
 			Como: La Lluvia Acida empieza sola o con una Lagrima Caustica; con Polterghast ya derrotado, la fase 3 puede llegar a soltar cualquiera de los dos.
 		}
 
@@ -1752,7 +1752,7 @@ Guia: {
 		ArmaParaCeaselessVoid: {
 			Titulo: Un arma de nivel postgame
 			Porque: Ceaseless Void tiene 80 de defensa y 50000-78000 de vida - de los tres jefes que abre Providence, el que menos vida tiene pero mas defensa.
-			Como: El Mark of Providence (drop de Providence) invoca a cualquiera de los tres. Muy recomendado hacerlo tras Providence, aunque tecnicamente no lo exige.
+			Como: El Mark of Providence (lo suelta Providence la primera vez, y también se fabrica) invoca a uno de los tres según dónde lo uses: a Ceaseless Void dentro de la Mazmorra. Muy recomendado hacerlo tras Providence, aunque técnicamente no lo exige.
 		}
 
 		VencerACeaselessVoid: {
@@ -1824,7 +1824,7 @@ Guia: {
 		ArmaParaYharon: {
 			Titulo: Un arma capaz del penultimo tramo de Calamity
 			Porque: Yharon, Dragon of Rebirth tiene 90 de defensa y 1000000-1560000 de vida - casi el doble que el Devourer of Gods. La wiki confirma que esta "pensado para pelearse despues de The Devourer of Gods".
-			Como: El Huevo de Yharon (obtenido tras completar el Templo de la Selva de postgame) lo invoca.
+			Como: El Huevo de Yharon lo invoca: se fabrica en el Manipulador antiguo con 10 Aleaciones de vida y 15 Plumas fulgentes, y esas plumas las suelta Dragonfolly (o sus crías salvajes), así que Dragonfolly es en la práctica su requisito. Invócalo en la Jungla: se enfurece si sales de ella.
 		}
 
 		VencerAYharon: {

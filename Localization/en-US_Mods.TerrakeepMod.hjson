@@ -860,6 +860,7 @@ Guia: {
 		shadowOrbSmashed: Having already broken a Shadow Orb or Crimson Heart
 		hardMode: Getting the world into Hardmode (defeating the Wall of Flesh)
 		downedMechBossAny: Defeating any of the three mechanical bosses (The Destroyer, The Twins or Skeletron Prime)
+		downedMechBossAll: Defeating ALL THREE mechanical bosses (The Destroyer, The Twins and Skeletron Prime)
 		downedPlantBoss: Defeat Plantera
 		downedGolemBoss: Defeat Golem
 		downedAncientCultist: Defeat the Lunatic Cultist
@@ -945,12 +946,12 @@ Guia: {
 
 		LegionDeEscarcha: {
 			Nombre: The Frost Legion (optional)
-			Resumen: Another wave invasion, with the same requirements as the Goblin Army. Its three enemy types apply cold on top of the hit.
+			Resumen: Another wave invasion, but a Hardmode, Christmas-only one: only the Snow Globe summons it, and that only comes out of Presents opened after the Wall of Flesh. Its three enemy types apply cold on top of the hit.
 		}
 
 		Piratas: {
 			Nombre: The Pirates (optional)
-			Resumen: Another wave invasion, with the same requirements as the Goblin Army. Its toughest enemy, the Pirate Captain, has far more defense than either of the other two invasions.
+			Resumen: Another wave invasion, already in Hardmode: the Pirate Map only drops from ocean enemies after the Wall of Flesh. Its toughest enemy, the Pirate Captain, has far more defense than either of the other two invasions.
 		}
 
 		Deerclops: {
@@ -980,12 +981,12 @@ Guia: {
 
 		InicioModoDificil: {
 			Nombre: The first steps of Hardmode
-			Resumen: New ores from smashing Altars, plus Queen Slime (18000 health) as an optional.
+			Resumen: New ores from smashing Altars with the Pwnhammer the Wall drops, plus Queen Slime (18000 health) as an optional.
 		}
 
 		Mecanicos: {
 			Nombre: The three mechanical bosses
-			Resumen: The Destroyer 80000, The Twins 20000 and 23000, Skeletron Prime 28000 health.
+			Resumen: The Destroyer 80000, The Twins 20000 and 23000, Skeletron Prime 28000 health. All three are needed before Plantera's Bulbs grow.
 		}
 
 		Plantera: {
@@ -1015,7 +1016,7 @@ Guia: {
 
 		EjercitoD2: {
 			Nombre: The Old One's Army (optional)
-			Resumen: Defend the Eternia Crystal through three sieges in a row. Betsy, each siege's boss, has 50000 health.
+			Resumen: Defend the Eternia Crystal across three tiers: tier 1 opens with the Tavernkeep (after your world's evil), tier 2 with one mechanical boss and tier 3 with Golem. Betsy (50000 health) only shows up at the end of tier 3.
 		}
 
 		JefesOpcionalesTardios: {
@@ -1115,7 +1116,7 @@ Guia: {
 
 		PrimordialWyrm: {
 			Nombre: Primordial Wyrm (optional and secret, Calamity)
-			Resumen: 2500000-3000000 life. Very advanced postgame hidden boss; summon detail unconfirmed.
+			Resumen: 2500000-3000000 life. Very advanced postgame hidden boss: it lives in the Abyss and shows up when you carry the Chaos State debuff (Rod of Discord) down there.
 		}
 
 		LluviaAcidaTier3: {
@@ -1150,7 +1151,7 @@ Guia: {
 
 		Yharon: {
 			Nombre: Yharon, Dragon of Rebirth
-			Resumen: 1000000-1560000 life, in the postgame Jungle Temple. After the Devourer of Gods, before the final tier.
+			Resumen: 1000000-1560000 life, in the Jungle (it enrages if you leave it). After the Devourer of Gods, before the final tier.
 		}
 
 		ExoMechsYSupremeCalamitas: {
@@ -1180,7 +1181,7 @@ Guia: {
 
 		PuebloDeCuatro: {
 			Titulo: Four villagers
-			Porque: Four is the exact number the game demands before the Eye of Cthulhu can turn up by itself at nightfall. Each villager also moves in for a concrete reason: the Merchant once somebody carries 50 silver, the Nurse as soon as somebody has used a Life Crystal and the Merchant already lives with you, and the Demolitionist with a bomb in the inventory and the Merchant present too.
+			Porque: Four is the exact number the game demands before the Eye of Cthulhu can turn up by itself at nightfall. Each villager also moves in for a concrete reason: the Merchant once all players together carry 50 silver, the Nurse as soon as somebody has used a Life Crystal, and the Demolitionist with any explosive in the inventory - neither of the last two needs the Merchant to already live with you.
 			Como: Build the houses first: a villager will not move in without a free, valid one, even if you meet their condition.
 		}
 
@@ -1211,12 +1212,12 @@ Guia: {
 		ArmaParaDeerclops: {
 			Titulo: A weapon that can weather the cold
 			Porque: Deerclops carries 20 damage, 10 defense and 7000 health, but the cold it leaves behind with every hit keeps biting after it's pushed you back: the fight weighs more than that base damage suggests. It blocks nothing on the path, but it's one of the few bosses that can show up in your world without you choosing the moment.
-			Como: It only steps out of a blizzard on stormy nights, inside the snow biome, and only with no other danger nearby. The Deer Thing calls it in instantly if you'd rather not wait for the weather to cooperate.
+			Como: It only comes out at midnight, in the middle of a blizzard, inside the snow biome, with no villagers or other danger nearby and with 200 health or 9 defense - and once you have beaten it, only one night in four. The Deer Thing calls it in instantly (also inside the snow) if you'd rather not wait for the weather to cooperate.
 		}
 
 		VencerADeerclops: {
 			Titulo: Defeat it (optional)
-			Porque: It doesn't open up any mandatory path: it's a visitor from another world, brought straight over from Don't Starve Together. What it leaves behind -its Eye, the Deer Thing pet- is more a trophy to keep than a real necessity.
+			Porque: It doesn't open up any mandatory path: it's a visitor from another world, brought straight over from Don't Starve Together. What it leaves behind -the Eye Bone that summons Chester, the living chest; the Eyebrella; and one of its four weapons, Lucy the Axe among them- is more a trophy to keep than a real necessity.
 			Como: It slams the ground and shoots ice spikes in straight lines from both sides: an elevated arena, away from the ground it stands on, avoids most of its attacks.
 		}
 
@@ -1228,26 +1229,26 @@ Guia: {
 
 		VencerAlEjercitoGoblin: {
 			Titulo: Defeat it (optional)
-			Porque: Beating back the invasion doesn't block the mandatory path, but it opens up the Mechanic's shop (if she's already living with you) and it's the only way to track down the Goblin Tinkerer, held prisoner somewhere under your feet.
+			Porque: Beating back the invasion doesn't block the mandatory path, but it's the only way the Goblin Tinkerer ever shows up, tied up in some tunnel under your feet: free him and he moves in with you, bringing his reforge counter and the Tinkerer's Workshop, the accessory that combines accessories.
 			Como: Fight near your base, with narrow corridors and traps: the waves come from both sides at once, and a bottleneck is worth more than open space.
 		}
 
 		ArmaParaLaLegionDeEscarcha: {
 			Titulo: A weapon that can weather another wave's cold
 			Porque: Another wave invasion, with the same three enemy types repeating. Mister Stabby is the toughest, with 65 damage and 26 defense, and all three apply cold on top of the direct hit - the real danger is that cold stacking up if you never break the rhythm.
-			Como: Same condition as the Goblin Army: 5 life crystals already used before you can summon it yourself. A heat source or an anti-cold buff helps more here than in almost any other stretch.
+			Como: It never arrives on its own: you need a Snow Globe, and that only comes (one time in fifteen) out of a Present opened once the world is in Hardmode - and Presents only drop from enemies at Christmas, December 15th to 31st. With the globe in hand, the same condition as the Goblin Army: 5 life crystals already used. A heat source or an anti-cold buff helps more here than in almost any other stretch.
 		}
 
 		VencerALaLegionDeEscarcha: {
 			Titulo: Defeat it (optional)
-			Porque: Beating it back doesn't open any mandatory path: it's purely a holiday indulgence. What they drop -pieces of the Mischievous Elf armor, the Snowball Cannon- is more a festive keepsake than a real necessity.
+			Porque: Beating it back doesn't open any mandatory path: it's purely a holiday indulgence. Its snowmen drop nothing but Snow Blocks; what really changes is that, with the Legion beaten and Christmas still on, Santa Claus moves in with you.
 			Como: Same as the Goblin Army: a bottleneck near your base works better than fighting in the open against both directions at once.
 		}
 
 		ArmaParaLosPiratas: {
 			Titulo: A weapon strong enough for a much more armoured enemy
 			Porque: The Pirate Captain is the toughest common enemy of the three wave invasions: 70 damage and 30 defense, well above the Goblin Warrior's 8 or Mister Stabby's 26. Watch out for a very common misconception: the "Flying Dutchman" often cited as the event's boss is not a real enemy - it is just the decorative ship.
-			Como: Same condition as the Goblin Army and the Frost Legion: 5 life crystals already used before you can summon it yourself with the Pirate Map.
+			Como: This is Hardmode business: the Pirate Map only drops (one time in a hundred) from ocean enemies after the Wall of Flesh, and the invasion only comes on its own with the world already in Hardmode and at least one altar smashed. With the map, the same condition as the Goblin Army: 5 life crystals already used.
 		}
 
 		VencerALosPiratas: {
@@ -1258,14 +1259,14 @@ Guia: {
 
 		ArmaContraLaMaldad: {
 			Titulo: A weapon that can keep swinging
-			Porque: The same formula as always (you take off damage minus half its defense, minimum 1) weighs less here than against the Eye: each Eater of Worlds segment only has 2 defense, and the Brain of Cthulhu itself has 14, though you cannot touch it until the Creepers around it die. What you do need is stamina: the Eater is dozens of segments doing 22 damage each, and the Brain hits for 30 on direct contact. A short, no-reach weapon leaves you standing still between hits; one with range or that shoots lets you hit and back away.
+			Porque: The same formula as always (you take off damage minus half its defense, minimum 1) weighs less here than against the Eye: Eater of Worlds segments have between 2 (head) and 8 (tail) defense, and the Brain of Cthulhu itself has 14, though you cannot touch it until the Creepers around it die. What you do need is stamina: the Eater is dozens of 150-health segments, with 22 damage on the head, and the Brain hits for 30 on direct contact. A short, no-reach weapon leaves you standing still between hits; one with range or that shoots lets you hit and back away.
 			Como: Any ranged or reach weapon from the first tier of ore is plenty. Breaking a Crimson Heart or Shadow Orb by accident already nudges the boss closer; if you would rather pick the moment yourself, Worm Food or the Bloody Spine summon it directly.
 		}
 
 		VencerLaMaldad: {
 			Titulo: Defeat it
-			Porque: The moment the Eater of Worlds or the Brain of Cthulhu falls, your whole world feels it: a meteorite is guaranteed to land somewhere on the map, and the Dryad starts selling Vile or Vicious Powder and telling you how much corruption or crimson your world has. Smashing Demon or Crimson Altars for new ore needs the Pwnhammer, which you only get from defeating the Wall of Flesh later on - not yet here, even if that's hard to believe with the boss already down.
-			Como: The Eater gets cut into pieces: any segment split in half turns into two more worms, so a weapon that pierces in a line (or has a lot of reach) finishes it faster than one that only hits one at a time. The Brain hides behind its Creepers: kill them first and it goes still and vulnerable for a few seconds.
+			Porque: The moment the Eater of Worlds or the Brain of Cthulhu falls, the sky marks the first victory with a guaranteed meteorite, the Tavernkeep can now be rescued in the caverns, and its Demonite/Crimtane plus scales or tissue samples make the Nightmare or Deathbringer Pickaxe: the first ones that mine Hellstone, the real road to the Wall of Flesh. What it does NOT open, however often people say it: the Altars. Smashing them needs the Pwnhammer (which only the Wall of Flesh drops) and a world already in Hardmode; before that the altar does not break and hitting it costs you half your health.
+			Como: The Eater gets cut into pieces: any segment split in half turns into two more worms, so a weapon that pierces in a line (or has a lot of reach) finishes it faster than one that only hits one at a time. The Brain hides behind its Creepers: kill them all and it enters its second phase, vulnerable for the rest of the fight but teleporting around you non-stop.
 		}
 
 		ArmaParaEsqueletron: {
@@ -1288,8 +1289,8 @@ Guia: {
 
 		VencerAlMuro: {
 			Titulo: Defeat it: the world changes forever
-			Porque: There's no middle ground here: the moment it dies, your entire world crosses over into Hardmode, and there's no going back this playthrough. From there everything ramps up at once -new, tougher enemies even in areas you'd already written off as safe- but it also opens up what you need to keep moving: new ores from smashing Demon or Crimson Altars with a hammer, and the path to the three mechanical bosses.
-			Como: Build a long, flat bridge over the lava before summoning it: the Wall advances on you by itself, so you need room to back away while shooting instead of uneven ground that slows you down. The mouth is its weakest part; the eye is its toughest.
+			Porque: There's no middle ground here: the moment it dies, your entire world crosses over into Hardmode, and there's no going back this playthrough. From there everything ramps up at once -new, tougher enemies even in areas you'd already written off as safe- but it also opens up what you need to keep moving: it always drops the Pwnhammer, the only hammer able to smash Demon or Crimson Altars, and each smashed altar seeds new ore across the world (Cobalt or Palladium with the first, Mythril or Orichalcum with the second, Adamantite or Titanium with the third). With Calamity and its "Early Hardmode Progression Rework" option (on by default) the deal changes: altars drop Souls of Night, Cobalt/Palladium spawns the moment the Wall dies, and the rest is dropped by the mechanical bosses.
+			Como: Build a long, flat bridge over the lava before summoning it: the Wall advances on you by itself, so you need room to back away while shooting instead of uneven ground that slows you down. The eyes are its part with no defense; the mouth is its most armoured.
 		}
 
 		ArmaParaLosMecanicos: {
@@ -1299,32 +1300,32 @@ Guia: {
 		}
 
 		VencerAUnMecanico: {
-			Titulo: Defeat one of the three
-			Porque: The moment any one of the three falls, the world answers back: new ore appears (Mythril or Orichalcum) and you finally have the real push to make Plantera worth fighting. You don't need to take down all three to move on, though the full set of gear they drop is the best you'll have before Plantera.
+			Titulo: Defeat all three
+			Porque: With the first one down, Life Fruit starts growing in the jungle, the Solar Eclipse can happen and tier 2 of the Old One's Army opens up. But Plantera's Bulbs only grow once ALL THREE mechanical bosses are down: until the Destroyer, the Twins and Skeletron Prime have all fallen, there is no way to summon her. Their Hallowed Bars and souls make the best gear you'll have before her.
 			Como: The Twins and Skeletron Prime fly and give chase: a raised platform arena helps more than open ground. The Destroyer is an extremely long worm: a weapon that pierces in a straight line takes out more than one segment per shot.
 		}
 
 		ArmaParaPlantera: {
 			Titulo: A weapon that can handle TWO fights in one
 			Porque: Plantera has 50 damage, 14 defense and 30000 health, but the number that actually matters here is not defense: as soon as it drops below half health it enrages, speeds up and chases much faster through the whole jungle. It is not a harder wall to punch through, it is TWO different fights back to back, and the second one can corner you if you cannot keep up the pace. 45 damage already helps, but good mobility pays off more here than a bigger number.
-			Como: Break a Plantera's Bulb in the underground jungle to summon her; they only appear after beating any of the three mechanical bosses. Clear a long corridor before breaking it: the second phase chases in a straight line and the natural jungle is too cluttered to dodge in.
+			Como: Break a Plantera's Bulb in the underground jungle to summon her; they only grow once all three mechanical bosses are down. Clear a long corridor before breaking it: the second phase chases in a straight line and the natural jungle is too cluttered to dodge in.
 		}
 
 		VencerAPlantera: {
 			Titulo: Defeat her
-			Porque: The first time she falls, the Jungle Temple's stone door opens for good and the Cyborg moves in with you. She also drops Chlorophyte seeds - the literal seed of every ore that comes after this.
+			Porque: When she falls she always drops the Temple Key, the only thing that opens the Jungle Temple's stone door, and the Cyborg moves in with you. The Dungeon also fills with new enemies (and their Ectoplasm, the base of the later lunar events), and biome chests can finally be opened with their keys.
 			Como: Fight in the corridor you cleared, never in the closed jungle: her tentacles and seeds chase better through tight trees than down a clean corridor.
 		}
 
 		ArmaParaElTemplo: {
 			Titulo: A weapon for the Golem's three phases
-			Porque: The Golem fights in three phases with different numbers: the body has 72 damage, 26 defense and 15000 health; once both fists are destroyed, the head breaks free with 32 defense and 80 damage, and until then it takes NO damage at all (dontTakeDamage=true). With the usual formula, 55 damage lands useful hits in all three phases without the last one, the hardest, dragging on forever.
-			Como: The Temple's stone door opens on its own once Plantera dies. Inside, the Temple's traps and chests drop Lihzahrd Power Cells: use one at the Lihzahrd Altar to summon him. Break both fists first; while they live, the head cannot be damaged.
+			Porque: The Golem fights in three pieces with different numbers: the mounted head has 64 damage, 20 defense and 25000 health; the body 72 damage, 26 defense and 15000; and when the head goes down it breaks free and flies around on its own with 32 defense, 80 damage and 16000 more. The detail that decides the fight: the BODY takes no damage while the head is still mounted, so start with the head. With the usual formula, 55 damage lands useful hits on all three pieces without the last one, the hardest, dragging on forever.
+			Como: The Temple's stone door opens with the Temple Key Plantera drops. Inside, the Temple's chests and its Lihzahrds and Flying Snakes drop Lihzahrd Power Cells: use one at the Lihzahrd Altar to summon him. Destroy the head first; until then the body cannot be damaged, and the fists can be ignored or broken separately.
 		}
 
 		VencerAlGolem: {
 			Titulo: Defeat him
-			Porque: With him down, every town NPC's wares climb one more notch, and the Temple is left clear right before you turn to the last optionals and, after that, face the Lunatic Cultist himself by the Dungeon.
+			Porque: With him down, what comes next opens up: the Cultists finally appear by the Dungeon entrance (and with them the Lunatic Cultist), the Martian Probe can start roaming, and tier 3 of the Old One's Army unlocks, the only one with Betsy. He also drops the Picksaw and Beetle Husks, the base of Beetle armor.
 			Como: Fight inside the Temple room, with room to circle the stone pillars: they shield you from its area attacks while you wait for an opening.
 		}
 
@@ -1342,20 +1343,20 @@ Guia: {
 
 		ArmaParaMourningWood: {
 			Titulo: A weapon for the first of the event's two bosses
-			Porque: Mourning Wood has 120 damage, 34 defense and 14000 health and arrives on the fifth wave of the Pumpkin Moon, the first of the two you need to beat.
+			Porque: Mourning Wood has 120 damage, 34 defense and 14000 health and arrives on the sixth wave of the Pumpkin Moon, the first of the two you need to beat.
 			Como: It can only be summoned at night and only if no other wave event is already running. A closed-off area with narrow corridors helps against both it and the rest of the wave.
 		}
 
 		VencerAMourningWood: {
 			Titulo: Defeat it (optional)
-			Porque: Taking him down doesn't close out the night: it only marks the first of the two bosses as beaten. The Pumpkin Moon keeps going until the ninth wave, when Pumpking finally arrives.
+			Porque: Taking him down doesn't close out the night: it only marks the first of the two bosses as beaten. The Pumpkin Moon keeps going until the tenth wave, when Pumpking finally arrives.
 			Como: It throws flaming logs from range: do not stand still in its firing line.
 		}
 
 		ArmaParaPumpking: {
 			Titulo: A weapon for the boss that closes out the event
 			Porque: Pumpking has 50 damage, 40 defense and 26000 health - less damage per hit than Mourning Wood, but almost double the health and more defense.
-			Como: It arrives on the ninth wave, once Mourning Wood is already down: you do not need to use the Medallion again, the event keeps going on its own if you hold out until then.
+			Como: It arrives on the tenth wave, once Mourning Wood is already down: you do not need to use the Medallion again, the event keeps going on its own if you hold out until then.
 		}
 
 		VencerAPumpking: {
@@ -1366,20 +1367,20 @@ Guia: {
 
 		ArmaParaEverscream: {
 			Titulo: A weapon for the first of the event's three bosses
-			Porque: Everscream has 110 damage, 38 defense and 13000 health and arrives on the third wave of the Frost Moon, the first of the three you need to beat.
+			Porque: Everscream has 110 damage, 38 defense and 13000 health and arrives on the fourth wave of the Frost Moon, the first of the three you need to beat.
 			Como: It can only be summoned at night and only if no other wave event is already running. Just like the Pumpkin Moon, a chokepoint near your base helps against the whole wave.
 		}
 
 		VencerAEverscream: {
 			Titulo: Defeat it (optional)
-			Porque: Taking him down only marks the first of the three as beaten: the Frost Moon keeps going until the tenth wave, when the Ice Queen arrives, with Santa-NK1 waiting halfway there.
+			Porque: Taking him down only marks the first of the three as beaten: the Frost Moon keeps going until the eleventh wave, when the Ice Queen arrives, with Santa-NK1 waiting halfway there.
 			Como: It fires bursts of icy projectiles from range, similar to Mourning Wood but with a faster rate of fire.
 		}
 
 		ArmaParaSantaNK1: {
 			Titulo: A weapon for the second boss: the most armoured of the three
 			Porque: Santa-NK1 has 120 damage, 56 defense and 18000 health - the highest defense of the event's three bosses, well above Everscream's and the Ice Queen's 38.
-			Como: It arrives on the sixth wave. It fires exploding presents and machine-gun bursts in a straight line: moving diagonally dodges more than backing away in a straight line.
+			Como: It arrives on the seventh wave. It fires exploding presents and machine-gun bursts in a straight line: moving diagonally dodges more than backing away in a straight line.
 		}
 
 		VencerASantaNK1: {
@@ -1391,24 +1392,24 @@ Guia: {
 		ArmaParaIceQueen: {
 			Titulo: A weapon for the boss that closes out the event
 			Porque: The Ice Queen has 120 damage, 38 defense and 34000 health - the highest of the event's three bosses - and coldDamage=true, applying extra cold damage on top of the direct hit.
-			Como: It arrives on the tenth wave, with Everscream and Santa-NK1 already down: the event keeps going on its own, without using the Naughty Present again. A heat source or a cold-resistance buff helps here more than in any other section.
+			Como: It arrives on the eleventh wave, with Everscream and Santa-NK1 already down: the event keeps going on its own, without using the Naughty Present again. A heat source or a cold-resistance buff helps here more than in any other section.
 		}
 
 		VencerAIceQueen: {
 			Titulo: Defeat her: closes out the event
-			Porque: With her down, the Frost Moon closes for good: the longer of the two wave events, ten rounds before she shows up, against nine for the Pumpkin Moon.
+			Porque: With her down, the Frost Moon closes for good: the longer of the two wave events, eleven rounds before she shows up, against ten for the Pumpkin Moon.
 			Como: It fires fanned-out bursts of ice crystals: moving in wide circles leaves fewer openings than backing away in a straight line.
 		}
 
 		ArmaParaElEjercitoD2: {
 			Titulo: A weapon strong enough for a whole siege
-			Porque: Betsy, the boss that closes out each siege, has 80 damage, 38 defense and 50000 health. It is not just her: each siege is several waves of the event's own enemies (goblins, wyverns, dark mages...) before she shows up.
-			Como: It is summoned by right-clicking the Eternia Crystal Stand (a structure you craft and place yourself) while carrying the Eternia Crystal in your inventory (Player.cs, ~line 30670): it gets consumed on use, just like the rest of this guide's summoning items.
+			Porque: Betsy has 80 damage, 38 defense and 50000 health, but she only shows up in the final wave of tier 3, the one that opens with Golem defeated. Before that there are two more tiers: tier 1, available as soon as you rescue the Tavernkeep (after your world's evil), and tier 2, which opens with any mechanical boss down. Each one is several waves of the event's own enemies (Etherian goblins, wyverns, dark mages, ogres...).
+			Como: The Eternia Crystal and its Stand are not crafted: the Tavernkeep sells them for Defender Medals. Place the Stand and, with the Crystal in your inventory, right-click it: it gets consumed and the siege begins, as long as no other siege is running and it is not a Pumpkin or Frost Moon.
 		}
 
 		VencerAlEjercitoD2: {
-			Titulo: Beat all three sieges (optional)
-			Porque: Surviving all three sieges on ANY difficulty (Media, Expert or For the Worthy) already counts as a win - you don't need the hardest one, though the best loot is waiting on the highest difficulty you dare to hold the line against.
+			Titulo: Beat a whole siege (optional)
+			Porque: Holding out to the last wave on ANY of the three tiers already counts as a win - you don't need the hardest one, though the best loot (and Betsy) wait on tier 3.
 			Como: Protect the Eternia Crystal, not just yourself: if it falls, the siege ends in defeat even if you are still alive. Building narrow corridors around the crystal, with traps, helps more than fighting out in the open.
 		}
 
@@ -1439,7 +1440,7 @@ Guia: {
 		ArmaParaMoonLord: {
 			Titulo: The finale: a weapon for 145000 health spread across three parts
 			Porque: The Moon Lord fights in three pieces with their own numbers: the core has 70 defense and 50000 health of its OWN and takes no damage at all until both hands and the head go down - over 145000 total health split between the three. With the usual formula, 90 damage lands useful hits on all three, and max health matters as much as the weapon: its lasers and meteor strikes leave very little room for error.
-			Como: Craft the Celestial Sigil with fragments from all four towers at a Mythril or Orichalcum Anvil and use it to summon him. Build a tall, clear platform beforehand, away from solid blocks: his hands and head descend from the sky and you need room to dodge in every direction.
+			Como: Craft the Celestial Sigil with 12 fragments from each of the four towers at the Ancient Manipulator (the one the Cultist drops) and use it to summon him. Build a tall, clear platform beforehand, away from solid blocks: his hands and head descend from the sky and you need room to dodge in every direction.
 		}
 
 		VencerAMoonLord: {
@@ -1463,12 +1464,12 @@ Guia: {
 		ArmaParaLaReinaSlime: {
 			Titulo: A weapon forged from Hardmode ore
 			Porque: The Queen Slime has 60 damage, 26 defense and 18000 health - a reasonable first check right after entering Hardmode. She blocks nothing, but she is the first real proof that the new ore (Cobalt/Palladium) is actually worth something.
-			Como: She can only be summoned at NIGHT and inside The Hallow, with the Queen Slime Crystal. She jumps very high: an arena with several platforms helps more than flat ground.
+			Como: She is summoned with the Gelatin Crystal, found in the Underground Hallow, and only inside The Hallow - at any time, day or night. She jumps very high: an arena with several platforms helps more than flat ground.
 		}
 
 		VencerALaReinaSlime: {
 			Titulo: Defeat her (optional)
-			Porque: It doesn't block the path to the mechanical bosses or anything mandatory. She drops the Crystal Assassin Wings, flight that puts you light-years ahead of anything available before she showed up.
+			Porque: It doesn't block the path to the mechanical bosses or anything mandatory. She drops the Gelatinous Pillion -a flying mount, flight that puts you light-years ahead of anything available before her-, the Hook of Dissonance, the Blade Staff and pieces of the Crystal Assassin armor.
 			Como: Almost all her attacks are melee and jumps: keeping your distance with a ranged or magic weapon is safer than trading melee hits against her slams.
 		}
 
@@ -1480,14 +1481,14 @@ Guia: {
 
 		VencerAFishron: {
 			Titulo: Defeat him (optional)
-			Porque: It doesn't open up anything on the mandatory path. He drops the Shrimpy Truffle and the rest of his gear, some of the best available before the moon, and unlocks the treasure fishing only he knows where to hide.
+			Porque: It doesn't open up anything on the mandatory path. He drops one of his five weapons (Flairon, Tsunami, Razorblade Typhoon, Bubble Gun or the Tempest Staff) and, one time in fifteen, the Fishron Wings: some of the best gear available before the moon.
 			Como: He changes attack patterns several times as his health drops: what you dodge in the first phase does not work in the last. Keep moving constantly instead of planting yourself in one spot.
 		}
 
 		ArmaParaLaEmperatriz: {
 			Titulo: A weapon for the highest health among the optionals
-			Porque: The Empress of Light has 80 damage, 50 defense and 70000 health - the highest health of all the late optional bosses. She also takes NO damage (dontTakeDamage) outside the right light conditions: fighting her at night makes her deliberately far more aggressive, as a penalty for ignoring her schedule.
-			Como: Attack the Prismatic Lacewing, a harmless critter found in The Hallow during the day, to summon her. Fight her IN DAYLIGHT the first time: at night she is far tougher and forgives no mistakes.
+			Porque: The Empress of Light has 80 damage, 50 defense and 70000 health - the highest health of all the late optional bosses. And she has a rule of her own: by DAY she is enraged and every one of her hits is lethal; by NIGHT it is the normal fight. Killing her enraged is the challenge that rewards the Terraprisma, but it is not the way to meet her.
+			Como: Kill the Prismatic Lacewing, a harmless critter that only appears on the Hallow surface at night, before midnight and with Plantera already defeated, to summon her. Fight her AT NIGHT the first time: by day every hit of hers kills you in one touch.
 		}
 
 		VencerALaEmperatriz: {
@@ -1499,7 +1500,7 @@ Guia: {
 		ArmaParaDesertScourge: {
 			Titulo: Any weapon with some range
 			Porque: The Desert Scourge has 4 defense and 4000-5000 life depending on the mode - less life than the Eye of Cthulhu. It's deliberately Calamity's very first optional boss, meant for around the same time as King Slime.
-			Como: It spawns on its own if you spend time in the Desert or Underground Desert, especially at night. The Desert Medallion summons it instantly if you'd rather pick the moment yourself.
+			Como: It never spawns on its own: the Desert Medallion, used inside the Desert, is the only way to summon it.
 		}
 
 		VencerADesertScourge: {
@@ -1523,7 +1524,7 @@ Guia: {
 		ArmaParaCrabulon: {
 			Titulo: A weapon that can pierce its shell
 			Porque: Crabulon has 8 defense and 3500-4400 life - a bit tougher than King Slime, meant for right after the Eye of Cthulhu.
-			Como: The Decapodita Sprout it grows from appears on its own, quite rarely, in the Glowing Mushroom biome. The Decapodita Sprout item summons it instantly if you carry one.
+			Como: It does not sprout on its own: the Decapodita Sprout summons it, and it can only be used inside a Glowing Mushroom biome that lies underground, below the surface.
 		}
 
 		VencerACrabulon: {
@@ -1558,7 +1559,7 @@ Guia: {
 
 		PrepararDreadnautilus: {
 			Titulo: Be ready for a Blood Moon
-			Porque: Calamity gives a sinister twist to that harmless rare fishing catch that's the BloodNautilus in vanilla: under a Blood Moon it turns into a real miniboss. The Horrible Hog is the other surprise of the same night: an ordinary wild hog that, for some reason, has grown far bigger than it should - roaming free since you took down the Eye of Cthulhu.
+			Porque: The Dreadnautilus is already a Blood Moon fishing miniboss in vanilla (7000 health, 55 damage, 24 defense); Calamity rewrites its whole AI and makes it far more dangerous. The Horrible Hog is the other surprise of the same night: an ordinary wild hog that, for some reason, has grown far bigger than it should - it only shows up during a Blood Moon and with the Eye of Cthulhu already defeated.
 			Como: Neither has a real summon item: they only appear during an actual Blood Moon. A Blood Moon-forcing accessory or just waiting for a random one is the only way.
 		}
 
@@ -1571,7 +1572,7 @@ Guia: {
 		ArmaParaCryogen: {
 			Titulo: Your first Calamity Hardmode weapon
 			Porque: Cryogen has 15 defense and 25000-48000 life - Calamity's own first Hardmode boss, meant for around the same point as vanilla's mechanical bosses.
-			Como: The Cryo Key summons it in the Snow biome. With the "Early Hardmode Progression Rework" option on, its crafting material needs a Mythril pickaxe or better - without it, you can try right at the start of Hardmode.
+			Como: The Cryo Key summons it inside the Snow biome. It is crafted at an anvil from 50 ice blocks, 5 Souls of Light, 5 Souls of Night and 8 Essence of Eleum (dropped by snow enemies in Hardmode): you can try right at the start of Hardmode. Its first death makes Cryonic Ore spawn in the snow.
 		}
 
 		VencerACryogen: {
@@ -1583,7 +1584,7 @@ Guia: {
 		ArmaParaAquaticScourge: {
 			Titulo: A weapon that can outlast a long worm
 			Porque: The Aquatic Scourge has 10 defense and 80000-96000 life - much more life than Cryogen, but less defense. Beating it unlocks phase 2 of the Acid Rain event.
-			Como: The Seafood item summons it anywhere, or it very rarely spawns naturally in the Sulphurous Sea.
+			Como: The Seafood item summons it, but only inside the Sulphurous Sea; it can also very rarely show up on its own, swimming in its waters.
 		}
 
 		VencerAAquaticScourge: {
@@ -1595,19 +1596,19 @@ Guia: {
 		ArmaParaBrimstoneElemental: {
 			Titulo: A weapon fit for a defensive boss
 			Porque: The Brimstone Elemental has 15 defense and 30000-49200 life, in the same early-Hardmode tier as Cryogen and Aquatic Scourge.
-			Como: The Charred Idol summons it anywhere. Fighting in open space helps: it spawns secondary arms around itself.
+			Como: The Charred Idol summons her, but only inside the Brimstone Crag, her biome in the Underworld. She cycles three phases: drifting toward you while teleporting, charging while firing fireballs, and closing up in her cocoon.
 		}
 
 		VencerABrimstoneElemental: {
 			Titulo: Defeat it (optional)
 			Porque: It doesn't block anything mandatory: one more of the optional trio Calamity offers in early Hardmode, alongside Cryogen and Aquatic Scourge - the order between the three doesn't matter, pick your own.
-			Como: Its secondary arms fire non-stop while the central core stays still: taking them out first massively cuts down the projectiles on screen.
+			Como: In her cocoon phase she closes her petals, gains a huge amount of defense and fires rings of darts: don't waste your best attacks there, save them for when she opens up again and charges.
 		}
 
 		PrepararLluviaAcida2: {
 			Titulo: Be ready for Acid Rain (tier 2)
-			Porque: Cragmaw Mire is a miniboss that can appear during the Acid Rain event once you reach 115 progress points - and that threshold only unlocks after the Aquatic Scourge is defeated.
-			Como: Acid Rain starts on its own, by chance, or instantly with a Caustic Tear. It cancels itself if you don't kill anything for 4 straight minutes.
+			Porque: Cragmaw Mire is a miniboss that only joins the Acid Rain roster once the Aquatic Scourge is down: it is that boss's flag, not a point counter, that switches the event's tier (and raises the kills needed from 110 to 135 for one player).
+			Como: Acid Rain starts on its own, by chance, or instantly with a Caustic Tear - but only with the Eye of Cthulhu already defeated or the world in Hardmode. It cuts itself short if two and a half minutes go by without a kill.
 		}
 
 		VencerACragmawMire: {
@@ -1655,7 +1656,7 @@ Guia: {
 		ArmaParaRavager: {
 			Titulo: A weapon meant for the Golem's tier
 			Porque: Ravager has 55 defense and 30000-54000 life - the wiki itself describes it as "intended to be post-Golem in difficulty", though it can be summoned earlier if you're bold enough.
-			Como: The Death Whistle summons it anywhere, but it needs an ingredient that only drops from the Hardmode version of the Jungle Temple.
+			Como: The Death Whistle summons it anywhere. It is crafted at a Demon or Crimson Altar from 25 Lihzahrd Bricks and 15 Lunar Tablet Fragments, the ones dropped by the Temple's Lihzahrds and Flying Snakes.
 		}
 
 		VencerARavager: {
@@ -1690,19 +1691,19 @@ Guia: {
 
 		ArmaParaPrimordialWyrm: {
 			Titulo: A very advanced end-game weapon
-			Porque: The Primordial Wyrm carries between 2,500,000 and 3,000,000 life and defense so absurdly high it reeks of a hidden trick in the fight, not just plain toughness. We haven't been able to confirm the exact mechanic or how to wake it: it's shown here honestly as the postgame secret it is, without making up the rest.
-			Como: Hidden/optional content from very late in the game, with no confirmed location or summon method yet. Look it up in the live game or the wiki before promising more detail.
+			Porque: The Primordial Wyrm carries between 2,500,000 and 3,000,000 life, 100 defense on the head with an extra 40% damage reduction, and 42 body segments that take no damage: only the head counts. It is a postgame secret on the level of Supreme Calamitas and the Exo Mechs, and it enrages outside the fourth layer of the Abyss.
+			Como: It has no summon item: it appears on top of you when you are in the Abyss with the Chaos State debuff active - the one the Rod of Discord leaves after a teleport. Go down to the fourth layer before triggering it.
 		}
 
 		VencerAPrimordialWyrm: {
 			Titulo: Defeat it (optional, secret)
-			Porque: It doesn't block anything mandatory: an advanced postgame secret, the kind almost nobody gets to see. Its existence is documented honestly rather than faking a detail we couldn't confirm.
-			Como: No confirmed attack-pattern data from this session - bring end-game precautions (full gear, plenty of healing) before attempting it.
+			Porque: It doesn't block anything mandatory: an advanced postgame secret, the kind almost nobody gets to see, and it does not require Polterghast or anyone else defeated first - only going down into the Abyss with the Chaos State on you.
+			Como: Only the head takes damage and in its final phase it becomes immune to almost every slow and freeze: full end-game gear, plenty of healing and a weapon that punishes a single target.
 		}
 
 		PrepararLluviaAcida3: {
 			Titulo: Be ready for Acid Rain (tier 3)
-			Porque: Mauler and Nuclear Terror are the two tier-3 (140 point) Acid Rain minibosses - unlocked after defeating Polterghast, the same tier where The Old Duke can appear.
+			Porque: Mauler and Nuclear Terror are the two tier-3 Acid Rain minibosses - the tier that Polterghast's defeat flag opens (170 kills for one player), the same tier where The Old Duke shows up as you reach the end of the event.
 			Como: Acid Rain starts on its own or with a Caustic Tear; with Polterghast already down, tier 3 can spawn either of the two.
 		}
 
@@ -1751,7 +1752,7 @@ Guia: {
 		ArmaParaCeaselessVoid: {
 			Titulo: A postgame-tier weapon
 			Porque: Ceaseless Void has 80 defense and 50000-78000 life - of the three bosses Providence unlocks, the one with the least life but the most defense.
-			Como: The Mark of Providence (Providence's drop) summons any of the three. Highly recommended after Providence, though it doesn't technically require it.
+			Como: The Mark of Providence (dropped by Providence the first time, and also craftable) summons one of the three depending on where you use it: Ceaseless Void inside the Dungeon. Highly recommended after Providence, though it doesn't technically require it.
 		}
 
 		VencerACeaselessVoid: {
@@ -1823,7 +1824,7 @@ Guia: {
 		ArmaParaYharon: {
 			Titulo: A weapon fit for Calamity's second-to-last tier
 			Porque: Yharon, Dragon of Rebirth has 90 defense and 1000000-1560000 life - almost double the Devourer of Gods. The wiki confirms it's "intended to be fought after The Devourer of Gods".
-			Como: Yharon's Egg (obtained after completing the postgame Jungle Temple) summons it.
+			Como: Yharon's Egg summons it: it is crafted at the Ancient Manipulator from 10 Life Alloy and 15 Effulgent Feathers, and those feathers drop from Dragonfolly (or its wild offspring), so Dragonfolly is in practice its prerequisite. Summon it in the Jungle: it enrages if you leave it.
 		}
 
 		VencerAYharon: {
