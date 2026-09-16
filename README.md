@@ -103,6 +103,22 @@ tecnología externa al juego.
 
 ## Novedades
 
+### 0.5.0 (16-sep-2026, madrugada)
+
+- **Arreglado un bug real**: la Guía podía quedarse marcando un paso muy temprano como pendiente
+  para siempre, aunque el jefe llevara mucho tiempo derrotado en el mundo real - un requisito que
+  ningún editor de archivos estático puede comprobar de verdad (el daño real del arma) se trataba
+  como bloqueante en vez de "sin datos todavía". El cerebro de evaluación de la Guía queda
+  consolidado en un solo sitio compartido con Terrakeep de escritorio.
+- **Auditoría de precisión completa** de los 46 tramos (116 pasos) contra el código real
+  decompilado del juego y Calamity, no de memoria: entre otros, romper altares exige el Martillo
+  Sagrado del Muro de Carne (no basta con matar al Devorador/Cerebro); Piratas y Legión de
+  Escarcha son de Modo Difícil, no prehardmode; los TRES mecánicos hacen falta juntos para
+  Plantera, no uno cualquiera; la Emperatriz de la Luz se enfurece de día, no de noche; el Golem
+  tiene invulnerable el cuerpo mientras la cabeza siga montada, no al revés; oleadas reales de las
+  Lunas y objetos de recompensa inventados sustituidos por los reales.
+- Versión del mod: `0.4.0` → `0.5.0`.
+
 ### 0.4.0 (15-sep-2026)
 
 - **Cobertura absoluta de la Guía**: 25 tramos nuevos de Calamity (60 pasos), sobre los 21 tramos
