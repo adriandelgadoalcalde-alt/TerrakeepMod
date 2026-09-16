@@ -837,6 +837,7 @@ Guia: {
 	Req: {
 		Recomendado: (recommended, not required)
 		NoEvaluable: The guide cannot check this yet: {0}
+		NoEvaluableGenerico: The guide cannot check this yet.
 		CristalesVida: Life Crystals used: {0} of {1}
 		VidaMaxima: Max health: {0} of {1}
 		Defensa: Defense: {0} of {1}
@@ -1263,7 +1264,7 @@ Guia: {
 
 		VencerLaMaldad: {
 			Titulo: Defeat it
-			Porque: The moment the Eater of Worlds or the Brain of Cthulhu falls, your whole world feels it: Demon or Crimson Altars start dropping new ore when smashed with a hammer, and the sky itself marks your first win with a meteorite that's guaranteed to fall.
+			Porque: The moment the Eater of Worlds or the Brain of Cthulhu falls, your whole world feels it: a meteorite is guaranteed to land somewhere on the map, and the Dryad starts selling Vile or Vicious Powder and telling you how much corruption or crimson your world has. Smashing Demon or Crimson Altars for new ore needs the Pwnhammer, which you only get from defeating the Wall of Flesh later on - not yet here, even if that's hard to believe with the boss already down.
 			Como: The Eater gets cut into pieces: any segment split in half turns into two more worms, so a weapon that pierces in a line (or has a lot of reach) finishes it faster than one that only hits one at a time. The Brain hides behind its Creepers: kill them first and it goes still and vulnerable for a few seconds.
 		}
 

@@ -8005,3 +8005,58 @@ ficha del Workshop, no para jugar:
   `scripts\` (que verifican menús de ANTES de Workshop). Documentado como límite real en
   `PUBLICAR-WORKSHOP.md` (nuevo).
 - Sin `git push`. Commit local en este repo.
+
+## 16-sep-2026 - Investigacion PRIORIDAD MAXIMA: bug real en directo de la Guia (arreglado en el repo hermano) + hueco cerrado aqui en el arnes en vivo
+
+El usuario reporto, jugando de verdad, que Terrakeep de escritorio (la app, no este mod) se
+quedaba pillado mostrando el Devorador de Mundos como pendiente aunque el mundo real ya lo tuviera
+derrotado hace tiempo, y que con un mundo sin personaje cargado "todo pone siempre lo mismo".
+Investigacion completa (evidencia real paso a paso, comparacion contra el codigo de antes del
+refactor de esta noche, arnes GUIA_SOLO real con `adrian`+`roca_negra.wld`) en la bitacora hermana
+de Terrasavr-Native (misma fecha, entrada "Bug real en directo: la Guia de escritorio se quedaba
+pillada para siempre") - resumen: NO era el refactor T1 de esta noche (logica movida tal cual,
+`GuideFlags.cs` sin tocar), sino un bug real de arquitectura ya presente desde que se integro la
+Guia en Terrakeep: todo tramo obligatorio exige `dano_arma` como unico requisito de su paso de
+preparacion, y `dano_arma` es SIEMPRE no evaluable en el editor de escritorio (no simula combate)
+- eso bloqueaba el tramo entero para siempre, sin relacion con el progreso real. Arreglado en
+`Terrakeep.Core.Guia.GuideEvaluationEngine` (nueva distincion "limite estructural" que no bloquea
+la completitud, frente a "sin datos todavia" que si sigue bloqueando) - **cero cambio de
+comportamiento aqui**, porque `ProveedorEstadoGuiaMod.HasLiveGameData` es siempre `true` con una
+partida real en marcha, asi que `dano_arma` nunca pasaba por esa ruta en este mod. Verificado con
+`scripts\actualizar-core.ps1` + `scripts\verificar-guia.ps1 -Calamity` completo tras traer el DLL
+nuevo: compilacion real, `.tmod` empaquetado, cliente real lanzado, 46 tramos recorridos ->
+`AUTOPRUEBA GUIA COMPLETA`, 0 requisitos `[?]`, ninguna comprobacion en rojo - exactamente igual
+que antes, como se esperaba.
+
+**Corregido tambien un dato real erroneo que el usuario señalo de pasada**: `Guia.Paso.
+VencerLaMaldad.Porque` decia que romper Altares Demoniacos/Carmesíes para sacar mineral nuevo se
+podia hacer nada mas caer el Devorador de Mundos/Cerebro de Cthulhu - falso, hace falta el
+Martillo Sagrado (solo se consigue derrotando al Muro de Carne). Corregido a los hechos reales
+(meteorito garantizado + Driade vendiendo Polvo Vil/Viscoso y el % de corrupcion/carmesi) en los
+dos `.hjson` de localizacion - la app de escritorio lo trae resincronizado con `scripts\
+sync-guia-desde-terrakeepmod.ps1` (ver bitacora hermana).
+
+**Hueco cerrado en el arnes propio de este repo** (hallazgo de una investigacion paralela de
+Fable, aplicado aqui tras confirmar que hacia falta): `verificar-guia.ps1` solo ponia en rojo
+`NO CUADRA|EXCEPCION|NO COINCIDE|NO CABE` - `[?]` (NoEvaluable) se imprimia linea a linea pero
+NUNCA hacia caer el gate, y no habia ningun invariante de que en una partida real el conteo
+deberia ser 0 (`ProveedorEstadoGuiaMod` tiene sus cuatro `Has*` siempre `true`). Nuevo:
+`AutopruebaGuia.cs` cuenta `_contadorNoEvaluable` en los dos sitios donde se imprime
+`[?]`/`[HECHO]`/`[FALTA]` y lo resume en `Terminar()`; `verificar-guia.ps1` añade `NO EVALUABLE:`
+a su patron rojo. Verificado que el invariante se cumple de verdad en un recorrido real completo
+(0, ver arriba).
+
+**No tocado**: `Assets/guia_progresion.json` tenia cambios de OTRA sesion en marcha a la vez en
+este mismo repo (reordenacion de Piratas/Legion de Escarcha a Modo Dificil, Mecanicos exige los
+tres en vez de cualquiera, zona de Ceaseless Void, profundidad de Crabulon - investigacion de
+contenido mas amplia con Fable, ajena a este encargo) - respetado sin tocar ni comitear, mismo
+criterio de siempre con sesiones concurrentes en este repo.
+
+### Archivos tocados (commit local, nunca push)
+- `Common/Guia/AutopruebaGuia.cs`: contador `_contadorNoEvaluable` + resumen en `Terminar()`.
+- `scripts/verificar-guia.ps1`: `NO EVALUABLE:` añadido al patron rojo.
+- `Localization/es-ES_Mods.TerrakeepMod.hjson`/`en-US_Mods.TerrakeepMod.hjson`:
+  `NoEvaluableGenerico` nuevo, `VencerLaMaldad.Porque` corregido.
+- `lib/Terrakeep.Core.dll`: actualizado con el commit hermano de Terrasavr-Native (T1 corregido).
+- `evidencia/guia-calamity.log.txt`: log real del recorrido de verificacion de esta ronda.
+- `.tmod` real recompilado con `scripts\compilar.ps1` (747838 bytes).

@@ -202,7 +202,11 @@ Get-CimInstance Win32_Process -Filter "Name='dotnet.exe'" -ErrorAction SilentlyC
 
 if ($encontrado) {
 	Write-Host "OK: encontrado '$objetivo' en el log." -ForegroundColor Green
-	$malos = Select-String -Path $evidencia -Pattern 'NO CUADRA|EXCEPCION|NO COINCIDE|NO CABE' -Encoding UTF8
+	# "NO EVALUABLE:" anadido el 16-sep-2026 (I+D-PROXIMOS-PASOS-FAMILIA-KEEP.md): hasta ahora "[?]"
+	# (NoEvaluable) se imprimia linea a linea pero nunca hacia caer este gate, y no habia invariante
+	# de que con partida real en marcha (Has* siempre true en ProveedorEstadoGuiaMod) deberia salir
+	# 0 - ver el contador nuevo en AutopruebaGuia.Terminar().
+	$malos = Select-String -Path $evidencia -Pattern 'NO CUADRA|EXCEPCION|NO COINCIDE|NO CABE|NO EVALUABLE:' -Encoding UTF8
 	if ($malos) {
 		Write-Host "PERO hay comprobaciones en rojo:" -ForegroundColor Red
 		$malos | ForEach-Object { Write-Host "  $($_.Line)" -ForegroundColor Red }

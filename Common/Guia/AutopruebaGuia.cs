@@ -53,6 +53,18 @@ namespace TerrakeepMod.Common.Guia
 		private static int _paso;
 		private static int _espera;
 
+		// Hueco real cerrado el 16-sep-2026 (I+D-PROXIMOS-PASOS-FAMILIA-KEEP.md, investigacion del
+		// reporte en directo "la guia siempre dice que no sabe comprobarlo"): "[?]" (NoEvaluable) se
+		// imprime linea a linea pero NUNCA hacia caer el gate de verificar-guia.ps1 (solo mira "NO
+		// CUADRA|EXCEPCION|NO COINCIDE|NO CABE"), y no habia ninguna comparacion antes/despues de
+		// cuantos "[?]" salian. Con partida real en marcha, ProveedorEstadoGuiaMod tiene sus cuatro
+		// Has* siempre a true (ver su cabecera) - asi que en un recorrido real EN VIVO, un requisito
+		// "[?]" solo puede salir por una bandera/tipo que el mod de verdad no reconoce, nunca por
+		// falta de datos. Si algun dia aparece uno, es real y hay que verlo - de ahi este contador y
+		// el "NO EVALUABLE" nuevo en el resumen final (Terminar()), que SI cae dentro del patron rojo
+		// del script.
+		private static int _contadorNoEvaluable;
+
 		private static bool _downedBoss1Original;
 		private static bool _downedBoss2Original;
 		private static bool _downedBoss3Original;
@@ -952,6 +964,9 @@ namespace TerrakeepMod.Common.Guia
 			List<FilaRequisitoTk> filas = contenido.FilasDeRequisito();
 			for (int i = 0; i < filas.Count; i++) {
 				ResultadoRequisito estado = filas[i].Estado();
+				if (estado.NoEvaluable) {
+					_contadorNoEvaluable++;
+				}
 				RegistroGuia.Linea(Terrakeep.LogTag + "   requisito " + (i + 1) + "/" + filas.Count + ": [" +
 					(estado.NoEvaluable ? "?" : (estado.Cumplido ? "HECHO" : "FALTA")) + "] " +
 					estado.Linea() + " (" + estado.Actual + "/" + estado.Pedido +
@@ -1614,6 +1629,9 @@ namespace TerrakeepMod.Common.Guia
 				List<ResultadoRequisito> resultados = EvaluadorGuia.Evaluar(paso);
 				for (int i = 0; i < resultados.Count; i++) {
 					ResultadoRequisito estado = resultados[i];
+					if (estado.NoEvaluable) {
+						_contadorNoEvaluable++;
+					}
 					RegistroGuia.Linea(Terrakeep.LogTag + "   requisito opcional " + (i + 1) + "/" +
 						resultados.Count + ": [" +
 						(estado.NoEvaluable ? "?" : (estado.Cumplido ? "HECHO" : "FALTA")) + "] " +
@@ -2692,6 +2710,12 @@ namespace TerrakeepMod.Common.Guia
 		private static void Terminar()
 		{
 			_terminada = true;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - requisitos [?] (no evaluable) " +
+				"vistos en todo el recorrido: " + _contadorNoEvaluable + (_contadorNoEvaluable == 0
+					? " -> OK: con partida real en marcha (ProveedorEstadoGuiaMod, Has* siempre true) " +
+					  "ningun requisito deberia quedarse sin poder comprobarse."
+					: " -> NO EVALUABLE: con partida real en marcha esto NO deberia pasar nunca - " +
+					  "revisar las lineas '[?]' de arriba en la evidencia."));
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA COMPLETA.");
 		}
 

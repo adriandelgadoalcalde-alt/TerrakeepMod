@@ -837,6 +837,7 @@ Guia: {
 	Req: {
 		Recomendado: (recomendado, no obligatorio)
 		NoEvaluable: Esto la guía no lo sabe comprobar todavía: {0}
+		NoEvaluableGenerico: Esto la guía no lo sabe comprobar todavía.
 		CristalesVida: Cristales de vida usados: {0} de {1}
 		VidaMaxima: Vida máxima: {0} de {1}
 		Defensa: Defensa: {0} de {1}
@@ -859,6 +860,7 @@ Guia: {
 		shadowOrbSmashed: Haber roto ya una Esfera Oscura o un Corazón Carmesí
 		hardMode: Que el mundo entre en Modo Difícil (derrotar al Muro de Carne)
 		downedMechBossAny: Derrotar a cualquiera de los tres mecánicos (Destructor, Gemelos o Esqueletron Prime)
+		downedMechBossAll: Derrotar a los TRES mecánicos (Destructor, Gemelos y Esqueletron Prime)
 		downedPlantBoss: Derrotar a Plantera
 		downedGolemBoss: Derrotar al Golem
 		downedAncientCultist: Derrotar al Cultista Lunático
@@ -1263,7 +1265,7 @@ Guia: {
 
 		VencerLaMaldad: {
 			Titulo: Derrotarlo
-			Porque: En cuanto caiga el Devorador de Mundos o el Cerebro de Cthulhu, tu mundo entero lo nota: los Altares Demoniacos o Carmesíes empiezan a soltar mineral nuevo al romperse con un mazo, y el cielo mismo te avisa de la primera victoria con un meteorito que cae seguro.
+			Porque: En cuanto caiga el Devorador de Mundos o el Cerebro de Cthulhu, tu mundo entero lo nota: un meteorito cae garantizado en algún punto del mapa, y la Dríade empieza a vender Polvo Vil o Viscoso y a decirte cuánta corrupción o carmesí tiene tu mundo. Romper Altares Demoníacos o Carmesíes para sacar mineral nuevo hace falta el Martillo Sagrado, que solo se consigue derrotando al Muro de Carne más adelante - todavía no aquí, aunque cueste creerlo con el jefe ya en el suelo.
 			Como: El Devorador se corta en trozos: cada segmento partido por la mitad se separa en dos gusanos más, así que un arma que atraviese en línea (o con mucho alcance) acaba antes que una que solo pega de uno en uno. El Cerebro se esconde detrás de sus Reptadores: mátalos primero y se queda quieto y vulnerable unos segundos.
 		}
 
