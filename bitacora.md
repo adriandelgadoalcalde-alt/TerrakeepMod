@@ -8198,3 +8198,83 @@ raton encima.
 - Visto de paso en el log del sandbox WS7 (sin Calamity): 36 avisos "Guia: AVISO de datos -
   bandera desconocida downedX" en los pasos de Calamity. No es de este encargo; para quien
   retome la Guia: decidir si con `Calamity cargado=False` esos avisos deben silenciarse.
+
+## 16-sep-2026 (tarde) - QA a ciegas con juego-libre/dossier de KeepQA: "Zoom" pisando "Markers" en Exploracion (en-US)
+
+Ronda a ciegas (sin pista previa de bug) sobre Terrakeep de escritorio y TerrakeepMod con las
+herramientas nuevas de KeepQA (`src/juego-libre` + `src/hipotesis/dossier.js` +
+`verificarHipotesis.js`), evitando a proposito Equipamiento/Inventario de **Terrakeep de
+escritorio** (bug del ★ en manos de otro agente en paralelo). En Terrakeep de escritorio: 3
+partidas de `juegoLibre.js` (semillas 11/7/3, ~95 pasos, pestañas Inicio/Personaje(solo
+hover)/Builds/Novedades/Acerca de/Exploracion/Guia/Servidor, tamaños normal y 1080x700) mas
+`dossier.js`+`verificarHipotesis.js` sobre 3 pantallas (Builds/Inicio/Guia): sin ningun hallazgo
+real nuevo fuera de Equipamiento/Inventario - los "Medium" que salieron eran falsos positivos ya
+conocidos de las piezas (tooltip pisando su fila de origen, microanimacion de hover de 2-3px,
+boton mudo interno de `ScrollBar` de WPF) o el propio harness abriendo por accidente el menu
+"Sistema" de la ventana y cerrandola con su "Cerrar" nativo (Critical `proceso_muerto`: NO es un
+bug de Terrakeep, es el fuzzer clicando el menu de sistema de Windows).
+
+**LIMITE REAL**: `juego-libre` (UIA externo, pywinauto) solo funciona con motores WPF
+(documentado en `DIAGNOSTICO-DE-FONDO-16SEP.md`: "juego-libre solo para WPF por UIA externo -
+tModLoader/DST no exponen ese arbol"). Para TerrakeepMod se uso en su lugar el arnes propio del
+mod (`Common/Panel/AutopruebaPanelUnico.cs` + `scripts\verificar-panel-unico.ps1`), y no hay
+extractor de geometria en formato KeepQA (`{id,tipo,padre_id,x,y,ancho,alto}`) para el arbol
+`UIElement` de tModLoader, asi que `dossier.js`/`verificarHipotesis.js` tampoco se pudieron usar
+aqui de forma literal - en su lugar, auditoria visual directa de las capturas reales que la propia
+autoprueba deja en `terrakeep-capturas\` (recortes con zoom real via PIL, no "a ojo" sobre la
+miniatura).
+
+**Bug real encontrado y arreglado**: en `pestana-4-exploration.png` (autoprueba en ingles,
+1600x900), el titulo "Markers" quedaba literalmente pisado por "Zoom: X px per tile" (recorte
+real, letras superpuestas) - `UI/Exploracion/PestanaMapa.cs`, `ConstruirLateral()`. Causa real:
+el renglon de estado (`estado`, el "Zoom:") se posicionaba con `VAlign = 1f` sin `Top` (anclado al
+fondo del contenedor ENTERO), mientras que todo lo de encima (Marcadores/detalle/bajo el raton) se
+apilaba con un `y` manual que crecia mas en ingles (el aviso de arriba parte en 4 lineas en vez de
+3) - cuando el flujo de arriba crecia lo suficiente, se comia el hueco fijo de abajo.
+
+Reconstruido en 6 iteraciones reales contra el juego (nunca a ciegas leyendo solo el codigo):
+1. Meter `estado` en el mismo flujo secuencial (`y` acumulado) -> arregla el pisado de "Markers"
+   pero el texto se sale por debajo del propio panel (el flujo entero no cabia en la pestaña).
+2. `y += 96f` fijo del aviso sustituido por una medida REAL
+   (`DynamicSpriteFont.MeasureString("Ay").Y * escala` x numero de `\n` que trajo
+   `PartirEnLineas`) - mismo principio que ya usaba `PartirEnLineas` para el ANCHO, aplicado ahora
+   al ALTO. No cambio nada por si solo: el problema no era medir mal el aviso.
+3. Instrumentado con un log de diagnostico REAL (`RegistroPanel.Linea`, retirado despues) dentro
+   de un `Update()` nuevo: la pestaña mide **~308-310px de alto real** (`GetDimensions()`), NO los
+   444px del area de contenido que reporta el panel para otras pestañas (esa cifra confundio el
+   primer intento) - el flujo entero llegaba a 331px, mas alto que el propio contenedor.
+4. `Update()` recorta `estado.Top` contra `GetDimensions().Height` REAL cada fotograma (no una
+   constante) - necesito `_estado.Recalculate()` explicito tras el `Top.Set`, si no el cambio se
+   guarda pero no se ve hasta el fotograma siguiente (confirmado en vivo: sin la llamada, la
+   captura no cambiaba nada).
+5. Con el recorte solo, "Zoom" ya no pisa "Markers" pero SI pisa el boton "Close (P)" del pie del
+   panel (que vive fuera de esta pestaña, con su propio `VAlign=1f` sobre el marco entero).
+6. Huecos entre botones/renglones ajustados al alto REAL de `BotonTk` (34px, `ColocarBoton`) + un
+   margen pequeño en vez de numeros redondos elegidos a ojo (40/40/48/46/30 -> 36/36/40/42/22) -
+   libera ~55px, suficiente para que el flujo completo (incluido "Zoom") quepa dentro de los
+   308-310px reales sin tocar ni "Markers" arriba ni "Close" abajo.
+7. Verificado con captura real tras cada paso (`verificar-panel-unico.ps1`, recorte 3x con PIL de
+   la esquina inferior derecha): "Markers" / "No search yet: use the Search tab" / "Zoom: 2.50 px
+   per tile" apilados limpios, "Close (P)" con hueco debajo, sin fuga fuera del panel. Grupo de
+   botones de arriba (Zoom in/out, Centre on me, See the whole world, Open the game map) sigue con
+   huecos visibles entre si, sin apelotonarse.
+
+### Verificacion real
+- `scripts\compilar.ps1`: 0 errores en cada una de las 6 iteraciones, `.tmod` recompilado y
+  **instalado de verdad** en `Documents\My Games\Terraria\tModLoader\Mods\TerrakeepMod.tmod`
+  (no solo el sandbox) tras cada cambio.
+- `scripts\verificar-panel-unico.ps1` real (cliente grafico real, mundo/personaje sintetico
+  `TerrakeepPrueba`) tras cada iteracion: "AUTOPRUEBA PANEL COMPLETA", 0 lineas "NO CUADRA", las 6
+  pestañas + animacion + atajos + icono HUD + muñeco de Apariencia en verde. Evidencia final en
+  `evidencia\panel-unico.log.txt`.
+- Capturas reales inspeccionadas con recortes 3x-4x (PIL, no la miniatura completa) antes y
+  despues de cada cambio - la ultima confirma el arreglo con evidencia de pixeles, no solo "el
+  codigo deberia ya no solaparse".
+- Commit local solo de `UI/Exploracion/PestanaMapa.cs` + `evidencia/panel-unico.log.txt`. Sin
+  `git push`.
+
+### Honestidad sobre lo que NO se encontro
+Terrakeep de escritorio: ningun bug nuevo fuera de Equipamiento/Inventario en 95 pasos de juego
+libre + 3 dossiers con hipotesis verificadas - no se fuerza ningun hallazgo debil. TerrakeepMod:
+el resto de pestañas (Character/Library/Builds/Research/Settings, animacion, atajos, icono HUD,
+Apariencia) pasaron la autoprueba y la inspeccion visual sin ningun problema detectado.

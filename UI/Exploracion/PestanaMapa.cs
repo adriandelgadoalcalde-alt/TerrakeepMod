@@ -24,7 +24,15 @@ namespace TerrakeepMod.UI.Exploracion
 	{
 		private const float AnchoLateral = 240f;
 
+		/// <summary>Margen de seguridad bajo el ultimo renglon del flujo, medido con
+		/// <c>GetDimensions()</c> real (16-sep-2026: esta pestaña solo mide ~308-310px de alto, NO
+		/// los 444 del area de contenido - eso confundio un primer intento de este mismo arreglo;
+		/// diagnostico real en bitacora.md).</summary>
+		private const float MargenInferior = 6f;
+
 		private MiniMapaTk _mapa;
+		private EtiquetaTk _estado;
+		private float _estadoTopDeFlujo;
 
 		/// <summary>El mini-mapa, para que la autoprueba pueda mirarlo y accionarlo.</summary>
 		public MiniMapaTk Mapa => _mapa;
@@ -36,6 +44,31 @@ namespace TerrakeepMod.UI.Exploracion
 
 			ConstruirMapa();
 			ConstruirLateral();
+		}
+
+		/// <summary>
+		/// BUG REAL visto en capturas reales del juego (16-sep-2026, ronda de juego-libre/dossier
+		/// de KeepQA): el renglon de estado ("Zoom: X px per tile") colgaba de <c>y</c> igual que
+		/// el resto del flujo de arriba (Marcadores/detalle/bajo el raton) para no pisarlos NUNCA -
+		/// pero un flujo tan largo en ingles (el aviso de arriba parte en mas lineas que en español)
+		/// podia acabar entrando en la franja del pie del panel. La geometria real de esta pestaña
+		/// (<see cref="UIElement.GetDimensions"/>) solo se conoce cuando el layout ya ha corrido,
+		/// nunca en el constructor (medido en vivo: esta pestaña solo tiene ~308-310px reales de
+		/// alto, no los 444 del area de contenido entera que reporta el panel para OTRAS pestañas) -
+		/// por eso el recorte se hace aqui, en <c>Update</c>, contra el alto REAL medido cada
+		/// fotograma, no contra una constante calculada a mano.
+		/// </summary>
+		public override void Update(GameTime gameTime)
+		{
+			base.Update(gameTime);
+			if (_estado != null) {
+				float techo = GetDimensions().Height - _estado.Height.Pixels - MargenInferior;
+				_estado.Top.Set(techo > 0f ? System.Math.Min(_estadoTopDeFlujo, techo) : _estadoTopDeFlujo, 0f);
+				// Sin este Recalculate el Top nuevo se guarda pero GetDimensions() (lo que Draw usa
+				// de verdad) se queda con el valor calculado la vez anterior: se vio en vivo que
+				// cambiar Top.Set aqui no movia nada en pantalla hasta añadir esta llamada.
+				_estado.Recalculate();
+			}
 		}
 
 		private void ConstruirMapa()
@@ -71,46 +104,62 @@ namespace TerrakeepMod.UI.Exploracion
 			BotonTk masLejos = new BotonTk(Idiomas.Texto("Exploracion.Mapa.Alejar"), 0.85f);
 			ColocarBoton(lateral, masLejos, AnchoLateral / 2f + 3f, y, AnchoLateral / 2f - 3f);
 			masLejos.AlPulsar += () => _mapa.Acercar(1f / 1.5f);
-			y += 40f;
+			// BUG REAL (16-sep-2026, ver Update() mas abajo): esta pestaña, medida en vivo con
+			// GetDimensions(), solo tiene 308-310px REALES de alto (no los 444 del area de
+			// contenido entera - Exploracion tambien tiene el minimapa a su izquierda, pero el alto
+			// SIGUE siendo el mismo para toda la pestaña). Con los huecos "sobrados" que traia esta
+			// columna (40/40/48/46 entre botones, 30 tras el detalle de Marcadores) el flujo entero
+			// se iba a 331px de alto - ya no cabia ni el propio "bajo el raton" antes de acabarse el
+			// hueco. Los huecos de aqui abajo se ajustan al alto REAL del boton (34, ColocarBoton) +
+			// un margen pequeño, no a numeros redondos elegidos a ojo.
+			y += 36f;
 
 			BotonTk enJugador = new BotonTk(Idiomas.Texto("Exploracion.Mapa.Centrar"), 0.85f);
 			ColocarBoton(lateral, enJugador, 0f, y, AnchoLateral);
 			enJugador.AlPulsar += () => _mapa.CentrarEnJugador();
-			y += 40f;
+			y += 36f;
 
 			BotonTk todo = new BotonTk(Idiomas.Texto("Exploracion.Mapa.MundoEntero"), 0.85f);
 			ColocarBoton(lateral, todo, 0f, y, AnchoLateral);
 			todo.AlPulsar += () => _mapa.EncuadrarMundo();
-			y += 52f;
+			y += 40f;
 
 			BotonTk verEnMapa = new BotonTk(Idiomas.Texto("Exploracion.Mapa.VerEnMapa"), 0.85f);
 			ColocarBoton(lateral, verEnMapa, 0f, y, AnchoLateral);
 			verEnMapa.Height.Set(40f, 0f);
 			verEnMapa.Ayuda = () => Idiomas.Texto("Exploracion.Mapa.VerEnMapaAyuda");
 			verEnMapa.AlPulsar += SaltarAlMapaVanilla;
-			y += 50f;
+			y += 42f;
 
 			// Se parte con el ancho REAL: los tres renglones con saltos escritos a mano estaban
 			// medidos para el texto en español y en ingles la tercera linea se salia del marco por la
 			// derecha (visto en una captura real del juego).
-			EtiquetaTk aviso = new EtiquetaTk(
-				() => EtiquetaTk.PartirEnLineas(
-					Idiomas.Texto("Exploracion.Mapa.AvisoExclusivo"), AnchoLateral - 4f, 0.7f),
-				0.7f, AnchoLateral, 50f);
+			string textoAvisoPartido = EtiquetaTk.PartirEnLineas(
+				Idiomas.Texto("Exploracion.Mapa.AvisoExclusivo"), AnchoLateral - 4f, 0.7f);
+			EtiquetaTk aviso = new EtiquetaTk(() => textoAvisoPartido, 0.7f, AnchoLateral, 50f);
 			aviso.ColorTexto = EstiloTk.TextoSuave;
 			aviso.Top.Set(y, 0f);
 			lateral.Append(aviso);
-			// 96 y no 74: la fuente del juego a escala 0,7 gasta ~21 px por linea, y este aviso se
-			// parte solo segun el ancho y el idioma. En español salen tres lineas y en ingles
-			// CUATRO, y con 74 la cuarta se comia el titulo "Marcadores" de debajo (las dos veces
-			// se vio en una captura real, no leyendo el codigo). Con 96 caben cuatro.
-			y += 96f;
+			// BUG REAL visto en captura del juego (16-sep-2026, ronda de juego-libre/dossier de
+			// KeepQA, en-US a 1600x900): un "96" fijo (a mano, "~21 px por linea, hasta 4 lineas
+			// caben") se quedaba corto de verdad para el numero de lineas + interlineado REALES que
+			// devuelve DynamicSpriteFont.MeasureString con esta fuente, y el resto del flujo de
+			// abajo (Marcadores/detalle/bajo el raton/zoom) arrancaba mas alto de lo que el hueco
+			// disponible permitia. En vez de otra cifra a mano, se mide la altura REAL con la MISMA
+			// fuente/escala que draw usa (ver PartirEnLineas de mas arriba: mismo principio, no
+			// adivinar el ancho de un texto - aqui, no adivinar su alto), contando cuantos '\n' trajo
+			// el texto ya partido. Se recalcula una sola vez aqui (el idioma no cambia sin
+			// reconstruir el panel, igual que el resto de este metodo se calcula una vez).
+			int avisoLineas = textoAvisoPartido.Split('\n').Length;
+			float avisoAltoLinea = Terraria.GameContent.FontAssets.MouseText.Value.MeasureString("Ay").Y * 0.7f;
+			float avisoAlto = avisoLineas * avisoAltoLinea;
+			y += avisoAlto + 4f;
 
 			EtiquetaTk leyenda = new EtiquetaTk(
-				() => Idiomas.Texto("Exploracion.Mapa.Marcadores"), 0.85f, AnchoLateral, 24f);
+				() => Idiomas.Texto("Exploracion.Mapa.Marcadores"), 0.85f, AnchoLateral, 22f);
 			leyenda.Top.Set(y, 0f);
 			lateral.Append(leyenda);
-			y += 24f;
+			y += 22f;
 
 			EtiquetaTk detalleLeyenda = new EtiquetaTk(
 				() => MarcadoresExploracion.HayAlgo
@@ -121,21 +170,26 @@ namespace TerrakeepMod.UI.Exploracion
 			detalleLeyenda.ColorTexto = EstiloTk.TextoSuave;
 			detalleLeyenda.Top.Set(y, 0f);
 			lateral.Append(detalleLeyenda);
-			y += 30f;
+			y += 22f;
 
-			EtiquetaTk bajoElRaton = new EtiquetaTk(TextoBajoElRaton, 0.75f, AnchoLateral, 22f);
+			EtiquetaTk bajoElRaton = new EtiquetaTk(TextoBajoElRaton, 0.75f, AnchoLateral, 20f);
 			bajoElRaton.ColorTexto = EstiloTk.TextoAviso;
 			bajoElRaton.Top.Set(y, 0f);
 			lateral.Append(bajoElRaton);
+			y += 20f;
 
+			// Posicion NATURAL en el flujo (nunca pisa lo de arriba); Update() la recorta contra el
+			// pie real del panel si hiciera falta - ver el comentario de Update() mas arriba.
 			EtiquetaTk estado = new EtiquetaTk(
 				() => _mapa != null
 					? Idiomas.Texto("Exploracion.Mapa.Zoom", _mapa.Escala.ToString("0.00"))
 					: "",
 				0.75f, AnchoLateral, 22f);
 			estado.ColorTexto = EstiloTk.TextoSuave;
-			estado.VAlign = 1f;
+			estado.Top.Set(y, 0f);
 			lateral.Append(estado);
+			_estado = estado;
+			_estadoTopDeFlujo = y;
 		}
 
 		private string TextoBajoElRaton()
