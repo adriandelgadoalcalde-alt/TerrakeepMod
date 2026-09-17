@@ -8278,3 +8278,106 @@ Terrakeep de escritorio: ningun bug nuevo fuera de Equipamiento/Inventario en 95
 libre + 3 dossiers con hipotesis verificadas - no se fuerza ningun hallazgo debil. TerrakeepMod:
 el resto de pestañas (Character/Library/Builds/Research/Settings, animacion, atajos, icono HUD,
 Apariencia) pasaron la autoprueba y la inspeccion visual sin ningun problema detectado.
+
+---
+
+## 17-sep-2026 - Mismo trio externo (analizadores + CsCheck + Stryker.NET) aplicado a TerrakeepMod - séptimo proyecto de la familia, en paralelo con TModLoaderMod
+
+Mismo patrón ya integrado en Terrakeep.Core/Starvekeep.Core/ServidorKeep.Core/Keep.Wpf (16/17-sep)
+y, esta misma noche en paralelo, en el repo hermano `TModLoaderMod` - ver su propio `bitacora.md`.
+Detalle técnico completo (con números reales) en `bitacora.md` de KeepQA, 17-sep-2026. Resumen aquí:
+
+### Paso 1 - Analizadores de .NET + Roslynator.Analyzers 5.0.0 en `TerrakeepMod.csproj`
+- Gate por defecto: 18 avisos únicos reales de entrada (17× `RCS1075` catch vacío de
+  `System.Exception`, 1× `RCS1155` comparación de cadenas sin `StringComparison`).
+- **Arreglado de verdad**: `RCS1155` en `Common/Investigacion/AutopruebaInvestigacion.cs` -
+  `fase.Trim().ToLowerInvariant() == "comprobar"` → `string.Equals(fase.Trim(), "comprobar",
+  StringComparison.OrdinalIgnoreCase)`.
+- **17× `RCS1075` documentados como backlog deliberado, NO arreglados**: el mismo patrón repetido
+  en ~15 escritores de evidencia (`Registro*.cs`/`Autoprueba*.cs`, activos solo bajo variables de
+  entorno `TERRAKEEP_AUTOTEST_*`) más 2 lecturas defensivas (`AlbumHitos.cs`,
+  `SincronizacionEscritorio.cs`) - todos ya llevan un comentario explicando por qué se ignora
+  CUALQUIER excepción a propósito (el log del juego ya tiene la línea vía otro canal, así que
+  fallar al escribir el archivo de evidencia nunca debe tumbar nada). Acotar a
+  `IOException`/`UnauthorizedAccessException` habría sido una opción real, pero se dejó
+  documentado sin tocar por ser exactamente el mismo tipo de backlog de diseño que ya se dejó sin
+  tocar en Terrakeep.Core/Keep.Wpf - no un bug real evidente.
+- `--completo` (informe, nunca gatea): ~300 avisos únicos de diseño (`CA1305` formateo sin
+  cultura×119, `CA1051` campos visibles×110, `CA1031` catch genérico×76, `CA1062` validación de
+  argumentos×68...), mismo perfil que el resto de la familia.
+- Verificado recompilando el mod ENTERO con el compilador real de tModLoader
+  (`scripts\compilar.ps1`) tras el fix: 0 errores, `.tmod` reinstalado de verdad.
+
+### Paso 2 - CsCheck 4.9.0: investigación real de qué es "lógica propia y pura" en el mod
+Investigados `Common/` y `UI/` completos (~90 archivos). Conclusión honesta: la inmensa mayoría
+depende en vivo de objetos del motor (`Main.tile`, `Main.LocalPlayer`, `ItemLoader`,
+`ModContent.TryFind`...) - **LÍMITE REAL**, sin superficie testeable fuera del juego. El ÚNICO
+candidato real: `Common/Libreria/GramaticaBusqueda.cs` - lógica pura (`System.Globalization`/
+`System.Text`, cero `using` de Terraria), una COPIA deliberada y ya documentada de
+`Terrakeep.App/ViewModels/LibrarySearchGrammar.cs` (assembly WPF, inalcanzable desde el mod), con
+su propio riesgo real de desincronización entre copias (ya pasó una vez en la familia con
+`best_prefix.json`).
+
+Nuevo proyecto `TerrakeepMod.Tests` (net10.0 - el `dotnet` del PATH no tiene runtime .NET 8
+instalado, solo lo trae tModLoader, ver `scripts\compilar.ps1`; el archivo probado es C# puro
+compatible con ambos TFM) con 24 pruebas:
+- 9 propiedades CsCheck reales (idempotencia y limpieza de diacríticos de `Plegar`, vacío/nulo
+  siempre coincide, término de 1 carácter se ignora siempre, `#id` exacto, `#lo-hi` por rango,
+  coma=OR metamórfico, espacio=AND, `.texto` busca solo en tooltip).
+- 13 pruebas deterministas: traducción literal de los 9 `[Fact]` reales de
+  `LibrarySearchGrammarTests.cs` (incluida la tilde "máscara"/"Máscara" de C-09) más 2 cierres de
+  frontera (ver Stryker abajo).
+- **Hallazgo real durante la propia escritura de las pruebas**: la primera versión de la propiedad
+  de AND-entre-palabras daba un falso positivo (con solo 36 letras/dígitos posibles y palabras de
+  2-8 caracteres, `w2` podía aparecer "de casualidad" dentro de `w1` - `Casa` compara por
+  SUBCADENA, no por palabra completa) - corregido acotando el generador, no el código de
+  producción (mismo principio que el hallazgo de precisión IEEE 754 de `Keep.Wpf.Tests`).
+- **Sin bug real encontrado en `GramaticaBusqueda.cs`** en esta ronda - resultado honesto, no
+  forzado (mismo tipo de resultado limpio que ya tuvo `Starvekeep.Core.Tests`).
+
+### Paso 3 - Stryker.NET 5.0.0, acotado a `GramaticaBusqueda.cs`
+Biblioteca intermedia `TerrakeepMod.LogicaPura` (enlaza, no copia, el mismo `.cs` real) porque
+Stryker exige una referencia de proyecto real para saber qué mutar. 44 mutantes: 14 `CompileError`
+(mutaciones `&&`→`||` que rompen la asignación definitiva de `hasta`/`desde` en `CasaId` - Stryker
+las descarta solo con su propio "Safe Mode"), 1 `NoCoverage` (el guardarrail `palabras.Length==0`
+en `Casa` - analizado y parece código realmente inalcanzable hoy: `Trim()` ya deja vacío/filtrado
+cualquier término que llegara ahí como solo-espacios antes de la comprobación de longitud mínima;
+documentado, no forzado), 6 `Ignored`, 23 puestos a prueba de verdad. **Primera corrida: 21
+matados, 2 supervivientes reales** (`termino.Length < 2` → `<= 2` sin ningún test que exigiera que
+un término de EXACTAMENTE 2 caracteres siguiera contando; el `return "";` del guardarrail nulo de
+`Plegar` sin ningún test que llamara `Plegar(null)` directamente). Añadidos los 2 cierres de
+frontera correspondientes en `GramaticaBusquedaParidadTests.cs` - **segunda corrida: 23/23
+matados, 0 supervivientes, puntuación final 95.83 %**. Informe en
+`KeepQA\artifacts\stryker-terrakeepmod-logicapura\mutation-report.{json,html}`.
+
+### Hallazgo arquitectónico real (aplica a CUALQUIER mod de tModLoader, documentado para el futuro)
+El compilador REAL de tModLoader (`Terraria.ModLoader.Core.ModCompile.CompileMod`, decompilado)
+NUNCA usa MSBuild: hace su propio `Directory.GetFiles(mod.path, "*.cs", SearchOption.AllDirectories)`
+y filtra con `IgnoreCompletely` → `BuildProperties.ignoreFile` → `buildIgnore` de `build.txt` (los
+mismos patrones que ya se usaban para excluir `scripts\`/`evidencia\` del `.tmod` empaquetado,
+confirmado que TAMBIÉN aplican al propio paso de compilación, no solo al empaquetado de recursos).
+Un `<Compile Remove>` en el `.csproj` NUNCA basta por sí solo - solo protege `dotnet build`/el IDE,
+nunca el `-build` real (confirmado en vivo: 116 errores `CS0246`/`CS0579` con `TerrakeepMod.Tests\`
+recién creada y solo el `<Compile Remove>` puesto). Solución real y definitiva: `<Compile Remove>`
+en el `.csproj` (protege `dotnet build`/IDE) **Y** `TerrakeepMod.Tests*`/`TerrakeepMod.LogicaPura*`
+en `buildIgnore` de `build.txt` (protege el `-build` real) - las dos cosas a la vez, ninguna sola
+basta. `dotnet-tools.json` (manifiesto de `dotnet-stryker`) también necesitó su propia entrada en
+`buildIgnore`: sin extensión `.cs`/`.csproj`/`.sln`, se habría empaquetado como recurso suelto
+dentro del `.tmod`. Mismo patrón exacto ya validado esta misma noche, en paralelo, en el repo
+hermano `TModLoaderMod` (`TModLoaderMod.Pruebas.Unit*`) - confirmado el archivo `.tmod` final
+limpio con un volcado real de sus 20 entradas (`TerrakeepMod.dll`, `Assets/*`, `Localization/*`,
+`lib/Terrakeep.Core.dll`... nada de tests/tooling).
+
+### Verificación real
+- `scripts\compilar.ps1`: 0 errores, `.tmod` recompilado e instalado de verdad tras el fix de
+  `RCS1155` y tras añadir los dos proyectos nuevos + `buildIgnore`.
+- `scripts\limpiar-tmod.ps1`: 652.366 bytes, 20 archivos conservados - volcado real de entradas
+  confirmando que no se coló nada de `TerrakeepMod.Tests\`/`TerrakeepMod.LogicaPura\`/
+  `dotnet-tools.json`.
+- `dotnet test` (net10.0): 24/24, repetido varias veces con semillas distintas de CsCheck.
+- `dotnet stryker`: 23/23 matados, 95.83 %, repetido tras la corrección de los 2 supervivientes.
+
+Commit local en TerrakeepMod (`TerrakeepMod.csproj`, `build.txt`, el fix de `RCS1155`,
+`TerrakeepMod.Tests\`, `TerrakeepMod.LogicaPura\`, `dotnet-tools.json`) y en KeepQA
+(`src/analisis-estatico/verificarAnalisisEstatico.js` con el `--prop Clave=Valor` nuevo +
+`artifacts/stryker-terrakeepmod-logicapura/` + esta documentación). Sin `git push`.

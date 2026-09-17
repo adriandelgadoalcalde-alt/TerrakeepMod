@@ -48,4 +48,22 @@ dllReferences = Terrakeep.Core
 #
 # docs\* añadido el 15-sep-2026: capturas reales del README (docs\screenshots\), documentacion
 # pura, cero uso en tiempo de ejecucion - mismo motivo que scripts\/evidencia\.
-buildIgnore = *.csproj, *.user, *.md, .git\*, .vs\*, .idea\*, obj\*, bin\*, bin-*, obj-*, *.pdb, Properties\*, scripts\*, evidencia\*, docs\*
+#
+# TerrakeepMod.Tests*, TerrakeepMod.LogicaPura* y dotnet-tools.json añadidos el 17-sep-2026
+# (KeepQA, paso 2/3 de la integracion de CsCheck+Stryker.NET - mismo hallazgo real y mismo patron
+# que TModLoaderMod.Pruebas.Unit* en el build.txt del repo hermano TModLoaderMod, ver el suyo):
+# el proyecto de tests xUnit+CsCheck y la biblioteca minima que enlaza GramaticaBusqueda.cs para
+# Stryker.NET viven DENTRO de esta misma carpeta de mod. Sin este buildIgnore,
+# ModCompile.CompileMod (decompilado: Directory.GetFiles(mod.path, "*.cs",
+# SearchOption.AllDirectories), filtrado por IgnoreCompletely -> ignoreFile -> buildIgnore; NO
+# pasa por MSBuild ni por el <Compile Remove> del .csproj, que solo protege "dotnet build"/el IDE)
+# recogia tambien esos .cs (con "using Xunit"/"using CsCheck" que el mod no tiene) y los generados
+# de sus propios bin/obj, y el -build real fallaba con mas de 100 errores CS0246/CS0579
+# (confirmado en vivo, 17-sep-2026, antes de este buildIgnore). La regex de FitsMask
+# (BuildProperties.cs) no ancla "*" a un segmento de ruta, asi que un solo "*" ya equivale a "**"
+# (cruza barras) - "TerrakeepMod.Tests*"/"TerrakeepMod.LogicaPura*" bastan para toda la subcarpeta.
+# dotnet-tools.json (manifiesto local de "dotnet tool" que fija dotnet-stryker 5.0.0) tampoco tiene
+# extension .cs/.csproj/.sln, asi que sin nombrarlo aqui ModCompile.PackageMod lo habria
+# empaquetado dentro del .tmod como recurso suelto - infraestructura de desarrollo, cero uso en
+# tiempo de ejecucion para quien instale el mod.
+buildIgnore = *.csproj, *.user, *.md, .git\*, .vs\*, .idea\*, obj\*, bin\*, bin-*, obj-*, *.pdb, Properties\*, scripts\*, evidencia\*, docs\*, TerrakeepMod.Tests*, TerrakeepMod.LogicaPura*, dotnet-tools.json

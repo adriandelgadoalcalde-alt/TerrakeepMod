@@ -1,0 +1,35 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<!-- KeepQA (17-sep-2026): biblioteca minima que existe UNICAMENTE para que TerrakeepMod.Tests
+	     y Stryker.NET tengan un proyecto real que referenciar - Stryker.NET necesita de verdad una
+	     referencia de proyecto para saber que ensamblado mutar ("Could not find an assembly
+	     reference to a mutable assembly", confirmado en esta misma integracion).
+
+	     Vive DENTRO de esta misma carpeta de mod (mismo patron ya probado esta misma noche en el
+	     repo hermano TModLoaderMod, ver su build.txt): el compilador REAL de tModLoader
+	     (ModCompile.CompileMod, decompilado) hace su PROPIO descubrimiento de archivos con
+	     "Directory.GetFiles(mod.path, "*.cs", SearchOption.AllDirectories)" y filtra con
+	     "IgnoreCompletely", que SI consulta build.txt/buildIgnore (confirmado leyendo el .cs
+	     decompilado completo - un primer intento sin tocar build.txt fallo con 116 errores reales,
+	     CS0246 de CsCheck/Xunit + CS0579 de AssemblyInfo.cs duplicado). Por eso TerrakeepMod.csproj
+	     tiene un <Compile Remove> (protege "dotnet build"/el IDE) Y build.txt tiene esta carpeta en
+	     buildIgnore (protege el -build REAL, que ignora el .csproj por completo). -->
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+	</PropertyGroup>
+
+	<PropertyGroup>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<AnalysisLevel>latest</AnalysisLevel>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<!-- Link directo al archivo REAL del mod, nunca una copia: el test compila exactamente el
+		     mismo GramaticaBusqueda.cs que se empaqueta dentro del .tmod real, asi que nunca puede
+		     desincronizarse con lo que de verdad se juega. -->
+		<Compile Include="..\Common\Libreria\GramaticaBusqueda.cs" Link="GramaticaBusqueda.cs" />
+	</ItemGroup>
+
+</Project>

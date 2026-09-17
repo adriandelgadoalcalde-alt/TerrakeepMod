@@ -66,7 +66,7 @@ namespace TerrakeepMod.Common.Investigacion
 				_comprobada = true;
 				_activa = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(Variable));
 				string fase = Environment.GetEnvironmentVariable(VariableFase);
-				_comprobarSolo = fase != null && fase.Trim().ToLowerInvariant() == "comprobar";
+				_comprobarSolo = fase != null && string.Equals(fase.Trim(), "comprobar", StringComparison.OrdinalIgnoreCase);
 				if (_activa) {
 					Registrar($"AUTOPRUEBA WS5: variable {Variable} detectada. Fase: " +
 						(_comprobarSolo ? "comprobar (solo lectura)" : "investigar") +

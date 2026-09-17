@@ -1,0 +1,60 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+	<!-- KeepQA (17-sep-2026): mismo trio externo (analizadores + CsCheck + Stryker.NET) que ya
+	     tiene el resto de la familia (Terrakeep.Core, Starvekeep.Core, ServidorKeep.Core, Keep.Wpf,
+	     TModLoaderMod), esta vez sobre TerrakeepMod - ver bitacora.md (17-sep-2026) para el detalle
+	     completo de la investigacion.
+
+	     Investigado primero: de ~90 archivos reales del mod, la inmensa mayoria depende en vivo de
+	     objetos del motor (Main.tile, Main.LocalPlayer, ItemLoader, ModContent...) y no tiene
+	     superficie testeable fuera del juego - documentado como LIMITE REAL. El UNICO candidato
+	     real encontrado es Common/Libreria/GramaticaBusqueda.cs: logica pura (System.Globalization/
+	     System.Text, cero dependencias de Terraria), una COPIA deliberada (ver su propia cabecera)
+	     de Terrakeep.App/ViewModels/LibrarySearchGrammar.cs (assembly WPF, inalcanzable desde el
+	     mod) - con su propio riesgo real de desincronizacion entre las dos copias, ya documentado
+	     una vez en la familia (best_prefix.json).
+
+	     TargetFramework net10.0 a proposito, DISTINTO del net8.0 del mod real: en esta maquina el
+	     dotnet del PATH (el que usa "dotnet test") no tiene instalado el runtime .NET 8 (solo
+	     tModLoader trae el suyo propio, ver scripts\compilar.ps1) - "dotnet test" contra net8.0
+	     fallaria siempre con "You must install or update .NET to run this application". No resta
+	     fiabilidad real: GramaticaBusqueda.cs es codigo puro compatible con C# 12 Y C# 14 por
+	     igual - se compila el ARCHIVO REAL identico, solo con un host de pruebas distinto. Nullable
+	     deshabilitado a proposito: el .cs enlazado no usa anotaciones de nulabilidad, igual que el
+	     resto del mod. -->
+	<PropertyGroup>
+		<TargetFramework>net10.0</TargetFramework>
+		<ImplicitUsings>enable</ImplicitUsings>
+		<Nullable>disable</Nullable>
+		<IsPackable>false</IsPackable>
+	</PropertyGroup>
+
+	<!-- KeepQA (17-sep-2026, paso 1): analizadores de .NET de serie tambien en los tests - solo las
+	     reglas del SDK, sin Roslynator aqui (mismo criterio que Terrakeep.Core.Tests). -->
+	<PropertyGroup>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<AnalysisLevel>latest</AnalysisLevel>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="coverlet.collector" Version="6.0.4" />
+		<PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.14.1" />
+		<PackageReference Include="xunit" Version="2.9.3" />
+		<PackageReference Include="xunit.runner.visualstudio" Version="3.1.4" />
+		<!-- CsCheck (github.com/AnthonyLloyd/CsCheck, Apache-2.0) - property-based testing real,
+		     mismo paquete y version que el resto de la familia. -->
+		<PackageReference Include="CsCheck" Version="4.9.0" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<Using Include="Xunit" />
+	</ItemGroup>
+
+	<ItemGroup>
+		<!-- TerrakeepMod.LogicaPura enlaza (no copia) el mismo GramaticaBusqueda.cs real del mod -
+		     ver su propia cabecera para el porque de este proyecto intermedio (lo exige
+		     Stryker.NET, que necesita una referencia de proyecto real para saber que mutar). -->
+		<ProjectReference Include="..\TerrakeepMod.LogicaPura\TerrakeepMod.LogicaPura.csproj" />
+	</ItemGroup>
+
+</Project>

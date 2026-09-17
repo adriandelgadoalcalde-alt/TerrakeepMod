@@ -28,6 +28,19 @@
 		     using van explicitos en cada archivo. -->
 	</PropertyGroup>
 
+	<!-- KeepQA (17-sep-2026, mismo patron ya probado esta misma noche en el repo hermano
+	     TModLoaderMod): TerrakeepMod.Tests\ y TerrakeepMod.LogicaPura\ (arnes de pruebas nuevo, ver
+	     bitacora.md) viven DENTRO de esta misma carpeta de mod - sin este Remove, el glob implicito
+	     "**/*.cs" del SDK se traga tambien sus .cs (fuente Y generados en su bin/obj), provocando
+	     referencias a Xunit/CsCheck que este proyecto no tiene y atributos de ensamblado duplicados
+	     (confirmado en vivo: CS0246/CS0579 antes de este Remove). Esto protege solo "dotnet
+	     build"/el IDE - el -build REAL de tModLoader ignora el .csproj por completo y se protege
+	     aparte con build.txt/buildIgnore (ver ese archivo). -->
+	<ItemGroup>
+		<Compile Remove="TerrakeepMod.Tests\**\*.cs" />
+		<Compile Remove="TerrakeepMod.LogicaPura\**\*.cs" />
+	</ItemGroup>
+
 	<ItemGroup>
 		<!-- Terrakeep.Core compilado para net8.0 (repo hermano Terrasavr-Native). Esta
 		     referencia es solo para que compile MSBuild / el IDE; el compilador propio de
@@ -37,6 +50,27 @@
 			<HintPath>lib\Terrakeep.Core.dll</HintPath>
 			<Private>false</Private>
 		</Reference>
+	</ItemGroup>
+
+	<!-- KeepQA (17-sep-2026): mismo trio de analizadores externos ya integrado en Terrakeep.Core,
+	     Starvekeep.Core, ServidorKeep.Core y Keep.Wpf - analizadores de .NET de serie (ya vienen
+	     con el SDK) + Roslynator.Analyzers como segunda pasada de reglas independiente. Solo
+	     AFECTA a "dotnet build"/el IDE: el compilador REAL de tModLoader (ModCompile.RoslynCompile,
+	     invocado por el target BuildMod de tMLMod.targets) nunca ejecuta analizadores de MSBuild
+	     ni lee PackageReference - solo compila los .cs y resuelve "dllReferences" de build.txt -
+	     asi que esto no puede romper el .tmod real, solo el "dotnet build" de validacion (fase 1
+	     de scripts\compilar.ps1) y la experiencia en el IDE. Verificado: el mod sigue compilando y
+	     empaquetando igual tras añadir esto (ver bitacora.md). -->
+	<PropertyGroup>
+		<EnableNETAnalyzers>true</EnableNETAnalyzers>
+		<AnalysisLevel>latest</AnalysisLevel>
+	</PropertyGroup>
+
+	<ItemGroup>
+		<PackageReference Include="Roslynator.Analyzers" Version="5.0.0">
+			<PrivateAssets>all</PrivateAssets>
+			<IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+		</PackageReference>
 	</ItemGroup>
 
 </Project>
