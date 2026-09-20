@@ -9137,6 +9137,58 @@ Captura real revisada a mano: "Class split, no repeats" / "TerrakeepPrueba: Mele
 "TkGrupoCompanero: Melee (repeated in the group) - try Ranged", sin solaparse con el resto del
 panel.
 
+### Idea 6, segunda pasada (20-sep-2026): "buscar por contenido, ordenar/agrupar, traer a mi inventario, arrastrar desde la Librería"
+
+Cotejo literal del coordinador contra el catálogo encontró que el selector de cofres del mundo solo
+tenía la lista por distancia - le faltaban cuatro piezas reales que el catálogo pedía explícitamente.
+
+**Implementado en `UI/Libreria/Widgets/SelectorCofreMundoTk.cs`**:
+- **Buscar por contenido**: campo de texto real (`CampoTextoTk`, el mismo widget que ya usa la
+  búsqueda principal de la Librería) que filtra la lista a los cofres que de verdad tienen un
+  objeto cuyo nombre real (`Item.Name`, el mismo que ve el jugador en su tooltip) contiene el
+  texto - nunca una etiqueta vacía, un cofre solo aparece si SÍ tiene algo que coincide.
+- **Ordenar/agrupar**: un botón que CICLA entre Distancia/Nombre/Llenos-primero (nunca otro
+  `DesplegableTk`: ese widget cuelga de la MISMA `CapaSuperposicionTk` que este selector entero, y
+  abrirlo habría cerrado el popup del selector - un solo hueco compartido). "Llenos" hace de
+  "agrupar" de verdad: los cofres con algo dentro van primero, empatando por distancia.
+- **Traer a mi inventario**: botón "→ Mochila" en cada fila con coincidencia real, que mueve ESE
+  objeto concreto al inventario real del jugador con `Player.GetItem(..., GetItemSettings.
+  LootAllSettingsRegularChest)` - la MISMA API pública que usa el botón "Loot All" de vanilla sobre
+  un cofre normal (confirmado en el decompilado, `ChestUI.LootAll`), deshacible por el lado del
+  cofre con `Historial.CambiarObjetos`. Nunca cierra el popup: se puede traer más de un objeto
+  seguido.
+- **Arrastrar desde la Librería**: investigado y confirmado que YA funcionaba - el destino
+  "CofreMundo" reutiliza el mismo `ItemSlot.LeftClick` genérico que los otros 7 destinos
+  (`ContenidoLibreria.ColocarEnRanura`), nunca un mecanismo aparte. Se añadió la comprobación real
+  que faltaba (pasos 38-39 de `AutopruebaLibreria.cs`) en vez de darlo por hecho sin probarlo.
+
+**Dos bugs reales de texto recortado encontrados con la propia captura, arreglados**: (1) con el
+botón "Traer" ocupando sitio, el formato de la fila ("… · {tiles} tiles · {n}/{total} objetos") ya
+no cabía y salía cortado ("...40 iter" en vez de "...40 items") - arreglado con la misma técnica de
+auto-reducción de escala de TM2/TM4 (medir con la fuente real, reducir si no cabe). (2) el botón
+"Traer" en sí mismo nunca había pasado por esa auto-reducción y "→ Inventory" (inglés) no cabía en
+su ancho fijo - mismo arreglo aplicado a su propio texto.
+
+**Límite cosmético real, menor, documentado en vez de escondido**: en la fila del cofre sintético
+de prueba (la única de las visibles con un NOMBRE propio, "Cofre de prueba WS3" - el resto son
+"Unnamed chest", más cortas), el primer carácter ("C") sigue perdiéndose visualmente por 1-2 píxeles
+pese a cuatro intentos reales de ajuste (ancho disponible recalculado con los números reales de
+padding/scrollbar, más un 8% de margen de seguridad para el trazo de sombra de
+`Utils.DrawBorderString`) - ninguno lo movió ni un píxel, lo que descarta que sea un problema de
+escala/medición y apunta a algo más fino en cómo `BotonTk` centra su texto que no se ha podido
+aislar esta noche. Regla de la casa aplicada ("si algo falla dos veces seguidas, para y
+documéntalo"): parado aquí, documentado con honestidad en vez de seguir en bucle. Impacto real
+CERO en los datos (`BotonTk.Texto` sigue intacto, solo el DIBUJADO pierde 1 carácter - confirmado
+por el propio paso 34 de la autoprueba, que encuentra la fila por su texto completo sin problema) y
+CERO en las otras 15 filas visibles de la misma lista, que se ven perfectas.
+
+**Verificación real** (`scripts\verificar-libreria.ps1`, pasos 33-39 nuevos): cofre sintético del
+paso 28 con Iron Bar real dentro; búsqueda "Iron" encuentra exactamente ese cofre con su botón
+"Traer" real; clic real en "Traer" mueve las 20 unidades de Iron Bar del cofre real al inventario
+real del jugador (confirmado con conteo antes/después); ciclo real de los tres modos de orden sin
+excepciones; objeto real del catálogo (Life Crystal) colocado por la ruta real de vanilla en la
+ranura 10 del cofre REAL del mundo elegido. `AUTOPRUEBA WS3 COMPLETA`, ninguna comprobación en rojo.
+
 ### Sin publicar nada
 
 `git push`, `gh release`, empaquetado del mod y subida de versión siguen sin tocarse, tal como se

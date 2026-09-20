@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.GameContent;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
@@ -174,6 +175,19 @@ namespace TerrakeepMod.Common.Libreria
 				// capturar en el mismo paso que el clic enseñaria la rejilla todavia con el destino
 				// de ANTES del clic.
 				case 32: ComprobarDestinoCofreYCapturar(); break;
+
+				// --- idea 6, hueco cerrado el 20-sep-2026: "buscar por contenido, ordenar/agrupar,
+				// traer a mi inventario, arrastrar desde la Libreria" - lo unico que quedaba sin
+				// verificar del selector de cofres del mundo. El popup del paso 29-31 ya se cerro
+				// solo (ElegirCofreDePrueba llama a Cerrar()), asi que se reabre aqui mismo.
+				case 33: AbrirSelectorCofre(); break;
+				case 34: BuscarPorContenidoYComprobar(); break;
+				case 35: TraerAlInventarioDesdeBusqueda(); break;
+				case 36: ComprobarTraidoAlInventario(); break;
+				case 37: CiclarOrdenYComprobar(); break;
+				case 38: PrepararArrastreDesdeLibreria(); break;
+				case 39: ComprobarArrastreDesdeLibreria(); break;
+
 				default:
 					Registrar("AUTOPRUEBA WS3 COMPLETA. Todos los pasos ejecutados sin excepciones.");
 					_terminada = true;
@@ -857,7 +871,8 @@ namespace TerrakeepMod.Common.Libreria
 
 			int totalReales = SelectorCofreMundoTk.TotalCofresReales();
 			Registrar("Paso 30 - selector de cofres abierto: " + totalReales + " cofres reales en Main.chest[], "
-				+ selector.FilasDibujadas + " filas dibujadas (Main.netMode=" + Main.netMode + "). "
+				+ selector.FilasDibujadas + " filas dibujadas (Main.netMode=" + Main.netMode + "). Geometria real: "
+				+ selector.GeometriaParaPrueba() + ". "
 				+ CapturaDePantalla.Guardar("ws3-selector-cofre"));
 		}
 
@@ -924,6 +939,196 @@ namespace TerrakeepMod.Common.Libreria
 				+ Describir(arrayDestino != null && arrayDestino.Length > 3 ? arrayDestino[3] : null)
 				+ " (" + (item3Ok ? "OK" : "NO CUADRA") + "). "
 				+ CapturaDePantalla.Guardar("ws3-destino-cofre"));
+		}
+
+		// =========================================================================================
+		// Idea 6, hueco cerrado el 20-sep-2026: cotejo literal del coordinador contra el catalogo
+		// encontro que faltaba "buscar por contenido, ordenar/agrupar, traer a mi inventario,
+		// arrastrar desde la Libreria" - el selector de cofres solo tenia la lista por distancia.
+		// =========================================================================================
+
+		private static int _mochilaAntesDeTraer;
+
+		/// <summary>Idea 6, "buscar por contenido": escribe un trozo REAL del nombre del Iron Bar
+		/// (el objeto que el paso 28 de verdad puso en el cofre sintetico) en el campo de busqueda,
+		/// por la via <c>BuscarParaPrueba</c> (dispara el mismo <c>AlCambiar</c> real que una tecla
+		/// de verdad), y comprueba que el cofre que SI lo tiene sigue en la lista con su boton
+		/// "Traer" real.</summary>
+		private static void BuscarPorContenidoYComprobar()
+		{
+			ContenidoLibreria contenido = Contenido;
+			SelectorCofreMundoTk selector = contenido != null ? contenido.SelectorCofre : null;
+			if (selector == null || !selector.Abierto) {
+				Registrar("Paso 34 - el selector no esta abierto (paso 33 fallo), se salta.");
+				return;
+			}
+
+			Item muestraBarra;
+			string nombreReal = ContentSamples.ItemsByType.TryGetValue(ItemID.IronBar, out muestraBarra) && muestraBarra != null
+				? muestraBarra.Name
+				: "Iron Bar";
+			string trozoBusqueda = nombreReal.Length > 4 ? nombreReal.Substring(0, 4) : nombreReal;
+
+			selector.BuscarParaPrueba(trozoBusqueda);
+
+			List<BotonTk> filas = selector.FilasParaAutoprueba();
+			BotonTk filaDelCofre = filas.Find(b => b.Texto != null && b.Texto.Contains("prueba WS3"));
+			List<BotonTk> botonesTraer = selector.BotonesTraerParaAutoprueba();
+
+			Registrar("Paso 34 - idea 6, \"buscar por contenido\": busqueda=\"" + trozoBusqueda
+				+ "\" (trozo real del nombre \"" + nombreReal + "\"). Filas dibujadas=" + selector.FilasDibujadas
+				+ ", fila del cofre sintetico encontrada=" + (filaDelCofre != null)
+				+ ", boton \"Traer\" real visible=" + (botonesTraer.Count > 0) + " -> "
+				+ (filaDelCofre != null && botonesTraer.Count > 0
+					? "OK: la busqueda por contenido encontro el cofre real que SI tiene el objeto dentro."
+					: "NO CUADRA."));
+		}
+
+		/// <summary>Idea 6, "traer a mi inventario": clic REAL en el boton "Traer" que dejo el paso
+		/// 34, contando antes cuanto Iron Bar lleva de verdad el jugador en la mochila.</summary>
+		private static void TraerAlInventarioDesdeBusqueda()
+		{
+			ContenidoLibreria contenido = Contenido;
+			SelectorCofreMundoTk selector = contenido != null ? contenido.SelectorCofre : null;
+			if (selector == null || !selector.Abierto) {
+				Registrar("Paso 35 - el selector no esta abierto, se salta.");
+				return;
+			}
+			List<BotonTk> botonesTraer = selector.BotonesTraerParaAutoprueba();
+			if (botonesTraer.Count == 0) {
+				Registrar("Paso 35 - no hay ningun boton \"Traer\" real (paso 34 fallo), se salta.");
+				return;
+			}
+
+			_mochilaAntesDeTraer = ContarEnMochila(ItemID.IronBar);
+
+			BotonTk boton = botonesTraer[0];
+			CalculatedStyle dim = boton.GetDimensions();
+			Vector2 centro = new Vector2(dim.X + dim.Width / 2f, dim.Y + dim.Height / 2f);
+			boton.LeftClick(new UIMouseEvent(boton, centro));
+
+			Registrar("Paso 35 - clic real en el boton \"" + boton.Texto + "\". Antes de pulsar, la mochila real "
+				+ "tenia " + _mochilaAntesDeTraer + " de Iron Bar.");
+		}
+
+		/// <summary>Un fotograma real despues del clic (paso 35): el objeto tiene que haber
+		/// desaparecido del cofre REAL del mundo y haber aparecido en la mochila REAL del
+		/// jugador - las dos cosas a la vez, por <c>Player.GetItem</c>, la misma API publica que
+		/// usa el boton "Loot All" de vanilla.</summary>
+		private static void ComprobarTraidoAlInventario()
+		{
+			Chest cofre = Main.chest != null && IndiceCofrePrueba < Main.chest.Length ? Main.chest[IndiceCofrePrueba] : null;
+			int ahora = ContarEnMochila(ItemID.IronBar);
+			bool cofreVacioEnRanura0 = cofre != null && cofre.item[0] != null && cofre.item[0].IsAir;
+			bool mochilaSubio = ahora > _mochilaAntesDeTraer;
+
+			Registrar("Paso 36 - tras \"traer a mi inventario\": mochila real ahora tiene " + ahora
+				+ " de Iron Bar (antes " + _mochilaAntesDeTraer + "). Ranura 0 del cofre sintetico vacia="
+				+ cofreVacioEnRanura0 + ". " + CapturaDePantalla.Guardar("ws3-traer-a-inventario") + " -> "
+				+ (mochilaSubio && cofreVacioEnRanura0
+					? "OK: el objeto se movio de verdad del cofre del mundo al inventario real."
+					: "NO CUADRA."));
+		}
+
+		private static int ContarEnMochila(int tipo)
+		{
+			Player jugador = Main.LocalPlayer;
+			if (jugador == null || jugador.inventory == null) {
+				return 0;
+			}
+			int total = 0;
+			int tope = Math.Min(58, jugador.inventory.Length);
+			for (int i = 0; i < tope; i++) {
+				Item objeto = jugador.inventory[i];
+				if (objeto != null && !objeto.IsAir && objeto.type == tipo) {
+					total += objeto.stack;
+				}
+			}
+			return total;
+		}
+
+		/// <summary>Idea 6, "ordenar/agrupar": limpia la busqueda (para ver todos los cofres) y
+		/// cicla el boton de orden real tres veces - tiene que pasar por los tres modos reales
+		/// (Distancia/Nombre/Llenos) sin excepciones y volver al inicial a la cuarta.</summary>
+		private static void CiclarOrdenYComprobar()
+		{
+			ContenidoLibreria contenido = Contenido;
+			SelectorCofreMundoTk selector = contenido != null ? contenido.SelectorCofre : null;
+			if (selector == null || !selector.Abierto) {
+				Registrar("Paso 37 - el selector no esta abierto, se salta.");
+				return;
+			}
+			selector.BuscarParaPrueba("");
+
+			string modo0 = selector.ModoOrdenParaPrueba;
+			selector.CiclarOrdenParaPrueba();
+			string modo1 = selector.ModoOrdenParaPrueba;
+			selector.CiclarOrdenParaPrueba();
+			string modo2 = selector.ModoOrdenParaPrueba;
+			selector.CiclarOrdenParaPrueba();
+			string modo3 = selector.ModoOrdenParaPrueba;
+
+			bool ciclaBien = modo0 != modo1 && modo1 != modo2 && modo2 != modo3 && modo3 == modo0;
+			Registrar("Paso 37 - idea 6, \"ordenar/agrupar\": ciclo real de modos " + modo0 + " -> " + modo1
+				+ " -> " + modo2 + " -> " + modo3 + " -> "
+				+ (ciclaBien ? "OK: los tres modos ciclan sin excepciones y vuelve al inicial." : "NO CUADRA."));
+		}
+
+		/// <summary>Idea 6, "arrastrar desde la Libreria": vuelve a elegir el cofre sintetico como
+		/// destino (la busqueda ya esta limpia desde el paso 37, asi que su fila real vuelve a
+		/// estar en la lista).</summary>
+		private static void PrepararArrastreDesdeLibreria()
+		{
+			ContenidoLibreria contenido = Contenido;
+			SelectorCofreMundoTk selector = contenido != null ? contenido.SelectorCofre : null;
+			if (contenido == null || selector == null || !selector.Abierto) {
+				Registrar("Paso 38 - el selector no esta abierto (paso 37 fallo), se salta.");
+				return;
+			}
+			List<BotonTk> filas = selector.FilasParaAutoprueba();
+			BotonTk filaDelCofre = filas.Find(b => b.Texto != null && b.Texto.Contains("prueba WS3"));
+			if (filaDelCofre == null) {
+				Registrar("Paso 38 - no se encontro la fila del cofre sintetico entre " + filas.Count + " filas, se salta.");
+				return;
+			}
+
+			CalculatedStyle dim = filaDelCofre.GetDimensions();
+			Vector2 centro = new Vector2(dim.X + dim.Width / 2f, dim.Y + dim.Height / 2f);
+			filaDelCofre.LeftClick(new UIMouseEvent(filaDelCofre, centro));
+
+			Registrar("Paso 38 - re-elegido el cofre sintetico como destino (\"" + filaDelCofre.Texto
+				+ "\"), para comprobar \"arrastrar desde la Libreria\" contra un cofre del MUNDO.");
+		}
+
+		private const int RanuraArrastreCofreMundo = 10;
+		private const int TipoArrastreCofreMundo = ItemID.LifeCrystal;
+
+		/// <summary>Un fotograma real despues (paso 38): coloca un objeto real del catalogo en el
+		/// cofre del MUNDO elegido por la MISMA ruta real de vanilla que ya usa cualquier otro
+		/// destino (<c>ItemSlot.LeftClick</c>, via <c>ContenidoLibreria.ColocarEnRanura</c>) - "
+		/// arrastrar desde la Libreria" nunca fue un mecanismo aparte para el cofre del mundo,
+		/// reutiliza el generico de siempre; esto lo comprueba de verdad en vez de darlo por
+		/// hecho.</summary>
+		private static void ComprobarArrastreDesdeLibreria()
+		{
+			ContenidoLibreria contenido = Contenido;
+			if (contenido == null) {
+				Registrar("Paso 39 - sin ContenidoLibreria, se salta.");
+				return;
+			}
+
+			string resultado = contenido.ColocarEnRanura(TipoArrastreCofreMundo, RanuraArrastreCofreMundo, false);
+
+			Chest cofre = Main.chest != null && IndiceCofrePrueba < Main.chest.Length ? Main.chest[IndiceCofrePrueba] : null;
+			Item enElCofre = cofre != null && cofre.item.Length > RanuraArrastreCofreMundo
+				? cofre.item[RanuraArrastreCofreMundo] : null;
+			bool ok = enElCofre != null && !enElCofre.IsAir && enElCofre.type == TipoArrastreCofreMundo;
+
+			Registrar("Paso 39 - idea 6, \"arrastrar desde la Libreria\": destino actual=\"" + contenido.NombreDestino
+				+ "\". Colocado en la ranura " + RanuraArrastreCofreMundo + " del cofre del mundo (devuelto: "
+				+ resultado + "). Ranura real del cofre ahora=" + Describir(enElCofre) + ". "
+				+ CapturaDePantalla.Guardar("ws3-arrastre-a-cofre") + " -> "
+				+ (ok ? "OK: el objeto del catalogo llego de verdad al cofre real del mundo." : "NO CUADRA."));
 		}
 
 		/// <summary>Ejercita el editor de cantidad COMPACTO (modo explicito, enganchado al

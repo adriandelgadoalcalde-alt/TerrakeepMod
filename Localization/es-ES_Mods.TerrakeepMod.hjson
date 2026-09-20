@@ -431,13 +431,22 @@ Libreria: {
 	// placed in the loaded world, to pick one as a Library destination.
 	SelectorCofre: {
 		SoloUnJugador: Solo disponible en partidas de un jugador (todavía no sincroniza los cambios con otros jugadores conectados).
-		Resumen: "{0} cofres reales encontrados en este mundo, ordenados por distancia."
+		Resumen: "{0} cofres reales encontrados en este mundo."
 		Ninguno: Este mundo todavía no tiene ningún cofre colocado.
+		NingunoConBusqueda: Ningún cofre real tiene un objeto que coincida con la búsqueda.
 		MasCofres: … y {0} cofres más lejanos (acércate para verlos arriba del todo).
 		SinNombre: Cofre sin nombre en ({0}, {1})
 		ConNombre: "{0} en ({1}, {2})"
 		Fila: "{0}  ·  {1} tiles  ·  {2}/{3} objetos"
 		Ayuda: Posición real: ({0}, {1}). A {2} tiles de ti ahora mismo.
+		PistaBusqueda: buscar por objeto dentro…
+		OrdenDistancia: Orden: distancia
+		OrdenNombre: Orden: nombre
+		OrdenLlenos: Orden: llenos primero
+		OrdenAyuda: Pulsa para cambiar el orden de la lista (distancia → nombre → llenos primero, agrupando los vacíos al final).
+		Traer: → Mochila
+		TraerAyuda: Trae {0} directamente a tu inventario real, sin cambiar de destino.
+		TraerDeshacer: Traer {0} del cofre del mundo a la mochila
 	}
 
 	Herramientas.Titulo: Editar objeto

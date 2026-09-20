@@ -431,13 +431,22 @@ Libreria: {
 	// placed in the loaded world, to pick one as a Library destination.
 	SelectorCofre: {
 		SoloUnJugador: Only available in singleplayer games (does not sync changes to other connected players yet).
-		Resumen: "{0} real chests found in this world, sorted by distance."
+		Resumen: "{0} real chests found in this world."
 		Ninguno: This world does not have any chest placed yet.
+		NingunoConBusqueda: No real chest has an item matching the search.
 		MasCofres: … and {0} more, farther away (get closer to see them at the top).
 		SinNombre: Unnamed chest at ({0}, {1})
 		ConNombre: "{0} at ({1}, {2})"
 		Fila: "{0}  ·  {1} tiles  ·  {2}/{3} items"
 		Ayuda: Real position: ({0}, {1}). {2} tiles away from you right now.
+		PistaBusqueda: search by item inside…
+		OrdenDistancia: Sort: distance
+		OrdenNombre: Sort: name
+		OrdenLlenos: Sort: full first
+		OrdenAyuda: Click to change the list order (distance → name → full first, grouping empty ones last).
+		Traer: → Inventory
+		TraerAyuda: Brings {0} straight to your real inventory, without changing destination.
+		TraerDeshacer: Bring {0} from the world chest to the inventory
 	}
 
 	Herramientas.Titulo: Edit item
