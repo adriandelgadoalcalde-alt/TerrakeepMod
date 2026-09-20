@@ -57,6 +57,17 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 	/// El editor de prefijo INTERACTIVO se queda donde ya funciona, en el mini-panel fijo de
 	/// siempre (<see cref="PanelHerramientasLibreriaTk"/>), justo al lado de esta tarjeta.
 	/// </para>
+	/// <para>
+	/// <b>Por qué no hay un tercer botón "Quitar" junto a Aplicar/Papelera.</b> El catálogo
+	/// original pedía tres botones porque imaginaba un editor anclado a un slot de equipo REAL,
+	/// donde "quitar" significa desequipar. Aquí el objeto editado no vive en un slot de equipo:
+	/// vive en <see cref="SlotSeleccionTk"/>, que ya lo saca de su hueco de origen al arrastrarlo
+	/// (ver la cabecera de esa clase - "arrastrar aquí MUEVE el objeto de verdad"). "Quitar" ya
+	/// existe y funciona: es arrastrarlo de vuelta fuera con el mismo <c>ItemSlot.Handle</c>
+	/// vanilla, el gesto que el propio usuario pidió explícitamente (ver esa misma cabecera). Un
+	/// botón "Quitar" sería una segunda forma de hacer lo mismo que el arrastre ya hace, no una
+	/// pieza nueva - por eso no está, no porque falte.
+	/// </para>
 	/// </remarks>
 	public class TarjetaEdicionFlotanteTk : UIPanel
 	{
