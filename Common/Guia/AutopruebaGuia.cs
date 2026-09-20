@@ -5,6 +5,7 @@ using Terraria;
 using Terraria.DataStructures;
 using Terraria.ID;
 using Terraria.ModLoader;
+using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Exploracion;
 using TerrakeepMod.Common.Panel;
@@ -737,6 +738,21 @@ namespace TerrakeepMod.Common.Guia
 				case 252: AvanzarRecorridoCalamityCompleto(); break;
 				case 253: ComprobarRecorridoCalamityCompletoTerminado(); break;
 				case 254: RestaurarRecorridoCalamityCompleto(); break;
+
+				// Idea 1 del catalogo de funciones ("entrenador de jefe"). No depende del paso
+				// actual de la Guia (EntrenadorJefe.Iniciar solo necesita un tipo del roster y un
+				// jugador real), asi que se prueba aqui, al final, sin tener que renumerar ninguno
+				// de los 254 pasos anteriores.
+				case 255: ComprobarRosterEntrenador(); break;
+				case 256: IniciarPracticaDeEntrenador(); break;
+				case 257: ComprobarPracticaEnMarcha(); break;
+				case 258: ForzarMuerteRealDelJefeDePractica(); break;
+				case 259: ComprobarInformeTrasVictoria(); break;
+				case 260: PulsarCerrarInformeEntrenador(); break;
+				case 261: ComprobarPanelEntrenadorCerrado(); break;
+				case 262: IniciarYCancelarPractica(); break;
+				case 263: ComprobarRestauracionTrasCancelar(); break;
+
 				default: Terminar(); break;
 			}
 		}
@@ -2807,6 +2823,142 @@ namespace TerrakeepMod.Common.Guia
 			if (scroll != null) {
 				scroll.ViewPosition = 0f;
 			}
+		}
+
+		// ---------------------------------------------------------------------------------------
+		// Idea 1 del catalogo de funciones: entrenador de jefe / arena de ensayo.
+		// ---------------------------------------------------------------------------------------
+
+		private static Vector2 _posicionAntesDePracticar;
+		private static bool _downedBoss1AntesDePracticar;
+
+		private static void ComprobarRosterEntrenador()
+		{
+			bool eyeOk = EntrenadorJefe.EsPracticable(NPCID.EyeofCthulhu);
+			bool wofBloqueado = !EntrenadorJefe.EsPracticable(NPCID.WallofFlesh);
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - EntrenadorJefe: roster real. " +
+				"EyeofCthulhu practicable=" + eyeOk + " -> " + (eyeOk ? "OK" : "MAL") +
+				". WallofFlesh NO practicable=" + wofBloqueado + " -> " +
+				(wofBloqueado ? "OK (limite real respetado: StartHardmode es irreversible)" : "MAL"));
+
+			bool iniciarWofFalla = !EntrenadorJefe.Iniciar(NPCID.WallofFlesh);
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - EntrenadorJefe.Iniciar(WallofFlesh) rechazado=" +
+				iniciarWofFalla + " -> " + (iniciarWofFalla ? "OK" : "MAL: deberia haberlo rechazado"));
+		}
+
+		private static void IniciarPracticaDeEntrenador()
+		{
+			Player jugador = Main.LocalPlayer;
+			_posicionAntesDePracticar = jugador.position;
+			_downedBoss1AntesDePracticar = NPC.downedBoss1;
+
+			bool iniciado = EntrenadorJefe.Iniciar(NPCID.EyeofCthulhu);
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - EntrenadorJefe.Iniciar(EyeofCthulhu) -> " +
+				iniciado + " -> " + (iniciado ? "OK" : "MAL") + ". Activa=" + EntrenadorJefe.Activa +
+				". Jugador ahora en tile (" + (int)(jugador.Center.X / 16f) + ", " + (int)(jugador.Center.Y / 16f) + ").");
+		}
+
+		private static void ComprobarPracticaEnMarcha()
+		{
+			bool hayJefeVivo = false;
+			for (int i = 0; i < Main.npc.Length; i++) {
+				if (Main.npc[i].active && Main.npc[i].type == NPCID.EyeofCthulhu) {
+					hayJefeVivo = true;
+					break;
+				}
+			}
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - EntrenadorJefe: jefe real vivo en el mundo=" +
+				hayJefeVivo + " -> " + (hayJefeVivo ? "OK" : "MAL") + ". " +
+				CapturaDePantalla.Guardar("guia-entrenador-en-marcha"));
+		}
+
+		/// <summary>Mata al jefe de la practica por el camino REAL de vanilla (<c>NPC.checkDead()</c>,
+		/// el mismo que corre tras cualquier golpe que deje la vida a 0 en una pelea de verdad) -
+		/// no se llama a ningun atajo propio: si <c>NPC.downedBoss1</c> se pone a <c>true</c> aqui,
+		/// es EXACTAMENTE lo mismo que pasaria si el jugador lo matara jugando.</summary>
+		private static void ForzarMuerteRealDelJefeDePractica()
+		{
+			for (int i = 0; i < Main.npc.Length; i++) {
+				if (Main.npc[i].active && Main.npc[i].type == NPCID.EyeofCthulhu) {
+					Main.npc[i].life = 0;
+					Main.npc[i].checkDead();
+					RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - EntrenadorJefe: muerte REAL forzada " +
+						"(npc.checkDead(), el mismo camino real de vanilla) sobre el jefe de la practica.");
+					return;
+				}
+			}
+			RegistroGuia.Aviso(Terrakeep.LogTag + " AUTOPRUEBA GUIA - EntrenadorJefe: no se encontro el jefe vivo para forzar su muerte.");
+		}
+
+		private static void ComprobarInformeTrasVictoria()
+		{
+			Player jugador = Main.LocalPlayer;
+			bool terminada = EntrenadorJefe.Terminada;
+			bool victoria = EntrenadorJefe.UltimaVictoria;
+			bool banderaRestaurada = NPC.downedBoss1 == _downedBoss1AntesDePracticar;
+			bool posicionRestaurada = Vector2.Distance(jugador.position, _posicionAntesDePracticar) < 1f;
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - EntrenadorJefe tras la muerte real: Terminada=" +
+				terminada + " (" + (terminada ? "OK" : "MAL") + "), UltimaVictoria=" + victoria + " (" +
+				(victoria ? "OK" : "MAL") + "), NPC.downedBoss1 restaurado a " + NPC.downedBoss1 + " (era " +
+				_downedBoss1AntesDePracticar + ") -> " + (banderaRestaurada
+					? "OK: la practica NO ha cerrado el tramo real de la Guia"
+					: "MAL: se ha quedado marcado como derrotado de verdad") +
+				". Posicion restaurada=" + posicionRestaurada + " (" + (posicionRestaurada ? "OK" : "MAL") +
+				"). Informe real: \"" + EntrenadorJefe.UltimoInforme + "\". " +
+				CapturaDePantalla.Guardar("guia-entrenador-informe-victoria"));
+		}
+
+		private static void PulsarCerrarInformeEntrenador()
+		{
+			ContenidoGuia contenido = GuiaSystem.PanelActual;
+			UI.Personaje.Widgets.BotonTk boton = contenido != null ? contenido.BotonAccionEntrenadorParaPrueba : null;
+			if (boton == null) {
+				RegistroGuia.Aviso(Terrakeep.LogTag + " AUTOPRUEBA GUIA - EntrenadorJefe: no se encontro el boton de accion del panel de informe.");
+				return;
+			}
+
+			CalculatedStyle dim = boton.GetDimensions();
+			Vector2 centro = new Vector2(dim.X + dim.Width / 2f, dim.Y + dim.Height / 2f);
+			boton.LeftClick(new UIMouseEvent(boton, centro));
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - EntrenadorJefe: clic real en \"" + boton.Texto + "\".");
+		}
+
+		private static void ComprobarPanelEntrenadorCerrado()
+		{
+			bool terminada = EntrenadorJefe.Terminada;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - EntrenadorJefe tras pulsar \"Cerrar\": Terminada=" +
+				terminada + " -> " + (!terminada ? "OK: el informe se ha quitado de pantalla." : "MAL: sigue ahi."));
+		}
+
+		private static void IniciarYCancelarPractica()
+		{
+			Player jugador = Main.LocalPlayer;
+			_posicionAntesDePracticar = jugador.position;
+
+			bool iniciado = EntrenadorJefe.Iniciar(NPCID.QueenBee);
+			EntrenadorJefe.Cancelar();
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - EntrenadorJefe: segunda practica (QueenBee) iniciada=" +
+				iniciado + " y cancelada de inmediato. Activa=" + EntrenadorJefe.Activa + " (esperado False) -> " +
+				(!EntrenadorJefe.Activa ? "OK" : "MAL") + ". Terminada=" + EntrenadorJefe.Terminada + ".");
+		}
+
+		private static void ComprobarRestauracionTrasCancelar()
+		{
+			Player jugador = Main.LocalPlayer;
+			bool posicionRestaurada = Vector2.Distance(jugador.position, _posicionAntesDePracticar) < 1f;
+			bool hayJefeVivo = false;
+			for (int i = 0; i < Main.npc.Length; i++) {
+				if (Main.npc[i].active && Main.npc[i].type == NPCID.QueenBee) {
+					hayJefeVivo = true;
+					break;
+				}
+			}
+
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - EntrenadorJefe tras cancelar: posicion restaurada=" +
+				posicionRestaurada + " (" + (posicionRestaurada ? "OK" : "MAL") + "), jefe todavia vivo en el mundo=" +
+				hayJefeVivo + " (" + (!hayJefeVivo ? "OK: retirado al cancelar" : "MAL") + "). Informe: \"" +
+				EntrenadorJefe.UltimoInforme + "\". " + CapturaDePantalla.Guardar("guia-entrenador-informe-cancelado"));
 		}
 
 		private static void Terminar()

@@ -57,6 +57,7 @@ namespace TerrakeepMod.UI.Guia
 			Height.Set(0f, 1f);
 
 			ConstruirColumnas();
+			ConstruirPanelEntrenador();
 			Reconstruir();
 		}
 
@@ -74,6 +75,11 @@ namespace TerrakeepMod.UI.Guia
 		/// que la autoprueba pueda bajar del todo y capturar la tira de "lo que viene" (TM4) aunque
 		/// quede fuera de la vista inicial.</summary>
 		public UIScrollbar ScrollDetalle => _scroll;
+
+		/// <summary>Idea 1 (entrenador de jefe): el boton de accion del panel de estado/informe
+		/// ("Cancelar" mientras hay practica, "Cerrar" con el informe ya listo), para que la
+		/// autoprueba pueda pulsarlo de verdad.</summary>
+		public BotonTk BotonAccionEntrenadorParaPrueba => _botonAccionEntrenador;
 
 		private void ConstruirColumnas()
 		{
@@ -128,6 +134,73 @@ namespace TerrakeepMod.UI.Guia
 			_lista.SetScrollbar(_scroll);
 		}
 
+		// -------------------------------------------------------------------------------------
+		// Idea 1 del catalogo de funciones: panel de estado/informe del "entrenador de jefe",
+		// SIEMPRE encima de las dos columnas (practicar es un estado de toda la pantalla, no algo
+		// que quepa dentro de una lista con scroll) - nunca colgado de CapaSuperposicionTk (esta
+		// no compite por el mismo hueco que ningun otro desplegable del area).
+		// -------------------------------------------------------------------------------------
+
+		private const float EscalaTextoEntrenador = 0.76f;
+		private const float AltoMinimoPanelEntrenador = 64f;
+		private const float AnchoBotonEntrenador = 120f;
+
+		private UIPanel _panelEntrenador;
+		private EtiquetaTk _textoEntrenador;
+		private BotonTk _botonAccionEntrenador;
+		private string _textoEntrenadorPartido = "";
+
+		private void ConstruirPanelEntrenador()
+		{
+			_panelEntrenador = new UIPanel();
+			_panelEntrenador.Width.Set(-40f, 1f);
+			_panelEntrenador.Height.Set(AltoMinimoPanelEntrenador, 0f);
+			_panelEntrenador.HAlign = 0.5f;
+			_panelEntrenador.VAlign = 1f;
+			_panelEntrenador.Top.Set(-6f, 0f);
+			_panelEntrenador.BackgroundColor = EstiloTk.FondoCaja * 1.06f;
+			_panelEntrenador.BorderColor = EstiloTk.BordeSobre * 0.7f;
+			_panelEntrenador.SetPadding(10f);
+			// No se añade aqui: Update() lo cuelga/descuelga de este UIElement segun si hay
+			// practica activa o informe pendiente de leer - mismo motivo real que el alternador de
+			// fuente de TM5 (ContenidoBuilds), un UIPanel dibuja su fondo siempre que este en el
+			// arbol, Height a 0 no basta para "ocultarlo" de verdad con garantias.
+
+			// El texto se ENVUELVE de verdad (ver ActualizarPanelEntrenador, con
+			// EtiquetaTk.PartirEnLineas) y el panel entero CRECE para que quepa - la primera
+			// version dejaba el texto en una sola linea con un ancho fijo, y con el informe real
+			// ("¡Práctica superada! DPS medio: ... duración: ... s. No cuenta como derrota real:
+			// el tramo sigue como estaba.") se salia del panel por la derecha, encima del propio
+			// boton - visto en una captura real (guia-entrenador-informe-victoria.png antes del
+			// arreglo). Mismo bug de fondo, mismo arreglo, que "lo que viene" en TM4.
+			_textoEntrenador = new EtiquetaTk(() => _textoEntrenadorPartido, EscalaTextoEntrenador, 900f, 22f);
+			_textoEntrenador.Width.Set(-(AnchoBotonEntrenador + 14f), 1f);
+			_panelEntrenador.Append(_textoEntrenador);
+
+			_botonAccionEntrenador = new BotonTk("", 0.78f);
+			_botonAccionEntrenador.Width.Set(AnchoBotonEntrenador, 0f);
+			_botonAccionEntrenador.Height.Set(30f, 0f);
+			_botonAccionEntrenador.HAlign = 1f;
+			_botonAccionEntrenador.AlPulsar += () => {
+				if (EntrenadorJefe.Activa) {
+					EntrenadorJefe.Cancelar();
+				}
+				else {
+					EntrenadorJefe.LimpiarInforme();
+				}
+			};
+			_panelEntrenador.Append(_botonAccionEntrenador);
+		}
+
+		private string TextoEntrenador()
+		{
+			if (EntrenadorJefe.Activa) {
+				return Idiomas.Texto("Guia.Entrenador.EnMarcha", (int)EntrenadorJefe.SegundosTranscurridos,
+					EntrenadorJefe.DanoAlJefeAhora, EntrenadorJefe.DanoRecibidoAhora);
+			}
+			return EntrenadorJefe.UltimoInforme;
+		}
+
 		public override void Update(GameTime gameTime)
 		{
 			base.Update(gameTime);
@@ -142,6 +215,45 @@ namespace TerrakeepMod.UI.Guia
 				PasoEnPantalla = paso;
 				TramoEnPantalla = tramo;
 				Reconstruir();
+			}
+
+			ActualizarPanelEntrenador();
+		}
+
+		private void ActualizarPanelEntrenador()
+		{
+			bool debeVerse = EntrenadorJefe.Activa || EntrenadorJefe.Terminada;
+			if (debeVerse && _panelEntrenador.Parent == null) {
+				Append(_panelEntrenador);
+			}
+			else if (!debeVerse && _panelEntrenador.Parent != null) {
+				RemoveChild(_panelEntrenador);
+			}
+			if (!debeVerse) {
+				return;
+			}
+
+			_botonAccionEntrenador.FijarTexto(Idiomas.Texto(EntrenadorJefe.Activa
+				? "Guia.Entrenador.Cancelar"
+				: "Guia.Entrenador.Cerrar"));
+
+			// Envuelve el texto real contra el ancho REAL de la etiqueta (mismo patron que
+			// RecalcularCabecera en ContenidoBuilds/FilaRequisitoTk.Reajustar) y crece el panel
+			// entero a lo que haga falta - nunca al reves.
+			float anchoInterior = _textoEntrenador.GetDimensions().Width;
+			if (anchoInterior <= 0f) {
+				return;
+			}
+
+			_textoEntrenadorPartido = EtiquetaTk.PartirEnLineas(TextoEntrenador(), anchoInterior, EscalaTextoEntrenador);
+
+			float altoTexto = Terraria.GameContent.FontAssets.MouseText.Value.MeasureString(_textoEntrenadorPartido).Y *
+				EscalaTextoEntrenador;
+			float altoNecesario = altoTexto + 20f + 8f;
+			float altoNuevo = System.Math.Max(AltoMinimoPanelEntrenador, altoNecesario);
+			if (System.Math.Abs(_panelEntrenador.Height.Pixels - altoNuevo) > 0.5f) {
+				_panelEntrenador.Height.Set(altoNuevo, 0f);
+				Recalculate();
 			}
 		}
 
@@ -212,6 +324,25 @@ namespace TerrakeepMod.UI.Guia
 			}
 			else {
 				AnadirAObjetivo(new ParrafoTk(() => elPaso.Titulo(), 1.0f), Color.White);
+			}
+
+			// Idea 1 del catalogo de funciones ("entrenador de jefe"): solo para el subconjunto
+			// real investigado y confirmado seguro (ver EntrenadorJefe.Roster) - nunca para el
+			// Muro de Carne ni para ningun jefe fuera del roster, que simplemente no enseñan el
+			// boton.
+			if (EntrenadorJefe.EsPracticable(jefeDelTitulo)) {
+				int elJefeAPracticar = jefeDelTitulo;
+				BotonTk botonPracticar = new BotonTk(Idiomas.Texto("Guia.Entrenador.Practicar"), 0.78f);
+				botonPracticar.Width.Set(220f, 0f);
+				botonPracticar.Height.Set(30f, 0f);
+				botonPracticar.Ayuda = () => Idiomas.Texto("Guia.Entrenador.PracticarAyuda");
+				botonPracticar.AlPulsar += () => EntrenadorJefe.Iniciar(elJefeAPracticar);
+				_listaObjetivo.Add(botonPracticar);
+
+				UIElement huecoTrasPracticar = new UIElement();
+				huecoTrasPracticar.Width.Set(0f, 1f);
+				huecoTrasPracticar.Height.Set(6f, 0f);
+				_listaObjetivo.Add(huecoTrasPracticar);
 			}
 
 			// ParrafoTk y no EtiquetaTk: EtiquetaTk no envuelve, y estas dos lineas son las que

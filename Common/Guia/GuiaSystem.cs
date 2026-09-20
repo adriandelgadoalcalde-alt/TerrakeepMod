@@ -88,12 +88,22 @@ namespace TerrakeepMod.Common.Guia
 			}
 			AutopruebaGuia.Avanzar();
 			BrujulaGuia.Actualizar();
+			// Idea 1 del catalogo de funciones ("entrenador de jefe"): corre siempre que hay
+			// partida, este o no la pestaña de la Guia abierta - mismo motivo real que BrujulaGuia,
+			// una practica en marcha no puede depender de que el jugador no cambie de pestaña.
+			EntrenadorJefe.Actualizar();
 		}
 
 		public override void OnWorldUnload()
 		{
 			// Los marcadores de la brujula son coordenadas de ESTE mundo: en otro no significan nada.
 			BrujulaGuia.AlSalirDelMundo();
+			// Idea 1: si el jugador cierra la partida con una practica en marcha, se cancela y se
+			// restaura todo ANTES de que el mundo deje de existir - nunca dejar una practica a
+			// medias colgando de un mundo que ya no esta cargado.
+			if (EntrenadorJefe.Activa) {
+				EntrenadorJefe.Cancelar();
+			}
 		}
 
 		public override void Unload()

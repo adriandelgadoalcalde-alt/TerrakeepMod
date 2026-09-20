@@ -8971,6 +8971,76 @@ todavía le faltaba; aplicado el mismo arreglo real. Captura real revisada pixel
 en su propia fila, clase (4 píldoras) y conjunto (3 píldoras) compartiendo una sola fila sin
 solaparse, cuerpo de 3 columnas intacto debajo.
 
+### Idea 9 (guía de grupo multijugador) - reexaminada a fondo, LÍMITE REAL confirmado con evidencia más precisa
+
+Pedido explícito de revisar otra vez con calma en vez de repetir el veredicto anterior sin volver a
+mirar. Investigado más a fondo con el decompilado real de `Terraria.NetMessage`/`Terraria.Player`:
+el mensaje de red `SyncEquipment` (id 5) SÍ puede en teoría llevar cualquier ranura, incluida la
+mochila (`PlayerItemSlotID.Inventory0 + l`) - un hallazgo que en un primer vistazo parecía abrir
+una vía real que el veredicto anterior no había visto. Comprobado el único sitio real donde el mod
+lo dispara así (`Player.cs`, el "quick-stack" a un cofre cercano): es un envío puntual cliente→
+servidor para informar de UN deposito concreto en un cofre compartido, no una difusión continua de
+la mochila de nadie a los demás clientes. Confirma, con evidencia más concreta que antes (no solo
+la palabra del catálogo), que la mochila de OTRO jugador conectado no es visible en general - solo
+lo que ya se sincroniza por diseño para poder dibujarlo (equipo puesto, objeto en la mano, vida,
+maná).
+
+**Vía parcial real que SÍ sería técnicamente construible**, y que no se había nombrado así antes:
+un "resumen de grupo" limitado a lo que SÍ sincroniza de forma fiable (defensa por la armadura
+puesta, daño del arma en la mano, vida/maná máximos) para cada jugador conectado, dejando fuera
+con un aviso honesto los requisitos que dependen de objetos en la mochila (pociones, materiales) -
+en vez de fingir que se puede evaluar el grupo entero. Aun así, **sigue siendo un LÍMITE REAL para
+esta noche por el mismo motivo de fondo**: no hay ningún arnés de dos clientes tModLoader en toda
+la familia Keep para verificar con cuidado ni siquiera esa versión acotada - lanzar dos clientes de
+verdad y comprobar de instancia a instancia es justo el tipo de "dato de partida multijugador sin
+poder verificarlo con cuidado" que se pidió evitar. Se documenta la ruta real completa (API,
+límite exacto, y el subconjunto que SÍ sincroniza) para cuando exista ese arnés.
+
+### Idea 1 (entrenador de jefe) - implementado y verificado, con el límite real documentado
+
+Nuevo `EntrenadorJefe` (`Common/Guia/EntrenadorJefe.cs`): deja practicar CUALQUIER jefe del roster
+principal salvo el Muro de Carne, con un botón "Practicar contra este jefe" dentro del objetivo
+actual de la Guía cuando aplica (`ContenidoGuia.MontarObjetivo`, guardado por
+`EntrenadorJefe.EsPracticable`). Al iniciar: guarda snapshot real del jugador (posición, vida,
+maná, buffs), del flag `downedX` del jefe y de los tiles alrededor de una arena fija (radio 70
+tiles), cura al jugador, lo teletransporta con `Player.Teleport` y lo invoca con
+`NPC.SpawnBoss` - la misma llamada pública que usan los propios objetos de invocación de vanilla,
+válida tanto para jefes normales como para los de segmentos (gusanos). Al terminar (victoria,
+derrota o cancelación): restaura tiles, flag `downedX` y estado del jugador, y teletransporta de
+vuelta - la práctica nunca cuenta como derrota real del tramo. El daño hecho/recibido se registra
+con ganchos reales de tModLoader (`GlobalNPC.OnHitByItem/OnHitByProjectile`,
+`ModPlayer.PostHurt`), y la muerte del jefe de prueba se fuerza con `npc.checkDead()` - el mismo
+camino de vanilla (drops, banderas, logros), no un atajo - precisamente para poder comprobar que
+todo se restaura después de una muerte REAL y no de una simulada.
+
+**Límite real investigado y documentado, no supuesto**: el Muro de Carne queda fuera a propósito.
+Su bloque de muerte en `NPC.cs` llama a `WorldGen.StartHardmode()`, que convierte de forma
+PERMANENTE e IRREVERSIBLE los tiles del mundo (piedra→corrupción/cripta, etc.) - no hay snapshot
+de tiles que pueda deshacer eso, a diferencia del resto de jefes. Un botón de "practicar" contra
+él mentiría sobre lo que de verdad hace.
+
+**Bug real encontrado con la propia autoprueba y arreglado antes de comitear**: el panel del
+informe tras la práctica (`ConstruirPanelEntrenador`/`ActualizarPanelEntrenador` en
+`ContenidoGuia.cs`) no envolvía el texto - `EtiquetaTk.DrawSelf` nunca envuelve por sí sola, el
+mismo bug real que ya había aparecido dos veces antes esta sesión (resumen del selector de cofre
+de la idea 6, tiras "lo que viene" de TM4). Visible en la primera captura
+(`guia-entrenador-informe-victoria.png`): el texto se salía por el borde derecho del panel, encima
+del botón "Cerrar". Arreglado igual que las otras dos veces: `EtiquetaTk.PartirEnLineas` sobre el
+ancho real interior, más una altura de panel que crece dinámicamente para darle sitio (mismo
+patrón que `RecalcularCabecera` de `ContenidoBuilds.cs`).
+
+**Verificación real** (`scripts\verificar-guia.ps1`, autoprueba completa + reverificación tras el
+arreglo): roster real comprobado (`EyeofCthulhu practicable=True`, `WallofFlesh NO
+practicable=True` con el motivo documentado en el propio log), `Iniciar(WallofFlesh)` rechazado,
+`Iniciar(EyeofCthulhu)` con el jefe apareciendo de verdad en el mundo (captura
+`guia-entrenador-en-marcha.png`), muerte real forzada con `npc.checkDead()`, y tras la muerte:
+`downedBoss1` restaurado a `False` (no ha cerrado el tramo real), posición restaurada, informe
+mostrado y cerrado con un clic real en "Cerrar". Segunda práctica (Reina Abeja) cancelada a medio
+camino: jefe retirado del mundo, posición restaurada, informe de cancelación correcto. Las tres
+capturas finales revisadas a mano confirman el arreglo del envoltorio: el texto cabe en una o dos
+líneas según el mensaje, el panel crece para darle sitio, y el botón "Cerrar"/"Cancelar" nunca se
+solapa. "Ninguna comprobacion en rojo" en las dos pasadas.
+
 ### Sin publicar nada
 
 `git push`, `gh release`, empaquetado del mod y subida de versión siguen sin tocarse, tal como se

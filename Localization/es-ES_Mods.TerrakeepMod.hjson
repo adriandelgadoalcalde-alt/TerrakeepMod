@@ -935,6 +935,19 @@ Guia: {
 	ObjetivoOpcionalEnTramo: "{0}: {1}"
 	LoQueViene: Lo que viene después
 	LoQueVieneMas: y {0} más adelante
+
+	// Functions catalogue idea 1 ("boss trainer / practice arena").
+	Entrenador: {
+		Practicar: Practicar contra este jefe
+		PracticarAyuda: Te teletransporta a una arena, invoca al jefe con sus stats reales de esta partida y lo restaura TODO al acabar (posición, vida, maná, terreno y si lo has derrotado de verdad o no) - ganes, pierdas o canceles.
+		EnMarcha: Practicando: {0} s  ·  daño hecho: {1}  ·  daño recibido: {2}
+		InformeVictoria: ¡Practica superada! DPS medio: {0}  ·  daño recibido: {1}  ·  duración: {2} s. No cuenta como derrota real: el tramo sigue como estaba.
+		InformeDerrota: Has caído en la práctica. DPS medio: {0}  ·  daño recibido: {1}  ·  duración: {2} s. Todo restaurado - vida, posición y terreno.
+		InformeCancelado: Práctica cancelada a los {0} s. Todo restaurado.
+		Cancelar: Cancelar
+		Cerrar: Cerrar
+	}
+
 	AvisoCalamityTitulo: Tienes Calamity instalado
 	AvisoCalamity: Con Calamity la progresion cambia de arriba abajo: otros jefes, otro orden y otras cifras. Esta guia YA incluye el arbol propio de Calamity (mas abajo, en la hoja de ruta y en los objetivos opcionales) ademas del de Terraria a secas - Calamity no elimina la progresion vanilla, solo le añade la suya encima. Los tramos con "(Calamity)" en el nombre son los suyos; el resto sigue siendo el mismo camino de siempre.
 

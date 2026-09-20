@@ -935,6 +935,19 @@ Guia: {
 	ObjetivoOpcionalEnTramo: "{0}: {1}"
 	LoQueViene: What comes next
 	LoQueVieneMas: and {0} more after that
+
+	// Functions catalogue idea 1 ("boss trainer / practice arena").
+	Entrenador: {
+		Practicar: Practice against this boss
+		PracticarAyuda: Teleports you to an arena, summons the boss with its real stats for this save, and restores EVERYTHING when it ends (position, health, mana, terrain, and whether you actually defeated it or not) - whether you win, lose or cancel.
+		EnMarcha: Practicing: {0}s  ·  damage dealt: {1}  ·  damage taken: {2}
+		InformeVictoria: Practice cleared! Average DPS: {0}  ·  damage taken: {1}  ·  duration: {2}s. Does not count as a real kill: the stretch stays as it was.
+		InformeDerrota: You fell during practice. Average DPS: {0}  ·  damage taken: {1}  ·  duration: {2}s. Everything restored - health, position and terrain.
+		InformeCancelado: Practice cancelled after {0}s. Everything restored.
+		Cancelar: Cancel
+		Cerrar: Close
+	}
+
 	AvisoCalamityTitulo: You have Calamity installed
 	AvisoCalamity: With Calamity, progression changes from top to bottom: different bosses, a different order, different numbers. This guide NOW includes Calamity's own tree (further down, in the roadmap and the optional objectives) on top of plain Terraria's - Calamity doesn't remove vanilla progression, it just adds its own on top. Tramos with "(Calamity)" in the name are its own; the rest is still the same path as always.
 
