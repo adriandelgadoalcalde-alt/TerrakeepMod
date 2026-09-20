@@ -105,7 +105,17 @@ namespace TerrakeepMod.Common.Panel
 					// log; ahora deja tambien captura y los pares de geometria antes/despues del hover
 					// para verificarTransicion.js (ver AutopruebaTooltipObjeto.ComprobarHover).
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
-						AutopruebaTooltipObjeto.Variable));
+						AutopruebaTooltipObjeto.Variable))
+					// Idea 9 (guia de grupo multijugador): el observador necesita una captura real
+					// de la seccion "Grupo" con un companero de verdad conectado por red - sin esto,
+					// Permitida devolvia false para sus dos variables y Guardar() se limitaba a
+					// devolver "captura no pedida" en silencio (bug real encontrado revisando el
+					// propio log de la autoprueba: decia "captura real guardada" porque el llamador
+					// no comprobaba el resultado, arreglado tambien en AutopruebaGrupo).
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
+						Guia.AutopruebaGrupo.VariableObservador))
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
+						Guia.AutopruebaGrupo.VariableCompanero));
 			}
 		}
 

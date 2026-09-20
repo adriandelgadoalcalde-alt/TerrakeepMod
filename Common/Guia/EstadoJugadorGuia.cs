@@ -54,6 +54,22 @@ namespace TerrakeepMod.Common.Guia
 		/// armadura, los accesorios y los buffs activos.</summary>
 		public static int Defensa => HayPartida ? (int)Jugador.statDefense : 0;
 
+		// -----------------------------------------------------------------------------------
+		// Idea 9 (guia de grupo multijugador): las mismas tres lecturas de arriba, pero de
+		// CUALQUIER jugador conectado, no solo el local. Ver GuiaGrupo.cs para el porque estos
+		// campos SI llegan de verdad a otros clientes en multijugador real (Main.TrySyncingMyPlayer
+		// + PlayerItemSlotID.CanRelay, decompilado real, no una suposicion).
+		// -----------------------------------------------------------------------------------
+
+		public static int CristalesVidaDe(Player jugador) =>
+			(jugador != null && jugador.active) ? jugador.ConsumedLifeCrystals : 0;
+
+		public static int VidaMaximaDe(Player jugador) =>
+			(jugador != null && jugador.active) ? jugador.statLifeMax2 : 0;
+
+		public static int DefensaDe(Player jugador) =>
+			(jugador != null && jugador.active) ? (int)jugador.statDefense : 0;
+
 		/// <summary>Cuantos NPC del pueblo hay vivos en el mundo. Mismo recuento que hace
 		/// <c>Main.UpdateTime_StartNight</c> para decidir si el Ojo de Cthulhu puede aparecer
 		/// solo: recorre <c>Main.npc[0..199]</c> y cuenta <c>active &amp;&amp; townNPC</c>.</summary>
@@ -81,15 +97,22 @@ namespace TerrakeepMod.Common.Guia
 			return false;
 		}
 
-		/// <summary>Cuantas unidades de ese objeto lleva encima el jugador.</summary>
-		public static int CuantosLleva(int tipo)
+		/// <summary>Cuantas unidades de ese objeto lleva encima el jugador. Con
+		/// <paramref name="jugador"/> a null (por defecto, todos los sitios existentes antes de la
+		/// idea 9), es el jugador local con el mismo hueco <see cref="HayPartida"/> de siempre; con
+		/// un jugador concreto (idea 9, un companero de grupo), se lee su inventario real - el
+		/// mismo campo <c>inventory[]</c>, que en multijugador real SI llega sincronizado del todo
+		/// a este cliente (ver <see cref="GuiaGrupo"/>).</summary>
+		public static int CuantosLleva(int tipo, Player jugador = null)
 		{
-			if (!HayPartida || tipo <= 0) {
+			Player p = jugador ?? Jugador;
+			bool hayDatos = jugador == null ? HayPartida : (p != null && p.active);
+			if (!hayDatos || tipo <= 0) {
 				return 0;
 			}
 
 			int total = 0;
-			Item[] inventario = Jugador.inventory;
+			Item[] inventario = p.inventory;
 			int tope = System.Math.Min(RanurasQueMiraElJuego, inventario.Length);
 			for (int i = 0; i < tope; i++) {
 				Item objeto = inventario[i];
@@ -110,15 +133,17 @@ namespace TerrakeepMod.Common.Guia
 		/// No cuentan como arma las herramientas que solo pican/talan sin daño util, ni los
 		/// accesorios, ni la municion.
 		/// </summary>
-		public static int DanoDelMejorArma(out string nombre)
+		public static int DanoDelMejorArma(out string nombre, Player jugador = null)
 		{
 			nombre = "";
-			if (!HayPartida) {
+			Player p = jugador ?? Jugador;
+			bool hayDatos = jugador == null ? HayPartida : (p != null && p.active);
+			if (!hayDatos) {
 				return 0;
 			}
 
 			int mejor = 0;
-			Item[] inventario = Jugador.inventory;
+			Item[] inventario = p.inventory;
 			int tope = System.Math.Min(RanurasQueMiraElJuego, inventario.Length);
 			for (int i = 0; i < tope; i++) {
 				Item objeto = inventario[i];
@@ -129,7 +154,7 @@ namespace TerrakeepMod.Common.Guia
 					continue;
 				}
 
-				int dano = Jugador.GetWeaponDamage(objeto);
+				int dano = p.GetWeaponDamage(objeto);
 				if (dano > mejor) {
 					mejor = dano;
 					nombre = objeto.Name;
@@ -146,14 +171,16 @@ namespace TerrakeepMod.Common.Guia
 		/// un proyectil es un gancho, y <c>Item.shoot</c> es el proyectil que dispara el objeto.
 		/// Asi vale cualquier gancho, tambien los de mods, sin tocar nada.
 		/// </summary>
-		public static bool LlevaGancho(out string nombre)
+		public static bool LlevaGancho(out string nombre, Player jugador = null)
 		{
 			nombre = "";
-			if (!HayPartida) {
+			Player p = jugador ?? Jugador;
+			bool hayDatos = jugador == null ? HayPartida : (p != null && p.active);
+			if (!hayDatos) {
 				return false;
 			}
 
-			Item[] inventario = Jugador.inventory;
+			Item[] inventario = p.inventory;
 			int tope = System.Math.Min(RanurasQueMiraElJuego, inventario.Length);
 			for (int i = 0; i < tope; i++) {
 				Item objeto = inventario[i];

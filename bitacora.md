@@ -8971,30 +8971,91 @@ todavía le faltaba; aplicado el mismo arreglo real. Captura real revisada pixel
 en su propia fila, clase (4 píldoras) y conjunto (3 píldoras) compartiendo una sola fila sin
 solaparse, cuerpo de 3 columnas intacto debajo.
 
-### Idea 9 (guía de grupo multijugador) - reexaminada a fondo, LÍMITE REAL confirmado con evidencia más precisa
+### Idea 9 (guía de grupo multijugador) - CORREGIDA el 20-sep-2026: no era un límite real, estaba mal investigada
 
-Pedido explícito de revisar otra vez con calma en vez de repetir el veredicto anterior sin volver a
-mirar. Investigado más a fondo con el decompilado real de `Terraria.NetMessage`/`Terraria.Player`:
-el mensaje de red `SyncEquipment` (id 5) SÍ puede en teoría llevar cualquier ranura, incluida la
-mochila (`PlayerItemSlotID.Inventory0 + l`) - un hallazgo que en un primer vistazo parecía abrir
-una vía real que el veredicto anterior no había visto. Comprobado el único sitio real donde el mod
-lo dispara así (`Player.cs`, el "quick-stack" a un cofre cercano): es un envío puntual cliente→
-servidor para informar de UN deposito concreto en un cofre compartido, no una difusión continua de
-la mochila de nadie a los demás clientes. Confirma, con evidencia más concreta que antes (no solo
-la palabra del catálogo), que la mochila de OTRO jugador conectado no es visible en general - solo
-lo que ya se sincroniza por diseño para poder dibujarlo (equipo puesto, objeto en la mano, vida,
-maná).
+**El veredicto de "LÍMITE REAL" de la ronda anterior era incorrecto**, y se retracta aquí con la
+investigación completa que faltaba. El usuario pidió explícitamente no aceptar un límite sin
+probar antes un camino real, con la pista concreta de mirar el protocolo de red en vez de asumir
+que hacían falta dos ventanas gráficas sin comprobarlo.
 
-**Vía parcial real que SÍ sería técnicamente construible**, y que no se había nombrado así antes:
-un "resumen de grupo" limitado a lo que SÍ sincroniza de forma fiable (defensa por la armadura
-puesta, daño del arma en la mano, vida/maná máximos) para cada jugador conectado, dejando fuera
-con un aviso honesto los requisitos que dependen de objetos en la mochila (pociones, materiales) -
-en vez de fingir que se puede evaluar el grupo entero. Aun así, **sigue siendo un LÍMITE REAL para
-esta noche por el mismo motivo de fondo**: no hay ningún arnés de dos clientes tModLoader en toda
-la familia Keep para verificar con cuidado ni siquiera esa versión acotada - lanzar dos clientes de
-verdad y comprobar de instancia a instancia es justo el tipo de "dato de partida multijugador sin
-poder verificarlo con cuidado" que se pidió evitar. Se documenta la ruta real completa (API,
-límite exacto, y el subconjunto que SÍ sincroniza) para cuando exista ese arnés.
+**Lo que la investigación anterior se dejó fuera**: solo había buscado sitios que llaman a
+`NetMessage.SendData(5, ...)` a mano (encontró el "quick-stack" a un cofre y paró ahí). Le faltó
+`Terraria.Main.TrySyncingMyPlayer()` (`Main.cs:17496-17528`, llamada real cada actualización de
+red desde el bucle principal): compara las 58 ranuras de la mochila del jugador local contra un
+snapshot (`Item.IsNetStateDifferent`) y reenvía cualquier ranura que cambie - no es un envío
+puntual, es continuo, automático, y cubre también armadura/tintes/accesorios/las tres loadouts
+(`TrySyncingItemArray`, mismas líneas). Y le faltó la pieza que de verdad decide si eso llega a
+los DEMÁS clientes: `MessageBuffer.cs` (case 5, ~línea 740) solo retransmite una ranura si
+`Terraria.ID.PlayerItemSlotID.CanRelay[ranura]` es `true`, y esa tabla (`PlayerItemSlotID.cs:48-58`)
+dice que `Inventory0` (las 58 ranuras de la mochila PRINCIPAL) tiene `canNetRelay: true` - igual
+que armadura, tintes, accesorios misceláneos y las tres loadouts. Solo el cofre de cerdito
+(Bank1), la caja fuerte (Bank2), la forja del defensor (Bank3) y el objeto en la papelera NO se
+retransmiten. Es decir: la mochila principal de CADA jugador conectado SÍ llega sincronizada de
+verdad a `Main.player[i].inventory[]` en todos los clientes, todo el rato - vanilla solo no
+dibuja ninguna interfaz para leerla, que es un límite de INTERFAZ, nunca de DATOS.
+
+**Implementado de verdad, con generalización mínima del motor existente en vez de duplicarlo**:
+- `Common/Guia/EstadoJugadorGuia.cs`: `CuantosLleva`/`DanoDelMejorArma`/`LlevaGancho` ganan un
+  parámetro `Player jugador = null` (por defecto, el jugador local con el mismo comportamiento de
+  siempre); nuevos `CristalesVidaDe`/`VidaMaximaDe`/`DefensaDe(Player)` para lo que antes eran
+  propiedades fijas al jugador local.
+- `Common/Guia/ProveedorEstadoGuiaMod.cs`: constructor nuevo `ProveedorEstadoGuiaMod(Player)`
+  (el sin argumentos se queda igual) - enruta cada campo al jugador correcto sin tocar
+  `Terrakeep.Core.Guia.GuideEvaluationEngine` (el cerebro único compartido con Terrakeep de
+  escritorio desde la consolidación T1), que sigue sin saber que esto existe.
+- `Common/Guia/EvaluadorGuia.cs`: sobrecarga `Evaluar(RequisitoGuia, Player)`.
+- `Common/Guia/GuiaGrupo.cs` (nuevo): `IndicesConectados()` (companeros activos reales, vacío en
+  un jugador) y `EsEvaluablePorJugador(TipoRequisito)` (Objeto/ObjetoCualquiera/Defensa/DanoArma/
+  Gancho/CristalesVida/VidaMaxima SÍ dependen de cada jugador; NpcsPueblo/Npc/NpcActivo/Bandera son
+  estado del MUNDO, igual para todos, y ya se ven una vez arriba - repetirlos por companero no
+  añadiría ningún dato nuevo).
+- `UI/Guia/FilaRequisitoTk.cs`: parámetro opcional `Func<Player> jugador` (null = jugador local,
+  comportamiento idéntico en todos los sitios de antes de esta idea).
+- `UI/Guia/ContenidoGuia.cs`: nueva sección "Grupo" (`MontarGrupo`), justo debajo de "Qué te
+  falta", visible solo con al menos un compañero conectado.
+
+**Dos bugs reales encontrados con el propio arnés, y arreglados**:
+1. **Nombre duplicado rechazado por el servidor real** (`MessageBuffer.cs:547`, comparación real
+   contra `Main.player[].name` de clientes activos - `"{0} is already on this server."`): el
+   compañero y el observador partían del mismo personaje sintético de WS0. Arreglado con API
+   pública real: el compañero se renombra en vivo (`Player.name`, campo público) y reenvía
+   `NetMessage.SendData(4, ...)` (PlayerInfo) nada más conectar, liberando el nombre para el
+   observador. Al elegir el nombre nuevo se tropezó una vez con `Player.nameLen = 20` (un nombre de
+   24 caracteres hizo que el servidor expulsara la conexión entera, y un autoguardado con ese
+   nombre de 24 caracteres corrompió temporalmente el `.plr` de prueba hasta restaurarlo desde el
+   origen limpio de WS0) - el nombre final, `TkGrupoCompanero`, tiene 16.
+2. **Bug real de UI, visible en la primera captura real** (`ContenidoGuia.cs`): `Reconstruir()`
+   calculaba su propia versión de `_claveMontada` (sin el sufijo `|grupo=N` que sí llevaba la
+   clave de `Update()`), así que las dos nunca coincidían con un compañero conectado y la lista de
+   la columna derecha se vaciaba y reconstruía TODOS los fotogramas sin parar - "Qué te falta" y
+   "Grupo" salían con el texto literalmente uno encima del otro. Arreglado unificando las dos
+   lecturas en una sola función `Clave(paso, tramo)`.
+
+**Verificación real, no de un solo cliente**: `scripts\verificar-grupo.ps1` (y la orquestación
+manual equivalente usada para depurar los dos bugs de arriba) levanta un **servidor dedicado
+headless real** (`dotnet tModLoader.dll -server -nosteam`, el mismo binario que usa
+`start-tModLoaderServer.bat` internamente, invocado directo para poder capturar su log de verdad)
+más **dos clientes gráficos reales, dos procesos de tModLoader distintos**, conectados por TCP a
+`127.0.0.1` de verdad. El compañero (`AutopruebaGrupo.PasoCompanero`) se pone encima una cantidad
+EXACTA y conocida (17 de Madera) y un Casco de Cobre; el observador
+(`AutopruebaGrupo.PasoObservador`) espera a verlo conectado, lee su mochila y su defensa **por la
+vía de producción** (`EstadoJugadorGuia.CuantosLleva(ItemID.Wood, companero)`,
+`EvaluadorGuia.Evaluar(requisitoObjeto, companero)`, `EstadoJugadorGuia.DefensaDe(companero)`) y
+comprueba que coincide exactamente con lo que el compañero puso - si la red no sincronizara de
+verdad la mochila/armadura de otro jugador, esto saldría en 0 siempre, no por casualidad. Log real
+del observador (`evidencia/grupo-observador.log.txt`): "mochila del companero via red: 17 de
+Madera (se esperaban 17) -> OK", "EvaluadorGuia.Evaluar(Objeto Madera, companero): Actual=17,
+Pedido=17, Cumplido=True -> OK", "defensa del companero via red: 1 -> OK", "AUTOPRUEBA GRUPO
+COMPLETA". Captura real final revisada a mano
+(`grupo-observador-companero-visible.png`): "Tu grupo, para este mismo paso" con
+"TkGrupoCompanero" (el compañero real, en el OTRO proceso), su defensa real y su gancho, sin
+solaparse con "Qué te falta" ni con "Lectura del jefe".
+
+**Lo que de verdad queda fuera, y por qué es honesto dejarlo fuera** (no es un límite nuevo, es
+alcance): la caja fuerte/el cofre de cerdito/la forja del defensor de un compañero (esas SÍ están
+confirmadas como no retransmitidas, `canNetRelay: false`) y los requisitos de tipo mundo
+(NpcsPueblo/Npc/NpcActivo/Bandera), que son iguales para todo el grupo y ya se muestran una vez
+arriba.
 
 ### Idea 1 (entrenador de jefe) - implementado y verificado, con el límite real documentado
 

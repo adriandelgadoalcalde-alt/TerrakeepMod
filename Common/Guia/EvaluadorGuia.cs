@@ -48,6 +48,22 @@ namespace TerrakeepMod.Common.Guia
 			return GuideEvaluationEngine.Evaluar(requisito, _proveedor);
 		}
 
+		/// <summary>Idea 9 (guia de grupo multijugador): el mismo requisito, pero evaluado contra
+		/// un companero de grupo concreto en vez del jugador local. Crea su propio proveedor (sin
+		/// estado guardado, barato) apuntando a ese jugador - ver <see cref="ProveedorEstadoGuiaMod"/>.</summary>
+		public static ResultadoRequisito Evaluar(RequisitoGuia requisito, Player jugador)
+		{
+			if (requisito == null || jugador == null) {
+				return new ResultadoRequisito {
+					Requisito = requisito,
+					NoEvaluable = true,
+					TextoClave = "Guia.Req.NoEvaluable",
+					TextoArgs = new object[] { "(null)" }
+				};
+			}
+			return GuideEvaluationEngine.Evaluar(requisito, new ProveedorEstadoGuiaMod(jugador));
+		}
+
 		/// <summary>Los requisitos de un paso, ya evaluados, en el orden del .json.</summary>
 		public static List<ResultadoRequisito> Evaluar(PasoGuia paso)
 		{

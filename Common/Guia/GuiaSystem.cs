@@ -87,6 +87,7 @@ namespace TerrakeepMod.Common.Guia
 				return;
 			}
 			AutopruebaGuia.Avanzar();
+			AutopruebaGrupo.Avanzar();
 			BrujulaGuia.Actualizar();
 			// Idea 1 del catalogo de funciones ("entrenador de jefe"): corre siempre que hay
 			// partida, este o no la pestaña de la Guia abierta - mismo motivo real que BrujulaGuia,

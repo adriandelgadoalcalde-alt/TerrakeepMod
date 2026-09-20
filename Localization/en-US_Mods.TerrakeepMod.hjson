@@ -936,6 +936,12 @@ Guia: {
 	LoQueViene: What comes next
 	LoQueVieneMas: and {0} more after that
 
+	// Functions catalogue idea 9 ("multiplayer group guide").
+	Grupo: {
+		Titulo: Your group, for this same step
+		Desconectado: (disconnected)
+	}
+
 	// Functions catalogue idea 1 ("boss trainer / practice arena").
 	Entrenador: {
 		Practicar: Practice against this boss

@@ -207,10 +207,28 @@ namespace TerrakeepMod.UI.Guia
 
 			// Se rehace solo cuando cambia el PASO (o el idioma, que ya obliga al marco a rehacer
 			// el area entera). Los numeros de dentro se leen cada fotograma por su cuenta, asi que
-			// no hay que reconstruir nada para que la barra se mueva.
+			// no hay que reconstruir nada para que la barra se mueva. La CLAVE tambien incluye
+			// cuantos companeros hay conectados (idea 9): a diferencia de un numero que cambia solo
+			// (eso lo lee cada fila por su cuenta cada fotograma), que alguien se una o se
+			// desconecte a mitad de paso cambia CUANTAS filas hay que dibujar, y eso si necesita
+			// reconstruir la lista - unirse/desconectarse no es frecuente, comprobar el recuento
+			// cada fotograma no tiene coste real.
+			//
+			// Bug real encontrado con la propia autoprueba (captura
+			// grupo-observador-companero-visible.png: "Que te falta" y "Grupo" se veian
+			// superpuestos, texto encima de texto): Reconstruir() calculaba SU PROPIA version de
+			// _claveMontada (sin el sufijo "|grupo=") en vez de reutilizar Clave(), asi que las dos
+			// nunca coincidian con un companero conectado - clave != _claveMontada era SIEMPRE
+			// cierto, y Reconstruir() (que empieza por _lista.Clear()) se llamaba TODOS los
+			// fotogramas sin parar. Cada FilaRequisitoTk nueva nace con su alto por defecto
+			// (24f) hasta que su propio Reajustar() (en Update()/DrawSelf()) lo corrige - pero la
+			// lista se volvia a vaciar y reconstruir antes de que ese ajuste llegara a influir en
+			// donde caen las filas siguientes, así que nunca llegaba a asentarse. Ahora las dos
+			// lecturas (aqui y en Reconstruir()) usan la MISMA Clave(), no pueden volver a
+			// divergir.
 			TramoGuia tramo;
 			PasoGuia paso = EstadoGuia.PasoActual(out tramo);
-			string clave = paso != null ? tramo.Clave + "/" + paso.Clave : "(ninguno)";
+			string clave = Clave(paso, tramo);
 			if (clave != _claveMontada) {
 				PasoEnPantalla = paso;
 				TramoEnPantalla = tramo;
@@ -257,6 +275,16 @@ namespace TerrakeepMod.UI.Guia
 			}
 		}
 
+		/// <summary>La UNICA formula real de la clave "esto es lo que hay montado ahora mismo".
+		/// <c>Update()</c> y <see cref="Reconstruir"/> tienen que usar exactamente esta misma
+		/// funcion - ver el porque en el comentario real de <c>Update()</c> (bug ya encontrado y
+		/// arreglado: dos formulas ligeramente distintas nunca llegaban a coincidir).</summary>
+		private static string Clave(PasoGuia paso, TramoGuia tramo)
+		{
+			return (paso != null ? tramo.Clave + "/" + paso.Clave : "(ninguno)")
+				+ "|grupo=" + GuiaGrupo.IndicesConectados().Count;
+		}
+
 		/// <summary>Vuelve a montar las dos columnas con el paso actual. Publico para que la
 		/// autoprueba pueda forzarlo tras cambiar el estado del jugador en vivo.</summary>
 		public void Reconstruir()
@@ -265,7 +293,7 @@ namespace TerrakeepMod.UI.Guia
 			PasoGuia paso = EstadoGuia.PasoActual(out tramo);
 			PasoEnPantalla = paso;
 			TramoEnPantalla = tramo;
-			_claveMontada = paso != null ? tramo.Clave + "/" + paso.Clave : "(ninguno)";
+			_claveMontada = Clave(paso, tramo);
 
 			MontarObjetivo(paso, tramo);
 			MontarDetalle(paso, tramo);
@@ -440,6 +468,8 @@ namespace TerrakeepMod.UI.Guia
 					_lista.Add(new FilaRequisitoTk(paso.Requisitos[i]));
 				}
 
+				MontarGrupo(paso);
+
 				int jefe = paso.Jefe != 0 ? paso.Jefe : (tramo != null ? tramo.JefeFinal : 0);
 				if (jefe > 0) {
 					AnadirTitulo("Guia.LecturaDelJefe", EstiloTk.TextoAviso);
@@ -504,6 +534,49 @@ namespace TerrakeepMod.UI.Guia
 				if (porDelante.Count > MaximoLoQueViene) {
 					AnadirParrafo(() => Idiomas.Texto("Guia.LoQueVieneMas", porDelante.Count - MaximoLoQueViene),
 						EstiloTk.TextoSuave, 0.7f);
+				}
+			}
+		}
+
+		/// <summary>
+		/// Idea 9 del catalogo de funciones: "que le falta a cada companero conectado" para ESTE
+		/// mismo paso, justo debajo de "Que te falta" del jugador local. Vacio en partida de un
+		/// jugador (<see cref="GuiaGrupo.IndicesConectados"/> ya lo deja vacio ahi) - no es un
+		/// aviso, es que no hay grupo del que hablar.
+		/// </summary>
+		/// <remarks>
+		/// Solo los tipos de requisito que dependen de CADA jugador (<see
+		/// cref="GuiaGrupo.EsEvaluablePorJugador"/>): cristales de vida, vida maxima, defensa,
+		/// objeto/objeto-cualquiera, dano de arma y gancho. Los de estado del MUNDO (vecino en el
+		/// pueblo, enemigo activo, bandera) son iguales para todo el grupo y ya se ven una vez
+		/// arriba - repetirlos por companero seria ruido sin dato nuevo.
+		/// <para />
+		/// El objeto/material SI se puede evaluar de un companero real porque su mochila principal
+		/// SI llega sincronizada a este cliente en multijugador de verdad - ver la cabecera de
+		/// <see cref="GuiaGrupo"/> para la cita exacta del decompilado (<c>PlayerItemSlotID.
+		/// CanRelay</c>).
+		/// </remarks>
+		private void MontarGrupo(PasoGuia paso)
+		{
+			List<int> companeros = GuiaGrupo.IndicesConectados();
+			if (companeros.Count == 0) {
+				return;
+			}
+
+			AnadirTitulo("Guia.Grupo.Titulo", EstiloTk.TextoAviso);
+			for (int c = 0; c < companeros.Count; c++) {
+				int indice = companeros[c];
+				_lista.Add(NuevaLinea(
+					() => Main.player[indice] != null && Main.player[indice].active
+						? Main.player[indice].name
+						: Idiomas.Texto("Guia.Grupo.Desconectado"),
+					Color.White, 0.8f));
+
+				for (int i = 0; i < paso.Requisitos.Count; i++) {
+					if (!GuiaGrupo.EsEvaluablePorJugador(paso.Requisitos[i].Tipo)) {
+						continue;
+					}
+					_lista.Add(new FilaRequisitoTk(paso.Requisitos[i], 0.78f, () => Main.player[indice]));
 				}
 			}
 		}

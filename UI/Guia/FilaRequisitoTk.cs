@@ -40,6 +40,11 @@ namespace TerrakeepMod.UI.Guia
 		private readonly RequisitoGuia _requisito;
 		private readonly float _escala;
 
+		/// <summary>Idea 9 (guia de grupo multijugador): a que jugador evaluar este requisito. Null
+		/// (todos los sitios de antes de esta idea) = el jugador local, comportamiento identico al
+		/// de siempre.</summary>
+		private readonly System.Func<Player> _jugador;
+
 		/// <summary><c>Item.type</c> real a dibujar (TM4, <see cref="IconoRequisito"/>), o -1 si
 		/// este requisito no tiene un objeto que enseñar. Se resuelve UNA vez en el constructor:
 		/// el requisito no cambia mientras la fila vive.</summary>
@@ -50,10 +55,11 @@ namespace TerrakeepMod.UI.Guia
 		private string _ultimoCrudo;
 		private float _ultimoAncho;
 
-		public FilaRequisitoTk(RequisitoGuia requisito, float escala = 0.78f)
+		public FilaRequisitoTk(RequisitoGuia requisito, float escala = 0.78f, System.Func<Player> jugador = null)
 		{
 			_requisito = requisito;
 			_escala = escala;
+			_jugador = jugador;
 			_tipoIcono = IconoRequisito.TipoDeObjeto(requisito);
 			if (_tipoIcono > 0) {
 				Item objeto = new Item();
@@ -69,7 +75,7 @@ namespace TerrakeepMod.UI.Guia
 		/// <summary>Estado real del requisito ahora mismo. Lo lee la autoprueba.</summary>
 		public ResultadoRequisito Estado()
 		{
-			return EvaluadorGuia.Evaluar(_requisito);
+			return _jugador == null ? EvaluadorGuia.Evaluar(_requisito) : EvaluadorGuia.Evaluar(_requisito, _jugador());
 		}
 
 		/// <summary>El texto que se esta viendo, ya envuelto. Lo lee la autoprueba para demostrar
