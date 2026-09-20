@@ -5,6 +5,7 @@ using Terraria.GameContent.UI.Elements;
 using Terraria.ID;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
+using TerrakeepMod.Common.Exploracion;
 using TerrakeepMod.UI.Guia;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -57,6 +58,7 @@ namespace TerrakeepMod.UI.Exploracion
 		private UIList _lista;
 		private UIScrollbar _scroll;
 		private EtiquetaTk _resumen;
+		private BotonTk _botonMarcar;
 		private int _contadorRefresco;
 		private int _totalNpcs;
 
@@ -69,6 +71,20 @@ namespace TerrakeepMod.UI.Exploracion
 				0.8f, 700f, 22f);
 			_resumen.ColorTexto = EstiloTk.TextoSuave;
 			Append(_resumen);
+
+			// Re-lectura literal del catalogo (20-sep-2026): la idea 5 pedia ADEMAS "marcar las
+			// casas en el minimapa", pieza real que faltaba (las "recolocaciones" siguen siendo el
+			// LIMITE REAL ya documentado arriba - esto es distinto: no simula nada, solo pinta
+			// donde YA esta de verdad cada casa). Reutiliza el mismo sistema real de marcadores
+			// que ya usa la pestaña "Búsqueda" (MarcadoresExploracion.Fijar +
+			// CapaMapaExploracion), nunca un mecanismo aparte.
+			_botonMarcar = new BotonTk(Idiomas.Texto("Exploracion.Vecindad.MarcarEnMapa"), 0.72f);
+			_botonMarcar.Width.Set(200f, 0f);
+			_botonMarcar.Height.Set(24f, 0f);
+			_botonMarcar.HAlign = 1f;
+			_botonMarcar.Ayuda = () => Idiomas.Texto("Exploracion.Vecindad.MarcarEnMapaAyuda");
+			_botonMarcar.AlPulsar += MarcarCasasEnElMapa;
+			Append(_botonMarcar);
 
 			_caja = new UIPanel();
 			_caja.Width.Set(0f, 1f);
@@ -145,6 +161,48 @@ namespace TerrakeepMod.UI.Exploracion
 			foreach (NPC npc in vecinos) {
 				AnadirFilaNpc(jugador, npc);
 			}
+		}
+
+		/// <summary>
+		/// Idea 5, pieza que faltaba: pinta un marcador real en la casa de CADA vecino activo
+		/// ahora mismo, reutilizando el mismo sistema de marcadores real que ya usa la pestaña
+		/// "Búsqueda" (mini-mapa Y mapa vanilla a pantalla completa). Usa
+		/// <c>NPC.homeTileX/homeTileY</c> (la casa asignada REAL, la misma que el juego consulta
+		/// para el "sin casa asignada" de <see cref="AnadirFilaNpc"/>) - nunca la posición actual
+		/// del NPC, que puede estar paseando lejos de casa.
+		/// </summary>
+		private void MarcarCasasEnElMapa()
+		{
+			Player jugador = Main.LocalPlayer;
+			if (jugador == null) {
+				return;
+			}
+
+			List<ResultadoBusqueda> marcadores = new List<ResultadoBusqueda>();
+			for (int i = 0; i < Main.maxNPCs; i++) {
+				NPC npc = Main.npc[i];
+				if (npc == null || !npc.active || !npc.townNPC || NPCID.Sets.IsTownPet[npc.type]) {
+					continue;
+				}
+				bool sinCasa = npc.homeTileX < 0 && npc.homeTileY < 0;
+				Vector2 tileCasa = sinCasa
+					? new Vector2(npc.Center.X / 16f, npc.Center.Y / 16f)
+					: new Vector2(npc.homeTileX, npc.homeTileY);
+
+				marcadores.Add(new ResultadoBusqueda {
+					Tile = tileCasa,
+					Cantidad = 1,
+					Etiqueta = npc.FullName,
+					DistanciaAlJugador = Vector2.Distance(jugador.Center, tileCasa * 16f) / 16f,
+					TipoNpc = npc.type,
+					FrameNpc = npc.frame
+				});
+			}
+
+			MarcadoresExploracion.Fijar(Idiomas.Texto("Exploracion.Vecindad.Titulo"), marcadores, EstiloTk.Correcto);
+
+			RegistroExploracion.Linea(Terrakeep.LogTag + " Vecindad: \"marcar en el mapa\" - " +
+				marcadores.Count + " casas reales marcadas (NPC.homeTileX/homeTileY).");
 		}
 
 		private void AnadirFilaNpc(Player jugador, NPC npc)

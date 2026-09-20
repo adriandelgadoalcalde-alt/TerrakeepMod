@@ -432,6 +432,83 @@ namespace TerrakeepMod.Common.Exploracion
 					break;
 
 				case 25: {
+					// Re-lectura literal del catalogo (20-sep-2026): pieza que faltaba de la idea 5,
+					// "marcar casas en el mapa". Clic REAL en el boton (panel.PulsarBoton - el mismo
+					// buscador por texto que ya usa el resto del arnes, nunca invocar el metodo
+					// privado a mano) y comprobacion de que MarcadoresExploracion queda con un
+					// marcador real POR CADA NPC de pueblo activo, en su homeTileX/homeTileY real -
+					// recalculado aqui de forma independiente a partir de Main.npc[], no releido del
+					// propio resultado de la pestaña, para que un bug de transcripcion en
+					// MarcarCasasEnElMapa() no se autoconfirme.
+					string clicado = panel.PulsarBoton(Idiomas.Texto("Exploracion.Vecindad.MarcarEnMapa"));
+
+					int esperados = 0;
+					float primeraX = -1f, primeraY = -1f;
+					string primerNombre = null;
+					for (int i = 0; i < Main.maxNPCs; i++) {
+						NPC npc = Main.npc[i];
+						if (npc == null || !npc.active || !npc.townNPC || NPCID.Sets.IsTownPet[npc.type]) {
+							continue;
+						}
+						esperados++;
+						if (primerNombre == null) {
+							bool sinCasa = npc.homeTileX < 0 && npc.homeTileY < 0;
+							primeraX = sinCasa ? npc.Center.X / 16f : npc.homeTileX;
+							primeraY = sinCasa ? npc.Center.Y / 16f : npc.homeTileY;
+							primerNombre = npc.FullName;
+						}
+					}
+
+					bool cuentaOk = MarcadoresExploracion.HayAlgo && MarcadoresExploracion.Resultados.Count == esperados;
+					// ResultadoBusqueda es una CLASE (referencia): default es null, nunca un valor
+					// vacio de verdad - de ahi la comprobacion explicita en vez de fiarse de un
+					// "default" silencioso, que aqui petaria con NullReferenceException si
+					// Resultados estuviera vacio.
+					ResultadoBusqueda primero = (MarcadoresExploracion.Resultados.Count > 0)
+						? MarcadoresExploracion.Resultados[0] : null;
+					bool primeroOk = cuentaOk && primero != null && primerNombre != null &&
+						System.Math.Abs(primero.Tile.X - primeraX) < 0.01f &&
+						System.Math.Abs(primero.Tile.Y - primeraY) < 0.01f;
+
+					RegistroExploracion.Linea(Terrakeep.LogTag +
+						" AUTOPRUEBA WS6/25 - clic real en \"" + clicado + "\" -> MarcadoresExploracion.HayAlgo=" +
+						MarcadoresExploracion.HayAlgo + ", Resultados.Count=" + MarcadoresExploracion.Resultados.Count +
+						" (esperados " + esperados + " NPC de pueblo activos) -> " +
+						(cuentaOk ? "OK: un marcador real por cada vecino." : "NO CUADRA.") +
+						(primero != null
+							? (" Primer marcador tile=(" + primero.Tile.X + "," + primero.Tile.Y +
+								") esperado=(" + primeraX + "," + primeraY + ") de \"" + primerNombre + "\" -> " +
+								(primeroOk ? "OK: coincide con NPC.homeTileX/homeTileY real." : "NO CUADRA."))
+							: " (sin ningun marcador que comparar) -> NO CUADRA."));
+
+					panel.CambiarPestana(0);
+					Siguiente(5);
+					break;
+				}
+
+				case 26: {
+					// Cambia al mini-mapa (pestaña "Mapa", indice 0 ya seleccionado arriba) para que
+					// los rombos de MarcadoresExploracion se dibujen de verdad al menos un fotograma
+					// antes de la captura - mismo patron ya usado para los marcadores de "Cobre".
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/26 - pestaña \"" +
+						panel.NombrePestanaActual + "\" tras volver, con los marcadores de Vecindad puestos: " +
+						panel.Mapa.Mapa.Informe());
+					// 5 fotogramas no bastaban: la captura salía con el mini-mapa en negro (0 trozos
+					// dibujados ese fotograma) - el propio Mapa.Informe() de arriba ya lo decía. 30
+					// fotogramas da tiempo real a que MiniMapaTk vuelva a pintar sus trozos tras el
+					// cambio de pestaña.
+					Siguiente(30);
+					break;
+				}
+
+				case 27: {
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/27 - " +
+						CapturaDePantalla.Guardar("ws6-vecindad-marcadores-mapa"));
+					Siguiente(5);
+					break;
+				}
+
+				case 28: {
 					// SOLO ARNES DE PRUEBAS: siembra un cofre SINTETICO (nunca uno real, mismo
 					// hueco 7999 de Main.chest ya usado por la autoprueba de la idea 6 en WS3 - una
 					// partida real jamas llega ahi) muy cerca del jugador, ANTES de marcar, para
@@ -451,14 +528,14 @@ namespace TerrakeepMod.Common.Exploracion
 					cofre.item[0].stack = 15;
 					Main.chest[IndiceCofrePruebaRebobinar] = cofre;
 
-					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/25 - SOLO ARNES DE PRUEBAS: " +
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/28 - SOLO ARNES DE PRUEBAS: " +
 						"cofre sintetico sembrado en Main.chest[" + IndiceCofrePruebaRebobinar + "] en tile (" +
 						_cofrePruebaX + ", " + _cofrePruebaY + ") con " + Describir(cofre.item[0]) + ".");
 					Siguiente(5);
 					break;
 				}
 
-				case 26:
+				case 29:
 					// Idea 10 del catalogo de funciones ("rebobinar el mundo"): abre la pestaña y
 					// pulsa el boton real "Marcar aqui" (misma ruta que el resto del arnes,
 					// panel.PulsarBoton -> BotonTk.LeftClick). El texto se pide a Idiomas.Texto en
@@ -467,7 +544,7 @@ namespace TerrakeepMod.Common.Exploracion
 					// texto fijo en ingles aqui no encontraba el boton real (bug real visto en el
 					// log: "Clic real en . HayFoto=False", PulsarBoton devolviendo null).
 					panel.CambiarPestana(4);
-					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/26 - pestaña \"" +
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/29 - pestaña \"" +
 						panel.NombrePestanaActual + "\": " + panel.InformePestanaActual() + ". Clic real en " +
 						panel.PulsarBoton(Idiomas.Texto("Exploracion.Rebobinar.Marcar")) + ". HayFoto=" +
 						panel.Rebobinar.HayFoto + ", CofresEnFoto=" + panel.Rebobinar.CofresEnFoto +
@@ -475,7 +552,7 @@ namespace TerrakeepMod.Common.Exploracion
 					Siguiente(5);
 					break;
 
-				case 27: {
+				case 30: {
 					// SOLO ARNES DE PRUEBAS: cambia un tile REAL dentro del area recien fotografiada
 					// (nunca fuera de ella) a un tipo distinto y conocido, Y cambia el contenido del
 					// cofre sembrado, para demostrar con datos reales que RecalcularDiferencia()
@@ -495,7 +572,7 @@ namespace TerrakeepMod.Common.Exploracion
 						cofre.item[1].stack = 3;
 					}
 
-					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/27 - ESCENARIO DE PRUEBA: tile (" +
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/30 - ESCENARIO DE PRUEBA: tile (" +
 						_tileDePruebaX + ", " + _tileDePruebaY + "), dentro del area fotografiada " +
 						area.ancho + "x" + area.alto + " desde (" + area.x + ", " + area.y + "), cambiado de " +
 						"TileType=" + _tileDePruebaTipoAntes + " HasTile=" + _tileDePruebaHasTileAntes +
@@ -506,8 +583,8 @@ namespace TerrakeepMod.Common.Exploracion
 					break;
 				}
 
-				case 28:
-					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/28 - tras el cambio sintetico: " +
+				case 31:
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/31 - tras el cambio sintetico: " +
 						"DiferentesAhora=" + panel.Rebobinar.DiferentesAhora +
 						" -> " + (panel.Rebobinar.DiferentesAhora >= 1
 							? "OK, detecta de verdad el tile cambiado."
@@ -520,19 +597,19 @@ namespace TerrakeepMod.Common.Exploracion
 					Siguiente(5);
 					break;
 
-				case 29:
-					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/29 - clic real en " +
+				case 32:
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/32 - clic real en " +
 						panel.PulsarBoton(Idiomas.Texto("Exploracion.Rebobinar.Rebobinar")) + ".");
 					Siguiente(5);
 					break;
 
-				case 30: {
+				case 33: {
 					Tile tras = Main.tile[_tileDePruebaX, _tileDePruebaY];
 					bool tileRestaurado = tras.TileType == _tileDePruebaTipoAntes && tras.HasTile == _tileDePruebaHasTileAntes;
 					Chest cofre = Main.chest[IndiceCofrePruebaRebobinar];
 					bool cofreRestaurado = cofre != null && cofre.item[1].IsAir;
 					panel.Rebobinar.RecalcularDiferencia();
-					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/30 - tras Rebobinar(): tile (" +
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/33 - tras Rebobinar(): tile (" +
 						_tileDePruebaX + ", " + _tileDePruebaY + ") TileType=" + tras.TileType + " HasTile=" + tras.HasTile +
 						" (esperado TileType=" + _tileDePruebaTipoAntes + " HasTile=" + _tileDePruebaHasTileAntes + ") -> " +
 						(tileRestaurado ? "OK, el tile ha vuelto a la foto." : "MAL: el tile NO ha vuelto.") +
@@ -545,7 +622,7 @@ namespace TerrakeepMod.Common.Exploracion
 					break;
 				}
 
-				case 31:
+				case 34:
 					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6 COMPLETA.");
 					_enMarcha = false;
 					break;

@@ -663,12 +663,15 @@ Exploracion: {
 
 	// Functions catalogue idea 5 ("NPC happiness planner").
 	Vecindad: {
+		Titulo: Neighborhood
 		Resumen: "{0} town NPCs active right now."
 		Ninguno: You don't have any town NPCs living in this world yet.
 		Precio: "{0} % of the base price"
 		SinInforme: (nothing special to say - content by default)
 		SinCasa: No house assigned - their mood isn't reliable until they have one.
 		Lejos: "{0} tiles away - get closer to their house for a real reading (this report may be reading your current biome, not theirs)."
+		MarcarEnMapa: Mark houses on map
+		MarcarEnMapaAyuda: Paints a real marker on each neighbor's house (NPC.homeTileX/homeTileY) on the minimap and the game's map.
 	}
 
 	// Functions catalogue idea 10 ("rewind the world"): a terrain undo, same idea as the object

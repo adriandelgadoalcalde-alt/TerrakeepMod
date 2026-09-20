@@ -663,12 +663,15 @@ Exploracion: {
 
 	// Functions catalogue idea 5 ("NPC happiness planner").
 	Vecindad: {
+		Titulo: Vecindad
 		Resumen: "{0} NPC de pueblo activos ahora mismo."
 		Ninguno: Todavía no tienes ningún NPC de pueblo viviendo en este mundo.
 		Precio: "{0} % del precio base"
 		SinInforme: (sin comentarios especiales - contento por defecto)
 		SinCasa: Sin casa asignada - su humor no es fiable hasta que tenga una.
 		Lejos: A {0} tiles - acércate a su casa para una lectura real (este informe puede estar leyendo tu bioma actual, no el suyo).
+		MarcarEnMapa: Marcar casas en el mapa
+		MarcarEnMapaAyuda: Pinta un marcador real en la casa de cada vecino (NPC.homeTileX/homeTileY) en el mini-mapa y en el mapa del juego.
 	}
 
 	// Functions catalogue idea 10 ("rewind the world"): a terrain undo, same idea as the object
