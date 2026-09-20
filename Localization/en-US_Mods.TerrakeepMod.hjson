@@ -19,6 +19,10 @@ Panel: {
 			{0}
 			Click to open the Guide.
 			'''
+		// Functions catalogue idea 2 ("DPS meter").
+		Dps: "{0} DPS"
+		DpsSinDatos: No recent hits
+		AyudaDps: Damage per second you've dealt in the last 10 real seconds.
 	}
 
 	Area: {

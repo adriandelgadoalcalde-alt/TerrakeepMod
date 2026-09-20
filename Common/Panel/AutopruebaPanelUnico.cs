@@ -8,6 +8,7 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Builds;
+using TerrakeepMod.Common.Guia;
 using TerrakeepMod.Common.Personaje;
 using TerrakeepMod.UI.Builds;
 using TerrakeepMod.UI.Panel;
@@ -155,6 +156,11 @@ namespace TerrakeepMod.Common.Panel
 				case 39: PulsarAutoEquiparParaCodigo(); break;
 				case 40: PulsarExportarCodigo(); break;
 				case 41: PulsarImportarCodigo(); break;
+
+				// --- DPS-metro (idea 2 del catalogo de funciones): chip de cabecera -----------------
+				case 42: ComprobarChipDpsSinDatos(); break;
+				case 43: RegistrarGolpesDePruebaEnMedidorDanio(); break;
+				case 44: ComprobarChipDpsConDatos(); break;
 
 				default: Terminar(); break;
 			}
@@ -644,6 +650,61 @@ namespace TerrakeepMod.Common.Panel
 				(resultado?.YaColocados ?? -1) + ") " +
 				(idempotente ? "-> OK: importar lo que ya llevabas puesto no crea ni mueve nada." :
 					"-> NO CUADRA (deberia ser idempotente)."));
+		}
+
+		// -------------------------------------------------------------------------------------
+		// DPS-metro (idea 2 del catalogo de funciones): el chip de cabecera lee MedidorDanio en
+		// vivo, visible desde cualquier pestaña, no solo Builds.
+		// -------------------------------------------------------------------------------------
+
+		/// <summary>Antes de registrar ningun golpe, el chip tiene que decir "sin datos" y no un
+		/// falso "0 DPS" (ver el XMLdoc de <see cref="MedidorDanio.HayDatosRecientes"/>).</summary>
+		private static void ComprobarChipDpsSinDatos()
+		{
+			MedidorDanio.ReiniciarParaPrueba();
+			PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
+			string texto = panel != null ? panel.ChipDpsParaPrueba : null;
+
+			RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL/dps - chip SIN golpes registrados: \"" +
+				texto + "\" (esperado: \"" + Idiomas.Texto("Panel.Cabecera.DpsSinDatos") + "\") " +
+				(texto == Idiomas.Texto("Panel.Cabecera.DpsSinDatos") ? "-> OK" : "-> NO CUADRA"));
+		}
+
+		/// <summary>
+		/// Registra tres golpes de daño CONOCIDO (100+150+200=450) directamente en
+		/// <see cref="MedidorDanio"/> - ver el XMLdoc de <see cref="MedidorDanio.RegistrarGolpeParaPrueba"/>
+		/// para el porque de no fabricar un combate real. Con la ventana de 10s completa,
+		/// 450/10=45.0 DPS exactos.
+		/// </summary>
+		private static void RegistrarGolpesDePruebaEnMedidorDanio()
+		{
+			MedidorDanio.RegistrarGolpeParaPrueba(100);
+			MedidorDanio.RegistrarGolpeParaPrueba(150);
+			MedidorDanio.RegistrarGolpeParaPrueba(200);
+
+			float dps = MedidorDanio.DpsUltimos10s();
+			RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL/dps - 3 golpes registrados " +
+				"(100+150+200=450 de daño): MedidorDanio.DpsUltimos10s()=" + dps.ToString("0.0") +
+				" (esperado 45.0) " + (System.Math.Abs(dps - 45f) < 0.01f ? "-> OK" : "-> NO CUADRA") +
+				". HayDatosRecientes()=" + MedidorDanio.HayDatosRecientes());
+		}
+
+		/// <summary>El chip de la cabecera tiene que reflejar esos 45 DPS UN fotograma despues (el
+		/// refresco de los chips corre en cada <c>Update</c> del panel), visto desde la pestaña
+		/// "Builds" en la que ha quedado abierto el panel - prueba real de que el chip es visible
+		/// desde CUALQUIER pestaña, no solo desde la Guia.</summary>
+		private static void ComprobarChipDpsConDatos()
+		{
+			PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
+			string texto = panel != null ? panel.ChipDpsParaPrueba : null;
+			string esperado = Idiomas.Texto("Panel.Cabecera.Dps", 45);
+
+			RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL/dps - chip CON golpes registrados " +
+				"(pestaña abierta: \"" + PanelTerrakeepState.NombresDeArea[(int)PanelTerrakeepSystem.AreaAbierta] +
+				"\"): \"" + texto + "\" (esperado: \"" + esperado + "\") " +
+				(texto == esperado ? "-> OK: visible desde cualquier pestaña." : "-> NO CUADRA"));
+
+			MedidorDanio.ReiniciarParaPrueba();
 		}
 	}
 }

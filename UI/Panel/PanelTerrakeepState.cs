@@ -91,6 +91,13 @@ namespace TerrakeepMod.UI.Panel
 		private BotonTk _chipHora;
 		private BotonTk _chipObjetivo;
 
+		/// <summary>Idea 2 del catalogo de funciones ("DPS-metro"): el cuarto chip que ya preveia
+		/// TM3 ("aqui encaja el DPS-metro del catalogo hermano como cuarto chip") - tercero real
+		/// aqui, porque el propio vida/mana se descarto (ver ConstruirCabeceraChips). Dato real de
+		/// <see cref="MedidorDanio"/>.</summary>
+		private BotonTk _chipDps;
+		private const float AnchoChipDps = 92f;
+
 		/// <summary>Deja sitio real al texto del titulo ("Terrakeep", invariable, nunca se
 		/// traduce - ver <c>Panel.Titulo</c> en los dos <c>.hjson</c>): medido con la fuente real a
 		/// escala 1.15, ronda los 120px; 140 deja un respiro pequeño sin desperdiciar ancho.</summary>
@@ -149,6 +156,10 @@ namespace TerrakeepMod.UI.Panel
 		/// <summary>La capa donde flotan los desplegables del panel. Ver
 		/// <see cref="CapaSuperposicionTk"/> para el porque de que exista.</summary>
 		public CapaSuperposicionTk CapaSuperposicion => _capaSuperposicion;
+
+		/// <summary>SOLO PARA AUTOPRUEBAS: el texto que se ve ahora mismo en el chip de DPS de la
+		/// cabecera (idea 2 del catalogo de funciones, ver <see cref="MedidorDanio"/>).</summary>
+		public string ChipDpsParaPrueba => _chipDps != null ? _chipDps.Texto : "";
 
 		/// <summary>El boton "Cerrar (tecla)" del pie. Expuesto para que la autoprueba pueda medir su
 		/// rectangulo REAL y demostrar que ya no se solapa con un desplegable abierto.</summary>
@@ -308,6 +319,16 @@ namespace TerrakeepMod.UI.Panel
 			_chipObjetivo.Ayuda = () => Idiomas.Texto("Panel.Cabecera.AyudaObjetivo", _objetivoActualParaAyuda);
 			_chipObjetivo.AlPulsar += () => CambiarArea(AreaTerrakeep.Guia, "clic en el chip de objetivo de la Guía");
 			_marco.Append(_chipObjetivo);
+
+			_chipDps = new BotonTk("", 0.72f);
+			_chipDps.EsPestana = true;
+			_chipDps.Habilitado = false; // Informativo, no se pulsa.
+			_chipDps.Width.Set(AnchoChipDps, 0f);
+			_chipDps.Height.Set(AltoTitulo, 0f);
+			_chipDps.Left.Set(LeftChips + AnchoChipHora + SeparacionChips + AnchoChipObjetivo + SeparacionChips, 0f);
+			_chipDps.Top.Set(0f, 0f);
+			_chipDps.Ayuda = () => Idiomas.Texto("Panel.Cabecera.AyudaDps");
+			_marco.Append(_chipDps);
 		}
 
 		/// <summary>Texto actual de los dos chips - se pide en cada fotograma desde
@@ -344,6 +365,16 @@ namespace TerrakeepMod.UI.Panel
 					_objetivoActualParaAyuda = Idiomas.Texto("Panel.Cabecera.SinPartida");
 				}
 			}
+
+			if (_chipDps != null) {
+				if (MedidorDanio.HayDatosRecientes()) {
+					int dps = (int)System.Math.Round(MedidorDanio.DpsUltimos10s());
+					_chipDps.FijarTexto(Idiomas.Texto("Panel.Cabecera.Dps", dps));
+				}
+				else {
+					_chipDps.FijarTexto(Idiomas.Texto("Panel.Cabecera.DpsSinDatos"));
+				}
+			}
 		}
 
 		/// <summary>Nombre completo (posiblemente largo) del objetivo actual de la Guia, o el
@@ -359,20 +390,24 @@ namespace TerrakeepMod.UI.Panel
 		/// </summary>
 		private void AjustarVisibilidadChips()
 		{
-			if (_chipHora == null || _chipObjetivo == null || _marco == null) {
+			if (_chipHora == null || _chipObjetivo == null || _chipDps == null || _marco == null) {
 				return;
 			}
 
 			float anchoMarco = _marco.GetDimensions().Width;
-			float necesario = LeftChips + AnchoChipHora + SeparacionChips + AnchoChipObjetivo;
+			float necesario = LeftChips + AnchoChipHora + SeparacionChips + AnchoChipObjetivo +
+				SeparacionChips + AnchoChipDps;
 			bool hayHueco = anchoMarco > 0f && necesario <= anchoMarco * FraccionMaximaCabecera;
 
 			float anchoHora = hayHueco ? AnchoChipHora : 0f;
 			float anchoObjetivo = hayHueco ? AnchoChipObjetivo : 0f;
+			float anchoDps = hayHueco ? AnchoChipDps : 0f;
 			if (Math.Abs(_chipHora.Width.Pixels - anchoHora) > 0.5f ||
-				Math.Abs(_chipObjetivo.Width.Pixels - anchoObjetivo) > 0.5f) {
+				Math.Abs(_chipObjetivo.Width.Pixels - anchoObjetivo) > 0.5f ||
+				Math.Abs(_chipDps.Width.Pixels - anchoDps) > 0.5f) {
 				_chipHora.Width.Set(anchoHora, 0f);
 				_chipObjetivo.Width.Set(anchoObjetivo, 0f);
+				_chipDps.Width.Set(anchoDps, 0f);
 				_marco.Recalculate();
 			}
 		}
@@ -1152,6 +1187,9 @@ namespace TerrakeepMod.UI.Panel
 				}
 				else if (ReferenceEquals(hijo, _chipObjetivo)) {
 					id = "chip_objetivo"; tipo = "chip"; grupo = "chips_cabecera"; capa = "contenido";
+				}
+				else if (ReferenceEquals(hijo, _chipDps)) {
+					id = "chip_dps"; tipo = "chip"; grupo = "chips_cabecera"; capa = "contenido";
 				}
 				else {
 					// Titulo y linea de ayuda del pie: EtiquetaTk locales a ConstruirTitulo/
