@@ -154,6 +154,12 @@ namespace TerrakeepMod.Common.Libreria
 				// la geometria real con el campo viewportAlto nuevo.
 				case 24: PrepararBusquedaViewport(); break;
 				case 25: VolcarViewportLibreria(); break;
+				// TM2 del catalogo de rediseño visual ("Editor de objeto flotante"): re-arrastra un
+				// objeto de prueba fresco al recuadro de seleccion (el de los pasos 14-15 puede haber
+				// acabado en la papelera del paso 23) y comprueba que la tarjeta flotante aparece de
+				// verdad, con captura real para poder inspeccionar los pixeles.
+				case 26: PrepararTarjetaFlotante(); break;
+				case 27: ComprobarYCapturarTarjetaFlotante(); break;
 				default:
 					Registrar("AUTOPRUEBA WS3 COMPLETA. Todos los pasos ejecutados sin excepciones.");
 					_terminada = true;
@@ -695,6 +701,71 @@ namespace TerrakeepMod.Common.Libreria
 				Main.mouseLeft = izquierdoPrevio;
 				Main.mouseLeftRelease = sueltoPrevio;
 			}
+		}
+
+		/// <summary>
+		/// TM2: repone los dos objetos de prueba (por si el paso 23, la papelera, se llevo el que
+		/// estuviera en el recuadro) y arrastra el APILABLE de vuelta al recuadro de seleccion, con
+		/// el mismo camino real que <see cref="ArrastrarAlRecuadroDeSeleccion"/> (paso 15).
+		/// </summary>
+		private static void PrepararTarjetaFlotante()
+		{
+			PrepararObjetosDeHerramientas();
+
+			if (_tipoStack <= 0) {
+				Registrar("Paso 26 - sin objetos de prueba, se salta.");
+				return;
+			}
+
+			Player jugador = Main.LocalPlayer;
+			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
+			if (herramientas == null) {
+				Registrar("Paso 26 - Contenido.Herramientas es null.");
+				return;
+			}
+
+			bool izquierdoPrevio = Main.mouseLeft;
+			bool sueltoPrevio = Main.mouseLeftRelease;
+			Main.mouseLeft = true;
+			Main.mouseLeftRelease = true;
+			try {
+				ItemSlot.LeftClick(jugador.inventory, ItemSlot.Context.InventoryItem, RanuraStack);
+				herramientas.Seleccion.EjercitarHandle();
+			}
+			finally {
+				Main.mouseLeft = izquierdoPrevio;
+				Main.mouseLeftRelease = sueltoPrevio;
+			}
+
+			Registrar("Paso 26 - reposicionado para la tarjeta flotante. Recuadro de seleccion: "
+				+ Describir(herramientas.Seleccion.ObjetoActual));
+		}
+
+		/// <summary>
+		/// TM2: comprueba con DATOS REALES (no solo "compila") que la tarjeta flotante se ha
+		/// abierto de verdad - <c>PanelHerramientasLibreriaTk.TarjetaFlotanteAbierta</c>, la misma
+		/// bandera que decide si se ve o no - y deja una captura real para inspeccionar a mano el
+		/// sprite a 2x, el nombre coloreado por rareza y la linea de prefijo.
+		/// </summary>
+		private static void ComprobarYCapturarTarjetaFlotante()
+		{
+			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
+			if (herramientas == null) {
+				Registrar("Paso 27 - Contenido.Herramientas es null.");
+				return;
+			}
+
+			bool hayObjeto = !herramientas.Seleccion.ObjetoActual.IsAir;
+			bool tarjetaAbierta = herramientas.TarjetaFlotanteAbierta;
+			string textoPrefijo = herramientas.TarjetaFlotante != null
+				? herramientas.TarjetaFlotante.TextoPrefijo()
+				: "(tarjeta null)";
+
+			Registrar("Paso 27 - tarjeta flotante (TM2): recuadro=" + Describir(herramientas.Seleccion.ObjetoActual)
+				+ ", TarjetaFlotanteAbierta=" + tarjetaAbierta
+				+ " (" + (hayObjeto == tarjetaAbierta ? "OK: coincide con si hay objeto" : "NO CUADRA") + "), "
+				+ "linea de prefijo=\"" + textoPrefijo + "\". "
+				+ CapturaDePantalla.Guardar("ws3-tarjeta-flotante"));
 		}
 
 		/// <summary>Ejercita el editor de cantidad COMPACTO (modo explicito, enganchado al

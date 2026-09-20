@@ -428,6 +428,12 @@ Libreria: {
 		NoApilable: '''"{0}" no admite pila (no se puede editar la cantidad)'''
 	}
 
+	// Visual redesign catalogue TM2 ("Floating item editor").
+	TarjetaFlotante: {
+		Prefijo: Prefijo: {0}
+		PrefijoConMejor: Prefijo: {0}  ·  mejor: {1}
+	}
+
 	Prefijo: {
 		Ninguno: Ninguno
 
@@ -607,6 +613,17 @@ Exploracion: {
 		Mapa: Mapa
 		Busqueda: Búsqueda
 		Mundo: Este mundo
+		Vecindad: Vecindad
+	}
+
+	// Functions catalogue idea 5 ("NPC happiness planner").
+	Vecindad: {
+		Resumen: "{0} NPC de pueblo activos ahora mismo."
+		Ninguno: Todavía no tienes ningún NPC de pueblo viviendo en este mundo.
+		Precio: "{0} % del precio base"
+		SinInforme: (sin comentarios especiales - contento por defecto)
+		SinCasa: Sin casa asignada - su humor no es fiable hasta que tenga una.
+		Lejos: A {0} tiles - acércate a su casa para una lectura real (este informe puede estar leyendo tu bioma actual, no el suyo).
 	}
 
 	Categoria: {

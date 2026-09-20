@@ -8620,4 +8620,96 @@ investigación si vuelve a pasar.
   vanilla) cayendo con elegancia al título simple sin tarjeta vacía
   (`guia-26-moonlord-preparativos.png`).
 
+## 20-sep-2026 (segundo empujón) — TM2 completo (editor de objeto flotante) + idea 5 (planificador de vecindad de NPCs)
+
+El aviso de la ronda anterior ("son sistemas grandes que merecen sesión dedicada" no es un
+límite real) era correcto: con el punto de partida ya investigado (`CapaSuperposicionTk`
+confirmada lista), TM2 sí se pudo construir entero esta ronda, y de las 5 ideas de funciones
+pendientes se investigó primero cuál tenía menos riesgo real (evitando las que tocan datos de
+partida real/multijugador sin poder verificarlas con cuidado) y se implementó la idea 5.
+
+### TM2 - tarjeta flotante de edición de objeto
+
+- `UI/Libreria/Widgets/TarjetaEdicionFlotanteTk.cs` (nuevo): tarjeta `UIPanel` de 240x204,
+  anclada al slot de selección vía `CapaSuperposicionTk`, con el sprite del objeto a 2x
+  (`ItemSlot.Draw` con guardado/restaurado real de `Main.inventoryScale`/`Main.inventoryBack`,
+  igual que hace el propio vanilla), nombre coloreado por rareza
+  (`Terraria.GameContent.UI.ItemRarity.GetColor`) con auto-reducción de escala si no cabe (nunca
+  se trunca), el editor de cantidad ya maduro (`EditorCantidadTk`, reutilizado tal cual) y la
+  papelera (`SlotPapeleraTk`, reutilizada). Dos decisiones de diseño reales, documentadas en el
+  propio XMLdoc de la clase:
+  1. **No sustituye el arrastre de `SlotSeleccionTk` por clic directo sobre el slot real**:
+     habría que reimplementar a mano la semántica de recogida de `ItemSlot.Handle` que usa toda
+     la Librería - más riesgo que beneficio para lo que pide el catálogo.
+  2. **El prefijo se muestra de solo lectura** (`TextoPrefijo()`, con el mejor prefijo posible
+     vía `CatalogoMejorPrefijo.MejorPrefijo` si es distinto del actual) en vez de anidar un
+     `EditorPrefijoTk` interactivo dentro de la tarjeta: ambos widgets comparten la MISMA
+     `CapaSuperposicionTk` (un solo hueco), así que anidarlos los habría hecho pelearse por ese
+     hueco entre sí mismos.
+- `UI/Libreria/Widgets/PanelHerramientasLibreriaTk.cs`: nuevo `Update()` que muestra/oculta la
+  tarjeta automáticamente según si `Seleccion` tiene un objeto real.
+- **Bug real encontrado y arreglado con la propia autoprueba** (no hipotético, capturado en el
+  log): la tarjeta y el desplegable YA EXISTENTE de `EditorPrefijoTk` (del mismo mini-panel, no
+  anidados entre sí - ver el punto 2 de arriba) resultaron ser DOS widgets hermanos que comparten
+  la misma `CapaSuperposicionTk`. `CapaSuperposicionTk.Mostrar()` hace `Quitar(null)` antes de
+  colgar lo nuevo, así que en el primer intento, en cuanto el jugador abría el desplegable de
+  prefijo, el `Update()` de la tarjeta (que corre todos los fotogramas mientras haya selección)
+  volvía a llamar a `Mostrar()` en el fotograma siguiente y expulsaba el desplegable que el
+  jugador acababa de abrir - confirmado con la autoprueba ANTES del arreglo: paso 18 registraba
+  `PopupAbierto=True` pero el paso 19, un fotograma después, ya no encontraba el popup abierto.
+  Arreglado con una guarda de cesión: si la capa la ocupa algo que no es la propia tarjeta, se
+  espera a que se libere sola en vez de arrebatársela.
+- `Common/Libreria/AutopruebaLibreria.cs`: pasos 26/27 nuevos (arrastra un objeto a selección,
+  comprueba que `TarjetaFlotanteAbierta` coincide con si hay objeto, vuelca el texto real de
+  `TextoPrefijo()` al log y guarda captura).
+- Localización (es-ES/en-US) con las claves `Libreria.TarjetaFlotante.Prefijo`/`PrefijoConMejor`.
+
+**Verificación real** (`scripts\verificar-libreria.ps1`, comprobado el primer plano/proceso de
+TerrakeepTrainer antes de lanzar el cliente gráfico): `AUTOPRUEBA WS3 COMPLETA` tras el arreglo,
+con el paso 19 mostrando ahora la comprobación completa de geometría en vez del fallo en cadena
+("el popup no esta abierto") - cabe entero dentro de la capa, no se cruza con el botón Cerrar,
+y `UIElement.GetElementAt` (la misma llamada real que usa `UserInterface` para repartir clics)
+devuelve el botón del desplegable, no la tarjeta. Capturas reales revisadas a ojo, pixel a pixel:
+`ws3-prefijo-1-abierto-dentro-del-panel.png` (desplegable de prefijo intacto, ya no expulsado) y
+`ws3-tarjeta-flotante.png` (tarjeta con sprite 2x, cantidad, papelera y "Prefix: None" - todo
+dentro de su caja, sin solapes).
+
+### Idea 5 - planificador de felicidad de vecinos (nueva sub-pestaña "Vecindad" en Exploración)
+
+- `UI/Exploracion/PestanaVecindad.cs` (nuevo): lista con scroll, refrescada cada 30 fotogramas,
+  de todos los NPCs de pueblo activos (`Main.npc[i].active && townNPC`, excluyendo mascotas de
+  pueblo vía `NPCID.Sets.IsTownPet`), ordenados por nombre. Por cada uno, usa la API vainilla
+  REAL de felicidad - `Main.ShopHelper.GetShoppingSettings(jugador, npc)`, la misma que calcula
+  el precio de la tienda del propio NPC - para mostrar el % de ajuste de precio (verde/rojo/gris
+  según sea mejor/peor/neutro que 1.0) y el texto REAL localizado de `HappinessReport` (la misma
+  frase que vainilla muestra en la conversación del NPC), sin reinventar el cálculo.
+- Dos avisos añadidos con investigación real, no adivinados: "SinCasa" si
+  `homeTileX/Y < 0` (el NPC aún no tiene casa asignada) y "Lejos" si la distancia jugador-NPC
+  supera 60 tiles - documentado en el XMLdoc de la clase el motivo concreto: la felicidad por
+  bioma se calcula sobre la posición VIVA del jugador
+  (`BiomePreferenceListTrait.ModifyShopPrice` llama a `preference.Biome.IsInBiome(info.player)`,
+  visto en el decompilado real de `Terraria.GameContent.Personalities.BiomePreferenceListTrait`),
+  no sobre la casa del NPC - así que el informe que se muestra solo es fiable estando cerca del
+  NPC de verdad, y el aviso lo deja claro en vez de dar un dato que podría no corresponder a esa
+  casa.
+- **Límite real investigado y aceptado, no forzado**: la idea original de "proponer una
+  reubicación mejor" para cada NPC no tiene una superficie segura - no existe ninguna API pública
+  para simular `GetShoppingSettings` con el jugador en OTRA posición sin moverlo de verdad (que
+  sería tocar la partida real para una simulación, descartado por el mismo criterio que ya se
+  aplicó con datos de partida real en TerrakeepTrainer). Se documenta aquí en vez de forzar un
+  cálculo que mentiría en cuanto el bioma de destino no coincidiera con el real.
+- `UI/Exploracion/ContenidoExploracion.cs`: cuarta sub-pestaña ("Vecindad") añadida al array de
+  claves y al `switch` de construcción, mismo patrón que las otras tres.
+- Localización (es-ES/en-US): pestaña + bloque `Exploracion.Vecindad.*`
+  (Resumen/Ninguno/Precio/SinInforme/SinCasa/Lejos).
+
+**Pendiente de verificación en el próximo commit**: falta una pasada real contra un mundo con
+NPCs de pueblo activos (el sandbox de la Guía normalmente los tiene) para capturar la pestaña
+con vecinos de verdad antes de darla por cerrada.
+
+### Sin publicar nada
+
+`git push`, `gh release`, empaquetado del mod y subida de versión siguen sin tocarse, tal como se
+pidió.
+
 Sin `git push`, sin `gh release`, sin empaquetar el mod, sin subir versión.

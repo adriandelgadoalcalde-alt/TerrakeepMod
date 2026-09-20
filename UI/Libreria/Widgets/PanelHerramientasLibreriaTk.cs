@@ -1,6 +1,8 @@
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
+using TerrakeepMod.UI.Panel;
 using TerrakeepMod.UI.Personaje.Widgets;
 
 namespace TerrakeepMod.UI.Libreria.Widgets
@@ -122,6 +124,120 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 			_editorPrefijo = new EditorPrefijoTk(() => _seleccion.ObjetoActual, Ancho);
 			_editorPrefijo.Top.Set(filaTres, 0f);
 			Append(_editorPrefijo);
+		}
+
+		// =====================================================================================
+		// TM2 del catalogo de rediseño visual ("Editor de objeto flotante"): en cuanto hay algo en
+		// el recuadro de seleccion, TarjetaEdicionFlotanteTk aparece junto a este mini-panel con el
+		// objeto a 2x, su nombre en el color real de su rareza y un aviso de "mejor prefijo" ya
+		// calculado - ver el XMLdoc completo de esa clase para el porque de cada decision de diseño
+		// (sobre todo por que NO reemplaza el arrastre a SlotSeleccionTk y por que su prefijo es
+		// solo informativo, no un EditorPrefijoTk anidado).
+		// =====================================================================================
+
+		private TarjetaEdicionFlotanteTk _tarjetaFlotante;
+		private bool _tarjetaFlotanteAbierta;
+
+		/// <summary>La tarjeta flotante, si se ha llegado a crear (solo la primera vez que hay algo
+		/// seleccionado). Expuesta para que la autoprueba pueda leerla sin duplicar la logica de
+		/// mostrar/ocultar.</summary>
+		public TarjetaEdicionFlotanteTk TarjetaFlotante => _tarjetaFlotante;
+
+		/// <summary>true si la tarjeta flotante esta visible ahora mismo. Lo lee la autoprueba.</summary>
+		public bool TarjetaFlotanteAbierta => _tarjetaFlotanteAbierta;
+
+		public override void Update(GameTime gameTime)
+		{
+			base.Update(gameTime);
+			ActualizarTarjetaFlotante();
+		}
+
+		/// <summary>
+		/// Muestra/esconde la tarjeta flotante segun si <see cref="SlotSeleccionTk.ObjetoActual"/>
+		/// tiene algo ahora mismo - nunca un evento de clic que rastrear, ver el XMLdoc de
+		/// <see cref="TarjetaEdicionFlotanteTk"/> para el porque real de esta decision.
+		/// </summary>
+		private void ActualizarTarjetaFlotante()
+		{
+			bool hayObjeto = _seleccion.ObjetoActual != null && !_seleccion.ObjetoActual.IsAir;
+			CapaSuperposicionTk capa = CapaSuperposicionTk.Buscar(this);
+			if (capa == null) {
+				// Montado suelto (una prueba sin panel alrededor, p.ej.): sin capa no hay donde
+				// flotar la tarjeta con seguridad, se deja sin mostrar en vez de arriesgar el
+				// mismo desborde real que la propia CapaSuperposicionTk existe para evitar.
+				return;
+			}
+
+			if (!hayObjeto) {
+				if (_tarjetaFlotanteAbierta) {
+					capa.Quitar(_tarjetaFlotante);
+					_tarjetaFlotanteAbierta = false;
+				}
+				return;
+			}
+
+			if (_tarjetaFlotante == null) {
+				_tarjetaFlotante = new TarjetaEdicionFlotanteTk(() => _seleccion.ObjetoActual);
+			}
+
+			PosicionarTarjetaFlotante(capa);
+
+			// Bug real encontrado y arreglado con la propia autoprueba (ver bitacora.md): la tarjeta
+			// y el desplegable de EditorPrefijoTk (del MISMO mini-panel, no anidado dentro de la
+			// tarjeta - ver el XMLdoc de TarjetaEdicionFlotanteTk para el porque de esa decision) se
+			// disputan la MISMA CapaSuperposicionTk, que solo admite un contenido a la vez. Sin esta
+			// comprobacion, la tarjeta volvia a intentar mostrarse en el fotograma siguiente a que el
+			// desplegable de prefijo se abriera (capa.Ocupada ya por el popup) y capa.Mostrar hace
+			// Quitar(null) ANTES de colgar lo nuevo - expulsando al popup que el jugador acababa de
+			// abrir. Aqui se cede el turno: si la capa la ocupa algo que NO es esta misma tarjeta, se
+			// espera a que se libere sola (el desplegable la suelta el solita al cerrarse) en vez de
+			// arrebatarsela.
+			if (capa.Ocupada && !ReferenceEquals(capa.Contenido, _tarjetaFlotante)) {
+				return;
+			}
+
+			if (!_tarjetaFlotanteAbierta) {
+				capa.Mostrar(_tarjetaFlotante, () => _tarjetaFlotanteAbierta = false);
+				_tarjetaFlotanteAbierta = true;
+			}
+		}
+
+		/// <summary>
+		/// Coloca la tarjeta "pegada" a este mini-panel (a su izquierda, con el borde superior
+		/// alineado; si no cabe ahí dentro del area util del marco, acotada al area, nunca
+		/// desbordando hacia el mundo) - el MISMO patron real, calculo a calculo, que ya usa y
+		/// tiene probado <see cref="EditorPrefijoTk"/> para su propio popup.
+		/// </summary>
+		private void PosicionarTarjetaFlotante(CapaSuperposicionTk capa)
+		{
+			CalculatedStyle area = capa.GetInnerDimensions();
+			CalculatedStyle esteMiniPanel = GetDimensions();
+			const float Separacion = 8f;
+
+			float x = esteMiniPanel.X - TarjetaEdicionFlotanteTk.Ancho - Separacion;
+			if (x < area.X) {
+				x = esteMiniPanel.X + esteMiniPanel.Width + Separacion;
+			}
+			if (x + TarjetaEdicionFlotanteTk.Ancho > area.X + area.Width) {
+				x = area.X + area.Width - TarjetaEdicionFlotanteTk.Ancho;
+			}
+			if (x < area.X) {
+				x = area.X;
+			}
+
+			float y = esteMiniPanel.Y;
+			if (y + TarjetaEdicionFlotanteTk.Alto > area.Y + area.Height) {
+				y = area.Y + area.Height - TarjetaEdicionFlotanteTk.Alto;
+			}
+			if (y < area.Y) {
+				y = area.Y;
+			}
+
+			// Left/Top son relativos al INTERIOR del padre real (la propia capa) - la posicion de
+			// pantalla que se acaba de calcular se pasa a coordenadas del padre restandole el
+			// origen del area, mismo criterio que EditorPrefijoTk.ConstruirPopup.
+			_tarjetaFlotante.Left.Set(x - area.X, 0f);
+			_tarjetaFlotante.Top.Set(y - area.Y, 0f);
 		}
 	}
 }
