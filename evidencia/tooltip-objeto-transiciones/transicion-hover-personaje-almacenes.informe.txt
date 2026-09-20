@@ -1,7 +1,7 @@
 ﻿VISUAL QA (pieza: verificarTransicion.js): PASS
 OVERALL VISUAL SCORE: N/D - una pieza mecánica no puntúa 0-100 de forma honesta (eso exige juicio de diseño, Parte 25); ver PROTOCOLO-REVISION-VISUAL.md.
 DESIGN IDENTITY: NO EVALUABLE MECÁNICAMENTE - requiere revisión manual de Claude (Parte 2, PROTOCOLO-REVISION-VISUAL.md).
-ALCANCE DE ESTA PIEZA: Comparación de DOS volcados de geometría de la misma pantalla (antes: 48 elementos, después: 48) alrededor de una transición "hover", declarada SIN cambio geométrico: 0 movidos/redimensionados, 0 aparecidos, 0 desaparecidos, 0 ids en la zona esperada de cambio (raíces: ninguna). Esta pieza NO ejecuta la transición (lo hace el extractor de cada motor) y no ve píxeles - un cambio solo de color no deja rastro aquí.
+ALCANCE DE ESTA PIEZA: Comparación de DOS volcados de geometría de la misma pantalla (antes: 51 elementos, después: 51) alrededor de una transición "hover", declarada SIN cambio geométrico: 0 movidos/redimensionados, 0 aparecidos, 0 desaparecidos, 0 ids en la zona esperada de cambio (raíces: ninguna). Esta pieza NO ejecuta la transición (lo hace el extractor de cada motor) y no ve píxeles - un cambio solo de color no deja rastro aquí.
 ------------------------------------------------------------
 
 CRITICAL ISSUES

@@ -1,76 +1,78 @@
-﻿[14:18:18.643] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Mod cargado. Prueba de humo de Terrakeep.Core: GameItem(Id=3389).IsEmpty=False, .IsCalamity=False, ensamblado real = Terrakeep.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
-[14:18:18.984] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Builds: la fuente "Calamity" no es utilizable en esta partida (35/154 objetos resueltos, y 0/119 de los que vienen de un mod); no se enseñara en el panel.
-[14:18:18.992] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Builds: catalogo resuelto. [Vanilla: 3 etapas, 156/156 objetos resueltos] 
-[14:18:19.002] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] PrefijoPicaro: tabla cargada desde Assets/rogue_prefixes.json (17 de arma + 4 de accesorio).
-[14:18:19.008] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Guia: arbol de progresion cargado. 46 tramos (46 con requisitos evaluables), 116 pasos, 230 requisitos, 36 avisos. Calamity cargado=False.
-[14:18:19.011] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedDesertScourge" en el paso "VencerADesertScourge"
-[14:18:19.019] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedDesertScourge" en el paso "PrepararGiantClam"
-[14:18:19.020] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCLAM" en el paso "VencerAGiantClam"
-[14:18:19.020] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCrabulon" en el paso "VencerACrabulon"
-[14:18:19.020] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedHiveMind" en el paso "VencerAHiveMindOPerforator"
-[14:18:19.020] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedSlimeGod" en el paso "VencerASlimeGod"
-[14:18:19.020] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedDreadnautilus" en el paso "VencerADreadnautilusYHorribleHog"
-[14:18:19.020] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCryogen" en el paso "VencerACryogen"
-[14:18:19.020] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedAquaticScourge" en el paso "VencerAAquaticScourge"
-[14:18:19.020] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedBrimstoneElemental" en el paso "VencerABrimstoneElemental"
-[14:18:19.020] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedAquaticScourge" en el paso "PrepararLluviaAcida2"
-[14:18:19.020] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCragmawMire" en el paso "VencerACragmawMire"
-[14:18:19.021] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedAstrumAureus" en el paso "VencerAAstrumAureus"
-[14:18:19.021] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCalamitasClone" en el paso "VencerACalamitasClone"
-[14:18:19.021] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedGSS" en el paso "VencerAGreatSandShark"
-[14:18:19.021] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedRavager" en el paso "VencerARavager"
-[14:18:19.021] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedPlaguebringer" en el paso "VencerAPlaguebringer"
-[14:18:19.021] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedDragonfolly" en el paso "VencerADragonfolly"
-[14:18:19.021] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedPrimordialWyrm" en el paso "VencerAPrimordialWyrm"
-[14:18:19.021] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedPolterghast" en el paso "PrepararLluviaAcida3"
-[14:18:19.021] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedMauler" en el paso "VencerALluviaAcida3"
-[14:18:19.021] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedAstrumDeus" en el paso "VencerAAstrumDeus"
-[14:18:19.021] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedGuardians" en el paso "VencerAGuardianes"
-[14:18:19.021] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedProvidence" en el paso "VencerAProvidence"
-[14:18:19.021] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCeaselessVoid" en el paso "VencerACeaselessVoid"
-[14:18:19.021] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedStormWeaver" en el paso "VencerAStormWeaver"
-[14:18:19.022] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedSignus" en el paso "VencerASignus"
-[14:18:19.022] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedSignus" en el paso "ArmaParaPolterghast"
-[14:18:19.022] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedPolterghast" en el paso "VencerAPolterghast"
-[14:18:19.022] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedPolterghast" en el paso "ArmaParaOldDuke"
-[14:18:19.022] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedBoomerDuke" en el paso "VencerAOldDuke"
-[14:18:19.022] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedDoG" en el paso "VencerADoG"
-[14:18:19.022] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedYharon" en el paso "VencerAYharon"
-[14:18:19.022] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedYharon" en el paso "ArmaParaExoMechs"
-[14:18:19.022] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedExoMechs" en el paso "VencerAExoMechs"
-[14:18:19.022] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCalamitas" en el paso "VencerASupremeCalamitas"
-[14:18:19.040] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Investigacion: arbol construido. 10 carpetas raiz (9 del arbol vanilla de Terrasavr, 1 de mods, 0 de "Otros objetos" con 0). Objetos investigables en el arbol: 5480; segun la tabla real del juego: 5480 (cuadra)
-[14:18:19.040] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Investigacion: carpetas raiz -> "Materiales" 0/1583 | "Decoraciones" 0/784 | "Mascotas, Monturas, Herramientas" 0/141 | "Pociones (regeneracion)" 0/14 | "Pociones (efectos)" 0/44 | "Jefes & Eventos" 0/23 | "Mision de Pez" 0/40 | "Categorias" 0/4628 | "Objectos por ID" 0/5391 | "tModLoader (89)" 0/89
-[14:18:19.042] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] MejorPrefijo: tabla cargada desde Assets/best_prefix.json.
-[14:18:19.046] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] PrefijosLegales: reglas cargadas desde Assets/vanilla_prefix_rules.json.
-[14:18:19.047] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] PrefijosLegales: efectos cargados desde Assets/vanilla_prefix_effects.json.
-[14:18:20.138] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Atajos: nada que sembrar (ya tenian tecla o ya se habian sembrado antes).
-[14:18:23.153] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Inventario".
-[14:18:23.166] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Personaje" (via reapertura).
-[14:18:23.179] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PANEL ABIERTO via autoprueba (TERRAKEEP_AUTOTEST_COMPLETITUD). Pestaña: "Personaje". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPrueba". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
-[14:18:23.228] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=100 y=64 w=1080 h=590. Resolucion 1280x720, escala de interfaz 1. Pestaña abierta: "Personaje". Barra de pestañas: ["Personaje" x=110 y=104 126x30 ACTIVA] ["Librería" x=242 y=104 126x30] ["Builds" x=375 y=104 126x30] ["Investigación" x=507 y=104 126x30] ["Exploración" x=640 y=104 126x30] ["Ajustes" x=772 y=104 126x30] ["Guía" x=905 y=104 126x30] ["Álbum" x=1037 y=104 126x30] 
-[14:18:23.259] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Completitud".
-[14:18:23.265] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] AUTOPRUEBA COMPLETITUD: saltado a la pestaña 7 ("Completitud"). A partir de aqui la dirige AutopruebaCompletitud.
-[14:18:23.286] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0 filas de resumen construidas=4 (se esperan 4) | OK
-[14:18:23.298] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.0 Jefes: 0/21 (0%), faltan.Count=21 | OK: datos reales y coherentes (Total>0, 0<=Hecho<=Total).
-[14:18:23.307] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.1 Bestiario: 0/540 (0%), faltan.Count=0 | OK: datos reales y coherentes (Total>0, 0<=Hecho<=Total).
-[14:18:23.323] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.2 Logros: 0/115 (0%), faltan.Count=115 | OK: datos reales y coherentes (Total>0, 0<=Hecho<=Total).
-[14:18:23.335] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.3 Investigacion: 0/5491 (0%), faltan.Count=0 | OK: datos reales y coherentes (Total>0, 0<=Hecho<=Total).
-[14:18:23.343] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.cruce Jefes.Total=21, la Guia real tiene 21 tramos implementados (bitacora, verificado el 13-sep-2026) | OK: mismo catalogo, mismo numero.
-[14:18:23.347] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.bioma[0] Superficie: 0 / 59
-[14:18:23.355] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.bioma[1] Cavernas: 0 / 46
-[14:18:23.358] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.bioma[2] La Mazmorra: 0 / 40
-[14:18:23.362] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.bioma[3] La jungla: 0 / 26
-[14:18:23.362] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.bioma[4] Jungla en el subsuelo: 0 / 23
-[14:18:23.362] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.bioma total de filas=40 (bestiario.Total=540) | OK: hay desglose real por bioma.
-[14:18:23.801] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO1 (es) captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS7\terrakeep-capturas\completitud-01-es.png"
-[14:18:23.839] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma cambiado EN VIVO via ModConfig.OnChanged: es-ES -> en-US. Prueba real de la recarga, clave propia del mod "Ajustes.Titulo" = "Terrakeep - Settings".
-[14:18:23.853] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma guardado en ModConfig (persistente entre partidas): English. Resultado de SaveChanges: Success.
-[14:18:23.875] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Completion".
-[14:18:23.882] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Character" (via cambio de idioma en vivo).
-[14:18:24.334] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO2 (en) cultura activa=en-US captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS7\terrakeep-capturas\completitud-02-en.png"
-[14:18:24.379] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma cambiado EN VIVO via ModConfig.OnChanged: en-US -> es-ES. Prueba real de la recarga, clave propia del mod "Ajustes.Titulo" = "Terrakeep - Ajustes".
-[14:18:24.383] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma guardado en ModConfig (persistente entre partidas): Espanol. Resultado de SaveChanges: Success.
-[14:18:24.385] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Completitud".
-[14:18:24.385] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Personaje" (via cambio de idioma en vivo).
-[14:18:24.707] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] AUTOPRUEBA COMPLETITUD: terminada.
+﻿[21:18:50.407] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Mod cargado. Prueba de humo de Terrakeep.Core: GameItem(Id=3389).IsEmpty=False, .IsCalamity=False, ensamblado real = Terrakeep.Core, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null
+[21:18:50.828] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Builds: la fuente "Calamity" no es utilizable en esta partida (35/154 objetos resueltos, y 0/119 de los que vienen de un mod); no se enseñara en el panel.
+[21:18:50.828] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Builds: catalogo resuelto. [Vanilla: 3 etapas, 156/156 objetos resueltos] 
+[21:18:50.837] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] PrefijoPicaro: tabla cargada desde Assets/rogue_prefixes.json (17 de arma + 4 de accesorio).
+[21:18:50.840] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Guia: arbol de progresion cargado. 46 tramos (46 con requisitos evaluables), 116 pasos, 230 requisitos, 36 avisos. Calamity cargado=False.
+[21:18:50.840] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedDesertScourge" en el paso "VencerADesertScourge"
+[21:18:50.841] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedDesertScourge" en el paso "PrepararGiantClam"
+[21:18:50.841] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCLAM" en el paso "VencerAGiantClam"
+[21:18:50.841] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCrabulon" en el paso "VencerACrabulon"
+[21:18:50.841] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedHiveMind" en el paso "VencerAHiveMindOPerforator"
+[21:18:50.841] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedSlimeGod" en el paso "VencerASlimeGod"
+[21:18:50.841] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedDreadnautilus" en el paso "VencerADreadnautilusYHorribleHog"
+[21:18:50.841] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCryogen" en el paso "VencerACryogen"
+[21:18:50.841] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedAquaticScourge" en el paso "VencerAAquaticScourge"
+[21:18:50.841] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedBrimstoneElemental" en el paso "VencerABrimstoneElemental"
+[21:18:50.841] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedAquaticScourge" en el paso "PrepararLluviaAcida2"
+[21:18:50.841] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCragmawMire" en el paso "VencerACragmawMire"
+[21:18:50.842] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedAstrumAureus" en el paso "VencerAAstrumAureus"
+[21:18:50.842] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCalamitasClone" en el paso "VencerACalamitasClone"
+[21:18:50.842] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedGSS" en el paso "VencerAGreatSandShark"
+[21:18:50.842] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedRavager" en el paso "VencerARavager"
+[21:18:50.842] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedPlaguebringer" en el paso "VencerAPlaguebringer"
+[21:18:50.842] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedDragonfolly" en el paso "VencerADragonfolly"
+[21:18:50.842] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedPrimordialWyrm" en el paso "VencerAPrimordialWyrm"
+[21:18:50.842] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedPolterghast" en el paso "PrepararLluviaAcida3"
+[21:18:50.842] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedMauler" en el paso "VencerALluviaAcida3"
+[21:18:50.842] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedAstrumDeus" en el paso "VencerAAstrumDeus"
+[21:18:50.842] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedGuardians" en el paso "VencerAGuardianes"
+[21:18:50.842] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedProvidence" en el paso "VencerAProvidence"
+[21:18:50.843] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCeaselessVoid" en el paso "VencerACeaselessVoid"
+[21:18:50.843] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedStormWeaver" en el paso "VencerAStormWeaver"
+[21:18:50.843] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedSignus" en el paso "VencerASignus"
+[21:18:50.843] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedSignus" en el paso "ArmaParaPolterghast"
+[21:18:50.843] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedPolterghast" en el paso "VencerAPolterghast"
+[21:18:50.843] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedPolterghast" en el paso "ArmaParaOldDuke"
+[21:18:50.843] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedBoomerDuke" en el paso "VencerAOldDuke"
+[21:18:50.843] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedDoG" en el paso "VencerADoG"
+[21:18:50.843] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedYharon" en el paso "VencerAYharon"
+[21:18:50.843] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedYharon" en el paso "ArmaParaExoMechs"
+[21:18:50.844] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedExoMechs" en el paso "VencerAExoMechs"
+[21:18:50.844] [.NET TP Worker/WARN] [TerrakeepMod]: [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCalamitas" en el paso "VencerASupremeCalamitas"
+[21:18:50.859] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Investigacion: arbol construido. 10 carpetas raiz (9 del arbol vanilla de Terrasavr, 1 de mods, 0 de "Otros objetos" con 0). Objetos investigables en el arbol: 5480; segun la tabla real del juego: 5480 (cuadra)
+[21:18:50.859] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] Investigacion: carpetas raiz -> "Materiales" 0/1583 | "Decoraciones" 0/784 | "Mascotas, Monturas, Herramientas" 0/141 | "Pociones (regeneracion)" 0/14 | "Pociones (efectos)" 0/44 | "Jefes & Eventos" 0/23 | "Mision de Pez" 0/40 | "Categorias" 0/4628 | "Objectos por ID" 0/5391 | "tModLoader (89)" 0/89
+[21:18:50.860] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] MejorPrefijo: tabla cargada desde Assets/best_prefix.json.
+[21:18:50.865] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] PrefijosLegales: reglas cargadas desde Assets/vanilla_prefix_rules.json.
+[21:18:50.866] [.NET TP Worker/INFO] [TerrakeepMod]: [Terrakeep] PrefijosLegales: efectos cargados desde Assets/vanilla_prefix_effects.json.
+[21:18:51.786] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Atajos: nada que sembrar (ya tenian tecla o ya se habian sembrado antes).
+[21:18:54.767] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Inventario".
+[21:18:54.768] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Personaje" (via reapertura).
+[21:18:54.768] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PANEL ABIERTO via autoprueba (TERRAKEEP_AUTOTEST_COMPLETITUD). Pestaña: "Personaje". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPrueba". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
+[21:18:54.772] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=100 y=64 w=1080 h=590. Resolucion 1280x720, escala de interfaz 1. Pestaña abierta: "Personaje". Barra de pestañas: ["Personaje" x=110 y=104 126x30 ACTIVA] ["Librería" x=242 y=104 126x30] ["Builds" x=375 y=104 126x30] ["Investigación" x=507 y=104 126x30] ["Exploración" x=640 y=104 126x30] ["Ajustes" x=772 y=104 126x30] ["Guía" x=905 y=104 126x30] ["Álbum" x=1037 y=104 126x30] 
+[21:18:54.788] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Completitud".
+[21:18:54.788] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] AUTOPRUEBA COMPLETITUD: saltado a la pestaña 7 ("Completitud"). A partir de aqui la dirige AutopruebaCompletitud.
+[21:18:54.804] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0 filas de resumen construidas=4 (se esperan 4) | OK
+[21:18:54.804] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.0 Jefes: 0/21 (0%), faltan.Count=21 | OK: datos reales y coherentes (Total>0, 0<=Hecho<=Total).
+[21:18:54.804] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.1 Bestiario: 0/540 (0%), faltan.Count=0 | OK: datos reales y coherentes (Total>0, 0<=Hecho<=Total).
+[21:18:54.804] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.2 Logros: 0/115 (0%), faltan.Count=115 | OK: datos reales y coherentes (Total>0, 0<=Hecho<=Total).
+[21:18:54.804] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.3 Investigacion: 0/5491 (0%), faltan.Count=0 | OK: datos reales y coherentes (Total>0, 0<=Hecho<=Total).
+[21:18:54.804] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.cruce Jefes.Total=21, la Guia real tiene 21 tramos implementados (bitacora, verificado el 13-sep-2026) | OK: mismo catalogo, mismo numero.
+[21:18:54.804] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.bioma[0] Superficie: 0 / 59
+[21:18:54.804] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.bioma[1] Cavernas: 0 / 46
+[21:18:54.804] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.bioma[2] La Mazmorra: 0 / 40
+[21:18:54.804] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.bioma[3] La jungla: 0 / 26
+[21:18:54.804] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.bioma[4] Jungla en el subsuelo: 0 / 23
+[21:18:54.805] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.bioma total de filas=40 (bestiario.Total=540) | OK: hay desglose real por bioma.
+[21:18:54.806] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.dondeConseguir receta real (Wooden Sword, type=24) -> "Terrakeep: se fabrica con Madera" (ingrediente real esperado: "Madera") | OK: la receta real aparece en el texto.
+[21:18:54.806] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.dondeConseguir tienda real (primer objeto de tienda sin receta, type=88) -> "Terrakeep: lo vende Mercader" | OK: la via de tienda real funciona.
+[21:18:55.257] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO1 (es) captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS7\terrakeep-capturas\completitud-01-es.png"
+[21:18:55.289] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma cambiado EN VIVO via ModConfig.OnChanged: es-ES -> en-US. Prueba real de la recarga, clave propia del mod "Ajustes.Titulo" = "Terrakeep - Settings".
+[21:18:55.289] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma guardado en ModConfig (persistente entre partidas): English. Resultado de SaveChanges: Success.
+[21:18:55.291] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Completion".
+[21:18:55.291] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Character" (via cambio de idioma en vivo).
+[21:18:55.717] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO2 (en) cultura activa=en-US captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS7\terrakeep-capturas\completitud-02-en.png"
+[21:18:55.760] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma cambiado EN VIVO via ModConfig.OnChanged: en-US -> es-ES. Prueba real de la recarga, clave propia del mod "Ajustes.Titulo" = "Terrakeep - Ajustes".
+[21:18:55.760] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma guardado en ModConfig (persistente entre partidas): Espanol. Resultado de SaveChanges: Success.
+[21:18:55.761] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Completitud".
+[21:18:55.761] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Personaje" (via cambio de idioma en vivo).
+[21:18:56.083] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] AUTOPRUEBA COMPLETITUD: terminada.

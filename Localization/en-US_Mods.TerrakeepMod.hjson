@@ -339,6 +339,12 @@ Completitud: {
 	Numeros: "{0} / {1}  ({2}%)"
 	Completo: Complete!
 	LogroOculto: ??? (secret achievement, not yet discovered)
+
+	DondeConseguir: {
+		Receta: Terrakeep: crafted with {0}
+		RecetaMas: " and {0} more"
+		Tienda: Terrakeep: sold by {0}
+	}
 }
 
 Libreria: {

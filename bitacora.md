@@ -9189,6 +9189,44 @@ real del jugador (confirmado con conteo antes/después); ciclo real de los tres 
 excepciones; objeto real del catálogo (Life Crystal) colocado por la ruta real de vanilla en la
 ranura 10 del cofre REAL del mundo elegido. `AUTOPRUEBA WS3 COMPLETA`, ninguna comprobación en rojo.
 
+### Idea 8, segunda pasada (20-sep-2026): "dónde conseguirlo" - la pieza que faltaba
+
+Cotejo literal del coordinador contra el catálogo encontró que el checklist de coleccionista tenía
+los cuatro resúmenes y el desglose por bioma, pero le faltaba decir DÓNDE conseguir lo que falta.
+
+**Implementado con el mismo mecanismo real que ya usa `GlobalItemMejorPrefijo`** (nuevo
+`Common/Completitud/GlobalItemDondeConseguir.cs`, `GlobalItem.ModifyTooltips`): una línea real
+"Terrakeep: se fabrica con…" o "Terrakeep: lo vende…" en el TOOLTIP VAINILLA del propio objeto -
+un único gancho que cubre la Librería Y cualquier ranura del juego a la vez (inventario, cofres,
+equipo…), nunca una ficha de objeto aparte. Dos fuentes reales, cacheadas UNA vez (recorrer las
+~3000 recetas reales y las tiendas reales en cada tooltip sería un coste de rendimiento en TODO el
+juego, no solo la Librería):
+- **Receta real**: `Main.recipe[]`/`Recipe.createItem`/`Recipe.requiredItem` (API pública real) -
+  la primera receta real que fabrica ese objeto, con sus ingredientes reales (hasta 3, "y N más" si
+  hay más).
+- **Tienda real**: `Terraria.ModLoader.NPCShopDatabase.AllShops` + `AbstractNPCShop.ActiveEntries`
+  (API pública real de tModLoader) - el primer NPC real cuya tienda vende ese objeto.
+
+**Límite real investigado a fondo, no una decisión de alcance sin mirar**: los objetos que SOLO
+salen de matar a un enemigo (sin receta ni tienda) se quedan fuera. `ItemDropDatabase.
+GetRulesForItemID(tipo)` (decompilado real) SÍ existe y devuelve las reglas reales que producen ese
+objeto, pero el registro real es NPC → reglas (`RegisterToNPC`), nunca al revés, y no hay ningún
+método público que resuelva objeto → NPC directamente - haría falta recorrer TODOS los NPC reales,
+pedir sus reglas (`Main.ItemDropsDB.GetRulesForNPCID`) y bajar el árbol entero de cada
+`IItemDropRule` (nodos condicionales, de opciones, de porcentaje) comprobando si ese tipo de objeto
+puede salir de él. Documentado como límite real para otra sesión, con la cita exacta de por qué, no
+fingido.
+
+**Verificación real** (`scripts\verificar-completitud.ps1`, comprobación nueva en
+`AutopruebaCompletitud.cs`): receta real de la Espada de Madera → "Terrakeep: se fabrica con
+Madera" (comprobado contra el nombre REAL del ingrediente en el idioma activo, no "Wood" a pelo -
+bug de la propia comprobación encontrado y arreglado en la primera pasada). Tienda real → primer
+objeto real de una tienda real sin receta → "Terrakeep: lo vende Mercader". Los dos "OK". Captura
+real revisada a mano (`scripts\verificar-tooltip-objeto.ps1`, `tooltip-hover-personaje-equipo.png`):
+el tooltip VAINILLA REAL del Casco de Cobre muestra "Equipable / 1 defensa / **Terrakeep: se
+fabrica con Lingote de cobre**", sin solaparse con nada. `AUTOPRUEBA COMPLETITUD: terminada`, sin
+ningún FALLO.
+
 ### Sin publicar nada
 
 `git push`, `gh release`, empaquetado del mod y subida de versión siguen sin tocarse, tal como se

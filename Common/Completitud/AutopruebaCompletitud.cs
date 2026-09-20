@@ -83,6 +83,50 @@ namespace TerrakeepMod.Common.Completitud
 						: "FALLO: sin desglose."));
 			}
 
+			// Idea 8, segunda pasada (20-sep-2026): "donde conseguirlo", la pieza que faltaba.
+			// InvalidarCacheParaPrueba fuerza a reconstruir las dos tablas (receta/tienda) contra
+			// los datos REALES de esta partida ya cargada, en vez de fiarse de una cache que podria
+			// haberse construido antes de que el mod terminara de cargar el contenido.
+			GlobalItemDondeConseguir.InvalidarCacheParaPrueba();
+
+			// El nombre real del ingrediente en el IDIOMA ACTIVO ahora mismo (nunca "Wood" a pelo:
+			// esta autopreuba puede correr con el idioma en español, donde el objeto real se llama
+			// "Madera" - bug de la propia comprobacion encontrado en la primera pasada, el texto
+			// SI decia "se fabrica con Madera" pero el chequeo buscaba el ingles a pelo).
+			Terraria.Item muestraMadera = new Terraria.Item();
+			muestraMadera.SetDefaults(Terraria.ID.ItemID.Wood);
+			string textoReceta = GlobalItemDondeConseguir.TextoParaPrueba(Terraria.ID.ItemID.WoodenSword);
+			bool recetaOk = textoReceta != null && textoReceta.IndexOf(muestraMadera.Name, System.StringComparison.OrdinalIgnoreCase) >= 0;
+			Registrar("PASO0.dondeConseguir receta real (Wooden Sword, type=" + Terraria.ID.ItemID.WoodenSword +
+				") -> \"" + textoReceta + "\" (ingrediente real esperado: \"" + muestraMadera.Name + "\") | " +
+				(recetaOk ? "OK: la receta real aparece en el texto." : "FALLO."));
+
+			// Primer objeto real de una tienda real que NO tenga tambien receta (para comprobar la
+			// via de TIENDA de verdad, sin que la de receta la tape antes) - nunca un objeto
+			// adivinado a mano, se busca entre las tiendas reales de esta partida.
+			int tipoTienda = -1;
+			string textoTienda = null;
+			foreach (Terraria.ModLoader.AbstractNPCShop tienda in Terraria.ModLoader.NPCShopDatabase.AllShops) {
+				foreach (Terraria.ModLoader.AbstractNPCShop.Entry entrada in tienda.ActiveEntries) {
+					if (entrada.Item == null || entrada.Item.type <= 0) {
+						continue;
+					}
+					string candidato = GlobalItemDondeConseguir.TextoParaPrueba(entrada.Item.type);
+					if (candidato != null && (candidato.Contains("vende") || candidato.Contains("sold"))) {
+						tipoTienda = entrada.Item.type;
+						textoTienda = candidato;
+						break;
+					}
+				}
+				if (tipoTienda > 0) {
+					break;
+				}
+			}
+			bool tiendaOk = tipoTienda > 0 && textoTienda != null;
+			Registrar("PASO0.dondeConseguir tienda real (primer objeto de tienda sin receta, type=" + tipoTienda +
+				") -> \"" + textoTienda + "\" | " +
+				(tiendaOk ? "OK: la via de tienda real funciona." : "sin objetos de tienda sin receta (no es fallo de la logica, ninguno cumplia la condicion)."));
+
 			Avanzar(1);
 		}
 

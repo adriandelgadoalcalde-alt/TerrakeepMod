@@ -339,6 +339,12 @@ Completitud: {
 	Numeros: "{0} / {1}  ({2}%)"
 	Completo: ¡Completo!
 	LogroOculto: ??? (logro secreto, todavía sin descubrir)
+
+	DondeConseguir: {
+		Receta: Terrakeep: se fabrica con {0}
+		RecetaMas: " y {0} más"
+		Tienda: Terrakeep: lo vende {0}
+	}
 }
 
 Libreria: {
