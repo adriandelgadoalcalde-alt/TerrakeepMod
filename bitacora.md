@@ -9337,3 +9337,30 @@ Sigue pendiente de VERIFICACIÓN GRÁFICA real (código ya compilado limpio, sin
 ronda anterior: "grupo listo" de la idea 9, estructuras Calamity + límite de cabañas de la idea 4,
 y "marcar casas en el mapa" de la idea 5. Nada de esto se toca hasta que el usuario confirme que
 puede seguir.
+
+## Cotejo literal TM4-TM6 completado (20-sep-2026, misma pausa)
+
+Terminado el cotejo literal del catálogo de REDISEÑO VISUAL para TerrakeepMod, TM1-TM6 completo:
+
+- **TM4** (tarjeta de misión con sprite del jefe, checklist con icono+color+forma, tira "lo que
+  viene" de 3 tarjetas): confirmado CERRADO sin huecos. `ContenidoGuia.cs` l.341-356 (tarjeta con
+  `IconoJefe.Resolver`), `FilaRequisitoTk.cs` l.126-191 (icono real vía `ItemSlot.Draw` + marca de
+  color Y forma - relleno para "Correcto", hueco para el resto, no solo color), `ContenidoGuia.cs`
+  l.523-756 (`ConstruirTiraLoQueViene`, tope de 3 tarjetas). Coincide con el catálogo palabra por
+  palabra.
+- **TM5** (Builds: alternador Vanilla/Calamity de 2 estados, etapa como `DesplegableTk`, clase y
+  conjunto en una sola fila, "Tienes X de Y" como anillo de progreso): confirmado CERRADO sin
+  huecos. `ContenidoBuilds.cs` tiene los cuatro elementos exactos (`_alternadorFuente`,
+  `_selectorEtapa` de tipo `DesplegableTk`, fila compartida clase+conjunto, `_anilloProgreso` de
+  tipo `AnilloProgresoTk`), con ganchos de autoprueba ya expuestos (`AlternadorFuenteParaPrueba`,
+  etc.), señal de que esto ya se verificó en el juego en una ronda anterior de la sesión.
+- **TM6** (transición de 120ms entre pestañas, alto máximo 82% de pantalla): confirmado CERRADO,
+  ya visto antes de la pausa (`FraccionAltoMaximoDePantalla = 0.82f`) y ahora también el fundido
+  (`l.583`, comentario "TM6... fundido de 120ms").
+
+Con esto, TM1-TM6 de TerrakeepMod quedan cotejados palabra por palabra contra el texto literal del
+catálogo. Único hueco real encontrado en toda la pasada: el de TM2 (botón "Quitar" sin
+documentar), ya cerrado y comiteado (`74bb4cc`). No queda ningún trabajo seguro (headless) más que
+hacer sobre el catálogo de REDISEÑO VISUAL para TerrakeepMod - lo único que falta es lo YA
+documentado arriba como pendiente de verificación gráfica real (idea 9 "grupo listo", idea 4
+Calamity/cabañas, idea 5 "marcar casas"), bloqueado mientras la pausa siga activa.
