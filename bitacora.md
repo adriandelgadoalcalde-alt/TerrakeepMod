@@ -9227,7 +9227,113 @@ el tooltip VAINILLA REAL del Casco de Cobre muestra "Equipable / 1 defensa / **T
 fabrica con Lingote de cobre**", sin solaparse con nada. `AUTOPRUEBA COMPLETITUD: terminada`, sin
 ningún FALLO.
 
+### Re-lectura literal completa de los dos catálogos (20-sep-2026, orden directa del usuario)
+
+Orden explícita: releer el texto LITERAL completo de la sección de TerrakeepMod en los dos
+documentos reales (`mcp__claude_ai_Claude_Docs__read`), nunca de memoria ni de resúmenes propios
+anteriores, y cotejar frase a frase contra el código real. Hecho: las 10 ideas del catálogo de
+FUNCIONES leídas palabra por palabra (sección "2. TerrakeepMod", ~7000 caracteres). Encontrados
+**tres huecos reales** en piezas ya dadas por cerradas en rondas anteriores:
+
+- **Idea 9 (guía de grupo)**: el texto pide "decir «el grupo está listo para X» Y qué le falta a
+  quién" - solo estaba lo segundo. Nuevo `GuiaGrupo.GrupoListo(paso)`: true solo si TODOS los
+  requisitos obligatorios del paso (de mundo, comprobados una vez; por jugador, comprobados para
+  CADA miembro del grupo) están cumplidos. Nueva línea real en "Grupo" de la Guía: "El grupo YA
+  está listo para: X" / "El grupo todavía NO está listo para: X".
+- **Idea 4 (sonar de estructuras)**: el texto lista explícitamente "estructuras de Calamity" entre
+  sus siete ejemplos, nunca investigado. El Laboratorio Envejecido de Draedon (decompilado real,
+  `CalamityMod/Walls/DraedonStructures/*.cs`) tiene CUATRO paredes EXCLUSIVAS propias
+  (`LaboratoryPanelWall`, `LaboratoryPlateBeam`, `LaboratoryPlatePillar`, `LaboratoryPlatingWall`,
+  clases `ModWall` reales) - mismo patrón ya probado con las paredes "Unsafe" de Mazmorra/Templo.
+  De paso, investigada también "cabañas" (otro de los siete ejemplos, tampoco investigado antes):
+  la cabaña real de isla flotante (`WorldGen.cs:73995-74072`, `GenVars.skyIslandHouseCount`) usa
+  madera regular sin ningún tile exclusivo y su cofre ya lo cubre el objetivo genérico "Cofres" -
+  MISMO límite real ya documentado para la Pirámide, ahora con la misma disciplina de
+  investigación, documentado en el propio código.
+- **Idea 5 (planificador de felicidad)**: el texto pide "marca las casas en el minimapa" - una
+  pieza DISTINTA de "proponer recolocaciones" (ese sigue siendo el límite real ya documentado: no
+  hay API segura para simular el bioma en otra posición sin teletransportar de verdad). Nuevo
+  botón "Marcar casas en el mapa" en `PestanaVecindad`, que reutiliza el mismo sistema real de
+  marcadores que ya usa la pestaña "Búsqueda" (`MarcadoresExploracion.Fijar`), con la casa REAL de
+  cada vecino (`NPC.homeTileX/homeTileY`, el mismo campo que ya usa el aviso "sin casa asignada").
+
+**Confirmado sin hueco, con evidencia de código releída línea a línea** (no solo la bitácora
+propia): idea 1 (entrenador con snapshot/restauración/informe real), idea 2 (DPS-metro), idea 3
+(diario automático), idea 6 (las cuatro piezas cerradas hoy mismo), idea 7 (prefijos Calamity SÍ
+incluidos vía `CatalogoPrefijoPicaro`; los OBJETOS de mod son un límite real ya investigado y
+documentado con precisión en el XMLdoc de `CodigoDeBuild` - la palabra exacta del catálogo es
+"prefijos Calamity", no "objetos Calamity", así que esto está correctamente resuelto, no es un
+hueco), idea 8 (dónde conseguirlo, cerrado hoy), idea 10 (límite de un jugador ya autorizado por el
+propio texto del catálogo: "empezar en un jugador").
+
+**PAUSA REAL pedida por el usuario a mitad de esta ronda: está jugando ahora mismo.** Las tres
+piezas de arriba (ideas 9/4/5) están implementadas y compilan limpio (0 errores), pero su
+**verificación en juego real queda PENDIENTE** - no se ha tocado ningún proceso gráfico ni se ha
+forzado foco desde que llegó el aviso. Se compiló en modo headless para confirmar que el código es
+correcto sintácticamente, nunca más que eso. Falta:
+1. `scripts\verificar-grupo.ps1` (servidor + 2 clientes) para confirmar en pantalla que "El grupo
+   YA/NO está listo para: X" se lee bien y no se solapa con nada.
+2. `scripts\verificar-exploracion.ps1 -Calamity` de nuevo, mirando si "LaboratorioDraedon" es
+   exactamente el objetivo que salió sin resolver en la pasada de "39 objetivos resueltos de 40"
+   (corrida ANTES de la pausa, resultado sin confirmar de cuál de los 40 era) - los nombres de
+   clase de las 4 paredes están confirmados correctos contra el decompilado real, pero falta la
+   confirmación en vivo.
+3. Captura real del botón "Marcar casas en el mapa" de Vecindad, nunca antes ejercitado en pantalla.
+
+**Aún no se ha comiteado nada de esto**: siguiendo la misma disciplina de toda la sesión (nunca
+comitear sin verificación real en juego), este trabajo queda en el árbol de trabajo, no en un
+commit, hasta poder retomar la verificación gráfica cuando el usuario confirme que ya no está
+jugando.
+
 ### Sin publicar nada
 
 `git push`, `gh release`, empaquetado del mod y subida de versión siguen sin tocarse, tal como se
 pidió.
+
+## Continuación segura durante la pausa de juego (20-sep-2026)
+
+El usuario pidió una PAUSA INMEDIATA porque está jugando ahora mismo: nada de tocar ventanas/juego
+en primer plano ni forzar foco. Confirmado por proceso (`Get-CimInstance Win32_Process`) que no
+quedaba ningún proceso de juego mío corriendo de antes - la última verificación gráfica ya se
+había cerrado sola. Mientras dura la pausa, se sigue solo con trabajo headless: cotejo literal del
+catálogo de REDISEÑO VISUAL (TerrakeepMod, TM1-TM6) contra el código real, sin abrir el juego.
+
+**TM1 (pestañas con sprite real + "por debajo de cierto ancho, solo el sprite con tooltip")**:
+confirmado CERRADO sin ningún hueco. `BotonTk.cs` tiene exactamente ese comportamiento:
+`textoVisible = !hayIcono || dim.Width >= AnchoMinimoConTexto || string.IsNullOrEmpty(_texto)`
+(l.378) - por debajo de `AnchoMinimoConTexto` el texto no se dibuja y solo queda el icono, con el
+tooltip (`Ayuda`) intacto porque se evalúa aparte, solo con `IsMouseHovering`. Coincide con la
+frase literal del catálogo casi palabra por palabra.
+
+**TM2 (tarjeta flotante de edición: sprite 2x, rareza, Aplicar/Quitar/Papelera)**: sprite a 2x
+confirmado (`EscalaSprite = 1.4f` sobre la escala base 0.7, l.68), nombre en el color real de
+rareza confirmado (`ItemRarity.GetColor(objeto.rare)`, l.184), Aplicar y Papelera confirmados. El
+botón "Quitar" no tenía código NI explicación en el XMLdoc - a diferencia de las otras dos
+decisiones de diseño de esa misma clase, que sí estaban documentadas con su "por qué no". Investigado:
+no es un hueco funcional. `SlotSeleccionTk` (la ranura donde vive el objeto que edita la tarjeta)
+ya saca el objeto real de su sitio de origen al arrastrarlo hacia dentro - es el mismo
+`ItemSlot.Handle` vanilla, y arrastrarlo de vuelta fuera ES "quitarlo", sin necesitar un botón
+aparte. Cerrado el hueco de DOCUMENTACIÓN (no de comportamiento) añadiendo ese "por qué" al XMLdoc
+de `TarjetaEdicionFlotanteTk.cs` - build headless verificado (0 errores), commit `74bb4cc` (cambio
+solo de comentarios, no necesita verificación gráfica).
+
+**TM3 (chips de cabecera: día/hora, objetivo, vida/maná)**: el código ya documentaba (XMLdoc de
+`_chipDps`, l.94-97) que el chip de vida/maná se descartó A PROPÓSITO, con la razón en el XMLdoc de
+`AltoTitulo`/`FraccionMaximaCabecera` (l.116-125): el HUD real de vida/maná del propio juego se
+pinta DESPUÉS de este `Draw`, en esa misma franja, y el jugador puede elegir entre tres estilos
+(clásico/elegante/barras) con anchos distintos - no hay una coordenada fija que reservar sin
+adivinar. Confirmado como decisión razonada y honesta (misma clase que el resto de desviaciones
+documentadas), no un hueco. El DPS-metro ocupa el hueco como "chip real" en su lugar, tal como el
+propio catálogo preveía ("aquí encaja el DPS-metro... como cuarto chip").
+
+Queda por repasar con el mismo rigor TM4 (checklist de la Guía) y TM5 (filtros de Builds) -ygunos
+ya se habían dado por cerrados en rondas previas de esta sesión, pero no con lectura literal
+palabra por palabra como esta. Se continúa en cuanto el contexto/tiempo lo permita, siempre sin
+tocar el juego mientras la pausa siga activa.
+
+### Pendiente real para cuando se levante la pausa
+
+Sigue pendiente de VERIFICACIÓN GRÁFICA real (código ya compilado limpio, sin comitear) lo de la
+ronda anterior: "grupo listo" de la idea 9, estructuras Calamity + límite de cabañas de la idea 4,
+y "marcar casas en el mapa" de la idea 5. Nada de esto se toca hasta que el usuario confirme que
+puede seguir.
