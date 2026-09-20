@@ -634,6 +634,7 @@ Exploracion: {
 		Busqueda: Búsqueda
 		Mundo: Este mundo
 		Vecindad: Vecindad
+		Rebobinar: Rebobinar
 	}
 
 	// Functions catalogue idea 5 ("NPC happiness planner").
@@ -644,6 +645,23 @@ Exploracion: {
 		SinInforme: (sin comentarios especiales - contento por defecto)
 		SinCasa: Sin casa asignada - su humor no es fiable hasta que tenga una.
 		Lejos: A {0} tiles - acércate a su casa para una lectura real (este informe puede estar leyendo tu bioma actual, no el suyo).
+	}
+
+	// Functions catalogue idea 10 ("rewind the world"): a terrain undo, same idea as the object
+	// undo history but for a bounded square of tiles around the player.
+	Rebobinar: {
+		Titulo: Rebobinar el terreno
+		Explicacion: Marca una foto real del terreno en un cuadrado de {0}x{0} tiles a tu alrededor (bloques, paredes, líquidos, pendientes, pintura y cables) y devuélvelo tal cual estaba cuando quieras.
+		SoloUnJugador: Solo disponible en partidas de un jugador (todavía no sincroniza los cambios con otros jugadores conectados).
+		Marcar: Marcar aquí
+		Rebobinar: Rebobinar ahora
+		SinMarcar: Todavía no has marcado ningún punto.
+		Marcada: Marcado alrededor del tile ({0}, {1}) hace {2} s.
+		Calculando: Comparando con el terreno real...
+		SinCambios: El terreno de la zona marcada sigue exactamente igual.
+		Cambiados: "{0} de {1} tiles de la zona marcada son distintos ahora mismo."
+		Marcado: Foto tomada: {0}x{1} tiles reales desde ({2}, {3}).
+		Rebobinado: ¡Hecho! {0} de {1} tiles han vuelto a como estaban en la foto.
 	}
 
 	Categoria: {

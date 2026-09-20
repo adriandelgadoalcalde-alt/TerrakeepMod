@@ -634,6 +634,7 @@ Exploracion: {
 		Busqueda: Search
 		Mundo: This world
 		Vecindad: Neighbourhood
+		Rebobinar: Rewind
 	}
 
 	// Functions catalogue idea 5 ("NPC happiness planner").
@@ -644,6 +645,23 @@ Exploracion: {
 		SinInforme: (nothing special to say - content by default)
 		SinCasa: No house assigned - their mood isn't reliable until they have one.
 		Lejos: "{0} tiles away - get closer to their house for a real reading (this report may be reading your current biome, not theirs)."
+	}
+
+	// Functions catalogue idea 10 ("rewind the world"): a terrain undo, same idea as the object
+	// undo history but for a bounded square of tiles around the player.
+	Rebobinar: {
+		Titulo: Rewind the terrain
+		Explicacion: Mark a real snapshot of the terrain in a {0}x{0}-tile square around you (blocks, walls, liquids, slopes, paint and wires) and bring it back exactly as it was whenever you want.
+		SoloUnJugador: Only available in singleplayer games (does not sync changes to other connected players yet).
+		Marcar: Mark here
+		Rebobinar: Rewind now
+		SinMarcar: You haven't marked a spot yet.
+		Marcada: Marked around tile ({0}, {1}) {2}s ago.
+		Calculando: Comparing against the real terrain...
+		SinCambios: The marked area's terrain is exactly the same.
+		Cambiados: "{0} of {1} tiles in the marked area are different right now."
+		Marcado: Snapshot taken: {0}x{1} real tiles from ({2}, {3}).
+		Rebobinado: Done! {0} of {1} tiles are back to how they were in the snapshot.
 	}
 
 	Categoria: {

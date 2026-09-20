@@ -8759,6 +8759,75 @@ reales revisadas pixel a pixel: `ws3-selector-cofre.png` (lista envuelta correct
 cortes) y `ws3-destino-cofre.png` (8º botón "Chest" activo, rejilla con el hierro x20 y la moneda
 de oro x5 reales).
 
+### Idea 10 - rebobinar el mundo (nueva sub-pestaña "Rebobinar" en Exploración) - VERIFICADA Y CERRADA
+
+Implementado sobre la investigación real ya hecha por el fork (ver arriba): `UI/Exploracion/PestanaRebobinar.cs`
+(nuevo) - un deshacer de TERRENO, mismo espíritu que `PilaDeSnapshots` pero para tiles. "Marcar
+aquí" fotografía un cuadrado de 201x201 tiles alrededor del jugador (`RadioTiles=100`) en un
+struct PROPIO (`TileGuardado`: tipo, pared, líquido, pendiente, media altura, pintura, cables) -
+**nunca guardando el `Tile` tal cual**, investigado con el decompilado real que desde el refactor
+de memoria de 1.4.4+ un `Tile` es un accesor ligero sobre arrays compartidos (`Get<TileTypeData>()`
+y compañía), no un dato independiente: copiar el struct copiaría la MISMA celda viva, no una foto.
+"Rebobinar" escribe cada campo de vuelta (todos con setter público real, confirmado uno a uno) y
+llama a `WorldGen.RangeFrame` + `Main.refreshMap` para el reencuadrado/minimapa. Un contador real
+"N de M tiles distintos ahora mismo" se recalcula cada 30 fotogramas, para que el jugador vea de
+verdad si algo ha cambiado antes de rebobinar. **Límite real aceptado a propósito, igual que la
+idea 6**: acotado a partida de un jugador (`Main.netMode == SinglePlayer`) - mismo motivo (no hay
+arnés de dos clientes en la familia para verificar `NetMessage.SendTileSquare` con cuidado esta
+noche), documentado en el XMLdoc de la clase. `ContenidoExploracion.cs`: 5ª sub-pestaña.
+Localización (es-ES/en-US): pestaña + bloque `Exploracion.Rebobinar.*`.
+
+`Common/Exploracion/AutopruebaExploracion.cs`: pasos 25-29 nuevos (abre la pestaña, pulsa "Marcar
+aquí" real, cambia un tile SINTÉTICO de prueba dentro del área fotografiada a un tipo conocido,
+comprueba que `DiferentesAhora` detecta el cambio, pulsa "Rebobinar ahora" real, comprueba que el
+tile vuelve exactamente a como estaba).
+
+**Corrección del usuario sobre el arnés propio**: TerrakeepMod SÍ tiene su propio arnés autónomo
+(`scripts\verificar-*.ps1`, arranca tModLoader con su propio mundo/personaje de pruebas) - a
+diferencia de TerrakeepTrainer, que dependía de un personaje REAL del usuario en Terraria vanilla.
+La pausa inicial por "actividad del usuario en primer plano" fue un error de razonamiento propio:
+confundir el caso de TerrakeepTrainer (donde SÍ hay que esperar, la ventana de vainilla es la del
+propio usuario) con el de TerrakeepMod (donde el cliente gráfico de verificación es una ventana e
+instalación TOTALMENTE APARTE, un sandbox propio, que nunca ha dependido de lo que el usuario
+tenga abierto). Corregido: se lanza el arnés propio sin esperar.
+
+**Dos bugs reales encontrados y arreglados con la propia autoprueba** (no hipotéticos):
+1. **Falso positivo de arrastre del minimapa (pasos 20/21)**: en la primera pasada de esta ronda
+   fallaron con `MAL` (`Main.mouseLeft=False` tras pulsar el ratón sintético). Investigado antes
+   de tocar nada: 10 procesos `dotnet.exe` de reutilización de nodos de MSBuild acumulados de
+   las repetidas compilaciones de la noche (mismo patrón raíz ya documentado hoy mismo con el
+   `find` huérfano). Cerrados esos procesos y repetida la misma pasada sin tocar el código: los
+   pasos 20/21 pasaron en verde - confirmado que era contención de CPU, no una regresión real.
+2. **Choque de nombres real entre la pestaña y su propio botón**: el botón de acción se llamaba
+   igual que la pestaña ("Rebobinar"/"Rewind"), así que `panel.PulsarBoton` (que recorre TODO el
+   panel, no solo la pestaña activa) encontraba primero el botón de la BARRA DE PESTAÑAS y
+   reconstruía `PestanaRebobinar` entera de cero, perdiendo la foto ya tomada - visto en el log
+   real (`DiferentesAhora=-1` tras "rebobinar", el tile sin restaurar). Arreglado renombrando el
+   botón de acción a "Rebobinar ahora"/"Rewind now" (mejora real de UX además de arreglo de
+   prueba: un botón que repite el nombre de su propia pestaña era confuso incluso para un jugador
+   real, no solo para el arnés).
+
+**Verificación real, ya completa** (`scripts\verificar-exploracion.ps1`): `AUTOPRUEBA WS6
+COMPLETA` en verde de principio a fin. Paso 26 cambia un tile sintético de prueba dentro del área;
+paso 27 confirma `DiferentesAhora=1` (detecta el cambio real); paso 28 pulsa "Rebobinar ahora" con
+un clic real; paso 29 confirma el tile exactamente restaurado (`TileType`/`HasTile` iguales a la
+foto) y `DiferentesAhora=0`. Captura real revisada pixel a pixel (`ws6-rebobinar-despues.png`):
+título, explicación envuelta en dos líneas, los dos botones sin recorte, y el mensaje real
+"¡Hecho! 1 de 40000 tiles han vuelto a como estaban en la foto."
+
+### Idea 1 (entrenador de jefe) - NO implementada esta ronda, con el límite real ya localizado
+
+Como se documentó en la investigación del fork, el subconjunto seguro (todos los jefes salvo el
+Muro de Carne, cuya muerte dispara `WorldGen.StartHardmode()` - conversión PERMANENTE de tiles de
+todo el mundo, límite real confirmado en `NPC.cs`) es tractable, pero requiere investigar el
+mecanismo de invocación REAL de cada jefe uno a uno (tipos de NPC, parámetros de `NewNPC`/
+`SpawnBoss`, condiciones previas) antes de escribir nada - y con el cliente gráfico bloqueado por
+la misma actividad real del usuario de arriba, no hay forma de verificar nada esta ronda. Se
+decide NO escribir código de invocación de jefes sin poder probarlo de verdad (misma disciplina de
+dos fases que el resto del proyecto): queda documentado el límite real del Muro de Carne y el
+punto de partida (`NPC.SpawnBoss`/`NPC.NewNPC`, banderas `downedBossN` solo se tocan al morir) para
+la próxima sesión.
+
 ### Sin publicar nada
 
 `git push`, `gh release`, empaquetado del mod y subida de versión siguen sin tocarse, tal como se

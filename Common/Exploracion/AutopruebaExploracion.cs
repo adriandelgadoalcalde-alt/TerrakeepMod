@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Terraria;
+using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Panel;
 using TerrakeepMod.UI.Exploracion;
 
@@ -39,6 +40,12 @@ namespace TerrakeepMod.Common.Exploracion
 		private static int _ratonY;
 		private static Vector2 _centroAntesDelArrastre;
 		private static float _escalaAlArrastrar;
+
+		/// <summary>Estado del tile de prueba de la idea 10 "rebobinar" (pasos 26-29).</summary>
+		private static int _tileDePruebaX;
+		private static int _tileDePruebaY;
+		private static ushort _tileDePruebaTipoAntes;
+		private static bool _tileDePruebaHasTileAntes;
 
 		public static void Arrancar()
 		{
@@ -417,6 +424,78 @@ namespace TerrakeepMod.Common.Exploracion
 					break;
 
 				case 25:
+					// Idea 10 del catalogo de funciones ("rebobinar el mundo"): abre la pestaña y
+					// pulsa el boton real "Marcar aqui" (misma ruta que el resto del arnes,
+					// panel.PulsarBoton -> BotonTk.LeftClick). El texto se pide a Idiomas.Texto en
+					// vez de escribirlo fijo en un idioma: el sandbox de WS6 arranca en español
+					// (config.json propio), a diferencia del de WS3 que arranca en ingles - un
+					// texto fijo en ingles aqui no encontraba el boton real (bug real visto en el
+					// log: "Clic real en . HayFoto=False", PulsarBoton devolviendo null).
+					panel.CambiarPestana(4);
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/25 - pestaña \"" +
+						panel.NombrePestanaActual + "\": " + panel.InformePestanaActual() + ". Clic real en " +
+						panel.PulsarBoton(Idiomas.Texto("Exploracion.Rebobinar.Marcar")) + ". HayFoto=" + panel.Rebobinar.HayFoto);
+					Siguiente(5);
+					break;
+
+				case 26: {
+					// SOLO ARNES DE PRUEBAS: cambia un tile REAL dentro del area recien fotografiada
+					// (nunca fuera de ella) a un tipo distinto y conocido, para demostrar con datos
+					// reales que RecalcularDiferencia() detecta el cambio y que Rebobinar() lo
+					// deshace de verdad - el mismo criterio que ya usan WS4/WS6 sembrando escenario
+					// sintetico antes de comprobar algo. El mundo de pruebas de WS6 ya se respalda y
+					// restaura entero alrededor de todo verificar-exploracion.ps1.
+					var area = panel.Rebobinar.AreaFoto;
+					_tileDePruebaX = area.x + 5;
+					_tileDePruebaY = area.y + 5;
+					Tile tile = Main.tile[_tileDePruebaX, _tileDePruebaY];
+					_tileDePruebaTipoAntes = tile.TileType;
+					_tileDePruebaHasTileAntes = tile.HasTile;
+					tile.HasTile = true;
+					tile.TileType = (ushort)Terraria.ID.TileID.Stone;
+
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/26 - ESCENARIO DE PRUEBA: tile (" +
+						_tileDePruebaX + ", " + _tileDePruebaY + "), dentro del area fotografiada " +
+						area.ancho + "x" + area.alto + " desde (" + area.x + ", " + area.y + "), cambiado de " +
+						"TileType=" + _tileDePruebaTipoAntes + " HasTile=" + _tileDePruebaHasTileAntes +
+						" a TileType=" + (int)Terraria.ID.TileID.Stone + " HasTile=True.");
+					panel.Rebobinar.RecalcularDiferencia();
+					Siguiente(5);
+					break;
+				}
+
+				case 27:
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/27 - tras el cambio sintetico: " +
+						"DiferentesAhora=" + panel.Rebobinar.DiferentesAhora +
+						" -> " + (panel.Rebobinar.DiferentesAhora >= 1
+							? "OK, detecta de verdad el tile cambiado."
+							: "MAL: no ha detectado ningun cambio.") + ". " +
+						CapturaDePantalla.Guardar("ws6-rebobinar-antes"));
+					Siguiente(5);
+					break;
+
+				case 28:
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/28 - clic real en " +
+						panel.PulsarBoton(Idiomas.Texto("Exploracion.Rebobinar.Rebobinar")) + ".");
+					Siguiente(5);
+					break;
+
+				case 29: {
+					Tile tras = Main.tile[_tileDePruebaX, _tileDePruebaY];
+					bool tileRestaurado = tras.TileType == _tileDePruebaTipoAntes && tras.HasTile == _tileDePruebaHasTileAntes;
+					panel.Rebobinar.RecalcularDiferencia();
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/29 - tras Rebobinar(): tile (" +
+						_tileDePruebaX + ", " + _tileDePruebaY + ") TileType=" + tras.TileType + " HasTile=" + tras.HasTile +
+						" (esperado TileType=" + _tileDePruebaTipoAntes + " HasTile=" + _tileDePruebaHasTileAntes + ") -> " +
+						(tileRestaurado ? "OK, el tile ha vuelto a la foto." : "MAL: el tile NO ha vuelto.") +
+						". DiferentesAhora=" + panel.Rebobinar.DiferentesAhora +
+						" (" + (panel.Rebobinar.DiferentesAhora == 0 ? "OK" : "MAL") + "). " +
+						CapturaDePantalla.Guardar("ws6-rebobinar-despues"));
+					Siguiente(5);
+					break;
+				}
+
+				case 30:
 					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6 COMPLETA.");
 					_enMarcha = false;
 					break;

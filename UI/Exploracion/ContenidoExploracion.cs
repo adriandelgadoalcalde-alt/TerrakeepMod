@@ -47,6 +47,9 @@ namespace TerrakeepMod.UI.Exploracion
 		/// <summary>La sub-pestaña de vecindad (idea 5 del catálogo de funciones).</summary>
 		public PestanaVecindad Vecindad { get; private set; }
 
+		/// <summary>La sub-pestaña de rebobinar (idea 10 del catálogo de funciones).</summary>
+		public PestanaRebobinar Rebobinar { get; private set; }
+
 		public ContenidoExploracion()
 		{
 			Width.Set(0f, 1f);
@@ -71,6 +74,7 @@ namespace TerrakeepMod.UI.Exploracion
 			_clavesPestana.Add("Busqueda");
 			_clavesPestana.Add("Mundo");
 			_clavesPestana.Add("Vecindad");
+			_clavesPestana.Add("Rebobinar");
 
 			// Mismo criterio que en el area de Personaje: ancho en porcentaje, no en pixeles fijos,
 			// para que la barra se estire con el panel. Tres pestañas a un tercio cada una se veian
@@ -150,6 +154,9 @@ namespace TerrakeepMod.UI.Exploracion
 				case 3:
 					Vecindad = new PestanaVecindad();
 					return Vecindad;
+				case 4:
+					Rebobinar = new PestanaRebobinar();
+					return Rebobinar;
 				default:
 					return null;
 			}
