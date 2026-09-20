@@ -8519,3 +8519,105 @@ Reverificado con la Guía entera (vanilla+Calamity, ~600s): "Ninguna comprobaci�
 
 Sin `git push`, sin `gh release`, sin empaquetar el mod, sin subir versión - el usuario revisará
 todo antes de publicar nada, tal como se pidió.
+
+
+---
+
+## 20-sep-2026 (continuación) - Retomada la cadena tras el aviso de "usuario ya no delante": TM1 y TM4 (parcial) implementados, TM5 e idea 8-bioma investigados y descartados con motivo real
+
+El coordinador avisó de que el usuario dejó de estar delante del ordenador (Terraria vanilla
+abierto, sin partida activa) y pidió retomar lo que había quedado documentado como pendiente en la
+entrada anterior: TM1/TM2/TM4/TM5 del catálogo visual y las ideas 1/5/6/8/9/10 del catálogo de
+funciones. Antes de tocar nada se comprobó primer plano y procesos de inyección reales
+(`Get-CimInstance Win32_Process`) para no interferir si TerrakeepTrainer estuviera enganchándose a
+la misma partida vanilla - limpio en todas las comprobaciones de esta ronda.
+
+### Implementado y verificado de verdad en el juego (2 commits más)
+
+**TM1 · Pestañas con sprite real del juego** (`UI/Personaje/Widgets/BotonTk.cs`,
+`Common/Panel/IconosPestanas.cs` nuevo). `BotonTk` gana icono real opcional; por debajo de 74px de
+ancho el texto se esconde y solo queda el icono con su tooltip, tal cual pedía el catálogo. Los 8
+iconos se investigaron contra el `Content/` real de la instalación de Steam (nunca adivinados):
+corazón real (Personaje), cofre real `ChestStack_0` (Librería), icono real de "se puede fabricar
+aquí" `Craft` (Builds), la lupa real del Bestiario `Button_Search` (Investigación), `Map_0`
+(Exploración), `Research_GearA` (Ajustes), la cabeza REAL del NPC Guía resuelta en vivo con
+`TownNPCProfiles.GetHeadIndexSafe` (Guía), y el icono real de cámara `Camera_0` (Álbum). Dos
+intentos reales de icono para Personaje se probaron y se descartaron con evidencia (documentado en
+el XMLdoc de `IconosPestanas`, no de memoria): `Main.MapPlayerRenderer.DrawPlayerHead` (la cabeza
+REAL del jugador) dio un borrón negro - causa real confirmada decompilando
+`MapHeadRenderer.RenderDrawData`, que dibuja con `Main.spriteBatch` y aplica un pase de
+`Main.pixelShader` asumiendo el contexto de `SpriteBatch.Begin()` con el que vanilla lo llama desde
+su propio HUD, no el de este panel; y `Bestiary/Portrait_Front` como respaldo estático dio un marco
+vacío (es el BORDE del retrato, no el contenido). El corazón real fue el que sí salió relleno y
+reconocible.
+
+**TM4 (parcial) · Guía con checklist de sprites** (`Common/Guia/IconoJefe.cs`,
+`UI/Guia/TarjetaObjetivoTk.cs` nuevos). Tarjeta con el sprite real del jefe (72px, el mismo
+`TextureAssets.NpcHeadBoss` con el que vanilla marca un jefe en el mapa) junto al título del paso,
+creciendo en alto si el título envuelve a más líneas - nunca recorta. El checklist-con-icono-de-
+objeto por requisito y la tira de "lo que viene" en tres tarjetas se dejan para otra ronda: el
+modelo real (`RequisitoGuia.Id`/`IdMod`/`Ids`/`IdsMod`, `Terrakeep.Core.dll`) no expone la
+resolución a "id real de esta partida" fuera de `ProveedorEstadoGuiaMod`, y adivinar un id crudo sin
+mirar esa resolución con calma habría sido justo el tipo de "a ciegas" que este proyecto prohíbe.
+
+### Bug real encontrado por el camino y descartado como propio (aislado con `git stash`)
+
+La primera pasada de `verificar-guia.ps1` con TM4 a medio escribir dio "NO CUADRA: se agotaron 308
+fotogramas esperando... `Player.UpdateEquips`". Antes de asumir que era mío: `git stash` para volver
+al último commit (solo TM1) y repetir la misma pasada - **el mismo fallo, idéntico, sin ningún
+cambio de TM4 puesto**. Revisando el sistema: `Get-CimInstance Win32_Processor` con
+`LoadPercentage=100` sostenido, y un proceso `find` huérfano de una `Bash` de más de una hora
+consumiendo CPU de un comando anterior de esta misma sesión (matado). Con la CPU liberada, la
+siguiente pasada (con TM4 ya restaurado con `git stash pop`) salió limpia del todo. Confirmado
+ambiental (contención real de CPU tras muchos lanzamientos seguidos del juego en una sola sesión),
+nunca un fallo de este código - documentado aquí para que quede constancia sin tener que repetir la
+investigación si vuelve a pasar.
+
+### Investigado y descartado esta ronda, con motivo real (no vago)
+
+- **TM5 (Builds: filtros compactos)**: se investigó en detalle mover el alternador Vanilla/Calamity
+  a la cabecera (el sub-cambio de menor riesgo del catálogo). Hallazgo real antes de escribir una
+  sola línea: `_subtitulo` (el "Tienes X de Y objetos... ranuras disponibles: N") es una
+  `EtiquetaTk` con ancho FIJO de 900px que no envuelve ni se recorta - en una ventana estrecha con
+  el catálogo de Calamity activo (el texto más largo de los dos), un alternador de 240px anclado a
+  la derecha de esa misma cabecera invadiría el mismo hueco donde ese texto puede llegar a
+  dibujarse. Sin rediseñar antes cómo se comporta ese subtítulo largo, mover el alternador ahí
+  arriesgaba el mismo tipo de solape que el proyecto lleva meses evitando a propósito. Se descarta
+  el movimiento; el resto de TM5 (selector desplegable de etapa, fila combinada clase+conjunto,
+  anillo de progreso) sigue necesitando los dos widgets nuevos ya señalados en la ronda anterior.
+- **Idea 8 (checklist de coleccionista) - "bestiario por bioma"**: investigada la API real
+  (`Terraria.GameContent.Bestiary.BestiaryDatabaseNPCsPopulator.CommonTags.SpawnConditions.Biomes`,
+  tModLoader.dll instalado) para desglosar el resumen agregado de Bestiario en sub-totales por
+  bioma sin destripar el propio bestiario (mismo criterio ya usado: contar, nunca nombrar lo no
+  descubierto). Es real y existe, pero identificar con certeza CUÁLES de las condiciones de
+  aparición de cada `BestiaryEntry.Info` son de bioma (y no de hora del día, evento o clima) exige
+  más tiempo de investigación del que quedaba en esta ronda para no adivinar una categorización
+  equivocada. Queda con la ruta real ya localizada para la próxima vez.
+- **TM2 (editor de objeto flotante)**: investigada la pieza que el propio catálogo señalaba
+  (`UI/Panel/CapaSuperposicionTk.cs`) - confirmado que SÍ está lista de verdad: capa genérica
+  reutilizable para "mostrar cualquier contenido flotante dentro del panel" con cierre al pulsar
+  fuera, orden de dibujado correcto (por encima de todo, botón Cerrar incluido) y enrutado real de
+  clic/rueda ya resuelto (los tres problemas reales que en su día rompían el desplegable de
+  prefijo). El trabajo real que falta no es la capa - es MOVER los widgets ya maduros del "Editar
+  objeto" fijo actual (`EditorCantidadTk`, `EditorPrefijoTk`) a una tarjeta nueva anclada al slot,
+  sin romper nada del flujo de edición que ya funciona - una cirugía real sobre una función central
+  ya pulida de la Librería, que se decide no empezar a medias en esta ronda. Punto de partida real
+  dejado para la próxima vez.
+- **Ideas 1/5/6/9/10**: no investigadas a fondo en esta ronda (presupuesto de tiempo). Siguen
+  siendo, con la información ya reunida en la entrada anterior de hoy, los candidatos reales para
+  la próxima sesión - ninguno se ha tocado ni a medias para no dejar código a mitad de camino.
+
+### Verificación real de esta ronda
+
+- `scripts\compilar.ps1`: 0 errores en cada commit.
+- `scripts\verificar-panel-unico.ps1`: AUTOPRUEBA PANEL COMPLETA en cada pasada de TM1 (tres
+  iteraciones reales hasta dar con un icono de Personaje que saliera relleno), con inspección de
+  píxeles real (recortes 2x-4x con PIL) de cada intento, nunca solo "compila".
+- `scripts\verificar-guia.ps1` (vanilla + Calamity, ~600s): AUTOPRUEBA GUIA COMPLETA, "Ninguna
+  comprobación en rojo" en la pasada final con TM4, tras aislar y descartar el falso positivo de
+  CPU. Capturas reales: Muro de Carne con su sprite limpio junto al título
+  (`guia-11-muro-preparativos.png`), Señor de la Luna (sin icono de jefe real registrado en
+  vanilla) cayendo con elegancia al título simple sin tarjeta vacía
+  (`guia-26-moonlord-preparativos.png`).
+
+Sin `git push`, sin `gh release`, sin empaquetar el mod, sin subir versión.
