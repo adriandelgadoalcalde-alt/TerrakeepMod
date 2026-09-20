@@ -7,6 +7,7 @@ using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
+using TerrakeepMod.Common.Guia;
 using TerrakeepMod.Common.Libreria;
 using TerrakeepMod.Common.Panel;
 using TerrakeepMod.UI.Ajustes;
@@ -48,8 +49,17 @@ namespace TerrakeepMod.UI.Panel
 	public class PanelTerrakeepState : UIState
 	{
 		private const float AnchoMaximo = 1080f;
-		private const float AltoMaximo = 700f;
 		private const float AltoPie = 44f;
+
+		/// <summary>
+		/// Fraccion de <c>Main.screenHeight</c> que puede ocupar como maximo el marco. Antes era un
+		/// tope FIJO de 700px (<c>AltoMaximo</c>); en un portatil de 1366x768 eso eran 700/768 = el
+		/// 91% del alto de pantalla y tapaba el HUD de vida (visto en captura real, catalogo de
+		/// rediseño visual TM6). 82% de la resolucion REAL, recalculado cada fotograma igual que ya
+		/// hace <see cref="AjustarEscalaDeLasPestanas"/> con el ancho (la resolucion puede cambiar en
+		/// vivo si el jugador redimensiona la ventana o cambia de pantalla completa a ventana).
+		/// </summary>
+		private const float FraccionAltoMaximoDePantalla = 0.82f;
 
 		/// <summary>
 		/// Alto de la fila del titulo, que ademas hace de <b>hueco para el HUD del juego</b>.
@@ -73,10 +83,54 @@ namespace TerrakeepMod.UI.Panel
 		private CapaSuperposicionTk _capaSuperposicion;
 		private readonly List<BotonTk> _botonesPestana = new List<BotonTk>();
 		private BotonTk _botonCerrar;
+
+		// --- TM3 (catalogo de rediseño visual): chips de la cabecera, visibles desde cualquier
+		// pestaña - "hoy hay que ir a la pestaña Guía para saber qué toca; un chip lo dice desde
+		// cualquier pestaña". Solo dos de los tres que proponia el catalogo original: el tercero
+		// (vida/maná) se descarta a proposito, ver el XMLdoc de ConstruirCabeceraChips.
+		private BotonTk _chipHora;
+		private BotonTk _chipObjetivo;
+
+		/// <summary>Deja sitio real al texto del titulo ("Terrakeep", invariable, nunca se
+		/// traduce - ver <c>Panel.Titulo</c> en los dos <c>.hjson</c>): medido con la fuente real a
+		/// escala 1.15, ronda los 120px; 140 deja un respiro pequeño sin desperdiciar ancho.</summary>
+		private const float LeftChips = 140f;
+		private const float AnchoChipHora = 72f;
+
+		/// <summary>
+		/// El chip de objetivo enseña un rotulo CORTO fijo ("Objetivo"/"Objective"), nunca el
+		/// nombre real del tramo - ver <see cref="RefrescarCabeceraChips"/> para el porque (nombres
+		/// reales medidos hasta 36 caracteres, ver <c>Guia.Tramo.InicioModoDificil.Nombre</c> en el
+		/// <c>.hjson</c>). 100px es de sobra para "Objetivo"/"Objective" a escala 0.72.
+		/// </summary>
+		private const float AnchoChipObjetivo = 100f;
+		private const float SeparacionChips = 8f;
+
+		/// <summary>
+		/// Nunca mas alla de esta fraccion del ancho REAL del marco: la derecha de la fila del
+		/// titulo la pinta el HUD de vida/mana del propio juego DESPUES de este Draw (ver el XMLdoc
+		/// de <see cref="AltoTitulo"/> - es el mismo hallazgo real, documentado ahi, del que salio
+		/// esta franja "prohibida"). No hay una coordenada exacta que pedirle al motor: el jugador
+		/// puede elegir entre tres estilos de vida/mana en las opciones de Terraria (clasico/
+		/// elegante/barras) con anchos distintos, asi que se deja un margen conservador en vez de
+		/// una medida puntual que solo valdria para uno de los tres.
+		/// </summary>
+		private const float FraccionMaximaCabecera = 0.5f;
 		private UIElement _contenidoActual;
 		private AreaTerrakeep _area;
 
 		private bool _medidasRegistradas;
+
+		/// <summary>
+		/// Fotogramas de fundido que le quedan al contenido recien montado (catalogo de rediseño
+		/// visual, TM6). 120ms a 60 fps son 7,2 fotogramas; se redondea a 7 porque el juego corre a
+		/// 60 fps fijos (<c>Main.instance.IsFixedTimeStep</c>) - no hace falta medir el tiempo real
+		/// transcurrido, contar fotogramas basta y es el mismo criterio que ya usan las cuentas
+		/// atras de mensaje temporal del resto del mod (p.ej. el resultado de auto-equipar en
+		/// <c>ContenidoBuilds</c>).
+		/// </summary>
+		private int _fotogramasVelo;
+		private const int FotogramasTransicionVelo = 7;
 
 		/// <summary>Pestaña abierta la ultima vez. Reabrir el panel vuelve a donde estabas.</summary>
 		public static AreaTerrakeep UltimaArea = AreaTerrakeep.Personaje;
@@ -156,7 +210,7 @@ namespace TerrakeepMod.UI.Panel
 			_marco.Width.Set(0f, 0.96f);
 			_marco.MaxWidth.Set(AnchoMaximo, 0f);
 			_marco.Height.Set(0f, 0.94f);
-			_marco.MaxHeight.Set(AltoMaximo, 0f);
+			_marco.MaxHeight.Set(Main.screenHeight * FraccionAltoMaximoDePantalla, 0f);
 			_marco.HAlign = 0.5f;
 			_marco.VAlign = 0.5f;
 			_marco.BackgroundColor = EstiloTk.FondoPanel;
@@ -165,6 +219,17 @@ namespace TerrakeepMod.UI.Panel
 
 			ConstruirTitulo();
 			ConstruirBarraPestanas();
+
+			// Los chips de la cabecera se cuelgan DESPUES de la barra de pestañas a proposito
+			// (bug real, encontrado con la propia autoprueba del panel, ver bitacora.md): antes
+			// vivian en ConstruirTitulo, y AutopruebaPanelUnico usa panel.BuscarPrimero&lt;BotonTk&gt;()
+			// -el PRIMER BotonTk del arbol, sin mas criterio- para probar la animacion de hover de
+			// "algun boton cualquiera" del panel. Con los chips colgados antes que las pestañas, ese
+			// BuscarPrimero encontraba el chip de hora (informativo, Habilitado=false, nunca crece)
+			// en vez de la pestaña "Character", y la prueba dejaba de demostrar lo que dice demostrar.
+			// El orden de Append no cambia DONDE se dibuja cada uno (las posiciones son Left/Top
+			// explicitos, no dependen del orden), asi que moverlos aqui abajo no cambia nada visible.
+			ConstruirCabeceraChips();
 
 			float arribaContenido = AltoTitulo + AltoBarraPestanas + 8f;
 			_contenedor = new UIElement();
@@ -199,6 +264,117 @@ namespace TerrakeepMod.UI.Panel
 			titulo.Left.Set(2f, 0f);
 			titulo.Top.Set(0f, 0f);
 			_marco.Append(titulo);
+		}
+
+		/// <summary>
+		/// TM3 (catalogo de rediseño visual): dos chips junto al titulo, visibles desde cualquier
+		/// pestaña - hora del mundo y el proximo objetivo de la Guia (pulsable: lleva directo a la
+		/// pestaña Guia, mismo espiritu que la idea 8 del catalogo de funciones - "convertir los
+		/// contadores en algo navegable").
+		/// <para />
+		/// <b>El tercer chip del catalogo original (vida/maná) se descarta a proposito, no por
+		/// pereza.</b> Investigado antes de escribir una sola linea (disciplina de dos fases del
+		/// proyecto): <see cref="AltoTitulo"/> ya documenta, con una captura real citada, que la
+		/// MITAD DERECHA de esta misma fila la pinta el HUD de vida/mana del propio juego DESPUES de
+		/// este <c>Draw</c> (<c>GUIBarsDraw</c>, tModLoader.dll real) - es la razon por la que el
+		/// titulo del panel vive a la izquierda desde el principio. Un chip que repita ese mismo dato
+		/// en ese mismo hueco no aporta nada (el jugador ya lo esta viendo, dibujado encima) y
+		/// ademas reproduce el bug real ya documentado ahi (la barra de pestañas tapada por los
+		/// corazones antes de que existiera <c>AltoTitulo</c>) en cuanto la resolucion es lo bastante
+		/// pequeña como para que el panel llegue a tocar el borde de la pantalla. Los otros dos chips
+		/// SI son seguros: se anclan con <c>Left</c> en PIXELES desde la izquierda (nunca con
+		/// <c>HAlign</c>/fraccion), la misma tecnica con la que el resto del panel evita el bug real
+		/// de "Left con fraccion + HAlign a la vez" (ver <c>PestanaConjuntos</c>), y solo se enseñan
+		/// si de verdad hay hueco (<see cref="AjustarVisibilidadChips"/>).
+		/// </summary>
+		private void ConstruirCabeceraChips()
+		{
+			_chipHora = new BotonTk("", 0.72f);
+			_chipHora.EsPestana = true;
+			_chipHora.Habilitado = false; // Informativo, no se pulsa: sin animacion de "pulsable".
+			_chipHora.Width.Set(AnchoChipHora, 0f);
+			_chipHora.Height.Set(AltoTitulo, 0f);
+			_chipHora.Left.Set(LeftChips, 0f);
+			_chipHora.Top.Set(0f, 0f);
+			_chipHora.Ayuda = () => Idiomas.Texto("Panel.Cabecera.AyudaHora");
+			_marco.Append(_chipHora);
+
+			_chipObjetivo = new BotonTk("", 0.72f);
+			_chipObjetivo.EsPestana = true;
+			_chipObjetivo.Width.Set(AnchoChipObjetivo, 0f);
+			_chipObjetivo.Height.Set(AltoTitulo, 0f);
+			_chipObjetivo.Left.Set(LeftChips + AnchoChipHora + SeparacionChips, 0f);
+			_chipObjetivo.Top.Set(0f, 0f);
+			_chipObjetivo.Ayuda = () => Idiomas.Texto("Panel.Cabecera.AyudaObjetivo", _objetivoActualParaAyuda);
+			_chipObjetivo.AlPulsar += () => CambiarArea(AreaTerrakeep.Guia, "clic en el chip de objetivo de la Guía");
+			_marco.Append(_chipObjetivo);
+		}
+
+		/// <summary>Texto actual de los dos chips - se pide en cada fotograma desde
+		/// <see cref="RefrescarTextos"/>, mismo criterio que el resto del panel (nada se queda
+		/// desfasado por no haberse enganchado a un evento).</summary>
+		private void RefrescarCabeceraChips()
+		{
+			if (_chipHora != null) {
+				float horaFloat = Terraria.Utils.GetDayTimeAs24FloatStartingFromMidnight() % 24f;
+				if (horaFloat < 0f) {
+					horaFloat += 24f;
+				}
+				int hora = (int)horaFloat;
+				int minuto = (int)((horaFloat - hora) * 60f);
+				_chipHora.FijarTexto(hora.ToString("00") + ":" + minuto.ToString("00"));
+			}
+
+			if (_chipObjetivo != null) {
+				// El rotulo del chip es SIEMPRE "Objetivo"/"Objective" - fijo, corto, nunca se
+				// recorta. El nombre real del tramo (que puede ser largo, ver el XMLdoc de
+				// AnchoChipObjetivo) se guarda aparte para el tooltip (Ayuda, fijado en
+				// ConstruirCabeceraChips) y para el clic.
+				_chipObjetivo.FijarTexto(Idiomas.Texto("Panel.Cabecera.ObjetivoCorto"));
+
+				TramoGuia tramo;
+				EstadoGuia.PasoActual(out tramo);
+				if (tramo != null) {
+					_objetivoActualParaAyuda = Idiomas.Texto("Panel.Cabecera.Objetivo", tramo.Nombre());
+				}
+				else if (EstadoJugadorGuia.HayPartida) {
+					_objetivoActualParaAyuda = Idiomas.Texto("Panel.Cabecera.GuiaCompleta");
+				}
+				else {
+					_objetivoActualParaAyuda = Idiomas.Texto("Panel.Cabecera.SinPartida");
+				}
+			}
+		}
+
+		/// <summary>Nombre completo (posiblemente largo) del objetivo actual de la Guia, o el
+		/// estado que toque ("Guía completa"/"Sin partida"). Lo lee el tooltip de
+		/// <see cref="_chipObjetivo"/> - ver <see cref="RefrescarCabeceraChips"/>.</summary>
+		private string _objetivoActualParaAyuda = "";
+
+		/// <summary>
+		/// Esconde los dos chips (ancho a 0, en vez de dejarlos dibujar fuera de su franja segura)
+		/// cuando el marco es tan estrecho que invadirian la mitad derecha reservada al HUD de
+		/// vida/mana - ver <see cref="FraccionMaximaCabecera"/>. Mismo patron de "la caja crece o se
+		/// esconde, el texto nunca se recorta ni invade sitio ajeno" que ya usa el resto del panel.
+		/// </summary>
+		private void AjustarVisibilidadChips()
+		{
+			if (_chipHora == null || _chipObjetivo == null || _marco == null) {
+				return;
+			}
+
+			float anchoMarco = _marco.GetDimensions().Width;
+			float necesario = LeftChips + AnchoChipHora + SeparacionChips + AnchoChipObjetivo;
+			bool hayHueco = anchoMarco > 0f && necesario <= anchoMarco * FraccionMaximaCabecera;
+
+			float anchoHora = hayHueco ? AnchoChipHora : 0f;
+			float anchoObjetivo = hayHueco ? AnchoChipObjetivo : 0f;
+			if (Math.Abs(_chipHora.Width.Pixels - anchoHora) > 0.5f ||
+				Math.Abs(_chipObjetivo.Width.Pixels - anchoObjetivo) > 0.5f) {
+				_chipHora.Width.Set(anchoHora, 0f);
+				_chipObjetivo.Width.Set(anchoObjetivo, 0f);
+				_marco.Recalculate();
+			}
 		}
 
 		private void ConstruirBarraPestanas()
@@ -330,6 +506,13 @@ namespace TerrakeepMod.UI.Panel
 
 			_contenedor.Recalculate();
 
+			// TM6 (catalogo de rediseño visual): el contenido nuevo entra con un fundido de 120ms en
+			// vez de un corte seco. Se dibuja como un velo por encima en Draw() (ver
+			// FotogramasTransicionVelo), no como un UIElement mas: un panel interactivo por encima
+			// del contenido nuevo le robaria el clic durante esos 7 fotogramas (los eventos de
+			// UIElement resuelven sobre el hijo mas reciente primero), y esto es solo dibujado.
+			_fotogramasVelo = FotogramasTransicionVelo;
+
 			PanelTerrakeepSystem.RegistrarEnArea(area,
 				Terrakeep.LogTag + " Pestaña activa: \"" + NombreDeArea(area) + "\" (via " + origen + ").");
 		}
@@ -353,6 +536,9 @@ namespace TerrakeepMod.UI.Panel
 			if (_botonCerrar != null) {
 				_botonCerrar.FijarTexto(Idiomas.Texto("Panel.Cerrar", PanelTerrakeepSystem.TeclaDe(_area)));
 			}
+
+			RefrescarCabeceraChips();
+			AjustarVisibilidadChips();
 		}
 
 		/// <summary>
@@ -451,12 +637,47 @@ namespace TerrakeepMod.UI.Panel
 			RefrescarTextos();
 			RehacerAreaSiCambioElIdioma();
 			MantenerInventarioAbierto();
+			AjustarAltoMaximo();
+
+			if (_fotogramasVelo > 0) {
+				_fotogramasVelo--;
+			}
 
 			// Si el personaje desaparece (muerte con partida en modo extremo, salir al menu...) el
 			// panel no tiene nada que editar y se cierra solo antes de petar leyendo nulos.
 			if (Main.gameMenu || Main.LocalPlayer == null || !Main.LocalPlayer.active) {
 				PanelTerrakeepSystem.CerrarPanel("el jugador ha dejado de estar disponible");
 			}
+		}
+
+		/// <summary>
+		/// TM6 (catalogo de rediseño visual): tope de alto REAL del marco al 82% de
+		/// <c>Main.screenHeight</c> (antes era un fijo de 700px que en un portatil 1366x768 ocupaba
+		/// el 91% de la pantalla y tapaba el HUD de vida, ver captura real documentada en la
+		/// bitacora). Se recalcula cada fotograma con el mismo criterio que ya usa
+		/// <see cref="AjustarEscalaDeLasPestanas"/> para el ancho: la resolucion puede cambiar en
+		/// vivo (redimensionar la ventana, pasar a pantalla completa), y el coste es una simple
+		/// multiplicacion.
+		/// </summary>
+		private void AjustarAltoMaximo()
+		{
+			if (_marco == null) {
+				return;
+			}
+
+			float nuevo = Main.screenHeight * FraccionAltoMaximoDePantalla;
+			if (System.Math.Abs(nuevo - _marco.MaxHeight.Pixels) < 0.5f) {
+				return;
+			}
+
+			_marco.MaxHeight.Set(nuevo, 0f);
+
+			// UIElement.MaxHeight.Set(...) por si solo no actualiza nada visible hasta el proximo
+			// Recalculate real - mismo bug real ya documentado y arreglado en
+			// ContenidoBuilds.RecalcularPildorasYFilas para Width/Left/Top. Se evita llamarlo todos
+			// los fotogramas (la resolucion normalmente NO cambia entre uno y el siguiente) con la
+			// comparacion de arriba.
+			_marco.Recalculate();
 		}
 
 		/// <summary>
@@ -539,6 +760,7 @@ namespace TerrakeepMod.UI.Panel
 
 			base.Draw(spriteBatch);
 
+			DibujarVeloDeTransicion(spriteBatch);
 			DibujarObjetoEnRaton(spriteBatch);
 			DibujarTooltipDeObjeto();
 
@@ -550,6 +772,36 @@ namespace TerrakeepMod.UI.Panel
 			BotonTk.DibujarTooltipPendiente(spriteBatch);
 
 			RegistrarMedidasUnaVez();
+		}
+
+		/// <summary>
+		/// TM6 (catalogo de rediseño visual): el velo de fundido de la pestaña recien abierta. Se
+		/// dibuja AQUI, despues de <c>base.Draw</c> (el contenido nuevo ya esta pintado debajo, no
+		/// hay que esperar a que aparezca), como un simple rectangulo del mismo color que
+		/// <see cref="EstiloTk.FondoPanel"/> que decae de opaco a invisible en
+		/// <see cref="FotogramasTransicionVelo"/> fotogramas. Con <c>SpriteBatch</c> en
+		/// <c>AlphaBlend</c> (el modo real con el que dibuja toda la interfaz del juego), un alpha
+		/// que baja a cero hace que el rectangulo deje de aportar nada al resultado sin importar su
+		/// color - el efecto visible es exactamente un fundido del contenido nuevo, sin tener que
+		/// tocar el color de cada widget heterogeneo que pueda montar cualquiera de las ocho areas
+		/// (ranuras de objeto vainilla incluidas, cuyo dibujado no es propio del mod). Cubre solo
+		/// <see cref="_contenedor"/> (el area de la pestaña activa) - nunca el titulo, la barra de
+		/// pestañas ni el pie, que no cambian con la transicion.
+		/// </summary>
+		private void DibujarVeloDeTransicion(SpriteBatch spriteBatch)
+		{
+			if (_fotogramasVelo <= 0 || _contenedor == null) {
+				return;
+			}
+
+			CalculatedStyle dim = _contenedor.GetDimensions();
+			if (dim.Width <= 0f || dim.Height <= 0f) {
+				return;
+			}
+
+			float fraccion = _fotogramasVelo / (float)FotogramasTransicionVelo;
+			Rectangle rect = new Rectangle((int)dim.X, (int)dim.Y, (int)dim.Width, (int)dim.Height);
+			spriteBatch.Draw(Terraria.GameContent.TextureAssets.MagicPixel.Value, rect, EstiloTk.FondoPanel * fraccion);
 		}
 
 		/// <summary>
@@ -895,11 +1147,17 @@ namespace TerrakeepMod.UI.Panel
 				else if (ReferenceEquals(hijo, _capaSuperposicion)) {
 					id = "capa_superposicion"; tipo = "overlay"; grupo = null; capa = "overlay";
 				}
+				else if (ReferenceEquals(hijo, _chipHora)) {
+					id = "chip_hora"; tipo = "chip"; grupo = "chips_cabecera"; capa = "contenido";
+				}
+				else if (ReferenceEquals(hijo, _chipObjetivo)) {
+					id = "chip_objetivo"; tipo = "chip"; grupo = "chips_cabecera"; capa = "contenido";
+				}
 				else {
 					// Titulo y linea de ayuda del pie: EtiquetaTk locales a ConstruirTitulo/
 					// ConstruirPie, sin campo propio - se identifican por posicion generica, honesto
 					// dado que no hay confusion posible (son los 2 unicos "otros" hijos directos del
-					// marco).
+					// marco sin identidad propia; los chips de TM3 SI la tienen, ver arriba).
 					id = "marco_otro_" + i; tipo = "texto"; grupo = "marco_textos"; capa = "contenido";
 				}
 

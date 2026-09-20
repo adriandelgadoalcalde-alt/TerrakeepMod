@@ -3,6 +3,24 @@ Panel: {
 	Cerrar: Close ({0})
 	Atajo: Shortcut: {0}
 
+	// TM3 (visual redesign catalogue): header chips, visible from any tab. ObjetivoCorto is the
+	// FIXED chip text (never changes length, never truncates); the real objective/tramo name,
+	// which CAN be long (real measured example: "The first steps of Hardmode", 28 chars), goes
+	// in the tooltip via AyudaObjetivo - same pattern the panel's own tabs already use (short
+	// fixed label always visible + Ayuda with the full detail).
+	Cabecera: {
+		ObjetivoCorto: Objective
+		Objetivo: Objective: {0}
+		GuiaCompleta: Guide complete
+		SinPartida: No character loaded
+		AyudaHora: Current in-world time.
+		AyudaObjetivo:
+			'''
+			{0}
+			Click to open the Guide.
+			'''
+	}
+
 	Area: {
 		Personaje: Character
 		Libreria: Library
