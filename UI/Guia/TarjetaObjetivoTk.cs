@@ -19,21 +19,33 @@ namespace TerrakeepMod.UI.Guia
 	/// </remarks>
 	public class TarjetaObjetivoTk : UIElement
 	{
+		/// <summary>Lado por defecto (la tarjeta grande del objetivo actual). La tira de "lo que
+		/// viene" pide tarjetas mas pequeñas (ver <see cref="TarjetaObjetivoTk(Func{string}, Func{Texture2D}, float, float)"/>),
+		/// asi que dejo de ser una constante fija.</summary>
 		public const float LadoIcono = 72f;
 		private const float Separacion = 10f;
 
 		private readonly Func<Texture2D> _icono;
 		private readonly ParrafoTk _titulo;
+		private readonly float _ladoIcono;
 
 		public TarjetaObjetivoTk(Func<string> titulo, Func<Texture2D> icono)
+			: this(titulo, icono, LadoIcono, 1.0f)
+		{
+		}
+
+		/// <summary>Variante con tamaño e escala propios - la usa la tira de "lo que viene" (TM4)
+		/// para sus tres tarjetas pequeñas, sin duplicar la clase entera solo por el tamaño.</summary>
+		public TarjetaObjetivoTk(Func<string> titulo, Func<Texture2D> icono, float ladoIcono, float escalaTitulo)
 		{
 			_icono = icono;
+			_ladoIcono = ladoIcono;
 			Width.Set(0f, 1f);
-			Height.Set(LadoIcono, 0f);
+			Height.Set(_ladoIcono, 0f);
 
-			_titulo = new ParrafoTk(titulo, 1.0f);
-			_titulo.Left.Set(LadoIcono + Separacion, 0f);
-			_titulo.Width.Set(-(LadoIcono + Separacion), 1f);
+			_titulo = new ParrafoTk(titulo, escalaTitulo);
+			_titulo.Left.Set(_ladoIcono + Separacion, 0f);
+			_titulo.Width.Set(-(_ladoIcono + Separacion), 1f);
 			Append(_titulo);
 		}
 
@@ -50,7 +62,7 @@ namespace TerrakeepMod.UI.Guia
 		{
 			base.Update(gameTime);
 
-			float alto = Math.Max(LadoIcono, _titulo.GetDimensions().Height);
+			float alto = Math.Max(_ladoIcono, _titulo.GetDimensions().Height);
 			if (Math.Abs(Height.Pixels - alto) >= 0.5f) {
 				Height.Set(alto, 0f);
 				if (Parent != null) {
@@ -67,7 +79,7 @@ namespace TerrakeepMod.UI.Guia
 			}
 
 			CalculatedStyle dim = GetDimensions();
-			Rectangle destino = new Rectangle((int)dim.X, (int)dim.Y, (int)LadoIcono, (int)LadoIcono);
+			Rectangle destino = new Rectangle((int)dim.X, (int)dim.Y, (int)_ladoIcono, (int)_ladoIcono);
 			spriteBatch.Draw(textura, destino, Color.White);
 		}
 	}

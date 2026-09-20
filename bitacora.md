@@ -8887,6 +8887,50 @@ asociado, ordenadas por total descendente ("Superficie: 0/59", "Cavernas: 0/46",
 0/40"...). Captura real revisada pixel a pixel (`completitud-01-es.png`): la fila de Bestiario con
 su propia lista scrollable, sin solapes con las demás filas.
 
+### TM4 (continuación) - CERRADO por completo: checklist con icono real por requisito + "lo que viene" en tira
+
+El commit parcial anterior (`1db1662`, misma sesión) ya dejaba la tarjeta con el sprite real del
+jefe; quedaban dos piezas reales por cerrar, ambas con el motivo concreto ya investigado entonces.
+
+**Checklist con icono de objeto por requisito**: el hueco real que dejó pendiente ("no hay una
+resolución de 'id real de esta partida' ya expuesta fuera de `ProveedorEstadoGuiaMod`") resultó
+tener solución real al mirarlo con calma: `RequisitoGuia.Id` (vanilla) YA es un `Item.type` real
+sin resolver nada, y `RequisitoGuia.IdMod` (Calamity y demás) es un nombre `"Mod/Objeto"` resoluble
+con `ItemID.Search.TryGetId` - el MISMO truco real que ya usa este mod para tiles de mod
+(`ObjetivosBusqueda.Resolver`). `Common/Guia/IconoRequisito.cs` (nuevo) resuelve el tipo real
+(objeto único o el primero resoluble de "cualquiera de estos"); `UI/Guia/FilaRequisitoTk.cs`
+dibuja el icono con `ItemSlot.Draw` a 20px (la misma técnica de TM2, guardando/restaurando
+`Main.inventoryScale`/`Main.inventoryBack`).
+
+**"Lo que viene" en tira horizontal de 3 tarjetas**: la primera versión reutilizaba
+`TarjetaObjetivoTk` (icono a la izquierda, título como `ParrafoTk` envolviendo) a tamaño reducido.
+**Bug real encontrado por la propia autoprueba, no hipotético**: `scripts\verificar-guia.ps1`
+devolvió "NO CABE: hay texto fuera de su caja" con la línea `"Esqueletron"` saliéndose -14,5 px de
+su caja - en una columna de 1/3 de ancho con icono a la izquierda, `EtiquetaTk.PartirEnLineas` no
+puede partir una palabra suelta más ancha que la caja (no trunca, la deja salirse). Arreglado con
+un widget nuevo (`TarjetaLoQueVieneTk`, icono ENCIMA, título de una sola línea DEBAJO) que nunca
+envuelve: mide con la fuente real y reduce la escala a mano si hace falta (la misma técnica ya
+probada en `TarjetaEdicionFlotanteTk` de TM2 para el nombre del objeto), recalculado en cada
+`DrawSelf` contra el ancho real - matemáticamente no puede desbordar, con un suelo de escala
+(0,46) para que un nombre muy largo no encoja hasta ser ilegible. Con más de 3 tramos por delante
+se avisa "y N más adelante" en vez de forzar una cuarta tarjeta.
+
+**Bug real preexistente encontrado de paso (no de esta sesión)**: un byte NUL literal incrustado
+dentro de una cadena de texto en `ContenidoGuia.cs` (`"\x00sin montar"`, ya en el commit `1db1662`)
+- corregido (era inofensivo funcionalmente, C# tolera un NUL dentro de un string, pero no era
+intencional).
+
+**Verificación real** (`scripts\verificar-guia.ps1`, vanilla + Calamity, ~90s con las capturas ya
+cacheadas del compilador): dos pasadas completas, la primera confirmó el bug real de desbordamiento
+("NO CABE... Esqueletron"), la segunda (tras el arreglo) "Ninguna comprobación en rojo". Paso
+nuevo en `Common/Guia/AutopruebaGuia.cs` (dentro del mismo case 21 existente, sin renumerar los
+230+ pasos siguientes, con un fotograma real de por medio entre bajar el scroll y capturar - mismo
+motivo ya documentado varias veces hoy) que baja el scroll de la columna derecha del todo y
+captura `guia-3b-lo-que-viene.png`, revisada pixel a pixel: 3 tarjetas reales (altar demoníaco,
+corona de la Reina Abeja, calavera de Esqueletrón) con sus títulos completos y legibles, sin
+solapes, más el aviso "y 8 más adelante". También revisado `guia-3-arma-y-arena.png`: iconos
+reales de plataforma de madera y poción curativa junto a sus requisitos, alineados sin solapes.
+
 ### Sin publicar nada
 
 `git push`, `gh release`, empaquetado del mod y subida de versión siguen sin tocarse, tal como se

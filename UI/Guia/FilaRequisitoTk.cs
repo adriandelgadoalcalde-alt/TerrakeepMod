@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent;
+using Terraria.GameContent.UI;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Guia;
@@ -27,10 +28,23 @@ namespace TerrakeepMod.UI.Guia
 	public class FilaRequisitoTk : UIElement
 	{
 		private const float AltoFila = 24f;
-		private const float Sangria = 18f;
+		private const float SangriaBase = 18f;
+
+		/// <summary>Tamaño real del icono de objeto (TM4). Escala de <c>ItemSlot.Draw</c> = este
+		/// valor / 52 (52px es el lado real de una ranura de vanilla a escala 1, mismo numero que
+		/// ya documenta <c>ContenidoLibreria.PasoSlotDestino</c>) - pequeño a propósito, para que
+		/// quepa dentro de una fila de 24px de alto sin agrandarla.</summary>
+		private const float LadoIcono = 20f;
+		private const float SangriaConIcono = SangriaBase + LadoIcono + 4f;
 
 		private readonly RequisitoGuia _requisito;
 		private readonly float _escala;
+
+		/// <summary><c>Item.type</c> real a dibujar (TM4, <see cref="IconoRequisito"/>), o -1 si
+		/// este requisito no tiene un objeto que enseñar. Se resuelve UNA vez en el constructor:
+		/// el requisito no cambia mientras la fila vive.</summary>
+		private readonly int _tipoIcono;
+		private readonly Item[] _muestra = new Item[1];
 
 		private string _envuelto = "";
 		private string _ultimoCrudo;
@@ -40,9 +54,17 @@ namespace TerrakeepMod.UI.Guia
 		{
 			_requisito = requisito;
 			_escala = escala;
+			_tipoIcono = IconoRequisito.TipoDeObjeto(requisito);
+			if (_tipoIcono > 0) {
+				Item objeto = new Item();
+				objeto.SetDefaults(_tipoIcono);
+				_muestra[0] = objeto;
+			}
 			Width.Set(0f, 1f);
 			Height.Set(AltoFila, 0f);
 		}
+
+		private float Sangria => _tipoIcono > 0 ? SangriaConIcono : SangriaBase;
 
 		/// <summary>Estado real del requisito ahora mismo. Lo lee la autoprueba.</summary>
 		public ResultadoRequisito Estado()
@@ -127,6 +149,22 @@ namespace TerrakeepMod.UI.Guia
 			// caracteres limitado, y meterle un glifo que no tenga es pedir un fallo que solo se
 			// veria en pantalla. Ademas se lee mejor de un vistazo.
 			DibujarMarca(spriteBatch, new Vector2(dim.X, dim.Y + 4f), color, relleno);
+
+			// TM4 del catalogo de rediseño visual: icono real del objeto (ItemSlot.Draw, la MISMA
+			// tecnica ya probada en TarjetaEdicionFlotanteTk - guardar/restaurar Main.inventoryScale/
+			// Main.inventoryBack alrededor, nunca una textura suelta a mano, para que funcione igual
+			// con un objeto de mod que con uno de vanilla).
+			if (_tipoIcono > 0 && _muestra[0] != null) {
+				float escalaPrevia = Main.inventoryScale;
+				Color fondoPrevio = Main.inventoryBack;
+				Main.inventoryScale = LadoIcono / 52f;
+				Main.inventoryBack = Color.Transparent;
+				ItemSlot.Draw(spriteBatch, _muestra, ItemSlot.Context.ChestItem, 0,
+					new Vector2(dim.X + 14f, dim.Y - 2f));
+				Main.inventoryScale = escalaPrevia;
+				Main.inventoryBack = fondoPrevio;
+			}
+
 			Utils.DrawBorderString(spriteBatch, _envuelto, new Vector2(dim.X + Sangria, dim.Y), color, _escala);
 		}
 

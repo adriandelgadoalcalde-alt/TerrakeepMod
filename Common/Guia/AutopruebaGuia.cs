@@ -137,6 +137,10 @@ namespace TerrakeepMod.Common.Guia
 		/// <summary>Tope de la espera de <see cref="EsperarA"/>: ~5 s a 60 fps.</summary>
 		private const int FotogramasMaximosDeEspera = 300;
 
+		/// <summary>Sub-paso interno del case 21 (TM4, tira de "lo que viene"): true entre bajar el
+		/// scroll y capturar, para dar un fotograma real de por medio.</summary>
+		private static bool _scrollLoQueVieneBajado;
+
 		/// <summary>
 		/// Espera a que se cumpla una condicion del juego en vez de dar por hecho que un numero
 		/// fijo de fotogramas basta. Devuelve true cuando se cumple (o cuando se agota la espera,
@@ -253,7 +257,29 @@ namespace TerrakeepMod.Common.Guia
 				case 18: CrearVecinos(3); break;
 				case 19: ComprobarPaso("ArmaYArena", "cuatro vecinos en el pueblo"); break;
 				case 20: ComprobarLecturaDelJefe(); break;
-				case 21: Capturar("guia-3-arma-y-arena"); break;
+				case 21:
+					Capturar("guia-3-arma-y-arena");
+					// TM4 del catalogo de rediseño visual: la tira horizontal de "lo que viene" vive
+					// al final de la columna derecha, fuera de la vista inicial - se baja el scroll
+					// del todo para que la captura la enseñe de verdad. El arreglo real del bug de
+					// desbordamiento de texto que la propia autoprueba encontro aqui mismo
+					// ("NO CABE... Esqueletron") ya se verifico por geometria en
+					// ComprobarTextosVisibles, pero una captura visual real es la comprobacion
+					// final - mismo criterio que el resto del proyecto. Dentro del MISMO case (no
+					// uno nuevo, para no tener que renumerar los otros 230+ pasos que vienen
+					// despues) y con un fotograma real de por medio (_repetir) entre bajar el
+					// scroll y capturar - CapturaDePantalla.Guardar coge el fotograma YA
+					// PRESENTADO, el mismo motivo real ya documentado varias veces esta noche
+					// (popup de prefijo, rebobinar) para el mismo tipo de error.
+					if (!_scrollLoQueVieneBajado) {
+						BajarScrollDetalleDelTodo();
+						_scrollLoQueVieneBajado = true;
+						_repetir = true;
+						break;
+					}
+					Capturar("guia-3b-lo-que-viene");
+					SubirScrollDetalleArriba();
+					break;
 
 				// --- arma -> toca invocarlo -----------------------------------------------------
 				case 22: PonerArma(); break;
@@ -2754,6 +2780,33 @@ namespace TerrakeepMod.Common.Guia
 		private static void Capturar(string nombre)
 		{
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - " + CapturaDePantalla.Guardar(nombre));
+		}
+
+		/// <summary>TM4: baja del todo el scroll de la columna derecha, para que la captura
+		/// enseñe la tira de "lo que viene" aunque quede fuera de la vista inicial.</summary>
+		private static void BajarScrollDetalleDelTodo()
+		{
+			ContenidoGuia contenido = GuiaSystem.PanelActual;
+			Terraria.GameContent.UI.Elements.UIScrollbar scroll = contenido != null ? contenido.ScrollDetalle : null;
+			if (scroll == null) {
+				RegistroGuia.Aviso(Terrakeep.LogTag + " AUTOPRUEBA GUIA - TM4: no se encontro la barra de scroll de la columna derecha.");
+				return;
+			}
+			scroll.ViewPosition = scroll.MaxViewSize;
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - TM4: scroll de la columna derecha bajado del todo " +
+				"(ViewPosition=" + scroll.ViewPosition.ToString("0.0") + " de MaxViewSize=" + scroll.MaxViewSize.ToString("0.0") + ").");
+		}
+
+		/// <summary>Deja el scroll de la columna derecha donde estaba al principio, para que el
+		/// siguiente paso (que sigue leyendo esa columna) no la vea a medio bajar.</summary>
+		private static void SubirScrollDetalleArriba()
+		{
+			_scrollLoQueVieneBajado = false;
+			ContenidoGuia contenido = GuiaSystem.PanelActual;
+			Terraria.GameContent.UI.Elements.UIScrollbar scroll = contenido != null ? contenido.ScrollDetalle : null;
+			if (scroll != null) {
+				scroll.ViewPosition = 0f;
+			}
 		}
 
 		private static void Terminar()
