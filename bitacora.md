@@ -8828,9 +8828,20 @@ dos fases que el resto del proyecto): queda documentado el límite real del Muro
 punto de partida (`NPC.SpawnBoss`/`NPC.NewNPC`, banderas `downedBossN` solo se tocan al morir) para
 la próxima sesión.
 
+### Idea 4 (sonar de estructuras) - CERRADA: verificación en vivo pendiente, ahora hecha
+
+El código ya estaba: Mazmorra/Templo lihzahrd/Nido de araña por sus paredes reales "Unsafe" y la
+Isla flotante por el tile real "Sunplate" (sesión anterior). Lo único que quedaba de verdad era la
+verificación en vivo, interrumpida entonces por una partida real del usuario. Verificado ahora con
+`scripts\verificar-exploracion.ps1 -Buscar 'Isla' -Revelar 2000`: "Isla flotante (Sunplate)"
+seleccionada de verdad por el buscador, **333 tiles reales encontrados en 20.170.801 tiles
+mirados, agrupados en 5 zonas** (5 islas flotantes reales del mundo de pruebas, cada una con sus
+coordenadas y distancia reales). Captura real revisada pixel a pixel
+(`ws6-resultados-iconos.png`): las 5 filas con icono, nombre y distancia, sin solapes. La Pirámide
+del desierto sigue como LÍMITE REAL ya documentado (sin tile/pared exclusivo propio) - no se
+fuerza un marcador falso. Idea 4 queda 100% cerrada.
+
 ### Sin publicar nada
 
 `git push`, `gh release`, empaquetado del mod y subida de versión siguen sin tocarse, tal como se
 pidió.
-
-Sin `git push`, sin `gh release`, sin empaquetar el mod, sin subir versión.
