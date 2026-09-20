@@ -87,6 +87,58 @@ namespace TerrakeepMod.Common.Guia
 			}
 		}
 
+		/// <summary>
+		/// La pieza real que faltaba de la idea 9 - re-lectura literal del catálogo el
+		/// 20-sep-2026: "decir «el grupo está listo para X» Y qué le falta a quién". Ya estaba lo
+		/// segundo (<see cref="EsEvaluablePorJugador"/> + <c>FilaRequisitoTk</c> por companero);
+		/// esto es lo primero: true solo si TODOS los requisitos OBLIGATORIOS del paso están
+		/// cumplidos por TODO el grupo (jugador local incluido) - los de mundo (NpcsPueblo, Npc,
+		/// NpcActivo, Bandera) se comprueban UNA vez, igual para todos; los que dependen de cada
+		/// jugador (<see cref="EsEvaluablePorJugador"/>) se comprueban para CADA miembro. Los
+		/// requisitos recomendados nunca bloquean - mismo criterio que
+		/// <c>GuideEvaluationEngine.PasoCompletado</c> para un jugador solo. Vacío (sin
+		/// compañeros) nunca cuenta como "listo": no hay grupo del que hablar.
+		/// </summary>
+		public static bool GrupoListo(PasoGuia paso)
+		{
+			if (paso == null) {
+				return false;
+			}
+			List<int> companeros = IndicesConectados();
+			if (companeros.Count == 0) {
+				return false;
+			}
+
+			foreach (RequisitoGuia requisito in paso.Requisitos) {
+				if (requisito.Recomendado) {
+					continue;
+				}
+
+				if (!EsEvaluablePorJugador(requisito.Tipo)) {
+					// Requisito de MUNDO: igual para todo el grupo, se comprueba una sola vez.
+					if (!EvaluadorGuia.Evaluar(requisito).Cumplido) {
+						return false;
+					}
+					continue;
+				}
+
+				// Requisito por jugador: el local Y cada compañero conectado tienen que cumplirlo.
+				if (!EvaluadorGuia.Evaluar(requisito).Cumplido) {
+					return false;
+				}
+				foreach (int indice in companeros) {
+					Player jugador = Main.player[indice];
+					if (jugador == null || !jugador.active) {
+						return false;
+					}
+					if (!EvaluadorGuia.Evaluar(requisito, jugador).Cumplido) {
+						return false;
+					}
+				}
+			}
+			return true;
+		}
+
 		// -------------------------------------------------------------------------------------
 		// Idea 9 (corregida el 20-sep-2026, segunda pasada): "repartir builds por clase sin
 		// solaparse" - la pieza que faltaba del catalogo. Las CINCO claves son las mismas de

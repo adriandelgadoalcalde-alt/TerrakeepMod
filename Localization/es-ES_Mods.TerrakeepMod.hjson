@@ -955,6 +955,8 @@ Guia: {
 	Grupo: {
 		Titulo: Tu grupo, para este mismo paso
 		Desconectado: (se ha desconectado)
+		Listo: El grupo YA está listo para: {0}
+		NoListo: El grupo todavía NO está listo para: {0}
 
 		Reparto: {
 			Titulo: Reparto de clases, sin repetir

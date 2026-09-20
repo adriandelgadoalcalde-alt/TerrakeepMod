@@ -565,6 +565,18 @@ namespace TerrakeepMod.UI.Guia
 			}
 
 			AnadirTitulo("Guia.Grupo.Titulo", EstiloTk.TextoAviso);
+
+			// Re-lectura literal del catalogo (20-sep-2026): la idea 9 pedia "decir el grupo esta
+			// listo para X" ADEMAS de "que le falta a quien" - lo segundo ya estaba, esto es lo
+			// primero, que faltaba. Calculado UNA vez al montar (mismo criterio ya aceptado para
+			// el reparto de clases justo debajo: si el estado cambiara a mitad de partida, se
+			// pone al dia en el siguiente Reconstruir).
+			bool grupoListo = GuiaGrupo.GrupoListo(paso);
+			string objetivoActual = paso.Titulo();
+			_lista.Add(NuevaLinea(
+				() => Idiomas.Texto(grupoListo ? "Guia.Grupo.Listo" : "Guia.Grupo.NoListo", objetivoActual),
+				grupoListo ? EstiloTk.Correcto : EstiloTk.Neutro, 0.8f));
+
 			for (int c = 0; c < companeros.Count; c++) {
 				int indice = companeros[c];
 				_lista.Add(NuevaLinea(

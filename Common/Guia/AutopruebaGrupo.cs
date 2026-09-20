@@ -314,6 +314,24 @@ namespace TerrakeepMod.Common.Guia
 						(_ultimaCaptura.StartsWith("captura real") ? "OK." : "NO CUADRA: no se guardo la captura."));
 					break;
 
+				case 13: {
+					// Re-lectura literal del catalogo (20-sep-2026): la idea 9 pedia ADEMAS "decir
+					// el grupo esta listo para X" - GuiaGrupo.GrupoListo(paso) es la pieza que
+					// faltaba. En este mismo escenario ni el jugador local ni el companero llegan a
+					// la defensa (11) que pide el paso actual ("Armadura: mas de 10 de defensa"),
+					// asi que el grupo TIENE que salir "no listo" - una comprobacion real contra el
+					// estado real, no un valor forzado a mano.
+					TramoGuia tramo;
+					PasoGuia pasoActual = EstadoGuia.PasoActual(out tramo);
+					bool listo = pasoActual != null && GuiaGrupo.GrupoListo(pasoActual);
+					bool ok = pasoActual != null && !listo;
+					Log("AUTOPRUEBA GRUPO OBSERVADOR - GuiaGrupo.GrupoListo(\"" +
+						(pasoActual != null ? pasoActual.Clave : "?") + "\") = " + listo +
+						" (ni el local ni el companero llegan a la defensa que pide el paso, tiene " +
+						"que dar false) -> " + (ok ? "OK: el grupo sale \"no listo\" de verdad." : "NO CUADRA."));
+					break;
+				}
+
 				default:
 					Log("AUTOPRUEBA GRUPO COMPLETA.");
 					_terminada = true;

@@ -955,6 +955,8 @@ Guia: {
 	Grupo: {
 		Titulo: Your group, for this same step
 		Desconectado: (disconnected)
+		Listo: Your group is ALREADY ready for: {0}
+		NoListo: Your group is NOT ready yet for: {0}
 
 		Reparto: {
 			Titulo: Class split, no repeats
