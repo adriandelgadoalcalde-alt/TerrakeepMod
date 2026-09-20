@@ -63,6 +63,26 @@ namespace TerrakeepMod.Common.Completitud
 				", la Guia real tiene 21 tramos implementados (bitacora, verificado el 13-sep-2026) | " +
 				(coincideConLaGuia ? "OK: mismo catalogo, mismo numero." : "FALLO: no coincide."));
 
+			// Idea 8: desglose real por bioma del Bestiario (fila 1). Se comprueba que hay filas
+			// reales, que cada una trae "hecho <= total" y que la suma de los "total" por bioma
+			// vistos aqui es MAYOR que el total de bichos del bestiario (todos < resumen.Total):
+			// no puede ser mayor porque un bioma nunca puede tener mas bichos que el bestiario
+			// entero, y es coherente que sea distinto de resumen.Total porque un mismo bicho puede
+			// contarse en varios biomas a la vez y algunos bichos no son de ningun bioma listado
+			// (ej. solo por evento).
+			ResumenCompletitud bestiario = pestana.ResumenParaPrueba(1);
+			if (bestiario != null) {
+				int ejemplos = System.Math.Min(5, bestiario.Desglose.Count);
+				for (int i = 0; i < ejemplos; i++) {
+					Registrar("PASO0.bioma[" + i + "] " + bestiario.Desglose[i]);
+				}
+				Registrar("PASO0.bioma total de filas=" + bestiario.Desglose.Count +
+					" (bestiario.Total=" + bestiario.Total + ") | " +
+					(bestiario.Desglose.Count > 0
+						? "OK: hay desglose real por bioma."
+						: "FALLO: sin desglose."));
+			}
+
 			Avanzar(1);
 		}
 

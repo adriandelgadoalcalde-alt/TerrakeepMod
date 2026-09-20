@@ -325,7 +325,15 @@ Personaje: {
 
 Completitud: {
 	Jefes: Bosses and events (Guide)
-	Bestiario: Bestiary
+
+	Bestiario: {
+		$parentVal: Bestiary
+		// Functions catalogue idea 8 ("collector's checklist"): a row of the Bestiary's per-biome
+		// breakdown. Never creature names, just the REAL biome name (the same official text the
+		// vanilla Bestiary's own filter buttons use) and the count.
+		FilaBioma: "{0}: {1} / {2}"
+	}
+
 	Logros: Achievements
 	Investigacion: Researched items (Journey Mode)
 	Numeros: "{0} / {1}  ({2}%)"

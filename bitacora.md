@@ -8841,6 +8841,32 @@ coordenadas y distancia reales). Captura real revisada pixel a pixel
 del desierto sigue como LÍMITE REAL ya documentado (sin tile/pared exclusivo propio) - no se
 fuerza un marcador falso. Idea 4 queda 100% cerrada.
 
+### Idea 8 (checklist de coleccionista) - CERRADA: desglose real por bioma del Bestiario
+
+Investigación de la sesión anterior completada: `BestiaryDatabaseNPCsPopulator.CommonTags.
+SpawnConditions` separa sus condiciones en CUATRO grupos reales (`Biomes`, `Events`, `Invasions`,
+`Times`, confirmado en el decompilado real) - `Biomes` es la única categoría real de "bioma" sin
+mezclar hora del día/clima/invasión, y trae 40 etiquetas reales (`Terraria.GameContent.Bestiary.
+SpawnConditionBestiaryInfoElement`, una por bioma: Superficie, Cavernas, Mazmorra, Corrupción,
+Cripta subterránea de Corrupción... hasta los 4 Pilares lunares). Cada etiqueta expone
+`GetDisplayNameKey()` público, así que el nombre mostrado es el texto OFICIAL de vanilla (el mismo
+que usan los propios botones de filtro del Bestiario), nunca inventado ni traducido a mano.
+
+`Common/Completitud/EstadoCompletitud.cs`: `Bestiario()` ahora recorre las 40 etiquetas por cada
+`BestiaryEntry` con `entry.Info.Contains(etiqueta)` - el MISMO camino real que usa
+`Filters.ByInfoElement` (el filtro real de la propia pantalla de Bestiario de vanilla), nunca un
+camino inventado - y deja un `ResumenCompletitud.Desglose` (campo nuevo, paralelo a `Faltan` pero
+para subtotales "Nombre: hecho/total" en vez de nombres de lo que falta) ordenado por total
+descendente. **Nunca se listan nombres de bichos**: solo biomas, mismo criterio de no-spoiler ya
+aplicado al resto de Bestiario. `UI/Personaje/PestanaCompletitud.cs`: la fila de Bestiario pasa a
+`conLista: true` y `Refrescar()` prioriza `Desglose` sobre `Faltan` cuando lo trae.
+
+**Verificación real** (`scripts\verificar-completitud.ps1`, paso 0 ampliado): "PASO0.bioma total de
+filas=40 (bestiario.Total=540)" - las 40 etiquetas reales, todas con al menos un bicho real
+asociado, ordenadas por total descendente ("Superficie: 0/59", "Cavernas: 0/46", "La Mazmorra:
+0/40"...). Captura real revisada pixel a pixel (`completitud-01-es.png`): la fila de Bestiario con
+su propia lista scrollable, sin solapes con las demás filas.
+
 ### Sin publicar nada
 
 `git push`, `gh release`, empaquetado del mod y subida de versión siguen sin tocarse, tal como se

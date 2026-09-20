@@ -40,7 +40,11 @@ namespace TerrakeepMod.UI.Personaje
 			Height.Set(0f, 1f);
 
 			ConstruirFila(0, "Completitud.Jefes", EstadoCompletitud.Jefes, conLista: true);
-			ConstruirFila(1, "Completitud.Bestiario", EstadoCompletitud.Bestiario, conLista: false);
+			// Idea 8 del catalogo de funciones ("checklist de coleccionista"): la fila de Bestiario
+			// ahora SI tiene lista - no de nombres de bichos (eso seguiria siendo spoiler, ver el
+			// comentario real de EstadoCompletitud.Bestiario), sino del desglose real por bioma que
+			// ese mismo metodo deja en ResumenCompletitud.Desglose.
+			ConstruirFila(1, "Completitud.Bestiario", EstadoCompletitud.Bestiario, conLista: true);
 			ConstruirFila(2, "Completitud.Logros", EstadoCompletitud.Logros, conLista: true);
 			ConstruirFila(3, "Completitud.Investigacion", EstadoCompletitud.Investigacion, conLista: false);
 
@@ -125,6 +129,17 @@ namespace TerrakeepMod.UI.Personaje
 				}
 
 				fila.ListaFaltan.Clear();
+
+				// El desglose (idea 8, subtotales por categoria) tiene prioridad sobre "lo que
+				// falta" cuando el resumen trae los dos rellenados con sentidos distintos - hoy
+				// solo pasa con Bestiario, que trae Desglose y deja Faltan vacio a proposito.
+				if (resumen.Desglose.Count > 0) {
+					foreach (string linea in resumen.Desglose) {
+						fila.ListaFaltan.Add(TextoFila(linea));
+					}
+					continue;
+				}
+
 				if (resumen.Faltan.Count == 0) {
 					fila.ListaFaltan.Add(TextoFila(Idiomas.Texto("Completitud.Completo")));
 					continue;
