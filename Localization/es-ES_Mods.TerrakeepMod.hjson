@@ -493,6 +493,38 @@ Builds: {
 	ConjuntoDestinoPildora: Conjunto {0}
 	ConjuntoDestinoAyuda: A cuál de los tres conjuntos de equipo (1/2/3) va la armadura y los accesorios de esta build al auto-equipar.
 	ConjuntoActivoMarca: (activo)
+
+	// Functions catalogue idea 7: in-game build codes (TKBUILD1:...).
+	Codigo: {
+		Pista: Código TKBUILD1:...
+		Exportar: Exportar
+		ExportarAyuda: Copia el conjunto de equipo elegido (armadura, accesorios y tintes) como un código y lo pone en el portapapeles.
+		Importar: Importar
+		ImportarAyuda: Aplica el código del cuadro de texto al conjunto de equipo elegido. Lo que ya tengas se mueve; lo que no tengas se crea (los tintes nunca se crean).
+		Copiado: Código copiado al portapapeles ({0} de 10 ranuras codificadas).
+		CopiadoConOmitidos: Código copiado al portapapeles ({0} de 10 ranuras codificadas, {1} objeto(s) de mod sin catálogo de ids todavía - LÍMITE REAL, ver bitácora).
+		Resultado: Código aplicado: creados={0}, movidos={1}, ya puestos={2}, sin sitio={3}, tintes movidos={4}, id no reconocido={5}.
+		ErrorFormato: El texto del cuadro no es un código TKBUILD1 válido.
+		ErrorCorrupto: El código está dañado o incompleto (no coincide la comprobación interna).
+		ErrorVersion: El código es de una versión de TKBUILD más nueva que esta.
+		SlotNoDesbloqueado: tu personaje todavía no tiene esa ranura de accesorio desbloqueada
+		IdNoReconocido: no existe en esta versión/mods del juego
+		PrefijoDistinto: tu prefijo real es distinto del que llevaba el código
+		MochilaLlena: se iba a crear, pero no hay hueco en la mochila para lo que ya llevabas ahí
+
+		Slot: {
+			Cabeza: Casco
+			Cuerpo: Pechera
+			Piernas: Grebas
+			Accesorio1: Accesorio 1
+			Accesorio2: Accesorio 2
+			Accesorio3: Accesorio 3
+			Accesorio4: Accesorio 4
+			Accesorio5: Accesorio 5
+			Accesorio6: Accesorio 6
+			Accesorio7: Accesorio 7
+		}
+	}
 }
 
 Investigacion: {

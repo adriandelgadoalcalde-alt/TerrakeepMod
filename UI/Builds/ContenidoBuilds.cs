@@ -5,6 +5,7 @@ using ReLogic.Graphics;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
+using Terrakeep.Core.Model;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Builds;
 using TerrakeepMod.UI.Personaje.Widgets;
@@ -93,6 +94,15 @@ namespace TerrakeepMod.UI.Builds
 		private EtiquetaTk _subtitulo;
 		private BotonTk _botonAutoEquipar;
 		private readonly List<BotonTk> _botonesLoadoutObjetivo = new List<BotonTk>();
+
+		// --- Idea 7 del catalogo de funciones: codigos de build (TKBUILD1:...) dentro del juego,
+		// ver Common/Builds/CodigoDeBuild.cs. Viven en el mismo pie que "Auto-equipar", a su
+		// derecha - reutilizan _mensajeResultado/_colorMensajeResultado/_fotogramasMensajeResultado
+		// (los mismos tres campos que ya usa MostrarResultadoAutoEquipar) para el resumen, en vez de
+		// montar un segundo mecanismo de aviso temporal aparte.
+		private CampoTextoTk _campoCodigo;
+		private BotonTk _botonExportarCodigo;
+		private BotonTk _botonImportarCodigo;
 
 		/// <summary>Alto REAL de la cabecera ahora mismo (>= <see cref="AltoCabeceraBase"/>).
 		/// Lo ajusta <see cref="RecalcularCabecera"/> a lo que el mensaje de resultado ocupe de
@@ -285,7 +295,124 @@ namespace TerrakeepMod.UI.Builds
 			_botonAutoEquipar.AlPulsar += EjecutarAutoEquipar;
 			Append(_botonAutoEquipar);
 
+			ConstruirControlesDeCodigo();
+
 			Reconstruir();
+		}
+
+		private const float AnchoCampoCodigo = 380f;
+		private const float AnchoBotonCodigo = 100f;
+		private const float SeparacionControlesPie = 10f;
+
+		/// <summary>
+		/// Idea 7 del catalogo de funciones: cuadro de texto + "Exportar"/"Importar" para los
+		/// codigos de build (<c>TKBUILD1:...</c>, <see cref="CodigoDeBuild"/>). Se colocan a la
+		/// derecha del boton "Auto-equipar" (210px), en el mismo pie de 40px.
+		/// </summary>
+		private void ConstruirControlesDeCodigo()
+		{
+			float izquierdaCampo = 210f + SeparacionControlesPie;
+
+			_campoCodigo = new CampoTextoTk(() => Idiomas.Texto("Builds.Codigo.Pista"), 220, 0.7f);
+			_campoCodigo.Left.Set(izquierdaCampo, 0f);
+			_campoCodigo.Width.Set(AnchoCampoCodigo, 0f);
+			_campoCodigo.Height.Set(34f, 0f);
+			_campoCodigo.VAlign = 1f;
+			Append(_campoCodigo);
+
+			float izquierdaExportar = izquierdaCampo + AnchoCampoCodigo + SeparacionControlesPie;
+			_botonExportarCodigo = new BotonTk(Idiomas.Texto("Builds.Codigo.Exportar"), EstiloTk.EscalaBoton);
+			_botonExportarCodigo.Left.Set(izquierdaExportar, 0f);
+			_botonExportarCodigo.Width.Set(AnchoBotonCodigo, 0f);
+			_botonExportarCodigo.Height.Set(34f, 0f);
+			_botonExportarCodigo.VAlign = 1f;
+			_botonExportarCodigo.Ayuda = () => Idiomas.Texto("Builds.Codigo.ExportarAyuda");
+			_botonExportarCodigo.AlPulsar += EjecutarExportarCodigo;
+			Append(_botonExportarCodigo);
+
+			float izquierdaImportar = izquierdaExportar + AnchoBotonCodigo + SeparacionControlesPie;
+			_botonImportarCodigo = new BotonTk(Idiomas.Texto("Builds.Codigo.Importar"), EstiloTk.EscalaBoton);
+			_botonImportarCodigo.Left.Set(izquierdaImportar, 0f);
+			_botonImportarCodigo.Width.Set(AnchoBotonCodigo, 0f);
+			_botonImportarCodigo.Height.Set(34f, 0f);
+			_botonImportarCodigo.VAlign = 1f;
+			_botonImportarCodigo.Ayuda = () => Idiomas.Texto("Builds.Codigo.ImportarAyuda");
+			_botonImportarCodigo.AlPulsar += EjecutarImportarCodigo;
+			Append(_botonImportarCodigo);
+		}
+
+		/// <summary>"Exportar": codifica el conjunto de equipo ELEGIDO en el selector de destino
+		/// (el mismo <see cref="LoadoutObjetivoValido"/> que ya usa "Auto-equipar", no el conjunto
+		/// ACTIVO a secas - los dos pueden ser distintos) y lo copia al portapapeles del sistema.</summary>
+		private void EjecutarExportarCodigo()
+		{
+			Player jugador = Main.LocalPlayer;
+			if (jugador == null) {
+				return;
+			}
+
+			int objetivo = LoadoutObjetivoValido(jugador);
+			string codigo = CodigoDeBuild.Exportar(jugador, objetivo, out int omitidos);
+			_campoCodigo.FijarTextoSilencioso(codigo);
+
+			try {
+				ReLogic.OS.Platform.Get<ReLogic.OS.IClipboard>().Value = codigo;
+			}
+			catch (System.Exception ex) {
+				// El portapapeles es un recurso del sistema operativo, no algo que el mod controle
+				// del todo (puede fallar en un entorno raro, p.ej. sin sesion de escritorio real) -
+				// el codigo YA esta en el cuadro de texto aunque esto falle, asi que se deja
+				// constancia en el log y se sigue, nunca se tumba la accion por esto.
+				RegistroBuilds.Aviso($"{Terrakeep.LogTag} Codigo de build: fallo copiando al portapapeles: {ex.Message}");
+			}
+
+			int codificados = BuildCode.SlotCount - omitidos;
+			_mensajeResultado = omitidos > 0
+				? Idiomas.Texto("Builds.Codigo.CopiadoConOmitidos", codificados, omitidos)
+				: Idiomas.Texto("Builds.Codigo.Copiado", codificados);
+			_colorMensajeResultado = omitidos > 0 ? EstiloTk.TextoAviso : EstiloTk.Correcto;
+			_fotogramasMensajeResultado = DuracionMensajeResultado;
+
+			RegistroBuilds.Linea($"{Terrakeep.LogTag} Codigo de build exportado (conjunto {objetivo + 1}, " +
+				$"{codificados}/{BuildCode.SlotCount} ranuras, {omitidos} omitidas): {codigo}");
+		}
+
+		/// <summary>"Importar": decodifica el texto del cuadro y lo aplica al conjunto ELEGIDO en el
+		/// selector de destino.</summary>
+		private void EjecutarImportarCodigo()
+		{
+			Player jugador = Main.LocalPlayer;
+			if (jugador == null || _campoCodigo == null) {
+				return;
+			}
+
+			int objetivo = LoadoutObjetivoValido(jugador);
+			ResultadoImportarCodigo resultado = CodigoDeBuild.Importar(jugador, _campoCodigo.Texto, objetivo);
+			_ultimoResultadoCodigo = resultado;
+			RefrescarPosesion();
+
+			if (!resultado.Ok) {
+				_mensajeResultado = resultado.MensajeError;
+				_colorMensajeResultado = EstiloTk.Peligro;
+				_fotogramasMensajeResultado = DuracionMensajeResultado;
+				RegistroBuilds.Aviso($"{Terrakeep.LogTag} Codigo de build: {resultado.MensajeError}");
+				return;
+			}
+
+			_mensajeResultado = Idiomas.Texto("Builds.Codigo.Resultado", resultado.Creados, resultado.Movidos,
+				resultado.YaColocados, resultado.SinSitio, resultado.TintesMovidos, resultado.NoReconocidos);
+			_colorMensajeResultado = resultado.SinSitio > 0 || resultado.NoReconocidos > 0
+				? EstiloTk.TextoAviso
+				: EstiloTk.Correcto;
+			_fotogramasMensajeResultado = DuracionMensajeResultado;
+
+			RegistroBuilds.Linea($"{Terrakeep.LogTag} Codigo de build aplicado (conjunto {objetivo + 1}): " +
+				$"creados={resultado.Creados} movidos={resultado.Movidos} ya_puestos={resultado.YaColocados} " +
+				$"sin_sitio={resultado.SinSitio} tintes_movidos={resultado.TintesMovidos} " +
+				$"no_reconocidos={resultado.NoReconocidos}");
+			foreach (string linea in resultado.Detalle) {
+				RegistroBuilds.Linea($"{Terrakeep.LogTag}   - {linea}");
+			}
 		}
 
 		private string _subtituloTexto = "";
@@ -968,6 +1095,18 @@ namespace TerrakeepMod.UI.Builds
 		/// el boton en esta sesion del panel). Lo usa la autoprueba para confirmar SIN capturas que
 		/// el mensaje sigue vivo varios fotogramas despues del clic, no solo en el instante.</summary>
 		public string MensajeResultado => _mensajeResultado;
+
+		/// <summary>SOLO PARA AUTOPRUEBAS: el texto que hay ahora mismo en el cuadro del código de
+		/// build (ver <see cref="CodigoDeBuild"/>), sin tener que exponer el propio
+		/// <see cref="CampoTextoTk"/>.</summary>
+		public string CodigoParaPrueba => _campoCodigo != null ? _campoCodigo.Texto : "";
+
+		/// <summary>El resultado NUMÉRICO (nunca el texto ya traducido, que cambia de idioma) de la
+		/// última llamada real a "Importar", o null si todavía no se ha pulsado. Lo lee la
+		/// autoprueba para comprobar la idempotencia sin tener que parsear <see cref="_mensajeResultado"/>
+		/// en un idioma concreto.</summary>
+		private ResultadoImportarCodigo _ultimoResultadoCodigo;
+		public ResultadoImportarCodigo UltimoResultadoCodigoParaPrueba => _ultimoResultadoCodigo;
 
 		/// <summary>Fotogramas que le quedan al mensaje de resultado antes de volver a la leyenda de
 		/// colores. 0 = ya no se enseña (o nunca se pulso el boton).</summary>

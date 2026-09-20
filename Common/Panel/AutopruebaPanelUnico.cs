@@ -6,7 +6,10 @@ using Terraria.GameInput;
 using Terraria.ID;
 using Terraria.ModLoader;
 using Terraria.UI;
+using TerrakeepMod.Common.Ajustes;
+using TerrakeepMod.Common.Builds;
 using TerrakeepMod.Common.Personaje;
+using TerrakeepMod.UI.Builds;
 using TerrakeepMod.UI.Panel;
 using TerrakeepMod.UI.Personaje;
 using TerrakeepMod.UI.Personaje.Widgets;
@@ -144,6 +147,14 @@ namespace TerrakeepMod.Common.Panel
 				case 35: MedirYCapturarMuneco("sin-armadura"); break;
 				case 36: PulsarAlternadorArmadura(); break;
 				case 37: MedirYCapturarMuneco("con-armadura-otra-vez"); break;
+
+				// --- Codigo de build (idea 7 del catalogo de funciones): auto-equipar -> exportar
+				// -> importar el MISMO codigo -> tiene que ser idempotente (nada que mover/crear la
+				// segunda vez), mismo criterio que ya prueba "Auto-equipar" dos veces seguidas.
+				case 38: AbrirPestanaConClic(AreaTerrakeep.Builds); break;
+				case 39: PulsarAutoEquiparParaCodigo(); break;
+				case 40: PulsarExportarCodigo(); break;
+				case 41: PulsarImportarCodigo(); break;
 
 				default: Terminar(); break;
 			}
@@ -548,6 +559,91 @@ namespace TerrakeepMod.Common.Panel
 			RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL/muñeco - clic REAL en \"" +
 				alternador.EtiquetaActual + "\". Valor antes=" + antes + " -> despues=" + alternador.Valor +
 				" " + (antes != alternador.Valor ? "-> OK: ha cambiado." : "-> NO HA CAMBIADO."));
+		}
+
+		// -------------------------------------------------------------------------------------
+		// Codigo de build (idea 7 del catalogo de funciones): auto-equipar -> exportar -> importar
+		// el MISMO codigo tiene que ser idempotente, mismo criterio ya probado por WS4 con
+		// "Auto-equipar" dos veces seguidas.
+		// -------------------------------------------------------------------------------------
+
+		private static ContenidoBuilds BuildsAbierto()
+		{
+			return PanelTerrakeepSystem.Panel != null ? PanelTerrakeepSystem.Panel.Builds : null;
+		}
+
+		/// <summary>Rellena el equipo real con "Auto-equipar" para tener algo de verdad que
+		/// exportar (el personaje de prueba arranca sin nada puesto).</summary>
+		private static void PulsarAutoEquiparParaCodigo()
+		{
+			PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
+			ContenidoBuilds builds = BuildsAbierto();
+			if (panel == null || builds == null) {
+				RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL/codigo: no se encontro " +
+					"ContenidoBuilds en la pestaña abierta.");
+				return;
+			}
+
+			string pulsado = panel.PulsarBoton(Idiomas.Texto("Builds.AutoEquipar"));
+			RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL/codigo - CLIC REAL en \"" +
+				Idiomas.Texto("Builds.AutoEquipar") + "\" (" + (pulsado ?? "NO ENCONTRADO") +
+				") para tener equipo real que exportar. Resultado: " + builds.MensajeResultado);
+		}
+
+		/// <summary>Pulsa "Exportar" de verdad y deja el codigo resultante en el log (para poder
+		/// copiarlo a mano si algun dia hace falta reproducir algo con el).</summary>
+		private static void PulsarExportarCodigo()
+		{
+			PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
+			ContenidoBuilds builds = BuildsAbierto();
+			if (panel == null || builds == null) {
+				return;
+			}
+
+			string pulsado = panel.PulsarBoton(Idiomas.Texto("Builds.Codigo.Exportar"));
+			string codigo = builds.CodigoParaPrueba;
+			bool pareceValido = !string.IsNullOrEmpty(codigo) && codigo.StartsWith("TKBUILD1:");
+
+			RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL/codigo - CLIC REAL en \"" +
+				Idiomas.Texto("Builds.Codigo.Exportar") + "\" (" + (pulsado ?? "NO ENCONTRADO") +
+				"). Codigo en el cuadro (" + (codigo?.Length ?? 0) + " caracteres): \"" + codigo + "\" " +
+				(pareceValido ? "-> OK: empieza por TKBUILD1:" : "-> NO CUADRA (no parece un codigo valido)") +
+				". Mensaje de resultado: " + builds.MensajeResultado);
+		}
+
+		/// <summary>
+		/// Pulsa "Importar" de verdad con el MISMO codigo que se acaba de exportar (sigue en el
+		/// cuadro de texto). Como el equipo activo ya es exactamente ese, el resultado tiene que
+		/// decir "ya puestos" en todo y CERO creados/movidos/sin-sitio/no-reconocidos - la misma
+		/// idempotencia real que ya prueba WS4 aplicando dos veces seguidas la misma build del
+		/// catalogo.
+		/// </summary>
+		private static void PulsarImportarCodigo()
+		{
+			PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
+			ContenidoBuilds builds = BuildsAbierto();
+			if (panel == null || builds == null) {
+				return;
+			}
+
+			string pulsado = panel.PulsarBoton(Idiomas.Texto("Builds.Codigo.Importar"));
+			string mensaje = builds.MensajeResultado ?? "";
+
+			// Numeros REALES del resultado, no el texto ya traducido (que en esta partida de prueba
+			// esta en ingles: "created=0, moved=0..." - parsear el texto en español habria dado un
+			// falso "NO CUADRA" con el juego en otro idioma, que es justo lo que paso la primera vez
+			// que se escribio esta autoprueba, ver bitacora.md).
+			ResultadoImportarCodigo resultado = builds.UltimoResultadoCodigoParaPrueba;
+			bool idempotente = resultado != null && resultado.Ok &&
+				resultado.Creados == 0 && resultado.Movidos == 0;
+
+			RegistroPanel.Linea(Terrakeep.LogTag + " AUTOPRUEBA PANEL/codigo - CLIC REAL en \"" +
+				Idiomas.Texto("Builds.Codigo.Importar") + "\" (" + (pulsado ?? "NO ENCONTRADO") +
+				") con el MISMO codigo que se acaba de exportar. Resultado: \"" + mensaje + "\" (creados=" +
+				(resultado?.Creados ?? -1) + " movidos=" + (resultado?.Movidos ?? -1) + " ya_puestos=" +
+				(resultado?.YaColocados ?? -1) + ") " +
+				(idempotente ? "-> OK: importar lo que ya llevabas puesto no crea ni mueve nada." :
+					"-> NO CUADRA (deberia ser idempotente)."));
 		}
 	}
 }

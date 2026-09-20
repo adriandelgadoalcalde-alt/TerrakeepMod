@@ -493,6 +493,38 @@ Builds: {
 	ConjuntoDestinoPildora: Set {0}
 	ConjuntoDestinoAyuda: Which of the three equipment sets (1/2/3) this build's armour and accessories go to on auto-equip.
 	ConjuntoActivoMarca: (active)
+
+	// Functions catalogue idea 7: in-game build codes (TKBUILD1:...).
+	Codigo: {
+		Pista: TKBUILD1:... code
+		Exportar: Export
+		ExportarAyuda: Copies the chosen equipment set (armour, accessories and dyes) as a code and puts it on the clipboard.
+		Importar: Import
+		ImportarAyuda: Applies the code in the text box to the chosen equipment set. What you already own is moved; what you don't is created (dyes are never created).
+		Copiado: Code copied to the clipboard ({0} of 10 slots encoded).
+		CopiadoConOmitidos: Code copied to the clipboard ({0} of 10 slots encoded, {1} modded item(s) skipped - no id catalogue yet, real limit, see the log).
+		Resultado: Code applied: created={0}, moved={1}, already set={2}, no room={3}, dyes moved={4}, unrecognised id={5}.
+		ErrorFormato: The text in the box is not a valid TKBUILD1 code.
+		ErrorCorrupto: The code is damaged or incomplete (its internal checksum doesn't match).
+		ErrorVersion: The code is from a newer TKBUILD version than this one.
+		SlotNoDesbloqueado: your character hasn't unlocked that accessory slot yet
+		IdNoReconocido: doesn't exist in this game version/mod list
+		PrefijoDistinto: your real prefix is different from the one the code carried
+		MochilaLlena: it was about to be created, but there was no room in the backpack for what you already had there
+
+		Slot: {
+			Cabeza: Helmet
+			Cuerpo: Chestplate
+			Piernas: Leggings
+			Accesorio1: Accessory 1
+			Accesorio2: Accessory 2
+			Accesorio3: Accessory 3
+			Accesorio4: Accessory 4
+			Accesorio5: Accessory 5
+			Accesorio6: Accessory 6
+			Accesorio7: Accessory 7
+		}
+	}
 }
 
 Investigacion: {

@@ -130,5 +130,36 @@ namespace TerrakeepMod.Common.Builds
 
 			return prefijo.Type;
 		}
+
+		/// <summary>
+		/// El camino INVERSO de <see cref="ResolverPrefijoReal"/>: dado un <c>Item.prefix</c> REAL de
+		/// esta partida (un <c>ModPrefix.Type</c>, siempre por encima de <c>PrefixID.Count</c> - el
+		/// llamador ya tiene que haber descartado el caso vanilla), busca si es un prefijo REAL de
+		/// Picaro de Calamity registrado en <c>rogue_prefixes.json</c> y, si lo es, devuelve su id
+		/// SINTETICO estable (10000-10020) - el mismo que usa <c>Terrakeep.Core.Model.ItemPrefix.
+		/// CalamitySynthetic</c> para los "Codigos de build dentro del juego" (idea 7 del catalogo de
+		/// funciones, ver <c>Common/Builds/CodigoDeBuild.cs</c>).
+		/// <para />
+		/// El nombre de clase real (<c>ModPrefix.Name</c>, que <c>ModType</c> resuelve de fabrica al
+		/// nombre del tipo de C#) coincide EXACTO con el campo "internal" de <c>rogue_prefixes.json</c>
+		/// - la misma correspondencia ya documentada y verificada en <see cref="ResolverPrefijoReal"/>,
+		/// solo que aqui se busca por nombre en vez de por id.
+		/// </summary>
+		public static int? ResolverIdSintetico(int prefijoTypeReal)
+		{
+			if (_catalogo == null || prefijoTypeReal <= 0) {
+				return null;
+			}
+
+			ModPrefix real = PrefixLoader.GetPrefix(prefijoTypeReal);
+			if (real == null || real.Mod == null || real.Mod.Name != NombreModCalamity) {
+				// No es un ModPrefix (prefijo vanilla) o es de otro mod: no hay id sintetico para
+				// eso en esta tabla - se deja sin prefijo en el codigo en vez de inventar uno.
+				return null;
+			}
+
+			RoguePrefixEntryData entrada = _catalogo.ByInternal(real.Name);
+			return entrada?.Id;
+		}
 	}
 }
