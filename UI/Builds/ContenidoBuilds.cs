@@ -39,13 +39,21 @@ namespace TerrakeepMod.UI.Builds
 
 		/// <summary>Alto MINIMO de la cabecera (subtitulo + una sola linea de resumen). Ver
 		/// <see cref="RecalcularCabecera"/>: crece de verdad cuando el mensaje de resultado no
-		/// cabe en una linea, nunca se queda en un numero fijo que recorte texto.</summary>
-		private const float AltoCabeceraBase = 52f;
+		/// cabe en una linea, nunca se queda en un numero fijo que recorte texto. Subido de 52 a 78
+		/// en TM5 para que quepan de sobra el alternador de fuente (26px) + el anillo de progreso
+		/// (44px) apilados en la columna de la derecha, sin que se recorten contra el borde
+		/// inferior de la cabecera.</summary>
+		private const float AltoCabeceraBase = 78f;
 		private const float TopResumen = 20f;
 		private const float EscalaResumen = 0.78f;
 		private const float AltoFila = EstiloTk.AltoPestana;
 		private const float SeparacionFilas = 4f;
 		private const float AltoPie = 40f;
+
+		/// <summary>Ancho reservado en la cabecera (TM5) para el alternador de fuente y el anillo
+		/// de progreso, apilados a la derecha - <see cref="_subtitulo"/> y <see cref="_resumen"/>
+		/// se quedan mas estrechos en ese mismo ancho para que su texto nunca pase por debajo.</summary>
+		private const float AnchoColumnaDerecha = 130f;
 
 		// --- Pildoras (fuente/etapa/clase/conjunto de destino): ver GrupoPildoras mas abajo -----
 		/// <summary>Escala de texto de las pildoras. Se guarda aparte (no solo en el <see cref="BotonTk"/>)
@@ -71,21 +79,28 @@ namespace TerrakeepMod.UI.Builds
 		private const float SeparacionPildorasV = 4f;
 
 		private UIPanel _cabecera;
-		private UIElement _filaFuentes;
-		private UIElement _filaEtapas;
 		private UIElement _filaClases;
 		private UIElement _filaLoadout;
-		private readonly GrupoPildoras _grupoFuentes;
-		private readonly GrupoPildoras _grupoEtapas;
 		private readonly GrupoPildoras _grupoClases;
 		private readonly GrupoPildoras _grupoLoadout;
 
-		/// <summary>Alto REAL de cada una de las 4 filas de pildoras ahora mismo (>= <see cref="AltoFila"/>).
-		/// Las ajusta <see cref="RecalcularPildorasYFilas"/> cada fotograma a lo que las pildoras
-		/// ocupen de verdad, nunca al reves - ver el XMLdoc de esa funcion y de
-		/// <see cref="GrupoPildoras"/> para el porque completo.</summary>
-		private float _altoFilaFuentes = AltoFila;
-		private float _altoFilaEtapas = AltoFila;
+		// TM5 del catalogo de rediseño visual ("Builds: filtros en dos filas, no en cuatro"):
+		// fuente (Vanilla/Calamity) pasa de fila de pildoras a alternador de dos estados junto al
+		// titulo, y etapa pasa de fila de pildoras a DesplegableTk desplegable - ninguno de los dos
+		// necesita ya el mecanismo de GrupoPildoras.Reflow (ese es un problema real solo cuando
+		// hay VARIAS opciones a la vez visibles compitiendo por el ancho; un alternador y un
+		// desplegable ocupan siempre el mismo hueco fijo).
+		private AlternadorTk _alternadorFuente;
+		private DesplegableTk _selectorEtapa;
+		private AnilloProgresoTk _anilloProgreso;
+
+		private const float AltoSelectorEtapa = 30f;
+
+		/// <summary>Alto REAL de cada una de las 2 filas de pildoras que quedan (clase/conjunto de
+		/// destino) ahora mismo (>= <see cref="AltoFila"/>). Las ajusta
+		/// <see cref="RecalcularPildorasYFilas"/> cada fotograma a lo que las pildoras ocupen de
+		/// verdad, nunca al reves - ver el XMLdoc de esa funcion y de <see cref="GrupoPildoras"/>
+		/// para el porque completo.</summary>
 		private float _altoFilaClases = AltoFila;
 		private float _altoFilaLoadout = AltoFila;
 
@@ -117,13 +132,17 @@ namespace TerrakeepMod.UI.Builds
 		/// <summary>Parametros de la ULTIMA llamada real a <see cref="ColocarFilas"/>, para que
 		/// <see cref="RecalcularCabecera"/> pueda repetirla con los mismos datos cuando el alto de
 		/// la cabecera cambia, sin tener que rehacer todo <see cref="Reconstruir"/>.</summary>
-		private bool _hayFilaFuentes;
 		private bool _hayFilaLoadout;
 
 		private int _indiceFuente;
 		private int _indiceEtapa;
 		private string _claveClase = "melee";
 		private string _textoResumen = "";
+
+		/// <summary>Ultimos numeros reales leidos por <see cref="ActualizarResumen"/> - los lee el
+		/// anillo de progreso (TM5) para su fraccion y su texto "X/Y" en el centro.</summary>
+		private int _objetosQueTiene;
+		private int _objetosResueltos;
 
 		/// <summary>
 		/// Mensaje de resultado de la ULTIMA pulsacion de "Auto-equipar", y cuantos fotogramas le
@@ -215,13 +234,18 @@ namespace TerrakeepMod.UI.Builds
 			}
 		}
 
-		/// <summary>SOLO PARA AUTOPRUEBAS: los contenedores de las 4 filas de pildoras (fuente/
-		/// etapa/clase/conjunto de destino), para poder iterar sus <see cref="BotonTk"/> reales y
-		/// medir que ninguno recorta su texto. Ver <see cref="GrupoPildoras"/>.</summary>
-		public UIElement FilaFuentesParaPrueba => _filaFuentes;
-		public UIElement FilaEtapasParaPrueba => _filaEtapas;
+		/// <summary>SOLO PARA AUTOPRUEBAS: los contenedores de las 2 filas de pildoras que quedan
+		/// (clase/conjunto de destino - fuente y etapa ya no son filas de pildoras, ver TM5), para
+		/// poder iterar sus <see cref="BotonTk"/> reales y medir que ninguno recorta su texto. Ver
+		/// <see cref="GrupoPildoras"/>.</summary>
 		public UIElement FilaClasesParaPrueba => _filaClases;
 		public UIElement FilaLoadoutParaPrueba => _filaLoadout;
+
+		/// <summary>TM5: el alternador Vanilla/Calamity y el desplegable de etapa, para que la
+		/// autoprueba pueda pulsarlos de verdad y leer su estado real.</summary>
+		public AlternadorTk AlternadorFuenteParaPrueba => _alternadorFuente;
+		public DesplegableTk SelectorEtapaParaPrueba => _selectorEtapa;
+		public AnilloProgresoTk AnilloProgresoParaPrueba => _anilloProgreso;
 
 		public ClaseBuild ClaseActual
 		{
@@ -248,7 +272,12 @@ namespace TerrakeepMod.UI.Builds
 			_cabecera.SetPadding(8f);
 			Append(_cabecera);
 
+			// TM5: la columna de la derecha de la cabecera (alternador de fuente + anillo de
+			// progreso, uno encima del otro) reserva ANCHOCOLUMNADERECHA px - subtitulo y resumen
+			// se quedan mas estrechos para que su texto nunca llegue a pasar por debajo, nunca un
+			// solape adivinado.
 			_subtitulo = new EtiquetaTk(() => _subtituloTexto, 0.85f, 900f, 24f);
+			_subtitulo.Width.Set(-AnchoColumnaDerecha, 1f);
 			_subtitulo.Left.Set(0f, 0f);
 			_subtitulo.Top.Set(0f, 0f);
 			_cabecera.Append(_subtitulo);
@@ -265,20 +294,67 @@ namespace TerrakeepMod.UI.Builds
 			// dejaba el motivo real ilegible a media frase, que es justo el problema que este mismo
 			// mensaje queria arreglar. Ver <see cref="RecalcularCabecera"/>.
 			_resumen = new EtiquetaTk(() => _resumenPartido, EscalaResumen, 900f, 22f);
-			_resumen.Width.Set(0f, 1f);
+			_resumen.Width.Set(-AnchoColumnaDerecha, 1f);
 			_resumen.ColorTexto = EstiloTk.TextoSuave;
 			_resumen.Left.Set(0f, 0f);
 			_resumen.Top.Set(TopResumen, 0f);
 			_cabecera.Append(_resumen);
 
-			_filaFuentes = NuevaFila();
-			_filaEtapas = NuevaFila();
+			// TM5 del catalogo de rediseño visual: alternador Vanilla/Calamity junto al titulo (en
+			// vez de una fila entera de pildoras que con Calamity instalado siempre tiene solo DOS
+			// opciones - un alternador es la forma real y directa de elegir entre dos, no una lista).
+			_alternadorFuente = new AlternadorTk(
+				() => FuenteActual != null ? FuenteActual.Etiqueta : "",
+				() => _indiceFuente == 1,
+				valor => {
+					int fuentes = CatalogoBuilds.Fuentes.Count;
+					_indiceFuente = valor && fuentes > 1 ? 1 : 0;
+					_indiceEtapa = 0;
+					Reconstruir();
+				});
+			_alternadorFuente.Width.Set(AnchoColumnaDerecha, 0f);
+			_alternadorFuente.Height.Set(26f, 0f);
+			_alternadorFuente.HAlign = 1f;
+			_alternadorFuente.Top.Set(0f, 0f);
+			// No se añade aqui: Reconstruir() lo cuelga/descuelga de _cabecera segun si hay mas de
+			// una fuente (ver mas abajo) - sin eso, sin Calamity instalado quedaria un alternador
+			// inerte "Vanilla" que no hace nada al pulsarlo.
+
+			// TM5: anillo de progreso ("Tienes X de Y" en forma de circulo) debajo del alternador,
+			// tambien pegado a la derecha.
+			_anilloProgreso = new AnilloProgresoTk(
+				() => _objetosResueltos > 0 ? (float)_objetosQueTiene / _objetosResueltos : 0f,
+				() => _objetosResueltos > 0 ? _objetosQueTiene + "/" + _objetosResueltos : "-",
+				22f);
+			_anilloProgreso.HAlign = 1f;
+			_anilloProgreso.Top.Set(30f, 0f);
+			_cabecera.Append(_anilloProgreso);
+
 			_filaClases = NuevaFila();
 			_filaLoadout = NuevaFila();
-			_grupoFuentes = new GrupoPildoras(_filaFuentes);
-			_grupoEtapas = new GrupoPildoras(_filaEtapas);
 			_grupoClases = new GrupoPildoras(_filaClases);
 			_grupoLoadout = new GrupoPildoras(_filaLoadout);
+
+			// TM5: etapa pasa de fila de pildoras a un DesplegableTk desplegable (son 3 hoy, pero el
+			// catalogo ya avisa "crecen": una lista desplegable no tiene el problema real de ancho
+			// que si tiene una fila de pildoras cuando las opciones se alargan).
+			_selectorEtapa = new DesplegableTk(
+				() => {
+					FuenteBuilds fuente = FuenteActual;
+					List<string> etiquetas = new List<string>();
+					if (fuente != null) {
+						foreach (EtapaBuild e in fuente.Etapas) {
+							etiquetas.Add(e.Etiqueta);
+						}
+					}
+					return etiquetas;
+				},
+				() => _indiceEtapa,
+				indice => {
+					_indiceEtapa = indice;
+					Reconstruir();
+				});
+			Append(_selectorEtapa);
 
 			_cuerpo = new UIElement();
 			_cuerpo.Width.Set(0f, 1f);
@@ -438,11 +514,9 @@ namespace TerrakeepMod.UI.Builds
 			_filasMaximas = 0;
 			_altoColocado = 0f;
 			// Limpia tambien la lista interna de botones de cada GrupoPildoras (no solo los hijos del
-			// UIElement): si no, una fila que este Reconstruir NO vuelve a pintar (p.ej. fuentes con
-			// Calamity desinstalado a medio camino) dejaria botones fantasma en esa lista para
-			// siempre, que Reflow seguiria midiendo y posicionando sin que nadie los vuelva a anadir.
-			_grupoFuentes.Limpiar();
-			_grupoEtapas.Limpiar();
+			// UIElement): si no, una fila que este Reconstruir NO vuelve a pintar dejaria botones
+			// fantasma en esa lista para siempre, que Reflow seguiria midiendo y posicionando sin
+			// que nadie los vuelva a anadir.
 			_grupoClases.Limpiar();
 			_grupoLoadout.Limpiar();
 			_cuerpo.RemoveAllChildren();
@@ -450,7 +524,7 @@ namespace TerrakeepMod.UI.Builds
 			FuenteBuilds fuente = FuenteActual;
 			if (fuente == null) {
 				_subtituloTexto = Idiomas.Texto("Builds.SinCatalogo");
-				ColocarFilas(false, false);
+				ColocarFilas(true);
 				Recalculate();
 				return;
 			}
@@ -458,20 +532,24 @@ namespace TerrakeepMod.UI.Builds
 			// Valores de partida; RefrescarPosesion los deja con los numeros reales al final.
 			ActualizarResumen(0, 0);
 
-			// Fila 1: fuente de datos. Solo se enseña si hay mas de una (Calamity sin instalar
-			// deja una sola y la fila sobra).
+			// TM5: fuente (alternador) y etapa (DesplegableTk) ya NO se "pintan" aqui - son widgets
+			// fijos, construidos una sola vez en el constructor, que leen _indiceFuente/
+			// _indiceEtapa en vivo desde sus propias lambdas en cada Update(). Solo hace falta
+			// asegurarse de que el indice de fuente sigue siendo valido (Calamity puede
+			// desinstalarse a medio camino).
 			IReadOnlyList<FuenteBuilds> fuentes = CatalogoBuilds.Fuentes;
-			bool hayFilaFuentes = fuentes.Count > 1;
-			if (hayFilaFuentes) {
-				List<string> etiquetas = new List<string>();
-				foreach (FuenteBuilds f in fuentes) {
-					etiquetas.Add(f.Etiqueta);
-				}
-				PintarPildoras(_grupoFuentes, etiquetas, _indiceFuente, indice => {
-					_indiceFuente = indice;
-					_indiceEtapa = 0;
-					Reconstruir();
-				});
+			if (_indiceFuente >= fuentes.Count) {
+				_indiceFuente = 0;
+			}
+			// Solo se enseña si hay mas de una fuente (Calamity sin instalar deja una sola y el
+			// alternador sobra) - AlternadorTk no tiene un "Habilitado" que lo oculte de verdad
+			// (UIPanel.DrawSelf dibuja siempre), asi que se quita/pone del arbol directamente.
+			bool hayVariasFuentes = fuentes.Count > 1;
+			if (hayVariasFuentes && _alternadorFuente.Parent == null) {
+				_cabecera.Append(_alternadorFuente);
+			}
+			else if (!hayVariasFuentes && _alternadorFuente.Parent != null) {
+				_cabecera.RemoveChild(_alternadorFuente);
 			}
 
 			// Fila del conjunto de DESTINO (a cual de los 3 loadouts va el auto-equipar).
@@ -479,20 +557,10 @@ namespace TerrakeepMod.UI.Builds
 			// esperar a que exista una clase seleccionable.
 			PintarSelectorLoadoutObjetivo();
 
-			// Fila 2: etapa de progresion.
-			List<string> etapas = new List<string>();
-			foreach (EtapaBuild e in fuente.Etapas) {
-				etapas.Add(e.Etiqueta);
-			}
-			PintarPildoras(_grupoEtapas, etapas, _indiceEtapa, indice => {
-				_indiceEtapa = indice;
-				Reconstruir();
-			});
-
-			// Fila 3: clase.
+			// Fila de clase.
 			EtapaBuild etapa = EtapaActual;
 			if (etapa == null) {
-				ColocarFilas(hayFilaFuentes, true);
+				ColocarFilas(true);
 				Recalculate();
 				return;
 			}
@@ -512,7 +580,7 @@ namespace TerrakeepMod.UI.Builds
 
 			ClaseBuild clase = ClaseActual;
 			if (clase == null) {
-				ColocarFilas(hayFilaFuentes, true);
+				ColocarFilas(true);
 				Recalculate();
 				return;
 			}
@@ -521,7 +589,7 @@ namespace TerrakeepMod.UI.Builds
 			PintarColumna(1, "Builds.Armas", clase.Armas);
 			PintarColumna(2, "Builds.Accesorios", clase.Accesorios);
 
-			ColocarFilas(hayFilaFuentes, true);
+			ColocarFilas(true);
 			Recalculate();
 			ColocarFilasDeObjetos();
 			RefrescarPosesion();
@@ -532,30 +600,41 @@ namespace TerrakeepMod.UI.Builds
 		/// fila de fuentes puede no existir (sin Calamity) y la de conjunto de destino tampoco sin
 		/// catalogo cargado, y dejar su hueco vacio era un agujero de 34 px en mitad del panel.
 		/// </summary>
-		private void ColocarFilas(bool hayFilaFuentes, bool hayFilaLoadout)
+		/// <summary>Fraccion del ancho que se lleva la fila de clase cuando comparte fila con la de
+		/// conjunto de destino (TM5: "clase y conjunto en una sola fila") - la de clase necesita
+		/// mas sitio (hasta 5 etiquetas reales: Cuerpo a cuerpo/A distancia/Magia/Invocacion/
+		/// Hibrida) que la de conjunto (siempre 3 pildoras cortas, "1"/"2"/"3").</summary>
+		private const float FraccionFilaClases = 0.62f;
+
+		private void ColocarFilas(bool hayFilaLoadout)
 		{
-			_hayFilaFuentes = hayFilaFuentes;
 			_hayFilaLoadout = hayFilaLoadout;
 
 			float y = _altoCabecera + 6f;
 
-			_filaFuentes.Top.Set(y, 0f);
-			_filaFuentes.Height.Set(hayFilaFuentes ? _altoFilaFuentes : 0f, 0f);
-			if (hayFilaFuentes) {
-				y += _altoFilaFuentes + SeparacionFilas;
-			}
+			// TM5: etapa ahora es un DesplegableTk de alto fijo, no una fila de pildoras que puede
+			// crecer a varias lineas.
+			_selectorEtapa.Top.Set(y, 0f);
+			_selectorEtapa.Height.Set(AltoSelectorEtapa, 0f);
+			y += AltoSelectorEtapa + SeparacionFilas;
 
-			_filaEtapas.Top.Set(y, 0f);
-			_filaEtapas.Height.Set(_altoFilaEtapas, 0f);
-			y += _altoFilaEtapas + SeparacionFilas;
+			// TM5: clase y conjunto de destino comparten la MISMA fila (una al lado de la otra), no
+			// una debajo de la otra - cada una sigue midiendo su propio ancho con GrupoPildoras.
+			// Reflow de forma independiente, solo que dentro de una columna mas estrecha en vez de
+			// la fila entera.
+			float altoFila = System.Math.Max(_altoFilaClases, hayFilaLoadout ? _altoFilaLoadout : 0f);
 
+			_filaClases.Left.Set(0f, 0f);
+			_filaClases.Width.Set(-SeparacionFilas, FraccionFilaClases);
 			_filaClases.Top.Set(y, 0f);
-			_filaClases.Height.Set(_altoFilaClases, 0f);
-			y += _altoFilaClases + SeparacionFilas;
+			_filaClases.Height.Set(altoFila, 0f);
 
+			_filaLoadout.Left.Set(0f, FraccionFilaClases);
+			_filaLoadout.Width.Set(0f, 1f - FraccionFilaClases);
 			_filaLoadout.Top.Set(y, 0f);
-			_filaLoadout.Height.Set(hayFilaLoadout ? _altoFilaLoadout : 0f, 0f);
-			y += (hayFilaLoadout ? _altoFilaLoadout : 0f) + 8f;
+			_filaLoadout.Height.Set(hayFilaLoadout ? altoFila : 0f, 0f);
+
+			y += altoFila + 8f;
 
 			_cuerpo.Top.Set(y, 0f);
 			_cuerpo.Height.Set(-(y + AltoPie), 1f);
@@ -749,22 +828,22 @@ namespace TerrakeepMod.UI.Builds
 				return;
 			}
 
+			// TM5: clase y conjunto ahora comparten fila (ver ColocarFilas), cada una con su PROPIO
+			// ancho fraccional - Reflow tiene que medir contra el ancho REAL de su propia columna,
+			// no contra el ancho del panel entero (el que valia cuando cada fila ocupaba el 100%).
+			float anchoClases = _filaClases.GetDimensions().Width;
+			float anchoLoadout = _filaLoadout.GetDimensions().Width;
+
 			bool cambioAlto = false;
-			if (AjustarAltoGrupo(_grupoFuentes, anchoDisponible, ref _altoFilaFuentes)) {
+			if (anchoClases > 0f && AjustarAltoGrupo(_grupoClases, anchoClases, ref _altoFilaClases)) {
 				cambioAlto = true;
 			}
-			if (AjustarAltoGrupo(_grupoEtapas, anchoDisponible, ref _altoFilaEtapas)) {
-				cambioAlto = true;
-			}
-			if (AjustarAltoGrupo(_grupoClases, anchoDisponible, ref _altoFilaClases)) {
-				cambioAlto = true;
-			}
-			if (AjustarAltoGrupo(_grupoLoadout, anchoDisponible, ref _altoFilaLoadout)) {
+			if (anchoLoadout > 0f && AjustarAltoGrupo(_grupoLoadout, anchoLoadout, ref _altoFilaLoadout)) {
 				cambioAlto = true;
 			}
 
 			if (cambioAlto) {
-				ColocarFilas(_hayFilaFuentes, _hayFilaLoadout);
+				ColocarFilas(_hayFilaLoadout);
 			}
 
 			// Siempre, no solo si cambioAlto - ver el "bug real" de arriba.
@@ -1274,14 +1353,16 @@ namespace TerrakeepMod.UI.Builds
 		private void ActualizarResumen(int tiene, int resueltos)
 		{
 			Player jugador = Main.LocalPlayer;
-			// El separador NO va dentro de la clave: ningun valor de los .hjson puede empezar o
-			// acabar con espacio (ver la nota de scripts/gen_hjson y la bitacora: tModLoader
-			// reescribe los archivos y se los come).
-			string ranuras = jugador == null
+
+			// TM5 del catalogo de rediseño visual: "Tienes X de Y" ya no va en el subtitulo de
+			// texto - lo enseña el anillo de progreso (ver AnilloProgresoTk, a la derecha de la
+			// cabecera), que lee estos dos campos en vivo desde su propia lambda.
+			_objetosQueTiene = tiene;
+			_objetosResueltos = resueltos;
+
+			_subtituloTexto = jugador == null
 				? ""
-				: "  ·  " + Idiomas.Texto("Builds.RanurasAccesorio",
-					EquipoJugador.SlotsAccesorioDisponibles(jugador));
-			_subtituloTexto = Idiomas.Texto("Builds.Tienes", tiene, resueltos, ranuras);
+				: Idiomas.Texto("Builds.RanurasAccesorio", EquipoJugador.SlotsAccesorioDisponibles(jugador));
 			_textoResumen = Idiomas.Texto("Builds.Leyenda");
 		}
 
@@ -1395,7 +1476,7 @@ namespace TerrakeepMod.UI.Builds
 			if (System.Math.Abs(altoNuevo - _altoCabecera) > 0.5f) {
 				_altoCabecera = altoNuevo;
 				_cabecera.Height.Set(_altoCabecera, 0f);
-				ColocarFilas(_hayFilaFuentes, _hayFilaLoadout);
+				ColocarFilas(_hayFilaLoadout);
 				Recalculate();
 			}
 		}

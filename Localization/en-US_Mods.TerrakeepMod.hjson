@@ -491,8 +491,9 @@ Builds: {
 	PrefijoSugerido: suggested prefix: {0}
 	NoExisteAqui: does not exist in this game
 	Nada: (nothing)
-	RanurasAccesorio: accessory slots available: {0}
-	Tienes: You have {0} of {1} items from this build{2}.
+	// Visual redesign catalogue TM5: now the whole subtitle text (the "Tienes X de Y" count moved
+	// to the progress ring) - a complete sentence with its own capital letter and period.
+	RanurasAccesorio: Accessory slots available: {0}.
 	Leyenda: Green = you have it  ·  grey = you do not  ·  red = it does not exist here.
 	ResultadoAutoEquipar: Auto-equip: {0}
 	NadaQueMover: Nothing was applied: no item from this build exists in this game (the source mod isn't installed).
@@ -2033,3 +2034,5 @@ Configs: {
 		}
 	}
 }
+
+Widgets.Desplegable.SinOpciones: (no options)

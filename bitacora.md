@@ -8931,6 +8931,46 @@ corona de la Reina Abeja, calavera de Esqueletrón) con sus títulos completos y
 solapes, más el aviso "y 8 más adelante". También revisado `guia-3-arma-y-arena.png`: iconos
 reales de plataforma de madera y poción curativa junto a sus requisitos, alineados sin solapes.
 
+### TM5 (Builds: filtros en dos filas, no en cuatro) - CERRADO
+
+La ronda anterior había descartado tocar este archivo ("de los más delicados... se decide NO
+tocarlo sin una ronda de verificación visual iterativa dedicada") - corregido: no era un límite
+real, era el tamaño esperado del trabajo. Investigado con calma y hecho entero.
+
+- **Fuente (Vanilla/Calamity) → alternador de dos estados junto al título**: reutiliza
+  `AlternadorTk` (widget YA existente, leído primero antes de usarlo). Colgado/descolgado de la
+  cabecera segun `CatalogoBuilds.Fuentes.Count > 1` (con Calamity no usable en la partida, como en
+  esta misma verificación, el alternador no aparece - nunca un control inerte).
+- **Etapa → desplegable**: nuevo widget genérico, colgado de `CapaSuperposicionTk` igual que
+  `EditorPrefijoTk`. **Bug real evitado por pelos**: el catálogo lo llama "SelectorTk", pero ese
+  nombre YA estaba cogido - un widget real y distinto desde WS1 (fila "etiqueta [-] valor [+]" de
+  paso, usado en `PestanaApariencia`/`CabeceraPersonaje`). La primera versión de este archivo lo
+  sobrescribió sin leerlo antes (fallo real de disciplina propia), con errores de compilación
+  reales en los tres sitios que ya lo usaban - detectado al compilar, restaurado desde git antes de
+  seguir, y el widget nuevo se quedó con un nombre real distinto: `DesplegableTk`.
+- **Clase y conjunto de destino → una sola fila**: cada uno sigue midiendo su propio ancho con
+  `GrupoPildoras.Reflow` de forma independiente (sin tocar esa maquinaria, ya delicada y con
+  historial real de bugs), solo que ahora dentro de una columna fraccional (62%/38%) en vez de la
+  fila entera - `RecalcularPildorasYFilas` pasa a medir el ancho REAL de cada columna, no el ancho
+  del panel entero (que era correcto cuando cada fila ocupaba el 100%, y habría sido un bug real
+  silencioso de quedarse sin cambiar).
+- **"Tienes X de Y" → anillo de progreso**: `AnilloProgresoTk` (nuevo), un círculo de verdad
+  dibujado con segmentos de `TextureAssets.MagicPixel` alrededor de una circunferencia (SpriteBatch
+  no tiene primitivos circulares - mismo principio real que ya usa `FilaRequisitoTk.DibujarMarca`
+  para su cuadradito de estado, en círculo), con el número "X/Y" centrado y con la misma técnica de
+  auto-reducción de escala de TM2/TM4 si no cupiera.
+
+**Verificación real** (`scripts\verificar-builds-en-juego.ps1`): la autoprueba funcional completa
+pasó sin ningún fallo (auto-equipar, filtrado por clase con clic real, idempotencia de la segunda
+pasada) - la lógica de negocio no se tocó, solo la presentación. **Bug de infraestructura real
+encontrado y arreglado de paso**: el script se quedó colgado en el diálogo "mods actualizados" de
+tModLoader (HERO's Mod se había actualizado por Steam Workshop entre sesiones) - el mismo problema
+que `verificar-guia.ps1` ya resolvía con `ShowNewUpdatedModsInfo: false`, pero que a este script
+todavía le faltaba; aplicado el mismo arreglo real. Captura real revisada pixel a pixel
+(`builds-persistencia-200f.png`): anillo "11/13" a la derecha del subtítulo, desplegable de etapa
+en su propia fila, clase (4 píldoras) y conjunto (3 píldoras) compartiendo una sola fila sin
+solaparse, cuerpo de 3 columnas intacto debajo.
+
 ### Sin publicar nada
 
 `git push`, `gh release`, empaquetado del mod y subida de versión siguen sin tocarse, tal como se

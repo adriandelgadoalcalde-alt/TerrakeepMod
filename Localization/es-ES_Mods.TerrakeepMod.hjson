@@ -491,8 +491,9 @@ Builds: {
 	PrefijoSugerido: prefijo sugerido: {0}
 	NoExisteAqui: no existe en esta partida
 	Nada: (nada)
-	RanurasAccesorio: ranuras de accesorio disponibles: {0}
-	Tienes: Tienes {0} de {1} objetos de esta build{2}.
+	// Visual redesign catalogue TM5: now the whole subtitle text (the "Tienes X de Y" count moved
+	// to the progress ring) - a complete sentence with its own capital letter and period.
+	RanurasAccesorio: Ranuras de accesorio disponibles: {0}.
 	Leyenda: Verde = ya lo tienes  ·  gris = no lo tienes  ·  rojo = no existe aquí.
 	ResultadoAutoEquipar: Auto-equipar: {0}
 	NadaQueMover: No se aplicó nada: ningún objeto de esta build existe en esta partida (el mod de origen no está instalado).
@@ -2033,3 +2034,5 @@ Configs: {
 		}
 	}
 }
+
+Widgets.Desplegable.SinOpciones: (sin opciones)

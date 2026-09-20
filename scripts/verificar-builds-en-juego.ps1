@@ -144,6 +144,22 @@ $env:TERRAKEEP_BUILDS_FUENTE     = $Fuente
 $env:TERRAKEEP_BUILDS_LOADOUT_OBJETIVO = $LoadoutObjetivo
 $env:TERRAKEEP_BUILDS_CAMBIAR_LOADOUT_A = $CambiarLoadoutA
 
+# Mismo arreglo real ya aplicado en verificar-guia.ps1 (ver ese script para la explicacion
+# completa): sin esto, si algun mod Workshop instalado (Calamity, HERO's Mod...) se actualizo
+# desde el ultimo lanzamiento con exito de ESTE sandbox, tModLoader se queda colgado en un dialogo
+# de "mods actualizados" que espera un clic que nunca llega en un lanzamiento automatico - visto
+# real aqui mismo (TM5, 20-sep-2026): el log se quedaba parado justo en "Mod Changes since last
+# launch" sin ninguna excepcion, ninguna linea de TerrakeepMod, timeout completo.
+$configSandbox = Join-Path $sandbox 'config.json'
+if (Test-Path $configSandbox) {
+	$json = Get-Content $configSandbox -Raw -Encoding UTF8 | ConvertFrom-Json
+	$json | Add-Member -NotePropertyName 'ShowNewUpdatedModsInfo' -NotePropertyValue $false -Force
+	($json | ConvertTo-Json -Depth 10) | Out-File $configSandbox -Encoding utf8
+} else {
+	'{"ShowNewUpdatedModsInfo": false}' | Out-File $configSandbox -Encoding utf8
+}
+Write-Host "== ShowNewUpdatedModsInfo forzado a false en $configSandbox (evita el dialogo de mods actualizados) ==" -ForegroundColor DarkGray
+
 Write-Host '== Cliente grafico ==' -ForegroundColor Cyan
 $p = Start-Process -FilePath (Join-Path $tmlDir 'start-tModLoader.bat') -WorkingDirectory $tmlDir -PassThru `
 	-ArgumentList @('-tmlsavedirectory', "`"$sandbox`"", '-skipselect', "${personaje}:${mundo}")

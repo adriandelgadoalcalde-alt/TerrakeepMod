@@ -618,8 +618,11 @@ namespace TerrakeepMod.Common.Panel
 			int fallos = 0;
 			int pildoras = 0;
 
+			// TM5 del catalogo de rediseño visual: fuente y etapa ya no son filas de pildoras
+			// (fuente es un alternador de dos estados, etapa es un DesplegableTk) - solo quedan
+			// clase y conjunto de destino con el mecanismo real de GrupoPildoras.Reflow que esta
+			// funcion audita.
 			foreach (UIElement fila in new[] {
-				builds.FilaFuentesParaPrueba, builds.FilaEtapasParaPrueba,
 				builds.FilaClasesParaPrueba, builds.FilaLoadoutParaPrueba
 			}) {
 				if (fila == null) {
