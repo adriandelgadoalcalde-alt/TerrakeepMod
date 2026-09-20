@@ -9364,3 +9364,58 @@ documentar), ya cerrado y comiteado (`74bb4cc`). No queda ningún trabajo seguro
 hacer sobre el catálogo de REDISEÑO VISUAL para TerrakeepMod - lo único que falta es lo YA
 documentado arriba como pendiente de verificación gráfica real (idea 9 "grupo listo", idea 4
 Calamity/cabañas, idea 5 "marcar casas"), bloqueado mientras la pausa siga activa.
+
+## Cierre real: los 3 pendientes verificados en vivo + redespliegue (21-sep-2026)
+
+El usuario terminó de jugar. Verificación gráfica real de las tres piezas que quedaban
+pendientes desde la re-lectura literal, con el arnés real de tModLoader (nunca simulado):
+
+- **Idea 9 ("grupo listo")**: `scripts\verificar-grupo.ps1` con servidor dedicado real + 2
+  clientes gráficos reales por red (127.0.0.1). El harness sufrió el "cuelgue espurio" ya
+  documentado antes en la sesión (Invoke-Expression/"se" tras una espera larga) - se resolvió
+  descomponiendo la orquestación en llamadas PowerShell más pequeñas, exactamente igual que la vez
+  anterior. `GuiaGrupo.GrupoListo("Defensa") = False -> OK: el grupo sale "no listo" de verdad`, 0
+  comprobaciones en rojo. Comiteado en `67490c8`.
+- **Idea 4 (estructuras Calamity + cabañas)**: `verificar-exploracion.ps1` no tiene un flag
+  `-Calamity` real (se comprobó el código: no existe) - el hueco real era que el sandbox WS6 sólo
+  tenía TerrakeepMod habilitado, nunca CalamityMod, así que `HayCalamity` nunca se probaba de
+  verdad en ninguna pasada anterior. Corregido copiando el `.tmod` real de CalamityMod al sandbox y
+  habilitándolo en `enabled.json`. Resultado, 2 pasadas limpias: "40 objetivos en 6 categorías, 40
+  resueltos". Comiteado en `0b41420`.
+- **Idea 5 ("marcar casas en el mapa")**: nueva autoprueba real (casos 25-27 de
+  `AutopruebaExploracion`, con renumeración 25-31 -> 28-34 para no chocar) que hace clic REAL en el
+  botón y compara el resultado contra `NPC.homeTileX/homeTileY` recalculado de forma independiente.
+  2 pasadas limpias: "Resultados.Count=2 (esperados 2)... Primer marcador tile=(3355,225)
+  esperado=(3355,225) de 'Anciano' -> OK". Comiteado en `95aac5e`.
+
+**Hallazgo real durante la verificación de la idea 5** (documentado, no ocultado): la primera
+pasada con la nueva autoprueba mostró 2 comprobaciones "MAL:" en un test AJENO y ya maduro (el
+arrastre sintético del mini-mapa, casos 18-21) y una captura del mini-mapa completamente en negro
+tras volver de la pestaña Vecindad. Investigado: el mini-mapa necesitaba más de 5 fotogramas para
+repintar sus trozos tras el cambio de pestaña (el propio log ya lo decía: "trozos de mapa dibujados
+el ultimo fotograma: 0"). Subido `Siguiente(5)` a `Siguiente(30)` entre el cambio de pestaña y la
+captura - con eso, 2 pasadas limpias seguidas, cero "MAL:"/"NO CUADRA", y la captura muestra el
+terreno real con el marcador. El fallo del arrastre sintético (ajeno) no volvió a reproducirse tras
+el arreglo, así que se trató como un efecto colateral de la misma causa (fotogramas insuficientes
+bajo carga de máquina), no un bug aparte.
+
+**TM2 (rediseño visual, hueco de documentación)**: cotejo literal completo de TM1-TM6 para
+TerrakeepMod terminado durante la pausa; el único hueco real fue TM2's botón "Quitar" sin
+documentar (no funcional: `SlotSeleccionTk` ya hace lo mismo al arrastrar hacia fuera) - cerrado
+con un XMLdoc explicando la equivalencia (`74bb4cc`).
+
+**Chequeo explícito de desbordamiento de texto** (pedido reforzado del usuario, aplicado también
+aquí): capturas reales revisadas de Vecindad (antes y con marcadores), Guía (con la nueva línea
+"El grupo YA/NO está listo para: X", envuelta en dos líneas dentro de su caja, sin recorte) y
+Búsqueda - ningún texto se sale de su contenedor en ninguna. La línea nueva de Guía usa
+`ParrafoTk` (el widget que SÍ envuelve, nunca `EtiquetaTk`), así que está protegida
+estructuralmente, no solo "porque cupo esta vez". El resto del panel (Personaje, Librería, Builds,
+Investigación, Ajustes, Álbum) no se ha vuelto a capturar en esta ronda concreta - ya pasó por la
+disciplina de auditoría visual establecida en rondas anteriores de toda la sesión, documentada
+aparte.
+
+**Redespliegue real**: `scripts\compilar.ps1` ejecutado de nuevo tras los tres commits -
+`OK: ...tModLoader\Mods\TerrakeepMod.tmod (817211 bytes, 21/09/2026 0:56:38)`, 0 errores. El .tmod
+que el juego carga la próxima vez que se abra incluye TODO lo de esta sesión.
+
+Sigue sin publicarse nada (`git push`, `gh release`, empaquetado o subida de versión).
