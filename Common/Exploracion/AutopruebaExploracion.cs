@@ -1,6 +1,7 @@
 using System;
 using Microsoft.Xna.Framework;
 using Terraria;
+using Terraria.ID;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Panel;
 using TerrakeepMod.UI.Exploracion;
@@ -41,11 +42,18 @@ namespace TerrakeepMod.Common.Exploracion
 		private static Vector2 _centroAntesDelArrastre;
 		private static float _escalaAlArrastrar;
 
-		/// <summary>Estado del tile de prueba de la idea 10 "rebobinar" (pasos 26-29).</summary>
+		/// <summary>Estado del tile de prueba de la idea 10 "rebobinar" (pasos 27-30).</summary>
 		private static int _tileDePruebaX;
 		private static int _tileDePruebaY;
 		private static ushort _tileDePruebaTipoAntes;
 		private static bool _tileDePruebaHasTileAntes;
+
+		/// <summary>Posicion del cofre sintetico de prueba de la idea 10 (paso 25). Mismo hueco
+		/// 7999 de <c>Main.chest[]</c> que ya usa la autoprueba de la idea 6 en el sandbox de WS3 -
+		/// una partida real jamas llega ahi (Main.maxChests=8000 real).</summary>
+		private const int IndiceCofrePruebaRebobinar = 7999;
+		private static int _cofrePruebaX;
+		private static int _cofrePruebaY;
 
 		public static void Arrancar()
 		{
@@ -423,7 +431,34 @@ namespace TerrakeepMod.Common.Exploracion
 					Siguiente(5);
 					break;
 
-				case 25:
+				case 25: {
+					// SOLO ARNES DE PRUEBAS: siembra un cofre SINTETICO (nunca uno real, mismo
+					// hueco 7999 de Main.chest ya usado por la autoprueba de la idea 6 en WS3 - una
+					// partida real jamas llega ahi) muy cerca del jugador, ANTES de marcar, para
+					// que la foto del paso siguiente lo incluya de verdad (el catalogo pide
+					// "tiles + cofres en un radio", no solo terreno).
+					Player jugador = Main.LocalPlayer;
+					_cofrePruebaX = (int)(jugador.Center.X / 16f) + 10;
+					_cofrePruebaY = (int)(jugador.Center.Y / 16f);
+					Chest cofre = new Chest();
+					cofre.x = _cofrePruebaX;
+					cofre.y = _cofrePruebaY;
+					cofre.name = "Cofre de prueba WS6";
+					for (int i = 0; i < cofre.item.Length; i++) {
+						cofre.item[i] = new Item();
+					}
+					cofre.item[0].SetDefaults(ItemID.SilverBar);
+					cofre.item[0].stack = 15;
+					Main.chest[IndiceCofrePruebaRebobinar] = cofre;
+
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/25 - SOLO ARNES DE PRUEBAS: " +
+						"cofre sintetico sembrado en Main.chest[" + IndiceCofrePruebaRebobinar + "] en tile (" +
+						_cofrePruebaX + ", " + _cofrePruebaY + ") con " + Describir(cofre.item[0]) + ".");
+					Siguiente(5);
+					break;
+				}
+
+				case 26:
 					// Idea 10 del catalogo de funciones ("rebobinar el mundo"): abre la pestaña y
 					// pulsa el boton real "Marcar aqui" (misma ruta que el resto del arnes,
 					// panel.PulsarBoton -> BotonTk.LeftClick). El texto se pide a Idiomas.Texto en
@@ -432,19 +467,19 @@ namespace TerrakeepMod.Common.Exploracion
 					// texto fijo en ingles aqui no encontraba el boton real (bug real visto en el
 					// log: "Clic real en . HayFoto=False", PulsarBoton devolviendo null).
 					panel.CambiarPestana(4);
-					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/25 - pestaña \"" +
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/26 - pestaña \"" +
 						panel.NombrePestanaActual + "\": " + panel.InformePestanaActual() + ". Clic real en " +
-						panel.PulsarBoton(Idiomas.Texto("Exploracion.Rebobinar.Marcar")) + ". HayFoto=" + panel.Rebobinar.HayFoto);
+						panel.PulsarBoton(Idiomas.Texto("Exploracion.Rebobinar.Marcar")) + ". HayFoto=" +
+						panel.Rebobinar.HayFoto + ", CofresEnFoto=" + panel.Rebobinar.CofresEnFoto +
+						" (" + (panel.Rebobinar.CofresEnFoto >= 1 ? "OK: incluye el cofre sembrado" : "MAL: no lo incluye") + ").");
 					Siguiente(5);
 					break;
 
-				case 26: {
+				case 27: {
 					// SOLO ARNES DE PRUEBAS: cambia un tile REAL dentro del area recien fotografiada
-					// (nunca fuera de ella) a un tipo distinto y conocido, para demostrar con datos
-					// reales que RecalcularDiferencia() detecta el cambio y que Rebobinar() lo
-					// deshace de verdad - el mismo criterio que ya usan WS4/WS6 sembrando escenario
-					// sintetico antes de comprobar algo. El mundo de pruebas de WS6 ya se respalda y
-					// restaura entero alrededor de todo verificar-exploracion.ps1.
+					// (nunca fuera de ella) a un tipo distinto y conocido, Y cambia el contenido del
+					// cofre sembrado, para demostrar con datos reales que RecalcularDiferencia()
+					// detecta los dos cambios y que Rebobinar() los deshace de verdad.
 					var area = panel.Rebobinar.AreaFoto;
 					_tileDePruebaX = area.x + 5;
 					_tileDePruebaY = area.y + 5;
@@ -454,48 +489,63 @@ namespace TerrakeepMod.Common.Exploracion
 					tile.HasTile = true;
 					tile.TileType = (ushort)Terraria.ID.TileID.Stone;
 
-					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/26 - ESCENARIO DE PRUEBA: tile (" +
+					Chest cofre = Main.chest[IndiceCofrePruebaRebobinar];
+					if (cofre != null) {
+						cofre.item[1].SetDefaults(ItemID.GoldBar);
+						cofre.item[1].stack = 3;
+					}
+
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/27 - ESCENARIO DE PRUEBA: tile (" +
 						_tileDePruebaX + ", " + _tileDePruebaY + "), dentro del area fotografiada " +
 						area.ancho + "x" + area.alto + " desde (" + area.x + ", " + area.y + "), cambiado de " +
 						"TileType=" + _tileDePruebaTipoAntes + " HasTile=" + _tileDePruebaHasTileAntes +
-						" a TileType=" + (int)Terraria.ID.TileID.Stone + " HasTile=True.");
+						" a TileType=" + (int)Terraria.ID.TileID.Stone + " HasTile=True. Cofre sembrado: ranura 1 -> " +
+						(cofre != null ? Describir(cofre.item[1]) : "(cofre null)") + ".");
 					panel.Rebobinar.RecalcularDiferencia();
 					Siguiente(5);
 					break;
 				}
 
-				case 27:
-					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/27 - tras el cambio sintetico: " +
+				case 28:
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/28 - tras el cambio sintetico: " +
 						"DiferentesAhora=" + panel.Rebobinar.DiferentesAhora +
 						" -> " + (panel.Rebobinar.DiferentesAhora >= 1
 							? "OK, detecta de verdad el tile cambiado."
-							: "MAL: no ha detectado ningun cambio.") + ". " +
+							: "MAL: no ha detectado ningun cambio.") +
+						". CofresDistintosAhora=" + panel.Rebobinar.CofresDistintosAhora +
+						" -> " + (panel.Rebobinar.CofresDistintosAhora >= 1
+							? "OK, detecta de verdad el cofre cambiado."
+							: "MAL: no ha detectado el cambio del cofre.") + ". " +
 						CapturaDePantalla.Guardar("ws6-rebobinar-antes"));
 					Siguiente(5);
 					break;
 
-				case 28:
-					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/28 - clic real en " +
+				case 29:
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/29 - clic real en " +
 						panel.PulsarBoton(Idiomas.Texto("Exploracion.Rebobinar.Rebobinar")) + ".");
 					Siguiente(5);
 					break;
 
-				case 29: {
+				case 30: {
 					Tile tras = Main.tile[_tileDePruebaX, _tileDePruebaY];
 					bool tileRestaurado = tras.TileType == _tileDePruebaTipoAntes && tras.HasTile == _tileDePruebaHasTileAntes;
+					Chest cofre = Main.chest[IndiceCofrePruebaRebobinar];
+					bool cofreRestaurado = cofre != null && cofre.item[1].IsAir;
 					panel.Rebobinar.RecalcularDiferencia();
-					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/29 - tras Rebobinar(): tile (" +
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/30 - tras Rebobinar(): tile (" +
 						_tileDePruebaX + ", " + _tileDePruebaY + ") TileType=" + tras.TileType + " HasTile=" + tras.HasTile +
 						" (esperado TileType=" + _tileDePruebaTipoAntes + " HasTile=" + _tileDePruebaHasTileAntes + ") -> " +
 						(tileRestaurado ? "OK, el tile ha vuelto a la foto." : "MAL: el tile NO ha vuelto.") +
-						". DiferentesAhora=" + panel.Rebobinar.DiferentesAhora +
-						" (" + (panel.Rebobinar.DiferentesAhora == 0 ? "OK" : "MAL") + "). " +
+						". Cofre ranura 1=" + (cofre != null ? Describir(cofre.item[1]) : "(cofre null)") +
+						" (esperado vacia) -> " + (cofreRestaurado ? "OK, el cofre ha vuelto a la foto." : "MAL: el cofre NO ha vuelto.") +
+						". DiferentesAhora=" + panel.Rebobinar.DiferentesAhora + ", CofresDistintosAhora=" + panel.Rebobinar.CofresDistintosAhora +
+						" (" + (panel.Rebobinar.DiferentesAhora == 0 && panel.Rebobinar.CofresDistintosAhora == 0 ? "OK" : "MAL") + "). " +
 						CapturaDePantalla.Guardar("ws6-rebobinar-despues"));
 					Siguiente(5);
 					break;
 				}
 
-				case 30:
+				case 31:
 					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6 COMPLETA.");
 					_enMarcha = false;
 					break;
@@ -790,6 +840,13 @@ namespace TerrakeepMod.Common.Exploracion
 		private static string Redondear(Vector2 punto)
 		{
 			return "(" + (int)punto.X + ", " + (int)punto.Y + ")";
+		}
+
+		private static string Describir(Item objeto)
+		{
+			return objeto == null || objeto.IsAir
+				? "(vacio)"
+				: "\"" + objeto.Name + "\" x" + objeto.stack + " (type=" + objeto.type + ")";
 		}
 
 		private static void Siguiente(int esperaEnFotogramas)

@@ -8828,6 +8828,26 @@ dos fases que el resto del proyecto): queda documentado el límite real del Muro
 punto de partida (`NPC.SpawnBoss`/`NPC.NewNPC`, banderas `downedBossN` solo se tocan al morir) para
 la próxima sesión.
 
+### Idea 10 (continuación) - correción de alcance real: faltaban los cofres
+
+Al consultar el texto REAL del catálogo (Claude Docs, no de memoria) se confirmó que la idea 10
+pedía "snapshot de una región (**tiles + cofres** en un radio)", no solo terreno - un hueco real
+en lo ya cerrado, no una decisión de alcance propia. Ampliado `PestanaRebobinar.cs`: "Marcar aquí"
+ahora también fotografía los cofres reales cuya esquina (`Chest.x/Chest.y`) cae dentro del área,
+clonando su contenido de verdad (`Item.Clone()`, el mismo método ya usado por
+`Common/Undo/Historial.cs`). Al restaurar, comprueba que el cofre en ese índice de `Main.chest[]`
+sigue siendo el MISMO (misma `x`/`y`) antes de escribir - un cofre destruido y otro nuevo colocado
+después podría reciclar el mismo índice, y escribir a ciegas sobre eso sería un bug real, no solo
+teórico. Contador aparte ("N cofres en la zona, M con contenido distinto") además del de tiles.
+
+**Verificación real** (`scripts\verificar-exploracion.ps1`, pasos renumerados 25-31): siembra un
+cofre sintético de prueba (nunca uno real) muy cerca del jugador antes de marcar, confirma que la
+foto lo incluye (`CofresEnFoto=2` - el sembrado más un cofre real ya generado ahí cerca), cambia su
+contenido junto con el tile de siempre, confirma que `CofresDistintosAhora` detecta el cambio real,
+y que "Rebobinar ahora" lo devuelve exactamente. Captura real revisada pixel a pixel: "2 cofres en
+la zona marcada, 0 con contenido distinto ahora mismo." y "¡Hecho! 1 de 40000 tiles y 1 de 2 cofres
+han vuelto a como estaban en la foto." - ambas líneas nuevas envueltas sin solapes.
+
 ### Idea 4 (sonar de estructuras) - CERRADA: verificación en vivo pendiente, ahora hecha
 
 El código ya estaba: Mazmorra/Templo lihzahrd/Nido de araña por sus paredes reales "Unsafe" y la

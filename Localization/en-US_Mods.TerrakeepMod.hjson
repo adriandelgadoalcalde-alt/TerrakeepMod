@@ -668,8 +668,9 @@ Exploracion: {
 		Calculando: Comparing against the real terrain...
 		SinCambios: The marked area's terrain is exactly the same.
 		Cambiados: "{0} of {1} tiles in the marked area are different right now."
-		Marcado: Snapshot taken: {0}x{1} real tiles from ({2}, {3}).
-		Rebobinado: Done! {0} of {1} tiles are back to how they were in the snapshot.
+		Marcado: Snapshot taken: {0}x{1} real tiles from ({2}, {3}), with {4} chests.
+		Rebobinado: Done! {0} of {1} tiles and {2} of {3} chests are back to how they were in the snapshot.
+		Cofres: "{0} chests in the marked area, {1} with different contents right now."
 	}
 
 	Categoria: {

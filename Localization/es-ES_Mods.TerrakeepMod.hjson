@@ -668,8 +668,9 @@ Exploracion: {
 		Calculando: Comparando con el terreno real...
 		SinCambios: El terreno de la zona marcada sigue exactamente igual.
 		Cambiados: "{0} de {1} tiles de la zona marcada son distintos ahora mismo."
-		Marcado: Foto tomada: {0}x{1} tiles reales desde ({2}, {3}).
-		Rebobinado: ¡Hecho! {0} de {1} tiles han vuelto a como estaban en la foto.
+		Marcado: Foto tomada: {0}x{1} tiles reales desde ({2}, {3}), con {4} cofres.
+		Rebobinado: ¡Hecho! {0} de {1} tiles y {2} de {3} cofres han vuelto a como estaban en la foto.
+		Cofres: "{0} cofres en la zona marcada, {1} con contenido distinto ahora mismo."
 	}
 
 	Categoria: {
