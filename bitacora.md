@@ -8381,3 +8381,141 @@ Commit local en TerrakeepMod (`TerrakeepMod.csproj`, `build.txt`, el fix de `RCS
 `TerrakeepMod.Tests\`, `TerrakeepMod.LogicaPura\`, `dotnet-tools.json`) y en KeepQA
 (`src/analisis-estatico/verificarAnalisisEstatico.js` con el `--prop Clave=Valor` nuevo +
 `artifacts/stryker-terrakeepmod-logicapura/` + esta documentación). Sin `git push`.
+
+
+---
+
+## 20-sep-2026 - Catálogos de funciones y de rediseño visual (Claude Docs): 5 ideas reales implementadas y verificadas, 1 parcial, resto investigado y documentado
+
+Encargo: implementar todo lo real que aplique a TerrakeepMod de los dos documentos vivos
+publicados esa noche (catálogo de FUNCIONES y catálogo de REDISEÑO VISUAL de toda la familia
+Keep), encadenando sin parar, sin publicar nada (sin `git push`, sin subir versión). Sección real
+de TerrakeepMod: 10 ideas de funciones (numeradas) + 6 ideas de rediseño visual (TM1-TM6).
+
+### Lo implementado y verificado de verdad en el juego (6 commits locales, sin `git push`)
+
+**TM6 · Transición suave + alto dinámico** (`UI/Panel/PanelTerrakeepState.cs`). El alto máximo del
+marco pasa de un fijo de 700px a un 82% real de `Main.screenHeight` (recalculado cada fotograma,
+como ya hace `AjustarEscalaDeLasPestanas` con el ancho) - antes tapaba el HUD de vida en
+portátiles 1366x768. El contenido de cada pestaña entra con un fundido de 120ms: un velo pintado a
+mano con `TextureAssets.MagicPixel` sobre `_contenedor`, nunca un `UIElement` más (así no roba el
+clic durante la transición). Verificado con captura real: el panel mide ≈501px lógicos a 613px de
+pantalla lógica, exactamente el 82% calculado.
+
+**TM3 · Chips de cabecera** (mismo archivo). Dos de los tres chips que proponía el catálogo
+original: hora del mundo (`Utils.GetDayTimeAs24FloatStartingFromMidnight`, real) y el objetivo
+actual de la Guía (`EstadoGuia.PasoActual`, pulsable → salta a la pestaña Guía). El tercero
+(vida/maná) se descartó a propósito: esa mitad de la fila del título ya está reservada al HUD real
+del juego (`GUIBarsDraw`, ver el XMLdoc ya existente de `AltoTitulo`) y duplicarlo ahí reproduciría
+el bug histórico de los corazones tapando la barra de pestañas. El rótulo del chip de objetivo es
+un texto corto FIJO ("Objetivo"/"Objective"); el nombre real del tramo, que llega a 36 caracteres,
+va en el tooltip - nunca se recorta.
+
+**Función 2 · DPS-metro** (`Common/Guia/MedidorDanio.cs`, nuevo `GlobalNPC`). Daño real del jugador
+local en los últimos 10 segundos, leído de `OnHitByItem`/`OnHitByProjectile` (`damageDone` real, el
+mismo número del numerito flotante) con `Main.GameUpdateCount` como reloj. Es el tercer chip de la
+cabecera de TM3 (cierra el hueco que el propio catálogo dejaba previsto: "aquí encaja el DPS-metro
+como cuarto chip"). Verificado con 3 golpes de daño CONOCIDO (100+150+200=450 → 45.0 DPS exactos) y
+el chip reflejándolo un fotograma después, visto desde la pestaña Builds (no la Guía) - prueba real
+de que es visible desde cualquier pestaña.
+
+**Función 3 · Diario de partida automático** (`Common/Hitos/AlbumHitos.cs`,
+`Common/Hitos/ContadorDiasSystem.cs` nuevo, `UI/Hitos/ContenidoAlbum.cs`). Cada hito del Álbum
+guarda ahora día del mundo (contador propio persistido en el `.wld`, investigado que vanilla no
+expone ninguno), equipo llevado (reutiliza `AutoEquipar.EstadoEquipo`), tiempo de esta sesión y
+jefe/evento (`TramoGuia.JefeFinal` resuelto y traducido). Se ven en el tooltip de cada fila, solo
+las líneas que la entrada tiene de verdad (un álbum grabado antes de este cambio no rompe ni
+enseña datos inventados). Verificado con una pasada real y completa de la Guía (vanilla+Calamity,
+56+ tramos): `album.json` real con `"jefe":"Árbol de luto"/"Gritoeterno"/"Betsy"` y
+`"tiempoSesionSegundos"` creciendo de verdad.
+
+**Función 7 · Códigos de build dentro del juego** (`Common/Builds/CodigoDeBuild.cs` nuevo,
+`Common/Builds/CatalogoPrefijoPicaro.cs` ampliado, `UI/Builds/ContenidoBuilds.cs`). Exportar/
+importar el conjunto de equipo (armadura + 7 accesorios + 10 tintes) como código `TKBUILD1:...`
+con `Terrakeep.Core.Model.BuildCode`, el códec real que trae `lib/Terrakeep.Core.dll` desde el
+primer día sin que nada lo llamara. Mismo criterio que Auto-equipar: lo que ya tienes se mueve, lo
+que no se crea, nunca se destruye nada, los tintes nunca se crean. **LÍMITE REAL documentado en el
+XMLdoc de la clase**: los objetos de un mod (Calamity incluido) no se codifican todavía -
+`BuildCode.Encode` solo acepta un `int` por ranura y el `Item.type` de un objeto de mod lo asigna
+tModLoader en caliente, no es estable entre sesiones; la app de escritorio resuelve esto con un
+catálogo de ids sintéticos de OBJETO (`CalamityCatalog.cs`/`CalamityItemCodec.cs` de
+Terrasavr-Native) que este mod no tiene portado, a diferencia de los PREFIJOS de Pícaro, que sí
+(`CatalogoPrefijoPicaro`, 21 entradas). Un objeto de mod se omite del código (ranura vacía, contado
+y avisado) en vez de codificar un id que mentiría. Verificado con una extensión real del arnés
+existente: auto-equipar crea 8 objetos → exportar produce un código real (53 caracteres, copiado al
+portapapeles) → importar el MISMO código es idempotente (creados=0, movidos=0, ya_puestos=8).
+
+**Función 4 (parcial) · Sonar de estructuras** (`Common/Exploracion/ObjetivosBusqueda.cs`).
+Investigado que Mazmorra/Templo lihzahrd/Nido de araña YA se buscaban por su pared "Unsafe" real
+(sesión anterior) - un proxy de estructura ya correcto. Añadida la Isla flotante, marcada por el
+tile real "Sunplate" (id 202, confirmado en `TileID.cs` decompilado). **Solo verificado por
+compilación** (0 errores) - la verificación en vivo (`verificar-exploracion.ps1 -Buscar`) quedó
+interrumpida a media compilación porque el usuario pasó a primer plano con una partida real de
+Don't Starve Together, y la regla de "comprobar primer plano antes de forzar foco" prohíbe robarle
+el foco en ese momento. Pendiente de verificar en vivo la próxima sesión libre.
+
+### Bug real encontrado y arreglado por el camino (con la propia autoprueba existente, no una nueva)
+
+Los tres chips de cabecera llevaban `EsPestana = true` (solo por el efecto visual de "crecer 2px en
+vez de 3px" al pasar el ratón). `AutopruebaGuia.AnchosDePestana` (`Common/Guia/AutopruebaGuia.cs`)
+resulta que recorre `panel.MarcoHijos` buscando CUALQUIER `BotonTk` con `EsPestana=true` para medir
+"la barra de pestañas" real de cara a comprobar que ningún rótulo se recorta - los tres chips se
+colaban ahí como si fueran pestañas de navegación, y como nunca pasan por
+`AjustarEscalaDeLasPestanas` (que solo toca `_botonesPestana`), su texto a escala fija "no cabía"
+según esa cuenta (`HAY TEXTO QUE NO CABE`, visto en rojo en una pasada completa de
+`verificar-guia.ps1`). Arreglado quitando `EsPestana=true` de los tres chips (inerte de todas
+formas en los dos con `Habilitado=false`: `BotonTk.Update` solo anima con `Habilitado=true`).
+Reverificado con la Guía entera (vanilla+Calamity, ~600s): "Ninguna comprobación en rojo".
+
+### Lo investigado y descartado, con razón real (no vago "queda pendiente")
+
+- **TM1 (pestañas con sprite real)**: investigado en el juego decompilado qué rutas de sprite
+  vanilla podrían representar cada uno de los 8 conceptos (cabeza del jugador/cofre/yunque/lupa/
+  mapa/engranaje/libro/cámara) - no se encontró un icono limpio de un solo concepto para varios de
+  ellos con la búsqueda real hecha esta sesión (`Images/UI/Settings_*` son gráficos de interruptor,
+  no un engranaje genérico; no hay icono vanilla de "cámara"). Necesita una sesión de investigación
+  de assets dedicada, con capturas reales del juego probando cada candidato, antes de escribir
+  código - se prefiere no forzar un sprite equivocado o vacío.
+- **TM2 (editor de objeto flotante) y TM4 (Guía con checklist de sprites)**: catalogados como
+  "Grande" con razón - tocan interacción central de Librería y el layout completo de la Guía. No
+  investigados a fondo esta sesión por presupuesto de tiempo; quedan para la próxima ronda.
+- **TM5 (Builds: filtros compactos)**: investigado el archivo real (`ContenidoBuilds.cs`,
+  `GrupoPildoras.Reflow`) - es de los ficheros más delicados y con más historial de bugs reales ya
+  documentados de todo el mod (reflow dinámico de píldoras, `Recalculate` condicional). Requeriría
+  además dos widgets nuevos que no existen (`SelectorTk` desplegable, anillo de progreso). Se
+  decide NO tocarlo sin una ronda de verificación visual iterativa dedicada, para no arriesgar
+  regresiones en un sistema ya fino.
+- **Idea 8 (checklist de coleccionista)**: investigado - ya está MUY avanzada de una sesión
+  anterior (`PestanaCompletitud` ya tiene 4 resúmenes con barra + lista scrollable de "lo que
+  falta" para Jefes y Logros, con Bestiario/Investigación deliberadamente sin nombres por no
+  destripar el propio bestiario del juego). El hueco real que quedaba ("navegable, con dónde
+  conseguirlo") choca con que `ContenidoGuia` es a propósito una "brújula, no un GPS" (solo enseña
+  el objetivo ACTUAL, nunca un tramo arbitrario que el jugador elija) - hacer clic en un jefe
+  pendiente de la lista y saltar a la Guía mostraría el objetivo actual real, no necesariamente el
+  jefe pulsado, una experiencia confusa. Se decide no forzar esa navegación sin rediseñar antes
+  cómo se vería una Guía "explorable" de verdad.
+- **Ideas 1 (entrenador de jefe), 5 (planificador de felicidad de NPCs), 6 (cofres del mundo en
+  vivo), 9 (guía de grupo) y 10 (rebobinar el mundo)**: sistemas nuevos genuinamente grandes
+  (arena de ensayo con snapshot+restauración, IA de recolocación de NPCs, editor de contenedores
+  del mundo en vivo, evaluación multijugador, snapshot/restauración de una región de tiles). No
+  investigados a fondo esta sesión - quedan en el catálogo para las próximas rondas, con la
+  infraestructura real ya localizada donde existe (`Undo/PilaDeSnapshots`, `ShopHelper`
+  decompilado, `Main_WorldEdit_Patch.TryCalcularAreaSeleccionada` de TModLoaderMod) para no
+  arrancar de cero la próxima vez.
+
+### Verificación real de conjunto
+
+- `scripts\compilar.ps1`: 0 errores en cada uno de los commits de esta sesión.
+- `scripts\verificar-panel-unico.ps1` (contra tModLoader real, mundo/personaje sintéticos): AUTOPRUEBA
+  PANEL COMPLETA en cada pasada, capturas reales inspeccionadas a mano (chips sin solape con HUD ni
+  con la barra de pestañas, controles de código de build en el pie sin desbordar).
+- `scripts\verificar-guia.ps1` (vanilla + Calamity, 56+ tramos, ~600s): AUTOPRUEBA GUIA COMPLETA,
+  "Ninguna comprobación en rojo" tras el arreglo del bug de `EsPestana`.
+- Verificador de analizadores estáticos de KeepQA (`verificarAnalisisEstatico.js`, gate por
+  defecto): 17 avisos únicos RCS1075, los mismos de antes de esta sesión (backlog deliberado ya
+  documentado el 17-sep) - ningún aviso nuevo introducido.
+- `.codebase-memory/` apareció sin seguimiento durante la sesión (herramienta del entorno, no
+  tocada a propósito) - no se ha añadido a git.
+
+Sin `git push`, sin `gh release`, sin empaquetar el mod, sin subir versión - el usuario revisará
+todo antes de publicar nada, tal como se pidió.
