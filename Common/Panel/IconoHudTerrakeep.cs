@@ -107,6 +107,7 @@ namespace TerrakeepMod.Common.Panel
 		{
 			_textura = null;
 			UI.Personaje.Widgets.BotonTk.Descargar();
+			IconosPestanas.Descargar();
 		}
 
 		/// <summary>

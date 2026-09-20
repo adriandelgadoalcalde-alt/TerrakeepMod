@@ -143,6 +143,36 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// <summary>Se dispara con el clic izquierdo, solo si el boton esta habilitado.</summary>
 		public event Action AlPulsar;
 
+		// --- TM1 (catalogo de rediseño visual): icono real del propio juego junto al texto -----
+		/// <summary>Icono opcional a la izquierda del texto. Se pide en cada dibujado (nunca se
+		/// guarda ya resuelto) por si la textura tarda en cargar la primera vez. null = sin icono,
+		/// el boton se comporta exactamente igual que antes de TM1.</summary>
+		public Func<Texture2D> Icono;
+
+		/// <summary>Caso especial de <see cref="Icono"/>: la cabeza REAL del jugador cargado, via
+		/// <c>Main.MapPlayerRenderer</c> (el mismo renderer con el que vanilla dibuja los iconos de
+		/// jugador del mapa/minimapa - un RenderTarget que tarda un fotograma en estar listo la
+		/// primera vez, <c>IsReady</c> lo dice solo). Nunca a la vez que <see cref="Icono"/>.</summary>
+		public bool IconoCabezaJugador;
+
+		/// <summary>Lado del icono cuadrado, en pixeles a escala de reposo.</summary>
+		public float LadoIcono = 20f;
+
+		/// <summary>
+		/// Por debajo de este ancho REAL del boton (con icono puesto), el texto se esconde y solo
+		/// queda el icono centrado con su <see cref="Ayuda"/> - "por debajo de cierto ancho, solo el
+		/// sprite con tooltip" (TM1). Sin icono este campo no hace nada: el texto nunca se esconde
+		/// por si solo, sigue siendo responsabilidad de quien coloca el boton (ver
+		/// <c>PanelTerrakeepState.AjustarEscalaDeLasPestanas</c>).
+		/// </summary>
+		public float AnchoMinimoConTexto = 74f;
+
+		/// <summary>Cuanto ancho REAL le come el icono al texto ahora mismo (0 sin icono). Lo usa
+		/// <c>PanelTerrakeepState.AjustarEscalaDeLasPestanas</c> para medir cuanto texto cabe de
+		/// verdad en un boton con icono - sin esto la cuenta seria demasiado optimista y el texto
+		/// podria acabar dibujandose encima del propio icono.</summary>
+		public float MargenIconoParaMedida => (Icono != null || IconoCabezaJugador) ? LadoIcono + 8f : 0f;
+
 		public BotonTk(string texto, float escalaTexto = 0.85f)
 		{
 			_texto = texto;
@@ -344,17 +374,54 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 				}
 			}
 
-			DibujarTexto(spriteBatch, dim);
+			bool hayIcono = Icono != null || IconoCabezaJugador;
+			bool textoVisible = !hayIcono || dim.Width >= AnchoMinimoConTexto || string.IsNullOrEmpty(_texto);
+
+			if (hayIcono) {
+				DibujarIcono(spriteBatch, dim, textoVisible);
+			}
+			if (textoVisible) {
+				DibujarTexto(spriteBatch, dim, hayIcono ? LadoIcono + 8f : 0f);
+			}
 		}
 
-		private void DibujarTexto(SpriteBatch spriteBatch, CalculatedStyle dim)
+		/// <summary>TM1: el icono a la izquierda del texto (o centrado en solitario si
+		/// <paramref name="haySitioParaTexto"/> es false - el boton se quedo sin ancho para las dos
+		/// cosas). <see cref="IconoCabezaJugador"/> usa el renderer real del motor; cualquier otro
+		/// icono es una textura fija pedida a <see cref="Icono"/>.</summary>
+		private void DibujarIcono(SpriteBatch spriteBatch, CalculatedStyle dim, bool haySitioParaTexto)
+		{
+			float lado = LadoIcono * (1f + 0.06f * Avance());
+			float x = haySitioParaTexto ? dim.X + 6f : dim.X + (dim.Width - lado) / 2f;
+			float y = dim.Y + (dim.Height - lado) / 2f;
+
+			if (IconoCabezaJugador) {
+				Player jugador = Main.LocalPlayer;
+				if (jugador != null && jugador.active && Main.MapPlayerRenderer != null) {
+					Main.MapPlayerRenderer.DrawPlayerHead(Main.Camera, jugador,
+						new Vector2(x + lado / 2f, y + lado / 2f), Habilitado ? 1f : 0.5f, lado / 40f, Color.Transparent);
+				}
+				return;
+			}
+
+			Texture2D textura = Icono != null ? Icono() : null;
+			if (textura == null) {
+				return;
+			}
+			Rectangle destino = new Rectangle((int)x, (int)y, (int)lado, (int)lado);
+			Color color = Habilitado ? Color.White : new Color(150, 150, 150);
+			spriteBatch.Draw(textura, destino, color);
+		}
+
+		private void DibujarTexto(SpriteBatch spriteBatch, CalculatedStyle dim, float margenIzquierdo)
 		{
 			// El texto crece un 6% como mucho, al mismo ritmo que el marco. Mas que eso, con la
 			// fuente del juego, se ve borroso y descentrado.
 			float escala = _escalaTexto * (1f + 0.06f * Avance());
 			Vector2 tamano = FontAssets.MouseText.Value.MeasureString(_texto) * escala;
+			float anchoDisponible = dim.Width - margenIzquierdo;
 			Vector2 posicion = new Vector2(
-				dim.X + (dim.Width - tamano.X) / 2f,
+				dim.X + margenIzquierdo + (anchoDisponible - tamano.X) / 2f,
 				dim.Y + (dim.Height - tamano.Y) / 2f);
 
 			Color color = Habilitado ? Color.White : new Color(150, 150, 150);

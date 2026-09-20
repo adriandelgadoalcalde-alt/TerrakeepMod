@@ -432,8 +432,43 @@ namespace TerrakeepMod.UI.Panel
 				boton.Ayuda = () => AyudaDeArea(area) + "\n" +
 					Idiomas.Texto("Panel.Atajo", PanelTerrakeepSystem.TeclaDe(area));
 				boton.AlPulsar += () => CambiarArea(area, "clic en la pestaña");
+				AsignarIconoDePestana(boton, area);
 				_botonesPestana.Add(boton);
 				_marco.Append(boton);
+			}
+		}
+
+		/// <summary>TM1: el icono real de cada pestaña - ver <see cref="Common.Panel.IconosPestanas"/>
+		/// para de donde sale cada uno y por que.</summary>
+		private static void AsignarIconoDePestana(BotonTk boton, AreaTerrakeep area)
+		{
+			switch (area) {
+				case AreaTerrakeep.Personaje:
+					// NUNCA IconoCabezaJugador aqui: investigado y descartado con evidencia real
+					// (borron negro en el juego), ver el XMLdoc completo en IconosPestanas.
+					boton.Icono = Common.Panel.IconosPestanas.Personaje;
+					break;
+				case AreaTerrakeep.Libreria:
+					boton.Icono = Common.Panel.IconosPestanas.Libreria;
+					break;
+				case AreaTerrakeep.Builds:
+					boton.Icono = Common.Panel.IconosPestanas.Builds;
+					break;
+				case AreaTerrakeep.Investigacion:
+					boton.Icono = Common.Panel.IconosPestanas.Investigacion;
+					break;
+				case AreaTerrakeep.Exploracion:
+					boton.Icono = Common.Panel.IconosPestanas.Exploracion;
+					break;
+				case AreaTerrakeep.Ajustes:
+					boton.Icono = Common.Panel.IconosPestanas.Ajustes;
+					break;
+				case AreaTerrakeep.Guia:
+					boton.Icono = Common.Panel.IconosPestanas.Guia;
+					break;
+				case AreaTerrakeep.Album:
+					boton.Icono = Common.Panel.IconosPestanas.Album;
+					break;
 			}
 		}
 
@@ -606,7 +641,10 @@ namespace TerrakeepMod.UI.Panel
 
 			for (int i = 0; i < _botonesPestana.Count; i++) {
 				BotonTk boton = _botonesPestana[i];
-				float ancho = boton.GetDimensions().Width;
+				// TM1: el icono real (o la cabeza del jugador) le come sitio al texto - sin restarlo
+				// aqui, esta cuenta seria demasiado optimista y el texto podria acabar dibujandose
+				// encima del propio icono a resoluciones pequeñas.
+				float ancho = boton.GetDimensions().Width - boton.MargenIconoParaMedida;
 				if (ancho <= 0f || string.IsNullOrEmpty(boton.Texto)) {
 					continue;
 				}
