@@ -836,12 +836,23 @@ Hitos: {
 	ResumenVacio: Your progress album is empty for now.
 	Resumen: "{0} screenshots in your progress album."
 	Fila: "{0}  ·  {1}"
-	FilaAyuda:
-		'''
-		Character: {0}
-		World: {1}
-		Click to open the full image in your system's viewer.
-		'''
+
+	FilaAyuda: {
+		// Functions catalogue idea 3 ("Automatic play diary"): world day, equipment worn, session
+		// time and boss, when the entry has them (an album saved BEFORE these fields existed leaves
+		// them out of the tooltip instead of showing a made-up value - see
+		// ContenidoAlbum.BloqueExtraDelHito).
+		$parentVal:
+			'''
+			Character: {0}
+			World: {1}
+			{2}Click to open the full image in your system's viewer.
+			'''
+		Dia: World day: {0}
+		Equipo: Equipment: {0}
+		Tiempo: This session's time: {0}
+		Jefe: Boss/event: {0}
+	}
 }
 
 Guia: {

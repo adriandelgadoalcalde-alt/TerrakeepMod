@@ -301,7 +301,13 @@ namespace TerrakeepMod.UI.Panel
 		private void ConstruirCabeceraChips()
 		{
 			_chipHora = new BotonTk("", 0.72f);
-			_chipHora.EsPestana = true;
+			// NUNCA EsPestana=true aqui: AutopruebaGuia.AnchosDePestana (Common/Guia/AutopruebaGuia.cs)
+			// recorre panel.MarcoHijos buscando BotonTk con EsPestana=true para medir "la barra de
+			// pestañas" - un chip informativo marcado asi se colaba en esa medida como si fuera una
+			// pestaña real de navegacion, y como nunca pasa por AjustarEscalaDeLasPestanas (que solo
+			// toca _botonesPestana), su texto a escala fija "no cabia" segun esa cuenta. Bug real
+			// encontrado con la propia autoprueba, ver bitacora.md. Ademas es inerte en un boton con
+			// Habilitado=false (BotonTk.Update solo anima con el raton encima SI esta habilitado).
 			_chipHora.Habilitado = false; // Informativo, no se pulsa: sin animacion de "pulsable".
 			_chipHora.Width.Set(AnchoChipHora, 0f);
 			_chipHora.Height.Set(AltoTitulo, 0f);
@@ -311,7 +317,6 @@ namespace TerrakeepMod.UI.Panel
 			_marco.Append(_chipHora);
 
 			_chipObjetivo = new BotonTk("", 0.72f);
-			_chipObjetivo.EsPestana = true;
 			_chipObjetivo.Width.Set(AnchoChipObjetivo, 0f);
 			_chipObjetivo.Height.Set(AltoTitulo, 0f);
 			_chipObjetivo.Left.Set(LeftChips + AnchoChipHora + SeparacionChips, 0f);
@@ -321,7 +326,6 @@ namespace TerrakeepMod.UI.Panel
 			_marco.Append(_chipObjetivo);
 
 			_chipDps = new BotonTk("", 0.72f);
-			_chipDps.EsPestana = true;
 			_chipDps.Habilitado = false; // Informativo, no se pulsa.
 			_chipDps.Width.Set(AnchoChipDps, 0f);
 			_chipDps.Height.Set(AltoTitulo, 0f);

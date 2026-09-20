@@ -836,12 +836,23 @@ Hitos: {
 	ResumenVacio: Tu álbum de progreso está vacío por ahora.
 	Resumen: "{0} capturas en tu álbum de progreso."
 	Fila: "{0}  ·  {1}"
-	FilaAyuda:
-		'''
-		Personaje: {0}
-		Mundo: {1}
-		Clic para abrir la imagen completa con el visor de tu sistema.
-		'''
+
+	FilaAyuda: {
+		// Functions catalogue idea 3 ("Automatic play diary"): world day, equipment worn, session
+		// time and boss, when the entry has them (an album saved BEFORE these fields existed leaves
+		// them out of the tooltip instead of showing a made-up value - see
+		// ContenidoAlbum.BloqueExtraDelHito).
+		$parentVal:
+			'''
+			Personaje: {0}
+			Mundo: {1}
+			{2}Clic para abrir la imagen completa con el visor de tu sistema.
+			'''
+		Dia: Día del mundo: {0}
+		Equipo: Equipo: {0}
+		Tiempo: Tiempo de esta sesión: {0}
+		Jefe: Jefe/evento: {0}
+	}
 }
 
 Guia: {

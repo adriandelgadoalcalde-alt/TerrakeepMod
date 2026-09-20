@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.IO;
 using Newtonsoft.Json.Linq;
 using Terraria;
+using TerrakeepMod.Common.Builds;
 
 namespace TerrakeepMod.Common.Hitos
 {
@@ -24,6 +25,29 @@ namespace TerrakeepMod.Common.Hitos
 		public DateTime Fecha = DateTime.Now;
 		public string Personaje = "";
 		public string Mundo = "";
+
+		// --- Idea 3 del catalogo de funciones ("Diario de partida automatico"): el hito guarda
+		// tambien dia del mundo, equipo llevado, tiempo de sesion y jefe. Los cuatro son
+		// OPCIONALES a proposito (valores por defecto = "sin dato"): un album grabado con una
+		// version anterior del mod (antes de que existieran estos campos) sigue leyendose sin
+		// romper nada, solo enseña estos cuatro vacios/en cero en sus entradas viejas - ver
+		// Listar().
+		/// <summary>Amaneceres del mundo transcurridos hasta el hito (ver <see cref="ContadorDiasSystem"/>),
+		/// o -1 si no se pudo leer.</summary>
+		public int DiaDelMundo = -1;
+
+		/// <summary>Resumen de una linea del equipo activo en el momento del hito (mismo formato
+		/// real que ya usa <c>AutoEquipar.EstadoEquipo</c> para el log de auto-equipar).</summary>
+		public string Equipo = "";
+
+		/// <summary>Segundos reales de ESTA sesion (desde que se cargo la partida) hasta el hito -
+		/// nunca el total acumulado de la partida entera, que el mod no puede saber sin guardarlo
+		/// el juego por su cuenta.</summary>
+		public int TiempoSesionSegundos = -1;
+
+		/// <summary>Nombre del jefe/evento que cierra el tramo, ya traducido, o "" si el tramo no
+		/// tiene uno (p.ej. un tramo de progresion sin jefe final).</summary>
+		public string Jefe = "";
 	}
 
 	/// <summary>
@@ -67,8 +91,13 @@ namespace TerrakeepMod.Common.Hitos
 		/// propio motor gráfico) y anota el hito en el índice. Nunca lanza: cualquier fallo (disco
 		/// lleno, permisos...) se cuenta en la línea devuelta, para el log, y no interrumpe la
 		/// partida.
+		/// <para />
+		/// Idea 3 del catálogo de funciones: <paramref name="tiempoSesionSegundos"/> y
+		/// <paramref name="jefe"/> los conoce quien detecta el hito (<c>HitosSystem</c>, que ya
+		/// lleva su propio reloj de sesión y el <c>TramoGuia</c> con su <c>JefeFinal</c>) - el resto
+		/// (día del mundo, equipo llevado) se puede leer aquí mismo en el momento del disparo.
 		/// </summary>
-		public static string Registrar(string claveTramo, string nombreLegible)
+		public static string Registrar(string claveTramo, string nombreLegible, int tiempoSesionSegundos, string jefe)
 		{
 			try {
 				DateTime ahora = DateTime.Now;
@@ -80,13 +109,18 @@ namespace TerrakeepMod.Common.Hitos
 					return "HITO \"" + claveTramo + "\" (" + nombreLegible + "): " + detalle;
 				}
 
+				Player jugador = Main.LocalPlayer;
 				EntradaAlbum entrada = new EntradaAlbum {
 					Clave = claveTramo,
 					Nombre = nombreLegible,
 					Archivo = Path.GetFileName(ruta),
 					Fecha = ahora,
-					Personaje = Main.LocalPlayer != null ? Main.LocalPlayer.name : "",
-					Mundo = Main.worldName ?? ""
+					Personaje = jugador != null ? jugador.name : "",
+					Mundo = Main.worldName ?? "",
+					DiaDelMundo = ContadorDiasSystem.DiasTranscurridos,
+					Equipo = jugador != null ? AutoEquipar.EstadoEquipo(jugador, jugador.armor) : "",
+					TiempoSesionSegundos = tiempoSesionSegundos,
+					Jefe = jefe ?? ""
 				};
 				AnadirAlIndice(entrada);
 
@@ -121,7 +155,11 @@ namespace TerrakeepMod.Common.Hitos
 				["archivo"] = entrada.Archivo,
 				["fecha"] = entrada.Fecha.ToString("yyyy-MM-dd HH:mm:ss"),
 				["personaje"] = entrada.Personaje,
-				["mundo"] = entrada.Mundo
+				["mundo"] = entrada.Mundo,
+				["diaDelMundo"] = entrada.DiaDelMundo,
+				["equipo"] = entrada.Equipo,
+				["tiempoSesionSegundos"] = entrada.TiempoSesionSegundos,
+				["jefe"] = entrada.Jefe
 			});
 
 			Directory.CreateDirectory(CarpetaAbsoluta);
@@ -156,7 +194,14 @@ namespace TerrakeepMod.Common.Hitos
 						Nombre = (string)o["nombre"] ?? "",
 						Archivo = (string)o["archivo"] ?? "",
 						Personaje = (string)o["personaje"] ?? "",
-						Mundo = (string)o["mundo"] ?? ""
+						Mundo = (string)o["mundo"] ?? "",
+						// Idea 3 del catalogo de funciones: los cuatro campos nuevos. (int?)/(string)
+						// sobre un token ausente (album.json de una version anterior del mod, antes
+						// de que existieran) da null, no una excepcion - de ahi el ?? de respaldo.
+						DiaDelMundo = (int?)o["diaDelMundo"] ?? -1,
+						Equipo = (string)o["equipo"] ?? "",
+						TiempoSesionSegundos = (int?)o["tiempoSesionSegundos"] ?? -1,
+						Jefe = (string)o["jefe"] ?? ""
 					};
 
 					DateTime fecha;

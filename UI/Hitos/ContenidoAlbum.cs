@@ -116,10 +116,49 @@ namespace TerrakeepMod.UI.Hitos
 				BotonTk fila = new BotonTk(texto, 0.75f);
 				fila.Width.Set(0f, 1f);
 				fila.Height.Set(28f, 0f);
-				fila.Ayuda = () => Idiomas.Texto("Hitos.FilaAyuda", actual.Personaje, actual.Mundo);
+				fila.Ayuda = () => Idiomas.Texto("Hitos.FilaAyuda", actual.Personaje, actual.Mundo,
+					BloqueExtraDelHito(actual));
 				fila.AlPulsar += () => AbrirCaptura(actual);
 				_lista.Add(fila);
 			}
+		}
+
+		/// <summary>
+		/// Idea 3 del catálogo de funciones ("Diario de partida automático"): día del mundo, equipo
+		/// llevado, tiempo de sesión y jefe/evento, una línea cada uno, SOLO los que la entrada
+		/// tenga de verdad. Una entrada grabada con una versión anterior del mod (antes de que
+		/// existieran estos cuatro campos, ver <see cref="EntradaAlbum"/>) los trae todos vacíos/en
+		/// -1 - se omiten del tooltip en vez de enseñar un "Día del mundo: -1" sin sentido.
+		/// </summary>
+		private static string BloqueExtraDelHito(EntradaAlbum entrada)
+		{
+			List<string> lineas = new List<string>();
+			if (entrada.DiaDelMundo >= 0) {
+				lineas.Add(Idiomas.Texto("Hitos.FilaAyuda.Dia", entrada.DiaDelMundo));
+			}
+			if (!string.IsNullOrEmpty(entrada.Equipo)) {
+				lineas.Add(Idiomas.Texto("Hitos.FilaAyuda.Equipo", entrada.Equipo));
+			}
+			if (entrada.TiempoSesionSegundos >= 0) {
+				lineas.Add(Idiomas.Texto("Hitos.FilaAyuda.Tiempo", FormatearDuracion(entrada.TiempoSesionSegundos)));
+			}
+			if (!string.IsNullOrEmpty(entrada.Jefe)) {
+				lineas.Add(Idiomas.Texto("Hitos.FilaAyuda.Jefe", entrada.Jefe));
+			}
+			// La plantilla real (Hitos.FilaAyuda) mete este bloque INLINE justo antes de "Clic para
+			// abrir..."; con el \n final aparte, una entrada sin ningun dato extra no deja una
+			// linea en blanco de sobra.
+			return lineas.Count > 0 ? string.Join("\n", lineas) + "\n" : "";
+		}
+
+		/// <summary>"125" segundos -> "2:05"; "3725" -> "1:02:05". Nunca decimales: es tiempo de
+		/// sesion para leer de un vistazo, no un cronometro de precision.</summary>
+		private static string FormatearDuracion(int segundosTotales)
+		{
+			TimeSpan duracion = TimeSpan.FromSeconds(segundosTotales);
+			return duracion.Hours > 0
+				? $"{duracion.Hours}:{duracion.Minutes:00}:{duracion.Seconds:00}"
+				: $"{duracion.Minutes}:{duracion.Seconds:00}";
 		}
 
 		private string TextoResumen()

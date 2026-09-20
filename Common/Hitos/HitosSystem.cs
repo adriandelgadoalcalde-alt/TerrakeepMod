@@ -59,6 +59,15 @@ namespace TerrakeepMod.Common.Hitos
 		/// <summary>true si ya se tomó la fotografía de esta partida.</summary>
 		private static bool _lineaBase;
 
+		/// <summary>
+		/// Idea 3 del catálogo de funciones: fotogramas reales transcurridos DESDE que se tomó la
+		/// fotografía de esta sesión (o sea, desde que hay partida activa) - "tiempo de sesión", no
+		/// el total acumulado de la partida entera, que el mod no puede saber sin que el juego lo
+		/// guarde por su cuenta. Se reinicia cada vez que se vuelve a tomar la fotografía (ver
+		/// <see cref="UpdateUI"/>), mismo ciclo de vida que <see cref="_superadoAntes"/>.
+		/// </summary>
+		private static int _fotogramasDeSesion;
+
 		/// <summary>Estado de "tramo superado" en la fotografía (o el más reciente ya visto), por
 		/// clave de tramo.</summary>
 		private static readonly Dictionary<string, bool> _superadoAntes = new Dictionary<string, bool>();
@@ -97,6 +106,7 @@ namespace TerrakeepMod.Common.Hitos
 
 			if (!_lineaBase) {
 				_lineaBase = true;
+				_fotogramasDeSesion = 0;
 				_superadoAntes.Clear();
 				for (int i = 0; i < tramos.Count; i++) {
 					TramoGuia t = tramos[i];
@@ -104,6 +114,8 @@ namespace TerrakeepMod.Common.Hitos
 				}
 				return;
 			}
+
+			_fotogramasDeSesion++;
 
 			for (int i = 0; i < tramos.Count; i++) {
 				TramoGuia t = tramos[i];
@@ -113,7 +125,9 @@ namespace TerrakeepMod.Common.Hitos
 				_superadoAntes.TryGetValue(t.Clave, out superadoAntes);
 
 				if (superadoAhora && !superadoAntes) {
-					string resultado = AlbumHitos.Registrar(t.Clave, t.Nombre());
+					string jefe = t.JefeFinal > 0 ? EvaluadorGuia.NombreDeNpc(t.JefeFinal) : "";
+					int tiempoSesionSegundos = _fotogramasDeSesion / 60;
+					string resultado = AlbumHitos.Registrar(t.Clave, t.Nombre(), tiempoSesionSegundos, jefe);
 					RegistroHitos.Linea(Terrakeep.LogTag + " " + resultado);
 				}
 
@@ -124,12 +138,14 @@ namespace TerrakeepMod.Common.Hitos
 		public override void OnWorldUnload()
 		{
 			_lineaBase = false;
+			_fotogramasDeSesion = 0;
 		}
 
 		public override void Unload()
 		{
 			_atajo = null;
 			_lineaBase = false;
+			_fotogramasDeSesion = 0;
 			_superadoAntes.Clear();
 		}
 
