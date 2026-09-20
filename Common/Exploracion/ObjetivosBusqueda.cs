@@ -201,6 +201,13 @@ namespace TerrakeepMod.Common.Exploracion
 			Tile("Tesoros", "BulbosPlantera", "PlanteraBulb");
 			Tile("Tesoros", "Colmenas", "Hive");
 			Tile("Tesoros", "LarvasAbeja", "Larva");
+			// Idea 4 del catalogo de funciones ("Sonar de estructuras"): "Sunplate" (id 202 real,
+			// TileID.cs) es el bloque REAL con el que WorldGen genera el suelo de cualquier isla
+			// flotante - unico marcador de tile fiable para esa estructura (investigado antes de
+			// escribir esto: la Piramide del desierto NO tiene ningun tile/pared EXCLUSIVO propio,
+			// solo Sandstone Brick, compartido con el resto del bioma - LIMITE REAL, documentado en
+			// bitacora.md, no se fuerza un marcador falso).
+			Tile("Tesoros", "IslaFlotante", "Sunplate");
 
 			// --- Contenedores y NPC ----------------------------------------------------------
 			_todos.Add(new ObjetivoBusqueda {
