@@ -44,6 +44,9 @@ namespace TerrakeepMod.UI.Exploracion
 		/// <summary>La sub-pestaña del mundo.</summary>
 		public PestanaMundo Mundo { get; private set; }
 
+		/// <summary>La sub-pestaña de vecindad (idea 5 del catálogo de funciones).</summary>
+		public PestanaVecindad Vecindad { get; private set; }
+
 		public ContenidoExploracion()
 		{
 			Width.Set(0f, 1f);
@@ -67,6 +70,7 @@ namespace TerrakeepMod.UI.Exploracion
 			_clavesPestana.Add("Mapa");
 			_clavesPestana.Add("Busqueda");
 			_clavesPestana.Add("Mundo");
+			_clavesPestana.Add("Vecindad");
 
 			// Mismo criterio que en el area de Personaje: ancho en porcentaje, no en pixeles fijos,
 			// para que la barra se estire con el panel. Tres pestañas a un tercio cada una se veian
@@ -143,6 +147,9 @@ namespace TerrakeepMod.UI.Exploracion
 				case 2:
 					Mundo = new PestanaMundo();
 					return Mundo;
+				case 3:
+					Vecindad = new PestanaVecindad();
+					return Vecindad;
 				default:
 					return null;
 			}

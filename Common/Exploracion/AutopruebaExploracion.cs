@@ -399,6 +399,24 @@ namespace TerrakeepMod.Common.Exploracion
 					break;
 
 				case 23:
+					// Idea 5 del catalogo de funciones: pestaña "Vecindad" (felicidad real de los
+					// NPC de pueblo). Se fuerza el refresco (publico solo para la autoprueba) en
+					// vez de esperar su propio temporizador de 30 fotogramas.
+					panel.CambiarPestana(3);
+					panel.Vecindad.Refrescar();
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/23 - pestaña \"" +
+						panel.NombrePestanaActual + "\": " + panel.InformePestanaActual() +
+						". NPC de pueblo activos detectados: " + panel.Vecindad.TotalNpcsParaPrueba + ".");
+					Siguiente(10);
+					break;
+
+				case 24:
+					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6/24 - " +
+						CapturaDePantalla.Guardar("ws6-vecindad"));
+					Siguiente(5);
+					break;
+
+				case 25:
 					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6 COMPLETA.");
 					_enMarcha = false;
 					break;

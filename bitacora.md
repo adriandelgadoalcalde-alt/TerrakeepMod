@@ -8703,9 +8703,13 @@ dentro de su caja, sin solapes).
 - Localización (es-ES/en-US): pestaña + bloque `Exploracion.Vecindad.*`
   (Resumen/Ninguno/Precio/SinInforme/SinCasa/Lejos).
 
-**Pendiente de verificación en el próximo commit**: falta una pasada real contra un mundo con
-NPCs de pueblo activos (el sandbox de la Guía normalmente los tiene) para capturar la pestaña
-con vecinos de verdad antes de darla por cerrada.
+**Verificación real** (`scripts\verificar-exploracion.ps1`, pasos 23/24 nuevos, mismo sandbox
+WS6 con NPCs de pueblo activos): `AUTOPRUEBA WS6 COMPLETA`, "NPC de pueblo activos detectados: 2"
+- Anciano y Zach el Guía. Captura real `ws6-vecindad.png` revisada pixel a pixel: Anciano al 100%
+del precio base con el aviso ámbar "A 1259 tiles - acércate a su casa para una lectura real"
+(dispara de verdad el umbral de 60 tiles), Zach el Guía al 150% en rojo con el texto REAL de
+`HappinessReport` de vanilla sobre no tener casa y que le gusta el Bosque - sin solapes, scroll
+funcional, colores correctos.
 
 ### Sin publicar nada
 
