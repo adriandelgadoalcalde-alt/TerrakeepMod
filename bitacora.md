@@ -9102,6 +9102,41 @@ capturas finales revisadas a mano confirman el arreglo del envoltorio: el texto 
 líneas según el mensaje, el panel crece para darle sitio, y el botón "Cerrar"/"Cancelar" nunca se
 solapa. "Ninguna comprobacion en rojo" en las dos pasadas.
 
+### Idea 9, segunda pasada (20-sep-2026): "repartir builds por clase sin solaparse" - la pieza que faltaba
+
+Cotejo literal del coordinador contra el catálogo encontró un hueco real: la sección "Grupo" ya
+evaluaba requisitos por jugador, pero nunca decía qué CLASE debería jugar cada uno para que el
+grupo no se pisara.
+
+**Implementado**: `GuiaGrupo.ClaveClaseDetectada(Player, out nombreArma)` detecta la clase real
+del arma que cada jugador lleva en la mano (el mismo criterio que
+`EstadoJugadorGuia.DanoDelMejorArma` - mejor arma real, sin herramientas/accesorios/munición - pero
+mirando de qué `DamageClass` es). `GuiaGrupo.RepartoClases()` reparte, en dos pasadas
+deterministas, una clase distinta a cada miembro del grupo (jugador local incluido): quien ya
+lleva una clase libre se la queda, y a quien la tiene repetida o no lleva ninguna reconocible se le
+sugiere la primera de las cinco clases reales de `CatalogoBuilds` (melee/ranged/mage/summoner, más
+rogue con Calamity) que siga sin nadie. Nueva sección "Reparto de clases, sin repetir" dentro de
+"Grupo" en `ContenidoGuia.cs`.
+
+**Bug real encontrado con la propia autoprueba (no inventado, medido)**: la primera versión
+comparaba `objeto.DamageType == DamageClass.Melee` con igualdad EXACTA - y una Espada Corta de
+Cobre real, diagnosticada en vivo, resultó tener `DamageType=MeleeNoSpeedDamageClass`, no
+`MeleeDamageClass` (hay varias clases reales "de cuerpo a cuerpo" en vanilla). El reparto salía
+vacío para TODOS los jugadores, incluido el jugador LOCAL (sin red de por medio, descartando de
+raíz que fuera un problema de sincronización). Arreglado con el API público real y correcto para
+esto, `Item.CountsAsClass(DamageClass)` (`Item.cs:52047`, el mismo método que usa por dentro el
+propio `Item.melee` del motor).
+
+**Verificación real**: mismo arnés de servidor dedicado + dos clientes gráficos reales de la
+corrección anterior de esta misma idea. El compañero se pone una Espada Corta de Cobre real; el
+observador se pone TAMBIÉN una, a propósito, para forzar un solape real entre dos procesos
+distintos - no un dato simulado en un solo cliente. Log real:
+`GuiaGrupo.RepartoClases() con las DOS espadas reales puestas: 2 miembros. Local: detectada=melee,
+solapa=False, sugerida=melee. Companero: detectada=melee, solapa=True, sugerida=ranged -> OK`.
+Captura real revisada a mano: "Class split, no repeats" / "TerrakeepPrueba: Melee" /
+"TkGrupoCompanero: Melee (repeated in the group) - try Ranged", sin solaparse con el resto del
+panel.
+
 ### Sin publicar nada
 
 `git push`, `gh release`, empaquetado del mod y subida de versión siguen sin tocarse, tal como se

@@ -47,10 +47,17 @@ if (Test-Path (Join-Path $origenWS0 "Worlds\$mundo.twld")) {
 }
 
 # Cada CLIENTE necesita su propio personaje (dos procesos no pueden compartir el mismo archivo
-# .plr abierto a la vez) - los dos son una copia del mismo sintetico de WS0, con nombre interno
-# identico ("TerrakeepPrueba"): vanilla real NO rechaza nombres duplicados entre jugadores
-# conectados (comprobado en el decompilado, MessageBuffer.cs no filtra por nombre), asi que no
-# hace falta renombrar nada para que la conexion funcione.
+# .plr abierto a la vez) - los dos parten de una copia del mismo sintetico de WS0. Corregido tras
+# depurar el arnes en vivo: el servidor real SI rechaza una segunda conexion con el mismo nombre
+# de jugador ACTIVO (MessageBuffer.cs, case 4 real: "if (player.name == Main.player[i].name &&
+# Netplay.Clients[i].IsActive) ... \"is already on this server\"") - por eso el companero se
+# renombra en vivo nada mas conectar (AutopruebaGrupo.PasoCompanero, API publica real:
+# Player.name + NetMessage.SendData(4)). Y por eso este script RESTAURA el .plr limpio de WS0 en
+# los DOS sandboxes EN CADA PASADA (nunca reutiliza el que quedo de la pasada anterior): un
+# renombrado en vivo puede quedar autoguardado en el archivo si el proceso no se cierra a tiempo,
+# y entonces "-player TerrakeepPrueba" deja de encontrar coincidencia (AutoJoin cae en
+# OpenPlayerSelect, un menu interactivo que se queda colgado sin ningun error visible - el bug
+# real que costo mas tiempo depurar de toda esta idea).
 foreach ($sandboxCliente in @($sandboxObservador, $sandboxCompanero)) {
 	Copy-Item (Join-Path $origenWS0 "Players\$personaje.plr") (Join-Path $sandboxCliente 'Players') -Force
 	if (Test-Path (Join-Path $origenWS0 "Players\$personaje.tplr")) {

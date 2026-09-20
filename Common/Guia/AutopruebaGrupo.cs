@@ -3,6 +3,7 @@ using System.IO;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.ID;
+using Terraria.ModLoader;
 using TerrakeepMod.Common.Panel;
 
 namespace TerrakeepMod.Common.Guia
@@ -156,8 +157,17 @@ namespace TerrakeepMod.Common.Guia
 					casco.SetDefaults(ItemID.CopperHelmet);
 					Main.LocalPlayer.armor[0] = casco;
 
+					// Idea 9, segunda pasada ("repartir builds por clase sin solaparse"): una
+					// espada REAL (DamageClass.Melee, la misma clase que el observador se pondra
+					// tambien) para poder comprobar de verdad el caso de SOLAPE, no solo el caso
+					// sin companero.
+					Item espada = new Item();
+					espada.SetDefaults(ItemID.CopperShortsword);
+					Main.LocalPlayer.inventory[1] = espada;
+
 					Log("AUTOPRUEBA GRUPO COMPANERO: dado estado real conocido - " +
-						CantidadMaderaConocida + " de Madera en la ranura 0 y Casco de Cobre puesto. " +
+						CantidadMaderaConocida + " de Madera en la ranura 0, Casco de Cobre puesto y " +
+						"Espada Corta de Cobre (clase real: cuerpo a cuerpo) en la ranura 1. " +
 						"Esperando a que el observador termine (nunca avanza mas alla de este paso por " +
 						"su cuenta).");
 					break;
@@ -243,7 +253,45 @@ namespace TerrakeepMod.Common.Guia
 					break;
 				}
 
-				case 7:
+				case 7: {
+					// Idea 9, segunda pasada: el propio observador se pone TAMBIEN una espada real
+					// de cuerpo a cuerpo - la MISMA clase que el companero (case 2) - para poder
+					// comprobar de verdad el caso de SOLAPE real entre dos jugadores reales, no
+					// solo simularlo con datos locales.
+					Item espada = new Item();
+					espada.SetDefaults(ItemID.CopperShortsword);
+					Main.LocalPlayer.inventory[1] = espada;
+					Log("AUTOPRUEBA GRUPO OBSERVADOR: puesta TAMBIEN una Espada Corta de Cobre " +
+						"(cuerpo a cuerpo, DamageType real=" + espada.DamageType.GetType().Name +
+						") - la misma clase que el companero, a proposito, para forzar un solape " +
+						"real que comprobar.");
+					break;
+				}
+
+				case 8:
+					EsperarA(() => GuiaGrupo.ClaveClaseDetectada(Main.player[_indiceCompanero], out _) == "melee",
+						"la espada del companero sincronice por red y este cliente detecte su clase " +
+						"(GuiaGrupo.ClaveClaseDetectada sobre el jugador remoto)");
+					break;
+
+				case 9: {
+					System.Collections.Generic.List<GuiaGrupo.AsignacionClase> reparto = GuiaGrupo.RepartoClases();
+					bool ok = reparto.Count == 2
+						&& reparto[0].ClaveDetectada == "melee" && !reparto[0].Solapa && reparto[0].ClaveSugerida == "melee"
+						&& reparto[1].ClaveDetectada == "melee" && reparto[1].Solapa && reparto[1].ClaveSugerida == "ranged";
+					Log("AUTOPRUEBA GRUPO OBSERVADOR - GuiaGrupo.RepartoClases() con las DOS espadas reales " +
+						"puestas: " + reparto.Count + " miembros. Local: detectada=" +
+						(reparto.Count > 0 ? reparto[0].ClaveDetectada : "?") + ", solapa=" +
+						(reparto.Count > 0 ? reparto[0].Solapa.ToString() : "?") + ", sugerida=" +
+						(reparto.Count > 0 ? reparto[0].ClaveSugerida : "?") + ". Companero: detectada=" +
+						(reparto.Count > 1 ? reparto[1].ClaveDetectada : "?") + ", solapa=" +
+						(reparto.Count > 1 ? reparto[1].Solapa.ToString() : "?") + ", sugerida=" +
+						(reparto.Count > 1 ? reparto[1].ClaveSugerida : "?") + " -> " +
+						(ok ? "OK: el reparto detecta el solape real y sugiere una clase distinta sin repetir." : "NO CUADRA."));
+					break;
+				}
+
+				case 10:
 					// Abre el panel de la Guia con la MISMA API publica que usa el atajo real (G) -
 					// no hace falta simular un clic de raton para esto: lo que se quiere comprobar es
 					// la seccion "Grupo" de dentro, no el mecanismo de apertura (ya cubierto por
@@ -251,14 +299,14 @@ namespace TerrakeepMod.Common.Guia
 					GuiaSystem.AbrirPanel("autoprueba-grupo");
 					break;
 
-				case 8:
+				case 11:
 					if (!EsperarA(() => GuiaSystem.PanelAbierto && GuiaSystem.PanelActual != null,
 						"el panel de la Guia este abierto de verdad")) {
 						return;
 					}
 					break;
 
-				case 9:
+				case 12:
 					Capturar("grupo-observador-companero-visible");
 					Log("AUTOPRUEBA GRUPO OBSERVADOR - " + _ultimaCaptura + " (companero \"" +
 						Main.player[_indiceCompanero].name +

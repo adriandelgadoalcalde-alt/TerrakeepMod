@@ -940,6 +940,15 @@ Guia: {
 	Grupo: {
 		Titulo: Your group, for this same step
 		Desconectado: (disconnected)
+
+		Reparto: {
+			Titulo: Class split, no repeats
+			Ok: "{0}: {1}"
+			SinArma: "{0}: no recognizable weapon - try {1}"
+			SinArmaNiHueco: "{0}: no recognizable weapon"
+			Solapa: "{0}: {1} (repeated in the group) - try {2}"
+			SolapaSinHueco: "{0}: {1} (repeated in the group, no free class left)"
+		}
 	}
 
 	// Functions catalogue idea 1 ("boss trainer / practice arena").

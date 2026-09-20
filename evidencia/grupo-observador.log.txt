@@ -1,8 +1,10 @@
-# Evidencia de la guia de grupo (idea 9) - 2026-09-20 17:44:52
-[17:44:52.685] AUTOPRUEBA GRUPO OBSERVADOR: conectado. Jugador "TerrakeepPrueba", netMode=1. Esperando a que se una un companero real.
-[17:44:52.866] AUTOPRUEBA GRUPO OBSERVADOR: companero visto en el indice 0 ("TkGrupoCompanero").
-[17:44:53.233] AUTOPRUEBA GRUPO OBSERVADOR - mochila del companero via red: 17 de Madera (se esperaban 17) -> OK: la mochila principal de OTRO jugador SI llega sincronizada de verdad.
-[17:44:53.417] AUTOPRUEBA GRUPO OBSERVADOR - EvaluadorGuia.Evaluar(Objeto Madera, companero): Actual=17, Pedido=17, Cumplido=True, NoEvaluable=False -> OK: el motor de requisitos de produccion evalua a un companero real.
-[17:44:53.783] AUTOPRUEBA GRUPO OBSERVADOR - defensa del companero via red: 1 (se esperaba >= 1 por el Casco de Cobre) -> OK: la armadura de OTRO jugador tambien llega y se recalcula de verdad.
-[17:44:54.414] AUTOPRUEBA GRUPO OBSERVADOR - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGrupoObservador\terrakeep-capturas\grupo-observador-companero-visible.png" (companero "TkGrupoCompanero" conectado de verdad, en un proceso de tModLoader distinto) -> OK.
-[17:44:54.566] AUTOPRUEBA GRUPO COMPLETA.
+# Evidencia de la guia de grupo (idea 9) - 2026-09-20 20:50:19
+[20:50:19.151] AUTOPRUEBA GRUPO OBSERVADOR: conectado. Jugador "TerrakeepPrueba", netMode=1. Esperando a que se una un companero real.
+[20:50:19.333] AUTOPRUEBA GRUPO OBSERVADOR: companero visto en el indice 0 ("TkGrupoCompanero").
+[20:50:19.699] AUTOPRUEBA GRUPO OBSERVADOR - mochila del companero via red: 17 de Madera (se esperaban 17) -> OK: la mochila principal de OTRO jugador SI llega sincronizada de verdad.
+[20:50:19.883] AUTOPRUEBA GRUPO OBSERVADOR - EvaluadorGuia.Evaluar(Objeto Madera, companero): Actual=17, Pedido=17, Cumplido=True, NoEvaluable=False -> OK: el motor de requisitos de produccion evalua a un companero real.
+[20:50:20.249] AUTOPRUEBA GRUPO OBSERVADOR - defensa del companero via red: 1 (se esperaba >= 1 por el Casco de Cobre) -> OK: la armadura de OTRO jugador tambien llega y se recalcula de verdad.
+[20:50:20.433] AUTOPRUEBA GRUPO OBSERVADOR: puesta TAMBIEN una Espada Corta de Cobre (cuerpo a cuerpo, DamageType real=MeleeNoSpeedDamageClass) - la misma clase que el companero, a proposito, para forzar un solape real que comprobar.
+[20:50:20.800] AUTOPRUEBA GRUPO OBSERVADOR - GuiaGrupo.RepartoClases() con las DOS espadas reales puestas: 2 miembros. Local: detectada=melee, solapa=False, sugerida=melee. Companero: detectada=melee, solapa=True, sugerida=ranged -> OK: el reparto detecta el solape real y sugiere una clase distinta sin repetir.
+[20:50:21.432] AUTOPRUEBA GRUPO OBSERVADOR - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGrupoObservador\terrakeep-capturas\grupo-observador-companero-visible.png" (companero "TkGrupoCompanero" conectado de verdad, en un proceso de tModLoader distinto) -> OK.
+[20:50:21.585] AUTOPRUEBA GRUPO COMPLETA.

@@ -940,6 +940,15 @@ Guia: {
 	Grupo: {
 		Titulo: Tu grupo, para este mismo paso
 		Desconectado: (se ha desconectado)
+
+		Reparto: {
+			Titulo: Reparto de clases, sin repetir
+			Ok: "{0}: {1}"
+			SinArma: "{0}: sin arma reconocida - prueba {1}"
+			SinArmaNiHueco: "{0}: sin arma reconocida"
+			Solapa: "{0}: {1} (repetida en el grupo) - prueba {2}"
+			SolapaSinHueco: "{0}: {1} (repetida en el grupo, no queda ninguna clase libre)"
+		}
 	}
 
 	// Functions catalogue idea 1 ("boss trainer / practice arena").

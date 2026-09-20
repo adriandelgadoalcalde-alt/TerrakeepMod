@@ -8,6 +8,7 @@ using Terraria.GameContent;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
+using TerrakeepMod.Common.Builds;
 using TerrakeepMod.Common.Exploracion;
 using TerrakeepMod.Common.Guia;
 using TerrakeepMod.UI.Personaje.Widgets;
@@ -579,6 +580,75 @@ namespace TerrakeepMod.UI.Guia
 					_lista.Add(new FilaRequisitoTk(paso.Requisitos[i], 0.78f, () => Main.player[indice]));
 				}
 			}
+
+			MontarRepartoClases();
+		}
+
+		/// <summary>
+		/// Idea 9 del catalogo de funciones, pieza que faltaba: "repartir builds por clase sin
+		/// solaparse". Una fila por cada miembro del grupo (jugador local incluido - "el grupo" es
+		/// todo el mundo conectado) con su clase real detectada por el arma que lleva en la mano
+		/// ahora mismo, y si dos o mas comparten clase, una clase SUGERIDA distinta para cada uno
+		/// que la comparte - nunca inventada, siempre una de las cinco reales de CatalogoBuilds
+		/// (ver <see cref="GuiaGrupo.RepartoClases"/>).
+		/// </summary>
+		private void MontarRepartoClases()
+		{
+			List<GuiaGrupo.AsignacionClase> reparto = GuiaGrupo.RepartoClases();
+			if (reparto.Count == 0) {
+				return;
+			}
+
+			// El TEXTO de cada fila vuelve a leer GuiaGrupo.RepartoClases() ENTERO en cada
+			// fotograma (no se guarda el "AsignacionClase" de ahora mismo en un closure): si
+			// alguien se cambia de arma a mitad de partida, el reparto tiene que reflejarlo en el
+			// acto, igual que "Que te falta" ya hace con sus propios numeros - mismo criterio que
+			// EtiquetaTk. El COLOR se calcula una sola vez al montar la fila (mismo criterio ya
+			// usado un poco mas abajo en "Este tramo, paso a paso": si el solape cambiara a mitad
+			// de partida, el color se pondria al dia en el siguiente Reconstruir - no hace falta
+			// que sea live fotograma a fotograma, el texto ya lo dice con palabras).
+			AnadirTitulo("Guia.Grupo.Reparto.Titulo", EstiloTk.TextoAviso);
+			for (int m = 0; m < reparto.Count; m++) {
+				int indiceMiembro = m;
+				_lista.Add(NuevaLinea(
+					() => TextoReparto(ObtenerMiembroDelReparto(indiceMiembro)),
+					reparto[m].Solapa ? EstiloTk.TextoAviso : Color.White,
+					0.76f));
+			}
+		}
+
+		/// <summary>El miembro <paramref name="indice"/> del reparto de clases DE AHORA MISMO (una
+		/// llamada nueva a <see cref="GuiaGrupo.RepartoClases"/> cada vez, nunca un valor guardado
+		/// de cuando se monto la lista) - o un valor vacio si el grupo cambio de tamaño entre
+		/// fotogramas (alguien se desconecto justo ahora).</summary>
+		private static GuiaGrupo.AsignacionClase ObtenerMiembroDelReparto(int indice)
+		{
+			List<GuiaGrupo.AsignacionClase> reparto = GuiaGrupo.RepartoClases();
+			return indice >= 0 && indice < reparto.Count ? reparto[indice] : default;
+		}
+
+		private static string TextoReparto(GuiaGrupo.AsignacionClase asignacion)
+		{
+			string nombre = asignacion.Indice == -1 && Main.LocalPlayer != null
+				? Main.LocalPlayer.name
+				: (Main.player[asignacion.Indice] != null && Main.player[asignacion.Indice].active
+					? Main.player[asignacion.Indice].name
+					: asignacion.Nombre);
+
+			if (asignacion.ClaveDetectada == null) {
+				return asignacion.ClaveSugerida != null
+					? Idiomas.Texto("Guia.Grupo.Reparto.SinArma", nombre, CatalogoBuilds.EtiquetaClase(asignacion.ClaveSugerida))
+					: Idiomas.Texto("Guia.Grupo.Reparto.SinArmaNiHueco", nombre);
+			}
+
+			if (!asignacion.Solapa) {
+				return Idiomas.Texto("Guia.Grupo.Reparto.Ok", nombre, CatalogoBuilds.EtiquetaClase(asignacion.ClaveDetectada));
+			}
+
+			return asignacion.ClaveSugerida != null
+				? Idiomas.Texto("Guia.Grupo.Reparto.Solapa", nombre, CatalogoBuilds.EtiquetaClase(asignacion.ClaveDetectada),
+					CatalogoBuilds.EtiquetaClase(asignacion.ClaveSugerida))
+				: Idiomas.Texto("Guia.Grupo.Reparto.SolapaSinHueco", nombre, CatalogoBuilds.EtiquetaClase(asignacion.ClaveDetectada));
 		}
 
 		private const float LadoIconoLoQueViene = 32f;

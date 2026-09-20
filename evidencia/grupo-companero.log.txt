@@ -1,4 +1,4 @@
-# Evidencia de la guia de grupo (idea 9) - 2026-09-20 17:44:26
-[17:44:26.065] AUTOPRUEBA GRUPO COMPANERO: conectado. Jugador "TerrakeepPrueba", netMode=1.
-[17:44:26.248] AUTOPRUEBA GRUPO COMPANERO: renombrado en vivo a "TkGrupoCompanero" y reenviado el PlayerInfo real - libera el nombre "TerrakeepPrueba" para que el observador pueda conectar con el.
-[17:44:26.431] AUTOPRUEBA GRUPO COMPANERO: dado estado real conocido - 17 de Madera en la ranura 0 y Casco de Cobre puesto. Esperando a que el observador termine (nunca avanza mas alla de este paso por su cuenta).
+# Evidencia de la guia de grupo (idea 9) - 2026-09-20 20:49:52
+[20:49:52.843] AUTOPRUEBA GRUPO COMPANERO: conectado. Jugador "TerrakeepPrueba", netMode=1.
+[20:49:53.026] AUTOPRUEBA GRUPO COMPANERO: renombrado en vivo a "TkGrupoCompanero" y reenviado el PlayerInfo real - libera el nombre "TerrakeepPrueba" para que el observador pueda conectar con el.
+[20:49:53.210] AUTOPRUEBA GRUPO COMPANERO: dado estado real conocido - 17 de Madera en la ranura 0, Casco de Cobre puesto y Espada Corta de Cobre (clase real: cuerpo a cuerpo) en la ranura 1. Esperando a que el observador termine (nunca avanza mas alla de este paso por su cuenta).
