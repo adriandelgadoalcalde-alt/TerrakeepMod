@@ -97,6 +97,7 @@ namespace TerrakeepMod.UI.Libreria
 		private UIElement _rejillaDestino;
 		private PanelHerramientasLibreriaTk _herramientas;
 		private readonly List<BotonTk> _botonesDestino = new List<BotonTk>();
+		private SelectorCofreMundoTk _selectorCofre;
 
 		private readonly List<SlotCatalogoLibreria> _slotsResultado = new List<SlotCatalogoLibreria>();
 
@@ -174,6 +175,24 @@ namespace TerrakeepMod.UI.Libreria
 		public PanelHerramientasLibreriaTk Herramientas {
 			get { return _herramientas; }
 		}
+
+		/// <summary>Idea 6: el selector de cofres del mundo, para que la autoprueba pueda abrirlo,
+		/// leer sus filas reales y pulsar una.</summary>
+		public SelectorCofreMundoTk SelectorCofre {
+			get { return _selectorCofre; }
+		}
+
+		/// <summary>El boton "Cofre" de la barra de destinos (el ultimo, idea 6), para que la
+		/// autoprueba pueda pulsarlo de verdad y anclar el popup del selector donde el boton
+		/// realmente esta en pantalla.</summary>
+		public BotonTk BotonDestinoCofre {
+			get { return _botonesDestino.Count > 0 ? _botonesDestino[_botonesDestino.Count - 1] : null; }
+		}
+
+		/// <summary>Indice del destino "CofreMundo" dentro de <see cref="Destinos"/>. Publico solo
+		/// para que la autoprueba pueda llamar a <see cref="MostrarDestino"/> con el indice real en
+		/// vez de suponer que es siempre el ultimo.</summary>
+		public static int IndiceDestinoCofre => System.Array.FindIndex(Destinos, d => d.Clave == "CofreMundo");
 
 		public ContenidoLibreria()
 		{
@@ -340,10 +359,40 @@ namespace TerrakeepMod.UI.Libreria
 				boton.Height.Set(28f, 0f);
 				boton.Left.Set(0f, i * fraccion);
 				boton.Ayuda = () => Destinos[indice].Nombre;
-				boton.AlPulsar += () => MostrarDestino(indice);
+
+				// El destino "CofreMundo" (idea 6) no cambia directamente a la rejilla como los
+				// otros siete: primero hay que elegir CUAL cofre real, asi que su boton abre el
+				// selector en vez de llamar a MostrarDestino. Es el propio selector quien llama a
+				// MostrarDestino una vez elegido (ver el callback pasado a SelectorCofreMundoTk
+				// mas abajo).
+				if (Destinos[indice].Clave == "CofreMundo") {
+					boton.AlPulsar += () => _selectorCofre.AlternarEn(boton);
+				}
+				else {
+					boton.AlPulsar += () => MostrarDestino(indice);
+				}
+
 				_botonesDestino.Add(boton);
 				_zonaDestino.Append(boton);
 			}
+
+			_selectorCofre = new SelectorCofreMundoTk(indiceCofre => {
+				Chest cofre = Main.chest != null && indiceCofre >= 0 && indiceCofre < Main.chest.Length
+					? Main.chest[indiceCofre]
+					: null;
+				if (cofre == null) {
+					return;
+				}
+				_cofreElegidoIndice = indiceCofre;
+				_cofreElegidoEtiqueta = string.IsNullOrWhiteSpace(cofre.name)
+					? Idiomas.Texto("Libreria.SelectorCofre.SinNombre", cofre.x, cofre.y)
+					: Idiomas.Texto("Libreria.SelectorCofre.ConNombre", cofre.name, cofre.x, cofre.y);
+
+				if (IndiceDestinoCofre >= 0) {
+					MostrarDestino(IndiceDestinoCofre);
+				}
+			});
+			_zonaDestino.Append(_selectorCofre);
 
 			EtiquetaTk ayuda = new EtiquetaTk(TextoAyudaDestino, 0.72f, 700f, 20f);
 			ayuda.ColorTexto = EstiloTk.TextoAviso;
@@ -604,6 +653,7 @@ namespace TerrakeepMod.UI.Libreria
 			public readonly int Primero;
 			public readonly int Cuantos;
 			private readonly Func<int, int> _contexto;
+			private readonly Func<string> _nombreDinamico;
 
 			/// <summary>Clave de localizacion de este destino. Es un nombre interno, no texto que
 			/// se enseñe.</summary>
@@ -611,16 +661,20 @@ namespace TerrakeepMod.UI.Libreria
 
 			/// <summary>Nombre largo del contenedor, traducido al idioma activo. Es una propiedad y
 			/// no un campo porque el array de destinos es estatico y se construye una sola vez: un
-			/// nombre guardado ahi se quedaria con el idioma que hubiera al cargar el mod.</summary>
-			public string Nombre => Idiomas.Texto("Libreria.Destino." + Clave + ".Largo");
+			/// nombre guardado ahi se quedaria con el idioma que hubiera al cargar el mod. Cuando
+			/// hay <see cref="_nombreDinamico"/> (idea 6, "Cofre del mundo": el nombre depende de
+			/// CUAL cofre este elegido ahora mismo) se usa ese en vez del texto fijo.</summary>
+			public string Nombre => _nombreDinamico != null ? _nombreDinamico() : Idiomas.Texto("Libreria.Destino." + Clave + ".Largo");
 
-			public DestinoLibreria(string clave, Func<Item[]> array, int primero, int cuantos, Func<int, int> contexto)
+			public DestinoLibreria(string clave, Func<Item[]> array, int primero, int cuantos, Func<int, int> contexto,
+				Func<string> nombreDinamico = null)
 			{
 				Clave = clave;
 				Array = array;
 				Primero = primero;
 				Cuantos = cuantos;
 				_contexto = contexto;
+				_nombreDinamico = nombreDinamico;
 			}
 
 			public int Contexto(int indice)
@@ -655,8 +709,44 @@ namespace TerrakeepMod.UI.Libreria
 			new DestinoLibreria("Forja", () => Main.LocalPlayer.bank3.item, 0, 40,
 				i => ItemSlot.Context.BankItem),
 			new DestinoLibreria("Boveda", () => Main.LocalPlayer.bank4.item, 0, 40,
-				i => ItemSlot.Context.VoidItem)
+				i => ItemSlot.Context.VoidItem),
+			// Idea 6 del catalogo de funciones ("cofres del mundo en vivo"): un 8º destino cuyo
+			// array no es fijo (a diferencia de los siete de arriba, que son SIEMPRE el mismo
+			// contenedor del jugador) - depende de CUAL cofre real del mundo se haya elegido con
+			// SelectorCofreMundoTk. Reutiliza el mismo mecanismo de siempre (ItemSlot.Handle sobre
+			// un Item[]) sin cambiar nada de MostrarDestino/ArrayDestino: solo el ORIGEN del array
+			// es distinto.
+			new DestinoLibreria("CofreMundo", ArrayDelCofreElegido, 0, 40,
+				i => ItemSlot.Context.ChestItem, NombreDelCofreElegido)
 		};
+
+		/// <summary>Indice en <c>Main.chest[]</c> del cofre del mundo elegido ahora mismo, o -1 si
+		/// no hay ninguno. Estatico a proposito, igual que <c>ContenidoExploracion.UltimaPestana</c>:
+		/// solo existe un panel de Libreria vivo a la vez.</summary>
+		private static int _cofreElegidoIndice = -1;
+
+		/// <summary>Rotulo legible (nombre + posicion) del cofre elegido, guardado en el momento
+		/// de elegirlo - si luego se descarga el trozo de mundo, el indice puede dejar de apuntar
+		/// a ese mismo cofre, pero el rotulo ya mostrado no cambia solo por eso.</summary>
+		private static string _cofreElegidoEtiqueta = "";
+
+		/// <summary>Array real del cofre del mundo elegido, o null si no hay ninguno elegido o el
+		/// indice ya no apunta a un cofre real (mundo distinto, cofre destruido).</summary>
+		private static Item[] ArrayDelCofreElegido()
+		{
+			if (_cofreElegidoIndice < 0 || Main.chest == null || _cofreElegidoIndice >= Main.chest.Length) {
+				return null;
+			}
+			Chest cofre = Main.chest[_cofreElegidoIndice];
+			return cofre != null ? cofre.item : null;
+		}
+
+		private static string NombreDelCofreElegido()
+		{
+			return ArrayDelCofreElegido() != null
+				? Idiomas.Texto("Libreria.Destino.CofreMundo.LargoElegido", _cofreElegidoEtiqueta)
+				: Idiomas.Texto("Libreria.Destino.CofreMundo.LargoNinguno");
+		}
 
 		/// <summary>Cambia el contenedor de destino que se enseña abajo.</summary>
 		public void MostrarDestino(int indice)

@@ -160,6 +160,20 @@ namespace TerrakeepMod.Common.Libreria
 				// verdad, con captura real para poder inspeccionar los pixeles.
 				case 26: PrepararTarjetaFlotante(); break;
 				case 27: ComprobarYCapturarTarjetaFlotante(); break;
+				// Idea 6 del catalogo de funciones ("cofres del mundo en vivo"): siembra un cofre
+				// de PRUEBA con contenido conocido (mundo aislado, nunca uno real - ver
+				// SembrarCofreDePrueba), abre el selector con un clic REAL sobre el boton "Cofre",
+				// comprueba sus filas reales y elige el cofre sembrado, y por ultimo comprueba que
+				// la rejilla de destino enseña de verdad el Item[] de ESE cofre.
+				case 28: SembrarCofreDePrueba(); break;
+				case 29: AbrirSelectorCofre(); break;
+				case 30: ComprobarYCapturarSelectorCofre(); break;
+				case 31: ElegirCofreDePrueba(); break;
+				// Separado del paso 31 a proposito, mismo motivo real ya documentado en el paso 18/
+				// 19 (CapturaDePantalla.Guardar captura el fotograma YA PRESENTADO, el ANTERIOR):
+				// capturar en el mismo paso que el clic enseñaria la rejilla todavia con el destino
+				// de ANTES del clic.
+				case 32: ComprobarDestinoCofreYCapturar(); break;
 				default:
 					Registrar("AUTOPRUEBA WS3 COMPLETA. Todos los pasos ejecutados sin excepciones.");
 					_terminada = true;
@@ -766,6 +780,150 @@ namespace TerrakeepMod.Common.Libreria
 				+ " (" + (hayObjeto == tarjetaAbierta ? "OK: coincide con si hay objeto" : "NO CUADRA") + "), "
 				+ "linea de prefijo=\"" + textoPrefijo + "\". "
 				+ CapturaDePantalla.Guardar("ws3-tarjeta-flotante"));
+		}
+
+		/// <summary>Ultimo hueco de <c>Main.chest[]</c> (tope real 8000, <c>Main.maxChests</c>):
+		/// una partida real jamas llega a usarlo (los cofres se asignan por orden creciente segun
+		/// se colocan/generan), asi que es seguro y estable sembrar aqui el cofre SINTETICO de
+		/// prueba en cada pasada, sin arriesgarse a pisar un cofre real del mundo de pruebas.</summary>
+		private const int IndiceCofrePrueba = 7999;
+
+		/// <summary>
+		/// Idea 6 (cofres del mundo en vivo). SOLO ARNES DE PRUEBAS: siembra un <see cref="Chest"/>
+		/// SINTETICO (nunca un cofre real del jugador) con dos objetos reales conocidos, siguiendo
+		/// el mismo patron con el que el propio juego crea uno de verdad
+		/// (<c>Chest.CreateChest</c>, decompilado: <c>item[i] = new Item()</c> en las 40 ranuras
+		/// antes de rellenar ninguna). Se repite cada pasada, asi que es idempotente.
+		/// </summary>
+		private static void SembrarCofreDePrueba()
+		{
+			if (Main.chest == null || IndiceCofrePrueba >= Main.chest.Length) {
+				Registrar("Paso 28 - Main.chest no esta listo, se salta.");
+				return;
+			}
+
+			Player jugador = Main.LocalPlayer;
+			int tileX = (int)(jugador.Center.X / 16f) + 6;
+			int tileY = (int)(jugador.Center.Y / 16f);
+
+			Chest cofre = new Chest();
+			cofre.x = tileX;
+			cofre.y = tileY;
+			cofre.name = "Cofre de prueba WS3";
+			for (int i = 0; i < cofre.item.Length; i++) {
+				cofre.item[i] = new Item();
+			}
+			cofre.item[0].SetDefaults(ItemID.IronBar);
+			cofre.item[0].stack = 20;
+			cofre.item[3].SetDefaults(ItemID.GoldCoin);
+			cofre.item[3].stack = 5;
+
+			Main.chest[IndiceCofrePrueba] = cofre;
+
+			Registrar("Paso 28 - SOLO ARNES DE PRUEBAS: sembrado un cofre sintetico en Main.chest["
+				+ IndiceCofrePrueba + "] (nunca un cofre real del jugador) en tile (" + tileX + ", " + tileY
+				+ ") con 2 objetos reales conocidos: " + Describir(cofre.item[0]) + ", " + Describir(cofre.item[3]) + ".");
+		}
+
+		/// <summary>Idea 6: clic REAL sobre el boton "Cofre" de la barra de destinos, por la misma
+		/// ruta que un clic de verdad (<c>UIElement.LeftClick</c>).</summary>
+		private static void AbrirSelectorCofre()
+		{
+			ContenidoLibreria contenido = Contenido;
+			BotonTk boton = contenido != null ? contenido.BotonDestinoCofre : null;
+			if (contenido == null || boton == null || contenido.SelectorCofre == null) {
+				Registrar("Paso 29 - no se encontro el boton \"Cofre\" o el selector, se salta.");
+				return;
+			}
+
+			CalculatedStyle dim = boton.GetDimensions();
+			Vector2 centro = new Vector2(dim.X + dim.Width / 2f, dim.Y + dim.Height / 2f);
+			boton.LeftClick(new UIMouseEvent(boton, centro));
+
+			Registrar("Paso 29 - clic real en el boton \"Cofre\" (x=" + (int)dim.X + " y=" + (int)dim.Y + " "
+				+ (int)dim.Width + "x" + (int)dim.Height + "). Selector abierto=" + contenido.SelectorCofre.Abierto + ".");
+		}
+
+		/// <summary>Idea 6: con el selector ya abierto (paso 29), cuenta los cofres reales del
+		/// mundo y deja una captura real para inspeccionar la lista a mano.</summary>
+		private static void ComprobarYCapturarSelectorCofre()
+		{
+			ContenidoLibreria contenido = Contenido;
+			SelectorCofreMundoTk selector = contenido != null ? contenido.SelectorCofre : null;
+			if (selector == null || !selector.Abierto) {
+				Registrar("Paso 30 - el selector no esta abierto (paso 29 fallo), se salta.");
+				return;
+			}
+
+			int totalReales = SelectorCofreMundoTk.TotalCofresReales();
+			Registrar("Paso 30 - selector de cofres abierto: " + totalReales + " cofres reales en Main.chest[], "
+				+ selector.FilasDibujadas + " filas dibujadas (Main.netMode=" + Main.netMode + "). "
+				+ CapturaDePantalla.Guardar("ws3-selector-cofre"));
+		}
+
+		/// <summary>Texto real de la fila pulsada en el paso 31, para que el paso 32 (un fotograma
+		/// real despues) pueda dejarlo en su propio mensaje sin tener que volver a buscarla.</summary>
+		private static string _filaCofrePulsada;
+
+		/// <summary>Idea 6: busca entre las filas REALES del popup (paso 30) la del cofre sembrado
+		/// en el paso 28 por su nombre y la pulsa de verdad. La comprobacion de que la rejilla de
+		/// destino cambio de verdad va en el paso 32, un fotograma real despues (ver su
+		/// comentario).</summary>
+		private static void ElegirCofreDePrueba()
+		{
+			ContenidoLibreria contenido = Contenido;
+			SelectorCofreMundoTk selector = contenido != null ? contenido.SelectorCofre : null;
+			if (contenido == null || selector == null || !selector.Abierto) {
+				Registrar("Paso 31 - el selector no esta abierto (paso 29/30 fallo), se salta.");
+				return;
+			}
+
+			List<BotonTk> filas = selector.FilasParaAutoprueba();
+			BotonTk filaDelCofre = filas.Find(b => b.Texto != null && b.Texto.Contains("prueba WS3"));
+			if (filaDelCofre == null) {
+				Registrar("Paso 31 - no se encontro la fila del cofre sembrado entre " + filas.Count
+					+ " filas reales, se salta. Textos: " + string.Join(" | ", filas.ConvertAll(b => b.Texto)));
+				_filaCofrePulsada = null;
+				return;
+			}
+
+			_filaCofrePulsada = filaDelCofre.Texto;
+
+			CalculatedStyle dim = filaDelCofre.GetDimensions();
+			Vector2 centro = new Vector2(dim.X + dim.Width / 2f, dim.Y + dim.Height / 2f);
+			filaDelCofre.LeftClick(new UIMouseEvent(filaDelCofre, centro));
+
+			Registrar("Paso 31 - clic real en la fila del cofre sembrado: \"" + filaDelCofre.Texto + "\".");
+		}
+
+		/// <summary>Un fotograma real despues del clic (paso 31): comprueba que la rejilla de
+		/// destino pasa a enseñar el <c>Item[]</c> de ESE cofre exacto (no una copia) - los dos
+		/// objetos conocidos tienen que aparecer tal cual en <c>ArrayDestino</c> - y deja una
+		/// captura real ya con el cambio dibujado.</summary>
+		private static void ComprobarDestinoCofreYCapturar()
+		{
+			ContenidoLibreria contenido = Contenido;
+			if (contenido == null || _filaCofrePulsada == null) {
+				Registrar("Paso 32 - no se pulso ninguna fila (paso 31 fallo), se salta.");
+				return;
+			}
+
+			Item[] arrayDestino = contenido.ArrayDestino;
+			bool coincideArray = arrayDestino != null && Main.chest[IndiceCofrePrueba] != null
+				&& ReferenceEquals(arrayDestino, Main.chest[IndiceCofrePrueba].item);
+			bool item0Ok = arrayDestino != null && arrayDestino.Length > 0
+				&& arrayDestino[0].type == ItemID.IronBar && arrayDestino[0].stack == 20;
+			bool item3Ok = arrayDestino != null && arrayDestino.Length > 3
+				&& arrayDestino[3].type == ItemID.GoldCoin && arrayDestino[3].stack == 5;
+
+			Registrar("Paso 32 - fila pulsada en el paso 31: \"" + _filaCofrePulsada + "\". Destino actual=\""
+				+ contenido.NombreDestino + "\". ArrayDestino es el Item[] REAL del cofre sembrado="
+				+ coincideArray + " (" + (coincideArray ? "OK" : "NO CUADRA") + "); ranura 0="
+				+ Describir(arrayDestino != null && arrayDestino.Length > 0 ? arrayDestino[0] : null)
+				+ " (" + (item0Ok ? "OK" : "NO CUADRA") + "); ranura 3="
+				+ Describir(arrayDestino != null && arrayDestino.Length > 3 ? arrayDestino[3] : null)
+				+ " (" + (item3Ok ? "OK" : "NO CUADRA") + "). "
+				+ CapturaDePantalla.Guardar("ws3-destino-cofre"));
 		}
 
 		/// <summary>Ejercita el editor de cantidad COMPACTO (modo explicito, enganchado al

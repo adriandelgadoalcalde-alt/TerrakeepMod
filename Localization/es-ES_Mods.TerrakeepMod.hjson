@@ -410,6 +410,26 @@ Libreria: {
 			Corto: Bóveda
 			Largo: Bóveda del Vacío
 		}
+
+		CofreMundo: {
+			Corto: Cofre
+			Largo: Cofre del mundo
+			LargoNinguno: Cofre del mundo: ninguno elegido (pulsa para elegir uno de la lista)
+			LargoElegido: Cofre del mundo elegido: {0}
+		}
+	}
+
+	// Function catalogue idea 6: SelectorCofreMundoTk's dropdown list with EVERY real chest
+	// placed in the loaded world, to pick one as a Library destination.
+	SelectorCofre: {
+		SoloUnJugador: Solo disponible en partidas de un jugador (todavía no sincroniza los cambios con otros jugadores conectados).
+		Resumen: "{0} cofres reales encontrados en este mundo, ordenados por distancia."
+		Ninguno: Este mundo todavía no tiene ningún cofre colocado.
+		MasCofres: … y {0} cofres más lejanos (acércate para verlos arriba del todo).
+		SinNombre: Cofre sin nombre en ({0}, {1})
+		ConNombre: "{0} en ({1}, {2})"
+		Fila: "{0}  ·  {1} tiles  ·  {2}/{3} objetos"
+		Ayuda: Posición real: ({0}, {1}). A {2} tiles de ti ahora mismo.
 	}
 
 	Herramientas.Titulo: Editar objeto

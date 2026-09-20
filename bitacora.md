@@ -8711,6 +8711,54 @@ del precio base con el aviso ámbar "A 1259 tiles - acércate a su casa para una
 `HappinessReport` de vanilla sobre no tener casa y que le gusta el Bosque - sin solapes, scroll
 funcional, colores correctos.
 
+### Idea 6 - cofres del mundo en vivo (8º destino de la Librería)
+
+Investigación previa delegada a un fork (solo lectura, sin tocar código) sobre las 4 ideas de
+funciones que quedaban (1 entrenador de jefe, 6 cofres del mundo, 9 guía de grupo, 10 rebobinar
+el mundo), con evidencia real del `tModLoader.dll` instalado decompilado. Veredictos, de menor a
+mayor riesgo: **idea 6 tractable con riesgo mínimo** (confirmado: `Terraria.Chest.item` es un
+`Item[]` público normal, el mismo tipo que ya editan los 7 contenedores del jugador), **idea 10
+tractable con riesgo bajo-medio** (pendiente, ver más abajo), **idea 1 tractable salvo el Muro de
+Carne** (matarlo dispara `WorldGen.StartHardmode()`, conversión PERMANENTE de tiles de todo el
+mundo - **LÍMITE REAL concreto**, con la línea real de `NPC.cs` localizada), **idea 9 LÍMITE REAL
+para esta noche** (confirmado por grep: cero arnés de dos clientes tModLoader en toda la familia
+Keep; la ruta real existe - `ModPacket`, difusión del paso propio ya calculado - pero construirla
+a ciegas sin poder verificar la sincronización es justo el riesgo que el usuario pidió evitar).
+
+Implementada la idea 6: `UI/Libreria/Widgets/SelectorCofreMundoTk.cs` (nuevo) - un desplegable,
+colgado de la misma `CapaSuperposicionTk` que `EditorPrefijoTk`/`TarjetaEdicionFlotanteTk`, con
+TODOS los cofres reales colocados en el mundo cargado (`Main.chest[]`, confirmado que el juego
+mantiene la lista entera en memoria desde que carga la partida - no hace falta estar cerca),
+ordenados por distancia, cada fila con nombre/posición/objetos reales. Al elegir uno, se convierte
+en un 8º "destino" más de `ContenidoLibreria` (`Destinos[]`, ahora con un `nombreDinamico`
+opcional para el rótulo que cambia según el cofre elegido) - reutiliza EXACTAMENTE el mismo
+mecanismo ya probado (`ItemSlot.Handle` sobre un `Item[]`) sin tocar `MostrarDestino`/
+`ArrayDestino`, solo el origen del array. **Límite real aceptado a propósito**: acotado a partida
+de un jugador (`Main.netMode == 0`) - escribir en un cofre de un servidor real exige reenviar el
+cambio a los clientes conectados (`NetMessage.SendData(MessageID.SyncChestItem, ...)`), mismo tipo
+de riesgo que la idea 9 y sin arnés real para verificarlo esta noche; el selector muestra un aviso
+en vez de la lista si `Main.netMode != 0`, documentado en el XMLdoc de la clase.
+
+**Bug real encontrado y arreglado con la propia captura, no a priori**: la primera versión dejaba
+el texto de resumen ("172 real chests found...") cortado a media palabra, porque `EtiquetaTk` no
+envuelve ni recorta texto sola (`Utils.DrawBorderString` puro, visto en su propio código) - se
+descubrió con la captura real, no adivinando. Arreglado envolviendo el texto A MANO con
+`EtiquetaTk.PartirEnLineas` (el propio helper ya existente para esto) antes de crear la etiqueta,
+con el alto ajustado al número real de líneas resultante.
+
+**Verificación real** (`scripts\verificar-libreria.ps1`, pasos 28-32 nuevos, comprobado el primer
+plano antes de cada lanzamiento - se detectó a TerrakeepTrainer activo en primer plano una vez y
+se esperó a que soltara el foco antes de lanzar el cliente): `AUTOPRUEBA WS3 COMPLETA`. Paso 28
+siembra un cofre SINTÉTICO de prueba (nunca uno real, mismo patrón que `Chest.CreateChest` real)
+con 2 objetos conocidos; paso 29 pulsa el botón "Cofre" real; paso 30 confirma 172 cofres reales
+encontrados en el mundo de pruebas y captura la lista; paso 31 pulsa la fila real del cofre
+sembrado; paso 32 (un fotograma después, mismo motivo ya documentado para el popup de prefijo)
+confirma que `ArrayDestino` es el `Item[]` REAL del cofre elegido (`ReferenceEquals`, no una
+copia) con sus dos objetos exactos, y captura la rejilla ya con el cofre cargado. Dos capturas
+reales revisadas pixel a pixel: `ws3-selector-cofre.png` (lista envuelta correctamente, sin
+cortes) y `ws3-destino-cofre.png` (8º botón "Chest" activo, rejilla con el hierro x20 y la moneda
+de oro x5 reales).
+
 ### Sin publicar nada
 
 `git push`, `gh release`, empaquetado del mod y subida de versión siguen sin tocarse, tal como se
