@@ -209,6 +209,17 @@ namespace TerrakeepMod.Common.Exploracion
 			// bitacora.md, no se fuerza un marcador falso).
 			Tile("Tesoros", "IslaFlotante", "Sunplate");
 
+			// Re-lectura literal del catalogo (20-sep-2026): "cabañas" es OTRO de los siete
+			// ejemplos de la idea 4, nunca investigado hasta ahora. La cabaña real que WorldGen
+			// coloca en algunas islas flotantes (GenVars.skyIslandHouseCount,
+			// WorldGen.cs:73995-74072 del decompilado) esta construida con el MISMO bloque de
+			// madera regular que cualquier construccion del jugador (variable "b" en ese metodo,
+			// nunca un tile exclusivo) y su cofre es un "buried chest" mas (ya cubierto por el
+			// objetivo generico "Cofres" de mas abajo) - MISMO LIMITE REAL que ya aplica a la
+			// Piramide, investigado ahora con la misma disciplina, no una decision de alcance sin
+			// mirar: no hay ningun marcador de tile/pared fiable para distinguir esta cabaña
+			// concreta del resto de la isla.
+
 			// --- Contenedores y NPC ----------------------------------------------------------
 			_todos.Add(new ObjetivoBusqueda {
 				Clave = "Cofres",
@@ -235,6 +246,19 @@ namespace TerrakeepMod.Common.Exploracion
 				"PinkDungeonTileUnsafe", "GreenDungeonSlabUnsafe", "GreenDungeonTileUnsafe");
 			Pared("Paredes", "TemploLihzahrd", "LihzahrdBrickUnsafe");
 			Pared("Paredes", "NidoArana", "SpiderUnsafe");
+
+			// Re-lectura literal del catalogo (20-sep-2026): la idea 4 pedia explicitamente
+			// "estructuras de Calamity" entre sus siete ejemplos, y no se habia investigado nunca -
+			// hueco real, no una decision de alcance. El "Laboratorio Envejecido" de Draedon (la
+			// estructura real que aparece cerca de su invocacion/Exo Mechs) tiene CUATRO paredes
+			// EXCLUSIVAS propias (decompilado real, CalamityMod/Walls/DraedonStructures/*.cs:
+			// LaboratoryPanelWall, LaboratoryPlateBeam, LaboratoryPlatePillar,
+			// LaboratoryPlatingWall - clases ModWall reales, mismo criterio ya probado que
+			// "CalamityMod/AerialiteOre" para minerales) - mismo patron real que ya usan
+			// Mazmorra/TemploLihzahrd/NidoArana con sus paredes "Unsafe".
+			Pared("Paredes", "LaboratorioDraedon", "CalamityMod/LaboratoryPanelWall",
+				"CalamityMod/LaboratoryPlateBeam", "CalamityMod/LaboratoryPlatePillar",
+				"CalamityMod/LaboratoryPlatingWall");
 
 			foreach (ObjetivoBusqueda objetivo in _todos) {
 				Resolver(objetivo);
