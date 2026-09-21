@@ -125,7 +125,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 				x = dim.X + (dim.Width - tamano.X) / 2f;
 			}
 
-			Utils.DrawBorderString(spriteBatch, cadena, new Vector2(x, dim.Y), ColorTexto, _escala);
+			EscribirTk.Dibujar(spriteBatch, cadena, new Vector2(x, dim.Y), ColorTexto, _escala);
 		}
 	}
 }

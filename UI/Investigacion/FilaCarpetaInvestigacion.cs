@@ -112,13 +112,13 @@ namespace TerrakeepMod.UI.Investigacion
 			// juego solo tiene los caracteres con los que se genero, y uno que no este hace
 			// reventar a DynamicSpriteFont al medir la cadena.
 			string marca = Carpeta.EsHoja ? "  " : (Carpeta.Desplegada ? "-" : "+");
-			Utils.DrawBorderString(spriteBatch, marca,
+			EscribirTk.Dibujar(spriteBatch, marca,
 				new Vector2(dim.X + sangria, dim.Y + 3f), EstiloInvestigacion.SinEmpezar, 0.85f);
 
 			Color colorNombre = Carpeta.Hechos >= Carpeta.Total && Carpeta.Total > 0
 				? EstiloInvestigacion.Hecho
 				: Color.White;
-			Utils.DrawBorderString(spriteBatch, _nombrePartido,
+			EscribirTk.Dibujar(spriteBatch, _nombrePartido,
 				new Vector2(dim.X + sangria + 16f, dim.Y + 3f), colorNombre, EscalaNombre);
 
 			// Recuento y barra, pegados al borde derecho y centrados verticalmente en el alto REAL
@@ -127,7 +127,7 @@ namespace TerrakeepMod.UI.Investigacion
 			Vector2 tamano = FontAssets.MouseText.Value.MeasureString(recuento) * 0.75f;
 			float xBarra = dim.X + dim.Width - AnchoBarra - 4f;
 			float yCentro = dim.Y + dim.Height / 2f;
-			Utils.DrawBorderString(spriteBatch, recuento,
+			EscribirTk.Dibujar(spriteBatch, recuento,
 				new Vector2(xBarra - 8f - tamano.X, yCentro - tamano.Y / 2f),
 				EstiloInvestigacion.ColorDeEstado(Carpeta.Hechos, Carpeta.Total), 0.75f);
 

@@ -425,7 +425,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 				dim.Y + (dim.Height - tamano.Y) / 2f);
 
 			Color color = Habilitado ? Color.White : new Color(150, 150, 150);
-			Utils.DrawBorderString(spriteBatch, _texto, posicion, color, escala);
+			EscribirTk.Dibujar(spriteBatch, _texto, posicion, color, escala);
 		}
 
 		/// <summary>
@@ -516,7 +516,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			float cursorY = y + relleno;
 			for (int i = 0; i < lineas.Length; i++) {
 				Color color = i == 0 ? Color.White : EstiloTk.TextoSuave;
-				Utils.DrawBorderString(spriteBatch, lineas[i], new Vector2(x + relleno, cursorY), color, 1f);
+				EscribirTk.Dibujar(spriteBatch, lineas[i], new Vector2(x + relleno, cursorY), color, 1f);
 				cursorY += tamanos[i].Y + espacioEntreLineas;
 			}
 

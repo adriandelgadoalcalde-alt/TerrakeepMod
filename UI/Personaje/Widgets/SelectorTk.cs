@@ -87,11 +87,11 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 				}
 			}
 
-			Utils.DrawBorderString(spriteBatch, etiqueta,
+			EscribirTk.Dibujar(spriteBatch, etiqueta,
 				new Vector2(dim.X, dim.Y + 6f), EstiloTk.TextoSuave, escalaEtiqueta);
 
 			string valor = _textoValor();
-			Utils.DrawBorderString(spriteBatch, valor,
+			EscribirTk.Dibujar(spriteBatch, valor,
 				new Vector2(dim.X + _anchoEtiqueta + 34f, dim.Y + 6f), Color.White, 0.8f);
 		}
 	}

@@ -193,7 +193,7 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 			}
 
 			Color colorNombre = ItemRarity.GetColor(objeto.rare);
-			Utils.DrawBorderString(spriteBatch, nombre, new Vector2(xNombre, dim.Y + 4f), colorNombre, escalaNombre);
+			EscribirTk.Dibujar(spriteBatch, nombre, new Vector2(xNombre, dim.Y + 4f), colorNombre, escalaNombre);
 		}
 	}
 }

@@ -733,7 +733,7 @@ namespace TerrakeepMod.UI.Guia
 
 				float x = dim.X + System.Math.Max(0f, (dim.Width - tamano.X) / 2f);
 				float y = dim.Y + LadoIconoLoQueViene + HuecoIconoTitulo;
-				Utils.DrawBorderString(spriteBatch, texto, new Vector2(x, y), Color.White, escala);
+				EscribirTk.Dibujar(spriteBatch, texto, new Vector2(x, y), Color.White, escala);
 			}
 		}
 

@@ -159,7 +159,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 				dim.X + (dim.Width - tamano.X) / 2f,
 				dim.Y + (dim.Height - tamano.Y) / 2f);
 
-			Utils.DrawBorderString(spriteBatch, mostrado, posicion, color, escala);
+			EscribirTk.Dibujar(spriteBatch, mostrado, posicion, color, escala);
 		}
 
 		private void LeerTeclado()

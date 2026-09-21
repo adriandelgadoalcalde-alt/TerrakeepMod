@@ -80,7 +80,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 				tamano = fuente.MeasureString(texto) * escala;
 			}
 			Vector2 posicionTexto = centro - tamano / 2f;
-			Utils.DrawBorderString(spriteBatch, texto, posicionTexto, Color.White, escala);
+			EscribirTk.Dibujar(spriteBatch, texto, posicionTexto, Color.White, escala);
 		}
 	}
 }

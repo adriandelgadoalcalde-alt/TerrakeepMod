@@ -116,7 +116,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			CalculatedStyle dim = GetDimensions();
 			Color color = _leer();
 
-			Utils.DrawBorderString(spriteBatch, EtiquetaActual,
+			EscribirTk.Dibujar(spriteBatch, EtiquetaActual,
 				new Vector2(dim.X, dim.Y + 4f), EstiloTk.TextoSuave, EscalaEtiqueta);
 
 			// Muestra del color, con un borde negro para que se vea aunque el color sea claro.
@@ -126,7 +126,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			spriteBatch.Draw(pixel,
 				new Rectangle(borde.X + 2, borde.Y + 2, borde.Width - 4, borde.Height - 4), color);
 
-			Utils.DrawBorderString(spriteBatch,
+			EscribirTk.Dibujar(spriteBatch,
 				color.R + "," + color.G + "," + color.B,
 				new Vector2(dim.X + 536f, dim.Y + 4f), Color.White, 0.7f);
 		}

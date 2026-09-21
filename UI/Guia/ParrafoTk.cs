@@ -102,7 +102,7 @@ namespace TerrakeepMod.UI.Guia
 			}
 
 			CalculatedStyle dim = GetInnerDimensions();
-			Utils.DrawBorderString(spriteBatch, _envuelto, new Vector2(dim.X, dim.Y), ColorTexto, _escala);
+			EscribirTk.Dibujar(spriteBatch, _envuelto, new Vector2(dim.X, dim.Y), ColorTexto, _escala);
 		}
 	}
 }

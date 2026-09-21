@@ -171,7 +171,7 @@ namespace TerrakeepMod.UI.Guia
 				Main.inventoryBack = fondoPrevio;
 			}
 
-			Utils.DrawBorderString(spriteBatch, _envuelto, new Vector2(dim.X + Sangria, dim.Y), color, _escala);
+			EscribirTk.Dibujar(spriteBatch, _envuelto, new Vector2(dim.X + Sangria, dim.Y), color, _escala);
 		}
 
 		/// <summary>Cuadrito de 10x10: relleno si esta cumplido, solo el contorno si no.</summary>

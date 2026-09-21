@@ -71,9 +71,9 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			string marca = marcado ? "[X]" : "[  ]";
 			Color colorMarca = marcado ? new Color(120, 255, 140) : new Color(170, 170, 170);
 
-			Utils.DrawBorderString(spriteBatch, marca,
+			EscribirTk.Dibujar(spriteBatch, marca,
 				new Vector2(dim.X + 8f, dim.Y + 6f), colorMarca, 0.8f);
-			Utils.DrawBorderString(spriteBatch, EtiquetaActual,
+			EscribirTk.Dibujar(spriteBatch, EtiquetaActual,
 				new Vector2(dim.X + 44f, dim.Y + 6f), Color.White, 0.8f);
 		}
 	}

@@ -147,13 +147,13 @@ namespace TerrakeepMod.UI.Investigacion
 
 			float x = dim.X + XTexto;
 
-			Utils.DrawBorderString(spriteBatch, _nombrePartido,
+			EscribirTk.Dibujar(spriteBatch, _nombrePartido,
 				new Vector2(x, dim.Y + 3f), completo ? EstiloInvestigacion.Hecho : Color.White, EscalaNombre);
 
 			string estado = completo
 				? Idiomas.Texto("Investigacion.EstadoCompleto", necesarias)
 				: Idiomas.Texto("Investigacion.EstadoParcial", hechas, necesarias);
-			Utils.DrawBorderString(spriteBatch, estado, new Vector2(x, dim.Y + _yLinea2 + 7f),
+			EscribirTk.Dibujar(spriteBatch, estado, new Vector2(x, dim.Y + _yLinea2 + 7f),
 				EstiloInvestigacion.ColorDeEstado(hechas, necesarias), EscalaEstado);
 		}
 	}

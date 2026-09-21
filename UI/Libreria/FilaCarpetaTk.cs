@@ -107,11 +107,11 @@ namespace TerrakeepMod.UI.Libreria
 
 			float xTexto = dim.X + (hayIcono ? 6f + LadoIcono + 8f : 10f);
 			float yTexto = dim.Y + (dim.Height - _altoTexto) / 2f;
-			Utils.DrawBorderString(spriteBatch, _nombrePartido,
+			EscribirTk.Dibujar(spriteBatch, _nombrePartido,
 				new Vector2(xTexto, yTexto), Color.White, EscalaTexto);
 
 			if (_tieneHijas) {
-				Utils.DrawBorderString(spriteBatch, ">",
+				EscribirTk.Dibujar(spriteBatch, ">",
 					new Vector2(dim.X + dim.Width - 16f, dim.Y + dim.Height / 2f - 10f),
 					EstiloTk.TextoSuave, 0.8f);
 			}

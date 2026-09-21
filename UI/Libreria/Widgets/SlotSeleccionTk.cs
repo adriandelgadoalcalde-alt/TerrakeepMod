@@ -94,7 +94,7 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 			if (_seleccion.IsAir && !ContainsPoint(Main.MouseScreen)) {
 				// Pista visual solo cuando esta vacio y el raton no lo tapa: un recuadro vacio de
 				// ItemSlot no dice nada por si solo de que sirve.
-				Utils.DrawBorderString(spriteBatch, Idiomas.Texto("Libreria.EditorPrefijo.RecuadroPista"),
+				EscribirTk.Dibujar(spriteBatch, Idiomas.Texto("Libreria.EditorPrefijo.RecuadroPista"),
 					new Vector2(rect.X, rect.Bottom + 2f), EstiloTk.TextoSuave, 0.6f);
 			}
 
