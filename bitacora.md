@@ -9483,3 +9483,132 @@ esta ronda son SOLO arneses de diagnostico (sin tocar ningun comportamiento real
 lista permitida" que ya se encontro antes esta sesion, esta vez en dos sitios). Nada de esto se ha
 comiteado todavia - se deja pendiente hasta terminar la investigacion y tener un arreglo real que
 verificar.
+
+## Cierre de la investigacion de los 3 bugs (continuacion, 21-sep-2026, madrugada)
+
+Continuacion real de la investigacion de arriba, retomada leyendo esta misma bitacora y sin repetir
+nada ya hecho. Sandbox reutilizado: `tModLoader-TerrakeepDiagTitulo`, mismo `UIScale=1,4666667` y
+`2560x1377` en ventana reales del usuario.
+
+### Bug 1 ("Veandad" en Vecindad) - CERRADO Y VERIFICADO
+
+**Causa raiz real**, confirmada leyendo el codigo decompilado de
+`ReLogic.Graphics.DynamicSpriteFont.InternalDrawFast` (`ilspycmd -t ReLogic.Graphics.DynamicSpriteFont`
+sobre `tModLoader-Decompiled\TerrariaVanilla\Terraria.Libraries.ReLogic.ReLogic.dll`, nunca visto
+antes en esta sesion): cada caracter avanza `kerning.X` (bearing IZQUIERDO de la fuente, puede ser
+NEGATIVO entre ciertos pares de letras - "ci" es el caso real) antes de dibujarse, multiplicado por
+la escala final en pantalla. A las escalas locales del panel (0.55-0.96) combinadas con
+`UIScale=1.0` (todo lo probado antes de esta noche) el solape resultante es una fraccion de pixel,
+invisible. Con `UIScale=1,4666667` el mismo solape proporcional crece lo bastante para que el trazo
+fino de la "i" quede tapado por el cuerpo de la "c" - confirmado con un recorte a 800% de
+`diag-vecindad-f03.png`: se ve literalmente la "i" dibujada ENCIMA de la "c", no al lado.
+
+**Arreglo real**: `UI/Personaje/Widgets/EscribirTk.cs` (nuevo), envoltorio de
+`Utils.DrawBorderString` con el MISMO contrato. Por debajo de una escala final de 1.0 (el limite que
+ya paso por TODA la auditoria visual de la sesion), delega sin tocar nada - cero riesgo de mover un
+pixel de lo ya verificado. Por encima, dibuja caracter a caracter con `MeasureString` de cada letra
+AISLADA (sin el bearing cruzado que causa el solape) - nunca puede solaparse, sea cual sea la
+palabra o la escala. Sustituidas las 27 llamadas reales a `Utils.DrawBorderString` de todo el panel
+(16 archivos), no solo la de "Vecindad": es un bug de la fuente vainilla a escala grande, no de esa
+palabra en concreto.
+
+**Verificado con captura real** en `tModLoader-TerrakeepDiagTitulo` (mismo UIScale/resolucion
+reales): "Vecindad" se lee bien, y el resto de rotulos del panel (pestañas superiores, sub-pestañas,
+"Marcar casas en el mapa") siguen dentro de su caja sin desbordar con el espaciado ligeramente mas
+suelto del nuevo camino. Comiteado en `fa06369`.
+
+### Bug 2 (titulo "Terrakeep" recortado a "keep") - NO reproducido el sintoma EXACTO, pero SI un bug real relacionado
+
+Cuatro intentos reales, cada uno con evidencia:
+
+1. **Fundido de apertura (TM6)**: DESCARTADO leyendo el codigo real de
+   `PanelTerrakeepState.DibujarVeloDeTransicion` - el velo cubre SOLO `_contenedor` (el area de la
+   pestaña activa), nunca el titulo ni la barra de pestañas (confirmado con el propio comentario del
+   metodo). Estructuralmente no puede ser la causa.
+2. **Redimension EXTERNA de la ventana** (pywinauto, `move_window` real sobre la ventana
+   "Terraria: Plantera infinita"): la ventana SI se movio/redimensiono de verdad (confirmado por
+   pywinauto), pero `Main.screenWidth` NUNCA cambio en 240 fotogramas seguidos vigilados
+   (`screenW=1745` en las 240 muestras). Conclusion real: un `SetWindowPos`/`move_window`
+   programatico no dispara el mismo camino que un resize real del jugador - abandonado como via de
+   repro.
+3. **Un solo cambio de resolucion EN VIVO** (`Terraria.Main.SetDisplayMode`, publico y estatico,
+   confirmado como el mismo codigo que usa Ajustes > Video, via `Main.cs` decompilado), con el panel
+   ya abierto en Personaje: SI cambio `screenWidth/Height` de verdad, `marco.X` se recalculo bien
+   desde el primer fotograma vigilado (nunca negativo), titulo intacto. Sin bug.
+4. **Varios `SetDisplayMode` seguidos en fotogramas consecutivos** (simulando un arrastre real del
+   borde, que dispara muchos eventos de resize seguidos): **SI aparecio un bug real, confirmado con
+   captura y AISLADO** - un "fantasma"/doble-exposicion en TODO el texto del panel (titulo incluido,
+   y el pie "Todo lo que toques aqui se escribe..." con cada letra duplicada con un pequeño desfase
+   horizontal), persistente durante varias decenas de fotogramas, no solo el primero. **Aislada la
+   variable** (regla de la memoria): se repitio la MISMA prueba forzando que TODO el texto pasara por
+   el camino ANTIGUO de `Utils.DrawBorderString` (subiendo `EscribirTk.LimiteEscalaSegura` a 999
+   temporalmente) - el mismo fantasma aparecio IDENTICO, así que **el arreglo de `EscribirTk` del bug
+   1 queda descartado como causante**; es un artefacto real del propio motor/backbuffer ante varios
+   resets de dispositivo grafico (`graphics.ApplyChanges()`) seguidos sin que se presente ningun
+   fotograma completo entre medias - fuera del alcance de lo que el codigo de dibujado de un mod
+   puede corregir (vive en el manejo del swapchain, no en como se pide dibujar el texto).
+
+**Conclusion real**: el recorte EXACTO "Terrakeep" -> "keep" que describio el usuario no se ha
+reproducido pese a los 4 intentos reales de arriba. Lo mas cercano encontrado (el fantasma de texto
+tras VARIOS resizes muy seguidos) es un bug real pero DISTINTO del reportado, y de origen motor/GPU,
+no del codigo del panel. LIMITE REAL: sin una forma de arrastrar el borde de la ventana con eventos
+WM_SIZE nativos reales (pywinauto no los dispara), no hay via adicional razonable para seguir
+persiguiendo el sintoma EXACTO esta noche. Revertido el cambio temporal de aislamiento
+(`LimiteEscalaSegura` vuelve a 1f, el valor real).
+
+### Bug 3 (tooltip huerfano de Exploracion) - Arnes ejecutado, hallazgo real distinto del esperado
+
+El arnes `DiagnosticoTooltipHuerfano` (construido en la ronda anterior, nunca ejecutado hasta ahora)
+SI se ejecuto: hover real sobre la pestaña "Exploración" via `MouseOver`, panel cerrado SIN apartar
+el raton antes (el escenario EXACTO reportado). Captura de referencia con el panel ABIERTO: nada en
+esa esquina. Captura "tras cerrar": **aparece un texto real, "Ajustes" (leible, con el mismo borde
+negro de `Utils.DrawBorderString`), flotando SIN fondo/pastilla en la esquina inferior derecha de la
+pantalla** - confirmado real (ausente en la captura de referencia), pero con dos diferencias reales
+frente a lo que describio el usuario: (a) el texto es "Ajustes", no "Exploración" - un area DISTINTA
+a la que se hizo hover; (b) no tiene pastilla/fondo propio, es texto suelto - distinto del
+`BotonTk.DibujarTooltipPendiente` que el usuario describio ("pastilla/etiqueta").
+
+**Investigacion de la causa real, con evidencia, no solo lectura de codigo**:
+- `BotonTk._tooltipPendiente`/`DibujarTooltipPendiente` tiene un UNICO llamador real en todo el
+  repositorio (`PanelTerrakeepState.Draw`, confirmado por grep), que dentro de un mismo `Draw()`
+  SIEMPRE consume (nulifica) lo que el mismo `Draw()` acaba de pedir - estructuralmente no puede
+  quedar pendiente fuera de un `Draw()`, y `Draw()` deja de correr en cuanto se cierra. Confirmado
+  ademas de forma EMPIRICA: una sonda por reflexion que escanea TODOS los campos `string` (estaticos
+  del ensamblado del mod Y estaticos/de instancia de `Terraria.Main`/`Main.instance`) en el MISMO
+  fotograma que la captura "tras cerrar" no encontro NINGUN campo con "Ajustes" - descarta tambien
+  `Main.hoverItemName`/`Main.HoverItem` como origen.
+- `IconoHudTerrakeep` (el icono del HUD junto al bestiario/emotes) SI sigue dibujando tras cerrar
+  (confirmado leyendo su propio codigo: capa siempre activa, layer 28), pero su tooltip es literal
+  "Terrakeep  (<tecla>)", no "Ajustes" - descartado por contenido.
+- Aplicado de todas formas un endurecimiento real y correcto (no un parche a ciegas): "Ajustes >
+  Controles" -->`PanelTerrakeepSystem.CerrarPanel` ahora limpia a mano
+  `BotonTk.LimpiarTooltipPendiente()` (nuevo) y `Main.hoverItemName = ""` en el momento de cerrar
+  (que SI sigue ejecutandose siempre, a diferencia de `Draw`) - cierra un hueco estructural real
+  (esos dos campos SOLO se limpiaban dentro de `Draw`, nunca al cerrar) aunque la prueba después de
+  aplicarlo demuestra que NO es la causa de "Ajustes" (la captura "tras cerrar" sigue mostrando
+  exactamente el mismo texto en el mismo sitio tras el cambio) - se deja puesto porque es correcto y
+  seguro por si mismo, documentado como mejora aparte, no como "el arreglo del bug 3".
+
+**LIMITE REAL declarado**: no se ha identificado la fuente exacta de "Ajustes" pese a: lectura
+completa del unico mecanismo de pastilla del mod (descartado), escaneo por reflexion de campos
+string en el ensamblado del mod Y en `Terraria.Main`/`Main.instance` (cero coincidencias), y una
+prueba de endurecimiento real que no cambio el resultado. Hipotesis mas probable, sin confirmar: no
+es un campo `string` guardado en ningun sitio (mi escaneo no puede verlo si es una `TextSnippet[]`,
+un `Func<string>` sin guardar, o contenido nativo de tModLoader ajeno al mod - la posicion, esquina
+inferior derecha, lejos de donde estaba el raton (935,139), y la falta de fondo propio, encajan mas
+con un elemento NATIVO de tModLoader/vainilla que con nada del codigo de Terrakeep). El bug del
+usuario tal cual lo describio (pastilla CON fondo, con el texto "Exploración", cerca de donde estaba
+el raton) sigue SIN reproducirse.
+
+### Redespliegue real
+
+`scripts\compilar.ps1` ejecutado tras cada cambio de esta ronda (bug 1 cerrado, arnes de bug 2
+ampliado dos veces, arnes de bug 3 ampliado dos veces, endurecimiento de `CerrarPanel`), 0 errores
+en todas las pasadas. `.tmod` real en `Documents\...\tModLoader\Mods\TerrakeepMod.tmod` actualizado
+en cada compilacion - la version final del `.tmod` que el juego carga la proxima vez incluye TODO lo
+de esta ronda (bug 1 cerrado + los dos endurecimientos reales de bug 3 + los arneses de diagnostico
+ampliados de bug 2/3, ninguno de los cuales toca comportamiento real fuera de sus variables de
+entorno).
+
+Sigue sin publicarse nada (`git push`, `gh release`, empaquetado o subida de version) - pedido
+explicito del mandato de esta noche.

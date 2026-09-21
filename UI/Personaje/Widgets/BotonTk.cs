@@ -450,6 +450,21 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// comprobar el estado interno de verdad, no solo lo que se ve en una captura.</summary>
 		public static string TooltipPendienteParaPrueba => _tooltipPendiente;
 
+		/// <summary>
+		/// Limpia a mano cualquier tooltip pedido y todavia no dibujado. <see cref="DibujarTooltipPendiente"/>
+		/// solo se llama desde dentro de <c>PanelTerrakeepState.Draw</c>, que deja de correr en
+		/// cuanto <c>IngameFancyUI.Close()</c> quita el estado - si el ultimo fotograma con el panel
+		/// abierto dejo <see cref="_tooltipPendiente"/> puesto (el raton sobre un boton con
+		/// <see cref="Ayuda"/> justo cuando se cierra, sin apartarlo antes - el mismo escenario real
+		/// reportado por el usuario), nunca llegaria a limpiarse solo. <c>PanelTerrakeepSystem.
+		/// CerrarPanel</c> lo llama justo al cerrar, que SI sigue ejecutandose siempre (a diferencia
+		/// de <c>Draw</c>).
+		/// </summary>
+		public static void LimpiarTooltipPendiente()
+		{
+			_tooltipPendiente = null;
+		}
+
 		public static void DibujarTooltipPendiente(SpriteBatch spriteBatch)
 		{
 			string texto = _tooltipPendiente;

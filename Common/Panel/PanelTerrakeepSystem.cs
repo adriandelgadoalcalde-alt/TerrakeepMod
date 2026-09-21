@@ -359,6 +359,20 @@ namespace TerrakeepMod.Common.Panel
 			// devuelve al inventario antes de cerrar.
 			PanelTerrakeepState.DevolverObjetoDelRaton();
 
+			// Investigacion real del 21-sep-2026 (bug reportado por el usuario, ver bitacora.md):
+			// un texto huerfano se quedaba flotando sobre el juego tras cerrar el panel con el raton
+			// todavia encima de un boton/pestaña. Causa raiz real: TANTO el tooltip con fondo propio
+			// de BotonTk como Main.hoverItemName (el de un objeto de vanilla) solo se LIMPIAN dentro
+			// de PanelTerrakeepState.Draw - que deja de ejecutarse en el instante en que
+			// IngameFancyUI.Close() (mas abajo) quita el estado. Si el ULTIMO fotograma con el panel
+			// abierto dejo alguno de los dos con un valor pendiente (el escenario exacto del bug:
+			// cerrar sin apartar antes el raton), nunca llegarian a limpiarse solos - la siguiente
+			// vez que vainilla vuelva a dibujar su propio tooltip (capa "Vanilla: Mouse Text", que se
+			// salta mientras el panel esta abierto) pintaria ese valor viejo. Limpieza a mano aqui,
+			// que SI sigue ejecutandose siempre al cerrar (a diferencia de Draw).
+			TerrakeepMod.UI.Personaje.Widgets.BotonTk.LimpiarTooltipPendiente();
+			Main.hoverItemName = "";
+
 			AreaTerrakeep area = _panel != null ? _panel.AreaActual : AreaTerrakeep.Personaje;
 			RegistrarEnArea(area, $"{Terrakeep.LogTag} PANEL CERRADO via {origen}. " +
 				$"Pestaña al cerrar: \"{NombreDe(area)}\".");

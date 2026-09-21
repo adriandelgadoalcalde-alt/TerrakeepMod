@@ -88,9 +88,66 @@ namespace TerrakeepMod.Common.Panel
 					ComprobarFotogramaTrasCierre(paso - 4);
 					_espera = 3;
 					break;
-				case 10: CapturaFinal(); break;
+				// La 1a pasada de este escaneo (solo ensamblado del mod, solo campos STATIC, 5
+				// fotogramas despues de cerrar) no encontro nada - dos huecos reales en el propio
+				// arnes, no en el bug: (1) Main._mouseTextCache (si existe) es un campo de INSTANCIA
+				// de Terraria.Main, en OTRO ensamblado, nunca mirado; (2) 5 fotogramas de retraso es
+				// tiempo de sobra para que un valor que solo vive UN fotograma ya se haya limpiado
+				// solo. Repetido ya MISMO fotograma que la captura final, y mirando TAMBIEN las
+				// instancias de Terraria.Main (Main.instance) ademas del ensamblado del mod.
+				case 10: CapturaFinal(); EscanearCamposEstaticos(); break;
 				default: Terminar(); break;
 			}
+		}
+
+		private static void EscanearCamposEstaticos()
+		{
+			RegistroPanel.Linea(Terrakeep.LogTag + " DIAGNOSTICO TOOLTIP HUERFANO - escaneando campos de tipo string buscando \"Ajustes\" (mismo fotograma que la captura final)...");
+			int encontrados = 0;
+
+			// 1) Todo el ensamblado del mod: campos STATIC (de instancia no tendria sentido, no hay
+			// una unica instancia identificable de la mayoria de nuestras clases).
+			encontrados += EscanearTipo(typeof(Terrakeep), null, soloStatic: true);
+			foreach (var tipo in typeof(Terrakeep).Assembly.GetTypes()) {
+				encontrados += EscanearTipo(tipo, null, soloStatic: true);
+			}
+
+			// 2) Terraria.Main: static Y de instancia sobre Main.instance - aqui es donde viviria
+			// algo como el cache interno de Main.MouseText/DrawPendingMouseText si el texto viene de
+			// ahi (mecanismo vainilla, no del mod).
+			encontrados += EscanearTipo(typeof(Main), Main.instance, soloStatic: false);
+
+			RegistroPanel.Linea(Terrakeep.LogTag + " DIAGNOSTICO TOOLTIP HUERFANO - escaneo completo, " + encontrados + " campo(s) encontrados.");
+		}
+
+		private static int EscanearTipo(Type tipo, object instancia, bool soloStatic)
+		{
+			System.Reflection.FieldInfo[] campos;
+			try {
+				var flags = System.Reflection.BindingFlags.Public | System.Reflection.BindingFlags.NonPublic |
+					System.Reflection.BindingFlags.DeclaredOnly |
+					(soloStatic ? System.Reflection.BindingFlags.Static
+						: System.Reflection.BindingFlags.Static | System.Reflection.BindingFlags.Instance);
+				campos = tipo.GetFields(flags);
+			}
+			catch { return 0; }
+
+			int encontrados = 0;
+			foreach (var campo in campos) {
+				if (campo.FieldType != typeof(string)) {
+					continue;
+				}
+				string valor;
+				try { valor = campo.GetValue(campo.IsStatic ? null : instancia) as string; }
+				catch { continue; }
+
+				if (valor != null && valor.IndexOf("Ajustes", StringComparison.Ordinal) >= 0) {
+					encontrados++;
+					RegistroPanel.Linea(Terrakeep.LogTag + " DIAGNOSTICO TOOLTIP HUERFANO - CAMPO SOSPECHOSO: " +
+						tipo.FullName + "." + campo.Name + " (static=" + campo.IsStatic + ") = \"" + valor + "\"");
+				}
+			}
+			return encontrados;
 		}
 
 		private static void Arrancar()
