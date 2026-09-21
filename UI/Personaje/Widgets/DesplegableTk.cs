@@ -32,14 +32,36 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 	/// </remarks>
 	public class DesplegableTk : UIElement
 	{
-		private const float AnchoPopup = 260f;
+		/// <summary>Ancho MINIMO del popup - de sobra para opciones cortas ("Cuerpo a cuerpo", "1",
+		/// "2"...). Ya NO es un tope fijo: ver <see cref="AnchoPopupReal"/>.</summary>
+		private const float AnchoPopupMinimo = 260f;
 		private const float AltoFilaPopup = 26f;
 		private const float AltoPopupMaximo = 220f;
+
+		/// <summary>Escala de las filas del popup en reposo - la misma que pasa <see cref="ConstruirPopup"/>
+		/// a cada <see cref="BotonTk"/> de opcion. Hace falta como constante (no solo el valor
+		/// literal en el sitio de la creacion) porque <see cref="AnchoPopupReal"/> mide el texto ANTES
+		/// de construir los botones, con esta misma escala.</summary>
+		private const float EscalaFilaPopup = 0.75f;
+
+		/// <summary>Por debajo de esta escala el texto de una fila del popup se vuelve ilegible - el
+		/// mismo suelo que ya usa <c>PanelTerrakeepState.AjustarEscalaDeLasPestanas</c>. Solo se
+		/// llega aqui si NI SIQUIERA el ancho maximo disponible de la superposicion basta para la
+		/// opcion mas larga a escala normal (pantalla muy estrecha) - un caso limite real, no el
+		/// camino habitual.</summary>
+		private const float EscalaFilaMinima = 0.55f;
 
 		private readonly Func<IReadOnlyList<string>> _opciones;
 		private readonly Func<int> _seleccionActual;
 		private readonly Action<int> _alElegir;
 		private readonly BotonTk _botonToggle;
+
+		/// <summary>Escala real de las filas del popup ABIERTO ahora mismo - normalmente
+		/// <see cref="EscalaFilaPopup"/>, solo baja hasta <see cref="EscalaFilaMinima"/> si ni el
+		/// ancho maximo disponible alcanza para la opcion mas larga. La lee la autoprueba para
+		/// demostrar con un numero que las filas caben de verdad, no solo "porque no salio recortado
+		/// en esta captura".</summary>
+		public float EscalaFilaActual { get; private set; } = EscalaFilaPopup;
 
 		private UIPanel _popup;
 		private UIList _lista;
@@ -159,7 +181,40 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 
 			float altoReal = Math.Min(AltoPopupMaximo, Math.Max(AltoFilaPopup * 2f, opciones.Count * (AltoFilaPopup + 3f) + 12f));
 			altoReal = Math.Min(altoReal, area.Height);
-			float anchoReal = Math.Min(AnchoPopup, area.Width);
+
+			// Bug real reportado por el usuario (con captura, más de una vez - ver bitacora.md):
+			// un ancho FIJO de 260px cortaba etiquetas reales largas como "Fin del juego (post
+			// Lunatic Cultist / Moon Lord)" dentro de la lista - el boton cerrado (ancho completo
+			// del panel) no tenia el problema, pero el popup desplegado si. Igual que
+			// RecalcularCabecera/AjustarEscalaDeLasPestanas en otros sitios de este mismo panel: la
+			// caja se adapta al contenido real, nunca se recorta el texto. Se mide la opcion MAS
+			// LARGA con la fuente real (no solo la seleccionada) y el popup crece hasta acogerla,
+			// topado por el hueco real disponible de la superposicion.
+			const float MargenFila = 16f; // mismo margen interno que BotonTk.DibujarTexto reparte a cada lado
+			const float AnchoScroll = 20f; // UIScrollbar (16px) + su hueco real en UIList.Width.Set(-20f, 1f)
+			const float PaddingPopup = 12f; // SetPadding(6f) a cada lado
+
+			float anchoOpcionMax = 0f;
+			for (int i = 0; i < opciones.Count; i++) {
+				float ancho = Terraria.GameContent.FontAssets.MouseText.Value.MeasureString(opciones[i]).X * EscalaFilaPopup;
+				if (ancho > anchoOpcionMax) {
+					anchoOpcionMax = ancho;
+				}
+			}
+
+			float anchoNecesario = anchoOpcionMax + MargenFila * 2f + AnchoScroll + PaddingPopup;
+			float anchoDisponible = Math.Max(AnchoPopupMinimo, area.Width);
+			float anchoReal = Math.Max(AnchoPopupMinimo, Math.Min(anchoNecesario, anchoDisponible));
+
+			// Caso limite real: ni el hueco MAXIMO disponible de la superposicion alcanza para la
+			// opcion mas larga a escala normal (pantalla muy estrecha). Ultimo recurso, igual que
+			// AjustarEscalaDeLasPestanas: encoger el texto de las filas, nunca recortarlo.
+			EscalaFilaActual = EscalaFilaPopup;
+			if (anchoNecesario > anchoDisponible && anchoOpcionMax > 0f) {
+				float anchoTextoDisponible = anchoDisponible - MargenFila * 2f - AnchoScroll - PaddingPopup;
+				float factor = anchoTextoDisponible / anchoOpcionMax;
+				EscalaFilaActual = Math.Max(EscalaFilaMinima, EscalaFilaPopup * factor);
+			}
 
 			_popup = new UIPanel();
 			_popup.Width.Set(anchoReal, 0f);
@@ -216,7 +271,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			int actual = _seleccionActual != null ? _seleccionActual() : -1;
 			for (int i = 0; i < opciones.Count; i++) {
 				int indice = i;
-				BotonTk fila = new BotonTk(opciones[i], 0.75f);
+				BotonTk fila = new BotonTk(opciones[i], EscalaFilaActual);
 				fila.Width.Set(0f, 1f);
 				fila.Height.Set(AltoFilaPopup, 0f);
 				fila.Activo = i == actual;

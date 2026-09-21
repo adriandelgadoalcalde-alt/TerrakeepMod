@@ -113,6 +113,11 @@ namespace TerrakeepMod.Common.Panel
 						DiagnosticoTooltipHuerfano.Variable))
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
 						DiagnosticoTituloYVecindad.Variable))
+					// Bugs reales del 21-sep-2026 (madrugada, ver bitacora.md): desplegable de etapa
+					// de Builds recortando etiquetas largas, y "Rebobinar" perdiendo la foto al
+					// cerrar el panel.
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
+						DiagnosticoBuildsYRebobinar.Variable))
 					// Idea 9 (guia de grupo multijugador): el observador necesita una captura real
 					// de la seccion "Grupo" con un companero de verdad conectado por red - sin esto,
 					// Permitida devolvia false para sus dos variables y Guardar() se limitaba a

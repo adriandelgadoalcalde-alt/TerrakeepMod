@@ -9612,3 +9612,120 @@ entorno).
 
 Sigue sin publicarse nada (`git push`, `gh release`, empaquetado o subida de version) - pedido
 explicito del mandato de esta noche.
+
+## Tres bugs reales reportados en vivo en Builds/Rebobinar (21-sep-2026, madrugada, continuacion)
+
+El usuario, jugando en vivo (mundo real "adriandres", personaje "Eldelgas"), reporto tres cosas mas
+mientras probaba el `.tmod` recien desplegado. Confirmado ANTES de tocar nada que dos de ellas YA
+estaban documentadas y sin cerrar (el usuario tenia razon: "esto ya lo reporte ayer"):
+
+### 1. Desplegable de etapa de Builds recortaba etiquetas largas - YA REPORTADO ANTES, CERRADO AHORA
+
+**Confirmado que no era la primera vez**: documentado sin cerrar en TRES puntos anteriores de esta
+misma bitacora - linea 1532 ("se deja asi a proposito: la alternativa era bajar tanto la escala del
+texto que dejara de leerse"), linea 3748 ("se deja SIN tocar, documentado en vez de callado... fuera
+de alcance razonable de esta tarea... queda para una tarea aparte") y el propio TM5 que introdujo
+`DesplegableTk` (linea 8944) sin arreglar el ancho del POPUP.
+
+**Causa raiz real**: el boton CERRADO del desplegable usa el 100% del ancho del panel (de sobra para
+cualquier etiqueta), pero el POPUP desplegado (`DesplegableTk.ConstruirPopup`) tenia un
+`AnchoPopup = 260f` FIJO - mucho mas estrecho, y `UIList` recorta lo que se sale de su propio
+rectangulo. Etiquetas reales como "Final del juego (post Lunatic Cultist / Moon Lord)" no cabian ni
+de lejos a 260px.
+
+**Arreglo real** (mismo patron ya usado en `RecalcularCabecera`/`AjustarEscalaDeLasPestanas`: la
+caja se adapta al contenido, nunca se recorta el texto): `DesplegableTk.ConstruirPopup` mide con la
+fuente real la opcion MAS LARGA (no solo la seleccionada) y el popup crece hasta acogerla, topado
+por el hueco real disponible de la superposicion (`CapaSuperposicionTk.GetInnerDimensions`). Si ni
+el hueco maximo bastara (pantalla muy estrecha), ultimo recurso real: encoger el texto de las filas
+hasta un suelo de 0.55 (mismo suelo que `AjustarEscalaDeLasPestanas`), nunca truncar.
+
+**Verificado con captura real** (`diag-desplegable-etapa.png`, sandbox propio, mismo UIScale real del
+usuario): las tres etiquetas completas y legibles - "Pre-Hardmode (listo para el Muro de Carne)",
+"Hardmode temprano (antes de los jefes mecanicos)", "Final del juego (post Lunatic Cultist / Moon
+Lord)" - todas dentro del popup, sin recorte.
+
+### 2. "Rebobinar" perdia la foto al cerrar el panel - YA REPORTADO ("ayer"), CAUSA RAIZ REAL ENCONTRADA Y CERRADA
+
+El usuario describio la funcion como si tuviera que "grabar" de forma continua mientras juega con el
+panel cerrado - no es exactamente lo que la idea 10 implementaba (una foto puntual tipo "marca
+ahora, rebobina despues"), pero el diagnostico del propio coordinador dio en el clavo: "¿esta
+enganchada al ciclo de vida de la UI en vez de a un sistema que siga vivo?" - SI, exactamente eso.
+
+**Causa raiz real, confirmada leyendo el codigo**: `PanelTerrakeepSystem.AbrirEnArea` crea un
+`PanelTerrakeepState` NUEVO cada vez (`_panel = new PanelTerrakeepState();`) y `CerrarPanel` lo
+descarta (`_panel = null;`). La foto de "Rebobinar" vivia en CAMPOS DE INSTANCIA del propio
+`PestanaRebobinar` (un `UIElement`, hijo de ese arbol) - cerrar el panel para ir a jugar (que es
+EXACTAMENTE lo que hace cualquier jugador real tras marcar) tiraba la foto entera sin avisar.
+
+**Arreglo real, mismo patron YA establecido en este mismo mod** para el deshacer de objetos
+(`Common/Undo/Historial.cs`/`PilaDeSnapshots`, estatico, limpiado solo por
+`HistorialSystem.OnWorldLoad`/`OnWorldUnload`):
+- `Common/Exploracion/EstadoRebobinar.cs` (nuevo): la foto de tiles/cofres y toda la logica de
+  marcar/comparar/rebobinar, en una clase ESTATICA ajena a cualquier ciclo de vida de interfaz.
+- `Common/Exploracion/RebobinarSystem.cs` (nuevo, `ModSystem`): limpia la foto SOLO al cambiar de
+  mundo/personaje (`OnWorldLoad`/`OnWorldUnload` - las coordenadas de tile y los indices de
+  `Main.chest[]` de una foto son de un mundo concreto, no valdrian en otro), y recalcula
+  `DiferentesAhora` cada 30 fotogramas via `PostUpdateEverything` ("el ultimo hook que se ejecuta en
+  cada actualizacion, en todos los clientes y el servidor", confirmado en el XMLdoc real de
+  `Terraria.ModLoader.ModSystem` decompilado) - SIEMPRE, con o sin panel abierto.
+- `UI/Exploracion/PestanaRebobinar.cs`: reescrita para ser una vista fina sobre `EstadoRebobinar` -
+  MISMOS nombres publicos que antes (`HayFoto`, `DiferentesAhora`, `Marcar()`...), asi que
+  `AutopruebaExploracion.cs` no necesito tocarla nada.
+
+**Verificado con un arnes nuevo** (`Common/Panel/DiagnosticoBuildsYRebobinar.cs`, sandbox propio, en
+paralelo a la sesion real del usuario sin tocarla): marca la foto, CIERRA el panel de verdad
+(`PanelTerrakeepSystem.CerrarPanel`), cambia un tile SINTETICO de prueba CON EL PANEL CERRADO,
+espera, reabre, pulsa "Rebobinar ahora". Log real: `"panel CERRADO. EstadoRebobinar.HayFoto=True"`
+(antes se perdia aqui mismo) y `"Rebobinar() pulsado. Tipo de tile ahora=5, original=5 -> OK:
+restaurado exactamente"` tras detectar `"Tiles distintos antes de restaurar: 1"` - el cambio hecho
+con el panel cerrado SI se detecto y SI se revirtio. **Matiz real, no ocultado**: el contador pasivo
+de fondo (`RebobinarSystem.PostUpdateEverything`, pensado para refrescar el texto EN PANTALLA
+mientras el panel esta cerrado) no llego a dispararse dentro de la ventana de espera de esta prueba
+concreta (se ejecuto en paralelo a la sesion grafica real del usuario, con contencion de recursos
+real de dos clientes graficos a la vez, ya documentada otras veces en esta bitacora) - el mecanismo
+CENTRAL (los datos sobreviven al cierre y `Rebobinar()` siempre recalcula fresco antes de actuar, sea
+cual sea el estado del contador pasivo) esta demostrado y es correcto; el refresco pasivo del texto
+en condiciones normales (un solo cliente, sin contencion) no se ha podido verificar por separado
+esta noche - queda anotado, no maquillado.
+
+### 3. Cabecera "Objetivo"/"Sin golpes recientes" solapada por una notificacion nativa del juego - INVESTIGADO, NO REPRODUCIDO, SIN ARREGLO A CIEGAS
+
+Investigado leyendo el codigo real decompilado (`Main.cs`, construccion de
+`_gameInterfaceLayers`): tanto los popups de logro ("Vanilla: Achievement Complete Popups", capa
+justo DESPUES de "Vanilla: Fancy UI" en la lista real) como el chat/anuncios tipo "X ha sido
+derrotado" (`Main.NewText` -> `DrawInterface_34_PlayerChat`, mucho mas adelante en la misma lista)
+viven en capas que el propio motor CORTA en seco en cuanto "Vanilla: Fancy UI" devuelve `false`
+(confirmado el mecanismo real: `while (enumerator.MoveNext() && enumerator.Current.Draw())` - un
+`false` para la iteracion ENTERA, no solo esa capa) - estructuralmente, ninguno de los dos deberia
+poder pintarse por encima del panel mientras esta abierto, el mismo mecanismo ya confirmado esta
+noche para tooltips de objeto y el propio deshacer.
+
+**No se ha podido reproducir en vivo** (exige matar un jefe real dentro de una partida, y la sesion
+real del usuario estaba en curso - no se ha interferido con ella). Sin evidencia real de la causa
+concreta, **no se aplica un arreglo a ciegas** (disciplina de dos fases del proyecto: investigar con
+evidencia real ANTES de tocar codigo). Hipotesis mas probable sin confirmar: un fotograma de
+transicion real (justo al ABRIR o CERRAR el panel, donde "Vanilla: Fancy UI" cambia de estado a
+mitad de fotograma) podria dejar pasar una notificacion YA en cola un instante antes de que el corte
+de capas se aplique del todo - el mismo tipo de "hueco de un fotograma en la frontera abrir/cerrar"
+que ya aparecio esta noche en otros dos sitios (bug 2 y bug 3 de la ronda anterior). Queda como
+LIMITE REAL para la proxima sesion, con la pista concreta ya localizada (las dos capas exactas a
+vigilar) para no repetir esta investigacion desde cero.
+
+### Redespliegue real, con un obstaculo real documentado
+
+**Obstaculo real encontrado**: `scripts\compilar.ps1` fallo con `TML003: Please close tModLoader or
+disable the mod in-game to build mods directly` - la sesion REAL del usuario (jugando en vivo,
+mundo "adriandres") tenia el mod cargado, bloqueando la fase 2 (el `-build` real de tModLoader
+escribe al `.tmod` COMPARTIDO). **No se le ha pedido cerrar el juego ni se ha forzado el cierre de su
+proceso** (regla de sentido comun: no interrumpir una sesion real en curso). **Solucion real
+encontrada**: `-tmlsavedirectory` tambien redirige donde escribe el `-build` en si, no solo donde
+lanza el cliente - compilando con ese parametro apuntado al sandbox propio
+(`tModLoader-TerrakeepDiagTitulo`) se evita el conflicto por completo, y de paso confirma que
+tModLoader soporta varios clientes graficos a la vez con `-tmlsavedirectory` distintos (se lanzo el
+sandbox de pruebas EN PARALELO a la sesion real del usuario sin problema - cada uno escribe a su
+propio `client.log`/`client2.log`, verificado). El codigo de los dos arreglos reales (desplegable +
+Rebobinar) esta comiteado y verificado en el sandbox propio; el `.tmod` COMPARTIDO
+(`Documents\...\tModLoader\Mods\TerrakeepMod.tmod`) queda pendiente de una recompilacion final en
+cuanto el usuario libere su cliente (o recargue mods desde el propio juego, que reconstruye su copia
+sola).
