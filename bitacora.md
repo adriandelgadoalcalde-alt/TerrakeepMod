@@ -9729,3 +9729,34 @@ Rebobinar) esta comiteado y verificado en el sandbox propio; el `.tmod` COMPARTI
 (`Documents\...\tModLoader\Mods\TerrakeepMod.tmod`) queda pendiente de una recompilacion final en
 cuanto el usuario libere su cliente (o recargue mods desde el propio juego, que reconstruye su copia
 sola).
+
+**Redespliegue real, ya sin el obstaculo de arriba**: el usuario confirmo que cerro el juego -
+`scripts\compilar.ps1` corrido de nuevo sin ningun TML003, `.tmod` real actualizado
+(`824629 bytes, 21/09/2026 10:47:01`).
+
+## Chip DPS de la cabecera desbordaba su pastilla ("Sin golpes recientes") - CERRADO Y VERIFICADO
+
+Cuarto bug real reportado en vivo por el usuario, mismo fila de la cabecera donde ya se investigaron
+el titulo y el tooltip huerfano esta noche, pero un control DISTINTO: `_chipDps`
+(`UI/Panel/PanelTerrakeepState.cs`), el "DPS-metro" de la idea 2 del catalogo. Ancho FIJO de 92px
+(`AnchoChipDps`), pensado para su estado numerico corto ("{0} DPS"), pero el otro estado real
+(`Panel.Cabecera.DpsSinDatos` = "Sin golpes recientes"/"No recent hits", localizacion real
+confirmada en los dos `.hjson`) es mucho mas largo y `BotonTk` no envuelve ni recorta su propio
+texto - se salia de la pastilla sin mas, visible en la captura real del usuario.
+
+**Arreglo real, mismo patron ya establecido en este panel** (`AjustarEscalaDeLasPestanas`, "la caja
+se adapta o el texto se encoge, nunca se recorta"): `AjustarEscalaChip` (nuevo, en
+`PanelTerrakeepState.cs`) mide con la fuente real el texto que el chip tiene AHORA MISMO cada vez
+que `RefrescarCabeceraChips` lo cambia (cubre los DOS estados reales - el numerico con cualquier
+cantidad de cifras, y el aviso sin datos en los dos idiomas del mod, no solo el caso reportado) y, si
+no cabe a la escala base (0.72), la reduce lo justo para que quepa entera, con un suelo de 0.55
+(mismo suelo que el resto del panel).
+
+**Verificado con captura real, antes/despues** (sandbox propio, mismo UIScale real del usuario): el
+recorte de la cabecera (`diag-titulo-01.png` tras el arreglo) muestra "Sin golpes recientes" con su
+propia pastilla de fondo GRIS (antes invisible: el texto se salia por encima sin caja propia
+visible) y el texto completo, legible, dentro de su caja - sin desbordar sobre "Objetivo" ni sobre el
+resto de la cabecera.
+
+**Redespliegue real**: `scripts\compilar.ps1` sin errores, `.tmod` real actualizado
+(`824767 bytes, 21/09/2026 11:06:03`).

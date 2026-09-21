@@ -383,7 +383,46 @@ namespace TerrakeepMod.UI.Panel
 				else {
 					_chipDps.FijarTexto(Idiomas.Texto("Panel.Cabecera.DpsSinDatos"));
 				}
+				AjustarEscalaChip(_chipDps, AnchoChipDps);
 			}
+		}
+
+		/// <summary>Escala base con la que se construyo <see cref="_chipDps"/> - el suelo real por
+		/// debajo del cual <see cref="AjustarEscalaChip"/> nunca reduce, el mismo suelo que usa
+		/// <see cref="AjustarEscalaDeLasPestanas"/> para el mismo tipo de caso limite.</summary>
+		private const float EscalaChipMinima = 0.55f;
+
+		/// <summary>
+		/// Bug real reportado por el usuario, en vivo, con captura (21-sep-2026): el texto
+		/// "Sin golpes recientes"/"No recent hits" (el estado sin datos de
+		/// <see cref="Panel.Cabecera.DpsSinDatos"/>) se salia de la pastilla del chip DPS, que tiene
+		/// un ancho FIJO de <see cref="AnchoChipDps"/> (92px) pensado para su otro estado, mucho mas
+		/// corto ("{0} DPS"). <see cref="BotonTk"/> no envuelve ni recorta su propio texto - lo deja
+		/// desbordar sin mas.
+		/// <para />
+		/// Mismo patron ya establecido en este panel para el mismo tipo de caso
+		/// (<see cref="AjustarEscalaDeLasPestanas"/>): mide con la fuente real el texto que el chip
+		/// tiene AHORA MISMO y, si no cabe a su escala base, la reduce lo justo para que quepa entero
+		/// - nunca lo recorta ni lo deja salirse. Se llama cada vez que el texto del chip cambia
+		/// (<see cref="RefrescarCabeceraChips"/>, incluye el cambio de idioma en caliente), asi que
+		/// cubre TODOS los estados reales del chip, no solo el reportado: el numerico
+		/// ("{0} DPS") con cualquier cantidad de cifras, y las dos traducciones (es-ES/en-US) del
+		/// aviso sin datos.
+		/// </summary>
+		private static void AjustarEscalaChip(BotonTk chip, float anchoCaja)
+		{
+			const float MargenInterno = 10f; // mismo margen que BotonTk.DibujarTexto reparte a cada lado, aproximado
+			float anchoDisponible = anchoCaja - MargenInterno * 2f;
+			if (anchoDisponible <= 0f || string.IsNullOrEmpty(chip.Texto)) {
+				return;
+			}
+
+			const float EscalaBase = 0.72f; // la misma con la que se construyo el BotonTk (ver ConstruirCabeceraChips)
+			float anchoTexto = Terraria.GameContent.FontAssets.MouseText.Value.MeasureString(chip.Texto).X * EscalaBase;
+
+			chip.EscalaTexto = anchoTexto > anchoDisponible
+				? Math.Max(EscalaChipMinima, EscalaBase * (anchoDisponible / anchoTexto))
+				: EscalaBase;
 		}
 
 		/// <summary>Nombre completo (posiblemente largo) del objetivo actual de la Guia, o el
