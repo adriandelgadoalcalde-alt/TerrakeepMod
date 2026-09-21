@@ -106,6 +106,13 @@ namespace TerrakeepMod.Common.Panel
 					// para verificarTransicion.js (ver AutopruebaTooltipObjeto.ComprobarHover).
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
 						AutopruebaTooltipObjeto.Variable))
+					// Dos diagnosticos reales del 21-sep-2026 (capturas reales del usuario, bitacora.md):
+					// tooltip huerfano de pestaña tras cerrar el panel, y titulo recortado + parpadeo en
+					// Vecindad con el UIScale/resolucion REALES del usuario (1.4666667, 2560x1377).
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
+						DiagnosticoTooltipHuerfano.Variable))
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
+						DiagnosticoTituloYVecindad.Variable))
 					// Idea 9 (guia de grupo multijugador): el observador necesita una captura real
 					// de la seccion "Grupo" con un companero de verdad conectado por red - sin esto,
 					// Permitida devolvia false para sus dos variables y Guardar() se limitaba a

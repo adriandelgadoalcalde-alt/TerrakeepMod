@@ -42,7 +42,13 @@ namespace TerrakeepMod.Common.Panel
 			// comportamiento de AutopruebaPanelUnico.
 			bool panelActivo = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaPanelUnico.Variable));
 			bool soakActivo = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaSoak.Variable));
-			if (!panelActivo && !soakActivo) {
+			// Mismo hueco real ya visto en CapturaDePantalla.Permitida (bitacora.md): cada
+			// diagnostico/autoprueba nueva tiene que añadirse aqui A MANO o su evidencia se pierde
+			// en silencio (solo llega al client.log compartido de todas las instancias, no al
+			// archivo propio aislado). Encontrado esta vez con los dos diagnosticos del 21-sep-2026.
+			bool tooltipHuerfanoActivo = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(DiagnosticoTooltipHuerfano.Variable));
+			bool tituloVecindadActivo = !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(DiagnosticoTituloYVecindad.Variable));
+			if (!panelActivo && !soakActivo && !tooltipHuerfanoActivo && !tituloVecindadActivo) {
 				return;
 			}
 

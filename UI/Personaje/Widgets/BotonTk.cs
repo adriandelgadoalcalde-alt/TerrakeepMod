@@ -445,6 +445,11 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// un borde y un fondo solido que marcan con claridad donde empieza y donde acaba, en vez
 		/// de mezclar sus letras con lo que hay detras.
 		/// </summary>
+		/// <summary>SOLO ARNES DE PRUEBAS: valor real de <see cref="_tooltipPendiente"/> ahora
+		/// mismo, sin consumirlo. Lo usa el diagnostico del "tooltip huerfano" (bitacora.md) para
+		/// comprobar el estado interno de verdad, no solo lo que se ve en una captura.</summary>
+		public static string TooltipPendienteParaPrueba => _tooltipPendiente;
+
 		public static void DibujarTooltipPendiente(SpriteBatch spriteBatch)
 		{
 			string texto = _tooltipPendiente;

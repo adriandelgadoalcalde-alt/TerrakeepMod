@@ -9419,3 +9419,67 @@ aparte.
 que el juego carga la próxima vez que se abra incluye TODO lo de esta sesión.
 
 Sigue sin publicarse nada (`git push`, `gh release`, empaquetado o subida de versión).
+
+## Investigacion en curso de 3 bugs reales reportados por el usuario (21-sep-2026, PRIORIDAD ALTA, SIN CERRAR)
+
+El usuario reporto en vivo, con capturas reales: (1) un tooltip huerfano de la pestaña
+"Exploración" pintandose en mitad de la pantalla con el panel cerrado, (2) el titulo "Terrakeep"
+recortado como solo "keep" en la esquina superior izquierda, y (3) parpadeos reales en la pestaña
+Vecindad. Tambien señalo, con razon, que mi afirmacion anterior de "0 textos fuera de caja" era
+FALSA - no se habia probado nunca con su UIScale real.
+
+**Dato clave encontrado**: el `config.json` REAL del usuario tiene `UIScale=1.4666667` y
+`2560x1377` en ventana (no pantalla completa) - una combinacion que NINGUNA autoprueba de toda la
+sesion habia probado nunca (todo se probo a UIScale=1.0). Se monto un sandbox nuevo
+(`tModLoader-TerrakeepDiagTitulo`) con exactamente esos valores para reproducir de verdad.
+
+**Bug real CONFIRMADO con captura**: en la pestaña Exploración > Vecindad, el rotulo de la propia
+sub-pestaña "Vecindad" se ve mal renderizado como **"Veandad"** (letras "ci" perdidas/superpuestas)
+- consistente en varias capturas seguidas (frames 00 y 03, ver
+`tModLoader-TerrakeepDiagTitulo\terrakeep-capturas\diag-vecindad-f00.png` y `...-f03.png`), asi que
+NO es un parpadeo entre dos estados sino una mala renderizacion fija a este UIScale concreto. La
+cadena de origen (`Localization\es-ES_Mods.TerrakeepMod.hjson`, clave `Exploracion.Pestana.
+Vecindad`) es correcta ("Vecindad"), y el boton se construye con texto fijo (no reactivo) a escala
+0.8 en `ContenidoExploracion.ConstruirBarraPestanas` (l.71-97), sin icono ni logica de auto-encoger
+- descartado un bug de STRING. Apunta a un artefacto de glifos (kerning/solape de 'c'/'i') en la
+escala COMBINADA real 0.8 (escala fija del boton) x 1.4667 (UIScale del usuario) = 1,1733, un
+factor no entero que ningun otro sitio del panel usa en sus pruebas. Investigacion de la causa
+RAIZ y el arreglo quedan PENDIENTES - no se ha tocado codigo de renderizado todavia.
+
+**Bug del titulo "Terrakeep" recortado**: NO reproducido en el primer intento, exactamente a la
+misma resolucion/UIScale reales del usuario (`Main.screenWidth=1745, Main.screenHeight=938,
+UIScale=1,4666667` - la resolucion YA viene en unidades virtuales, `marco.X=332,7` positivo, sin
+indicio de desbordamiento por la izquierda). Ver `diag-titulo-01.png`/`diag-titulo-02.png`: el
+titulo se lee "Terrakeep" completo y sin recortar. Posibles causas todavia NO investigadas: (a) el
+bug puede depender de un ESTADO TRANSITORIO (justo durante el fundido de apertura del panel, TM6,
+7 fotogramas, mi captura esperaba 30 fotogramas antes - demasiado tarde para pillarlo), (b) puede
+depender de REDIMENSIONAR la ventana en vivo (el usuario cambiando de tamaño con el panel ya
+abierto, un camino que ningun diagnostico de esta sesion ha probado todavia), o (c) puede ser
+especifico de un monitor/posicion de ventana que mi sandbox headless no replica. Sigue SIN
+confirmar ni descartar.
+
+**Tooltip huerfano de la pestaña Exploración tras cerrar el panel**: arnes de diagnostico
+construido (`Common/Panel/DiagnosticoTooltipHuerfano.cs`, variable de entorno
+`TERRAKEEP_DIAG_TOOLTIP_HUERFANO`) que reproduce el escenario EXACTO (hover real sobre la pestaña
+Exploración vía `MouseOver` a mano, cierre del panel SIN llamar nunca a `MouseOut` - a diferencia
+de `AutopruebaTooltipPestana`, que si lo hace y por eso nunca habria visto este caso), comprobando
+`BotonTk.TooltipPendienteParaPrueba` fotograma a fotograma tras cerrar. Investigacion del
+mecanismo (documentada en el propio commit/codigo): `BotonTk.DibujarTooltipPendiente` solo se
+llama desde dentro de `PanelTerrakeepState.Draw`, que deja de ejecutarse en cuanto
+`IngameFancyUI.Close()` pone `Main.InGameUI.CurrentState = null` (confirmado leyendo el
+`IngameFancyUI.cs` real decompilado) - estructuralmente no deberia poder persistir. El arnes esta
+CODIFICADO pero **todavia NO se ha ejecutado ni una sola vez** (se interrumpio por la prioridad de
+los otros dos bugs) - sigue sin evidencia real que lo confirme o lo descarte.
+
+### Estado real, sin maquillar
+
+NINGUNO de los tres bugs esta cerrado ni arreglado todavia. Solo uno (el de "Veandad" en Vecindad)
+tiene evidencia real y reproducida; los otros dos siguen investigandose. Cambios de codigo hechos
+esta ronda son SOLO arneses de diagnostico (sin tocar ningun comportamiento real del panel):
+`Common/Panel/DiagnosticoTooltipHuerfano.cs` (nuevo), `Common/Panel/DiagnosticoTituloYVecindad.cs`
+(nuevo), `BotonTk.TooltipPendienteParaPrueba` (accesor de solo lectura para pruebas),
+`PanelTerrakeepState.MarcoDimensionesParaPrueba` (idem), `RegistroPanel.cs` y
+`CapturaDePantalla.cs` (arreglado el mismo hueco de "variable de autoprueba nueva sin añadir a la
+lista permitida" que ya se encontro antes esta sesion, esta vez en dos sitios). Nada de esto se ha
+comiteado todavia - se deja pendiente hasta terminar la investigacion y tener un arreglo real que
+verificar.

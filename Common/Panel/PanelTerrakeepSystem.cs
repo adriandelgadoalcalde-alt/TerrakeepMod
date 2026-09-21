@@ -99,6 +99,8 @@ namespace TerrakeepMod.Common.Panel
 			AutopruebaIdiomas.Avanzar();
 			AutopruebaTooltipObjeto.Avanzar();
 			AutopruebaTooltipPestana.Avanzar();
+			DiagnosticoTooltipHuerfano.Avanzar();
+			DiagnosticoTituloYVecindad.Avanzar();
 			AutopruebaEspaciado.Avanzar();
 			// KeepQA V2.0, Fase 6, Bloque B: sesion de estres/soak real (abrir/cerrar el panel
 			// repetidamente durante minutos) - inactiva por defecto, mismo patron de variable de

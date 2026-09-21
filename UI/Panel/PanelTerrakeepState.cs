@@ -161,6 +161,11 @@ namespace TerrakeepMod.UI.Panel
 		/// cabecera (idea 2 del catalogo de funciones, ver <see cref="MedidorDanio"/>).</summary>
 		public string ChipDpsParaPrueba => _chipDps != null ? _chipDps.Texto : "";
 
+		/// <summary>SOLO PARA AUTOPRUEBAS: el rectangulo REAL en pantalla del marco del panel ahora
+		/// mismo - lo usa el diagnostico del titulo recortado para comprobar si su X es negativa
+		/// (el marco empezaria fuera de la pantalla por la izquierda).</summary>
+		public Terraria.UI.CalculatedStyle MarcoDimensionesParaPrueba => _marco.GetDimensions();
+
 		/// <summary>El boton "Cerrar (tecla)" del pie. Expuesto para que la autoprueba pueda medir su
 		/// rectangulo REAL y demostrar que ya no se solapa con un desplegable abierto.</summary>
 		public BotonTk BotonCerrar => _botonCerrar;
