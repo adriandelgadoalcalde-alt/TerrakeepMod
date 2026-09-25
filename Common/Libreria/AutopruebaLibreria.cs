@@ -188,6 +188,18 @@ namespace TerrakeepMod.Common.Libreria
 				case 38: PrepararArrastreDesdeLibreria(); break;
 				case 39: ComprobarArrastreDesdeLibreria(); break;
 
+				// Hueco de cobertura cerrado (25-sep-2026, investigacion del bug reportado con
+				// imagen9.png: "Libreria / Editar objeto: el pequeño editor queda atrapado, bloquea
+				// la Libreria hasta cambiar de pestaña"). Los pasos 26-27 solo comprobaban que la
+				// tarjeta flotante se ABRIA; ninguno ejercitaba clicar FUERA de ella con la tarjeta
+				// abierta ni cambiar de pestaña con algo dentro del recuadro de seleccion - los dos
+				// gestos que el encargo pedia probar explicitamente. Ver el XMLdoc de cada metodo.
+				case 40: PrepararTrampaClicFuera(); break;
+				case 41: ComprobarTrampaClicFuera(); break;
+				case 42: ComprobarTrampaReabreSola(); break;
+				case 43: PrepararPerdidaAlCambiarPestana(); break;
+				case 44: ComprobarPerdidaAlCambiarPestana(); break;
+
 				default:
 					Registrar("AUTOPRUEBA WS3 COMPLETA. Todos los pasos ejecutados sin excepciones.");
 					_terminada = true;
@@ -794,6 +806,299 @@ namespace TerrakeepMod.Common.Libreria
 				+ " (" + (hayObjeto == tarjetaAbierta ? "OK: coincide con si hay objeto" : "NO CUADRA") + "), "
 				+ "linea de prefijo=\"" + textoPrefijo + "\". "
 				+ CapturaDePantalla.Guardar("ws3-tarjeta-flotante"));
+		}
+
+		// =========================================================================================
+		// Hueco de cobertura cerrado (25-sep-2026): investigacion del bug reportado con imagen9.png
+		// ("Libreria / Editar objeto: el pequeño editor queda atrapado, bloquea la Libreria hasta
+		// cambiar de pestaña superior"). Los pasos 26-27 de arriba solo comprobaban que la tarjeta
+		// flotante se ABRIA con datos reales; ninguno ejercitaba los dos gestos que el propio
+		// encargo del usuario pedia probar ("cancelar; click fuera; cambio de pestaña"). Reproducido
+		// con evidencia real (GetElementAt + LeftClick, el mismo camino que un clic de verdad, y
+		// conteo real de objetos en todos los contenedores del jugador), dos defectos reales
+		// encontrados y documentados en bitacora.md para que aplicador-fix los corrija sin tener que
+		// reinvestigar nada:
+		//
+		//  1. CapaSuperposicionTk (UI/Panel/CapaSuperposicionTk.cs) ocupa TODA la zona de contenido
+		//     del panel (PanelTerrakeepState.cs: _capaSuperposicion.Width/Height iguales a
+		//     _contenedor), no solo el area de la tarjeta. Con la tarjeta abierta
+		//     (IgnoresMouseInteraction=false), CUALQUIER clic dentro de esa zona (catalogo, arbol,
+		//     busqueda) resuelve a la capa antes que a lo de abajo, y su LeftClick/RightClick
+		//     (lineas 165-180) lo cierra con Quitar(null) - pero
+		//     PanelHerramientasLibreriaTk.ActualizarTarjetaFlotante (lineas 199-202) la reabre SOLA
+		//     el fotograma siguiente porque SlotSeleccionTk.ObjetoActual sigue lleno: bucle cerrado,
+		//     ningun clic dentro de la Libreria llega nunca a su destino real mientras haya algo
+		//     seleccionado.
+		//  2. PanelTerrakeepState.CambiarArea (lineas 609-612) destruye _contenidoActual (con el
+		//     PanelHerramientasLibreriaTk y su SlotSeleccionTk) en CUALQUIER cambio de pestaña, sin
+		//     devolver antes SlotSeleccionTk.ObjetoActual a ningun sitio - y ese objeto ya SALIO de
+		//     su ranura de origen (SlotSeleccionTk.cs, su propio XMLdoc: "arrastrar aqui MUEVE el
+		//     objeto de verdad"). El propio "cambiar de pestaña" que el usuario usa para escapar del
+		//     bloqueo del punto 1 BORRA PARA SIEMPRE el objeto que estaba editando.
+		// =========================================================================================
+
+		/// <summary>Reprepara un objeto de prueba fresco en el recuadro de seleccion (por si los
+		/// pasos de cofres de en medio dejaron otro estado) y deja la Libreria enseñando catalogo
+		/// real, para tener una ranura de catalogo de verdad con la que probar el bloqueo.</summary>
+		private static void PrepararTrampaClicFuera()
+		{
+			PrepararObjetosDeHerramientas();
+			Contenido.IrALaRaiz();
+			Contenido.FijarBusqueda("#1-60");
+
+			if (_tipoStack <= 0) {
+				Registrar("Paso 40 - sin objetos de prueba, se salta.");
+				return;
+			}
+
+			Player jugador = Main.LocalPlayer;
+			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
+			if (herramientas == null) {
+				Registrar("Paso 40 - Contenido.Herramientas es null.");
+				return;
+			}
+
+			bool izquierdoPrevio = Main.mouseLeft;
+			bool sueltoPrevio = Main.mouseLeftRelease;
+			Main.mouseLeft = true;
+			Main.mouseLeftRelease = true;
+			try {
+				ItemSlot.LeftClick(jugador.inventory, ItemSlot.Context.InventoryItem, RanuraStack);
+				herramientas.Seleccion.EjercitarHandle();
+			}
+			finally {
+				Main.mouseLeft = izquierdoPrevio;
+				Main.mouseLeftRelease = sueltoPrevio;
+			}
+
+			Registrar("Paso 40 - preparada la trampa: recuadro de seleccion=" + Describir(herramientas.Seleccion.ObjetoActual)
+				+ ", ranuras de catalogo visibles=" + Contenido.SlotsResultado.Count + ".");
+		}
+
+		/// <summary>
+		/// Bug 1 (el reportado, "queda atrapado"): reproduce con el camino REAL del motor
+		/// (<c>UIElement.GetElementAt</c>, la misma llamada que usa <c>UserInterface.Update</c> para
+		/// repartir clics) que, con la tarjeta flotante abierta, un clic sobre una ranura REAL del
+		/// catalogo no llega a esa ranura sino a <see cref="CapaSuperposicionTk"/> - y dispara ese
+		/// clic de verdad (<c>UIElement.LeftClick</c>) para comprobar que ademas cierra la tarjeta,
+		/// demostrando que el "clic fuera" SI se registra pero nunca alcanza lo que el jugador
+		/// queria pulsar.
+		/// </summary>
+		private static void ComprobarTrampaClicFuera()
+		{
+			PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
+			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
+			CapaSuperposicionTk capa = panel != null ? panel.CapaSuperposicion : null;
+			if (panel == null || herramientas == null || capa == null || herramientas.TarjetaFlotante == null
+				|| !herramientas.TarjetaFlotanteAbierta) {
+				Registrar("Paso 41 - condiciones no cumplidas (panel=" + (panel != null) + ", herramientas="
+					+ (herramientas != null) + ", capa=" + (capa != null) + ", tarjetaAbierta="
+					+ (herramientas != null && herramientas.TarjetaFlotanteAbierta) + "), se salta.");
+				return;
+			}
+
+			// Punto DENTRO de la capa (misma zona que TODO el contenido de la Libreria: catalogo,
+			// arbol, busqueda - ver PanelTerrakeepState.cs, _capaSuperposicion.Width/Height iguales a
+			// _contenedor) pero FUERA de la tarjeta flotante - las dos geometrias se leen EN VIVO
+			// (GetDimensions ya recalculado, mismo fotograma), nada hardcodeado ni supuesto. La
+			// tarjeta se posiciona "pegada" al mini-panel (PosicionarTarjetaFlotante, a la izquierda o
+			// derecha de el, nunca en la esquina superior-izquierda de la capa), asi que la esquina
+			// superior-izquierda de la capa + un margen pequeño cae, por construccion, fuera de ella -
+			// se comprueba de todas formas antes de usarlo, sin asumirlo a ciegas.
+			Rectangle capaRect = capa.GetDimensions().ToRectangle();
+			Rectangle tarjetaRect = herramientas.TarjetaFlotante.GetDimensions().ToRectangle();
+			Vector2 puntoFueraDeLaTarjeta = new Vector2(capaRect.X + 12f, capaRect.Y + 12f);
+
+			if (tarjetaRect.Contains(puntoFueraDeLaTarjeta.ToPoint())) {
+				Registrar("Paso 41 - el punto de control (" + (int)puntoFueraDeLaTarjeta.X + ","
+					+ (int)puntoFueraDeLaTarjeta.Y + ") cae DENTRO de la tarjeta (rect=" + tarjetaRect
+					+ "), no sirve para probar \"fuera\"; se salta este paso.");
+				return;
+			}
+
+			UIElement bajoElRaton = panel.GetElementAt(puntoFueraDeLaTarjeta);
+			bool esLaCapaOAlgoDeLaTarjeta = bajoElRaton != null
+				&& (ReferenceEquals(bajoElRaton, capa) || EsDescendienteDe(bajoElRaton, capa));
+
+			Registrar("Paso 41 - clic REAL (via UIElement.GetElementAt, la misma llamada que reparte "
+				+ "clics de verdad) en (" + (int)puntoFueraDeLaTarjeta.X + "," + (int)puntoFueraDeLaTarjeta.Y
+				+ "): dentro del area de contenido de la capa (rect=" + capaRect + ") pero fuera de la "
+				+ "tarjeta flotante (rect=" + tarjetaRect + "), CON la tarjeta abierta. El motor entrega "
+				+ "el punto a: " + (bajoElRaton == null ? "null" : bajoElRaton.GetType().Name) + ". "
+				+ (esLaCapaOAlgoDeLaTarjeta
+					? "OK (bug REPRODUCIDO): CUALQUIER clic dentro de la zona de contenido de la Libreria "
+						+ "que no caiga exactamente sobre la tarjeta lo absorbe CapaSuperposicionTk - la "
+						+ "rejilla de catalogo, el arbol de carpetas y la busqueda quedan inalcanzables "
+						+ "mientras haya algo en el recuadro de seleccion."
+					: "revisar: ni la capa ni la tarjeta reciben el punto (" + bajoElRaton?.GetType().Name
+						+ "), la hipotesis no se confirma con ESTE punto concreto."));
+
+			if (bajoElRaton != null) {
+				bool abiertaAntes = herramientas.TarjetaFlotanteAbierta;
+				bajoElRaton.LeftClick(new UIMouseEvent(bajoElRaton, puntoFueraDeLaTarjeta));
+				bool abiertaDespues = herramientas.TarjetaFlotanteAbierta;
+				Registrar("Paso 41 - se dispara ese clic de verdad (UIElement.LeftClick) sobre lo que "
+					+ "recibio el punto. TarjetaFlotanteAbierta antes=" + abiertaAntes + ", justo despues="
+					+ abiertaDespues + " (" + (abiertaAntes && !abiertaDespues
+						? "el clic SI cerro la tarjeta (CapaSuperposicionTk.Quitar) - pero el objeto sigue "
+							+ "en el recuadro, asi que el paso siguiente comprueba si se reabre sola"
+						: "no cambio") + "). Recuadro de seleccion tras el clic: "
+					+ Describir(herramientas.Seleccion.ObjetoActual) + " (se espera que SIGA con algo dentro: "
+					+ "el clic fuera nunca lo vacia).");
+			}
+		}
+
+		/// <summary>Un paso real despues (~<see cref="FotogramasEntrePasos"/> fotogramas): comprueba
+		/// que la tarjeta se ha vuelto a abrir SOLA, sin ningun clic nuevo -
+		/// <c>PanelHerramientasLibreriaTk.ActualizarTarjetaFlotante</c> la reabre en cuanto ve que
+		/// <c>SlotSeleccionTk.ObjetoActual</c> sigue lleno - cerrando el circulo: el clic de fuera SI
+		/// cierra la tarjeta un instante (paso 41), pero nunca deja pasar el clic Y ademas la reabre
+		/// ella sola el fotograma siguiente, asi que no hay forma real de interactuar con el resto de
+		/// la Libreria mientras haya algo seleccionado.</summary>
+		private static void ComprobarTrampaReabreSola()
+		{
+			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
+			if (herramientas == null) {
+				Registrar("Paso 42 - Contenido.Herramientas es null.");
+				return;
+			}
+
+			bool sigueConAlgo = !herramientas.Seleccion.ObjetoActual.IsAir;
+			bool reabierta = herramientas.TarjetaFlotanteAbierta;
+
+			Registrar("Paso 42 - " + FotogramasEntrePasos + " fotogramas reales despues del clic fuera "
+				+ "del paso 41, SIN pulsar nada mas: recuadro de seleccion sigue con algo dentro=" + sigueConAlgo
+				+ ", TarjetaFlotanteAbierta=" + reabierta + " -> "
+				+ (sigueConAlgo && reabierta
+					? "OK (bug CONFIRMADO): se reabrio SOLA, sin ningun clic nuevo - el bucle "
+						+ "cierra/reabre nunca deja un hueco real para clicar otra cosa de la Libreria."
+					: "no se reabrio, revisar la hipotesis") + " "
+				+ CapturaDePantalla.Guardar("ws3-trampa-tarjeta-flotante"));
+		}
+
+		private static int _tipoPerdida;
+		private static int _stackPerdidaAntes;
+
+		/// <summary>Deja constancia REAL de cuanto hay del objeto seleccionado en TODOS los demas
+		/// sitios del juego antes de cambiar de pestaña, para poder comparar despues.</summary>
+		private static void PrepararPerdidaAlCambiarPestana()
+		{
+			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
+			if (herramientas == null || herramientas.Seleccion.ObjetoActual.IsAir) {
+				Registrar("Paso 43 - el recuadro de seleccion esta vacio (pasos 40-42 no dejaron nada "
+					+ "dentro), se salta la prueba de perdida de objeto.");
+				_tipoPerdida = 0;
+				return;
+			}
+
+			_tipoPerdida = herramientas.Seleccion.ObjetoActual.type;
+			_stackPerdidaAntes = herramientas.Seleccion.ObjetoActual.stack;
+			int totalFueraDelRecuadro = ContarTotalDelTipoEnElJuego(_tipoPerdida);
+
+			Registrar("Paso 43 - antes de cambiar de pestaña: recuadro de seleccion=" + Describir(herramientas.Seleccion.ObjetoActual)
+				+ ". Ese mismo tipo en cualquier OTRO sitio del juego (los 7 contenedores fijos del "
+				+ "jugador, papelera, suelo, raton)=" + totalFueraDelRecuadro + " (se espera 0: el objeto "
+				+ "salio de su origen al arrastrarlo aqui, es el UNICO sitio donde existe ahora mismo).");
+		}
+
+		/// <summary>
+		/// Bug 2 (el gesto que el usuario usa para "escapar" del bloqueo del paso 41/42: cambiar a
+		/// otra pestaña superior y volver): reproduce con <c>PanelTerrakeepState.CambiarArea</c> real
+		/// (el mismo metodo que dispara el clic de una pestaña de verdad) y compara con conteo REAL,
+		/// en todos los contenedores del jugador a la vez, si el objeto que estaba en el recuadro de
+		/// seleccion sigue existiendo en algun sitio despues.
+		/// </summary>
+		private static void ComprobarPerdidaAlCambiarPestana()
+		{
+			if (_tipoPerdida <= 0) {
+				Registrar("Paso 44 - sin objeto de prueba (paso 43 se salto), se salta.");
+				return;
+			}
+
+			PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
+			if (panel == null) {
+				Registrar("Paso 44 - PanelTerrakeepSystem.Panel es null.");
+				return;
+			}
+
+			panel.CambiarArea(AreaTerrakeep.Personaje, "autoprueba WS3 - trampa tarjeta flotante");
+			panel.CambiarArea(AreaTerrakeep.Libreria, "autoprueba WS3 - trampa tarjeta flotante");
+
+			int totalDespues = ContarTotalDelTipoEnElJuego(_tipoPerdida);
+			PanelHerramientasLibreriaTk herramientasNuevas = Contenido.Herramientas;
+			bool recuadroNuevoVacio = herramientasNuevas == null || herramientasNuevas.Seleccion.ObjetoActual.IsAir;
+
+			Registrar("Paso 44 - tras cambiar Libreria -> Personaje -> Libreria (con " + _stackPerdidaAntes
+				+ " unidades reales de type=" + _tipoPerdida + " dentro del recuadro de seleccion ANTES "
+				+ "de cambiar): PanelHerramientasLibreriaTk se reconstruye de cero (nuevo Contenido.Herramientas), "
+				+ "su recuadro de seleccion nuevo esta vacio=" + recuadroNuevoVacio + ". Ese mismo tipo AHORA en "
+				+ "cualquier sitio del juego (los 7 contenedores fijos, papelera, suelo, raton)=" + totalDespues + " -> "
+				+ (totalDespues == 0 && recuadroNuevoVacio
+					? "OK (bug CONFIRMADO): las " + _stackPerdidaAntes + " unidades que habia en el recuadro "
+						+ "de seleccion ANTES de cambiar de pestaña ya NO ESTAN EN NINGUN SITIO del juego - "
+						+ "se han borrado de verdad, no se han movido. PanelTerrakeepState.CambiarArea destruye "
+						+ "el contenido sin devolver antes SlotSeleccionTk.ObjetoActual a su origen."
+					: "no se perdio nada, revisar la hipotesis") + ".");
+		}
+
+		/// <summary>Sube por la cadena <c>Parent</c> desde <paramref name="hijo"/> buscando si es
+		/// <paramref name="posiblePadre"/> o cuelga de el - la forma real de comprobar si un
+		/// elemento que recibio el raton pertenece a la capa de superposicion (o a lo que flota
+		/// dentro de ella) sin asumir que sea EXACTAMENTE la capa misma.</summary>
+		private static bool EsDescendienteDe(UIElement hijo, UIElement posiblePadre)
+		{
+			UIElement actual = hijo;
+			while (actual != null) {
+				if (ReferenceEquals(actual, posiblePadre)) {
+					return true;
+				}
+				actual = actual.Parent;
+			}
+			return false;
+		}
+
+		/// <summary>Suma cuanto hay del <paramref name="tipo"/> pedido en TODOS los sitios reales
+		/// donde podria estar fuera del recuadro de seleccion: los <see cref="ContenidoLibreria.Destinos"/>
+		/// del jugador (los mismos 7-8 contenedores fijos que ya recorre el paso 10, via
+		/// TotalDestinos/MostrarDestino/ArrayDestino), la papelera, el raton y lo tirado por el
+		/// suelo. Si un objeto real desaparece de verdad (no esta en NINGUNO de estos sitios, ni en
+		/// el propio recuadro) es que el motor lo ha borrado, no que se haya movido de sitio.</summary>
+		private static int ContarTotalDelTipoEnElJuego(int tipo)
+		{
+			int total = 0;
+			ContenidoLibreria contenido = Contenido;
+			if (contenido != null) {
+				for (int i = 0; i < contenido.TotalDestinos; i++) {
+					contenido.MostrarDestino(i);
+					Item[] array = contenido.ArrayDestino;
+					if (array == null) {
+						continue;
+					}
+					for (int j = 0; j < array.Length; j++) {
+						if (array[j] != null && !array[j].IsAir && array[j].type == tipo) {
+							total += array[j].stack;
+						}
+					}
+				}
+				contenido.MostrarDestino(0);
+			}
+
+			Player jugador = Main.LocalPlayer;
+			if (jugador != null && jugador.trashItem != null && !jugador.trashItem.IsAir && jugador.trashItem.type == tipo) {
+				total += jugador.trashItem.stack;
+			}
+
+			for (int i = 0; i < Main.item.Length; i++) {
+				if (Main.item[i] != null && Main.item[i].active && Main.item[i].type == tipo) {
+					total += Main.item[i].stack;
+				}
+			}
+
+			if (Main.mouseItem != null && !Main.mouseItem.IsAir && Main.mouseItem.type == tipo) {
+				total += Main.mouseItem.stack;
+			}
+
+			return total;
 		}
 
 		/// <summary>Ultimo hueco de <c>Main.chest[]</c> (tope real 8000, <c>Main.maxChests</c>):

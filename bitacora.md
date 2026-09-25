@@ -9862,3 +9862,173 @@ aunque en este caso el segundo intento SI paso.
   (`Main.DrawMap` los dibuja siempre, sea cual sea el mod) - el hueco real, confirmado con evidencia,
   esta SOLO en el mini-mapa PROPIO de Terrakeep (`MiniMapaTk`), no en el mapa vanilla al que se salta
   con "Ver en el mapa del juego".
+
+---
+
+## Libreria / Editar objeto: el pequeño editor queda atrapado (imagen9.png) - INVESTIGADO, REPRODUCIDO EN VIVO Y DOS BUGS REALES CONFIRMADOS (25-sep-2026, rol investigador-bug, no aplica el arreglo)
+
+Bug reportado por el usuario con captura (`imagen9.png`): "Libreria / Editar objeto. Al escoger una
+pieza de armadura y llevarla a 'Editar objeto / Seleccionar', el pequeño editor queda atrapado. No se
+puede cerrar/interactuar correctamente y la Libreria queda practicamente bloqueada hasta cambiar de
+pestaña superior." Esta entrada es SOLO la fase 1 (investigador-bug), disciplina de dos fases del
+proyecto: **no se ha tocado ningun archivo de produccion**, unicamente el arnes nativo
+(`Common/Libreria/AutopruebaLibreria.cs`, pasos 40-44 nuevos) y esta bitacora.
+
+**Colision real con otro agente en paralelo** (ver la entrada de arriba, "Mapa interno de
+Exploracion"): mientras escribia los pasos 40-44 en `AutopruebaLibreria.cs`, otro agente
+(investigando el bug de NPCs en el mapa) intento compilar y fallo una vez por encontrar el archivo a
+medio escribir - documentado por el desde su lado. El archivo estaba SIEMPRE dentro de mi working
+set (es el arnes de WS3), asi que no hubo invasion de ambito por mi parte; se deja constancia por la
+misma regla ("si algo falla dos veces seguidas, escribirlo") aunque el fallo fue del otro agente, no
+del mio.
+
+### Causa raiz real: DOS defectos distintos, no uno solo
+
+Investigado leyendo el codigo real (no supuesto) de las tres clases involucradas: `TarjetaEdicionFlotanteTk`
+(el "pequeño editor", `UI/Libreria/Widgets/TarjetaEdicionFlotanteTk.cs`), la capa donde flota
+(`UI/Panel/CapaSuperposicionTk.cs`) y el marco del panel unico (`UI/Panel/PanelTerrakeepState.cs`).
+
+**1) La Libreria queda bloqueada mientras algo este en el recuadro de seleccion (la parte "queda
+atrapado" del reporte).**
+- `UI/Panel/PanelTerrakeepState.cs:266-270`: `_capaSuperposicion` se construye con el MISMO ancho y
+  alto que `_contenedor` (`Width.Set(0,1)`/`Height` igual, `arribaContenido`/`AltoPie` identicos) -
+  cubre TODA la zona de contenido del panel (rejilla de catalogo, arbol de carpetas, busqueda), no
+  solo el area alrededor de la tarjeta flotante.
+- `UI/Panel/CapaSuperposicionTk.cs:100-114` (`Mostrar`): al abrir la tarjeta, `IgnoresMouseInteraction`
+  pasa a `false`. Desde ahi, `UIElement.GetElementAt` (el mismo camino real que usa el motor para
+  repartir clics, decompilado y ya usado por la propia autoprueba en el paso 19 del popup de
+  prefijos) resuelve CUALQUIER punto dentro de esa zona a la capa antes que a lo que hay debajo -
+  confirmado con datos reales del cliente en vivo, no supuesto (ver evidencia abajo).
+- `UI/Panel/CapaSuperposicionTk.cs:165-180` (`LeftClick`/`RightClick`): cuando el clic resuelve a la
+  propia capa (`evt.Target == this`), la cierra con `Quitar(null)` - el comportamiento correcto para
+  un desplegable normal (el selector de prefijo), pero la tarjeta flotante NO es un desplegable de un
+  solo uso (su propio XMLdoc, `TarjetaEdicionFlotanteTk.cs:36-47`, explica por que NO deberia cerrarse
+  con un clic fuera: es el editor activo de un objeto que sigue "cogido").
+- `UI/Libreria/Widgets/PanelHerramientasLibreriaTk.cs:199-202` (`ActualizarTarjetaFlotante`): en
+  cuanto `SlotSeleccionTk.ObjetoActual` sigue lleno (que es justo el caso, el clic fuera no lo vacia),
+  la vuelve a abrir SOLA el fotograma siguiente (`capa.Mostrar(_tarjetaFlotante, ...)`).
+- **El bucle que cierra el circulo**: el clic SI llega a la capa y SI la cierra un instante, pero
+  nunca alcanza lo que habia debajo (catalogo/arbol/busqueda) Y se reabre ella sola el fotograma
+  siguiente - no hay ningun clic real que un jugador pueda dar dentro de la Libreria que le deje
+  interactuar con el resto del panel mientras haya algo en el recuadro de seleccion. Coincide EXACTO
+  con "no se puede cerrar/interactuar correctamente y la Libreria queda practicamente bloqueada".
+
+**2) El propio gesto que el usuario usa para escapar (cambiar de pestaña superior) BORRA el objeto
+para siempre - un segundo bug, mas grave que el primero, encontrado investigando el "hasta cambiar de
+pestaña superior" del reporte.**
+- `UI/Libreria/Widgets/SlotSeleccionTk.cs:26-31` (XMLdoc de la propia clase): "arrastrar aqui MUEVE el
+  objeto de verdad" - el objeto sale de su ranura de origen (mochila, almacen...) y pasa a vivir en el
+  campo privado `_seleccion` mientras se edita.
+- `UI/Panel/PanelTerrakeepState.cs:586-636` (`CambiarArea`), lineas 609-612: en CUALQUIER cambio de
+  pestaña (incluido el que el usuario usa para escapar del bloqueo del punto 1) se hace
+  `_contenedor.RemoveChild(_contenidoActual); _contenidoActual = null;` y despues, linea 618, se
+  reconstruye `_contenidoActual = CrearContenido(area)` de cero.
+- **No existe ningun `OnDeactivate`/`Dispose` en `ContenidoLibreria`, `PanelHerramientasLibreriaTk` ni
+  `SlotSeleccionTk`** (comprobado con `grep` sobre `UI/Libreria/`: cero resultados) que devuelva
+  `SlotSeleccionTk.ObjetoActual` a ningun sitio antes de destruir el arbol. El objeto que estaba
+  "cogido" en el recuadro de seleccion no vuelve al inventario, no cae al suelo, no aparece en ningun
+  otro contenedor - simplemente deja de existir cuando el `PanelHerramientasLibreriaTk` viejo se
+  descuelga del arbol de UI y no queda ninguna referencia viva a el.
+
+### Reproducido en vivo con evidencia real, cliente grafico real
+
+Sandbox `tModLoader-TerrakeepWS3` (`scripts\verificar-libreria.ps1`), sin tocar ningun archivo de
+produccion. Nota de entorno: el bloqueo de audio que impidio verificar el cliente grafico en rondas
+anteriores (ver el cierre de WS0 mas arriba en esta bitacora) ya NO aplica en esta maquina - se
+comprobo con `Get-CimInstance Win32_SoundDevice` que ahora hay salida de audio real disponible (varios
+dispositivos con Status=OK, incluido un headset conectado), asi que el cliente arranca sin quedarse en
+el dialogo modal de `NoAudioHardwareException`.
+
+**Log real** (`evidencia\ws3-libreria.log.txt`, dos pasadas, la segunda con el paso 41 ya corregido
+para usar geometria en vivo de la capa en vez de la posicion de una ranura de catalogo que en la
+primera pasada resulto no fiable a esa altura de la secuencia):
+
+- Paso 40 - preparado el recuadro de seleccion con `"Mushroom" x10` (type=5, objeto real, arrastrado
+  con el mismo `ItemSlot.LeftClick`/`EjercitarHandle` que ya usan los pasos 15/18/26).
+- **Paso 41 - bug 1 reproducido**: clic real (`UIElement.GetElementAt`, la misma llamada que reparte
+  clics de verdad) en un punto DENTRO del rectangulo de la capa (`{X:31 Y:133 Width:1027 Height:370}`)
+  pero FUERA del rectangulo de la tarjeta flotante (`{X:501 Y:300 Width:240 Height:204}`), ambos leidos
+  en vivo el mismo fotograma. "El motor entrega el punto a: `CapaSuperposicionTk`." Se dispara ese
+  clic de verdad (`UIElement.LeftClick`): `TarjetaFlotanteAbierta` pasa de `True` a `False` (la capa
+  SI la cierra), pero el recuadro de seleccion sigue con `"Mushroom" x10` dentro (el clic fuera nunca
+  lo vacia).
+- **Paso 42 - bug 1 confirmado, el bucle cierra**: 12 fotogramas reales despues del clic del paso 41,
+  SIN pulsar nada mas, `TarjetaFlotanteAbierta` vuelve a ser `True` - se reabrio sola. Captura real del
+  back buffer guardada (`ws3-trampa-tarjeta-flotante.png`, inspeccionada visualmente: es
+  pixel-a-pixel la misma composicion que `imagen9.png` del reporte original - el panel "Edit item"
+  flotando sobre la Libreria con el objeto seleccionado dentro).
+- **Paso 43/44 - bug 2 confirmado, perdida real y medida del objeto**: antes de cambiar de pestaña, se
+  cuenta ese mismo tipo (Mushroom, type=5) en los 7 contenedores fijos del jugador
+  (`ContenidoLibreria.Destinos`, el mismo camino que ya recorre el paso 10) + papelera + suelo + raton
+  = **0** en cualquier sitio salvo el recuadro (confirma que ya habia salido de su origen, tal como
+  documenta `SlotSeleccionTk`). Se llama `PanelTerrakeepState.CambiarArea` real, Libreria -> Personaje
+  -> Libreria (el mismo gesto que el usuario usa para "escapar"). Tras eso: el `Contenido.Herramientas`
+  es una instancia NUEVA con el recuadro vacio, y ese mismo tipo sigue en **0** en TODOS los sitios de
+  antes - las 10 unidades que existian de verdad en el recuadro de seleccion ya no estan en ningun
+  sitio del juego. Borradas, no movidas.
+
+### Hueco de cobertura real que dejo pasar este bug
+
+La autoprueba nativa de WS3 tenia dos pasos (26-27, `PrepararTarjetaFlotante`/
+`ComprobarYCapturarTarjetaFlotante`) que solo comprobaban que la tarjeta flotante se ABRIA con datos
+reales; ninguno ejercitaba los gestos que el propio encargo del usuario pedia probar explicitamente
+("cancelar; click fuera; ... cambio de pestaña"). **Cerrado**: cinco pasos nuevos en
+`Common/Libreria/AutopruebaLibreria.cs` (casos 40-44 del switch, metodos `PrepararTrampaClicFuera`,
+`ComprobarTrampaClicFuera`, `ComprobarTrampaReabreSola`, `PrepararPerdidaAlCambiarPestana`,
+`ComprobarPerdidaAlCambiarPestana`, mas los helpers `EsDescendienteDe`/`ContarTotalDelTipoEnElJuego`),
+verificados en vivo dos veces (`AUTOPRUEBA WS3 COMPLETA` en las dos pasadas, ninguna excepcion). El
+dia que se aplique el arreglo, estos mismos pasos deberian invertir su criterio de "OK"/"NO CUADRA"
+(clic fuera SI deberia llegar a lo de abajo sin cerrar la tarjeta a la fuerza; el objeto SI deberia
+seguir existiendo despues de cambiar de pestaña) - los mensajes de log de cada paso ya explican que
+se esperaria ver tras el arreglo.
+
+### Lo que necesita `aplicador-fix` (el arreglo de produccion en si, que este rol NO aplica)
+
+**Bug 1 (bloqueo/atrapado)**: `TarjetaEdicionFlotanteTk` necesita un criterio de cierre propio,
+distinto del que usa `CapaSuperposicionTk` para un desplegable normal - la propia clase ya lo dice en
+su XMLdoc (`TarjetaEdicionFlotanteTk.cs:36-47`): "se sustituye por un criterio mas predecible... la
+tarjeta se muestra SIEMPRE que hay algo en el recuadro de seleccion, y se esconde sola en cuanto se
+arrastra de vuelta fuera" - esa era la intencion de diseño, pero en la practica la tarjeta vive DENTRO
+de `CapaSuperposicionTk`, que se comporta como un modal de zona completa sea cual sea su contenido.
+Opciones reales a valorar (sin decidir cual, es tarea de `aplicador-fix`):
+  - Que `CapaSuperposicionTk.LeftClick`/`RightClick` (lineas 165-180) NO cierre el contenido cuando es
+    la tarjeta flotante (un flag o una interfaz tipo `IContenidoPersistente` que el contenido pueda
+    marcar, para no acoplar la capa a un tipo concreto).
+  - O que la tarjeta NO viva en `CapaSuperposicionTk` en absoluto, sino en un contenedor propio,
+    pequeño (del tamaño real de la tarjeta, no de toda la zona de contenido) que NO intercepte el
+    resto de la Libreria - mas fiel a la intencion original documentada en su XMLdoc.
+  - Cualquier arreglo debe conservar que el desplegable de prefijo (`EditorPrefijoTk`, el uso ORIGINAL
+    de `CapaSuperposicionTk`) siga cerrandose con clic fuera - los dos contenidos comparten la misma
+    capa hoy (`PanelHerramientasLibreriaTk.cs:195-197`, "se cede el turno" si la capa la ocupa otra
+    cosa), asi que el arreglo tiene que distinguir cual de los dos esta dentro, no cambiar el
+    comportamiento global de la capa.
+
+**Bug 2 (perdida de objeto, el mas grave de los dos)**: antes de que `PanelTerrakeepState.CambiarArea`
+(`PanelTerrakeepState.cs:609-612`) destruya `_contenidoActual`, hace falta devolver
+`SlotSeleccionTk.ObjetoActual` a algun sitio real si no esta vacio - la ruta mas segura y ya probada
+en el propio mod es `Player.GetItem` (la misma que ya usa `ContenidoLibreria.PedirObjeto` en
+`UI/Libreria/ContenidoLibreria.cs:577` para el caso analogo de "el raton ya llevaba algo"), devolviendo
+al inventario del jugador y, si no cabe, considerando tirarlo al suelo en vez de borrarlo en silencio.
+El gancho mas limpio es un `OnDeactivate`/metodo de limpieza en `ContenidoLibreria` (que hoy no existe,
+confirmado por `grep`) llamado desde `CambiarArea` ANTES de `RemoveChild`, no despues - mismo patron ya
+usado por `CapaSuperposicionTk.OnDeactivate` (linea 155-159) para no dejar la capa "sorda" tras cerrar
+el panel.
+
+**Los dos bugs comparten la MISMA raiz de diseño**: `SlotSeleccionTk` fue pensado como un hueco
+transitorio (arrastrar, editar, arrastrar de vuelta), pero ni la capa que aloja su editor ni el ciclo
+de vida del panel que lo contiene tratan ese estado transitorio como algo que necesite un cierre
+limpio explicito - de ahi que el encargo pida textualmente "el editor debe poseer un ciclo de
+apertura/cierre limpio".
+
+### Confirmacion: ¿se reutiliza el mismo componente en otros sitios?
+
+`TarjetaEdicionFlotanteTk`/`PanelHerramientasLibreriaTk`/`SlotSeleccionTk` viven en `UI/Libreria/Widgets/`
+pero su propio XMLdoc (`PanelHerramientasLibreriaTk.cs:19-27`) documenta que **se reutilizan TAL CUAL**
+en las pestañas de Personaje que enseñan objetos reales (Inventario/Almacenes/Equipo) - confirmado con
+`grep` sobre el repo: `PanelHerramientasLibreriaTk`/`TarjetaEdicionFlotanteTk` aparecen instanciados
+tambien fuera de `UI/Libreria/`. **El arreglo de los dos bugs, al estar en el widget compartido y/o en
+`PanelTerrakeepState.CambiarArea` (que es unico, no por pestaña), cierra el bloqueo y la perdida de
+objeto en TODAS las pestañas que usan este mini-panel a la vez - no hace falta repetirlo pestaña por
+pestaña.** Esto tambien significa que el riesgo real (perdida de objetos reales del jugador) no esta
+acotado a la Libreria: cualquier pestaña de Personaje con este mismo mini-panel abierto y algo
+seleccionado sufre el mismo bug 2 si el jugador cambia de pestaña superior.
