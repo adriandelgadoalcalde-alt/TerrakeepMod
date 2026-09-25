@@ -674,13 +674,13 @@ namespace TerrakeepMod.Common.Exploracion
 		/// tendria que DIFERIR del pixel crudo del mapa - salvo la coincidencia casi imposible de
 		/// que el icono sea del mismo color exacto que el terreno de debajo.
 		/// <para />
-		/// Hoy (25-sep-2026, causa real documentada en bitacora.md) esto SIEMPRE compara igual,
-		/// porque <c>LienzoMapaTk.DibujarMarcadores</c> nunca itera <c>Main.npc[]</c>: solo dibuja
-		/// resultados de busqueda/marcado manual (<c>MarcadoresExploracion</c>/<c>MarcadoresGuia</c>),
-		/// el spawn y el jugador. En cuanto <c>aplicador-fix</c> añada el bucle real de NPCs, este
-		/// mismo canario dejara de coincidir en la posicion de cada NPC dibujado - el log de este
-		/// paso queda pensado para poder invertir el criterio ("MAL" -&gt; "OK") el dia que exista
-		/// ese bucle, sin tener que reescribir la tecnica de muestreo.
+		/// **CRITERIO INVERTIDO el 25-sep-2026 (rol aplicador-fix)**: hasta entonces esto SIEMPRE
+		/// comparaba igual, porque <c>LienzoMapaTk.DibujarMarcadores</c> nunca iteraba
+		/// <c>Main.npc[]</c>. Ya con el bucle real de cabezas de NPC de pueblo aplicado (mismo
+		/// metodo, justo antes del punto de aparicion), coincidir el pixel de pantalla con el pixel
+		/// crudo del mapa vuelve a significar lo que dice la tecnica: NADA dibujado encima, luego
+		/// MAL. El criterio de "BUG CONFIRMADO"/"OK" de mas abajo queda ya invertido respecto a la
+		/// version original de este metodo.
 		/// </remarks>
 		private static void ComprobarIconosNpcEnMinimapa(ContenidoExploracion panel)
 		{
@@ -744,8 +744,8 @@ namespace TerrakeepMod.Common.Exploracion
 					"): pixel EN PANTALLA=" + Rgba(pixelPantalla[0]) + ", pixel CRUDO del mapa del juego en ese mismo " +
 					"tile=" + Rgba(pixelMapaCrudo[0]) + (hayTextura ? "" : " (sin textura de mapa en esa casilla)") +
 					" -> " + (coincideConElMapaCrudo
-						? "IGUAL: no hay NINGUN icono propio dibujado sobre este NPC (bug reproducido)."
-						: "DISTINTO: hay algo dibujado sobre este NPC (no reproducido aqui, o ya arreglado)."));
+						? "IGUAL: MAL, no hay NINGUN icono propio dibujado sobre este NPC (bug reproducido)."
+						: "DISTINTO: OK, hay algo dibujado sobre este NPC (cabeza real del NPC de pueblo)."));
 			}
 
 			RegistroExploracion.Linea(Terrakeep.LogTag + " CANARIO NPC-EN-MINIMAPA - resumen: " + dentroDeLaVista +
@@ -753,9 +753,11 @@ namespace TerrakeepMod.Common.Exploracion
 				" sin ningun icono propio encima -> " +
 				(dentroDeLaVista == 0
 					? "INCONCLUSIVE: ningun NPC de pueblo activo caia dentro de la vista para comprobar."
-					: (sinIconoEncima == dentroDeLaVista
-						? "BUG CONFIRMADO: el mini-mapa no dibuja marcador propio para NINGUN NPC de pueblo activo."
-						: "el mini-mapa dibuja algo sobre al menos un NPC (revisar linea a linea arriba).")));
+					: (sinIconoEncima == 0
+						? "OK: el mini-mapa dibuja un marcador propio para TODOS los NPC de pueblo activos dentro de la vista."
+						: (sinIconoEncima == dentroDeLaVista
+							? "BUG CONFIRMADO: el mini-mapa no dibuja marcador propio para NINGUN NPC de pueblo activo."
+							: "MAL: el mini-mapa dibuja marcador solo para ALGUNOS NPC de pueblo activos (revisar linea a linea arriba)."))));
 		}
 
 		private static string Rgba(Color c)

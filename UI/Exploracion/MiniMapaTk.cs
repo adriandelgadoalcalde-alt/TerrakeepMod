@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Terraria;
 using Terraria.GameContent;
 using Terraria.GameInput;
+using Terraria.ID;
 using Terraria.UI;
 using TerrakeepMod.Common.Exploracion;
 
@@ -449,6 +450,44 @@ namespace TerrakeepMod.UI.Exploracion
 						LadoIcono, LadoIcono);
 					IconoResultado.Dibujar(spriteBatch, objetivo, resultado, destinoIcono, Color.White);
 				}
+
+				MarcadoresDibujados++;
+			}
+
+			// NPC de pueblo activos, con su cabeza REAL - lo que vanilla siempre dibuja en su propio
+			// mapa (Main.DrawMap, TownNPCProfiles.GetHeadIndexSafe + TextureAssets.NpcHead) y que
+			// este mini-mapa propio no replicaba: hasta hoy DibujarMarcadores solo pintaba
+			// resultados de busqueda, spawn y jugador (bug real reportado por el usuario, ver
+			// bitacora.md 25-sep-2026 - "Mapa interno de Exploracion no enseña los NPC del mundo").
+			// Se excluyen las mascotas de pueblo (NPCID.Sets.IsTownPet) con el mismo filtro que ya usa
+			// PestanaVecindad.Refrescar/MarcarCasasEnElMapa. Tamaño fijo (no escalado con el zoom, como
+			// el resto de marcadores de esta funcion): son señales, no cosas del mundo.
+			const float LadoCabezaNpc = 14f;
+			for (int i = 0; i < Main.maxNPCs; i++) {
+				NPC npcPueblo = Main.npc[i];
+				if (npcPueblo == null || !npcPueblo.active || !npcPueblo.townNPC) {
+					continue;
+				}
+				if (NPCID.Sets.IsTownPet[npcPueblo.type]) {
+					continue;
+				}
+
+				int indiceCabeza = TownNPCProfiles.GetHeadIndexSafe(npcPueblo);
+				if (indiceCabeza <= 0) {
+					continue;
+				}
+
+				Vector2 posicionNpc = _vista.TileAPantalla(npcPueblo.Center / 16f);
+				if (!marco.Contains((int)posicionNpc.X, (int)posicionNpc.Y)) {
+					continue;
+				}
+
+				Texture2D cabeza = TextureAssets.NpcHead[indiceCabeza].Value;
+				float mayorLado = cabeza.Width > cabeza.Height ? cabeza.Width : cabeza.Height;
+				float escalaCabeza = mayorLado > 0f ? LadoCabezaNpc / mayorLado : 1f;
+				Vector2 origenCabeza = new Vector2(cabeza.Width / 2f, cabeza.Height / 2f);
+				spriteBatch.Draw(cabeza, posicionNpc, null, Color.White, 0f, origenCabeza, escalaCabeza,
+					SpriteEffects.None, 0f);
 
 				MarcadoresDibujados++;
 			}

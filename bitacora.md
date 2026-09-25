@@ -10032,3 +10032,72 @@ objeto en TODAS las pestañas que usan este mini-panel a la vez - no hace falta 
 pestaña.** Esto tambien significa que el riesgo real (perdida de objetos reales del jugador) no esta
 acotado a la Libreria: cualquier pestaña de Personaje con este mismo mini-panel abierto y algo
 seleccionado sufre el mismo bug 2 si el jugador cambia de pestaña superior.
+
+## Mapa interno de Exploracion no enseña los NPC del mundo - ARREGLADO (rol aplicador-fix, 25-sep-2026)
+
+Continuacion de la entrada anterior ("Mapa interno de Exploracion no enseña los NPC del mundo -
+INVESTIGADO Y REPRODUCIDO"), que dejo la causa raiz confirmada, el arreglo propuesto y el canario ya
+escrito (`ComprobarIconosNpcEnMinimapa`, pasos 34-35 de `AutopruebaExploracion.cs`). Este rol aplica
+el arreglo de produccion siguiendo esa recomendacion tal cual.
+
+**Arreglo real**: `UI/Exploracion/MiniMapaTk.cs`, `LienzoMapaTk.DibujarMarcadores` - nuevo bucle
+`for (int i = 0; i < Main.maxNPCs; i++)` justo despues del bloque de resultados de busqueda y antes
+del punto de aparicion (mismo archivo/metodo que señalaba el hallazgo). Por cada `Main.npc[i]`
+`.active && .townNPC`, excluyendo mascotas de pueblo (`NPCID.Sets.IsTownPet[npc.type]`, mismo filtro
+ya usado en `PestanaVecindad.Refrescar`/`MarcarCasasEnElMapa`), calcula la posicion con
+`_vista.TileAPantalla(npc.Center / 16f)` (metodo publico ya existente) y comprueba visibilidad con
+`marco.Contains(...)`, igual que el resto del metodo para spawn/jugador. Para la fidelidad visual
+pedida (cabeza real del NPC, no un rombo/anillo generico), usa
+`TownNPCProfiles.GetHeadIndexSafe(npc)` + `TextureAssets.NpcHead[indice].Value` - el mismo par que usa
+vanilla en `Main.DrawMap` (`Terraria/Main.cs:71775`, confirmado en el decompilado real) - dibujado a
+tamaño fijo (lado maximo 14px, sin escalar con el zoom, igual que los demas marcadores de este mismo
+metodo) centrado con el origen en el medio de la textura. Se añadio `using Terraria.ID;` al archivo
+(hacia falta para `NPCID.Sets.IsTownPet`; `TownNPCProfiles`/`TextureAssets` ya estaban accesibles via
+el `using Terraria.GameContent;` existente).
+
+**`CapaMapaExploracion.cs` NO se ha tocado**, tal y como confirmo la investigacion: el mapa vanilla a
+pantalla completa ya dibuja sus propios iconos de cabeza de NPC por su cuenta (`Main.DrawMap`), el
+hueco real estaba solo en el mini-mapa propio de Terrakeep.
+
+**Canario invertido** (`Common/Exploracion/AutopruebaExploracion.cs`,
+`ComprobarIconosNpcEnMinimapa`): el criterio de "BUG CONFIRMADO"/"OK" estaba escrito para el estado
+CON el bug (coincidir el pixel de pantalla con el pixel crudo del mapa = bug). Con el arreglo ya
+aplicado ese mismo criterio se invierte por diseño (asi lo dejo documentado el propio XML-doc del
+metodo): coincidir vuelve a significar "nada dibujado ahi" = MAL, y ahora el resumen distingue tres
+casos (ninguno/todos/algunos de los NPC dentro de la vista con icono propio) en vez de los dos
+originales.
+
+**Verificado en vivo, mismo sandbox real** `tModLoader-TerrakeepWS6` (NPCs reales "Zach" y
+"Anciano"), `scripts\verificar-exploracion.ps1` de punta a punta (compila, lanza el cliente grafico
+real, ejecuta la autoprueba completa):
+- Log real (`terrakeep-ws6-evidencia.log`, pasos 34-35): con el mini-mapa centrado en el jugador
+  (tile 2096,268) sin busqueda ni marcado manual en marcha, "Anciano" queda fuera de la vista actual
+  (se omite, correcto) y "Zach" (tile 2110,269, pantalla 550,442) da pixel EN PANTALLA=
+  `RGBA(174, 101, 14, 255)` frente a pixel CRUDO del mapa=`RGBA(131, 164, 255, 255)` ->
+  **DISTINTO: OK, hay algo dibujado sobre este NPC (cabeza real del NPC de pueblo)**. Resumen: "1 NPC
+  de pueblo activos dentro de la vista actual del mini-mapa, 0 sin ningun icono propio encima -> OK:
+  el mini-mapa dibuja un marcador propio para TODOS los NPC de pueblo activos dentro de la vista."
+  Antes del arreglo, este mismo canario daba "IGUAL" y "BUG CONFIRMADO" (ver entrada anterior).
+- `AUTOPRUEBA WS6 COMPLETA` encontrada en el log -> sin regresion en el resto de pasos 1-33 de la
+  misma pasada (mini-mapa, arrastre, zoom, busqueda, Vecindad, Rebobinar, dificultad, etc., todos con
+  su "OK" habitual en el mismo log).
+- Captura real (`terrakeep-capturas\ws6-minimapa-sin-iconos-npc.png` del sandbox WS6, recorte
+  ampliado en el scratchpad de la sesion): el rombo/anillo blanco del jugador y, a su lado, la cabeza
+  real de "Zach" (pelo castaño, sprite reconocible), sin solapamiento entre los dos marcadores y con
+  un tamaño en pantalla coherente con el resto de iconos del mini-mapa (14px de lado maximo, mismo
+  orden de magnitud que el rombo de 15x15 de `IconosExploracion`). Antes del arreglo esa misma zona
+  solo mostraba el diamante del jugador (ver captura y log de la entrada de investigacion).
+
+**Compilacion y redespliegue reales**: `scripts\compilar.ps1` sin errores (solo los avisos benignos ya
+documentados: `CS1701` de Newtonsoft.Json y el `WARN: Image loading failed` de `icon_small.png`) ->
+`.tmod` real regenerado en `Mods\TerrakeepMod.tmod` (829113 bytes, 25/09/2026 20:20:39). El propio
+`scripts\verificar-exploracion.ps1` recompilo y redesplego ademas la copia del sandbox
+(`tModLoader-TerrakeepWS6\Mods\TerrakeepMod.tmod`, 829111 bytes) para la pasada de verificacion en
+vivo. No aplica el patron "barra de tareas + copia instalada" de las apps WPF de la familia (Terrakeep
+escritorio, Starvekeep): este es un mod de tModLoader, su unico artefacto instalado es el `.tmod` en
+`Mods\`, y ese es justo el que ha quedado actualizado.
+
+**Commit**: `UI/Exploracion/MiniMapaTk.cs` (arreglo real) y
+`Common/Exploracion/AutopruebaExploracion.cs` (inversion del criterio del canario), ambos ya en el
+working set de la investigacion previa. No se ha tocado `CapaMapaExploracion.cs` ni ningun otro
+archivo fuera de este alcance.
