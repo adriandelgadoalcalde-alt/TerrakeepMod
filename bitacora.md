@@ -9760,3 +9760,105 @@ resto de la cabecera.
 
 **Redespliegue real**: `scripts\compilar.ps1` sin errores, `.tmod` real actualizado
 (`824767 bytes, 21/09/2026 11:06:03`).
+
+## Mapa interno de Exploracion no enseña los NPC del mundo - INVESTIGADO Y REPRODUCIDO (rol investigador-bug, no aplica el arreglo)
+
+Bug reportado por el usuario (texto, sin captura): "Mapa interno de Exploracion. No se visualizan
+correctamente los NPC. Ahora aparecen basicamente: mi posicion; spawn. Deben aparecer los NPC que
+corresponda utilizando el estado real del mundo. Comprobar vanilla y, cuando aplique, modded."
+Investigacion de dos fases (disciplina del proyecto): esta entrada es SOLO la fase 1
+(investigador-bug). **No se ha tocado ningun archivo de produccion** - unicamente el arnes nativo
+(`Common/Exploracion/AutopruebaExploracion.cs`) y esta bitacora.
+
+**Causa raiz real, confirmada leyendo el codigo** (`UI/Exploracion/MiniMapaTk.cs`, metodo
+`LienzoMapaTk.DibujarMarcadores`, lineas 423-471): ese metodo dibuja tres cosas y solo tres -
+resultados de busqueda manual (`MarcadoresExploracion.Resultados`/`MarcadoresGuia.Resultados`), el
+punto de aparicion (`Main.spawnTileX/Y`) y el jugador (`Main.LocalPlayer`). **En ningun punto del
+archivo hay un bucle sobre `Main.npc[]`** para dibujar un icono POR CADA NPC de pueblo activo - la
+unica funcion de este mismo archivo que SI recorre `Main.npc[]` es
+`PestanaMapa.NombreBajoElCursor` (linea 241), y solo para el TEXTO bajo el cursor al pasar el raton,
+nunca para pintar nada en el lienzo. El mismo patron se repite en el mapa vanilla a pantalla completa
+del propio mod: `Common/Exploracion/CapaMapaExploracion.cs` (el `ModMapLayer` que pinta encima del
+mapa grande de Terraria) tampoco itera NPCs, solo los mismos dos conjuntos de resultados de
+busqueda/brujula.
+
+**Contraste real con vanilla** (pedido explicito del encargo: "comprobar vanilla"), leido en el
+codigo decompilado real e instalado (`Downloads\Keep\tModLoader-Decompiled\tModLoader\Terraria\
+Main.cs`, v1.4.4.9, la MISMA version instalada): el propio `Main.DrawMap` (mapa vanilla, tanto el
+mini-mapa de la esquina como el mapa a pantalla completa) SI dibuja un icono de cabeza por CADA NPC
+de pueblo activo, siempre, sin que el jugador pida nada -
+`for (int m = 0; m < 200; m++) { if (npc[m].active && npc[m].townNPC) { ... DrawNPCHeadFriendly(...) } }`
+(linea 71771-71791, con dos copias mas del mismo bucle en 71890 y 72174 para las otras vistas del
+mapa) mas un bucle equivalente para jefes (`GetBossHeadTextureIndex()`,
+`DrawNPCHeadBoss`). O sea: el propio vanilla de Terraria SI muestra la posicion en vivo de cada NPC
+de pueblo en su mapa sin busqueda manual - es justo la funcion que el mini-mapa de Terrakeep no
+replica. **Modded (Calamity)**: no aplica aqui como causa aparte - Calamity no registra NPCs de
+pueblo con ningun mecanismo de mapa distinto de vanilla (son `ModNPC` normales con
+`NPC.townNPC=true`), asi que el mismo bucle que falta en `MiniMapaTk` cubriria tambien a los NPC de
+pueblo de Calamity sin necesitar nada especifico del mod; no se ha localizado ningun mundo de prueba
+con NPCs de pueblo de Calamity asentados para una comprobacion en vivo (LIMITE REAL: no verificado
+in-game con Calamity, solo por lectura de su modelo de NPCs, que es identico al de vanilla en este
+aspecto).
+
+**Reproducido en vivo con evidencia real**, sandbox `tModLoader-TerrakeepWS6` (2 NPC de pueblo reales
+asentados: "Zach" y "Anciano", ver `scripts\verificar-exploracion.ps1`), sin tocar ningun archivo de
+produccion:
+- Log real (`evidencia\ws6-exploracion.log.txt`, paso "AUTOPRUEBA WS6/2"): con el mini-mapa centrado
+  en el jugador (tile 2096,268), sin ninguna busqueda ni marcado manual en marcha, "Zach" (a solo 15
+  tiles) y "Conejo" (69 tiles, NPC normal, no de pueblo) estan dentro de la vista, y
+  `marcadores dibujados: 0`.
+- Captura real (`ws6-minimapa-sin-iconos-npc.png`, tambien en `terrakeep-capturas\` del sandbox): el
+  mini-mapa muestra el diamante blanco del jugador y nada mas en el terreno de alrededor - ningun
+  icono en la posicion real de Zach, a menos de 40px de distancia en pantalla.
+- **Canario nuevo que cierra el hueco de cobertura** (ver mas abajo): comparacion de pixeles EXACTA,
+  no visual a ojo - `RGBA(131, 164, 255, 255)` en pantalla, en la posicion exacta de "Zach", es
+  BYTE A BYTE identico al pixel CRUDO de `Main.instance.mapTarget` en ese mismo tile. Con
+  `SamplerState.PointClamp` (sin mezcla de color, confirmado en el XML-doc de `MiniMapaTk`), una
+  coincidencia exacta de RGB solo es posible si NADA se ha dibujado encima del mapa en ese punto -
+  prueba directa y medida de que no existe ningun marcador de NPC, no una inferencia.
+
+**Hueco de cobertura real que dejo pasar este bug**: la autoprueba nativa de WS6 (`AutopruebaExploracion.cs`)
+ya comprobaba tres cosas relacionadas con NPCs - el nombre bajo el cursor (paso 6), la BUSQUEDA manual
+"NPC vivos ahora mismo" (paso 9) y el boton "Marcar casas en el mapa" de Vecindad (paso 25) - pero
+NINGUNA de las tres demuestra que el mini-mapa enseñe la posicion en vivo de un NPC SIN que el
+jugador pida nada, que es justo el comportamiento vanilla que falta. **Cerrado**: nuevos pasos 34-35
+en `AutopruebaExploracion.cs` (metodo nuevo `ComprobarIconosNpcEnMinimapa`) que centran el mini-mapa
+en el jugador sin busqueda/marcado en marcha y, para cada NPC de pueblo activo dentro de la vista,
+comparan el pixel real de pantalla (`GraphicsDevice.GetBackBufferData` con el overload de
+`Rectangle`, confirmado con `ilspycmd` sobre `FNA.dll` que existe esa sobrecarga de 1x1 pixel) contra
+el pixel crudo de `mapTarget` en ese mismo tile (misma tecnica ya establecida por
+`ComprobarPixelDelMapa`). Verificado en vivo dos veces (sandbox WS6, `AUTOPRUEBA WS6 COMPLETA` en las
+dos pasadas) - la segunda con la coincidencia de pixel documentada arriba.
+
+**Obstaculo real de sesion (no del bug)**: la primera pasada tras escribir el canario fallo a compilar
+por una colision real con OTRO agente trabajando en paralelo en `Common/Libreria/AutopruebaLibreria.cs`
+(WS3, casos 40-44 llamando a metodos que ese agente todavia no habia terminado de escribir) - archivo
+fuera de mi working set, no tocado. Confirmado con `git diff` que el archivo llevaba cambios ajenos en
+curso. Una segunda pasada, sin volver a tocar nada, compilo sin errores (el otro agente ya habia
+terminado su edicion) - documentado aqui por la regla de "si algo falla dos veces seguidas, escribirlo",
+aunque en este caso el segundo intento SI paso.
+
+**Lo que necesita `aplicador-fix`** (el arreglo de produccion en si, que este rol NO aplica):
+- Archivo/metodo: `UI/Exploracion/MiniMapaTk.cs`, `LienzoMapaTk.DibujarMarcadores` (linea 423 en
+  adelante). Añadir un bucle `for (int i = 0; i < Main.maxNPCs; i++)` sobre `Main.npc[i]`, filtrando
+  `.active && .townNPC` (y probablemente excluyendo mascotas de pueblo con
+  `NPCID.Sets.IsTownPet[npc.type]`, mismo filtro ya usado en `PestanaVecindad.Refrescar`/
+  `MarcarCasasEnElMapa`), calculando la posicion en pantalla con `TileAPantalla(npc.Center / 16f)`
+  (metodo publico YA existente en `MiniMapaTk`) y comprobando visibilidad con `marco.Contains(...)`,
+  igual que ya hace el resto de `DibujarMarcadores` para el spawn/jugador. Vanilla usa la cabeza real
+  del NPC (`TownNPCProfiles.GetHeadIndexSafe` + `TextureAssets.NpcHead`); lo mas fiel al catalogo
+  real de la app seria replicar ESO (cabeza real del NPC, como en vanilla) en vez de reutilizar el
+  rombo/anillo generico que ya usan spawn y jugador, para que sea reconocible cual NPC es cual de un
+  vistazo (igual que el propio mapa de Terraria).
+- El MISMO arreglo, si se implementa como metodo compartido, cierra tambien `CapaMapaExploracion.cs`
+  (el mapa vanilla a pantalla completa), que tiene el mismo hueco por la misma razon.
+- El canario nuevo (`ComprobarIconosNpcEnMinimapa`, pasos 34-35) queda ESCRITO PARA HOY (bug presente):
+  compara pixel real vs. pixel crudo del mapa y marca "BUG CONFIRMADO" cuando coinciden. El dia que se
+  aplique el arreglo, ese mismo canario dejara de coincidir en la posicion de cada NPC dibujado - el
+  criterio de "OK"/"MAL" del log esta comentado en el XML-doc del metodo para que se invierta entonces
+  (coincidir = MAL, no coincidir = OK) sin tener que reescribir la tecnica de muestreo.
+- Confirmar tambien, tras el arreglo, que el `ModMapLayer` de `CapaMapaExploracion.cs` NO necesita
+  tocarse si vanilla ya pinta sus propios iconos de NPC en el mapa a pantalla completa por su cuenta
+  (`Main.DrawMap` los dibuja siempre, sea cual sea el mod) - el hueco real, confirmado con evidencia,
+  esta SOLO en el mini-mapa PROPIO de Terrakeep (`MiniMapaTk`), no en el mapa vanilla al que se salta
+  con "Ver en el mapa del juego".

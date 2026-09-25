@@ -622,11 +622,145 @@ namespace TerrakeepMod.Common.Exploracion
 					break;
 				}
 
+				// ---------------------------------------------------------------------------
+				// CANARIO NPC-EN-MINIMAPA (25-sep-2026, investigacion del bug real reportado por
+				// el usuario: "el mapa interno de Exploracion no muestra los NPC reales del
+				// mundo, solo mi posicion y el spawn"). Cierra el hueco de cobertura real: hasta
+				// hoy ninguna pasada de esta autoprueba comprobaba si un NPC de pueblo ACTIVO
+				// tiene su propio marcador en el mini-mapa (los pasos 6/9/25 de mas arriba solo
+				// comprueban el nombre bajo el cursor, la BUSQUEDA manual "NPC vivos ahora
+				// mismo" y las CASAS marcadas a mano por el boton de Vecindad - ninguno de los
+				// tres demuestra que el mini-mapa ENSEÑE la posicion en vivo de un NPC sin que el
+				// jugador pida nada). Ver ComprobarIconosNpcEnMinimapa mas abajo para la tecnica.
+				// ---------------------------------------------------------------------------
+
 				case 34:
+					panel.CambiarPestana(0);
+					panel.Mapa.Mapa.CentrarEnJugador();
+					RegistroExploracion.Linea(Terrakeep.LogTag + " CANARIO NPC-EN-MINIMAPA - mini-mapa centrado en el " +
+						"jugador (sin ninguna busqueda ni marcado manual en marcha) para comprobar si los NPC de pueblo " +
+						"activos tienen marcador propio: " + panel.Mapa.Mapa.Informe());
+					Siguiente(15);
+					break;
+
+				case 35:
+					RegistroExploracion.Linea(Terrakeep.LogTag + " CANARIO NPC-EN-MINIMAPA - " +
+						CapturaDePantalla.Guardar("ws6-minimapa-sin-iconos-npc"));
+					ComprobarIconosNpcEnMinimapa(panel);
+					Siguiente(5);
+					break;
+
+				case 36:
 					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6 COMPLETA.");
 					_enMarcha = false;
 					break;
 			}
+		}
+
+		/// <summary>
+		/// CANARIO que cierra el hueco de cobertura real de este bug: para cada NPC de pueblo
+		/// ACTIVO que caiga dentro de la vista actual del mini-mapa, compara el pixel REAL que hay
+		/// en pantalla justo en su posicion con el pixel CRUDO que tiene <c>Main.instance.mapTarget</c>
+		/// en ese mismo tile (misma cuenta exacta que ya usa <see cref="ComprobarPixelDelMapa"/>).
+		/// </summary>
+		/// <remarks>
+		/// <b>Por que la comparacion de pixeles es una prueba valida y no una intuicion.</b>
+		/// <see cref="TerrakeepMod.UI.Exploracion.LienzoMapaTk"/> dibuja el mapa con
+		/// <c>SamplerState.PointClamp</c> (ver <c>MiniMapaTk</c>, XML-doc de la clase): muestreo por
+		/// vecino mas cercano, SIN mezcla de color. Eso significa que, si nada se dibuja ENCIMA del
+		/// mapa en un punto de pantalla, el color que hay ahi es EXACTAMENTE (no "parecido") el
+		/// mismo que el pixel de origen de <c>mapTarget</c>, sin importar el zoom. Si algo (un
+		/// icono, un marcador) se dibujase encima de la posicion del NPC, el pixel de pantalla
+		/// tendria que DIFERIR del pixel crudo del mapa - salvo la coincidencia casi imposible de
+		/// que el icono sea del mismo color exacto que el terreno de debajo.
+		/// <para />
+		/// Hoy (25-sep-2026, causa real documentada en bitacora.md) esto SIEMPRE compara igual,
+		/// porque <c>LienzoMapaTk.DibujarMarcadores</c> nunca itera <c>Main.npc[]</c>: solo dibuja
+		/// resultados de busqueda/marcado manual (<c>MarcadoresExploracion</c>/<c>MarcadoresGuia</c>),
+		/// el spawn y el jugador. En cuanto <c>aplicador-fix</c> añada el bucle real de NPCs, este
+		/// mismo canario dejara de coincidir en la posicion de cada NPC dibujado - el log de este
+		/// paso queda pensado para poder invertir el criterio ("MAL" -&gt; "OK") el dia que exista
+		/// ese bucle, sin tener que reescribir la tecnica de muestreo.
+		/// </remarks>
+		private static void ComprobarIconosNpcEnMinimapa(ContenidoExploracion panel)
+		{
+			MiniMapaTk mapa = panel.Mapa.Mapa;
+			Terraria.UI.CalculatedStyle dim = mapa.GetDimensions();
+			Rectangle marco = new Rectangle((int)dim.X, (int)dim.Y, (int)dim.Width, (int)dim.Height);
+			Microsoft.Xna.Framework.Graphics.GraphicsDevice dispositivo = Main.instance.GraphicsDevice;
+
+			int dentroDeLaVista = 0;
+			int sinIconoEncima = 0;
+
+			for (int i = 0; i < Main.maxNPCs; i++) {
+				NPC npcActivo = Main.npc[i];
+				if (npcActivo == null || !npcActivo.active || !npcActivo.townNPC) {
+					continue;
+				}
+
+				Vector2 tile = npcActivo.Center / 16f;
+				Vector2 pantalla = mapa.TileAPantalla(tile);
+				int sx = (int)pantalla.X;
+				int sy = (int)pantalla.Y;
+				if (!marco.Contains(sx, sy)) {
+					RegistroExploracion.Linea(Terrakeep.LogTag + " CANARIO NPC-EN-MINIMAPA - \"" +
+						npcActivo.GivenOrTypeName + "\" queda FUERA de la vista actual del mini-mapa " +
+						"(tile " + (int)tile.X + "," + (int)tile.Y + " -> pantalla " + sx + "," + sy +
+						"), se omite de la comprobacion.");
+					continue;
+				}
+				dentroDeLaVista++;
+
+				Color[] pixelPantalla = new Color[1];
+				dispositivo.GetBackBufferData(new Rectangle(sx, sy, 1, 1), pixelPantalla, 0, 1);
+
+				int wx = (int)tile.X;
+				int wy = (int)tile.Y;
+				int k = wx / Main.textureMaxWidth;
+				int l = wy / Main.textureMaxHeight;
+				Color[] pixelMapaCrudo = new Color[1];
+				bool hayTextura = false;
+				if (Main.instance.mapTarget != null &&
+					k >= 0 && k < Main.instance.mapTarget.GetLength(0) &&
+					l >= 0 && l < Main.instance.mapTarget.GetLength(1)) {
+					Microsoft.Xna.Framework.Graphics.RenderTarget2D trozo = Main.instance.mapTarget[k, l];
+					if (trozo != null && !trozo.IsDisposed && !trozo.IsContentLost) {
+						trozo.GetData(0, new Rectangle(wx % Main.textureMaxWidth, wy % Main.textureMaxHeight, 1, 1),
+							pixelMapaCrudo, 0, 1);
+						hayTextura = true;
+					}
+				}
+
+				bool coincideConElMapaCrudo = hayTextura &&
+					pixelPantalla[0].R == pixelMapaCrudo[0].R &&
+					pixelPantalla[0].G == pixelMapaCrudo[0].G &&
+					pixelPantalla[0].B == pixelMapaCrudo[0].B;
+				if (coincideConElMapaCrudo) {
+					sinIconoEncima++;
+				}
+
+				RegistroExploracion.Linea(Terrakeep.LogTag + " CANARIO NPC-EN-MINIMAPA - \"" +
+					npcActivo.GivenOrTypeName + "\" activo en tile (" + wx + "," + wy + "), pantalla (" + sx + "," + sy +
+					"): pixel EN PANTALLA=" + Rgba(pixelPantalla[0]) + ", pixel CRUDO del mapa del juego en ese mismo " +
+					"tile=" + Rgba(pixelMapaCrudo[0]) + (hayTextura ? "" : " (sin textura de mapa en esa casilla)") +
+					" -> " + (coincideConElMapaCrudo
+						? "IGUAL: no hay NINGUN icono propio dibujado sobre este NPC (bug reproducido)."
+						: "DISTINTO: hay algo dibujado sobre este NPC (no reproducido aqui, o ya arreglado)."));
+			}
+
+			RegistroExploracion.Linea(Terrakeep.LogTag + " CANARIO NPC-EN-MINIMAPA - resumen: " + dentroDeLaVista +
+				" NPC de pueblo activos dentro de la vista actual del mini-mapa, " + sinIconoEncima +
+				" sin ningun icono propio encima -> " +
+				(dentroDeLaVista == 0
+					? "INCONCLUSIVE: ningun NPC de pueblo activo caia dentro de la vista para comprobar."
+					: (sinIconoEncima == dentroDeLaVista
+						? "BUG CONFIRMADO: el mini-mapa no dibuja marcador propio para NINGUN NPC de pueblo activo."
+						: "el mini-mapa dibuja algo sobre al menos un NPC (revisar linea a linea arriba).")));
+		}
+
+		private static string Rgba(Color c)
+		{
+			return "RGBA(" + c.R + ", " + c.G + ", " + c.B + ", " + c.A + ")";
 		}
 
 		/// <summary>
