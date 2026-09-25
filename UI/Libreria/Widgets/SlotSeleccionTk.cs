@@ -66,6 +66,50 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 			ItemSlot.Handle(ref _seleccion, ItemSlot.Context.InventoryItem);
 		}
 
+		/// <summary>
+		/// Devuelve lo que haya dentro AL JUGADOR de verdad, nunca lo borra en silencio: primero al
+		/// inventario con <c>Player.GetItem</c> - el mismo patron ya usado por
+		/// <c>ContenidoLibreria.PedirObjeto</c> y <c>PanelTerrakeepState.DevolverObjetoDelRaton</c> -
+		/// y si no cabe entero, lo que sobre se tira al suelo junto al jugador con
+		/// <c>Item.NewItem</c> en vez de perderse. Deja el recuadro vacio siempre, quepa o no.
+		/// <para />
+		/// Hay que llamarlo SIEMPRE antes de que el <c>PanelHerramientasLibreriaTk</c> que aloja
+		/// este recuadro se destruya al cambiar de pestaña (<c>PanelHerramientasLibreriaTk.
+		/// Limpiar</c>, invocada desde <c>PanelTerrakeepState.CambiarArea</c> y <c>ContenidoPersonaje
+		/// .CambiarPestana</c>) - bug real, "perdida de objeto al cambiar de pestaña", investigado y
+		/// documentado en bitacora.md: sin esto, las unidades que hubiera aqui (que ya habian salido
+		/// de su hueco de origen al arrastrarlas, ver el XMLdoc de la clase) simplemente dejaban de
+		/// existir en cuanto el widget viejo se descolgaba del arbol de UI.
+		/// </summary>
+		public void DevolverAlJugador()
+		{
+			if (_seleccion == null || _seleccion.IsAir) {
+				return;
+			}
+
+			// Player.GetItem (decompilado, Player.GetItem_FillEmptyInventorySlot) NO vacia el
+			// Item que se le pasa cuando lo coloca en una ranura vacia: mete la MISMA referencia
+			// tal cual (inventory[i] = returnItem), sin tocar su .stack. Por eso _seleccion se
+			// reasigna a un Item nuevo justo debajo en vez de fiarse de que GetItem lo deje a
+			// cero - confirmado con evidencia real (log de diagnostico temporal, WS3) al
+			// investigar por que el recuento de la autoprueba salia x2 tras este arreglo: el
+			// objeto SI se devolvia bien, entero, a una sola ranura - el x2 era un artefacto
+			// previo y ajeno de AutopruebaLibreria.ContarTotalDelTipoEnElJuego (los destinos
+			// "Inventario" y "Monedas" comparten el mismo Item[] sin recortar por rango, asi que
+			// cualquier objeto en las primeras 50 ranuras se cuenta dos veces) - no un fallo de
+			// este metodo. Documentado en bitacora.md para quien investigue ese detalle despues.
+			Item sobrante = Main.LocalPlayer.GetItem(Main.myPlayer, _seleccion,
+				GetItemSettings.InventoryUIToInventorySettings);
+
+			if (sobrante != null && !sobrante.IsAir) {
+				// No cabia entero en el inventario: se tira al suelo real junto al jugador, en vez
+				// de perder en silencio lo que no encajo.
+				Item.NewItem(Main.LocalPlayer.GetSource_DropAsItem(), Main.LocalPlayer.Center, sobrante);
+			}
+
+			_seleccion = new Item();
+		}
+
 		protected override void DrawSelf(SpriteBatch spriteBatch)
 		{
 			float escalaPrevia = Main.inventoryScale;

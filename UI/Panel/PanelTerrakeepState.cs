@@ -81,6 +81,7 @@ namespace TerrakeepMod.UI.Panel
 		private UIPanel _marco;
 		private UIElement _contenedor;
 		private CapaSuperposicionTk _capaSuperposicion;
+		private HospedajeFlotanteTk _hospedajeFlotante;
 		private readonly List<BotonTk> _botonesPestana = new List<BotonTk>();
 		private BotonTk _botonCerrar;
 
@@ -157,6 +158,11 @@ namespace TerrakeepMod.UI.Panel
 		/// <see cref="CapaSuperposicionTk"/> para el porque de que exista.</summary>
 		public CapaSuperposicionTk CapaSuperposicion => _capaSuperposicion;
 
+		/// <summary>El hospedaje donde flota el contenido PERSISTENTE del panel (hoy, la tarjeta
+		/// de edicion flotante de Libreria/Personaje). Ver <see cref="HospedajeFlotanteTk"/> para
+		/// el porque de que sea un hueco distinto de <see cref="CapaSuperposicion"/>.</summary>
+		public HospedajeFlotanteTk HospedajeFlotante => _hospedajeFlotante;
+
 		/// <summary>SOLO PARA AUTOPRUEBAS: el texto que se ve ahora mismo en el chip de DPS de la
 		/// cabecera (idea 2 del catalogo de funciones, ver <see cref="MedidorDanio"/>).</summary>
 		public string ChipDpsParaPrueba => _chipDps != null ? _chipDps.Texto : "";
@@ -199,6 +205,10 @@ namespace TerrakeepMod.UI.Panel
 				else if (ReferenceEquals(hijo, _capaSuperposicion)) {
 					etiqueta = "CapaSuperposicionTk" +
 						(_capaSuperposicion.Ocupada ? " OCUPADA" : " vacia");
+				}
+				else if (ReferenceEquals(hijo, _hospedajeFlotante)) {
+					etiqueta = "HospedajeFlotanteTk" +
+						(_hospedajeFlotante.Ocupada ? " OCUPADA" : " vacia");
 				}
 				if (texto.Length > 0) {
 					texto.Append(" | ");
@@ -268,6 +278,17 @@ namespace TerrakeepMod.UI.Panel
 			_capaSuperposicion.Top.Set(arribaContenido, 0f);
 			_capaSuperposicion.Height.Set(-(arribaContenido + AltoPie), 1f);
 			_marco.Append(_capaSuperposicion);
+
+			// Misma geometria que _capaSuperposicion (toda la zona de contenido, por conveniencia
+			// de coordenadas: PanelHerramientasLibreriaTk.PosicionarTarjetaFlotante calcula la
+			// posicion de la tarjeta dentro de esta area exactamente igual que ya calculaba dentro
+			// de la capa) pero NO es modal - ver el XMLdoc de HospedajeFlotanteTk para el porque de
+			// que haga falta un hueco aparte para contenido persistente.
+			_hospedajeFlotante = new HospedajeFlotanteTk();
+			_hospedajeFlotante.Width.Set(0f, 1f);
+			_hospedajeFlotante.Top.Set(arribaContenido, 0f);
+			_hospedajeFlotante.Height.Set(-(arribaContenido + AltoPie), 1f);
+			_marco.Append(_hospedajeFlotante);
 
 			CambiarArea(UltimaArea, "reapertura");
 		}
@@ -607,6 +628,15 @@ namespace TerrakeepMod.UI.Panel
 			}
 
 			if (_contenidoActual != null) {
+				// Bug real, "perdida de objeto al cambiar de pestaña" (bitacora.md): si habia algo
+				// en el recuadro de seleccion de PanelHerramientasLibreriaTk (Libreria o cualquiera
+				// de las pestañas de Personaje que lo reutilizan), ese objeto ya habia salido de su
+				// hueco de origen (SlotSeleccionTk lo mueve de verdad, no lo copia) y no vivia en
+				// NINGUN array del jugador - destruir _contenidoActual sin devolverlo antes lo
+				// borraba en silencio, sin que apareciera ni en el inventario ni en el suelo. Hay
+				// que hacerlo ANTES de RemoveChild, nunca despues (una vez fuera del arbol no queda
+				// ninguna referencia viva al widget).
+				PanelHerramientasLibreriaTk.LimpiarTodosLosQueCuelguenDe(_contenidoActual);
 				_contenedor.RemoveChild(_contenidoActual);
 				_contenidoActual = null;
 			}
@@ -1430,6 +1460,7 @@ namespace TerrakeepMod.UI.Panel
 				// a clasificarse como "controles" - quedarian atrapados como "panel", que no es lo
 				// que son de verdad.
 				case CapaSuperposicionTk _:
+				case HospedajeFlotanteTk _:
 					return "overlay";
 				case BotonTk _:
 				case SlotObjetoVanilla _:

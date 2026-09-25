@@ -156,21 +156,34 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 		/// Muestra/esconde la tarjeta flotante segun si <see cref="SlotSeleccionTk.ObjetoActual"/>
 		/// tiene algo ahora mismo - nunca un evento de clic que rastrear, ver el XMLdoc de
 		/// <see cref="TarjetaEdicionFlotanteTk"/> para el porque real de esta decision.
+		/// <para />
+		/// Vive en <see cref="HospedajeFlotanteTk"/>, NO en <see cref="CapaSuperposicionTk"/> (donde
+		/// vivia antes de que se investigara y arreglara el bug real "editor atrapado"/"trampa
+		/// tarjeta flotante" documentado en bitacora.md): esa capa es modal a proposito para
+		/// desplegables de un solo uso (el selector de prefijo), y siendo la tarjeta un editor
+		/// PERSISTENTE, vivir ahi hacia que cualquier clic dentro de la zona de contenido de la
+		/// Libreria (catalogo, arbol, busqueda) quedara inalcanzable mientras hubiera algo en el
+		/// recuadro de seleccion - ver el XMLdoc de <see cref="HospedajeFlotanteTk"/> para el porque
+		/// tecnico exacto (codigo real de <c>UIElement.GetElementAt</c>, decompilado antes de
+		/// escribir esto). Al vivir en un hospedaje separado y no modal, tambien desaparece de raiz
+		/// la disputa que antes tenia esta misma tarjeta con el desplegable de <c>EditorPrefijoTk</c>
+		/// por la unica plaza de <c>CapaSuperposicionTk</c> (ya no comparten hueco: pueden estar los
+		/// dos a la vez sin expulsarse).
 		/// </summary>
 		private void ActualizarTarjetaFlotante()
 		{
 			bool hayObjeto = _seleccion.ObjetoActual != null && !_seleccion.ObjetoActual.IsAir;
-			CapaSuperposicionTk capa = CapaSuperposicionTk.Buscar(this);
-			if (capa == null) {
-				// Montado suelto (una prueba sin panel alrededor, p.ej.): sin capa no hay donde
-				// flotar la tarjeta con seguridad, se deja sin mostrar en vez de arriesgar el
-				// mismo desborde real que la propia CapaSuperposicionTk existe para evitar.
+			HospedajeFlotanteTk hospedaje = HospedajeFlotanteTk.Buscar(this);
+			if (hospedaje == null) {
+				// Montado suelto (una prueba sin panel alrededor, p.ej.): sin hospedaje no hay donde
+				// flotar la tarjeta con seguridad, se deja sin mostrar en vez de arriesgar el mismo
+				// desborde real que el propio HospedajeFlotanteTk existe para evitar.
 				return;
 			}
 
 			if (!hayObjeto) {
 				if (_tarjetaFlotanteAbierta) {
-					capa.Quitar(_tarjetaFlotante);
+					hospedaje.Quitar(_tarjetaFlotante);
 					_tarjetaFlotanteAbierta = false;
 				}
 				return;
@@ -180,24 +193,10 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 				_tarjetaFlotante = new TarjetaEdicionFlotanteTk(() => _seleccion.ObjetoActual);
 			}
 
-			PosicionarTarjetaFlotante(capa);
-
-			// Bug real encontrado y arreglado con la propia autoprueba (ver bitacora.md): la tarjeta
-			// y el desplegable de EditorPrefijoTk (del MISMO mini-panel, no anidado dentro de la
-			// tarjeta - ver el XMLdoc de TarjetaEdicionFlotanteTk para el porque de esa decision) se
-			// disputan la MISMA CapaSuperposicionTk, que solo admite un contenido a la vez. Sin esta
-			// comprobacion, la tarjeta volvia a intentar mostrarse en el fotograma siguiente a que el
-			// desplegable de prefijo se abriera (capa.Ocupada ya por el popup) y capa.Mostrar hace
-			// Quitar(null) ANTES de colgar lo nuevo - expulsando al popup que el jugador acababa de
-			// abrir. Aqui se cede el turno: si la capa la ocupa algo que NO es esta misma tarjeta, se
-			// espera a que se libere sola (el desplegable la suelta el solita al cerrarse) en vez de
-			// arrebatarsela.
-			if (capa.Ocupada && !ReferenceEquals(capa.Contenido, _tarjetaFlotante)) {
-				return;
-			}
+			PosicionarTarjetaFlotante(hospedaje);
 
 			if (!_tarjetaFlotanteAbierta) {
-				capa.Mostrar(_tarjetaFlotante, () => _tarjetaFlotanteAbierta = false);
+				hospedaje.Mostrar(_tarjetaFlotante);
 				_tarjetaFlotanteAbierta = true;
 			}
 		}
@@ -208,9 +207,9 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 		/// desbordando hacia el mundo) - el MISMO patron real, calculo a calculo, que ya usa y
 		/// tiene probado <see cref="EditorPrefijoTk"/> para su propio popup.
 		/// </summary>
-		private void PosicionarTarjetaFlotante(CapaSuperposicionTk capa)
+		private void PosicionarTarjetaFlotante(HospedajeFlotanteTk hospedaje)
 		{
-			CalculatedStyle area = capa.GetInnerDimensions();
+			CalculatedStyle area = hospedaje.GetInnerDimensions();
 			CalculatedStyle esteMiniPanel = GetDimensions();
 			const float Separacion = 8f;
 
@@ -233,11 +232,58 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 				y = area.Y;
 			}
 
-			// Left/Top son relativos al INTERIOR del padre real (la propia capa) - la posicion de
-			// pantalla que se acaba de calcular se pasa a coordenadas del padre restandole el
+			// Left/Top son relativos al INTERIOR del padre real (el propio hospedaje) - la posicion
+			// de pantalla que se acaba de calcular se pasa a coordenadas del padre restandole el
 			// origen del area, mismo criterio que EditorPrefijoTk.ConstruirPopup.
 			_tarjetaFlotante.Left.Set(x - area.X, 0f);
 			_tarjetaFlotante.Top.Set(y - area.Y, 0f);
+		}
+
+		// =====================================================================================
+		// Bug 2 (perdida real de objeto al cambiar de pestaña, bitacora.md): limpieza explicita a
+		// llamar ANTES de que este widget se destruya (RemoveChild), desde las DOS rutas reales que
+		// hoy construyen/destruyen contenido de cero - PanelTerrakeepState.CambiarArea (las seis
+		// areas de arriba) y ContenidoPersonaje.CambiarPestana (las sub-pestañas de Personaje:
+		// Inventario/Almacenes/Equipo/... - un cambio independiente del anterior, mismo bug).
+		// =====================================================================================
+
+		/// <summary>
+		/// Devuelve al jugador lo que hubiera en el recuadro de seleccion y esconde la tarjeta
+		/// flotante si estaba abierta. Idempotente: llamarlo sobre un widget ya vacio no hace nada.
+		/// </summary>
+		public void Limpiar()
+		{
+			_seleccion.DevolverAlJugador();
+
+			if (_tarjetaFlotanteAbierta) {
+				HospedajeFlotanteTk hospedaje = HospedajeFlotanteTk.Buscar(this);
+				if (hospedaje != null) {
+					hospedaje.Quitar(_tarjetaFlotante);
+				}
+				_tarjetaFlotanteAbierta = false;
+			}
+		}
+
+		/// <summary>
+		/// Recorre <paramref name="raiz"/> y llama a <see cref="Limpiar"/> en TODOS los
+		/// <see cref="PanelHerramientasLibreriaTk"/> que cuelguen de ahi (como mucho hay uno en la
+		/// practica hoy, pero se recorre entero por si acaso en vez de asumirlo) - la forma generica
+		/// de cerrar el bug de perdida de objeto sin que quien destruye el contenido (Libreria,
+		/// Inventario, Equipo, Almacenes...) tenga que saber que hay un mini-panel de herramientas
+		/// ahi dentro.
+		/// </summary>
+		public static void LimpiarTodosLosQueCuelguenDe(UIElement raiz)
+		{
+			if (raiz == null) {
+				return;
+			}
+
+			raiz.ExecuteRecursively(elemento => {
+				PanelHerramientasLibreriaTk herramientas = elemento as PanelHerramientasLibreriaTk;
+				if (herramientas != null) {
+					herramientas.Limpiar();
+				}
+			});
 		}
 	}
 }

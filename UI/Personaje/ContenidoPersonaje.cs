@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Personaje;
+using TerrakeepMod.UI.Libreria.Widgets;
 using TerrakeepMod.UI.Personaje.Widgets;
 
 namespace TerrakeepMod.UI.Personaje
@@ -112,6 +113,13 @@ namespace TerrakeepMod.UI.Personaje
 			}
 
 			if (_pestanaActual != null) {
+				// Mismo bug real que PanelTerrakeepState.CambiarArea ("perdida de objeto al cambiar
+				// de pestaña", bitacora.md), pero por la ruta INDEPENDIENTE de las sub-pestañas de
+				// Personaje (Inventario/Almacenes/Equipo reutilizan PanelHerramientasLibreriaTk
+				// tal cual, ver su cabecera): cambiar de sub-pestaña aqui tambien destruye el
+				// contenido de cero sin pasar nunca por CambiarArea, asi que necesita la misma
+				// limpieza explicita ANTES de RemoveChild.
+				PanelHerramientasLibreriaTk.LimpiarTodosLosQueCuelguenDe(_pestanaActual);
 				_contenedor.RemoveChild(_pestanaActual);
 				_pestanaActual = null;
 			}

@@ -10101,3 +10101,188 @@ escritorio, Starvekeep): este es un mod de tModLoader, su unico artefacto instal
 `Common/Exploracion/AutopruebaExploracion.cs` (inversion del criterio del canario), ambos ya en el
 working set de la investigacion previa. No se ha tocado `CapaMapaExploracion.cs` ni ningun otro
 archivo fuera de este alcance.
+
+## 25-sep-2026 - Arreglo real (aplicador-fix) de los DOS bugs del editor de objeto flotante de
+## Libreria: "bucle cierra/reabre" (bug 1) y "perdida real de objeto al cambiar de pestaña" (bug 2)
+
+Rol `aplicador-fix` sobre la investigacion ya cerrada mas arriba en esta misma bitacora ("editor
+atrapado"/"trampa tarjeta flotante", entrada con el analisis linea a linea de `PanelTerrakeepState
+.cs`, `CapaSuperposicionTk.cs` y `PanelHerramientasLibreriaTk.cs`). Causa raiz confirmada, no
+reinvestigada: se aplica el arreglo directamente sobre esa base, con una verificacion adicional
+propia solo donde hacia falta cerrar un hueco de cobertura real (ver mas abajo, "el bug 2 tambien
+existe en Personaje").
+
+### Bug 1 (bucle cierra/reabre): hospedaje propio, NO modal, para la tarjeta
+
+Arreglo real: **`UI/Panel/HospedajeFlotanteTk.cs` (archivo nuevo)**. La opcion que barajaba la
+investigacion era "un flag/interfaz para que `CapaSuperposicionTk` distinga contenido persistente
+de desplegable normal" o "sacar la tarjeta a su propio contenedor". Se eligio la segunda,
+investigando primero POR QUE la primera no bastaria: decompilado `UIElement.GetElementAt` real de
+`tModLoader.dll` instalado (`ilspycmd`, ver el codigo real en el XMLdoc de la clase nueva) -
+**`GetElementAt` NO es `virtual`** (no se puede sobrescribir en una subclase) y su algoritmo real
+devuelve el PROPIO contenedor como "objetivo" del clic cuando ninguno de sus hijos contiene el
+punto (`return uIElement.GetElementAt(point) ?? uIElement;` en el padre que lo evalua) - o sea que
+un contenedor NO modal que siga cubriendo TODA la zona de contenido (como haria un simple flag
+sobre `CapaSuperposicionTk`) seguiria absorbiendo cualquier clic que no caiga exactamente sobre la
+tarjeta, aunque ya no la cerrara. Lo que SI es `virtual` es `ContainsPoint`: `HospedajeFlotanteTk`
+lo sobrescribe para que solo "contenga" el punto del raton cuando cae dentro del hijo real que
+aloja - con eso, un clic fuera de la tarjeta hace que el motor lo salte entero y siga bajando por
+el resto de hijos del marco (`_contenedor`), llegando de verdad al catalogo/arbol/busqueda de
+debajo. `PanelTerrakeepState.OnInitialize` cuelga `_hospedajeFlotante` con la MISMA geometria que
+`_capaSuperposicion` (toda la zona de contenido, por conveniencia de coordenadas: `Posicionar
+TarjetaFlotante` no cambia su calculo) pero como hijo SEPARADO, antes de `_capaSuperposicion` en el
+orden de `Append` (la capa modal de `EditorPrefijoTk` sigue siendo la ultima, sin tocar ese
+invariante ya probado por `AutopruebaLibreria` paso 19). `PanelHerramientasLibreriaTk
+.ActualizarTarjetaFlotante` ahora muestra/esconde la tarjeta en `HospedajeFlotanteTk` (`Mostrar`/
+`Quitar`, API nueva paralela a la de `CapaSuperposicionTk` pero sin callback "al quitar" ni cierre
+modal) en vez de en la capa - lo que ademas ELIMINA de raiz la logica de "ceder el turno" que
+existia porque tarjeta y `EditorPrefijoTk` se disputaban la unica plaza de la capa compartida: al
+vivir en hospedajes distintos, ya no hay disputa, pueden estar los dos abiertos a la vez sin
+expulsarse.
+
+**Mecanismo de cierre elegido** (punto 3 del encargo): ninguno nuevo. Se mantiene el ya documentado
+en el propio XMLdoc de `TarjetaEdicionFlotanteTk` (existia antes del bug, nunca se aplico de
+verdad): la tarjeta se esconde SOLA en cuanto se arrastra el objeto de vuelta fuera del recuadro de
+seleccion (`ActualizarTarjetaFlotante`, rama `!hayObjeto`). No hacia falta un boton de cerrar ni
+Escape: la razon real por la que ese mecanismo NUNCA funcionaba no era que faltara, sino que
+`CapaSuperposicionTk.TapaAlRaton` (consultado por `SlotSeleccionTk.DrawSelf` antes de dejar
+arrastrar) devolvia `true` para CUALQUIER punto de la zona de contenido mientras la tarjeta
+estuviera "abierta ahi dentro" - **bloqueando tambien el propio recuadro de seleccion**, asi que ni
+siquiera se podia arrastrar el objeto de vuelta fuera para cerrarla. Al mover la tarjeta a un
+hospedaje ajeno a `CapaSuperposicionTk`, ese bloqueo desaparece solo, sin tocar `TapaAlRaton` ni
+`SlotSeleccionTk`.
+
+### Bug 2 (perdida de objeto, el mas grave): limpieza explicita ANTES de `RemoveChild`, en las DOS
+### rutas reales que destruyen el mini-panel
+
+**`UI/Libreria/Widgets/SlotSeleccionTk.cs`**, metodo nuevo `DevolverAlJugador()`: mismo patron que
+`ContenidoLibreria.PedirObjeto`/`PanelTerrakeepState.DevolverObjetoDelRaton` - `Player.GetItem` al
+inventario y, si no cabe entero, `Item.NewItem` al suelo junto al jugador con lo que sobre, nunca
+perderlo en silencio. Detalle real descubierto investigando por que el recuento de la autoprueba
+salia distinto de lo esperado (ver mas abajo): **`Player.GetItem` NO vacia el `Item` que se le pasa
+cuando lo coloca en una ranura vacia** (decompilado `Player.GetItem_FillEmptyInventorySlot`: hace
+`inventory[i] = returnItem;` con la MISMA referencia, sin tocar su `.stack`) - por eso el metodo
+reasigna `_seleccion = new Item();` el mismo (no se fia de que `GetItem` lo deje a cero).
+
+**`UI/Libreria/Widgets/PanelHerramientasLibreriaTk.cs`**, dos metodos nuevos: `Limpiar()` (llama a
+`DevolverAlJugador` y esconde la tarjeta si estaba abierta) y el estatico `LimpiarTodosLosQueCuelguen
+De(UIElement raiz)` (recorre `raiz.ExecuteRecursively` buscando cualquier `PanelHerramientasLibreriaTk`
+colgado y lo limpia - generico, no necesita que quien lo llame sepa que hay un mini-panel ahi
+dentro).
+
+**Las DOS rutas reales que hoy construyen/destruyen contenido de cero, ambas arregladas**:
+1. `UI/Panel/PanelTerrakeepState.cs`, `CambiarArea` (linea ~609 antes del arreglo): se añade
+   `PanelHerramientasLibreriaTk.LimpiarTodosLosQueCuelguenDe(_contenidoActual)` justo ANTES de
+   `_contenedor.RemoveChild(_contenidoActual)` - la ruta ya identificada por la investigacion
+   (cambiar entre las 6 areas de arriba: Personaje/Libreria/Builds/Investigacion/Exploracion/
+   Ajustes).
+2. **Hallazgo propio de esta fase, no estaba en el encargo de investigacion**: leyendo
+   `UI/Personaje/ContenidoPersonaje.cs` para confirmar la reutilizacion del widget, su metodo
+   `CambiarPestana` (las SUB-pestañas DENTRO de Personaje: Inventario/Almacenes/Equipo/Buffs/
+   Apariencia/Desbloqueos/Conjuntos/Completitud) hace exactamente `_contenedor.RemoveChild
+   (_pestanaActual)` sin ninguna limpieza - una ruta COMPLETAMENTE INDEPENDIENTE de
+   `PanelTerrakeepState.CambiarArea` (confirmado leyendo `UIElement.Deactivate`/`RemoveChild`
+   decompilados: `RemoveChild` NO llama a `OnDeactivate`, asi que ningun gancho automatico cubre
+   esto) que sufre el MISMO bug: cambiar de Inventario a Equipo (o a Almacenes) con algo en el
+   recuadro de seleccion lo borraria en silencio exactamente igual, sin pasar nunca por
+   `CambiarArea`. Se arregla con la misma llamada, en el mismo punto (antes de `RemoveChild`).
+   Import nuevo: `using TerrakeepMod.UI.Libreria.Widgets;`.
+
+### Verificacion real en el juego, las dos rutas, con datos medidos
+
+**Ruta 1 (Libreria, `PanelTerrakeepState.CambiarArea`)**: canario ya creado por la investigacion,
+casos 40-44 de `Common/Libreria/AutopruebaLibreria.cs`, sandbox `tModLoader-TerrakeepWS3`
+(`scripts\verificar-libreria.ps1`). Resultado tras el arreglo (log completo en
+`evidencia\ws3-libreria.log.txt`, reproducido 3 veces, mismo resultado exacto cada vez):
+- **Paso 41 (bug 1)**: clic real en un punto dentro de la zona de contenido pero fuera de la
+  tarjeta -> el motor entrega el punto a `CampoTextoTk` (la busqueda real de la Libreria, NO la
+  capa ni la tarjeta) -> "la hipotesis no se confirma con ESTE punto concreto" (el bug ya NO se
+  reproduce: el clic SI llega a un control real de debajo). Se dispara ese clic de verdad:
+  `TarjetaFlotanteAbierta antes=True, justo despues=True (no cambio)` - el clic fuera YA NO cierra
+  la tarjeta.
+- **Paso 42**: sigue abierta 12 fotogramas despues sin clic nuevo - esperado, nunca se cerro, asi
+  que no hay nada que "reabrir solo" (el mensaje del canario sigue diciendo "bug CONFIRMADO" por
+  como esta escrita su condicion, que no distingue "nunca se cerro" de "se reabrio" - detalle de
+  fraseo del canario, no un fallo real: el paso 41, que SI mide el antes/despues, ya demuestra el
+  arreglo).
+- **Paso 43/44 (bug 2)**: recuadro con 10 unidades reales de `Mushroom` (type=5) antes de cambiar
+  Libreria -> Personaje -> Libreria; 0 en cualquier otro sitio ANTES (correcto: el objeto vive solo
+  en el recuadro mientras se edita). Tras el cambio: recuadro nuevo vacio=`True`, y el tipo aparece
+  de nuevo en el inventario real -> **"no se perdio nada, revisar la hipotesis" (el bug 2 ya NO se
+  reproduce)**. El total exacto que reporta el log es 20, no 10 - investigado a fondo con un
+  diagnostico temporal (añadido, verificado y RETIRADO en la misma sesion, nunca quedo en
+  produccion): `Player.GetItem` colocaba las 10 unidades en UNA sola ranura real, sin sobrante
+  (`sobrante=(vacio)`) - la causa del x2 es un artefacto PREVIO y AJENO de `AutopruebaLibreria
+  .ContarTotalDelTipoEnElJuego`: los "destinos" `Inventario` y `Monedas` de `ContenidoLibreria
+  .Destinos` comparten literalmente el mismo `Item[]` (`Main.LocalPlayer.inventory`) y
+  `ContenidoLibreria.ArrayDestino` devuelve el array COMPLETO sin recortar por `Primero`/`Cuantos`,
+  asi que cualquier objeto en las primeras 50 ranuras se cuenta dos veces en esta suma concreta -
+  no relacionado con el arreglo de esta fase, documentado aqui para quien investigue ese detalle
+  del arnes despues (no se ha tocado ese codigo, fuera del alcance de este encargo).
+
+**Ruta 2 (Personaje, `ContenidoPersonaje.CambiarPestana`, hallazgo propio)**: sin canario previo
+(no era parte del hueco de cobertura que cerro la investigacion), asi que se añaden dos pasos
+nuevos y reales a `Common/Personaje/AutopruebaPersonaje.cs` (casos 27/28,
+`PrepararPerdidaAlCambiarSubPestana`/`ComprobarPerdidaAlCambiarSubPestana`, mismo patron que los
+casos 43/44 de Libreria) y se recorren las TRES sub-pestañas que enseñan objetos reales en una sola
+pasada (Inventario -> Almacenes -> Equipo -> Inventario), sandbox `tModLoader-TerrakeepWS1`
+(`scripts\verificar-personaje.ps1`). Resultado real (`client.log`, dos ejecuciones, mismo
+resultado):
+```
+Paso 27 - preparado en la sub-pestaña Inventario: recuadro de seleccion="Champiñon" type=5 stack=7 prefix=0.
+Paso 28 - tras cambiar Inventario -> Almacenes -> Equipo -> Inventario (con 7 unidades reales de
+type=5 dentro del recuadro de seleccion ANTES de cambiar): PanelHerramientasLibreriaTk se
+reconstruye de cero, su recuadro nuevo esta vacio=True. Ese mismo tipo AHORA en Player.inventory
+real=7 -> OK: el objeto sigue existiendo de verdad (ContenidoPersonaje.CambiarPestana ya no lo
+borra al cambiar de sub-pestaña dentro de Personaje).
+AUTOPRUEBA WS1 COMPLETA. Todos los pasos ejecutados sin excepciones.
+```
+7 = 7 exacto (aqui no hay artefacto de recuento: se suma directamente `Player.inventory`, un solo
+array, sin el problema de "destinos" solapados de Libreria). Sin excepciones en ninguna de las dos
+pasadas completas (0-29).
+
+**Las 4 pestañas del encargo, cubiertas con evidencia real**: Libreria (ruta 1, arriba) e
+Inventario/Almacenes/Equipo (ruta 2, las tres en la misma pasada del paso 28) - las 4 comparten
+literalmente `PanelHerramientasLibreriaTk`/`SlotSeleccionTk.DevolverAlJugador`/`LimpiarTodosLosQue
+CuelguenDe`, sin ninguna rama de codigo distinta segun la pestaña.
+
+### Regresion
+
+`TerrakeepMod.Tests` (`dotnet test`, proyecto separado de logica pura, sin relacion directa con
+este arreglo pero comprobado igualmente): **24/24 en verde**, antes y despues del cambio. Las
+autopruebas WS1 y WS3 completas (pasos 0-29 y 0-44 respectivamente) terminan sin ninguna excepcion
+en las dos, con todo lo demas que ya comprobaban (buffs, apariencia, desbloqueos, builds,
+investigacion, exploracion, arbol de la Libreria, busqueda, prefijos, papelera, cofres del mundo...)
+en el mismo "OK" de siempre - nada se rompio.
+
+### Compilacion y redespliegue reales
+
+`scripts\compilar.ps1` sin errores (solo los avisos benignos ya documentados: `CS1701` de
+Newtonsoft.Json y `WARN: Image loading failed` de `icon_small.png`) -> `.tmod` real regenerado en
+`Mods\TerrakeepMod.tmod` (830801 bytes, 25/09/2026 20:52:23), el mismo que usan
+`-tmlsavedirectory`/`verificar-personaje.ps1` para copiar a sus sandboxes. No aplica el patron
+"barra de tareas + copia instalada" de las apps WPF de la familia: este es un mod de tModLoader, su
+unico artefacto instalado real es el `.tmod` de `Mods\`, y es justo el que ha quedado actualizado.
+tModLoader no estaba abierto durante la compilacion (verificado antes de empezar), asi que no hubo
+ningun bloqueo de archivo que esquivar.
+
+### Archivos tocados
+
+- `UI/Panel/HospedajeFlotanteTk.cs` (nuevo) - hospedaje no modal para contenido flotante persistente.
+- `UI/Panel/PanelTerrakeepState.cs` - cuelga `_hospedajeFlotante`, limpieza en `CambiarArea`,
+  entrada nueva en `ClasificarCapa` (KeepQA `verificarCapas.js`) y en `DiagnosticoOrdenDibujado`.
+- `UI/Libreria/Widgets/PanelHerramientasLibreriaTk.cs` - usa el hospedaje nuevo en vez de la capa
+  modal; `Limpiar()`/`LimpiarTodosLosQueCuelguenDe` nuevos.
+- `UI/Libreria/Widgets/SlotSeleccionTk.cs` - `DevolverAlJugador()` nuevo.
+- `UI/Libreria/Widgets/TarjetaEdicionFlotanteTk.cs` - XMLdoc actualizado (el porque de "no cierra
+  con clic fuera" y de "el prefijo es informativo" habian quedado desfasados con el arreglo).
+- `UI/Personaje/ContenidoPersonaje.cs` - limpieza en `CambiarPestana` (hallazgo propio, ruta
+  independiente con el mismo bug 2).
+- `Common/Personaje/AutopruebaPersonaje.cs` - casos 27/28 nuevos (canario real para la ruta 2, que
+  no tenia ninguno).
+
+**Commit**: los siete archivos de arriba. No se ha tocado `Common/Libreria/AutopruebaLibreria.cs`
+(el canario de la ruta 1 ya lo creo la investigacion, sigue intacto) ni ningun otro archivo fuera
+de este alcance. `evidencia/ws3-libreria.log.txt` se actualiza con la ultima pasada real (post-
+arreglo) por el propio `scripts\verificar-libreria.ps1`, mismo criterio que el resto de entradas de
+esta bitacora.

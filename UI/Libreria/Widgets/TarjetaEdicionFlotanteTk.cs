@@ -34,9 +34,9 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 	/// </para>
 	/// <para>
 	/// <b>Por qué NO usa "cerrar al pulsar fuera" del catálogo original al pie de la letra.</b>
-	/// <see cref="TerrakeepMod.UI.Panel.CapaSuperposicionTk"/> ya cierra cualquier contenido suyo
-	/// con un clic fuera - pero esta tarjeta no es un menú desplegable de un solo uso (como el
-	/// selector de prefijo): es el editor ACTIVO de un objeto que sigue "cogido" en
+	/// <see cref="TerrakeepMod.UI.Panel.CapaSuperposicionTk"/> cierra cualquier contenido suyo con
+	/// un clic fuera - pero esta tarjeta no es un menú desplegable de un solo uso (como el selector
+	/// de prefijo): es el editor ACTIVO de un objeto que sigue "cogido" en
 	/// <see cref="SlotSeleccionTk"/> mientras se trabaja con él. Cerrarla con un clic accidental
 	/// fuera, sin soltar el objeto, dejaría al jugador sin ver lo que tiene cogido - una sorpresa
 	/// real, no una mejora. Se sustituye por un criterio más predecible y honesto con lo que
@@ -44,18 +44,28 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 	/// se esconde sola en cuanto se arrastra de vuelta fuera (<c>PanelHerramientasLibreriaTk.
 	/// ActualizarTarjetaFlotante</c>) - ni un evento de clic que rastrear, ni una tarjeta vacía
 	/// flotando por error.
+	/// <para />
+	/// <b>Bug real encontrado DESPUÉS de escribir lo de arriba (bitacora.md, "editor atrapado"/
+	/// "trampa tarjeta flotante"):</b> vivir dentro de <c>CapaSuperposicionTk</c> tenía un efecto
+	/// secundario que nadie había investigado: esa capa cubre TODA la zona de contenido del panel
+	/// (no solo el rectángulo de la tarjeta), así que en cuanto tenía algo dentro se comportaba como
+	/// el fondo de un modal de zona completa - cualquier clic en el catálogo/árbol/búsqueda de
+	/// debajo, e incluso arrastrar el objeto de vuelta fuera del propio <see cref="SlotSeleccionTk"/>
+	/// (el mecanismo de cierre descrito arriba), quedaba bloqueado mientras la tarjeta estuviera
+	/// abierta. Arreglado moviendo la tarjeta a <see cref="TerrakeepMod.UI.Panel.HospedajeFlotanteTk"/>,
+	/// un hospedaje separado que NO es modal: ver su XMLdoc para el porqué técnico exacto.
 	/// </para>
 	/// <para>
 	/// <b>Por qué el prefijo aquí es solo INFORMATIVO (nombre actual + "mejor prefijo" ya
-	/// calculado), no el desplegable interactivo completo.</b> Descubierto probando el diseño
-	/// original antes de escribir el resto: <see cref="EditorPrefijoTk"/> abre su propio
-	/// desplegable con <c>CapaSuperposicionTk.Mostrar</c> - la MISMA capa donde vive esta tarjeta.
-	/// Esa capa solo admite UN contenido flotante a la vez (<c>Quitar(null)</c> al principio de
-	/// <c>Mostrar</c>, código real), así que anidar el desplegable de prefijo dentro de la propia
-	/// tarjeta expulsaría a la tarjeta en el instante de abrirlo - un bug real de verdad, no
-	/// teórico, encontrado leyendo <c>CapaSuperposicionTk.cs</c> antes de anidar nada a ciegas.
-	/// El editor de prefijo INTERACTIVO se queda donde ya funciona, en el mini-panel fijo de
-	/// siempre (<see cref="PanelHerramientasLibreriaTk"/>), justo al lado de esta tarjeta.
+	/// calculado), no el desplegable interactivo completo.</b> Decisión de producto, no una
+	/// limitación técnica: el editor de prefijo INTERACTIVO se queda donde ya funciona, en el
+	/// mini-panel fijo de siempre (<see cref="PanelHerramientasLibreriaTk"/>), justo al lado de
+	/// esta tarjeta, para no duplicar el mismo control en dos sitios a la vez. (Hasta el arreglo de
+	/// <c>HospedajeFlotanteTk</c> de arriba, había además una razón técnica real: el desplegable de
+	/// <see cref="EditorPrefijoTk"/> y esta tarjeta se disputaban la MISMA
+	/// <see cref="TerrakeepMod.UI.Panel.CapaSuperposicionTk"/>, que solo admite un contenido a la
+	/// vez - anidarlo aquí habría expulsado a la tarjeta en el instante de abrirlo. Esa razón ya no
+	/// aplica: viven en hospedajes distintos y ya no se disputan nada.)
 	/// </para>
 	/// <para>
 	/// <b>Por qué no hay un tercer botón "Quitar" junto a Aplicar/Papelera.</b> El catálogo

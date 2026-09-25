@@ -52,6 +52,11 @@ namespace TerrakeepMod.Common.Personaje
 		private static uint _tickAlAplicarBuff;
 		private static int _intentosCaducidad;
 
+		// --- Pasos 27/28: perdida de objeto al cambiar de sub-pestaña dentro de Personaje (bug 2,
+		// ver ContenidoPersonaje.CambiarPestana) ---------------------------------------------------
+		private static int _tipoPerdidaPersonaje;
+		private static int _stackPerdidaPersonajeAntes;
+
 		/// <summary>Si un paso lo pone a true, se repite en la siguiente tanda en vez de avanzar.
 		/// Lo usa la comprobacion de caducidad de buffs, que necesita que el JUEGO avance ticks
 		/// (no solo fotogramas de interfaz) y no puede darlo por hecho.</summary>
@@ -150,7 +155,17 @@ namespace TerrakeepMod.Common.Personaje
 				// capturar en el MISMO paso que abre el popup lo enseñaria todavia cerrado.
 				case 25: CapturarPulsarYPapeleraEnPersonaje(); break;
 				case 26: ComprobarPapeleraQuitaDeUnHueco(); break;
-				case 27: ComprobarCierreConObjetoEnElRaton(); break;
+				// Bug 2 real de TerrakeepMod.UI.Panel.PanelHerramientasLibreriaTk (bitacora.md,
+				// "perdida de objeto al cambiar de pestaña"): en Personaje el mismo mini-panel se
+				// destruye/reconstruye por una ruta INDEPENDIENTE de PanelTerrakeepState.CambiarArea
+				// (ya verificada a fondo en AutopruebaLibreria, casos 40-44) - ContenidoPersonaje.
+				// CambiarPestana, al cambiar entre Inventario/Almacenes/Equipo/... DENTRO de
+				// Personaje. Mismo patron de dos pasos (preparar + comprobar) para demostrar que el
+				// arreglo compartido (PanelHerramientasLibreriaTk.LimpiarTodosLosQueCuelguenDe,
+				// llamado tambien desde ContenidoPersonaje.CambiarPestana) cubre esta ruta tambien.
+				case 27: PrepararPerdidaAlCambiarSubPestana(); break;
+				case 28: ComprobarPerdidaAlCambiarSubPestana(); break;
+				case 29: ComprobarCierreConObjetoEnElRaton(); break;
 				default:
 					Registrar("AUTOPRUEBA WS1 COMPLETA. Todos los pasos ejecutados sin excepciones.");
 					_terminada = true;
@@ -1084,6 +1099,117 @@ namespace TerrakeepMod.Common.Personaje
 		/// Ultimo paso: cierra el panel con un objeto todavia cogido con el raton y comprueba que
 		/// se devuelve al inventario en vez de quedarse invisible fuera del panel.
 		/// </summary>
+		/// <summary>
+		/// Bug 2 (bitacora.md, "perdida de objeto al cambiar de pestaña"), reproducido aqui por la
+		/// ruta de <c>ContenidoPersonaje.CambiarPestana</c> (independiente de <c>PanelTerrakeepState
+		/// .CambiarArea</c>, ya verificada en <c>AutopruebaLibreria</c> casos 40-44): arrastra un
+		/// objeto fresco de <c>Player.inventory</c> al recuadro de seleccion del mini-panel de la
+		/// sub-pestaña Inventario, mismo patron real que <see cref="PrepararArrastreParaEditorCantidad"/>.
+		/// </summary>
+		private static void PrepararPerdidaAlCambiarSubPestana()
+		{
+			ContenidoPersonaje panel = PanelPruebaSystem.PanelActual;
+			if (panel == null) {
+				Registrar("Paso 27 - no hay panel de Personaje montado.");
+				_tipoPerdidaPersonaje = 0;
+				return;
+			}
+
+			panel.IrAPestana(0); // Inventario
+
+			int tipo = BuscarObjeto(o => o.maxStack > 1 && o.damage <= 0 && o.createTile < 0 && o.consumable);
+			if (tipo <= 0) {
+				Registrar("Paso 27 - sin objeto de prueba apilable, se salta.");
+				_tipoPerdidaPersonaje = 0;
+				return;
+			}
+
+			PanelHerramientasLibreriaTk herramientas = panel.BuscarPrimero<PanelHerramientasLibreriaTk>();
+			if (herramientas == null) {
+				Registrar("Paso 27 - no se encontro el mini-panel de Inventario.");
+				_tipoPerdidaPersonaje = 0;
+				return;
+			}
+
+			Item[] inventario = PersonajeVivo.Jugador.inventory;
+			const int RanuraPrueba = 4; // libre: 0,1,2,3,50-54 ya usados por pasos anteriores.
+			Item objeto = new Item();
+			objeto.SetDefaults(tipo);
+			objeto.stack = Math.Min(7, objeto.maxStack);
+			inventario[RanuraPrueba] = objeto;
+
+			bool izquierdoPrevio = Main.mouseLeft;
+			bool sueltoPrevio = Main.mouseLeftRelease;
+			Main.mouseLeft = true;
+			Main.mouseLeftRelease = true;
+			try {
+				ItemSlot.LeftClick(inventario, ItemSlot.Context.InventoryItem, RanuraPrueba);
+				herramientas.Seleccion.EjercitarHandle();
+			}
+			finally {
+				Main.mouseLeft = izquierdoPrevio;
+				Main.mouseLeftRelease = sueltoPrevio;
+			}
+
+			_tipoPerdidaPersonaje = tipo;
+			_stackPerdidaPersonajeAntes = herramientas.Seleccion.ObjetoActual.stack;
+
+			Registrar("Paso 27 - preparado en la sub-pestaña Inventario: recuadro de seleccion="
+				+ PersonajeVivo.DescribirObjeto(herramientas.Seleccion.ObjetoActual) + ".");
+		}
+
+		/// <summary>
+		/// Cambia de sub-pestaña DENTRO de Personaje (Inventario -&gt; Equipo -&gt; Inventario, el
+		/// mismo gesto real que dispara cualquier boton de sub-pestaña, via
+		/// <c>ContenidoPersonaje.IrAPestana</c> -&gt; <c>CambiarPestana</c>) con el recuadro todavia
+		/// ocupado, y comprueba con datos reales del <see cref="Player"/> que el objeto SIGUE
+		/// existiendo - nunca se pierde en silencio.
+		/// </summary>
+		private static void ComprobarPerdidaAlCambiarSubPestana()
+		{
+			if (_tipoPerdidaPersonaje <= 0) {
+				Registrar("Paso 28 - sin objeto de prueba (paso 27 se salto), se salta.");
+				return;
+			}
+
+			ContenidoPersonaje panel = PanelPruebaSystem.PanelActual;
+			if (panel == null) {
+				Registrar("Paso 28 - no hay panel de Personaje montado.");
+				return;
+			}
+
+			// Recorre TAMBIEN Almacenes de paso: las tres sub-pestañas que enseñan objetos reales
+			// (Inventario/Almacenes/Equipo, ver la cabecera de PanelHerramientasLibreriaTk) comparten
+			// literalmente el mismo ContenidoPersonaje.CambiarPestana sin ninguna rama distinta segun
+			// el indice - probarlas las tres en la misma pasada es la evidencia mas directa de que el
+			// arreglo (que vive al PRINCIPIO de ese metodo compartido, antes de mirar que pestaña es)
+			// cubre a las tres, no solo a Equipo.
+			panel.IrAPestana(1); // Almacenes (gesto real de "escapar" del recuadro ocupado)
+			panel.IrAPestana(2); // Equipo
+			panel.IrAPestana(0); // vuelta a Inventario
+
+			Item[] inventario = PersonajeVivo.Jugador.inventory;
+			int total = 0;
+			for (int i = 0; i < inventario.Length; i++) {
+				if (inventario[i] != null && !inventario[i].IsAir && inventario[i].type == _tipoPerdidaPersonaje) {
+					total += inventario[i].stack;
+				}
+			}
+
+			PanelHerramientasLibreriaTk herramientasNuevas = panel.BuscarPrimero<PanelHerramientasLibreriaTk>();
+			bool recuadroNuevoVacio = herramientasNuevas == null || herramientasNuevas.Seleccion.ObjetoActual.IsAir;
+			bool ok = total >= _stackPerdidaPersonajeAntes && recuadroNuevoVacio;
+
+			Registrar("Paso 28 - tras cambiar Inventario -> Almacenes -> Equipo -> Inventario (con "
+				+ _stackPerdidaPersonajeAntes + " unidades reales de type=" + _tipoPerdidaPersonaje
+				+ " dentro del recuadro de seleccion ANTES de cambiar): PanelHerramientasLibreriaTk se "
+				+ "reconstruye de cero, su recuadro nuevo esta vacio=" + recuadroNuevoVacio + ". Ese mismo "
+				+ "tipo AHORA en Player.inventory real=" + total + " -> " + (ok
+					? "OK: el objeto sigue existiendo de verdad (ContenidoPersonaje.CambiarPestana ya no "
+						+ "lo borra al cambiar de sub-pestaña dentro de Personaje)."
+					: "FALLO: parece haberse perdido.") + ".");
+		}
+
 		private static void ComprobarCierreConObjetoEnElRaton()
 		{
 			Player jugador = Main.LocalPlayer;
@@ -1100,7 +1226,7 @@ namespace TerrakeepMod.Common.Personaje
 
 			long despues = Utils.CoinsCount(out desbordado, jugador.inventory);
 
-			Registrar("Paso 27 - cierre con un objeto cogido (3 monedas de oro = 30000 cobre). "
+			Registrar("Paso 29 - cierre con un objeto cogido (3 monedas de oro = 30000 cobre). "
 				+ "Monedas en el inventario antes=" + antes + ", despues=" + despues
 				+ " (diferencia " + (despues - antes) + "). "
 				+ "Objeto que queda en el raton: " + PersonajeVivo.DescribirObjeto(Main.mouseItem) + ". "
