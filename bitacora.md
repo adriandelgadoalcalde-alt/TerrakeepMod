@@ -10286,3 +10286,213 @@ ningun bloqueo de archivo que esquivar.
 de este alcance. `evidencia/ws3-libreria.log.txt` se actualiza con la ultima pasada real (post-
 arreglo) por el propio `scripts\verificar-libreria.ps1`, mismo criterio que el resto de entradas de
 esta bitacora.
+
+## Investigacion de los 3 pendientes de TerrakeepMod tras el cierre de Terrakeep (26-sep-2026, rol investigador-bug, no aplica ningun arreglo)
+
+Encargo: TerrakeepMod pasa a ACTIVO tras el cierre de Terrakeep (`PROJECT_HANDOFF_GATE` en PASS).
+Tres pendientes reales, nunca investigados a fondo: (1) "renombrar conjuntos parpadea letras",
+(2) "indicador circular 6/13 con segmentos verdes desfasados del circulo" (imagen10 del encargo
+original), (3) "Exploracion > Vecindad parpadea texto/scroll/contenido, pestañas superiores
+estables". Los tres se han reproducido de verdad en el juego real (cliente grafico, sandbox
+`tModLoader-TerrakeepWS7`, personaje/mundo `TerrakeepPrueba` con 2 NPC de pueblo reales), NUNCA por
+"deberia fallar" - evidencia medida: capturas reales del back buffer, muestreo de pixeles reales,
+y medicion con la fuente real del juego.
+
+### Arnes nuevo, NO toca ningun archivo de produccion
+
+`Common/Panel/DiagnosticoInvestigador3Bugs.cs` (nuevo, `ModSystem` autocargado por tModLoader,
+inactivo salvo con `TERRAKEEP_INVESTIGACION_3BUGS=1`) + `scripts/verificar-investigacion-3bugs.ps1`
+(nuevo). Usa solo API PUBLICA ya expuesta (`PanelTerrakeepSystem`, `ContenidoBuilds.
+AnilloProgresoParaPrueba`, `ContenidoExploracion.Vecindad`, `PestanaVecindad.
+TotalNpcsParaPrueba`) mas reflexion de solo lectura/invocacion sobre campos y metodos PRIVADOS que
+YA EXISTEN (nunca cambia su firma ni su comportamiento real - mismo criterio que el propio
+`PestanaConjuntos.RenombrarParaPrueba`/`AplicarPresetParaPrueba` ya documentan como tecnica "real"
+de este proyecto, aplicada aqui desde FUERA del archivo de produccion). Duplica su propia captura
+de back buffer (misma tecnica de `Common/Panel/CapturaDePantalla.cs`) para no tener que tocar el
+whitelist `Permitida` de ese archivo de produccion por una investigacion puntual.
+
+### BUG 1 - "renombrar conjuntos parpadea letras" - CONFIRMADO con evidencia real (medida + visual)
+
+**Causa raiz real**: `UI/Personaje/Widgets/CampoTextoTk.cs:129-162` (`DrawSelf`). El texto que se
+mide y CENTRA en el campo incluye el cursor parpadeante:
+
+```
+131: string mostrado = vacio && !_enfocado ? Pista : _texto;
+...
+134: if (_enfocado && _cursorVisible) {
+135:     mostrado += "|";
+136: }
+...
+150: DynamicSpriteFont fuente = FontAssets.MouseText.Value;
+151: float escala = _escalaTexto;
+152: Vector2 tamano = fuente.MeasureString(mostrado) * escala;
+...
+158: Vector2 posicion = new Vector2(
+159:     dim.X + (dim.Width - tamano.X) / 2f,
+160:     dim.Y + (dim.Height - tamano.Y) / 2f);
+```
+
+`_cursorVisible` cambia cada 20 fotogramas (`LeerTeclado`, linea 196-199, ~3 veces/segundo). Cada
+vez que cambia, `tamano.X` cambia (el cursor "|" tiene su propio ancho), y como la posicion X se
+CENTRA con ese ancho, el texto ENTERO (no solo el cursor) se desplaza horizontalmente - no es un
+cursor parpadeando al lado del texto fijo, es el texto fijo el que salta de sitio dos veces por
+ciclo de parpadeo.
+
+**Medido con la fuente REAL del juego** (`FontAssets.MouseText.Value.MeasureString`, log real,
+campo real de renombrar del conjunto 0, texto real "Conjunto 1", escala real 0.8 -
+`EmpezarRenombrar` construye `new CampoTextoTk(..., 24, 0.8f)`):
+- `MeasureString("Conjunto 1")*0.8` = 66,400 px
+- `MeasureString("Conjunto 1|")*0.8` = 72,800 px
+- delta = 6,400 px -> segun la formula de arriba, el texto se desplaza **3,200 px cada transicion**
+  de `_cursorVisible` (osea unas 3 veces por segundo, claramente perceptible a simple vista).
+
+**Confirmado VISUALMENTE**, no solo con el numero: 3 transiciones reales de `_cursorVisible`
+capturadas en 15 fotogramas con el campo de renombrar abierto de verdad (`EmpezarRenombrar(0)` real
+via reflexion, mismo codigo que pulsa el boton "Renombrar"), capturas en
+`evidencia/investigacion-3bugs-capturas/renombrar-transicionN-cursor{ON,OFF}.png`. Comparando
+`transicion1-cursorOFF` (fotograma con "Conjunto 1|", el cursor recien desaparecido pero el back
+buffer capturado es el ANTERIOR ya presentado - mismo aviso real que documenta `CapturaDePantalla`)
+contra `transicion2-cursorON` (fotograma con "Conjunto 1" solo): la palabra "Conjunto 1" aparece
+claramente desplazada varios pixeles a la izquierda/derecha entre una captura y otra - EL TEXTO
+SALTA, no solo el cursor.
+
+**Hueco de cobertura real que dejaba pasar este bug**: `Common/Loadouts/AutopruebaConjuntos.cs`
+(la autoprueba nativa de "Conjuntos") solo ejercita `PestanaConjuntos.RenombrarParaPrueba`, que
+llama `EmpezarRenombrar` + `TerminarRenombrar` en la MISMA llamada (linea 425-431 de
+`PestanaConjuntos.cs`) - el campo nunca queda abierto mas de un fotograma en la autoprueba
+existente, asi que jamas observa el parpadeo del cursor ni el salto de texto que causa. Cerrado
+aqui con el nuevo `PASO2`/`PASO3` de `DiagnosticoInvestigador3Bugs.cs`, que deja el campo abierto
+de verdad y captura las transiciones reales.
+
+**Diseño del arreglo (para el aplicador-fix, NO implementado aqui)**: en `CampoTextoTk.DrawSelf`,
+medir `tamano` SIN el cursor (usar `_texto`/`Pista`, nunca `mostrado` con el "|" añadido) para
+calcular `posicion`, y dibujar el cursor "|" APARTE, a continuacion del texto ya posicionado (p.ej.
+`EscribirTk.Dibujar(..., posicion, ...)` para el texto, y si `_cursorVisible` un segundo
+`EscribirTk.Dibujar` del "|" en `posicion.X + tamano.X` sin recalcular el centrado). Asi el cursor
+parpadea de verdad (aparece/desaparece) pero el TEXTO se queda quieto - que es el comportamiento
+esperado de cualquier campo de texto real.
+
+### BUG 2 - "segmentos del anillo desfasados" - NO REPRODUCIDO pese a una investigacion real y exhaustiva (LIMITE REAL)
+
+**Causa raiz analizada**: `UI/Personaje/Widgets/AnilloProgresoTk.cs:46-84` (`DrawSelf`). Cada
+segmento se coloca en `centro + (cos,sin)*_radio` (calculo continuo, sin redondeo hasta el
+`Rectangle` final) y se colorea segun `t < fraccion` - geometricamente correcto por construccion
+(28 segmentos equiespaciados sobre una circunferencia real, sin ninguna textura de "pista" de fondo
+independiente con la que pudiera desalinearse).
+
+**Probado con evidencia real, dos veces**: con el escenario real del personaje de pruebas (0/13,
+todo vacio) y forzando por reflexion (`ContenidoBuilds._objetosQueTiene`/`_objetosResueltos`, los
+MISMOS campos que ya lee `_fraccion` en cada `Draw` - no se cambio ninguna logica) el escenario
+real "6/13" del encargo, muestreando los 28 puntos exactos de la circunferencia contra el back
+buffer REAL (`GraphicsDevice.GetBackBufferData`), primero a `Main.UIScale=1.0` y despues al
+`UIScale=1.4666667` REAL del usuario (el mismo que causo el bug de "Veandad" documentado mas
+arriba en esta bitacora - con conversion explicita punto-logico -> punto-pantalla multiplicando por
+`Main.UIScale`, ver comentario en el propio arnes):
+
+- UIScale=1.0, "6/13": **28/28 segmentos con `distanciaColor=0,0`** (color exacto, ni un solo
+  pixel de diferencia) - 13 segmentos verdes seguidos, 15 grises, sobre la circunferencia exacta.
+- UIScale=1.4666667, "6/13" (el UIScale real del usuario): **28/28 segmentos con
+  `distanciaColor=0,0`** otra vez.
+
+Capturas reales en `evidencia/investigacion-3bugs-capturas/anillo-builds-6de13.png` (visualmente:
+un semicirculo verde limpio, sin ningun segmento fuera de la circunferencia ni desplazado). El
+archivo `evidencia/investigacion-3bugs.log.txt` guarda la ULTIMA pasada (UIScale real 1,4666667,
+28 lineas `PASO6 anillo seg=...`, CERO `MAL:`); la pasada anterior a UIScale=1,0 (tambien 28/28 sin
+fallos, mismo escenario 6/13) se comprobo en la terminal en el momento pero no quedo archivada por
+separado al reescribir el mismo nombre de log - el resultado (28/28 exacto en las dos escalas) esta
+citado arriba tal cual se vio en consola.
+
+**LIMITE REAL**: no se ha podido reproducir "segmentos verdes desfasados del circulo" con las dos
+condiciones mas plausibles ya probadas (escala por defecto y la escala real del usuario que causo
+el bug hermano de "Veandad"). Hipotesis sin descartar, pendientes de mas datos del encargo
+original (la imagen10 en si, o el contexto exacto - Vanilla/Calamity, resolucion de ventana real,
+si el panel se redimensiono en vivo mientras estaba abierto tipo el bug de "Terrakeep"->"keep" ya
+documentado mas arriba): (a) un fotograma transitorio durante `Reconstruir()`/cambio de clase/etapa
+en el que `_objetosQueTiene`/`_objetosResueltos` este a medio actualizar frente al `_fraccion()` ya
+leido por `AnilloProgresoTk` (no se ha podido forzar esa condicion de carrera con las herramientas
+de este arnes), o (b) un redimensionado de ventana EN VIVO con el panel abierto en Builds (mismo
+mecanismo real que ya causo el bug de "Terrakeep"->"keep": `Main.SetDisplayMode` con el panel ya
+abierto, `Common/Panel/DiagnosticoTituloYVecindad.cs:120-171` tiene el patron real para probarlo,
+no ejercitado aqui sobre Builds por alcance/tiempo). Recomendacion para el coordinador: si hay
+oportunidad, pedir al usuario la imagen10 original o repetir la observacion con mas contexto
+(clase/etapa exactas, si redimensiono la ventana) antes de despachar un aplicador-fix a ciegas.
+
+### BUG 3 - "Vecindad parpadea texto/scroll/contenido" - CONFIRMADO con evidencia real medida
+
+**Causa raiz real**: `UI/Exploracion/PestanaVecindad.cs:118-125` (`Update`) llama a `Refrescar()`
+cada `FotogramasEntreRefrescos` (30 fotogramas, linea 55, ~0,5 s) SIN NINGUNA condicion de cambio
+real de los datos:
+
+```
+118: public override void Update(GameTime gameTime)
+119: {
+120:     base.Update(gameTime);
+121:     if (++_contadorRefresco >= FotogramasEntreRefrescos) {
+122:         _contadorRefresco = 0;
+123:         Refrescar();
+124:     }
+125: }
+```
+
+`Refrescar()` (linea 129-164) hace `_lista.Clear()` y reconstruye TODAS las filas desde cero
+(`AnadirFilaNpc`, linea 208-244, crea instancias NUEVAS de `ParrafoTk`/etiquetas cada vez, nunca
+reutiliza las que ya habia) - exactamente el patron que el propio encargo señalaba como sospechoso
+("reconstruir hijos de un UIList/UIElement sin condicion de cambio real"). Ademas, por como esta
+hecho `Terraria.GameContent.UI.Elements.UIList` (decompilado,
+`tModLoader-Decompiled\tModLoader\Terraria\GameContent\UI\Elements\UIList.cs:137-156,187-194`),
+cada `Add()` recalcula el scrollbar (`UpdateScrollbar` -> `UIScrollbar.SetView`, que CLAMPEA
+`ViewPosition` a `[0, maxViewSize-viewSize]`,
+`tModLoader-Decompiled\...\UIScrollbar.cs:61-67`) - si el alto total del contenido cambia entre un
+refresco y el siguiente (lo normal en juego real: `ShoppingSettings.HappinessReport`, el informe de
+animo de cada NPC, es un texto en vivo del motor que cambia de longitud/numero de lineas segun
+distancia/hora/bioma reales), cualquier usuario que hubiera hecho scroll pierde su posicion sin
+tocar nada, aprox. dos veces por segundo.
+
+**Confirmado en vivo, con evidencia medida** (`PestanaVecindad` real con 2 NPC de pueblo activos,
+95 fotogramas seguidos SIN tocar nada, identidad de objeto (`GetHashCode()`) del primer elemento de
+`UIList._items` vigilada fotograma a fotograma):
+
+```
+PASO8 f=0  hashItem0=5898262
+PASO8 f=24 hashItem0=50997116 -> RECONSTRUIDA
+PASO8 f=54 hashItem0=64306494 -> RECONSTRUIDA
+PASO8 f=84 hashItem0=8259109  -> RECONSTRUIDA
+```
+
+3 reconstrucciones completas en 95 fotogramas, cada ~30 fotogramas EXACTOS (coincide con
+`FotogramasEntreRefrescos`) - la lista entera se tira y se rehace, con objetos nuevos, cada medio
+segundo, SIEMPRE, tenga o no algo que cambiar. Con solo 2 NPC el contenido (181,0 px) no llega a
+superar el hueco visible (282,4 px), asi que la parte "reset de `ViewPosition`" de la hipotesis NO
+se pudo forzar en este sandbox concreto (`LIMITE REAL`: hacen falta 3+ NPC reclutados con casas
+reales para que la lista sea mas alta que el hueco) - pero el mecanismo (`UIScrollbar.SetView`
+clampea con cada `Add()`) esta confirmado leyendo el codigo real decompilado, no supuesto.
+
+**Hueco de cobertura real que dejaba pasar este bug**: `Common/Exploracion/AutopruebaExploracion.cs`
+(paso 23-25, ver bitacora anterior) solo comprueba que la pestaña "Vecindad" tiene el numero de
+filas/NPC correcto y que el boton "Marcar casas en el mapa" funciona - nunca vigila varios
+fotogramas SEGUIDOS con la pestaña ya abierta, asi que jamas pudo detectar una reconstruccion
+periodica. Cerrado aqui con el nuevo `PASO7`/`PASO8` de `DiagnosticoInvestigador3Bugs.cs` (vigila
+`_lista._items[0].GetHashCode()` y `_lista.ViewPosition` fotograma a fotograma).
+
+**Diseño del arreglo (para el aplicador-fix, NO implementado aqui)**: en `PestanaVecindad.Refrescar`,
+comparar los datos reales (lista de `NPC.whoAmI` activos + su `HappinessReport`/`PriceAdjustment`)
+contra un snapshot del ultimo refresco ANTES de `_lista.Clear()`, y solo reconstruir si algo
+cambio de verdad (o, mas simple y menos invasivo: subir mucho `FotogramasEntreRefrescos` y/o
+reescribir el texto de las filas YA EXISTENTES en vez de recrearlas cuando el NUMERO de NPC no ha
+cambiado - evita el clamp de scroll Y el parpadeo de identidad sin tocar el resto de la logica).
+
+### Archivos tocados (SOLO arnes/documentacion, ningun archivo de produccion)
+
+- `Common/Panel/DiagnosticoInvestigador3Bugs.cs` (nuevo) - arnes de investigacion completo de los
+  3 bugs, inactivo salvo `TERRAKEEP_INVESTIGACION_3BUGS=1`.
+- `scripts/verificar-investigacion-3bugs.ps1` (nuevo) - lanza el diagnostico sobre el sandbox WS7
+  y recoge log/capturas a `evidencia/`.
+- `evidencia/investigacion-3bugs.log.txt` (nuevo) - log real completo de la ultima pasada (UIScale
+  real 1.4666667, escenario Builds forzado a 6/13).
+- `evidencia/investigacion-3bugs-capturas/` (nuevo) - capturas reales: 3 transiciones de cursor de
+  Conjuntos, anillo de Builds a 0/13 y a 6/13.
+- `bitacora.md` (esta entrada).
+
+**No se ha tocado ningun `.cs` de produccion** (`CampoTextoTk.cs`, `AnilloProgresoTk.cs`,
+`PestanaVecindad.cs` se han LEIDO pero no editado - el arreglo de los bugs 1 y 3 queda para un
+aplicador-fix aparte, sin el sesgo de esta investigacion).
