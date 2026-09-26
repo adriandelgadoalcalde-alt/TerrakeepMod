@@ -10496,3 +10496,67 @@ cambiado - evita el clamp de scroll Y el parpadeo de identidad sin tocar el rest
 **No se ha tocado ningun `.cs` de produccion** (`CampoTextoTk.cs`, `AnilloProgresoTk.cs`,
 `PestanaVecindad.cs` se han LEIDO pero no editado - el arreglo de los bugs 1 y 3 queda para un
 aplicador-fix aparte, sin el sesgo de esta investigacion).
+
+## Arreglo real de BUG 1 - "renombrar conjuntos parpadea letras" (aplicador-fix, sobre el diseño de arriba)
+
+**Causa confirmada por el investigador** (ver entrada anterior): `CampoTextoTk.DrawSelf` media
+`tamano`/`posicion` sobre `mostrado`, que INCLUIA el cursor `"|"` cuando `_enfocado && _cursorVisible`
+(linea 134-136 vieja). Como `_cursorVisible` cambia cada 20 fotogramas, el ancho medido cambiaba y
+el `posicion.X` centrado (linea 158-160 vieja) desplazaba el texto ENTERO, no solo el cursor.
+
+**Arreglo aplicado** en `UI/Personaje/Widgets/CampoTextoTk.cs` (`DrawSelf`): se quito la linea que
+anadia `"|"` a `mostrado` antes de medir. Ahora `tamano`/`posicion` se calculan SOLO con el texto
+real (`_texto` o `Pista`, segun corresponda) - el cursor NUNCA entra en `MeasureString` ni en el
+calculo de centrado. El cursor se dibuja en una llamada `EscribirTk.Dibujar` SEPARADA, DESPUES del
+texto principal, en `posicion.X + tamano.X` (a continuacion del texto ya posicionado), y solo si
+`_enfocado && _cursorVisible` - exactamente el diseno que dejo el investigador.
+
+**Verificado con el arnes YA CONSTRUIDO por el investigador** (`TERRAKEEP_INVESTIGACION_3BUGS=1`,
+`Common/Panel/DiagnosticoInvestigador3Bugs.cs` PASO2/PASO3, sandbox `tModLoader-TerrakeepWS7`,
+personaje/mundo `TerrakeepPrueba`, `scripts/verificar-investigacion-3bugs.ps1`), recompilando antes
+el `.tmod` real con el arreglo (`scripts/compilar.ps1`, ver mas abajo) y volviendo a capturar las
+mismas 3 transiciones reales de cursor (`renombrar-transicion1-cursorOFF/2-cursorON/3-cursorOFF.png`):
+las capturas PRE-arreglo del commit `f1f21c8` (recuperadas con `git show f1f21c8:evidencia/...`) se
+compararon pixel a pixel contra las nuevas capturas POST-arreglo con un script Python/Pillow
+(`comparar_cursor.py`, scratchpad, no forma parte del repo), recortando SOLO la zona del campo
+"Conjunto 1" (region `(30,375)-(360,410)` en la resolucion 1280x720 real de la captura):
+
+- **PRE-arreglo** (bug real, capturas del investigador): transicion1(cursorOFF) vs
+  transicion2(cursorON) -> **1108 pixeles distintos, bbox (119,5)-(205,27), ancho=87px** - la
+  palabra "Conjunto 1" entera se mueve (87px de bounding box es mas ancho que la "I" del cursor,
+  confirma que el TEXTO se desplaza, no solo el cursor).
+- **POST-arreglo** (mismo escenario, tras el arreglo): transicion1(cursorOFF) vs
+  transicion2(cursorON) -> **64 pixeles distintos, bbox (168,6)-(173,19), ancho=6px** - una franja
+  de 6px de ancho (el propio glifo "|") en el borde derecho del texto, nada del resto de "Conjunto 1"
+  cambia. transicion2(cursorON) vs transicion3(cursorOFF) -> 1 pixel de diferencia (ruido de
+  antialiasing, despreciable). Confirmado tambien VISUALMENTE recortando el campo de las 3 capturas
+  post-arreglo: "Conjunto 1" queda pixel-identico en las tres, solo aparece/desaparece la barra del
+  cursor al final.
+- El log del PASO2 (formula teorica de `MeasureString`, independiente del codigo de `CampoTextoTk`)
+  sigue mostrando el mismo delta teorico de 3,200px "si se incluyera el cursor en la medicion" -
+  eso es esperado y no invalida el arreglo: es una demostracion generica de la magnitud del
+  problema, no una llamada a `CampoTextoTk.DrawSelf`. La prueba real del arreglo es la comparacion
+  de pixeles de arriba, que SI ejercita el `DrawSelf` real ya corregido.
+
+**Bugs 2 y 3 sin afectar** (mismo `verificar-investigacion-3bugs.ps1`, misma pasada post-arreglo):
+PASO6 (anillo de Builds, `AnilloProgresoTk.cs`, no tocado) sigue en **28/28 segmentos con
+`distanciaColor=0,0`**; PASO8 (Vecindad, `PestanaVecindad.cs`, no tocado) sigue con **3
+reconstrucciones completas en 95 fotogramas** (el comportamiento ya documentado, sin cambios) - no
+se toco ninguno de los dos archivos.
+
+**Build y despliegue real**: `scripts/compilar.ps1` (Fase 1 `dotnet build -p:BuildMod=false`, Fase 2
+`-build` real de tModLoader con su propio `dotnet.exe`) termino en verde, sin errores (solo los
+avisos benignos ya documentados: `CS1701` de `Newtonsoft.Json`/`System.Runtime` y el
+`WARN: Image loading failed` de los iconos, los dos ya vistos en cierres anteriores). El `.tmod`
+real se genero en `Documents\My Games\Terraria\tModLoader\Mods\TerrakeepMod.tmod` (837.635 bytes,
+26/09/2026 06:22:25) y se redesplego tambien al sandbox WS7 (`Mods\TerrakeepMod.tmod` dentro de
+`tModLoader-TerrakeepWS7`, lo hace el propio `verificar-investigacion-3bugs.ps1` antes de lanzar el
+cliente). No hay proceso de tModLoader/dotnet abierto que bloquee nada (comprobado tras la pasada).
+
+### Archivos tocados (arreglo real)
+
+- `UI/Personaje/Widgets/CampoTextoTk.cs` - arreglo real: centrado sin cursor, cursor dibujado aparte.
+- `evidencia/investigacion-3bugs.log.txt`, `evidencia/investigacion-3bugs-capturas/*.png` -
+  regenerados por la pasada de verificacion post-arreglo (sobrescriben las capturas pre-arreglo, que
+  quedan preservadas en el historial de git, commit `f1f21c8`).
+- `bitacora.md` (esta entrada).

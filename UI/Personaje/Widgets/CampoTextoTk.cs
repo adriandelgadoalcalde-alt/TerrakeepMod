@@ -131,19 +131,13 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			string mostrado = vacio && !_enfocado ? Pista : _texto;
 			Color color = vacio && !_enfocado ? new Color(120, 128, 150) : Color.White;
 
-			if (_enfocado && _cursorVisible) {
-				mostrado += "|";
-			}
-
-			// Medido con la fuente REAL del juego (mismo criterio que EditorCantidadTk.TextoEtiqueta
-			// - nunca suponer un ancho por caracter) y CENTRADO en las dos direcciones, no pegado al
-			// borde izquierdo: un campo compacto (el de cantidad de la Libreria, 60px) no cabe la
-			// pista larga ("cantidad"/"quantity" en ingles) al tamaño de letra pedido, y antes se
-			// salia del recuadro por encima del boton "+" de al lado (bug real reportado por el
-			// usuario: "la caja de texto no esta bien ajustada... el placeholder no parece estar
-			// centrado"). Se reduce la escala SOLO lo justo para que quepa, en vez de recortar el
-			// texto: son palabras cortas (pista o numero), truncarlas a medias se leeria peor que
-			// achicarlas un poco.
+			// El centrado se mide y calcula SOLO con el texto real (sin el cursor "|"): el cursor
+			// parpadea cada 20 fotogramas (ver LeerTeclado) y si se incluye en la cadena medida, el
+			// ancho de "mostrado" cambia con el parpadeo y el texto ENTERO se desplaza al centrar -
+			// no solo el hueco del cursor (bug real medido: salto de 3.2px cada transicion de
+			// cursor, ~3 veces/segundo, en "renombrar conjuntos"). El cursor se dibuja aparte,
+			// A CONTINUACION del texto ya posicionado, para que su presencia/ausencia nunca afecte
+			// al centrado del texto principal.
 			const float MargenLateral = 6f;
 			float disponible = Math.Max(0f, dim.Width - MargenLateral * 2f);
 
@@ -160,6 +154,10 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 				dim.Y + (dim.Height - tamano.Y) / 2f);
 
 			EscribirTk.Dibujar(spriteBatch, mostrado, posicion, color, escala);
+
+			if (_enfocado && _cursorVisible) {
+				EscribirTk.Dibujar(spriteBatch, "|", new Vector2(posicion.X + tamano.X, posicion.Y), color, escala);
+			}
 		}
 
 		private void LeerTeclado()
