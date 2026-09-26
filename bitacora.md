@@ -10560,3 +10560,103 @@ cliente). No hay proceso de tModLoader/dotnet abierto que bloquee nada (comproba
   regenerados por la pasada de verificacion post-arreglo (sobrescriben las capturas pre-arreglo, que
   quedan preservadas en el historial de git, commit `f1f21c8`).
 - `bitacora.md` (esta entrada).
+
+## Arreglo real de BUG 3 - "Exploracion > Vecindad parpadea texto/scroll/contenido" (aplicador-fix, sobre el diseño de arriba)
+
+**Causa confirmada por el investigador** (ver entrada anterior): `PestanaVecindad.Update` llamaba a
+`Refrescar()` cada `FotogramasEntreRefrescos` (30 fotogramas) SIN ninguna condicion de cambio real, y
+`Refrescar()` hacia `_lista.Clear()` + reconstruccion completa con instancias NUEVAS siempre, tenga o
+no algo que cambiar - clampeando `ViewPosition` en cada `Add()` (decompilado, `UIScrollbar.SetView`).
+
+**Opcion elegida: A (snapshot de comparacion), no B.** Se descarto la opcion B (reescribir el
+contenido de las filas YA EXISTENTES) por ser mas invasiva y arriesgada en este archivo concreto: el
+numero de filas por NPC no es fijo (3 o 4 filas segun `sinCasa`/`fiable`), asi que "encajar" filas
+existentes contra ese numero variable sin recrear nada exigiria una maquinaria de reconciliacion
+nueva con mas superficie de bug que el propio problema que arregla. La opcion A resuelve el sintoma
+real (reconstruccion sin necesidad) con un cambio mucho mas pequeño y sin tocar la logica de pintado.
+
+**Arreglo aplicado** en `UI/Exploracion/PestanaVecindad.cs` (`Refrescar`/`AnadirFilaNpc`):
+- Se calculan los datos reales de CADA NPC (nombre, `ShoppingSettings` real, distancia en tiles,
+  `fiable`, `sinCasa`) UNA sola vez por refresco, guardados en una lista de `DatosNpc` (struct nueva,
+  privada) - nunca se llama dos veces a `Main.ShopHelper.GetShoppingSettings` para el mismo NPC.
+- Con esos mismos datos se construye una "instantanea" (string) de todo lo que de verdad se enseñaria
+  en pantalla (whoAmI+nombre+precio redondeado+informe de animo+sinCasa+distancia si no es fiable).
+- Si la instantanea coincide con la del refresco anterior (`_instantaneaAnterior`), `Refrescar()`
+  vuelve sin tocar `_lista` en absoluto - ni `Clear()` ni `Add()`, cero clamp de scroll, cero objetos
+  nuevos. Solo si algo VISIBLE cambio de verdad se hace `_lista.Clear()` + se reconstruye con
+  `AnadirFilaNpc(d.Npc, d.Ajustes, d.DistanciaTiles, d.Fiable, d.SinCasa)` (firma nueva: ya no
+  recalcula nada, solo pinta los datos que ya se calcularon para la instantanea - la comparacion y lo
+  que se pinta usan exactamente los mismos valores, no pueden divergir entre si).
+- Caso `jugador == null`: se limpia la lista una sola vez (nunca en bucle) y se resetea
+  `_instantaneaAnterior` a `null` para forzar una reconstruccion real la próxima vez que haya jugador.
+
+**Verificado con el arnes YA CONSTRUIDO por el investigador** (`TERRAKEEP_INVESTIGACION_3BUGS=1`,
+`Common/Panel/DiagnosticoInvestigador3Bugs.cs` PASO7/PASO8, mismo sandbox `tModLoader-TerrakeepWS7`,
+`scripts/verificar-investigacion-3bugs.ps1`), recompilando antes el `.tmod` real con el arreglo:
+
+```
+ANTES  (commit de la investigacion, sin tocar PestanaVecindad.cs):
+  PASO8 f=0  hashItem0=5898262
+  PASO8 f=24 hashItem0=50997116 -> RECONSTRUIDA
+  PASO8 f=54 hashItem0=64306494 -> RECONSTRUIDA
+  PASO8 f=84 hashItem0=8259109  -> RECONSTRUIDA
+  RESUMEN: 3 reconstrucciones completas en 95 fotogramas.
+
+DESPUES (con el arreglo, misma pasada, mismos 2 NPC de pueblo activos):
+  PASO8 f=0  hashItem0=5898262
+  PASO8 f=15 hashItem0=5898262
+  PASO8 f=24 hashItem0=50997116 -> RECONSTRUIDA (unica reconstruccion de toda la pasada)
+  PASO8 f=30 hashItem0=50997116
+  PASO8 f=45 hashItem0=50997116
+  PASO8 f=60 hashItem0=50997116
+  PASO8 f=75 hashItem0=50997116
+  PASO8 f=90 hashItem0=50997116
+  RESUMEN BUG3: 1 reconstruccion completa en 95 fotogramas (antes: 3).
+```
+
+De 3 reconstrucciones cada 30 fotogramas EXACTOS (el temporizador disparando sin condicion, el propio
+bug) a **1 sola reconstruccion en toda la pasada de 95 fotogramas**, y esa unica reconstruccion cae
+justo al cambiar a la pestaña (PASO7 mueve al jugador de Builds a Exploracion, así que la distancia
+real jugador-NPC/el informe de animo en vivo SI cambiaron de verdad entre el primer `Refrescar()` del
+constructor y el disparo del temporizador a los 30 fotogramas) - exactamente el comportamiento
+esperado del diseño: reconstruir solo cuando algo real cambia, nunca por rutina. Tras esa unica
+reconstruccion, el temporizador sigue disparando `Refrescar()` cada 30 fotogramas (f=30/45/60/75/90 se
+ve en el log) pero como los datos reales ya no cambiaron, `_lista` no se toca - `hashItem0` se queda
+fijo en `50997116` el resto de la pasada.
+
+**Reset de scroll: sigue como LIMITE REAL de este sandbox concreto, sin cambios.** Con solo 2 NPC de
+pueblo activos el contenido (181,0px) sigue sin superar el hueco visible (282,4px) - el propio log lo
+dice ("scrollbar inactivo"). `_resetsDeScroll` sale en 0 tanto antes como despues del arreglo, pero
+antes eso no probaba nada (el escenario no era scrollable, jamas se pudo forzar un clamp real); ahora
+tampoco lo prueba - sigue siendo el mismo LIMITE REAL ya documentado por el investigador (hacen falta
+3+ NPC reclutados con casas reales en el sandbox de WS7 para que la lista supere el hueco visible y se
+pueda medir el clamp de `ViewPosition` de verdad). El mecanismo que causaba el reset (`Add()` clampea
+`ViewPosition` en `UIScrollbar.SetView`) ya no se ejecuta en absoluto cuando los datos no cambian
+(cero `Add()` = cero clamp posible), así que el arreglo YA cierra esa vía aunque este sandbox
+concreto no pueda demostrarlo con un escenario scrollable real.
+
+**Bugs 1 y 2 sin afectar** (misma pasada post-arreglo, mismo log): PASO3 (`CampoTextoTk.cs`, ya
+cerrado, no tocado en esta entrada) sigue con **3 transiciones reales de cursor** observadas sin
+error. PASO6 (`AnilloProgresoTk.cs`, no tocado) sigue en **28/28 segmentos con `distanciaColor=0,0`**.
+Tambien se revisó `Common/Exploracion/AutopruebaExploracion.cs` (paso 23-25, la autoprueba normal del
+panel de Exploracion que ya cubre Vecindad): usa `panel.Vecindad.Refrescar()` y
+`panel.Vecindad.TotalNpcsParaPrueba`, las dos API publicas, sin cambios de firma ni de comportamiento
+- no requiere ningun ajuste.
+
+**Build y despliegue real**: `scripts/compilar.ps1` (Fase 1 `dotnet build -p:BuildMod=false`, Fase 2
+`-build` real de tModLoader) termino en verde, sin errores (solo los mismos avisos benignos ya
+documentados: `CS1701` de `Newtonsoft.Json`/`System.Runtime` y `WARN: Image loading failed` de los
+iconos). El `.tmod` real se genero en
+`Documents\My Games\Terraria\tModLoader\Mods\TerrakeepMod.tmod` (838.081 bytes, 26/09/2026 06:29:52) y
+se redesplego tambien al sandbox WS7 (lo hace el propio `verificar-investigacion-3bugs.ps1` antes de
+lanzar el cliente). Tras la pasada no queda ningun proceso `dotnet.exe`/`tModLoader.exe` abierto
+(comprobado con `tasklist`).
+
+### Archivos tocados (arreglo real BUG 3)
+
+- `UI/Exploracion/PestanaVecindad.cs` - arreglo real: instantanea de comparacion antes de reconstruir,
+  datos por NPC calculados una sola vez (struct `DatosNpc`), `AnadirFilaNpc` ya no recalcula nada.
+- `evidencia/investigacion-3bugs.log.txt`, `evidencia/investigacion-3bugs-capturas/*.png` -
+  regenerados por la pasada de verificacion post-arreglo de BUG 3 (sobrescriben otra vez la evidencia,
+  la version anterior queda preservada en el historial de git).
+- `bitacora.md` (esta entrada).

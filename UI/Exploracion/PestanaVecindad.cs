@@ -62,6 +62,31 @@ namespace TerrakeepMod.UI.Exploracion
 		private int _contadorRefresco;
 		private int _totalNpcs;
 
+		/// <summary>
+		/// Ultimo "resumen" real de lo que se enseño (nombre+precio+informe de animo+aviso de
+		/// casa/distancia de CADA NPC, en el mismo orden ya estable de <see cref="Refrescar"/>) -
+		/// permite comparar antes de reconstruir. Investigado (hueco de cobertura real, ver
+		/// bitacora.md "BUG 3"): <c>Refrescar()</c> se llamaba cada <see cref="FotogramasEntreRefrescos"/>
+		/// SIN condicion de cambio real, y por como clampea <c>UIScrollbar.SetView</c> cada
+		/// <c>UIList.Add()</c> (decompilado), reconstruir la lista entera sin necesidad reseteaba el
+		/// scroll del usuario y creaba parpadeo de identidad de objeto (evidencia real: 3
+		/// reconstrucciones en 95 fotogramas SIN tocar nada). Null = todavia no se ha construido
+		/// ninguna instantanea (fuerza la primera construccion real).
+		/// </summary>
+		private string _instantaneaAnterior;
+
+		/// <summary>Datos ya calculados de un vecino para un refresco - se calculan UNA sola vez
+		/// por NPC (nunca dos, ni para comparar ni para pintar la fila) para que la instantanea de
+		/// comparacion y lo que de verdad se pinta nunca puedan divergir.</summary>
+		private struct DatosNpc
+		{
+			public NPC Npc;
+			public ShoppingSettings Ajustes;
+			public float DistanciaTiles;
+			public bool Fiable;
+			public bool SinCasa;
+		}
+
 		public PestanaVecindad()
 		{
 			Width.Set(0f, 1f);
@@ -124,15 +149,21 @@ namespace TerrakeepMod.UI.Exploracion
 			}
 		}
 
-		/// <summary>Vuelve a leer todos los NPC de pueblo activos y su felicidad real. Público para
-		/// que la autoprueba pueda forzarlo sin esperar el temporizador.</summary>
+		/// <summary>Vuelve a leer todos los NPC de pueblo activos y su felicidad real, pero SOLO
+		/// reconstruye la lista visual (<c>_lista.Clear()</c> + filas nuevas) cuando lo que se
+		/// enseñaría de verdad cambió desde el último refresco - ver <see cref="_instantaneaAnterior"/>.
+		/// Público para que la autoprueba pueda forzarlo sin esperar el temporizador.</summary>
 		public void Refrescar()
 		{
-			_lista.Clear();
-			_totalNpcs = 0;
-
 			Player jugador = Main.LocalPlayer;
 			if (jugador == null) {
+				// Sin jugador no hay nada real que leer (ni ShopHelper ni posición) - se limpia una
+				// sola vez, nunca en bucle, para no generar el mismo parpadeo que se está arreglando.
+				if (_totalNpcs != 0 || _lista.Count != 0) {
+					_lista.Clear();
+					_totalNpcs = 0;
+				}
+				_instantaneaAnterior = null;
 				return;
 			}
 
@@ -152,14 +183,43 @@ namespace TerrakeepMod.UI.Exploracion
 			// de una partida a otra sin ningún significado para el jugador.
 			vecinos.Sort((a, b) => string.CompareOrdinal(a.FullName, b.FullName));
 
+			// Datos reales de CADA vecino, calculados una sola vez (nunca dos: la instantánea de
+			// comparación y la fila pintada usan exactamente los mismos valores, así no pueden
+			// divergir entre sí).
+			List<DatosNpc> datos = new List<DatosNpc>(vecinos.Count);
+			string instantanea = vecinos.Count == 0 ? "0" : "";
+			foreach (NPC npc in vecinos) {
+				ShoppingSettings ajustes = Main.ShopHelper.GetShoppingSettings(jugador, npc);
+				float distanciaTiles = Vector2.Distance(jugador.Center, npc.Center) / 16f;
+				bool fiable = distanciaTiles <= RadioTilesFiable;
+				bool sinCasa = npc.homeTileX < 0 && npc.homeTileY < 0;
+				datos.Add(new DatosNpc {
+					Npc = npc, Ajustes = ajustes, DistanciaTiles = distanciaTiles, Fiable = fiable, SinCasa = sinCasa
+				});
+
+				// Todo lo que de verdad se enseña en pantalla por cada NPC (mismo texto/condiciones
+				// que AnadirFilaNpc pinta abajo) - si nada de esto cambia, no hay ningún motivo real
+				// para tirar la lista y reconstruirla.
+				instantanea += npc.whoAmI + "|" + npc.FullName + "|" +
+					(int)System.Math.Round(ajustes.PriceAdjustment * 100.0) + "|" +
+					ajustes.HappinessReport + "|" + sinCasa + "|" +
+					(fiable ? -1 : (int)distanciaTiles) + ";";
+			}
+
+			if (instantanea == _instantaneaAnterior) {
+				return;
+			}
+			_instantaneaAnterior = instantanea;
+
+			_lista.Clear();
 			_totalNpcs = vecinos.Count;
 			if (vecinos.Count == 0) {
 				_lista.Add(NuevaLinea(() => Idiomas.Texto("Exploracion.Vecindad.Ninguno"), EstiloTk.TextoSuave, 0.8f));
 				return;
 			}
 
-			foreach (NPC npc in vecinos) {
-				AnadirFilaNpc(jugador, npc);
+			foreach (DatosNpc d in datos) {
+				AnadirFilaNpc(d.Npc, d.Ajustes, d.DistanciaTiles, d.Fiable, d.SinCasa);
 			}
 		}
 
@@ -205,13 +265,8 @@ namespace TerrakeepMod.UI.Exploracion
 				marcadores.Count + " casas reales marcadas (NPC.homeTileX/homeTileY).");
 		}
 
-		private void AnadirFilaNpc(Player jugador, NPC npc)
+		private void AnadirFilaNpc(NPC npc, ShoppingSettings ajustes, float distanciaTiles, bool fiable, bool sinCasa)
 		{
-			ShoppingSettings ajustes = Main.ShopHelper.GetShoppingSettings(jugador, npc);
-			float distanciaTiles = Vector2.Distance(jugador.Center, npc.Center) / 16f;
-			bool fiable = distanciaTiles <= RadioTilesFiable;
-			bool sinCasa = npc.homeTileX < 0 && npc.homeTileY < 0;
-
 			// Verde/rojo/gris con el mismo criterio real ya centralizado en EstiloTk (idea 8/
 			// FilaRequisitoTk): mas barato que el precio base = contento, mas caro = descontento.
 			Color colorPrecio = ajustes.PriceAdjustment < 0.999 ? EstiloTk.Correcto
