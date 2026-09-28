@@ -396,6 +396,7 @@
           "clave": "ArmaContraLaMaldad",
           "zona": "Cavernas",
           "capa": "cavernas",
+          "jefe": 13,
           "requisitos": [
             {
               "_fuente": "NPC.cs SetDefaults: Devorador de Mundos, cabeza type==13 (linea 3978) daño 22 / defensa 2, cuerpo type==14 (3997) daño 13 / defensa 4, cola type==15 (4017) daño 11 / defensa 8, 150 de vida CADA segmento. Cerebro type==266 (7560): daño 30, defensa 14, vida 1250, con dontTakeDamage=true desde SetDefaults mientras vivan sus Reptadores (type==267: 100 de vida, 20 de daño, 10 de defensa). Con daño-defensa*0.5 (minimo 1), 20 de daño de arma deja golpes utiles contra los dos.",
@@ -428,6 +429,7 @@
           "clave": "VencerLaMaldad",
           "zona": "Cavernas",
           "capa": "cavernas",
+          "jefe": 13,
           "requisitos": [
             {
               "_fuente": "NPC.cs:85444-85455, case 13/14/15/266 con boss=true: SetEventFlagCleared(ref downedBoss2) y WorldGen.spawnMeteor=true seguro la primera vez (!downedBoss2), 1/2 las siguientes; ademas Main.cs:82945 tira 1/50 cada noche con downedBoss2. LO QUE NO ABRE (auditoria 16-sep-2026, reportado por el usuario jugando): los altares. WorldGen.SmashAltar (WorldGen.cs:42691) devuelve sin hacer nada si !Main.hardMode, y Player.cs:45912 hiere al jugador (statLife/2) al golpear el tile 26 con hammer<80 o sin hardmode - el unico martillo de 80% antes de los de hardmode es el Gran martillo (Pwnhammer, 367), drop 100% del Muro de Carne (ItemDropDatabase.RegisterBoss_WOF). Lo que SI abre de verdad: el Tabernero pasa a poder rescatarse (DD2Event.ReadyToFindBartender => NPC.downedBoss2) y con el la dificultad 1 del Antiguo Ejercito; y el material del jefe (Endemoniado/Carmesi + Escamas de las sombras/Muestras de tejido) da el Pico de pesadilla (65%) / Pico mortifero (70%), los primeros que pican Piedra infernal (Player.cs:55016 exige pickPower>=65 para el tile 58).",
