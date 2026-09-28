@@ -10660,3 +10660,92 @@ lanzar el cliente). Tras la pasada no queda ningun proceso `dotnet.exe`/`tModLoa
   regenerados por la pasada de verificacion post-arreglo de BUG 3 (sobrescriben otra vez la evidencia,
   la version anterior queda preservada en el historial de git).
 - `bitacora.md` (esta entrada).
+
+## 28-sep-2026 - Arregla el anillo de progreso "6/13" de Builds, desbordado por fuera de la ventana
+
+Hallazgo del usuario con captura real (`Captura de pantalla 2026-09-28 074010.png`, guardada en
+`C:\Users\adrian\Pictures\Screenshots\`): en Builds, el badge circular "6/13" (el anillo de
+progreso de la cabecera - cuenta de cuantos objetos del build ya posee el usuario, aqui 3
+armadura+3 armas+7 accesorios=13, 6 en verde) quedaba DESFASADO, solapando la esquina superior
+derecha de la ventana y sobresaliendo por fuera. Pedido explicito: moverlo al lado izquierdo del
+alternador "[ ] Vanilla", centrado con el, sin que sobresalga por ningun lado.
+
+Encargo recibido inicialmente apuntando a "Terrakeep, app WPF" (`Terrasavr-Native`) - busqueda
+exhaustiva ahi (`BuildsView.xaml`, `MainWindow.xaml`, `BuildsViewModel.cs`,
+`BuildClassGearViewModel.cs`, `HomeView.xaml`, `CharacterListEntryViewModel.cs`) no encontro ningun
+badge de fraccion N/M: cero coincidencias reales. Abrir la captura real del usuario (herramienta
+`Read` sobre el PNG) confirmo que la UI de la captura es en realidad **TerrakeepMod** (interfaz
+dibujada dentro de tModLoader, pestañas Personaje/Libreria/Builds/Investigacion/Exploracion/
+Ajustes/Guia/Album con estetica pixel-art) - correccion de repo objetivo documentada aqui con
+evidencia real, no una suposicion.
+
+**Causa real** (`UI/Builds/ContenidoBuilds.cs`, confirmada contra el codigo real de
+`Terraria.UI.UIElement.Recalculate`/`GetInnerDimensions` en
+`Downloads\Keep\tModLoader-Decompiled\tModLoader\Terraria\UI\UIElement.cs`): el alternador de
+fuente (Vanilla/Calamity) y el anillo de progreso (`AnilloProgresoTk`, diametro 44px) vivian
+APILADOS en la columna derecha de la cabecera, cada uno con su propio `Top` fijo sin relacion real
+entre si (alternador `Top=0` alto 26, anillo `Top=30` alto 44, los dos con `HAlign=1f` y `Left`
+por defecto = pegados al borde derecho real de la cabecera con solo el `SetPadding(8f)` de margen)
+- insuficiente en la practica segun la captura real del usuario, que muestra el circulo
+sobresaliendo por el borde derecho de la ventana.
+
+**Arreglo real**: alternador y anillo pasan a compartir la MISMA fila (alto = diametro del anillo,
+44px) en vez de apilarse - el alternador se centra verticalmente dentro de esa fila
+(`Top=(44-26)/2=9`), y el anillo pasa a tener un `Left` NEGATIVO relativo
+(`-(AnchoAlternadorFuente + SeparacionAnilloAlternador)` = `-(130+8)` = `-138`) que, combinado con
+su propio `HAlign=1f`, lo deja SIEMPRE pegado al borde izquierdo real del alternador - nunca una
+coordenada absoluta que pueda desfasarse al redimensionar la ventana. `AnchoColumnaDerecha`
+(reservado para que `_subtitulo`/`_resumen` nunca pasen por debajo) crece de 130 a 182px
+(`DiametroAnillo + SeparacionAnilloAlternador + AnchoAlternadorFuente`) para dar cabida a los dos
+lado a lado. Se añadio `ContenidoBuilds.CabeceraParaPrueba` (mismo patron `*ParaPrueba` ya
+establecido por `AnilloProgresoParaPrueba` et al.) para que un arnes pueda comparar la geometria
+real del anillo contra `GetInnerDimensions()` de la cabecera sin adivinar el padding a mano.
+
+**Verificacion de build real**: `scripts/compilar.ps1` (Fase 1 `dotnet build -p:BuildMod=false`,
+Fase 2 `-build` real de tModLoader) en verde, 0 errores (mismos avisos benignos preexistentes:
+`CS1701` de `Newtonsoft.Json`/`System.Runtime`, `WARN: Image loading failed` de los iconos). El
+`.tmod` real se recompilo y redesplego en
+`Documents\My Games\Terraria\tModLoader\Mods\TerrakeepMod.tmod` (840.373 bytes, 28/09/2026 08:59:48).
+
+**Canario nuevo** (`Common/Panel/DiagnosticoAnilloBuildsDesbordado.cs`, arnes real
+`TERRAKEEP_DIAG_ANILLO_DESBORDE=1`, mismo patron exacto ya establecido por
+`DiagnosticoInvestigador3Bugs.cs`): fuerza por reflexion el escenario real "6/13" (mismos campos
+`_objetosQueTiene`/`_objetosResueltos` que ya lee `_fraccion` en cada `Draw`), mide
+`GetDimensions()` del anillo/alternador reales y `GetInnerDimensions()` de la cabecera real, y
+confirma tres cosas con datos MEDIDOS del motor (nunca una formula recalculada aparte): (1) el
+anillo no sobresale por ningun lado de los limites internos reales de la cabecera - el sintoma
+exacto reportado; (2) el anillo queda a la izquierda del alternador sin solaparlo; (3) los dos
+quedan centrados verticalmente entre si. Script real para lanzarlo en el sandbox WS7:
+`scripts/verificar-anillo-builds-desbordado.ps1` (mismo patron que
+`verificar-investigacion-3bugs.ps1`).
+
+**Ejecucion en vivo del canario: PENDIENTE, bloqueada por un proceso real de otro agente.** Al
+lanzar el arnes, `tModLoader` es una app de instancia unica (Steam) y el UNICO proceso real
+(`dotnet.exe` bajo `...\tModLoader\dotnet\`) resulto pertenecer a otro agente trabajando en
+PARALELO en este mismo repo en esta misma ronda (confirmado con `git status`: cambios sin comitear
+ajenos en `Common/Panel/DiagnosticoInvestigador3Bugs.cs` y `UI/Exploracion/PestanaVecindad.cs`,
+mas capturas nuevas en `evidencia/investigacion-3bugs-capturas/` - su propio ciclo de pruebas de
+"Bug3/Vecindad", relanzando el cliente repetidamente cada ~1-2 min durante toda esta ronda,
+confirmado con varios `Get-Process` seguidos mostrando PIDs y `StartTime` distintos). Siguiendo la
+regla fija ("no fuerces el cierre de la ventana del usuario/de otro agente"), NO se forzo el cierre
+de ese proceso ni se relanzo por encima. El log resultante de mi propio intento
+(`evidencia/anillo-builds-desbordado.log.txt`) salio vacio (mi variable
+`TERRAKEEP_DIAG_ANILLO_DESBORDE` nunca llego a un proceso propio realmente nuevo, ya que Steam
+reutiliza/enfoca la instancia unica ya viva del otro agente) - se borro por no aportar evidencia
+real. Queda `scripts/verificar-anillo-builds-desbordado.ps1` listo para relanzarse en cuanto el
+sandbox WS7 quede libre.
+
+**Confianza en el arreglo sin la confirmacion visual en vivo todavia**: alta pero no absoluta - la
+formula esta verificada linea a linea contra el codigo REAL de `UIElement.Recalculate`/
+`GetDimensionsBasedOnParentDimensions` (no una suposicion de como funciona `HAlign`/`Left`/
+`GetInnerDimensions`), y el mismo mecanismo (`HAlign=1f` + `Left` relativo) es exactamente el que
+ya usaba el alternador de fuente sin desbordar nunca - el anillo ahora hereda ese mismo margen real
+ya probado, en vez de depender de coordenadas propias sin relacion con el.
+
+### Archivos tocados (arreglo real del anillo desbordado)
+
+- `UI/Builds/ContenidoBuilds.cs` - arreglo real: alternador y anillo comparten fila en vez de
+  apilarse, `Left` relativo del anillo en vez de pegado al borde, más `CabeceraParaPrueba`.
+- `Common/Panel/DiagnosticoAnilloBuildsDesbordado.cs` (nuevo) - arnes de verificacion real.
+- `scripts/verificar-anillo-builds-desbordado.ps1` (nuevo) - lanzador real en el sandbox WS7.
+- `bitacora.md` (esta entrada).
