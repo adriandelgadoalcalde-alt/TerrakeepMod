@@ -10749,3 +10749,96 @@ ya probado, en vez de depender de coordenadas propias sin relacion con el.
 - `Common/Panel/DiagnosticoAnilloBuildsDesbordado.cs` (nuevo) - arnes de verificacion real.
 - `scripts/verificar-anillo-builds-desbordado.ps1` (nuevo) - lanzador real en el sandbox WS7.
 - `bitacora.md` (esta entrada).
+
+## 28-sep-2026 — Reapertura de BUG 3 (Vecindad sigue parpadeando): el arreglo del 26-sep no cubria NPC lejos/caminando
+
+El usuario reporta hoy: "parpadeos en la pestaña vecindad, siguen estando y muy presentes" - pese al
+arreglo real del 26-sep (commit `4004113`, ver entradas de arriba). Encargo recibido ya con la causa
+diagnosticada por un investigador-bug (fase 1): la instantanea de comparacion de
+`PestanaVecindad.Refrescar` (`UI/Exploracion/PestanaVecindad.cs:203-206` antes de este arreglo) solo
+"congelaba" la distancia jugador↔NPC cuando el NPC estaba dentro de `RadioTilesFiable` (60 tiles,
+`fiable ? -1 : (int)distanciaTiles`) - fuera de ese radio seguia comparando por el TILE ENTERO exacto,
+y los NPC de pueblo caminan solos sin parar (IA de vanilla, nunca se detiene del todo). El sandbox WS7
+usado por el arreglo del 26-sep solo tiene 2 NPC SIEMPRE pegados al jugador (fiable=true todo el rato),
+asi que jamas pudo ejercitar esa rama - de ahi que el propio BUG3 se diera por cerrado sin que el bug
+real (el caso COMUN: vecino lejos o paseando) desapareciera.
+
+**Confirmacion cuantitativa en vivo (obligatoria antes de tocar produccion, no solo el analisis
+estatico del encargo)**: se extendio `Common/Panel/DiagnosticoInvestigador3Bugs.cs` (arnes de solo
+investigacion, `TERRAKEEP_INVESTIGACION_3BUGS=1`) con dos piezas nuevas:
+- `TeleportarLejosDeVecinos()` (PASO8 nuevo) - aleja al jugador 90 tiles en horizontal (misma Y, mismo
+  mecanismo real `Player.Teleport` ya usado en produccion por `EntrenadorJefe.cs`) para forzar la rama
+  "no fiable" con NPC de pueblo REALES caminando, no simulados. `RestaurarPosicionJugador()` (PASO10)
+  lo devuelve a su sitio al terminar - reversible, no dejo nada tocado del mundo/personaje reales.
+- Ventana de observacion (`ObservarVecindad`, antes PASO8 ahora PASO9) subida de 95 a 1800 fotogramas
+  (~30s) - los NPC de este sandbox concreto pasan tramos de pie quietos mas largos que los ~1,6s de la
+  ventana original, hacia falta mucho mas margen real para que la IA entrara en un tramo de caminar.
+
+**Obstaculo real de sesion, resuelto sin bloquear el trabajo**: la primera pasada de `dotnet build`
+(Fase 1 de `scripts/compilar.ps1`) fallo por `Common/Panel/DiagnosticoAnilloBuildsDesbordado.cs`, un
+archivo SIN COMMITEAR de un agente distinto trabajando en paralelo sobre el bug real "anillo de Builds
+desbordado" (ver la entrada inmediatamente anterior - se cerro de verdad mientras esta sesion seguia
+abierta, commits `6981e99`/`a583f7c`). Nunca se toco ese archivo de produccion; se hizo una copia de
+seguridad a un scratchpad fuera del repo por precaucion y se reintento el build en un bucle acotado
+(10 intentos, 20s de espera entre cada uno, sin bloquear) hasta que el propio agente terminase su
+edicion - se resolvio solo en el primer reintento. Ninguna perdida de trabajo ajeno.
+
+**Evidencia real medida (jugador alejado >60 tiles, 2 NPC de pueblo reales, 30 segundos seguidos, SIN
+tocar nada, misma metrica que BUG3 original - identidad de objeto del primer `UIElement` de
+`_lista._items`)**:
+
+```
+SIN CUANTIZAR (codigo del 26-sep, sin tocar):   29 reconstrucciones en 1800 fotogramas (~30s)
+  - reconstrucciones en f=18,48,78,108,138,168... CADA 30 fotogramas EXACTOS sin parar, de
+    principio (f=18) a fin (f=1158) del tramo en que el NPC estuvo caminando - practicamente
+    CADA ciclo de refresco, el mismo parpadeo continuo que BUG3 ya habia arreglado para el caso
+    cercano, reaparecido en el caso lejos/caminando.
+
+CUANTIZADO paso=3 tiles (primera prueba del arreglo):  10 reconstrucciones en 1800 fotogramas
+  - mejora real (29->10) pero un NPC caminando sigue cruzando un bucket de 3 tiles casi cada
+    ciclo de refresco (30-60 fotogramas de diferencia entre reconstrucciones) - insuficiente.
+
+CUANTIZADO paso=8 tiles (valor real elegido):           3 reconstrucciones en 1800 fotogramas
+  - f=18, f=1068, f=1218: ~18-20s de diferencia entre reconstrucciones, ya NO "cada ciclo".
+```
+
+**Arreglo aplicado** en `UI/Exploracion/PestanaVecindad.cs` (`Refrescar`): nueva constante
+`PasoDistanciaLejosTiles = 8f` (con su XMLdoc documentando las 3 mediciones de arriba). La distancia
+que entra en la instantanea de comparacion, cuando el NPC NO es fiable, ya no es el tile entero exacto
+sino `(int)(Math.Round(distanciaTiles / PasoDistanciaLejosTiles) * PasoDistanciaLejosTiles)` -
+cuantizada a multiplos de 8 tiles. `AnadirFilaNpc` sigue pintando la distancia EXACTA del momento de la
+reconstruccion (el usuario nunca ve un numero "redondo raro" en la etiqueta "Lejos (N tiles)", solo se
+actualiza con menos frecuencia) - la cuantizacion vive SOLO en la comparacion, nunca en lo que se
+pinta. Se evaluaron las dos opciones que planteaba el encargo (cuantizar vs. reconciliar filas sueltas
+en vez de `Clear()+Add()`): se descarto la reconciliacion de filas por el mismo motivo ya documentado
+por el investigador original de BUG3 (numero de filas por NPC no fijo, 3 o 4 segun `sinCasa`/`fiable`,
+mas superficie de bug que el problema que arregla) - la cuantizacion sola ya baja el problema de
+"parpadeo continuo, cada 0,5s" a "una reconstruccion aislada cada ~18-20s durante un paseo real", una
+diferencia categorica de percepcion sin tocar la arquitectura ya validada de BUG3 (opcion A, instantanea
+completa).
+
+**Verificado con el arnes extendido** (ver arriba): las 3 pasadas de arriba se hicieron SIEMPRE
+recompilando y redesplegando el `.tmod` real antes de cada una (nunca contra un binario viejo). BUG1
+(`CampoTextoTk.cs`, no tocado) y BUG2 (`AnilloProgresoTk.cs`, no tocado) sin cambios en la misma pasada
+final: 3 transiciones de cursor reales, 28/28 segmentos del anillo con `distanciaColor=0,0`.
+
+**Build/test/despliegue reales**: `scripts/compilar.ps1` en verde en la pasada final (solo los mismos
+avisos benignos ya documentados - `CS1701`/`WARN: Image loading failed`). `.tmod` real desplegado en
+`Documents\My Games\Terraria\tModLoader\Mods\TerrakeepMod.tmod` (840.399 bytes, 28/09/2026 09:07:01) y
+tambien en el sandbox WS7 (lo hace `verificar-investigacion-3bugs.ps1` antes de lanzar el cliente).
+`dotnet test` de `TerrakeepMod.Tests` (net10.0, proyecto de logica pura sin relacion directa con este
+archivo - `PestanaVecindad` depende de `NPC`/`Player` reales de Terraria, sin superficie testeable fuera
+del motor, mismo LIMITE REAL ya documentado el 17-sep-2026): **24/24 en verde, sin regresion**. Tras la
+ultima pasada no queda ningun proceso `tModLoader.exe` colgado bloqueando nada.
+
+### Archivos tocados
+
+- `UI/Exploracion/PestanaVecindad.cs` - arreglo real: distancia "no fiable" cuantizada a multiplos de
+  8 tiles en la instantanea de comparacion (nunca en lo que se pinta).
+- `Common/Panel/DiagnosticoInvestigador3Bugs.cs` - arnes de investigacion extendido: PASO8 nuevo
+  (`TeleportarLejosDeVecinos`, aleja al jugador de verdad para forzar el caso "no fiable"), PASO9 (antes
+  PASO8, `ObservarVecindad`) con ventana de 1800 fotogramas en vez de 95, PASO10 nuevo
+  (`RestaurarPosicionJugador`).
+- `evidencia/investigacion-3bugs.log.txt`, `evidencia/investigacion-3bugs-capturas/*.png` - log/capturas
+  reales de la ULTIMA pasada (post-arreglo, paso=8, 3 reconstrucciones en 30s).
+- `bitacora.md` (esta entrada).

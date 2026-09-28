@@ -216,10 +216,19 @@ namespace TerrakeepMod.Common.Panel
 				case 5: ForzarEscenarioAnillo(); Avanzar(6); break;
 				case 6: MedirAnillo(); Avanzar(7); break;
 				case 7: IrAVecindad(); Avanzar(8); break;
-				case 8:
-					if (ObservarVecindad()) { Avanzar(9); } else { _espera = 0; }
+				// PASO NUEVO (28-sep-2026, reapertura de BUG3: el usuario sigue viendo parpadeo real
+				// tras el arreglo del 26-sep): el sandbox WS7 solo tiene 2 NPC de pueblo pegados al
+				// jugador, SIEMPRE dentro de RadioTilesFiable (60 tiles) - ese escenario NUNCA pudo
+				// ejercitar la rama "no fiable" de la instantanea de PestanaVecindad.Refrescar, que es
+				// justo donde sigue el hueco. Se aleja al jugador de verdad (Player.Teleport, mismo
+				// mecanismo real ya usado por EntrenadorJefe.cs) para forzar esa rama con NPCs de
+				// pueblo caminando de verdad (su IA nunca se detiene) y una ventana de observacion
+				// mucho mas larga.
+				case 8: TeleportarLejosDeVecinos(); Avanzar(9); break;
+				case 9:
+					if (ObservarVecindad()) { Avanzar(10); } else { _espera = 0; }
 					break;
-				case 9: Terminar(); break;
+				case 10: RestaurarPosicionJugador(); Terminar(); break;
 			}
 		}
 
@@ -433,45 +442,98 @@ namespace TerrakeepMod.Common.Panel
 			Log("PASO7: cambiado a Exploracion/Vecindad.");
 		}
 
+		private static Vector2 _posicionOriginalJugador;
+		private static bool _jugadorTeleportado;
+
+		/// <summary>Aleja al jugador &gt;60 tiles (RadioTilesFiable) de sus NPC de pueblo activos,
+		/// SOLO horizontalmente (misma altura Y que ya tenia, evita caer/asfixiarse en terreno
+		/// desconocido) - fuerza la rama "no fiable" de <c>PestanaVecindad.Refrescar</c> que el
+		/// sandbox normal (NPC siempre pegados al jugador) nunca ejercita. <c>Player.Teleport</c> es
+		/// API real ya usada en produccion (<c>EntrenadorJefe.cs</c>), reversible con
+		/// <see cref="RestaurarPosicionJugador"/>.</summary>
+		private static void TeleportarLejosDeVecinos()
+		{
+			Player jugador = Main.LocalPlayer;
+			if (jugador == null) {
+				Log("PASO8 FALLO: jugador nulo, no se puede alejar.");
+				return;
+			}
+			_posicionOriginalJugador = jugador.position;
+			_jugadorTeleportado = true;
+			// 90 tiles > RadioTilesFiable (60) con margen real, mismo signo que el borde del mundo
+			// mas cercano para no salirse de Main.maxTilesX.
+			float signo = jugador.Center.X > Main.maxTilesX * 16f / 2f ? -1f : 1f;
+			Vector2 destino = new Vector2(jugador.Center.X + signo * 90f * 16f, jugador.Center.Y);
+			jugador.Teleport(destino, 1);
+			Log("PASO8: jugador teletransportado de (" + _posicionOriginalJugador.X.ToString("0.0") + "," +
+				_posicionOriginalJugador.Y.ToString("0.0") + ") a (" + destino.X.ToString("0.0") + "," +
+				destino.Y.ToString("0.0") + ") - 90 tiles en horizontal, misma Y, para forzar la rama " +
+				"\"no fiable\" (>60 tiles) de la instantanea con NPCs de pueblo REALES caminando.");
+		}
+
+		private static void RestaurarPosicionJugador()
+		{
+			if (!_jugadorTeleportado) {
+				return;
+			}
+			Player jugador = Main.LocalPlayer;
+			if (jugador != null) {
+				jugador.Teleport(_posicionOriginalJugador, 1);
+				Log("PASO10: jugador devuelto a su posicion original.");
+			}
+			_jugadorTeleportado = false;
+		}
+
 		private static int _subFrameVecindad;
 		private static int _hashItem0Anterior;
 		private static float _viewPositionAnterior;
 		private static int _cambiosDeIdentidad;
 		private static int _resetsDeScroll;
+		// Ventana mucho mas larga que los 95 fotogramas (95 = ~1,6s) del arnes original: con el
+		// jugador ya lejos (PASO8), hacen falta varios segundos reales para que la IA de los NPC de
+		// pueblo (que nunca se detiene) cruce suficientes limites de tile entero como para que la
+		// hipotesis del 28-sep-2026 (distancia "no fiable" sin cuantizar dispara reconstrucciones casi
+		// todo el rato) se pueda medir con evidencia real, no solo teorica.
+		// Primera pasada real (28-sep-2026, 400 fotogramas/~6,7s): con el jugador ya alejado, UNA
+		// sola reconstruccion (la del cruce a "no fiable") y despues congelado el resto de la
+		// ventana - los NPC de pueblo de este sandbox concreto pasan tramos de pie quietos (AI de
+		// vanilla, no siempre caminando) mas largos que 6,7s. Subido a 1800 (~30s) para tener margen
+		// real de que la IA entre en un tramo de caminar de verdad dentro de la ventana observada.
+		private const int FotogramasObservacionVecindad = 1800;
 
 		private static bool ObservarVecindad()
 		{
 			var vecindad = PanelTerrakeepSystem.Panel?.Exploracion?.Vecindad;
 			if (vecindad == null) {
-				Log("PASO8: PestanaVecindad nula - se omite la observacion.");
+				Log("PASO9: PestanaVecindad nula - se omite la observacion.");
 				return true;
 			}
 
 			var lista = Priv(vecindad, "_lista") as UIList;
 			if (lista == null) {
-				Log("PASO8: campo _lista inaccesible - se omite la observacion.");
+				Log("PASO9: campo _lista inaccesible - se omite la observacion.");
 				return true;
 			}
 
 			if (_subFrameVecindad == 0) {
 				float alturaContenido = lista.GetTotalHeight();
 				float alturaHueco = lista.GetDimensions().Height;
-				Log("PASO8 inicio: NPCs de pueblo activos=" + vecindad.TotalNpcsParaPrueba + " lista.Count=" + lista.Count +
+				Log("PASO9 inicio: NPCs de pueblo activos=" + vecindad.TotalNpcsParaPrueba + " lista.Count=" + lista.Count +
 					" GetTotalHeight=" + alturaContenido.ToString("0.0") + " hueco visible=" + alturaHueco.ToString("0.0") +
-					" ViewPosition inicial=" + lista.ViewPosition.ToString("0.00"));
+					" ViewPosition inicial=" + lista.ViewPosition.ToString("0.00") + " (jugador ya alejado por PASO8).");
 
 				bool escrollable = alturaContenido > alturaHueco + 1f;
 				if (escrollable) {
 					lista.ViewPosition = 15f;
-					Log("PASO8: contenido mas alto que el hueco visible - ViewPosition forzado a 15 para vigilar " +
+					Log("PASO9: contenido mas alto que el hueco visible - ViewPosition forzado a 15 para vigilar " +
 						"si un refresco lo resetea sin que el usuario toque nada. ViewPosition tras forzarlo=" +
 						lista.ViewPosition.ToString("0.00") + ".");
 				}
 				else {
-					Log("PASO8: con " + vecindad.TotalNpcsParaPrueba + " NPC(s) de pueblo activos en este sandbox, el " +
+					Log("PASO9: con " + vecindad.TotalNpcsParaPrueba + " NPC(s) de pueblo activos en este sandbox, el " +
 						"contenido NO llega a ser mas alto que el hueco visible (scrollbar inactivo) - la parte " +
 						"\"reset de scroll\" de la hipotesis queda como LIMITE REAL de ESTE sandbox concreto (pocos " +
-						"NPCs reclutados). Se sigue vigilando igualmente la RECONSTRUCCION completa cada 30 fotogramas.");
+						"NPCs reclutados). Se sigue vigilando igualmente la RECONSTRUCCION completa.");
 				}
 
 				_hashItem0Anterior = -1;
@@ -490,8 +552,8 @@ namespace TerrakeepMod.Common.Panel
 				_resetsDeScroll++;
 			}
 
-			if (_subFrameVecindad % 15 == 0 || cambioIdentidad || cambioViewPosition) {
-				Log("PASO8 f=" + _subFrameVecindad + " Count=" + lista.Count +
+			if (_subFrameVecindad % 30 == 0 || cambioIdentidad || cambioViewPosition) {
+				Log("PASO9 f=" + _subFrameVecindad + " Count=" + lista.Count +
 					" TotalHeight=" + lista.GetTotalHeight().ToString("0.0") +
 					" ViewPosition=" + lista.ViewPosition.ToString("0.00") + " hashItem0=" + hashActual +
 					(cambioIdentidad ? " -> RECONSTRUIDA (la identidad del primer UIElement de la lista cambio: Clear()+Add() crearon objetos NUEVOS)" : "") +
@@ -502,11 +564,12 @@ namespace TerrakeepMod.Common.Panel
 			_viewPositionAnterior = lista.ViewPosition;
 			_subFrameVecindad++;
 
-			if (_subFrameVecindad >= 95) {
-				Log("PASO8 RESUMEN BUG3: en " + _subFrameVecindad + " fotogramas seguidos con la pestaña Vecindad " +
-					"abierta y SIN tocar nada, hubo " + _cambiosDeIdentidad + " reconstrucciones completas de la " +
-					"lista (se esperan ~3, una cada 30 fotogramas = PestanaVecindad.FotogramasEntreRefrescos) y " +
-					_resetsDeScroll + " cambios de ViewPosition no provocados por este diagnostico.");
+			if (_subFrameVecindad >= FotogramasObservacionVecindad) {
+				Log("PASO9 RESUMEN BUG3(28-sep): en " + _subFrameVecindad + " fotogramas seguidos (~" +
+					(_subFrameVecindad / 60.0).ToString("0.0") + "s) con la pestaña Vecindad abierta, el jugador " +
+					"alejado >60 tiles (RadioTilesFiable) de sus NPC de pueblo y SIN tocar nada, hubo " +
+					_cambiosDeIdentidad + " reconstrucciones completas de la lista y " + _resetsDeScroll +
+					" cambios de ViewPosition no provocados por este diagnostico.");
 				return true;
 			}
 			return false;

@@ -54,6 +54,31 @@ namespace TerrakeepMod.UI.Exploracion
 
 		private const int FotogramasEntreRefrescos = 30;
 
+		/// <summary>
+		/// Reapertura de BUG 3 (28-sep-2026): el arreglo del 26-sep congelaba la distancia en la
+		/// instantanea SOLO dentro de <see cref="RadioTilesFiable"/> (<c>fiable ? -1 : ...</c>) - fuera
+		/// de ese radio seguia comparando por el tile ENTERO exacto (<c>(int)distanciaTiles</c>), y los
+		/// NPC de pueblo caminan solos sin parar (IA de vanilla). Confirmado con evidencia real medida
+		/// (arnes <c>DiagnosticoInvestigador3Bugs.cs</c> PASO8/PASO9, jugador alejado &gt;60 tiles de
+		/// verdad): <b>29 reconstrucciones completas en 30 segundos</b> (practicamente CADA ciclo de
+		/// <see cref="FotogramasEntreRefrescos"/>, de principio a fin del tramo en que el NPC estuvo
+		/// caminando) - el mismo parpadeo que BUG3 ya arreglo para el caso cercano, ahora en el caso
+		/// COMUN (vecino lejos/paseando) en vez del raro que se probo entonces. Cuantizar a multiplos de
+		/// esta constante (en vez de al tile exacto) hace falta que el NPC se mueva una distancia
+		/// REALMENTE significativa para la UI (nadie necesita saber si esta a 87 o 88 tiles) antes de
+		/// contar como cambio real - sin tocar la logica de reconstruccion en si (opcion A, ya elegida
+		/// por el arreglo original: seguir comparando instantaneas completas, nunca reconciliar filas
+		/// sueltas, ver bitacora.md "BUG 3"). Medido en vivo, mismo arnes/mismo NPC caminando, jugador
+		/// alejado 90 tiles 30s seguidos: paso=3 bajo de 29 a 10 reconstrucciones en 30s (un NPC
+		/// caminando cruza un bucket de 3 tiles casi cada ciclo de refresco - mejora real pero todavia
+		/// muy perceptible); <b>8</b> (el valor real elegido) lo baja a SOLO 3 reconstrucciones en 30s,
+		/// muy espaciadas entre si (~18-20s de diferencia, ya no "cada ciclo") - la etiqueta "Lejos"
+		/// sigue redondeando al tile, el usuario nunca necesita saber si un vecino esta a 41 u a 47
+		/// tiles, solo se refresca con mucha menos frecuencia. Ver bitacora.md para las 3 mediciones
+		/// completas (sin cuantizar / paso=3 / paso=8).
+		/// </summary>
+		private const float PasoDistanciaLejosTiles = 8f;
+
 		private UIPanel _caja;
 		private UIList _lista;
 		private UIScrollbar _scroll;
@@ -199,11 +224,16 @@ namespace TerrakeepMod.UI.Exploracion
 
 				// Todo lo que de verdad se enseña en pantalla por cada NPC (mismo texto/condiciones
 				// que AnadirFilaNpc pinta abajo) - si nada de esto cambia, no hay ningún motivo real
-				// para tirar la lista y reconstruirla.
+				// para tirar la lista y reconstruirla. Distancia "no fiable" CUANTIZADA a multiplos de
+				// PasoDistanciaLejosTiles (ver su XMLdoc): el NPC tiene que alejarse/acercarse una
+				// cantidad real antes de que cuente como cambio, en vez de cualquier tile exacto que
+				// cruce su propio paseo constante.
+				int distanciaParaInstantanea = fiable ? -1
+					: (int)(System.Math.Round(distanciaTiles / PasoDistanciaLejosTiles) * PasoDistanciaLejosTiles);
 				instantanea += npc.whoAmI + "|" + npc.FullName + "|" +
 					(int)System.Math.Round(ajustes.PriceAdjustment * 100.0) + "|" +
 					ajustes.HappinessReport + "|" + sinCasa + "|" +
-					(fiable ? -1 : (int)distanciaTiles) + ";";
+					distanciaParaInstantanea + ";";
 			}
 
 			if (instantanea == _instantaneaAnterior) {
