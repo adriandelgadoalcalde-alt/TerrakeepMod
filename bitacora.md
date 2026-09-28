@@ -10719,28 +10719,45 @@ quedan centrados verticalmente entre si. Script real para lanzarlo en el sandbox
 `scripts/verificar-anillo-builds-desbordado.ps1` (mismo patron que
 `verificar-investigacion-3bugs.ps1`).
 
-**Ejecucion en vivo del canario: PENDIENTE, bloqueada por un proceso real de otro agente.** Al
-lanzar el arnes, `tModLoader` es una app de instancia unica (Steam) y el UNICO proceso real
-(`dotnet.exe` bajo `...\tModLoader\dotnet\`) resulto pertenecer a otro agente trabajando en
-PARALELO en este mismo repo en esta misma ronda (confirmado con `git status`: cambios sin comitear
-ajenos en `Common/Panel/DiagnosticoInvestigador3Bugs.cs` y `UI/Exploracion/PestanaVecindad.cs`,
-mas capturas nuevas en `evidencia/investigacion-3bugs-capturas/` - su propio ciclo de pruebas de
-"Bug3/Vecindad", relanzando el cliente repetidamente cada ~1-2 min durante toda esta ronda,
-confirmado con varios `Get-Process` seguidos mostrando PIDs y `StartTime` distintos). Siguiendo la
-regla fija ("no fuerces el cierre de la ventana del usuario/de otro agente"), NO se forzo el cierre
-de ese proceso ni se relanzo por encima. El log resultante de mi propio intento
-(`evidencia/anillo-builds-desbordado.log.txt`) salio vacio (mi variable
-`TERRAKEEP_DIAG_ANILLO_DESBORDE` nunca llego a un proceso propio realmente nuevo, ya que Steam
-reutiliza/enfoca la instancia unica ya viva del otro agente) - se borro por no aportar evidencia
-real. Queda `scripts/verificar-anillo-builds-desbordado.ps1` listo para relanzarse en cuanto el
-sandbox WS7 quede libre.
+**Ejecucion en vivo del canario: CONFIRMADA, con evidencia real medida.** Primer intento
+BLOQUEADO por un proceso real de otro agente: `tModLoader` es una app de instancia unica (Steam) y
+el UNICO proceso real (`dotnet.exe` bajo `...\tModLoader\dotnet\`) resulto pertenecer a otro agente
+trabajando en PARALELO en este mismo repo en esta misma ronda (confirmado con `git status`:
+cambios sin comitear ajenos en `Common/Panel/DiagnosticoInvestigador3Bugs.cs` y
+`UI/Exploracion/PestanaVecindad.cs`, mas capturas nuevas en
+`evidencia/investigacion-3bugs-capturas/` - su propio ciclo de pruebas de "Bug3/Vecindad",
+relanzando el cliente repetidamente cada ~1-2 min, confirmado con varios `Get-Process` seguidos
+mostrando PIDs y `StartTime` distintos). Siguiendo la regla fija ("no fuerces el cierre de la
+ventana del usuario/de otro agente"), NO se forzo el cierre de ese proceso ni se relanzo por
+encima - el primer log resultante salio vacio y se descarto por no aportar evidencia real.
 
-**Confianza en el arreglo sin la confirmacion visual en vivo todavia**: alta pero no absoluta - la
-formula esta verificada linea a linea contra el codigo REAL de `UIElement.Recalculate`/
-`GetDimensionsBasedOnParentDimensions` (no una suposicion de como funciona `HAlign`/`Left`/
-`GetInnerDimensions`), y el mismo mecanismo (`HAlign=1f` + `Left` relativo) es exactamente el que
-ya usaba el alternador de fuente sin desbordar nunca - el anillo ahora hereda ese mismo margen real
-ya probado, en vez de depender de coordenadas propias sin relacion con el.
+En cuanto ese proceso quedo libre (~2 minutos despues, confirmado con `Get-Process` sin resultado),
+se relanzo `scripts/verificar-anillo-builds-desbordado.ps1` de verdad, sandbox WS7, mismo escenario
+real "6/13" de la captura del usuario. Resultado REAL medido (`evidencia/anillo-builds-desbordado.log.txt`):
+
+```
+anillo=(980,00,150,80) 44,00x44,00 -> right=1024,00 bottom=194,80
+cabecera.GetInnerDimensions()=(118,00,150,80) 1044,00x62,00 -> right=1162,00 bottom=212,80
+izquierda=OK arriba=OK derecha=OK abajo=OK -> SIN_DESBORDE=True
+```
+
+138px de margen real hasta el borde derecho de la cabecera - coincide EXACTO con la constante
+`AnchoAlternadorFuente + SeparacionAnilloAlternador` (130+8=138), confirma que la aritmetica del
+arreglo es la que de verdad se esta ejecutando. El sintoma original reportado por el usuario (el
+anillo se solapaba con la esquina y sobresalia por fuera) queda cerrado con datos reales del
+motor, no solo con la lectura del codigo.
+
+Una segunda comprobacion del arnes ("a la izquierda del alternador, centrado con el") no pudo
+confirmarse visualmente en ESTE sandbox concreto: WS7 no tiene Calamity instalado, asi que
+`Reconstruir()` nunca cuelga `_alternadorFuente` de `_cabecera` (ver el comentario real de
+`ContenidoBuilds`) y su `GetDimensions()` se queda en (0,0) de fabrica. Arreglado el propio arnes
+en el mismo commit para detectar esto de verdad (`alternador.Parent != null`, no solo
+`alternador != null`) y documentarlo como LIMITE REAL de este sandbox en vez de un falso "MAL". La
+aritmetica de esa parte (el `Left` negativo del anillo depende SOLO de las constantes
+`AnchoAlternadorFuente`/`SeparacionAnilloAlternador`, nunca de si el alternador esta de verdad
+colgado) esta verificada linea a linea contra el codigo REAL de `UIElement.Recalculate`/
+`GetDimensionsBasedOnParentDimensions` - mismo mecanismo (`HAlign=1f` + `Left` relativo) que ya
+usaba el alternador de fuente sin desbordar nunca.
 
 ### Archivos tocados (arreglo real del anillo desbordado)
 
