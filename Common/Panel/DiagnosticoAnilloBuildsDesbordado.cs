@@ -182,7 +182,12 @@ namespace TerrakeepMod.Common.Panel
 				" derecha=" + (dentroDerecha ? "OK" : "MAL") + " abajo=" + (dentroAbajo ? "OK" : "MAL") +
 				" -> SIN_DESBORDE=" + sinDesborde);
 
-			if (alternador != null) {
+			// alternador != null solo confirma que el OBJETO C# existe - Reconstruir() lo cuelga/
+			// descuelga de _cabecera segun si hay mas de una fuente instalada (ver el comentario real
+			// de ContenidoBuilds), asi que sin Calamity queda sin Parent y su GetDimensions() nunca
+			// se recalcula (se queda en (0,0) 0x0, el valor de fabrica) - Parent != null es la
+			// comprobacion real de "esta de verdad en el arbol visual ahora mismo".
+			if (alternador != null && alternador.Parent != null) {
 				CalculatedStyle dimAlternador = alternador.GetDimensions();
 				float centroYAnillo = dimAnillo.Y + dimAnillo.Height / 2f;
 				float centroYAlternador = dimAlternador.Y + dimAlternador.Height / 2f;
@@ -201,7 +206,8 @@ namespace TerrakeepMod.Common.Panel
 					: "MAL: revisar los detalles de arriba."));
 			}
 			else {
-				Log("PASO2: alternador de fuente ausente (una sola fuente instalada, sin Calamity) - solo se comprueba que el anillo no desborde. " +
+				Log("PASO2: alternador de fuente sin Parent (una sola fuente instalada en este sandbox, sin Calamity - Reconstruir() no lo cuelga de la cabecera) - " +
+					"solo se puede comprobar que el anillo no desborde, la comprobacion de \"a la izquierda del alternador/centrado con el\" queda como LIMITE REAL de este sandbox concreto. " +
 					"RESUMEN: " + (sinDesborde ? "OK" : "MAL"));
 			}
 		}

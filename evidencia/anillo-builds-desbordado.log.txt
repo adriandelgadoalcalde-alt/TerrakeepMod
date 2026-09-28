@@ -1,0 +1,5 @@
+﻿[09:10:43.327] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] ANILLO-BUILDS-DESBORDE: PASO0: panel abierto en Builds.
+[09:10:43.427] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] ANILLO-BUILDS-DESBORDE: PASO1: forzado _objetosQueTiene=6 _objetosResueltos=13 (mismo "6/13" real de la captura del usuario).
+[09:10:43.529] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] ANILLO-BUILDS-DESBORDE: PASO2 LIMITES: anillo=(980,00,150,80) 44,00x44,00 -> right=1024,00 bottom=194,80 | cabecera.GetInnerDimensions()=(118,00,150,80) 1044,00x62,00 -> right=1162,00 bottom=212,80 | izquierda=OK arriba=OK derecha=OK abajo=OK -> SIN_DESBORDE=True
+[09:10:43.537] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] ANILLO-BUILDS-DESBORDE: PASO2: alternador de fuente sin Parent (una sola fuente instalada en este sandbox, sin Calamity - Reconstruir() no lo cuelga de la cabecera) - solo se puede comprobar que el anillo no desborde, la comprobacion de "a la izquierda del alternador/centrado con el" queda como LIMITE REAL de este sandbox concreto. RESUMEN: OK
+[09:10:43.629] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] ANILLO-BUILDS-DESBORDE: ANILLO-BUILDS-DESBORDE: terminado.
