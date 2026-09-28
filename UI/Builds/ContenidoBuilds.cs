@@ -40,9 +40,12 @@ namespace TerrakeepMod.UI.Builds
 		/// <summary>Alto MINIMO de la cabecera (subtitulo + una sola linea de resumen). Ver
 		/// <see cref="RecalcularCabecera"/>: crece de verdad cuando el mensaje de resultado no
 		/// cabe en una linea, nunca se queda en un numero fijo que recorte texto. Subido de 52 a 78
-		/// en TM5 para que quepan de sobra el alternador de fuente (26px) + el anillo de progreso
-		/// (44px) apilados en la columna de la derecha, sin que se recorten contra el borde
-		/// inferior de la cabecera.</summary>
+		/// en TM5, cuando el alternador de fuente (26px) y el anillo de progreso (44px) vivian
+		/// APILADOS en la columna de la derecha. Arreglo del 28-sep-2026 (ver
+		/// <see cref="AnchoAlternadorFuente"/>): ahora comparten la MISMA fila de 44px de alto, asi
+		/// que 78 sobra de largo para esa columna - se deja igual a proposito (no hace falta
+		/// reducirlo: el sobrante solo deja un poco de aire vacio bajo la fila, nunca un recorte;
+		/// bajarlo es pulido cosmetico, no parte de este arreglo).</summary>
 		private const float AltoCabeceraBase = 78f;
 		private const float TopResumen = 20f;
 		private const float EscalaResumen = 0.78f;
@@ -50,10 +53,34 @@ namespace TerrakeepMod.UI.Builds
 		private const float SeparacionFilas = 4f;
 		private const float AltoPie = 40f;
 
-		/// <summary>Ancho reservado en la cabecera (TM5) para el alternador de fuente y el anillo
-		/// de progreso, apilados a la derecha - <see cref="_subtitulo"/> y <see cref="_resumen"/>
-		/// se quedan mas estrechos en ese mismo ancho para que su texto nunca pase por debajo.</summary>
-		private const float AnchoColumnaDerecha = 130f;
+		/// <summary>Ancho PROPIO del alternador de fuente (Vanilla/Calamity) - separado de
+		/// <see cref="AnchoColumnaDerecha"/> desde el bug real reportado por el usuario con captura
+		/// (28-sep-2026): el anillo de progreso vivia APILADO debajo del alternador, los dos con
+		/// <c>HAlign=1f</c> pero el anillo con <c>Left</c> por defecto (0) - eso lo dejaba pegado al
+		/// borde derecho de la cabecera con solo el <c>SetPadding(8f)</c> de <see cref="_cabecera"/>
+		/// de margen real, que en la practica (medido en la captura real del usuario) no bastaba:
+		/// el circulo quedaba desfasado, solapando la esquina superior derecha de la ventana y
+		/// sobresaliendo por fuera. Pedido explicito del usuario: moverlo al lado IZQUIERDO del
+		/// alternador (el "boton de Vanilla"), centrado con el, para que nunca sobresalga por
+		/// ningun lado - ver <see cref="SeparacionAnilloAlternador"/>/<see cref="DiametroAnillo"/>
+		/// mas abajo y su uso en el constructor.</summary>
+		private const float AnchoAlternadorFuente = 130f;
+
+		/// <summary>Diametro real del anillo de progreso (2x el radio pasado a
+		/// <see cref="AnilloProgresoTk"/> en el constructor) - se guarda aqui como constante,
+		/// en vez de un literal repetido, para que el calculo de <see cref="AnchoColumnaDerecha"/>
+		/// y el <c>Left</c> negativo del anillo (ver constructor) nunca se desincronicen del radio
+		/// real usado al construirlo.</summary>
+		private const float DiametroAnillo = 44f;
+
+		/// <summary>Hueco horizontal entre el anillo de progreso y el alternador de fuente, ahora
+		/// que viven en la MISMA fila en vez de apilados (ver <see cref="AnchoAlternadorFuente"/>).</summary>
+		private const float SeparacionAnilloAlternador = 8f;
+
+		/// <summary>Ancho reservado en la cabecera para el alternador de fuente Y el anillo de
+		/// progreso juntos, lado a lado - <see cref="_subtitulo"/> y <see cref="_resumen"/> se
+		/// quedan mas estrechos en ese mismo ancho para que su texto nunca pase por debajo.</summary>
+		private const float AnchoColumnaDerecha = DiametroAnillo + SeparacionAnilloAlternador + AnchoAlternadorFuente;
 
 		// --- Pildoras (fuente/etapa/clase/conjunto de destino): ver GrupoPildoras mas abajo -----
 		/// <summary>Escala de texto de las pildoras. Se guarda aparte (no solo en el <see cref="BotonTk"/>)
@@ -246,6 +273,12 @@ namespace TerrakeepMod.UI.Builds
 		public AlternadorTk AlternadorFuenteParaPrueba => _alternadorFuente;
 		public DesplegableTk SelectorEtapaParaPrueba => _selectorEtapa;
 		public AnilloProgresoTk AnilloProgresoParaPrueba => _anilloProgreso;
+		/// <summary>SOLO PARA AUTOPRUEBAS (28-sep-2026, arreglo del anillo desbordado - ver
+		/// <see cref="AnchoAlternadorFuente"/>): la propia cabecera, para poder comparar
+		/// <see cref="AnilloProgresoParaPrueba"/>.GetDimensions() contra sus limites REALES
+		/// (GetInnerDimensions(), que ya descuenta el SetPadding(8f) real) en vez de adivinar el
+		/// padding a mano en el arnes.</summary>
+		public UIPanel CabeceraParaPrueba => _cabecera;
 
 		public ClaseBuild ClaseActual
 		{
@@ -312,22 +345,37 @@ namespace TerrakeepMod.UI.Builds
 					_indiceEtapa = 0;
 					Reconstruir();
 				});
-			_alternadorFuente.Width.Set(AnchoColumnaDerecha, 0f);
+			_alternadorFuente.Width.Set(AnchoAlternadorFuente, 0f);
 			_alternadorFuente.Height.Set(26f, 0f);
 			_alternadorFuente.HAlign = 1f;
-			_alternadorFuente.Top.Set(0f, 0f);
+			// Bug real reportado por el usuario con captura (28-sep-2026, "el anillo 6/13 se solapa
+			// con la esquina de la ventana"): alternador y anillo pasan de estar APILADOS (alternador
+			// arriba, anillo debajo, los dos pegados al borde derecho) a compartir la MISMA fila -
+			// el anillo (mas alto, DiametroAnillo) marca el alto real de la fila y el alternador
+			// (mas bajo, 26px) se centra verticalmente dentro de ella, en vez de vivir cada uno con
+			// su propio Top fijo sin relacion entre si.
+			_alternadorFuente.Top.Set((DiametroAnillo - 26f) / 2f, 0f);
 			// No se añade aqui: Reconstruir() lo cuelga/descuelga de _cabecera segun si hay mas de
 			// una fuente (ver mas abajo) - sin eso, sin Calamity instalado quedaria un alternador
 			// inerte "Vanilla" que no hace nada al pulsarlo.
 
-			// TM5: anillo de progreso ("Tienes X de Y" en forma de circulo) debajo del alternador,
-			// tambien pegado a la derecha.
+			// TM5 (rediseñado 28-sep-2026, ver el comentario de AnchoAlternadorFuente): anillo de
+			// progreso ("Tienes X de Y" en forma de circulo) AL LADO IZQUIERDO del alternador de
+			// fuente, centrado verticalmente con el - nunca mas apilado ni pegado al borde derecho
+			// de la cabecera sin margen real. HAlign=1f sigue midiendo contra el ancho ENTERO de la
+			// cabecera (igual que el alternador), pero el Left NEGATIVO lo empuja
+			// (AnchoAlternadorFuente + SeparacionAnilloAlternador) px hacia la izquierda del borde
+			// derecho de verdad - exactamente el ancho que ya ocupa el alternador mas el hueco entre
+			// los dos, así que el anillo queda SIEMPRE pegado al borde izquierdo del alternador, sea
+			// cual sea el ancho real de la cabecera (nunca una coordenada absoluta que pueda
+			// desfasarse al redimensionar la ventana).
 			_anilloProgreso = new AnilloProgresoTk(
 				() => _objetosResueltos > 0 ? (float)_objetosQueTiene / _objetosResueltos : 0f,
 				() => _objetosResueltos > 0 ? _objetosQueTiene + "/" + _objetosResueltos : "-",
-				22f);
+				DiametroAnillo / 2f);
 			_anilloProgreso.HAlign = 1f;
-			_anilloProgreso.Top.Set(30f, 0f);
+			_anilloProgreso.Left.Set(-(AnchoAlternadorFuente + SeparacionAnilloAlternador), 0f);
+			_anilloProgreso.Top.Set(0f, 0f);
 			_cabecera.Append(_anilloProgreso);
 
 			_filaClases = NuevaFila();
