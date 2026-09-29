@@ -955,10 +955,23 @@ namespace TerrakeepMod.Common.Panel
 				if (padre == null) {
 					continue;
 				}
-				CalculatedStyle a = m.Elemento.GetDimensions();
-				if (a.Width <= 0f || a.Height <= 0f) {
+				CalculatedStyle dimA = m.Elemento.GetDimensions();
+				if (dimA.Width <= 0f || dimA.Height <= 0f) {
 					continue;
 				}
+				// "a" real: el ancho VISIBLE de verdad (el texto renderizado, medido con la MISMA
+				// fuente/escala que la regla 1 de desborde de arriba), no la caja declarada del
+				// contenedor. Bug real de la propia autoprueba (29-sep-2026, requirement
+				// 0446b3c9): una EtiquetaTk se dimensiona a menudo con un ancho de sobra para el
+				// peor caso (un idioma mas largo, un numero mas grande) - "Tintes de pelo
+				// encontrados..." (Personaje > Apariencia) declara 900px de caja pero el texto
+				// real renderizado mide ~650px, y marcaba FALLO SOLAPE-BLOQUE contra el panel del
+				// muñeco aunque el texto de verdad se queda claramente a la izquierda (confirmado
+				// contra la captura real del juego, no solo con numeros). Nunca se AGRANDA el
+				// ancho (Math.Min con el declarado): si la caja declarada fuera mas ESTRECHA que
+				// el texto, eso ya lo marca la regla 1 (desborde) por separado.
+				float anchoRealA = Math.Min(dimA.Width, fuente.MeasureString(m.Texto).X * m.Escala);
+				CalculatedStyle a = new CalculatedStyle(dimA.X, dimA.Y, anchoRealA, dimA.Height);
 				foreach (UIElement hermano in padre.Children) {
 					if (hermano == m.Elemento || esMedible.Contains(hermano)) {
 						continue;
@@ -967,7 +980,7 @@ namespace TerrakeepMod.Common.Panel
 					if (!mediblesDentroDe.TryGetValue(hermano, out dentro) || dentro.Count == 0) {
 						continue; // hermano sin texto dentro: fondo/decoracion/slots, no un bloque con contenido
 					}
-					CalculatedStyle b = hermano.GetDimensions();
+					CalculatedStyle b = CajaVisibleDe(hermano);
 					if (b.Width <= 0f || b.Height <= 0f || !SeSolapan(a, b)) {
 						continue;
 					}
@@ -1002,6 +1015,58 @@ namespace TerrakeepMod.Common.Panel
 		{
 			return a.X < b.X + b.Width - 0.5f && a.X + a.Width - 0.5f > b.X &&
 				a.Y < b.Y + b.Height - 0.5f && a.Y + a.Height - 0.5f > b.Y;
+		}
+
+		/// <summary>
+		/// Caja que de verdad OCUPA <paramref name="elemento"/> en pantalla, para la regla 3 de
+		/// mas arriba (bloque hermano). Un <c>UIElement</c> A SECAS (el tipo exacto, no una
+		/// subclase) no pinta nada por si mismo: su <c>DrawSelf</c> base esta vacio (confirmado en
+		/// el codigo decompilado real de <c>Terraria.UI.UIElement</c>, sin ningun campo
+		/// <c>BackgroundColor</c> que ese metodo pueda leer) - es un contenedor puramente de
+		/// layout, y este mod los usa a menudo con <c>Height.Set(x, 1f)</c> ("llenar el hueco que
+		/// sobre", patron real, ver <c>PestanaAlmacenes._rejilla</c>), bastante mas alto que su
+		/// contenido de verdad. Comparar contra esa caja INFLADA es un falso positivo real
+		/// (requirement 0446b3c9, 29-sep-2026): "Hucha: 2 de 40 ranuras ocupadas." iba DEBAJO de la
+		/// rejilla de objetos, en el hueco vacio que le sobra a <c>_rejilla</c>, y marcaba
+		/// "invade" un bloque con el que no coincide ni un pixel (confirmado contra la captura real
+		/// del juego). Para ese caso concreto se usa en su lugar la UNION de las cajas de los hijos
+		/// DIRECTOS: el relleno vacio deja de contar, pero cualquier contenido real (texto,
+		/// ranuras de objetos, paneles anidados) lo sigue cubriendo entero.
+		/// <para />
+		/// Para cualquier OTRA cosa (<c>UIPanel</c> y cualquier subclase que pueda pintar su
+		/// propio fondo en toda su caja, como el panel de vista previa del muñeco de Apariencia)
+		/// se sigue usando la caja declarada COMPLETA, sin tocar: ahi la caja declarada SI es la
+		/// superficie visible real, y un texto que se meta debajo de su fondo (aunque no toque
+		/// ningun texto suyo) seria un solape de verdad.
+		/// </summary>
+		private static CalculatedStyle CajaVisibleDe(UIElement elemento)
+		{
+			CalculatedStyle propia = elemento.GetDimensions();
+			if (elemento.GetType() != typeof(UIElement)) {
+				return propia;
+			}
+
+			bool alguno = false;
+			float x0 = 0f, y0 = 0f, x1 = 0f, y1 = 0f;
+			foreach (UIElement hijo in elemento.Children) {
+				CalculatedStyle c = hijo.GetDimensions();
+				if (c.Width <= 0f || c.Height <= 0f) {
+					continue;
+				}
+				if (!alguno) {
+					x0 = c.X;
+					y0 = c.Y;
+					x1 = c.X + c.Width;
+					y1 = c.Y + c.Height;
+					alguno = true;
+				} else {
+					x0 = Math.Min(x0, c.X);
+					y0 = Math.Min(y0, c.Y);
+					x1 = Math.Max(x1, c.X + c.Width);
+					y1 = Math.Max(y1, c.Y + c.Height);
+				}
+			}
+			return alguno ? new CalculatedStyle(x0, y0, x1 - x0, y1 - y0) : propia;
 		}
 
 		private static void Terminar()
