@@ -103,6 +103,22 @@ tecnología externa al juego.
 
 ## Novedades
 
+### 0.6.2 (29-sep-2026)
+
+- **Prefijo sugerido de Builds, ya en español**: en la pestaña Builds, el pie de cada arma
+  recomendada enseñaba el prefijo sugerido en inglés a pelo ("prefijo sugerido: Legendary"),
+  incluso con el mod entero en español. Ahora sale con el nombre oficial que usa el propio
+  Terraria en el idioma activo (`Lang.prefix`, la misma fuente que ya usaban el editor de
+  prefijos de la Librería y el auto-equipar) - "prefijo sugerido: (Legendario)" en español,
+  "suggested prefix: Legendary" en inglés.
+- **Texto "Zoom" de Exploración, más legible en ventanas pequeñas**: en el caso más apretado
+  (ventana pequeña con la interfaz del sistema ampliada), el renglón de zoom del minimapa podía
+  quedar más pequeño de lo habitual para evitar solaparse con el aviso de arriba. Ahora el
+  bloque de texto solo reserva sitio para "bajo el ratón" cuando de verdad tiene algo que
+  enseñar (la mayoría de fotogramas no lo tiene), así que el resto de renglones - "Zoom"
+  incluido - necesita comprimirse mucho menos.
+- Versión del mod: `0.6.1` → `0.6.2`.
+
 ### 0.6.1 (29-sep-2026)
 
 - **Tildes restauradas en la Guía**: el aviso "Tienes Calamity instalado" y casi todo el texto de
