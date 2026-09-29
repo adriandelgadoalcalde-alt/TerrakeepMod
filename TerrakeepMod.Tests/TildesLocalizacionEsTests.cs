@@ -23,6 +23,9 @@ public class TildesLocalizacionEsTests
         "subterranea", "lagrima", "caustica", "lunatico", "corazon", "usalo", "muchisimo", "aqui",
         "manten", "respiracion", "acuatica", "caparazon", "celula", "cosmicas", "infeccion",
         "laseres", "penultimo", "presion", "practica superada",
+        // Nombres OFICIALES es-ES del juego (tModLoader.dll, es_ES.NPCs.json): "Esqueletrón",
+        // "Esqueletrón mayor" y "Gólem" - el mod los escribia sin tilde (y "Esqueletron Prime").
+        "esqueletron", "esqueletron prime", "golem",
     };
 
     private static string RutaHjsonEs()

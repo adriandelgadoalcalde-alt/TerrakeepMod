@@ -531,7 +531,7 @@ Builds: {
 
 		calamity: {
 			prehardmode: Pre-Hardmode (listo para el Muro de Carne)
-			earlyhardmode: Hardmode (post-Plantera / pre-Golem, aprox.)
+			earlyhardmode: Hardmode (post-Plantera / pre-Gólem, aprox.)
 			endgame: Final del juego (Auric Tesla, post-Yharon/Exo Mechs)
 		}
 	}
@@ -1036,13 +1036,13 @@ Guia: {
 	Bandera: {
 		downedBoss1: Derrotar al Ojo de Cthulhu
 		downedBoss2: Derrotar al Devorador de Mundos o al Cerebro de Cthulhu
-		downedBoss3: Derrotar a Esqueletron
+		downedBoss3: Derrotar a Esqueletrón
 		shadowOrbSmashed: Haber roto ya una Esfera Oscura o un Corazón Carmesí
 		hardMode: Que el mundo entre en Modo Difícil (derrotar al Muro de Carne)
-		downedMechBossAny: Derrotar a cualquiera de los tres mecánicos (Destructor, Gemelos o Esqueletron Prime)
-		downedMechBossAll: Derrotar a los TRES mecánicos (Destructor, Gemelos y Esqueletron Prime)
+		downedMechBossAny: Derrotar a cualquiera de los tres mecánicos (Destructor, Gemelos o Esqueletrón mayor)
+		downedMechBossAll: Derrotar a los TRES mecánicos (Destructor, Gemelos y Esqueletrón mayor)
 		downedPlantBoss: Derrotar a Plantera
-		downedGolemBoss: Derrotar al Golem
+		downedGolemBoss: Derrotar al Gólem
 		downedAncientCultist: Derrotar al Cultista Lunático
 		downedTowers: Derrotar a las cuatro torres celestiales
 		downedMoonlord: Derrotar al Señor de la Luna
@@ -1150,7 +1150,7 @@ Guia: {
 		}
 
 		Esqueletron: {
-			Nombre: Esqueletron y la Mazmorra
+			Nombre: Esqueletrón y la Mazmorra
 			Resumen: 4400 de vida. Al morir se abre la Mazmorra entera y llega el Sastre a vivir contigo.
 		}
 
@@ -1166,7 +1166,7 @@ Guia: {
 
 		Mecanicos: {
 			Nombre: Los tres mecánicos
-			Resumen: Destructor 80000, Gemelos 20000 y 23000, Esqueletron Prime 28000 de vida. Hacen falta los tres para que broten los bulbos de Plantera.
+			Resumen: Destructor 80000, Gemelos 20000 y 23000, Esqueletrón mayor 28000 de vida. Hacen falta los tres para que broten los bulbos de Plantera.
 		}
 
 		Plantera: {
@@ -1175,13 +1175,13 @@ Guia: {
 		}
 
 		TemploYGolem: {
-			Nombre: El Templo y el Golem
-			Resumen: Golem, 15000 de vida y 26 de defensa, dentro del Templo de la Selva.
+			Nombre: El Templo y el Gólem
+			Resumen: Gólem, 15000 de vida y 26 de defensa, dentro del Templo de la Selva.
 		}
 
 		LocuraMarciana: {
 			Nombre: La Locura Marciana (opcional)
-			Resumen: Otra invasión por oleadas, sin objeto de invocación: la dispara sola una Sonda Marciana al detectarte, ya en Modo Difícil y con el Golem derrotado.
+			Resumen: Otra invasión por oleadas, sin objeto de invocación: la dispara sola una Sonda Marciana al detectarte, ya en Modo Difícil y con el Gólem derrotado.
 		}
 
 		LunaDeCalabazas: {
@@ -1196,7 +1196,7 @@ Guia: {
 
 		EjercitoD2: {
 			Nombre: El Antiguo Ejército D2 (opcional)
-			Resumen: Defiende el Cristal eternia en tres dificultades: la 1 se abre con el Tabernero (tras la maldad de tu mundo), la 2 con un mecánico y la 3 con el Golem. Betsy (50000 de vida) solo aparece al final de la dificultad 3.
+			Resumen: Defiende el Cristal eternia en tres dificultades: la 1 se abre con el Tabernero (tras la maldad de tu mundo), la 2 con un mecánico y la 3 con el Gólem. Betsy (50000 de vida) solo aparece al final de la dificultad 3.
 		}
 
 		JefesOpcionalesTardios: {
@@ -1236,7 +1236,7 @@ Guia: {
 
 		SlimeGod: {
 			Nombre: The Slime God (opcional, Calamity)
-			Resumen: Dos Paladines que se fusionan en un núcleo final. El último gran opcional de prehardmode, justo después de Esqueletron.
+			Resumen: Dos Paladines que se fusionan en un núcleo final. El último gran opcional de prehardmode, justo después de Esqueletrón.
 		}
 
 		DreadnautilusYHorribleHog: {
@@ -1281,12 +1281,12 @@ Guia: {
 
 		Ravager: {
 			Nombre: Ravager (opcional, Calamity)
-			Resumen: 30000-54000 de vida, cerca del Templo de la Selva. Pensado en dificultad para el nivel del Golem.
+			Resumen: 30000-54000 de vida, cerca del Templo de la Selva. Pensado en dificultad para el nivel del Gólem.
 		}
 
 		Plaguebringer: {
 			Nombre: The Plaguebringer Goliath (opcional, Calamity)
-			Resumen: 70000-105000 de vida, en la Jungla. La fuerza de la Plaga que se instala tras el Golem.
+			Resumen: 70000-105000 de vida, en la Jungla. La fuerza de la Plaga que se instala tras el Gólem.
 		}
 
 		Dragonfolly: {
@@ -1451,7 +1451,7 @@ Guia: {
 
 		ArmaParaEsqueletron: {
 			Titulo: Un arma capaz de aguantar sus manos
-			Porque: Esqueletron tiene 32 de daño y 10 de defensa en la cabeza: con la fórmula de siempre, un arma de 20 de daño le quita 15 por golpe, y hacen falta bastantes contra sus 4400 de vida - eso es solo la cabeza. Cada mano tiene su propia vida aparte, 600, así que en total hay cerca de 5600 de vida repartidos entre las dos manos y la cabeza, no 4400. Sus manos giran y golpean fuerte: sin alcance en tu arma, vas a recibir más de lo que das.
+			Porque: Esqueletrón tiene 32 de daño y 10 de defensa en la cabeza: con la fórmula de siempre, un arma de 20 de daño le quita 15 por golpe, y hacen falta bastantes contra sus 4400 de vida - eso es solo la cabeza. Cada mano tiene su propia vida aparte, 600, así que en total hay cerca de 5600 de vida repartidos entre las dos manos y la cabeza, no 4400. Sus manos giran y golpean fuerte: sin alcance en tu arma, vas a recibir más de lo que das.
 			Como: Cualquier arma de mineral de la segunda capa (o un arco con buenas flechas) ya cumple. El Anciano, siempre junto a la entrada de la Mazmorra, te reta a luchar contra él si le hablas de noche.
 		}
 
@@ -1463,7 +1463,7 @@ Guia: {
 
 		ArmaParaElMuro: {
 			Titulo: Un arma para un jefe con muchísima más vida
-			Porque: El Muro de Carne tiene 8000 de vida, con 50 de daño y 12 de defensa en el cuerpo; su ojo pega igual de fuerte pero sin nada de defensa. Con la fórmula de siempre, un arma de 25 de daño le quita bastante más de la mitad a cada golpe, y hace falta ese salto: no es solo más vida que Esqueletron, es una pelea CRONOMETRADA que avanza sola hacia ti por un pasillo del Infierno, así que alargarla de más no es una opción.
+			Porque: El Muro de Carne tiene 8000 de vida, con 50 de daño y 12 de defensa en el cuerpo; su ojo pega igual de fuerte pero sin nada de defensa. Con la fórmula de siempre, un arma de 25 de daño le quita bastante más de la mitad a cada golpe, y hace falta ese salto: no es solo más vida que Esqueletrón, es una pelea CRONOMETRADA que avanza sola hacia ti por un pasillo del Infierno, así que alargarla de más no es una opción.
 			Como: Cualquier arma fundida con Piedra Infernal ya cumple de sobra. Una Poción de Piel de Obsidiana te libra del fuego de la lava mientras dura, y el Muñeco Vudú del Guía, lanzado a la lava, es la forma práctica de invocarlo sin tener que empujarlo tú mismo.
 		}
 
@@ -1475,14 +1475,14 @@ Guia: {
 
 		ArmaParaLosMecanicos: {
 			Titulo: Un arma capaz de un jefe de Hardmode de verdad
-			Porque: Los tres suben el listón de golpe: los Gemelos tienen 10 de defensa con 20000 y 23000 de vida, Esqueletron Prime 24 de defensa con 28000, y el Destructor su cabeza sin defensa pero el cuerpo y la cola a 30 y 35, con 80000 de vida repartidos en decenas de segmentos. Con la fórmula de siempre, un arma de 40 de daño deja golpes útiles contra los tres sin que la pelea se eternice, y esa vida tan alta es la razón: un arma floja aquí no pierde la pelea de golpe, la alarga hasta que un error la pierde por ti.
-			Como: Cualquier arma de mineral de Hardmode temprano (Cobalto/Paladio o superior) ya cumple. Se invocan de noche con un objeto concreto cada uno: Ojo Mecánico para los Gemelos, Gusano Mecánico para el Destructor, Cráneo Mecánico para Esqueletron Prime. No hace falta pelear a los tres a la vez ni en un orden fijo.
+			Porque: Los tres suben el listón de golpe: los Gemelos tienen 10 de defensa con 20000 y 23000 de vida, Esqueletrón mayor 24 de defensa con 28000, y el Destructor su cabeza sin defensa pero el cuerpo y la cola a 30 y 35, con 80000 de vida repartidos en decenas de segmentos. Con la fórmula de siempre, un arma de 40 de daño deja golpes útiles contra los tres sin que la pelea se eternice, y esa vida tan alta es la razón: un arma floja aquí no pierde la pelea de golpe, la alarga hasta que un error la pierde por ti.
+			Como: Cualquier arma de mineral de Hardmode temprano (Cobalto/Paladio o superior) ya cumple. Se invocan de noche con un objeto concreto cada uno: Ojo Mecánico para los Gemelos, Gusano Mecánico para el Destructor, Cráneo Mecánico para Esqueletrón mayor. No hace falta pelear a los tres a la vez ni en un orden fijo.
 		}
 
 		VencerAUnMecanico: {
 			Titulo: Derrotar a los tres
-			Porque: Con el primero que cae ya empiezan a brotar las Frutas de la vida en la jungla, puede llegar el Eclipse Solar y se abre la dificultad 2 del Antiguo Ejército. Pero los bulbos de Plantera solo crecen con los TRES mecánicos derrotados: hasta que no caigan el Destructor, los Gemelos y Esqueletron Prime, no hay forma de invocarla. Sus Lingotes sagrados y sus almas dan el mejor equipo que vas a tener antes de ella.
-			Como: Los Gemelos y Esqueletron Prime vuelan y persiguen: un arena elevada con plataformas ayuda más que el suelo. El Destructor es un gusano larguísimo: un arma que atraviese en línea recta acaba con más de un segmento por disparo.
+			Porque: Con el primero que cae ya empiezan a brotar las Frutas de la vida en la jungla, puede llegar el Eclipse Solar y se abre la dificultad 2 del Antiguo Ejército. Pero los bulbos de Plantera solo crecen con los TRES mecánicos derrotados: hasta que no caigan el Destructor, los Gemelos y Esqueletrón mayor, no hay forma de invocarla. Sus Lingotes sagrados y sus almas dan el mejor equipo que vas a tener antes de ella.
+			Como: Los Gemelos y Esqueletrón mayor vuelan y persiguen: un arena elevada con plataformas ayuda más que el suelo. El Destructor es un gusano larguísimo: un arma que atraviese en línea recta acaba con más de un segmento por disparo.
 		}
 
 		ArmaParaPlantera: {
@@ -1498,8 +1498,8 @@ Guia: {
 		}
 
 		ArmaParaElTemplo: {
-			Titulo: Un arma para las tres fases del Golem
-			Porque: El Golem pelea en tres piezas con números distintos: la cabeza montada tiene 64 de daño, 20 de defensa y 25000 de vida; el cuerpo 72 de daño, 26 de defensa y 15000; y cuando la cabeza cae se suelta y vuela por su cuenta con 32 de defensa, 80 de daño y 16000 más. El detalle que decide la pelea: el CUERPO no recibe daño mientras la cabeza siga montada, así que empieza por ella. Con la fórmula de siempre, 55 de daño deja golpes útiles en las tres piezas sin que la última, la más dura, se haga eterna.
+			Titulo: Un arma para las tres fases del Gólem
+			Porque: El Gólem pelea en tres piezas con números distintos: la cabeza montada tiene 64 de daño, 20 de defensa y 25000 de vida; el cuerpo 72 de daño, 26 de defensa y 15000; y cuando la cabeza cae se suelta y vuela por su cuenta con 32 de defensa, 80 de daño y 16000 más. El detalle que decide la pelea: el CUERPO no recibe daño mientras la cabeza siga montada, así que empieza por ella. Con la fórmula de siempre, 55 de daño deja golpes útiles en las tres piezas sin que la última, la más dura, se haga eterna.
 			Como: La puerta de piedra del Templo se abre con la Llave del templo que suelta Plantera. Dentro, los cofres del Templo y sus Lihzahrd y Serpientes voladoras sueltan Células de poder de lihzahrd: úsalas en el Altar de lihzahrd para invocarlo. Destruye primero la cabeza; hasta entonces el cuerpo no se puede dañar, y los puños se pueden ignorar o romper aparte.
 		}
 
@@ -1512,7 +1512,7 @@ Guia: {
 		PrepararLocuraMarciana: {
 			Titulo: Un arma capaz del enemigo mejor blindado
 			Porque: El Oficial Marciano es el enemigo común más blindado de las cuatro invasiones del árbol: 50 de defensa, 75 de daño y 300 de vida - por delante de los 30 del Capitán Pirata, los 26 de Mister Estocada y los 8 del Guerrero Goblin. Con la fórmula de siempre, 60 de daño deja golpes útiles.
-			Como: A diferencia del Ejército Goblin, la Legión de Escarcha o los Piratas, esta invasión no tiene objeto de invocación: una Sonda Marciana aparece sola, por probabilidad, en Modo Difícil y con el Golem ya derrotado, lejos del punto de aparición del mundo. En cuanto te detecta y logra huir sin que la mates, arranca la invasión ella sola - matarla antes de que escape no la dispara.
+			Como: A diferencia del Ejército Goblin, la Legión de Escarcha o los Piratas, esta invasión no tiene objeto de invocación: una Sonda Marciana aparece sola, por probabilidad, en Modo Difícil y con el Gólem ya derrotado, lejos del punto de aparición del mundo. En cuanto te detecta y logra huir sin que la mates, arranca la invasión ella sola - matarla antes de que escape no la dispara.
 		}
 
 		VencerALaLocuraMarciana: {
@@ -1583,7 +1583,7 @@ Guia: {
 
 		ArmaParaElEjercitoD2: {
 			Titulo: Un arma capaz de un asedio entero
-			Porque: Betsy tiene 80 de daño, 38 de defensa y 50000 de vida, pero solo aparece en la última oleada de la dificultad 3, la que se abre con el Golem derrotado. Antes hay dos dificultades más: la 1, disponible en cuanto rescatas al Tabernero (tras la maldad de tu mundo), y la 2, que se abre con cualquier mecánico caído. Cada una son varias oleadas de enemigos propios del evento (goblins etéreos, wyverns, magos oscuros, ogros...).
+			Porque: Betsy tiene 80 de daño, 38 de defensa y 50000 de vida, pero solo aparece en la última oleada de la dificultad 3, la que se abre con el Gólem derrotado. Antes hay dos dificultades más: la 1, disponible en cuanto rescatas al Tabernero (tras la maldad de tu mundo), y la 2, que se abre con cualquier mecánico caído. Cada una son varias oleadas de enemigos propios del evento (goblins etéreos, wyverns, magos oscuros, ogros...).
 			Como: El Cristal eternia y su Stand no se fabrican: los vende el Tabernero por Medallas del Defensor. Coloca el Stand, y con el Cristal en la mochila haz clic derecho sobre él: se consume y arranca el asedio, siempre que no haya ya otro en marcha ni sea Luna de Calabazas o Helada.
 		}
 
@@ -1727,7 +1727,7 @@ Guia: {
 
 		ArmaParaSlimeGod: {
 			Titulo: Un arma capaz de dos fases seguidas
-			Porque: The Slime God empieza como dos Paladines (Crimulan y Ebonian) que se fusionan en el núcleo final. Pensado por la propia wiki para justo después de Esqueletron, el último tramo importante de prehardmode de Calamity.
+			Porque: The Slime God empieza como dos Paladines (Crimulan y Ebonian) que se fusionan en el núcleo final. Pensado por la propia wiki para justo después de Esqueletrón, el último tramo importante de prehardmode de Calamity.
 			Como: El Overloaded Sludge lo invoca en cualquier sitio. Prepara curación para dos fases distintas: los Paladines primero, el núcleo fusionado después.
 		}
 
@@ -1745,7 +1745,7 @@ Guia: {
 
 		VencerADreadnautilusYHorribleHog: {
 			Titulo: Derrotar a cualquiera de los dos (opcional)
-			Porque: Ninguno de los dos bloquea nada obligatorio: son las dos curiosidades que la Luna de Sangre de Calamity guarda para quien se atreva a salir esa noche, pensadas para el mismo tramo que Esqueletron y el Slime God.
+			Porque: Ninguno de los dos bloquea nada obligatorio: son las dos curiosidades que la Luna de Sangre de Calamity guarda para quien se atreva a salir esa noche, pensadas para el mismo tramo que Esqueletrón y el Slime God.
 			Como: El Dreadnautilus nada en línea recta y muerde fuerte para prehardmode; el Horrible Hog embiste en tierra. Los dos se pueden esquivar con plataformas y distancia.
 		}
 
@@ -1834,20 +1834,20 @@ Guia: {
 		}
 
 		ArmaParaRavager: {
-			Titulo: Un arma pensada para el nivel del Golem
-			Porque: Ravager tiene 55 de defensa y 30000-54000 de vida - la propia wiki lo describe como "pensado en dificultad para estar a la altura del Golem", aunque se puede invocar antes si tienes valor.
+			Titulo: Un arma pensada para el nivel del Gólem
+			Porque: Ravager tiene 55 de defensa y 30000-54000 de vida - la propia wiki lo describe como "pensado en dificultad para estar a la altura del Gólem", aunque se puede invocar antes si tienes valor.
 			Como: El Silbato de la Muerte lo invoca en cualquier sitio. Se fabrica en un Altar Demoníaco o Carmesí con 25 Ladrillos de lihzahrd y 15 Fragmentos de tablilla solar, los que sueltan los Lihzahrd y las Serpientes voladoras del Templo.
 		}
 
 		VencerARavager: {
 			Titulo: Derrotarlo (opcional)
-			Porque: No bloquea nada obligatorio, pero es la puerta de entrada a la Plaga que empieza a cubrir la Jungla después del Golem - vale la pena antes de ir a por Plaguebringer Goliath.
+			Porque: No bloquea nada obligatorio, pero es la puerta de entrada a la Plaga que empieza a cubrir la Jungla después del Gólem - vale la pena antes de ir a por Plaguebringer Goliath.
 			Como: Sus cuatro partes (cabeza, cuerpo, dos garras) atacan por separado: concentra el daño en la cabeza, el resto pierde fuerza cuando cae.
 		}
 
 		ArmaParaPlaguebringer: {
-			Titulo: Un arma capaz de un jefe post-Golem
-			Porque: The Plaguebringer Goliath tiene 50 de defensa y 70000-105000 de vida - la propia wiki la describe como "la fuerza central de la plaga que se instala en la Jungla tras la derrota del Golem".
+			Titulo: Un arma capaz de un jefe post-Gólem
+			Porque: The Plaguebringer Goliath tiene 50 de defensa y 70000-105000 de vida - la propia wiki la describe como "la fuerza central de la plaga que se instala en la Jungla tras la derrota del Gólem".
 			Como: El Abombination la invoca en la Jungla o Jungla subterránea.
 		}
 
