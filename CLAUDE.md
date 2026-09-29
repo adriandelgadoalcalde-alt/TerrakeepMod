@@ -195,3 +195,6 @@ compiló MSBuild ("Loading pre-compiled TerrakeepMod.dll") en vez de compilarlo 
   `Terrariano`, `adriandres`, `Afueras_de_Larvas_de_gusano`) sin que lo pida explícitamente.
   Usar siempre el sandbox `-tmlsavedirectory`.
 - Ningún workstream se da por cerrado con "compila": hay que probarlo en el juego real.
+
+## Familia Keep / integraciones
+Este repo participa en FAMILIA-KEEP.json. Para funciones compartidas con Terrakeep escritorio u otro miembro, usa contrato explícito en INTEGRACIONES-KEEP.json y pruebas de contrato/E2E. No copies lógica entre runtimes si puede existir un contrato o librería común runtime-agnostic. KeepQA complementa las pruebas nativas del mod.
