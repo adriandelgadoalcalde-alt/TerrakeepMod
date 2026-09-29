@@ -11000,3 +11000,111 @@ falta es la ejecución en el cliente real.
    1600x900 y 1920x1080 con UIScale Pequeña/Mediana/Grande, capturas reales de Builds/Libreria/
    Exploración/Personaje, y anotar cualquier corte/solape encontrado como hallazgo nuevo (no
    asumir "sin problema" solo porque compila).
+
+## 29-sep-2026 (verificación QA en vivo) — Guion de verificación ejecutado: terminología ES/EN, persistencia y arrastre CONFIRMADOS; auditoría de UIScale/resolución PARCIAL (3 resoluciones × 100%, sin las variantes de escala)
+
+Verificación independiente (no soy el agente que hizo el arreglo del hueco 1): partida real en el
+sandbox `tModLoader-TerrakeepWS7` (personaje/mundo `TerrakeepPrueba`), `.tmod` recién copiado del
+`Mods\` real (840.471 bytes, mismo que el commit `cf0c074`). SHA-256 de `config.json`,
+`input profiles.json`, `Mods/enabled.json` y de todos los `Players`/`Worlds` reales del usuario
+tomados antes y después: **idénticos** (nada tocado fuera del sandbox).
+
+### Método real de interacción
+
+Sin herramienta de "computer use": control de ratón/teclado real vía Win32 desde PowerShell
+(`SetCursorPos`/`mouse_event` para el ratón — funciona con normalidad; para el teclado,
+**`SendInput`/`keybd_event` NO llegan al juego en este entorno** — confirmado con `D` mantenido
+1,5s sin mover al personaje ni Escape abriendo el menú. Lo que sí funciona de verdad es
+**`PostMessage` con `WM_KEYDOWN`/`WM_KEYUP` directo al `hWnd`** del juego (mismo camino que usa
+SDL2 en Windows) — confirmado moviendo al personaje de verdad con eso. Capturas con
+`Graphics.CopyFromScreen` sobre el rect de la ventana (el juego corre en ventana normal, nunca
+`Fullscreen` real, así que la composición de escritorio no se salta y la captura sí sirve, al
+revés de lo que documenta `CapturaDePantalla.cs` para el caso de pantalla completa exclusiva).
+
+**Hallazgo de proceso, no de producto**: en dos momentos la captura devolvió contenido de OTRA
+ventana del escritorio compartido (una app "Claude" en primer plano tapando el rect del juego) en
+vez del juego — la restauración por `SetForegroundWindow`/`AttachThreadInput` falló dos veces
+seguidas, resuelto al final haciendo clic en el icono de la barra de tareas (zona neutral, no
+tapada nunca por ninguna ventana normal). Sin daño real (hashes limpios, ninguna acción de
+producción tocada), pero **el escritorio NO estuvo exclusivo todo el tiempo** pese a la premisa
+del encargo — documentado aquí con honestidad, no ocultado. Un segundo incidente menor
+autoprovocado: un clic mal calculado en el Álbum abrió el visor de Fotos de Windows sobre una
+captura de hito real (`Dragonfolly`) — cerrado sin más efecto.
+
+### 1. Terminología oficial ES en la Librería — OBSERVED OK
+
+Árbol completo navegado a mano, en español, con capturas reales (no solo lectura de código):
+`Materiales` → `Pre-Modo Difícil`/`Modo Difícil` (con tilde, confirmado también leyendo el JSON
+fuente: `"Pre-Hardmode":"Pre-Modo Difícil"`), `Cobre & Estaño`, `Mineral Endemoniado & Mineral
+Carmesí`, dentro de `Modo Difícil`: `Sagrado & Clorofita` (no "Clorofila"), `Piñonita &
+Ectoplasma` (ñ real), `Vórtice`, `Nebulosa`, `Luminita & Marciano`. `Decoraciones` → `Muebles`:
+`Candelabros`, `Bancos de Trabajo`; `Muebles 2`: `Librerías`, `Sofás`, `Aparadores`, `Fregaderos`,
+`Retretes` — las seis carpetas que pedía el guion de verificación, todas presentes con la
+ortografía correcta.
+
+**Control negativo en inglés**: cambiado el idioma con el selector propio del mod (pestaña
+Ajustes, "Idioma de la interfaz" → English — cambia en vivo de verdad, confirmado con capturas
+antes/después) y confirmado que la Librería sigue en inglés sin fuga de español:
+`Materials`/`Decorative`/`Pre-Hardmode`/`Hardmode`/`Non-ore`/`Wood`/`Plants & Organic`. Correcto
+por construcción (catálogo de etiquetas vacío a propósito en inglés).
+
+**Nota de proceso real**: el switch de idioma del MENÚ VANILLA (pantalla de selección de idioma
+antes de cargar partida) **no** cambia el idioma del panel de Terrakeep aunque cambie el menú
+principal — el mod tiene su PROPIA preferencia (`AjustesConfig.Idioma`, por defecto
+`SeguirElJuego` pero en este sandbox ya estaba fijada explícitamente a "Español" de una sesión
+anterior) que se re-aplica en el primer fotograma de cada arranque, sobrescribiendo lo que diga
+`config.json`. No es un bug: es el comportamiento documentado en `Idiomas.cs` (persistencia
+explícita entre partidas). El selector correcto para probar el idioma del MOD es el suyo propio,
+no el del menú de Terraria.
+
+### 2. Auditoría UIScale/resolución — PARCIAL, honesto
+
+Cubierto de verdad, en vivo, con capturas reales de los 8 paneles (Personaje, Librería, Builds,
+Investigación, Exploración, Ajustes, Guía, Álbum) en tres resoluciones reales a UIScale 100%:
+**1366×768, 1920×1080 y 2560×1440(1377 útil)** — **24/24 capturas sin recorte, sin solape, sin
+texto cortado ni panel saliéndose de la pantalla**. Confirmado visualmente panel por panel, no
+solo "compiló".
+
+**No cubierto** (pendiente real, no fingido): las variantes de UIScale 75 %/150 % de la matriz que
+pedía el encargo. Se abandonaron tras el segundo incidente de escritorio compartido (arriba) por
+prudencia — seguir haciendo clic a ciegas con coordenadas calculadas mientras el escritorio no era
+fiablemente exclusivo era un riesgo real de seguir interfiriendo con la otra sesión. Konsecuencia:
+la matriz completa 8 paneles × 3 resoluciones × 3 escalas (72 celdas) se queda en 24/72 con
+evidencia real; el resto es un hueco explícito, no un "sin problema" supuesto.
+
+**Hallazgo menor, sin confirmar causa**: el atajo `K` (Personaje) a veces abrió el inventario
+vanilla en vez del panel del mod, de forma intermitente, tras usar `PostMessage` sintético.
+Reproducible en el arnés de esta sesión pero **no aislado si es del juego o del método de
+inyección sintética** — nunca falló haciendo clic directo en la pestaña "Personaje" con el panel
+ya abierto por otra tecla. No se registra como defecto de producto sin poder descartar que sea un
+artefacto del arnés (nunca se probó con una pulsación física real).
+
+### 3. Persistencia de Exploración — OBSERVED OK
+
+`Exploración > Este mundo`, en español: fila **"Autoguardado: activado"** visible en la ficha del
+mundo, y el aviso naranja **"⚠ El cambio es PERMANENTE: se escribe en el mundo en el siguiente
+autoguardado (lo tienes activado)... Queda en el historial de Terrakeep, se puede deshacer con
+Ctrl+Z mientras no se haya guardado"** — visible ANTES de tocar nada, en las dos lenguas (control
+negativo en inglés con el mismo texto traducido, mismo panel). Coincide con lo que el agente de
+paridad afirmó por código.
+
+### 4. Ghost de arrastre de la Librería — OBSERVED OK
+
+Cogido un "Mineral de cobre" de la Librería con un clic real (no mantenido: confirmado que el
+mecanismo real es clic = coger 1 unidad, no arrastrar con el botón pulsado) y movido el cursor:
+captura real con zoom mostrando el sprite del mineral pegado al cursor, **sin ningún recuadro
+blanco ni marco tipo OLE** — el mismo estándar que ya tiene escritorio, confirmado visualmente y
+no solo por lectura de código.
+
+### Evidencia
+
+Capturas reales en `scratchpad/tml-vivo-29sep/` de la sesión de verificación (no forman parte del
+repo). Hashes antes/después de `Players`/`Worlds`/`config.json`/`input profiles.json` reales:
+idénticos.
+
+### Cierre
+
+`tModLoader`/`Terraria` cerrado por proceso al terminar (sin quedar residual). Requirement
+`0446b3c9-9108-4c1d-be03-66e050d7d1d6` actualizado con evidencia real de verificador-qa para los
+criterios confirmados; **no marcado DONE** — el hueco 2 (UIScale 75 %/150 %) sigue abierto de
+verdad.
