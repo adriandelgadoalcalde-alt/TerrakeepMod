@@ -751,6 +751,17 @@ namespace TerrakeepMod.Common.Libreria
 		/// </summary>
 		private static void PrepararTarjetaFlotante()
 		{
+			// v0.7.1: la captura de este paso es la del README ("06-editar-objeto"). El paso 24
+			// deja el buscador con "es" y dos resultados sueltos: se vacia y se abre la primera
+			// carpeta real con objetos, para que la foto enseñe la Libreria como la ve un jugador.
+			if (Contenido != null) {
+				Contenido.FijarBusqueda("");
+				CategoryTreeNodeData carpeta = Contenido.PrimeraCarpetaConObjetos();
+				if (carpeta != null) {
+					Contenido.AbrirCarpeta(carpeta);
+				}
+			}
+
 			PrepararObjetosDeHerramientas();
 
 			if (_tipoStack <= 0) {
@@ -808,7 +819,38 @@ namespace TerrakeepMod.Common.Libreria
 				+ "linea de prefijo=\"" + textoPrefijo + "\". "
 				+ CapturaDePantalla.Guardar("ws3-tarjeta-flotante"));
 
+			ComprobarUnSoloEditorVisible(herramientas);
 			ComprobarFilaRapidaDeCantidad(herramientas);
+		}
+
+		/// <summary>
+		/// v0.7.1: con la tarjeta flotante abierta tiene que haber UN SOLO editor del objeto en
+		/// pantalla - un EditorCantidadTk, un EditorPrefijoTk y una papelera, los de la tarjeta - y
+		/// el mini-panel se queda solo con su recuadro de seleccion. Se cuentan los widgets REALMENTE
+		/// colgados del panel (ExecuteRecursively solo recorre lo que esta en el arbol).
+		/// </summary>
+		private static void ComprobarUnSoloEditorVisible(PanelHerramientasLibreriaTk herramientas)
+		{
+			int cantidades = 0, prefijos = 0, papeleras = 0;
+			PanelTerrakeepSystem.Panel?.ExecuteRecursively(e => {
+				if (e is EditorCantidadTk) cantidades++;
+				if (e is EditorPrefijoTk) prefijos++;
+				if (e is SlotPapeleraTk) papeleras++;
+			});
+			bool enLaTarjeta = herramientas.TarjetaFlotanteAbierta
+				&& ReferenceEquals(herramientas.EditorCantidadVisible, herramientas.TarjetaFlotante.EditorCantidad)
+				&& ReferenceEquals(herramientas.EditorPrefijoVisible, herramientas.TarjetaFlotante.EditorPrefijo);
+			Rectangle tarjeta = herramientas.TarjetaFlotante.GetDimensions().ToRectangle();
+			Rectangle recuadro = herramientas.Seleccion.GetDimensions().ToRectangle();
+			bool tapaRecuadro = tarjeta.Intersects(recuadro);
+			bool ok = cantidades == 1 && prefijos == 1 && papeleras == 1 && enLaTarjeta && herramientas.EditoresDelMiniPanelOcultos
+				&& !tapaRecuadro;
+			Registrar("Paso 27a - un solo editor visible con la tarjeta abierta: EditorCantidadTk=" + cantidades +
+				", EditorPrefijoTk=" + prefijos + ", papeleras=" + papeleras + ", editores del mini-panel ocultos=" +
+				herramientas.EditoresDelMiniPanelOcultos + ", el visible es el de la tarjeta=" + enLaTarjeta +
+				", la tarjeta (x=" + tarjeta.X + " " + tarjeta.Width + "x" + tarjeta.Height + ") tapa el recuadro de seleccion (x=" +
+				recuadro.X + ")=" + tapaRecuadro + " -> " +
+				(ok ? "OK: un solo editor." : "NO CUADRA: hay editores duplicados en pantalla."));
 		}
 
 		/// <summary>
@@ -1515,7 +1557,7 @@ namespace TerrakeepMod.Common.Libreria
 				return;
 			}
 
-			EditorCantidadTk editor = herramientas.EditorCantidad;
+			EditorCantidadTk editor = herramientas.EditorCantidadVisible;
 			Item objetivo = editor.ObjetivoActual;
 			bool mismaReferencia = ReferenceEquals(objetivo, herramientas.Seleccion.ObjetoActual);
 
@@ -1586,7 +1628,7 @@ namespace TerrakeepMod.Common.Libreria
 				return;
 			}
 
-			EditorCantidadTk editor = herramientas.EditorCantidad;
+			EditorCantidadTk editor = herramientas.EditorCantidadVisible;
 			Item objetivo = editor.ObjetivoActual;
 
 			const double DuracionTotalS = 2.4;
@@ -1725,9 +1767,9 @@ namespace TerrakeepMod.Common.Libreria
 			// fotograma en que se llama a AbrirParaAutoprueba() enseña el fotograma ANTERIOR, con el
 			// popup todavia cerrado - bug real de esta autoprueba, visto en una captura (salia el
 			// boton "Prefix: None" sin desplegar nada).
-			herramientas.EditorPrefijo.AbrirParaAutoprueba();
+			herramientas.EditorPrefijoVisible.AbrirParaAutoprueba();
 			Registrar("Paso 18 - popup de prefijo abierto sobre \"" + herramientas.Seleccion.ObjetoActual.Name
-				+ "\" (PopupAbierto=" + herramientas.EditorPrefijo.PopupAbierto + "). La captura y los "
+				+ "\" (PopupAbierto=" + herramientas.EditorPrefijoVisible.PopupAbierto + "). La captura y los "
 				+ "clics se hacen en el paso siguiente, para darle al menos un fotograma real de sobra.");
 		}
 
@@ -1747,12 +1789,12 @@ namespace TerrakeepMod.Common.Libreria
 		{
 			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
 			PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
-			if (herramientas == null || panel == null || !herramientas.EditorPrefijo.PopupAbierto) {
+			if (herramientas == null || panel == null || !herramientas.EditorPrefijoVisible.PopupAbierto) {
 				Registrar("Paso 19 - el popup no esta abierto (paso 18 fallo), se salta.");
 				return;
 			}
 
-			EditorPrefijoTk editor = herramientas.EditorPrefijo;
+			EditorPrefijoTk editor = herramientas.EditorPrefijoVisible;
 			Registrar("Paso 19 - geometria real: " + editor.DiagnosticoGeometria());
 			Registrar("Paso 19 - orden REAL de dibujado dentro del marco (UIElement.DrawChildren "
 				+ "dibuja en el orden de Append, asi que el ULTIMO es el que queda encima): "
@@ -1826,12 +1868,12 @@ namespace TerrakeepMod.Common.Libreria
 		{
 			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
 			PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
-			if (herramientas == null || panel == null || !herramientas.EditorPrefijo.PopupAbierto) {
+			if (herramientas == null || panel == null || !herramientas.EditorPrefijoVisible.PopupAbierto) {
 				Registrar("Paso 20 - el popup no esta abierto, se salta el scroll.");
 				return;
 			}
 
-			EditorPrefijoTk editor = herramientas.EditorPrefijo;
+			EditorPrefijoTk editor = herramientas.EditorPrefijoVisible;
 			if (!editor.NecesitaScroll) {
 				Registrar("Paso 20 - la lista de prefijos de este objeto CABE entera (CanScroll=false), "
 					+ "asi que no hay scroll que probar aqui. " + editor.DiagnosticoScroll());
@@ -1876,12 +1918,12 @@ namespace TerrakeepMod.Common.Libreria
 		{
 			PanelHerramientasLibreriaTk herramientas = Contenido.Herramientas;
 			PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
-			if (herramientas == null || panel == null || !herramientas.EditorPrefijo.PopupAbierto) {
+			if (herramientas == null || panel == null || !herramientas.EditorPrefijoVisible.PopupAbierto) {
 				Registrar("Paso 21 - el popup no esta abierto, se salta.");
 				return;
 			}
 
-			EditorPrefijoTk editor = herramientas.EditorPrefijo;
+			EditorPrefijoTk editor = herramientas.EditorPrefijoVisible;
 			List<string> visiblesAhora = editor.FilasVisibles();
 			bool cambioLoVisible = !visiblesAhora.SequenceEqual(_visiblesAntes);
 			bool seMovieronLasFilas = Math.Abs(editor.PrimeraFilaY - _filaAntes) > 1f;
@@ -1918,7 +1960,7 @@ namespace TerrakeepMod.Common.Libreria
 				return;
 			}
 
-			EditorPrefijoTk editor = herramientas.EditorPrefijo;
+			EditorPrefijoTk editor = herramientas.EditorPrefijoVisible;
 			Item objetivo = herramientas.Seleccion.ObjetoActual;
 			int prefijoAntes = objetivo.prefix;
 			int dañoAntes = objetivo.damage;

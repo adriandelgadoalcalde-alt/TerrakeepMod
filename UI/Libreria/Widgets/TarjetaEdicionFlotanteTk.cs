@@ -57,16 +57,15 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 	/// un hospedaje separado que NO es modal: ver su XMLdoc para el porqué técnico exacto.
 	/// </para>
 	/// <para>
-	/// <b>Por qué el prefijo aquí es solo INFORMATIVO (nombre actual + "mejor prefijo" ya
-	/// calculado), no el desplegable interactivo completo.</b> Decisión de producto, no una
-	/// limitación técnica: el editor de prefijo INTERACTIVO se queda donde ya funciona, en el
-	/// mini-panel fijo de siempre (<see cref="PanelHerramientasLibreriaTk"/>), justo al lado de
-	/// esta tarjeta, para no duplicar el mismo control en dos sitios a la vez. (Hasta el arreglo de
-	/// <c>HospedajeFlotanteTk</c> de arriba, había además una razón técnica real: el desplegable de
-	/// <see cref="EditorPrefijoTk"/> y esta tarjeta se disputaban la MISMA
-	/// <see cref="TerrakeepMod.UI.Panel.CapaSuperposicionTk"/>, que solo admite un contenido a la
-	/// vez - anidarlo aquí habría expulsado a la tarjeta en el instante de abrirlo. Esa razón ya no
-	/// aplica: viven en hospedajes distintos y ya no se disputan nada.)
+	/// <b>El prefijo aquí es el editor INTERACTIVO y la tarjeta es el único editor visible
+	/// (v0.7.1).</b> Hasta la v0.7.0 esta línea era solo informativa "para no duplicar el mismo
+	/// control en dos sitios", pero la cantidad y la papelera SÍ estaban en la tarjeta y en el
+	/// mini-panel a la vez: dos editores del mismo objeto en pantalla (visto en la captura del README
+	/// de la v0.7.0). Como tarjeta y desplegable ya no se disputan ningún hueco (hospedajes distintos,
+	/// y la capa del desplegable va por encima y recibe el ratón primero), el
+	/// <see cref="EditorPrefijoTk"/> vive aquí y <see cref="PanelHerramientasLibreriaTk"/> esconde sus
+	/// propios editores mientras la tarjeta está abierta. <see cref="TextoPrefijo"/> se conserva para
+	/// la autoprueba.
 	/// </para>
 	/// <para>
 	/// <b>Por qué no hay un tercer botón "Quitar" junto a Aplicar/Papelera.</b> El catálogo
@@ -84,8 +83,11 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 	{
 		public const float Ancho = 240f;
 		/// <summary>204 hasta la v0.6.2; +28 desde la v0.7.0 para la fila "+10 / +100 / Máx" del
-		/// editor de cantidad (paridad con Terrakeep escritorio 3.3.0, ver <see cref="CantidadRapida"/>).</summary>
-		public const float Alto = 232f;
+		/// editor de cantidad (paridad con Terrakeep escritorio 3.3.0, ver <see cref="CantidadRapida"/>).
+		/// v0.7.1: 236 - el prefijo pasa a ser el EDITOR interactivo (26 px) en vez de una linea
+		/// informativa (18 px), porque la tarjeta es ya el UNICO editor visible (ver
+		/// <c>PanelHerramientasLibreriaTk.AjustarEditoresDelMiniPanel</c>).</summary>
+		public const float Alto = 236f;
 
 		/// <summary>2x real de la escala de ranura que ya usa la rejilla de destino de la Librería
 		/// (<c>ContenidoLibreria.EscalaSlotDestino</c> = 0.7f) - "sprite a 2x" tal cual pide TM2.</summary>
@@ -94,7 +96,7 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 		private readonly Func<Item> _proveedor;
 		private readonly Item[] _muestra = new Item[1];
 		private readonly EditorCantidadTk _editorCantidad;
-		private readonly EtiquetaTk _lineaPrefijo;
+		private readonly EditorPrefijoTk _editorPrefijo;
 		private readonly SlotPapeleraTk _papelera;
 
 		public TarjetaEdicionFlotanteTk(Func<Item> proveedor)
@@ -103,7 +105,10 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 
 			Width.Set(Ancho, 0f);
 			Height.Set(Alto, 0f);
-			BackgroundColor = EstiloTk.FondoCaja;
+			// OPACO (v0.7.1): con EstiloTk.FondoCaja (alfa 0,92) se transparentaban los numeros de
+			// las ranuras y la pista de la rejilla de destino que quedan debajo, justo detras del
+			// nombre del objeto (visto en la captura del README de la v0.7.0).
+			BackgroundColor = new Color(EstiloTk.FondoCaja.R, EstiloTk.FondoCaja.G, EstiloTk.FondoCaja.B, (byte)255);
 			// Borde visible, igual que el popup de prefijo: esta tarjeta flota POR ENCIMA de otros
 			// controles y sin una línea que la separe se lee como si formara parte de lo de abajo.
 			BorderColor = EstiloTk.BordeSobre * 0.55f;
@@ -115,15 +120,16 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 			_editorCantidad.Top.Set(filaCantidad, 0f);
 			Append(_editorCantidad);
 
-			// Informativo, no interactivo - ver el XMLdoc de la clase (por qué no es un
-			// EditorPrefijoTk anidado aquí dentro).
+			// v0.7.1: el editor de prefijo INTERACTIVO vive aqui (antes era una linea informativa y el
+			// editor real seguia en el mini-panel, con la cantidad repetida en los dos sitios a la
+			// vez). Su desplegable cuelga de la CapaSuperposicionTk del panel, que va por encima del
+			// hospedaje de esta tarjeta y recibe el raton primero (PanelTerrakeepState.OnInitialize).
 			float filaPrefijo = filaCantidad + EditorCantidadTk.AltoConFilaRapida + 8f;
-			_lineaPrefijo = new EtiquetaTk(TextoPrefijo, 0.68f, Ancho - 16f, 18f);
-			_lineaPrefijo.ColorTexto = EstiloTk.TextoSuave;
-			_lineaPrefijo.Top.Set(filaPrefijo, 0f);
-			Append(_lineaPrefijo);
+			_editorPrefijo = new EditorPrefijoTk(() => _proveedor != null ? _proveedor() : null, Ancho - 16f);
+			_editorPrefijo.Top.Set(filaPrefijo, 0f);
+			Append(_editorPrefijo);
 
-			float filaPapelera = filaPrefijo + 18f + 10f;
+			float filaPapelera = filaPrefijo + 26f + 10f;
 			EtiquetaTk etiquetaPapelera = new EtiquetaTk(
 				() => Idiomas.Texto("Personaje.Herramientas.Papelera"), 0.65f, 150f, 16f);
 			etiquetaPapelera.ColorTexto = EstiloTk.TextoSuave;
@@ -145,6 +151,9 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 		/// <summary>El editor de cantidad de esta tarjeta (con la fila "+10 / +100 / Máx"), para la
 		/// autoprueba.</summary>
 		public EditorCantidadTk EditorCantidad => _editorCantidad;
+
+		/// <summary>El editor de prefijo de esta tarjeta, para la autoprueba.</summary>
+		public EditorPrefijoTk EditorPrefijo => _editorPrefijo;
 
 		/// <summary>El texto de la línea informativa de prefijo: el que lleva puesto ahora mismo, y
 		/// si no coincide con el "mejor prefijo" ya calculado (<see cref="CatalogoMejorPrefijo"/>,

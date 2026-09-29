@@ -786,7 +786,7 @@ namespace TerrakeepMod.Common.Personaje
 				return;
 			}
 
-			EditorCantidadTk editor = herramientas.EditorCantidad;
+			EditorCantidadTk editor = herramientas.EditorCantidadVisible;
 			Item objetivo = editor.ObjetivoActual;
 			bool mismaReferencia = ReferenceEquals(objetivo, herramientas.Seleccion.ObjetoActual);
 
@@ -899,9 +899,9 @@ namespace TerrakeepMod.Common.Personaje
 				// captura el fotograma YA PRESENTADO, asi que capturar en el MISMO paso que abre el
 				// popup enseñaria el popup todavia CERRADO - mismo bug real que ya se encontro y
 				// arreglo en AutopruebaLibreria.ComprobarEditorPrefijo/CapturarYPulsarPrefijo.
-				herramientas.EditorPrefijo.AbrirParaAutoprueba();
+				herramientas.EditorPrefijoVisible.AbrirParaAutoprueba();
 				Registrar("Paso 24 - popup de prefijo abierto sobre \"" + herramientas.Seleccion.ObjetoActual.Name
-					+ "\" (PopupAbierto=" + herramientas.EditorPrefijo.PopupAbierto + "). La captura y los "
+					+ "\" (PopupAbierto=" + herramientas.EditorPrefijoVisible.PopupAbierto + "). La captura y los "
 					+ "clics se hacen en el paso siguiente.");
 			}
 			finally {
@@ -924,7 +924,7 @@ namespace TerrakeepMod.Common.Personaje
 				return;
 			}
 
-			EditorPrefijoTk editorPrefijo = herramientas.EditorPrefijo;
+			EditorPrefijoTk editorPrefijo = herramientas.EditorPrefijoVisible;
 			Item objetivo = herramientas.Seleccion.ObjetoActual;
 			int prefijoAntes = objetivo.prefix;
 			int objetosActivosAntes = ContarObjetosEnElMundo();

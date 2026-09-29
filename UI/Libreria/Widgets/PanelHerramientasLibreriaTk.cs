@@ -61,6 +61,51 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 		/// <summary>El editor de prefijo, expuesto para la autoprueba.</summary>
 		public EditorPrefijoTk EditorPrefijo => _editorPrefijo;
 
+		/// <summary>El editor de cantidad que el jugador VE ahora mismo: el de la tarjeta flotante si
+		/// esta abierta (entonces los del mini-panel se esconden), si no, el del mini-panel. Lo usan
+		/// las autopruebas para pulsar siempre el control real que hay en pantalla.</summary>
+		public EditorCantidadTk EditorCantidadVisible =>
+			_tarjetaFlotanteAbierta && _tarjetaFlotante != null ? _tarjetaFlotante.EditorCantidad : _editorCantidad;
+
+		/// <summary>Mismo criterio que <see cref="EditorCantidadVisible"/> para el prefijo.</summary>
+		public EditorPrefijoTk EditorPrefijoVisible =>
+			_tarjetaFlotanteAbierta && _tarjetaFlotante != null ? _tarjetaFlotante.EditorPrefijo : _editorPrefijo;
+
+		/// <summary>true mientras los editores del mini-panel estan escondidos porque la tarjeta
+		/// flotante es el editor visible. Lo lee la autoprueba.</summary>
+		public bool EditoresDelMiniPanelOcultos => _editoresOcultos;
+
+		private EtiquetaTk etiquetaPapelera;
+		private bool _editoresOcultos;
+
+		/// <summary>
+		/// v0.7.1 (revision de la captura del README de la v0.7.0): con un objeto seleccionado se
+		/// veian DOS editores del mismo objeto a la vez - la tarjeta flotante y este mini-panel, los
+		/// dos con "-", cantidad, "+", "Aplicar", prefijo y papelera. La propia cabecera de
+		/// <see cref="TarjetaEdicionFlotanteTk"/> ya decia "no duplicar el mismo control en dos
+		/// sitios", pero solo se habia aplicado al prefijo. Ahora, mientras la tarjeta esta
+		/// abierta, el mini-panel se queda SOLO con su recuadro de seleccion (que hace falta para
+		/// arrastrar el objeto de vuelta fuera y cerrar la tarjeta) y la tarjeta es el unico
+		/// editor: cantidad (con +10/+100/Máx), prefijo y papelera.
+		/// </summary>
+		private void AjustarEditoresDelMiniPanel(bool ocultar)
+		{
+			if (ocultar == _editoresOcultos) {
+				return;
+			}
+			_editoresOcultos = ocultar;
+			UIElement[] editores = { _titulo, etiquetaPapelera, _papelera, _editorCantidad, _editorPrefijo };
+			foreach (UIElement editor in editores) {
+				if (ocultar) {
+					RemoveChild(editor);
+				}
+				else if (editor.Parent == null) {
+					Append(editor);
+				}
+			}
+			Recalculate();
+		}
+
 		public PanelHerramientasLibreriaTk()
 		{
 			// Alto FIJO, no en porcentaje: el contenido interno se coloca con desplazamientos
@@ -77,7 +122,7 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 
 			float filaUno = 22f;
 
-			EtiquetaTk etiquetaPapelera = new EtiquetaTk(
+			etiquetaPapelera = new EtiquetaTk(
 				() => Idiomas.Texto("Personaje.Herramientas.Papelera"), 0.62f, 70f, 14f);
 			etiquetaPapelera.ColorTexto = EstiloTk.TextoSuave;
 			etiquetaPapelera.Top.Set(filaUno, 0f);
@@ -186,6 +231,7 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 					hospedaje.Quitar(_tarjetaFlotante);
 					_tarjetaFlotanteAbierta = false;
 				}
+				AjustarEditoresDelMiniPanel(false);
 				return;
 			}
 
@@ -198,6 +244,7 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 			if (!_tarjetaFlotanteAbierta) {
 				hospedaje.Mostrar(_tarjetaFlotante);
 				_tarjetaFlotanteAbierta = true;
+				AjustarEditoresDelMiniPanel(true);
 			}
 		}
 
@@ -213,7 +260,12 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 			CalculatedStyle esteMiniPanel = GetDimensions();
 			const float Separacion = 8f;
 
-			float x = esteMiniPanel.X - TarjetaEdicionFlotanteTk.Ancho - Separacion;
+			// v0.7.1: la tarjeta termina justo antes del recuadro de seleccion (no antes del
+			// mini-panel entero): con la tarjeta abierta el mini-panel esconde su titulo, papelera y
+			// editores, asi que ese hueco ya esta libre y la tarjeta tapa ~74 px menos de la rejilla
+			// de destino de la izquierda. El recuadro de seleccion NUNCA se tapa: es donde se arrastra
+			// el objeto de vuelta fuera para cerrar la tarjeta.
+			float x = _seleccion.GetDimensions().X - TarjetaEdicionFlotanteTk.Ancho - Separacion;
 			if (x < area.X) {
 				x = esteMiniPanel.X + esteMiniPanel.Width + Separacion;
 			}
