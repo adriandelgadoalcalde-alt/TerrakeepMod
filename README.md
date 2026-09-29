@@ -19,7 +19,7 @@ Terrakeep junto al bestiario y los emotes, con el inventario abierto.
 
 <p align="center">
   <img src="docs/screenshots/01-guia-calamity.png" width="49%" alt="Pestaña Guía con Calamity instalado: cabecera con reloj, objetivo y chip de DPS, tarjeta con el sprite real de Yharon, lo que te falta y la lectura del jefe" />
-  <img src="docs/screenshots/02-album.png" width="49%" alt="Pestaña Álbum con las capturas automáticas de cada hito cerrado, bajo la barra de pestañas con icono de sprite" />
+  <img src="docs/screenshots/02-album.png" width="49%" alt="Pestaña Álbum con doce hitos reales ordenados del más reciente al más antiguo, bajo la barra de pestañas con icono de sprite" />
 </p>
 <p align="center">
   <img src="docs/screenshots/03-builds.png" width="49%" alt="Pestaña Builds con dos filas de filtros, el anillo de progreso 0/13 junto al alternador Vanilla, las tres columnas de armadura, armas y accesorios y los códigos de build" />
@@ -109,7 +109,9 @@ tecnología externa al juego.
   los 25 tramos de Calamity salían sin tildes ("progresion", "arbol", "Lluvia Acida", "Modo
   Dificil"...). Corregidas 88 líneas del español, "¡Práctica superada!" en el informe del
   entrenador de jefe y la concordancia de "La Feromona Exótica"; en inglés, "Tramos with" pasa a
-  "Stages with". Una prueba automática vigila que no vuelvan a perderse.
+  "Stages with". Los jefes usan ya su nombre oficial en español, el mismo que muestra el juego:
+  **Esqueletrón**, **Esqueletrón mayor** (antes "Esqueletron Prime") y **Gólem**. Una prueba
+  automática vigila que no vuelvan a perderse.
 - **El Álbum se ordena de verdad por fecha**, del hito más reciente al más antiguo. Antes solo se
   invertía el orden en que estaban guardados, así que un álbum copiado o fusionado salía mezclado,
   y una entrada con la fecha ilegible saltaba arriba del todo; ahora se va al final.
