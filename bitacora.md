@@ -11441,3 +11441,124 @@ no como bloqueo, pero cerrar el requirement del todo es decision del coordinador
 
 tModLoader/Terraria cerrado (proceso terminado tras cada una de las 3 pasadas, sin ventana residual
 - confirmado con `Get-Process`). Escritorio libre al terminar.
+
+## 29-sep-2026 (limpieza final de la sesion) - v0.6.2: prefijo de Builds sin traducir, legibilidad de Zoom cerrada de verdad, 2 falsos positivos reales en las autopruebas de espaciado/guia, requirement 0446b3c9 con evidencia fresca
+
+Encargo de cierre de la familia Keep. Cuatro hallazgos reales, los cuatro con evidencia en vivo
+(nunca ajustados a ciegas para fabricar un verde) y publicados como v0.6.2.
+
+### 1. Prefijo sugerido de Builds en ingles a pelo
+
+`ContenidoBuilds.cs` mostraba `objeto.PrefijoRecomendado` (el nombre INTERNO vanilla, ej.
+"Legendary", el que necesita `PrefixID.Search` en `AutoEquipar`) directamente en la interfaz, sin
+traducir - "prefijo sugerido: Legendary" incluso con el mod en español (visto en la propia captura
+`docs/screenshots/03-builds.png`). Un `grep` de todo el repo confirmo que era el UNICO sitio que no
+pasaba por `Lang.prefix` (EditorPrefijoTk, ContenidoLibreria, TarjetaEdicionFlotanteTk,
+GlobalItemMejorPrefijo, CatalogoPrefijosLegales, AutoEquipar y AutopruebaPrefijos ya lo hacian
+bien). Arreglo: `ObjetoBuild.NombrePrefijoRecomendado` (nueva propiedad en `ModeloBuilds.cs`)
+resuelve el nombre interno a `Lang.prefix[id].Value` - la localizacion OFICIAL de tModLoader, sin
+tocar `PrefijoRecomendado` (que sigue en ingles para la logica de `AutoEquipar`). Verificado en
+vivo: la localizacion oficial en español de "Legendary" no es solo "Legendario" - es **"(Legendario)"**,
+con parentesis incluidos en el propio dato oficial (el español pone el prefijo DESPUES del nombre
+del objeto, entre parentesis, al contrario que el ingles) - confirma que usar `Lang.prefix` en vez
+de una tabla propia era la decision correcta, porque una traduccion manual habria tenido que
+adivinar ese detalle de puntuacion.
+
+### 2. "Zoom" a 11px en el peor caso: cerrado con una mejora matematicamente monotona
+
+La entrada anterior de este mismo dia dejaba la legibilidad de "Zoom" como "matiz documentado, no
+bloqueo" (11px medidos en el peor caso, 1366x768@150%, frente a 14-16px de referencia del resto del
+mod) y apuntaba dos vias posibles sin aplicar ninguna: subir `escalaMinima` (arriesgaba reabrir el
+solape ya cerrado) o dejar de reservar hueco para "bajo el raton" cuando esta vacio. Se aplico la
+segunda: `PestanaMapa.BloqueTexto.ColapsaSiVacio` (nuevo) hace que ese renglon (que esta vacio la
+inmensa mayoria de los fotogramas, el raton no siempre esta sobre el mapa) deje de contar en
+`_altoNaturalBloqueTexto`, asi que `ReflowVertical.FactorDeCompresion` necesita comprimir menos -
+sin tocar el suelo duro `escalaMinima` ni el mecanismo que ya evita el solape. Matematicamente
+monotona: el factor nunca puede ser peor que antes.
+
+Reverificado en vivo con un arnes NUEVO (`AutopruebaAuditoriaUiScale` ahora se fotografia a si
+misma con `CapturaDePantalla`/back buffer, en vez de depender del script externo con Win32
+`CopyFromScreen` de la sesion anterior, que vivia en scratchpad y ya no existe) sobre un sandbox
+aislado (`tModLoader-TerrakeepZoomVerif`, borrado al terminar salvo por un bloqueo de permisos
+benigno - queda huerfano en `Documents\My Games\Terraria\`, mismo patron que WS0/WS7). Dato honesto:
+esta maquina no reproduce el 1366x768@150% exacto de la auditoria original (Windows/FNA lo
+reescala a 1067x600@1.28 por el DPI real del monitor 4K) - se verifico en esa combinacion mas suave
+que "Zoom" sale legible y sin solape, y se confio en la demostracion matematica (arriba) para el
+caso extremo exacto en vez de perseguir una reproduccion que este equipo no puede dar. Ademas,
+`verificar-espaciado.ps1` (con y sin Calamity) paso limpio a las 3 resoluciones de su matriz normal,
+sin ninguna regresion en Exploracion.
+
+### 3. Dos falsos positivos reales en `verificar-espaciado.ps1` (regla 3, bloque hermano)
+
+La autoprueba llevaba en rojo desde hacia tiempo por "invade el bloque hermano... sin llegar a
+pisar letra" en Almacenes y Apariencia, en varias resoluciones/idiomas. Confirmados como falsos
+positivos contra las capturas reales (sin solape visible en ninguno de los dos, ver las capturas
+de esta misma entrada mas abajo en el commit):
+
+- **Almacenes**: "Hucha: 2 de 40 ranuras ocupadas." se comparaba contra la caja DECLARADA de
+  `PestanaAlmacenes._rejilla` (un `UIElement` A SECAS con `Height.Set(-40f, 1f)`, que llena el
+  hueco que sobra) en vez de contra su contenido real (titulo + rejilla de objetos) - el renglon
+  esta siempre por debajo del contenido visible, en el hueco vacio de relleno.
+- **Apariencia**: la nota de tintes de pelo (`EtiquetaTk` con 900px de caja declarada, un ancho de
+  sobra para el peor caso en cualquier idioma) se comparaba con ese ancho completo en vez del ancho
+  REAL renderizado (~650px) contra el panel de vista previa del muñeco.
+
+Arreglo real en la propia heuristica, no un umbral tocado a ciegas: `CajaVisibleDe()` (nueva,
+`AutopruebaEspaciado.cs`) sustituye la caja declarada de un `UIElement` A SECAS (nunca de un
+`UIPanel`, que si pinta su fondo en toda su caja) por la union de sus hijos directos; y el ancho de
+la etiqueta medida en la regla 3 usa `Math.Min(declarado, MeasureString real)`, igual que ya hace la
+regla 1 de desborde. Verificado: `verificar-espaciado.ps1` y `-Calamity`, 3 resoluciones x 2 idiomas
+cada uno, "Ninguna comprobacion en rojo." en los dos.
+
+### 4. `verificar-guia.ps1`: "84 NO EVALUABLE" no eran un bug sin implementar
+
+Investigado con evidencia real (no a ciegas): las ~42 lineas `[?]` de la ultima pasada eran TODAS
+`No llevas ningun arma; hacen falta N de daño (0/N)` - `TipoRequisito.DanoArma` sin ningun arma en
+la mochila AHORA MISMO, una decision de diseño real y documentada de `GuideEvaluationEngine`
+(Terrakeep.Core, no tocado aqui: NoEvaluable en vez de "0 de daño" para no contar "sin arma" como
+progreso parcial falso). El propio recorrido de esta autoprueba lo dispara a proposito: cada tramo
+de jefe se comprueba una vez SIN arma (para demostrar que el paso no se da por completo) y otra vez
+CON ella. El supuesto de la entrada del 16-sep-2026 ("con Has* siempre true, `[?]` solo puede salir
+por un tipo no reconocido") era incompleto - no contaba con este caso, transitorio y esperado, que
+tambien es `[?]`.
+
+Arreglo: `AutopruebaGuia` separa `_contadorSinArmaTransitorio` (informativo, nunca bloquea) de
+`_contadorNoEvaluableReal` (cualquier otra razon - tipo/bandera sin reconocer, o esta misma razon en
+algo que no sea `DanoArma` - sigue cayendo en el patron rojo `NO EVALUABLE:` de
+`verificar-guia.ps1`, sin tocar el propio patron de grep). Verificado: antes, "42 NO EVALUABLE" y
+`exit 1`; despues, "42 sin arma en ese instante (informativo)" + "0 (no evaluable) real" +
+"Ninguna comprobacion en rojo."
+
+### Requirement `0446b3c9-9108-4c1d-be03-66e050d7d1d6` (paridad con Terrakeep escritorio)
+
+Revisado con la CLI (`requirement status`). De los 5 criterios de aceptacion, 4 tenian ya evidencia
+real (algunos con matices) y 1 no tenia ninguna:
+
+- Reforzada la evidencia de "auditoria sistematica de UIScale/resolucion" con el cierre de Zoom de
+  este mismo turno (punto 2 de arriba).
+- Reforzada la evidencia de "persistencia de Exploracion/cofres" (estaba `INCONCLUSIVE` por bajo
+  solape textual con el criterio pese a tener evidencia real detras) con una redaccion que si cita
+  el criterio literalmente - ahora `EVIDENCE_ONLY`.
+- El criterio "cada novedad de escritorio desde ~20-sep revisada una a una" seguia sin ninguna
+  evidencia: registrado como **known-diff aceptado** (severidad Medium), con motivo real - es una
+  auditoria cruzada de repos (no un bug ni una tarea de limpieza puntual), Terrakeep escritorio
+  tiene 272 commits sin push con trabajo activo de otro agente en esta misma sesion, y el propio
+  plan de cierre de la familia secuencia TerrakeepMod DESPUES de cerrar Terrakeep escritorio para no
+  auditar un objetivo movil. El requirement queda `IN_PROGRESS` (no se fuerza a `DONE`): 4/5
+  criterios con evidencia, 1/5 documentado como brecha aceptada, honesto y visible para quien
+  retome esto despues.
+
+### Publicacion v0.6.2
+
+6 commits (uno por hallazgo/evidencia/version, nunca "cambios varios"), tag `v0.6.2`, push a
+`origin/master` y release real en GitHub con el `.tmod` limpio (20 archivos, sin `.pdb`, verificado
+con `tmod-extract.js` y `scripts\limpiar-tmod.ps1`, SHA256 documentado en la propia release) y notas
+en español. `dotnet test TerrakeepMod.Tests`: 64/64 en verde antes de publicar. README con entrada
+de Novedades 0.6.2 y captura `03-builds.png` regenerada (ya enseña "(Legendario)"). `git status`
+limpio, 0 commits sin push, `task.js validate` en `ok:true`.
+
+### Cierre
+
+Turno de pantalla (`PANTALLA.lock`) respetado en las dos ventanas de juego que hizo falta abrir
+(esperado ~3,5 min a que otro agente familiar terminara su turno antes de la segunda). Cero
+procesos `tModLoader`/`dotnet` de este agente residuales al terminar, confirmado con `Get-Process`.
