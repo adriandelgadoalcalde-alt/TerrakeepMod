@@ -4,13 +4,13 @@ Un solo panel (tecla K) con ocho pestañas, todas con la interfaz nativa de Terr
 
 - Personaje: inventario, hucha/caja fuerte/forja/boveda, los tres conjuntos de equipo, buffs, apariencia (peinado, variante, tintes y los siete colores) y los 13 desbloqueos permanentes.
 
-- Libreria: catalogo navegable de TODOS los objetos de la partida, incluidos los de cualquier mod instalado, con buscador (coma = o, espacio = y, #id, .texto). Coge un objeto del catalogo y sueltalo en cualquier contenedor real.
+- Libreria: catalogo navegable de TODOS los objetos de la partida, incluidos los de cualquier mod instalado, con buscador (coma = o, espacio = y, #id, .texto). Coge un objeto del catalogo y sueltalo en cualquier contenedor real, o editale la cantidad (con saltos de +10, +100 o hasta el maximo real) y el prefijo.
 
 - Builds: equipo recomendado por etapa y clase, con "ya lo tienes" y auto-equipar. Si no tienes un objeto de la build, lo crea directamente desde la Libreria con su mejor prefijo real para esa build (vanilla o Calamity).
 
 - Investigacion: cuanto llevas investigado de cada carpeta en Modo Viaje, y como completarlo o quitarlo. Pasa por la API oficial del juego, asi que el menu de duplicar del Modo Viaje refleja lo mismo.
 
-- Exploracion: mini-mapa navegable con las texturas reales del juego, busqueda de minerales, gemas, tesoros, cofres, NPC, liquidos y paredes por todo el mundo, y cambio de dificultad en vivo con salvaguardas.
+- Exploracion: mini-mapa navegable con las texturas reales del juego, busqueda de minerales, gemas, tesoros, cofres, NPC, liquidos y paredes por todo el mundo, cambio de dificultad en vivo con salvaguardas, las invasiones vencidas del mundo editables y una pestaña Vecindad con la felicidad real de cada vecino, desde la que puedes traer a un vecino que falte o echar a uno.
 
 - Ajustes: idioma (Español / English) en vivo, historial de deshacer y rehacer, y la lista real de atajos de teclado.
 

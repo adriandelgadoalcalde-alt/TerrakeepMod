@@ -25,6 +25,10 @@ Terrakeep junto al bestiario y los emotes, con el inventario abierto.
   <img src="docs/screenshots/03-builds.png" width="49%" alt="Pestaña Builds con dos filas de filtros, el anillo de progreso 0/13 junto al alternador Vanilla, las tres columnas de armadura, armas y accesorios y los códigos de build" />
   <img src="docs/screenshots/04-libreria.png" width="49%" alt="Pestaña Librería navegando la carpeta Mascotas de Jefes, con los ocho destinos (incluido Cofre) abajo" />
 </p>
+<p align="center">
+  <img src="docs/screenshots/05-este-mundo.png" width="49%" alt="Exploración > Este mundo: ficha del mundo con la fila nueva de Invasiones (Goblins, Escarcha, Piratas) y, a la derecha, la dificultad en vivo con su aviso de permanencia" />
+  <img src="docs/screenshots/06-editar-objeto.png" width="49%" alt="Librería con la tarjeta Editar objeto abierta sobre un Champiñón: cantidad con los botones rápidos +10, +100 y Máx, prefijo y papelera" />
+</p>
 
 ## Qué hace
 
@@ -37,8 +41,8 @@ Ocho pestañas, todas con la interfaz nativa de Terraria (sin ninguna ventana ex
 - **Librería** - catálogo navegable de TODOS los objetos de la partida, incluidos los de
   cualquier mod instalado (no solo Calamity), con buscador (`coma` = o, `espacio` = y, `#id`,
   `.texto` busca en el tooltip). Coge un objeto y suéltalo en cualquier contenedor real, o
-  arrástralo al recuadro de edición para cambiarle la cantidad o el prefijo, o para tirarlo a la
-  papelera.
+  arrástralo al recuadro de edición para cambiarle la cantidad (con saltos rápidos de +10, +100
+  o hasta el máximo real del objeto) o el prefijo, o para tirarlo a la papelera.
 - **Builds** - equipo recomendado por etapa y clase, con "ya lo tienes" y auto-equipar a
   cualquiera de los tres conjuntos. Coloca primero lo que ya tienes; lo que te falte lo trae
   directamente del catálogo de la Librería (con su mejor prefijo real), sin tocar nunca nada
@@ -48,8 +52,10 @@ Ocho pestañas, todas con la interfaz nativa de Terraria (sin ninguna ventana ex
   Modo Viaje refleja exactamente lo mismo.
 - **Exploración** - mini-mapa navegable con las texturas reales del juego, búsqueda de
   minerales, gemas, tesoros, cofres, NPCs, líquidos y paredes por todo el mundo, salto al mapa
-  vanilla a pantalla completa con marcadores propios, y cambio de dificultad en vivo con
-  avisos claros de sus riesgos reales.
+  vanilla a pantalla completa con marcadores propios, cambio de dificultad en vivo con
+  avisos claros de sus riesgos reales, las invasiones vencidas del mundo (Goblins, Legión de
+  Escarcha, Piratas) editables y una pestaña Vecindad con la felicidad real de cada vecino, desde
+  la que también puedes traer a un vecino que falte o echar a uno que ya viva aquí.
 - **Ajustes** - idioma (Español/English) en vivo sin reiniciar, historial de deshacer/rehacer,
   y la lista real de atajos de teclado.
 - **Guía** - brújula de progresión en tiempo real, la pestaña más nueva del panel. Cubre **el
@@ -102,6 +108,34 @@ Toda la interfaz está construida con los bloques nativos de Terraria (`IngameFa
 tecnología externa al juego.
 
 ## Novedades
+
+### 0.7.0 (29-sep-2026)
+
+Paridad con Terrakeep de escritorio 3.3.0: se han revisado una a una sus 289 novedades desde el
+20 de septiembre ([`docs/paridad-escritorio-3.3.0.md`](docs/paridad-escritorio-3.3.0.md)) y se
+traen al juego las tres que tenían sentido dentro de la partida y faltaban:
+
+- **Cantidad rápida en "Editar objeto"**: la tarjeta flotante de la Librería gana una fila
+  **+10 / +100 / Máx** que nunca pasa del máximo real de apilado de ese objeto (de vanilla o de
+  cualquier mod). Se deshace con Ctrl+Z, como el resto.
+- **Invasiones vencidas, editables**: en Exploración > Este mundo, la ficha tiene una fila
+  "Invasiones" con **Goblins**, **Escarcha** y **Piratas**. Resaltada = vencida; pulsa para
+  cambiarla. Queda grabado en el mundo en el siguiente guardado y se deshace con Ctrl+Z.
+- **Traer y echar vecinos**: en Exploración > Vecindad, **"Traer vecino..."** despliega los
+  vecinos de la lista oficial que todavía no viven en tu mundo y trae al que elijas al punto de
+  aparición, sin casa (el juego le busca una solo), y cada vecino tiene un botón **"Echar"** que
+  lo retira sin matarlo. Las dos cosas se deshacen con Ctrl+Z.
+- **"Zoom" siempre legible**: en Exploración > Mapa, el renglón de zoom ya nunca se dibuja por
+  debajo del tamaño de letra más pequeño que usa el resto del mod, ni siquiera con la escala de
+  interfaz al máximo. Si no hay sitio, antes de encoger letra se deja de enseñar el aviso del mapa
+  grande (lo mismo lo dice la ayuda del botón "Ver en el mapa del juego").
+- **"Este mundo" cabe entero en cualquier ventana**: la ficha aprieta el interlineado sin encoger
+  la letra (y, en el caso más apretado, oculta los datos que ya repite la cabecera), y la columna
+  de dificultad se desplaza con la rueda en vez de salirse por debajo y pisar "Cerrar".
+- **El desplegable de prefijo vuelve a responder con un objeto seleccionado**: la tarjeta
+  "Editar objeto" se quedaba los clics y la rueda encima del desplegable abierto.
+- Todo lo que edita el mundo sigue siendo solo para partidas de un jugador.
+- Versión del mod: `0.6.2` → `0.7.0`.
 
 ### 0.6.2 (29-sep-2026)
 
