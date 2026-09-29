@@ -266,6 +266,24 @@ namespace TerrakeepMod.UI.Panel
 
 			ConstruirPie();
 
+			// Misma geometria que _capaSuperposicion (toda la zona de contenido, por conveniencia
+			// de coordenadas: PanelHerramientasLibreriaTk.PosicionarTarjetaFlotante calcula la
+			// posicion de la tarjeta dentro de esta area exactamente igual que ya calculaba dentro
+			// de la capa) pero NO es modal - ver el XMLdoc de HospedajeFlotanteTk para el porque de
+			// que haga falta un hueco aparte para contenido persistente.
+			_hospedajeFlotante = new HospedajeFlotanteTk();
+			_hospedajeFlotante.Width.Set(0f, 1f);
+			_hospedajeFlotante.Top.Set(arribaContenido, 0f);
+			_hospedajeFlotante.Height.Set(-(arribaContenido + AltoPie), 1f);
+			//
+			// ANTES de la capa, no despues (v0.7.0): UIElement.GetElementAt reparte el raton
+			// recorriendo los hijos del ULTIMO al primero, asi que con el hospedaje colgado detras de
+			// la capa la tarjeta "Editar objeto" se quedaba con el raton encima del desplegable de
+			// prefijo abierto (AutopruebaLibreria pasos 19-21 en rojo desde el 25-sep: "el
+			// desplegable esta sordo", la rueda no lo movia). La capa tiene que seguir siendo la
+			// ultima: dibujada encima Y primera en recibir el raton.
+			_marco.Append(_hospedajeFlotante);
+
 			// LA ULTIMA, y a proposito: es la capa donde flotan los desplegables (hoy el selector de
 			// prefijo). UIElement.DrawChildren dibuja en el orden en que se hizo Append, asi que
 			// colgarla despues del pie es lo que garantiza que un desplegable abierto quede POR ENCIMA
@@ -278,17 +296,6 @@ namespace TerrakeepMod.UI.Panel
 			_capaSuperposicion.Top.Set(arribaContenido, 0f);
 			_capaSuperposicion.Height.Set(-(arribaContenido + AltoPie), 1f);
 			_marco.Append(_capaSuperposicion);
-
-			// Misma geometria que _capaSuperposicion (toda la zona de contenido, por conveniencia
-			// de coordenadas: PanelHerramientasLibreriaTk.PosicionarTarjetaFlotante calcula la
-			// posicion de la tarjeta dentro de esta area exactamente igual que ya calculaba dentro
-			// de la capa) pero NO es modal - ver el XMLdoc de HospedajeFlotanteTk para el porque de
-			// que haga falta un hueco aparte para contenido persistente.
-			_hospedajeFlotante = new HospedajeFlotanteTk();
-			_hospedajeFlotante.Width.Set(0f, 1f);
-			_hospedajeFlotante.Top.Set(arribaContenido, 0f);
-			_hospedajeFlotante.Height.Set(-(arribaContenido + AltoPie), 1f);
-			_marco.Append(_hospedajeFlotante);
 
 			CambiarArea(UltimaArea, "reapertura");
 		}
