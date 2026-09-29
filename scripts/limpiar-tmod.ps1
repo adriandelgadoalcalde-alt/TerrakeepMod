@@ -2,7 +2,7 @@
 # de tModLoader. build.txt (buildIgnore) no puede hacerlo: ModCompile.Build (tModLoader.dll
 # real, decompilado) añade el .pdb sin condicion en cuanto compila, sin pasar por buildIgnore -
 # ver el comentario real en build.txt. Usa la herramienta compartida de la familia
-# (Downloads\KeepQA\src\empaquetado-tmod\limpiar-tmod.js), que reescribe el .tmod con un hash
+# (Downloads\Keep\KeepQA\src\empaquetado-tmod\limpiar-tmod.js), que reescribe el .tmod con un hash
 # SHA1 valido siguiendo el formato real de TmodFile.Save() - no un zip a medias.
 #
 #   .\scripts\compilar.ps1
@@ -11,7 +11,7 @@
 $ErrorActionPreference = 'Stop'
 
 $node = 'C:\Users\adrian\Downloads\dev-tools\node-v24.20.0-win-x64\node.exe'
-$herramienta = 'C:\Users\adrian\Downloads\KeepQA\src\empaquetado-tmod\limpiar-tmod.js'
+$herramienta = 'C:\Users\adrian\Downloads\Keep\KeepQA\src\empaquetado-tmod\limpiar-tmod.js'
 $tmod = Join-Path $env:USERPROFILE 'Documents\My Games\Terraria\tModLoader\Mods\TerrakeepMod.tmod'
 
 if (-not (Test-Path $node)) { throw "No se encuentra node.exe en $node (ver herramientas.json)." }
