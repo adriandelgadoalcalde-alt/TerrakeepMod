@@ -952,7 +952,7 @@ namespace TerrakeepMod.UI.Builds
 				string extra = objeto.Resuelto
 					? (string.IsNullOrEmpty(objeto.PrefijoRecomendado)
 						? ""
-						: Idiomas.Texto("Builds.PrefijoSugerido", objeto.PrefijoRecomendado))
+						: Idiomas.Texto("Builds.PrefijoSugerido", objeto.NombrePrefijoRecomendado))
 					: Idiomas.Texto("Builds.NoExisteAqui");
 				UIText pie = null;
 				if (!string.IsNullOrEmpty(extra)) {

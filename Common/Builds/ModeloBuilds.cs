@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Terraria;
+using Terraria.ID;
 using TerrakeepMod.Common.Ajustes;
 
 namespace TerrakeepMod.Common.Builds
@@ -72,6 +73,31 @@ namespace TerrakeepMod.Common.Builds
 					return preferido;
 				}
 				return !string.IsNullOrEmpty(otro) ? otro : Pid;
+			}
+		}
+
+		/// <summary>
+		/// Nombre del prefijo recomendado, YA en el idioma activo, para enseñar en la interfaz
+		/// ("prefijo sugerido: Legendario"). <see cref="PrefijoRecomendado"/> guarda el nombre
+		/// INTERNO vanilla ("Legendary": lo necesita tal cual <c>PrefixID.Search</c> en
+		/// <c>AutoEquipar</c> para resolver el id real) - mostrar ese valor crudo dejaba el aviso a
+		/// medio traducir en un panel por lo demas en español (bug real visto en captura, 29-sep-
+		/// 2026). Mismo patron que ya usa <c>Nombre</c> arriba: PROPIEDAD, no campo, para seguir el
+		/// idioma en vivo sin tener que reabrir el panel. Usa <c>Lang.prefix</c> (la localizacion
+		/// OFICIAL de tModLoader, la misma que ya usan <c>EditorPrefijoTk</c>/
+		/// <c>CatalogoPrefijosLegales.NombrePrefijo</c>/<c>AutoEquipar</c>), nunca una tabla propia.
+		/// Si el nombre interno no resuelve a un id vanilla valido (dato del catalogo corrupto o de
+		/// un mod), se enseña tal cual en vez de ocultarlo - mejor un nombre en ingles que nada.
+		/// </summary>
+		public string NombrePrefijoRecomendado {
+			get {
+				if (string.IsNullOrEmpty(PrefijoRecomendado)) {
+					return PrefijoRecomendado;
+				}
+				if (PrefixID.Search.TryGetId(PrefijoRecomendado, out int id) && id > 0 && id < PrefixID.Count) {
+					return Lang.prefix[id].Value;
+				}
+				return PrefijoRecomendado;
 			}
 		}
 	}
