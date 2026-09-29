@@ -56,5 +56,56 @@ namespace TerrakeepMod.Common.Panel
 			float factor = altoDisponible / altoNecesario;
 			return factor < escalaMinima ? escalaMinima : factor;
 		}
+
+		/// <summary>
+		/// Escala de texto mas pequeña que el mod usa para texto que hay que LEER (no un suelo de
+		/// emergencia): 0,68, la de los avisos secundarios de Exploracion (<c>PestanaMundo.
+		/// EscalaAvisoSecundario</c>), el titulo de tramo de la Guia, la ruta de carpetas de Buffs o
+		/// las filas del selector de cofres. A UIScale 100% son ~14 px de glifo real, el minimo que
+		/// ya se midio como "legible" en el resto del mod (bitacora.md, 29-sep-2026).
+		/// </summary>
+		public const float EscalaMinimaLegible = 0.68f;
+
+		/// <summary>
+		/// Variante de <see cref="FactorDeCompresion"/> para un flujo cuyo ULTIMO renglon no puede
+		/// encogerse por debajo de <paramref name="escalaMinimaUltima"/> (caso real: "Zoom" de
+		/// Exploracion &gt; Mapa, que a 1366x768@150% quedaba a 11 px - requirement 0446b3c9). Si
+		/// comprimir todo con el mismo factor dejaria ese renglon por debajo de su minimo, se le
+		/// fija en el minimo y se reparte el hueco que QUEDA entre el resto del flujo: el resto se
+		/// comprime algo mas, pero el total (resto comprimido + ultimo renglon a su minimo) sigue
+		/// cabiendo en <paramref name="altoDisponible"/> - la misma garantia de "sin solape" que
+		/// <see cref="FactorDeCompresion"/>, mientras el resto no toque su propio suelo duro.
+		/// </summary>
+		/// <param name="altoNaturalTotal">Alto del flujo entero a escala natural (incluye el ultimo).</param>
+		/// <param name="altoNaturalUltimo">Alto del ultimo renglon a su escala base.</param>
+		/// <param name="escalaBaseUltimo">Escala base del ultimo renglon.</param>
+		/// <param name="escalaMinimaUltimo">Escala por debajo de la cual no se deja bajar el ultimo.</param>
+		/// <param name="altoDisponible">Alto real disponible para el flujo.</param>
+		/// <param name="escalaUltimo">Escala ABSOLUTA con la que hay que dibujar el ultimo renglon.</param>
+		/// <param name="escalaMinima">Suelo duro del resto del flujo (el de siempre).</param>
+		/// <returns>Factor a aplicar a la posicion y a la escala del RESTO del flujo; la posicion del
+		/// ultimo renglon es la suma de los altos del resto por este mismo factor.</returns>
+		public static float FactorConUltimoMinimo(float altoNaturalTotal, float altoNaturalUltimo,
+			float escalaBaseUltimo, float escalaMinimaUltimo, float altoDisponible, out float escalaUltimo,
+			float escalaMinima = 0.55f)
+		{
+			float factor = FactorDeCompresion(altoNaturalTotal, altoDisponible, escalaMinima);
+			float minimo = escalaMinimaUltimo < escalaBaseUltimo ? escalaMinimaUltimo : escalaBaseUltimo;
+			if (escalaBaseUltimo <= 0f || escalaBaseUltimo * factor >= minimo) {
+				escalaUltimo = escalaBaseUltimo * factor;
+				return factor;
+			}
+
+			escalaUltimo = minimo;
+			float altoUltimo = altoNaturalUltimo * (minimo / escalaBaseUltimo);
+			float altoResto = altoNaturalTotal - altoNaturalUltimo;
+			float huecoResto = altoDisponible - altoUltimo;
+			if (huecoResto <= 0f) {
+				// Ni siquiera el ultimo renglon cabe solo: el resto se va a su suelo duro (nunca
+				// "1", que FactorDeCompresion devuelve para datos no validos).
+				return altoResto > 0f ? escalaMinima : 1f;
+			}
+			return FactorDeCompresion(altoResto, huecoResto, escalaMinima);
+		}
 	}
 }

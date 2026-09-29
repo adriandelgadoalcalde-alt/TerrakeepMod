@@ -71,6 +71,14 @@ namespace TerrakeepMod.UI.Exploracion
 		/// <summary>El mini-mapa, para que la autoprueba pueda mirarlo y accionarlo.</summary>
 		public MiniMapaTk Mapa => _mapa;
 
+		/// <summary>Escala REAL con la que se esta dibujando "Zoom" ahora mismo (tras el reflujo).
+		/// La lee la autoprueba de espaciado para comprobar que nunca baja de
+		/// <see cref="ReflowVertical.EscalaMinimaLegible"/>.</summary>
+		public float EscalaZoomActual { get; private set; } = 0.75f;
+
+		/// <summary>La etiqueta "Zoom", para que la autoprueba mida su geometria real.</summary>
+		public EtiquetaTk EtiquetaZoom => _estado;
+
 		public PestanaMapa()
 		{
 			Width.Set(0f, 1f);
@@ -135,12 +143,22 @@ namespace TerrakeepMod.UI.Exploracion
 			}
 
 			float altoDisponible = GetDimensions().Height - _inicioBloqueTexto - MargenInferior;
-			float factor = ReflowVertical.FactorDeCompresion(altoNatural, altoDisponible);
+
+			// Cierre de la legibilidad de "Zoom" (requirement 0446b3c9, v0.7.0): "Zoom" es el ULTIMO
+			// renglon del bloque y nunca baja de ReflowVertical.EscalaMinimaLegible (0,68, la escala
+			// mas pequeña que el resto del mod usa para texto que hay que leer). Si hace falta
+			// comprimir tanto que "Zoom" quedaria por debajo, se fija ahi y el resto del bloque se
+			// comprime un poco mas para dejarle sitio - el total sigue cabiendo, sin solape.
+			BloqueTexto ultimo = _bloqueTexto[_bloqueTexto.Count - 1];
+			float escalaUltimo;
+			float factor = ReflowVertical.FactorConUltimoMinimo(altoNatural, ultimo.AltoLinea, ultimo.EscalaBase,
+				ReflowVertical.EscalaMinimaLegible, altoDisponible, out escalaUltimo);
+			EscalaZoomActual = escalaUltimo;
 
 			float yRel = 0f;
 			for (int i = 0; i < _bloqueTexto.Count; i++) {
 				BloqueTexto item = _bloqueTexto[i];
-				item.Etiqueta.EscalaTexto = item.EscalaBase * factor;
+				item.Etiqueta.EscalaTexto = i == _bloqueTexto.Count - 1 ? escalaUltimo : item.EscalaBase * factor;
 				item.Etiqueta.Top.Set(_inicioBloqueTexto + yRel * factor, 0f);
 				// Sin este Recalculate el Top/escala nuevos se guardan pero GetDimensions() (lo que
 				// Draw usa de verdad) se queda con el valor calculado la vez anterior: se vio en vivo
