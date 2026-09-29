@@ -11108,3 +11108,122 @@ idénticos.
 `0446b3c9-9108-4c1d-be03-66e050d7d1d6` actualizado con evidencia real de verificador-qa para los
 criterios confirmados; **no marcado DONE** — el hueco 2 (UIScale 75 %/150 %) sigue abierto de
 verdad.
+
+## 29-sep-2026 (verificador QA independiente) - Hueco 2 CERRADO: auditoria completa de UIScale 75%/150% (48/48 celdas, 0 INCONCLUSIVE), 3 defectos reales encontrados y acotados a una sola combinacion
+
+Continuacion de la entrada anterior del mismo dia ("verificacion QA en vivo"), que dejo el hueco 2
+en 24/72 celdas (solo UIScale 100%). Verificacion independiente (no soy el agente que hizo esa
+primera pasada): mismo sandbox tModLoader-TerrakeepWS7, personaje/mundo TerrakeepPrueba. SHA-256
+de config.json, input profiles.json, Mods/enabled.json y de todos los Players/Worlds reales del
+usuario tomados antes y despues (78 archivos): identicos.
+
+### El bloqueo real: el teclado sintetico no abre el panel, ni con PostMessage
+
+La entrada anterior daba por bueno que PostMessage con WM_KEYDOWN/WM_KEYUP directo al hWnd
+"movia al personaje de verdad". Repetida la prueba aqui con un criterio mas estricto (se abre
+realmente el panel, no solo "se movio un tile el personaje", que tambien puede deberse al
+parpadeo normal de fisica): con la ventana del juego confirmada en primer plano real
+(GetForegroundWindow() == hWnd, y SetWindowPos(HWND_TOPMOST) aplicado), PostMessage de la tecla K
+(atajo por defecto de "Personaje") no abrio el panel ni una vez, ni con una pulsacion ni con dos,
+esperando hasta 45 s tras cargar el mundo - cero lineas "Pestana activa" en client.log, que
+PanelTerrakeepState.CambiarArea escribe SIEMPRE que se abre una pestana. Confirma con mas rigor
+la conclusion que ya dejo escrita el 7-sep-2026 tras cuatro vias distintas (sesion RDP
+desconectada, nivel de integridad UIPI, ausencia de scan code de hardware, WH_JOURNALPLAYBACK):
+FNA/SDL2 en esta instalacion de tModLoader ignora sistematicamente la entrada de teclado sintetica
+generada en espacio de usuario, sea cual sea la API. Diagnostico completo en el scratchpad de
+esta sesion (no forma parte del repo).
+
+Solucion real, no un rodeo: Common/Panel/AutopruebaAuditoriaUiScale.cs (nuevo, arnes de
+verificacion puro, igual de gateado por variable de entorno - TERRAKEEP_AUDITORIA_UISCALE - que
+la decena de Autoprueba*/Diagnostico* que ya viven en este mismo fichero de sistema). Llama
+DIRECTAMENTE a PanelTerrakeepSystem.AbrirEnArea (el mismo metodo de produccion que usa la barra de
+pestanas al recibir un clic real, y que ya usan AutopruebaSoak, AutopruebaPanelUnico,
+AutopruebaIdiomas y otra decena de arneses de este proyecto) para recorrer las ocho areas una
+detras de otra, dejando en el log una linea "AUDITORIA UISCALE: LISTO <Area>" que el script
+externo usa como semaforo para fotografiar. Cero pulsaciones de teclado de por medio - el bloqueo
+del 7-sep no se sortea, se evita por completo. Se anadio una unica linea a
+PanelTerrakeepSystem.UpdateUI para engancharlo, mismo patron que sus doce vecinos; nada de
+produccion se ha tocado mas alla de eso.
+
+### Captura: Graphics.CopyFromScreen sobre el rect completo de la ventana
+
+Confirmado el mismo hallazgo que ya documento la entrada anterior: el juego corre en ventana
+normal (nunca Fullscreen real), asi que la composicion de escritorio no se salta y
+CopyFromScreen sobre GetWindowRect si sirve como evidencia real. Antes de cada captura se
+comprobo WindowFromPoint en el centro de la ventana (y su GetAncestor(GA_ROOT)) contra el hWnd
+del juego, con SetWindowPos(HWND_TOPMOST) activo durante toda la sesion y un reintento con
+SetForegroundWindow si fallaba - protocolo pedido explicitamente en el encargo. 48/48 capturas
+lograron confirmar la ventana correcta, 0 celdas INCONCLUSIVE.
+
+### Matriz completa: 8 paneles x 3 resoluciones x 2 escalas = 48 celdas
+
+| Panel | 1366x768 @75% | 1366x768 @150% | 1920x1080 @75% | 1920x1080 @150% | 2560x1440 @75% | 2560x1440 @150% |
+|---|---|---|---|---|---|---|
+| Personaje | OK | DEFECTO (ver abajo) | OK | OK | OK | OK |
+| Libreria | OK | OK | OK | OK | OK | OK |
+| Builds | OK | OK | OK | OK | OK | OK |
+| Investigacion | OK | OK | OK | OK | OK | OK |
+| Exploracion | OK | DEFECTO (ver abajo) | OK | OK | OK | OK |
+| Ajustes | OK | DEFECTO (ver abajo) | OK | OK | OK | OK |
+| Guia | OK | OK | OK | OK | OK | OK |
+| Album | OK | OK | OK | OK | OK | OK |
+
+45/48 OBSERVED OK (sin recorte, sin solape, sin texto cortado, sin control inalcanzable, panel
+siempre centrado y dentro de los limites visibles). 3/48 defectos reales, los tres en la MISMA
+combinacion (1366x768 a UIScale 150%):
+
+1. Personaje: el texto de ayuda del pie ("Arrastra, apila y usa el clic derecho igual que en el
+   inventario del juego: es el mismo ItemSlot de vanilla.") se desborda por DEBAJO del marco del
+   panel y se dibuja sobre el fondo del juego en vez de sobre el fondo navy del panel - el boton
+   "Cerrar (K)" sigue siendo alcanzable (misma fila que la primera linea de ayuda), pero la
+   segunda linea queda visualmente fuera de sitio.
+2. Exploracion: la linea "Zoom: 2,50 px por tile" se solapa con el parrafo "El mapa grande del
+   juego no puede convivir con este panel: al abrirlo, Terrakeep se cierra y vuelve solo." (ambos
+   textos comparten posicion vertical, letras entremezcladas, ilegible).
+3. Ajustes: las dos ultimas lineas del bloque "Atajos de teclado" ("...cuando tienes el
+   inventario abierto." y "El idioma cambia en vivo...") se solapan entre si.
+
+Causa raiz observada (documentada para quien retome esto, NO corregida - fuera de alcance de una
+verificacion): en el resto de combinaciones el marco (PanelTerrakeepState._marco, Width = 96% de
+pantalla con MaxWidth = 1080 UI-px) queda limitado por el TOPE de 1080 UI-px. Pero a 1366 px de
+ancho fisico con UIScale 150%, la fraccion del 96% en espacio de UI (0,96 x 1366 / 1,5 = 874
+UI-px aprox.) es MENOR que ese tope de 1080, asi que en esta unica combinacion el marco gana por
+la fraccion y sale mas ESTRECHO de lo habitual - varios bloques de texto de ayuda de longitud
+media/larga (fijos en pixeles de UI, pensados para caber en el ancho de 1080) dejan de caber a ese
+ancho reducido. Confirmado que NO reproduce en 1920x1080@150% ni en 2560x1440@150% (marco a su
+ancho maximo normal de 1080 UI-px en ambos casos, 8/8 limpios) ni en ninguna combinacion a UIScale
+75%. Paneles con texto de ayuda corto (Libreria, Builds, Investigacion, Guia, Album) no llegan a
+mostrar el problema en esta misma combinacion estrecha - el defecto depende de LA LONGITUD del
+texto de cada area, no solo de la resolucion/escala.
+
+### Entorno y seguridad
+
+Procesos comprobados limpios antes y despues (dontstarve*/Terrakeep/tModLoader ninguno abierto al
+empezar ni al terminar). Sandbox restaurado a su estado original (UIScale 100%, 2560x1440) al
+terminar la sesion. TerrakeepMod.tmod reconstruido con scripts/compilar.ps1 (841246 bytes) para
+incluir el nuevo arnes - el mismo binario, sin mas cambios de produccion, copiado al sandbox antes
+de cada lanzamiento.
+
+### Archivos tocados
+
+- Common/Panel/AutopruebaAuditoriaUiScale.cs (nuevo) - arnes de verificacion, inactivo sin la
+  variable de entorno TERRAKEEP_AUDITORIA_UISCALE.
+- Common/Panel/PanelTerrakeepSystem.cs - una linea (+ comentario) para enganchar el arnes a
+  UpdateUI, mismo patron que sus doce vecinos.
+- bitacora.md (esta entrada).
+
+### Evidencia
+
+Requirement 0446b3c9-9108-4c1d-be03-66e050d7d1d6: evidencia anadida con --fuente verificador-qa
+--agente verificador-qa-terrakeepmod-uiscale-29sep2026 --criterio "Auditoria sistematica de
+UIScale/resolucion en los paneles del mod...". No marcado DONE: hay 3 defectos reales sin
+corregir (documentados arriba, pendientes para quien retome el arreglo). Capturas completas de
+las 48 celdas en scratchpad/uiscale-audit/<resolucion>-<escala>/*.png de esta sesion (no forman
+parte del repo).
+
+### Cierre
+
+tModLoader/Terraria cerrado por proceso al terminar (sin quedar residual, comprobado con
+Get-Process). SetWindowPos(HWND_NOTOPMOST) no hizo falta aplicarlo aparte: cada combinacion mata
+el proceso del juego (y con el, la ventana) antes de pasar a la siguiente, asi que no queda
+ninguna ventana TOPMOST viva al final de la sesion. Escritorio libre.

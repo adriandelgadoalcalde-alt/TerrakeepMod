@@ -107,6 +107,10 @@ namespace TerrakeepMod.Common.Panel
 			// repetidamente durante minutos) - inactiva por defecto, mismo patron de variable de
 			// entorno que el resto de autopruebas de esta lista.
 			AutopruebaSoak.Avanzar();
+			// Auditoria QA de UIScale/resolucion del 29-sep-2026 (requirement 0446b3c9): recorre
+			// las ocho areas una detras de otra para fotografiarlas, inactiva por defecto. Ver
+			// XMLdoc de AutopruebaAuditoriaUiScale para el porque de esta via en vez de teclado.
+			AutopruebaAuditoriaUiScale.Avanzar();
 
 			ComprobarAtajos();
 
