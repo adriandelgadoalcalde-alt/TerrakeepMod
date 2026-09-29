@@ -18,12 +18,12 @@ Terrakeep junto al bestiario y los emotes, con el inventario abierto.
 ## Capturas
 
 <p align="center">
-  <img src="docs/screenshots/01-guia-calamity.png" width="49%" alt="Pestaña Guía con Calamity instalado, mostrando el objetivo actual y la hoja de ruta" />
-  <img src="docs/screenshots/02-album.png" width="49%" alt="Pestaña Álbum con las capturas automáticas de cada hito cerrado" />
+  <img src="docs/screenshots/01-guia-calamity.png" width="49%" alt="Pestaña Guía con Calamity instalado: cabecera con reloj, objetivo y chip de DPS, tarjeta con el sprite real de Yharon, lo que te falta y la lectura del jefe" />
+  <img src="docs/screenshots/02-album.png" width="49%" alt="Pestaña Álbum con las capturas automáticas de cada hito cerrado, bajo la barra de pestañas con icono de sprite" />
 </p>
 <p align="center">
-  <img src="docs/screenshots/03-builds.png" width="49%" alt="Pestaña Builds con el selector Vanilla/Calamity y las tres columnas de armadura, armas y accesorios" />
-  <img src="docs/screenshots/04-libreria.png" width="49%" alt="Pestaña Librería navegando la carpeta Mascotas de Jefes" />
+  <img src="docs/screenshots/03-builds.png" width="49%" alt="Pestaña Builds con dos filas de filtros, el anillo de progreso 0/13 junto al alternador Vanilla, las tres columnas de armadura, armas y accesorios y los códigos de build" />
+  <img src="docs/screenshots/04-libreria.png" width="49%" alt="Pestaña Librería navegando la carpeta Mascotas de Jefes, con los ocho destinos (incluido Cofre) abajo" />
 </p>
 
 ## Qué hace
