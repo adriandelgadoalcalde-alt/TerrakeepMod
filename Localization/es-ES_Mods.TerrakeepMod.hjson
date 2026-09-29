@@ -675,7 +675,7 @@ Exploracion: {
 		Lejos: A {0} tiles - acércate a su casa para una lectura real (este informe puede estar leyendo tu bioma actual, no el suyo).
 		MarcarEnMapa: Marcar casas en el mapa
 		MarcarEnMapaAyuda: Pinta un marcador real en la casa de cada vecino (NPC.homeTileX/homeTileY) en el mini-mapa y en el mapa del juego.
-		SoloUnJugador: "Solo en partidas de un jugador: en multijugador los vecinos los decide el servidor."
+		SoloUnJugador: Solo en partidas de un jugador: en multijugador los vecinos los decide el servidor.
 		Traer: Traer vecino...
 		TraerNinguno: Ya viven todos
 		TraerAyuda: Trae al punto de aparición, sin casa, a uno de los {0} vecinos de la lista oficial que todavía no viven aquí (igual que Terrakeep de escritorio). El juego le busca casa solo. Se deshace con Ctrl+Z.
@@ -856,7 +856,7 @@ Exploracion: {
 				Piratas: Piratas
 			}
 
-			SoloUnJugador: "Solo en partidas de un jugador: en multijugador las banderas del mundo las decide el servidor."
+			SoloUnJugador: Solo en partidas de un jugador: en multijugador las banderas del mundo las decide el servidor.
 			AyudaVencida: "{0}: VENCIDA en este mundo (resaltado). Pulsa para marcarla como no vencida; se graba en el mundo en el siguiente guardado y se deshace con Ctrl+Z."
 			AyudaPendiente: "{0}: todavía NO vencida en este mundo. Pulsa para marcarla como vencida; se graba en el mundo en el siguiente guardado y se deshace con Ctrl+Z."
 			HistorialVencida: "{0}: marcada como vencida"

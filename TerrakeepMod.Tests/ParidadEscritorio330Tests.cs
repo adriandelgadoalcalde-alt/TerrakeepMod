@@ -135,3 +135,66 @@ public class ReflujoConUltimoMinimoTests
         Assert.Equal(ReflowVertical.EscalaMinimaLegible, escala, 5);
     }
 }
+
+public class DistribuirRenglonesTests
+{
+    // La ficha real de Exploracion > Este mundo: cabecera 34, paso 24, 13 renglones (12 datos +
+    // invasiones), 5 colapsables (los que repite la cabecera de Exploracion).
+    private static readonly bool[] Colapsables =
+        { true, false, true, false, true, false, false, false, false, true, true, false, false };
+    private const float Minimo = 19f / 24f;
+
+    private static float Ocupado(float factor, bool[] visibles)
+    {
+        int n = 0;
+        foreach (bool v in visibles) {
+            if (v) n++;
+        }
+        return 34f * factor + n * 24f * factor;
+    }
+
+    [Fact]
+    public void SobraSitio_TodoVisibleYSinTocar()
+    {
+        var visibles = new bool[Colapsables.Length];
+        float f = ReflowVertical.DistribuirRenglones(34f, 24f, Colapsables, 400f, Minimo, visibles, out float letra);
+        Assert.Equal(1f, f);
+        Assert.Equal(1f, letra);
+        Assert.All(visibles, Assert.True);
+    }
+
+    [Fact]
+    public void PocoApretado_SoloSeApretaElInterlineado_LaLetraNoCambia()
+    {
+        // 1280x720 real de la verificacion de la v0.7.0: ~292 px de interior para 346 necesarios.
+        var visibles = new bool[Colapsables.Length];
+        float f = ReflowVertical.DistribuirRenglones(34f, 24f, Colapsables, 292f, Minimo, visibles, out float letra);
+        Assert.Equal(1f, letra);
+        Assert.All(visibles, Assert.True);
+        Assert.True(Ocupado(f, visibles) <= 292f + 0.01f);
+    }
+
+    [Fact]
+    public void MuyApretado_OcultaLoQueRepiteLaCabecera_YLaLetraSigueLegible()
+    {
+        var visibles = new bool[Colapsables.Length];
+        float f = ReflowVertical.DistribuirRenglones(34f, 24f, Colapsables, 200f, Minimo, visibles, out float letra);
+        for (int i = 0; i < Colapsables.Length; i++) {
+            Assert.Equal(!Colapsables[i], visibles[i]);
+        }
+        Assert.True(0.8f * letra >= ReflowVertical.EscalaMinimaLegible - 0.001f, $"letra {0.8f * letra}");
+        Assert.True(Ocupado(f, visibles) <= 200f + 0.01f);
+    }
+
+    [Theory]
+    [InlineData(120f)]
+    [InlineData(60f)]
+    public void CasoExtremo_NuncaSeSolapa(float disponible)
+    {
+        var visibles = new bool[Colapsables.Length];
+        float f = ReflowVertical.DistribuirRenglones(34f, 24f, Colapsables, disponible, Minimo, visibles, out float letra);
+        Assert.True(Ocupado(f, visibles) <= disponible + 0.01f);
+        // La letra baja en la misma proporcion que el paso desde el paso minimo: el glifo sigue cabiendo.
+        Assert.Equal(f / Minimo, letra, 4);
+    }
+}

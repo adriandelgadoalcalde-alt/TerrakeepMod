@@ -159,6 +159,7 @@ namespace TerrakeepMod.Common.Panel
 					// v0.7.0 (paridad con escritorio 3.3.0): la ficha gana la fila de invasiones
 					// vencidas - se audita el arbol ENTERO de "Este mundo", no solo el recuadro naranja.
 					_acciones.Enqueue(() => AuditarYCapturarExploracion("mundo", res.Nombre, idi.Nombre));
+					_acciones.Enqueue(() => ComprobarMundo(res.Nombre, idi.Nombre));
 					_acciones.Enqueue(() => AbrirBuffs(res.Nombre, idi.Nombre));
 					_acciones.Enqueue(() => MedirYCapturarBuffs(res.Nombre, idi.Nombre));
 
@@ -803,6 +804,54 @@ namespace TerrakeepMod.Common.Panel
 			AuditarArbol(exploracion, nombreCorto + " (" + nombreRes + "/" + nombreIdioma + ")");
 			Registro.Linea("AUTOPRUEBA ESPACIADO/" + nombreCorto + " (" + nombreRes + "/" + nombreIdioma + ") - " +
 				CapturaDePantalla.Guardar(nombreCorto + "-" + nombreRes + "-" + nombreIdioma));
+		}
+
+		/// <summary>
+		/// v0.7.0: "Este mundo" tiene que caber ENTERO en su pestaña. La ficha (con la fila nueva de
+		/// invasiones) se reparte con ReflowVertical.DistribuirRenglones y ningun renglon visible puede
+		/// salirse por debajo de su caja; la columna de dificultad es una lista que no puede salirse de
+		/// la pestaña (si no cabe, tiene que enseñar su barra de desplazamiento). Antes de la v0.7.0 el
+		/// boton de confirmar se salia por debajo a 1280x720 y pisaba "Cerrar (P)".
+		/// </summary>
+		private static void ComprobarMundo(string nombreRes, string nombreIdioma)
+		{
+			PestanaMundo mundo = PanelTerrakeepSystem.Panel != null && PanelTerrakeepSystem.Panel.Exploracion != null
+				? PanelTerrakeepSystem.Panel.Exploracion.Mundo : null;
+			if (mundo == null || mundo.CajaFicha == null || mundo.ListaDificultad == null) {
+				Registro.Linea("AUTOPRUEBA ESPACIADO/mundo-cabe (" + nombreRes + "/" + nombreIdioma + "): no se encontro PestanaMundo.");
+				return;
+			}
+
+			CalculatedStyle interior = mundo.CajaFicha.GetInnerDimensions();
+			float fondoFicha = 0f;
+			foreach (UIElement hijo in mundo.CajaFicha.Children) {
+				EtiquetaTk etiqueta = hijo as EtiquetaTk;
+				BotonTk boton = hijo as BotonTk;
+				bool conTexto = (etiqueta != null && !string.IsNullOrEmpty(etiqueta.TextoActual)) ||
+					(boton != null && !string.IsNullOrEmpty(boton.Texto));
+				if (conTexto) {
+					CalculatedStyle d = hijo.GetDimensions();
+					fondoFicha = Math.Max(fondoFicha, d.Y + d.Height);
+				}
+			}
+			bool fichaCabe = fondoFicha <= interior.Y + interior.Height + 0.5f;
+			float escalaLetra = 0.8f * mundo.FactorLetraFicha;
+			bool fichaLegible = escalaLetra >= ReflowVertical.EscalaMinimaLegible - 0.001f;
+
+			CalculatedStyle pestana = mundo.GetDimensions();
+			CalculatedStyle lista = mundo.ListaDificultad.GetDimensions();
+			bool listaDentro = lista.Y + lista.Height <= pestana.Y + pestana.Height + 0.5f;
+			float total = mundo.ListaDificultad.GetTotalHeight();
+			bool scrollCoherente = mundo.ScrollDificultadVisible == (total > lista.Height + 0.5f);
+
+			Registro.Linea("AUTOPRUEBA ESPACIADO/mundo-cabe (" + nombreRes + "/" + nombreIdioma + ") - ficha: factor de paso " +
+				mundo.FactorPasoFicha.ToString("0.000") + ", letra " + escalaLetra.ToString("0.000") + ", renglones ocultos " +
+				mundo.RenglonesOcultosFicha + ", fondo del ultimo renglon y=" + (int)fondoFicha + " vs caja " +
+				(int)(interior.Y + interior.Height) + " -> " + (fichaCabe ? "OK: cabe." : "FALLO: la ficha se sale de su caja.") +
+				" " + (fichaLegible ? "OK: legible." : "FALLO LEGIBILIDAD: letra de la ficha por debajo del minimo.") +
+				" Dificultad: lista " + (int)lista.Height + " px de alto para " + (int)total + " px de contenido, barra=" +
+				mundo.ScrollDificultadVisible + " -> " + (listaDentro ? "OK: dentro de la pestaña." : "FALLO: la lista se sale de la pestaña.") +
+				" " + (scrollCoherente ? "OK: barra solo si hace falta." : "FALLO: barra de desplazamiento incoherente con el contenido."));
 		}
 
 		/// <summary>

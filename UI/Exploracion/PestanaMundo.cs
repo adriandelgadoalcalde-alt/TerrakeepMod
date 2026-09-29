@@ -57,7 +57,18 @@ namespace TerrakeepMod.UI.Exploracion
 		private EtiquetaTk _etiquetaEfecto;
 		private EtiquetaTk _etiquetaDeshacer;
 		private EtiquetaTk _mensaje;
-		private float _yAntesDeAviso;
+		private string _mensajePartido = "";
+
+		/// <summary>
+		/// Columna derecha en una <see cref="UIList"/> (v0.7.0). Antes cada pieza colgaba de un Top
+		/// fijo calculado a mano, y a 1280x720 el boton de confirmar y el mensaje se salian por
+		/// debajo de la pestaña hasta pisar "Cerrar (P)" (visto en la captura real de la verificacion
+		/// de la v0.7.0). Ahora las piezas se apilan solas por su alto real y, si no caben, aparece una
+		/// barra de desplazamiento (y solo entonces): la letra nunca se encoge y nada se solapa.
+		/// </summary>
+		private UIList _listaDerecha;
+		private UIScrollbar _scrollDerecha;
+		private bool _scrollDerechaVisible;
 
 		/// <summary>Modo que esta elegido (pendiente de confirmar), o -1 si ninguno.</summary>
 		public int ModoElegido => _modoElegido;
@@ -95,98 +106,140 @@ namespace TerrakeepMod.UI.Exploracion
 			caja.BorderColor = new Color(0, 0, 0, 0);
 			caja.SetPadding(12f);
 			Append(caja);
-
-			EtiquetaTk titulo = new EtiquetaTk(
-				() => Idiomas.Texto("Exploracion.Mundo.Ficha"), 0.95f, 380f, 26f);
-			caja.Append(titulo);
-
-			float y = 34f;
-			y = Dato(caja, y, "Nombre", () => MundoActual.Nombre);
-			y = Dato(caja, y, "Semilla", () => MundoActual.Semilla);
-			y = Dato(caja, y, "Tamano", () => MundoActual.TamanoLegible);
-			y = Dato(caja, y, "Tiles", () => MundoActual.TotalTiles.ToString("N0"));
-			y = Dato(caja, y, "Modo", () => Idiomas.Texto("Exploracion.Mundo.ModoValor",
-				MundoActual.ModoDeJuegoLegible, MundoActual.ModoDeJuego));
-			y = Dato(caja, y, "Progreso", () => Idiomas.Texto(MundoActual.EsHardmode
-				? "Exploracion.Hardmode"
-				: "Exploracion.PreHardmode"));
-			y = Dato(caja, y, "MalDelMundo", () => MundoActual.MalDelMundo);
-			y = Dato(caja, y, "SemillasSecretas", () => MundoActual.SemillasSecretas);
-			y = Dato(caja, y, "Aparicion",
-				() => Idiomas.Texto("Exploracion.Mundo.Tile", MundoActual.PuntoDeAparicion));
-			y = Dato(caja, y, "EstasEn",
-				() => Idiomas.Texto("Exploracion.Mundo.Tile", MundoActual.PosicionDelJugador));
-			y = Dato(caja, y, "Explorado",
-				() => Idiomas.Texto("Exploracion.Mundo.Porcentaje",
-					MundoActual.PorcentajeExplorado().ToString("0.0")));
-			y = Dato(caja, y, "Autoguardado", () => Idiomas.Texto(Main.autoSave
-				? "Exploracion.Mundo.Activado"
-				: "Exploracion.Mundo.Desactivado"));
-			ConstruirInvasiones(caja, y);
 			_cajaFicha = caja;
+
+			_tituloFicha = new EtiquetaTk(
+				() => Idiomas.Texto("Exploracion.Mundo.Ficha"), EscalaTituloFicha, 380f, 26f);
+			caja.Append(_tituloFicha);
+
+			// "colapsable" = lo que ya repite la cabecera de Exploracion justo encima (nombre, tamaño,
+			// modo, posicion y porcentaje explorado): es lo primero que se deja de enseñar si la
+			// ficha no cabe ni apretando el interlineado - ver ReflowVertical.DistribuirRenglones.
+			Dato(caja, "Nombre", () => MundoActual.Nombre, colapsable: true);
+			Dato(caja, "Semilla", () => MundoActual.Semilla, colapsable: false);
+			Dato(caja, "Tamano", () => MundoActual.TamanoLegible, colapsable: true);
+			Dato(caja, "Tiles", () => MundoActual.TotalTiles.ToString("N0"), colapsable: false);
+			Dato(caja, "Modo", () => Idiomas.Texto("Exploracion.Mundo.ModoValor",
+				MundoActual.ModoDeJuegoLegible, MundoActual.ModoDeJuego), colapsable: true);
+			Dato(caja, "Progreso", () => Idiomas.Texto(MundoActual.EsHardmode
+				? "Exploracion.Hardmode"
+				: "Exploracion.PreHardmode"), colapsable: false);
+			Dato(caja, "MalDelMundo", () => MundoActual.MalDelMundo, colapsable: false);
+			Dato(caja, "SemillasSecretas", () => MundoActual.SemillasSecretas, colapsable: false);
+			Dato(caja, "Aparicion",
+				() => Idiomas.Texto("Exploracion.Mundo.Tile", MundoActual.PuntoDeAparicion), colapsable: false);
+			Dato(caja, "EstasEn",
+				() => Idiomas.Texto("Exploracion.Mundo.Tile", MundoActual.PosicionDelJugador), colapsable: true);
+			Dato(caja, "Explorado",
+				() => Idiomas.Texto("Exploracion.Mundo.Porcentaje",
+					MundoActual.PorcentajeExplorado().ToString("0.0")), colapsable: true);
+			Dato(caja, "Autoguardado", () => Idiomas.Texto(Main.autoSave
+				? "Exploracion.Mundo.Activado"
+				: "Exploracion.Mundo.Desactivado"), colapsable: false);
+			ConstruirInvasiones(caja);
 		}
 
-		// ---- Invasiones vencidas (paridad con Terrakeep escritorio 3.3.0, commit cc1d4ddc) -------
+		// ---- Ficha: renglones de paso fijo con reparto legible (v0.7.0) --------------------------
 
-		/// <summary>Donde empieza la columna de valores de la ficha (la misma de <see cref="Dato"/>).</summary>
+		/// <summary>Donde empieza la columna de valores de la ficha.</summary>
 		private const float ColumnaValor = 140f;
+		private const float CabeceraFicha = 34f;
+		private const float PasoFicha = 24f;
+		private const float AltoRenglonFicha = 22f;
+		private const float EscalaTextoFicha = 0.8f;
+		private const float EscalaTituloFicha = 0.95f;
+
+		/// <summary>Paso minimo antes de empezar a encoger la letra: 19 de 24 px. A escala 0,8 el
+		/// glifo de la fuente del juego sigue cabiendo entero en un renglon de 19 px.</summary>
+		private const float FraccionPasoMinimoFicha = 19f / 24f;
+
 		private const float SeparacionBotonesInvasion = 4f;
-		private const float AltoBotonInvasion = 22f;
 		private const float EscalaBotonInvasion = 0.72f;
 
 		private UIPanel _cajaFicha;
+		private EtiquetaTk _tituloFicha;
+		private readonly List<RenglonFicha> _renglones = new List<RenglonFicha>();
+		private bool[] _colapsables;
+		private bool[] _visibles;
 		private readonly List<KeyValuePair<InvasionesMundo.Invasion, BotonTk>> _botonesInvasion =
 			new List<KeyValuePair<InvasionesMundo.Invasion, BotonTk>>();
 
-		/// <summary>Cada fila de la ficha con su Top NATURAL y su escala base, para poder
-		/// comprimirla entera con <see cref="ReflowVertical"/> si el hueco real es mas bajo de lo
-		/// habitual (mismo patron que <c>PestanaMapa</c>): la fila de invasiones es la 13.ª y no se
-		/// quiere que ninguna resolucion la saque por debajo de la caja.</summary>
-		private readonly List<FilaFicha> _filasFicha = new List<FilaFicha>();
-		private float _altoNaturalFicha;
+		/// <summary>Factores con los que se esta dibujando la ficha ahora mismo (1 = sin tocar). Los
+		/// lee la autoprueba de espaciado para dejarlos en la evidencia.</summary>
+		public float FactorPasoFicha { get; private set; } = 1f;
+		public float FactorLetraFicha { get; private set; } = 1f;
+		public int RenglonesOcultosFicha { get; private set; }
 
-		private readonly struct FilaFicha
+		private sealed class RenglonFicha
 		{
-			public readonly UIElement Elemento;
-			public readonly float TopNatural;
-			public readonly float EscalaBase;
-			public readonly float AltoBase;
-
-			public FilaFicha(UIElement elemento, float topNatural, float escalaBase, float altoBase)
-			{
-				Elemento = elemento;
-				TopNatural = topNatural;
-				EscalaBase = escalaBase;
-				AltoBase = altoBase;
-			}
+			public EtiquetaTk Nombre;
+			public EtiquetaTk Valor;
+			public List<BotonTk> Botones;
+			public bool Colapsable;
 		}
+
+		/// <summary>La caja de la ficha, para que la autoprueba de espaciado compruebe que ningun
+		/// renglon visible se sale por debajo.</summary>
+		public UIPanel CajaFicha => _cajaFicha;
 
 		/// <summary>Los tres botones de invasion, para la autoprueba (los pulsa por su ruta real).</summary>
 		public IReadOnlyList<KeyValuePair<InvasionesMundo.Invasion, BotonTk>> BotonesInvasion => _botonesInvasion;
 
-		private void ConstruirInvasiones(UIPanel caja, float y)
+		/// <summary>Una fila "rotulo: valor" de la ficha. Recibe la CLAVE de localizacion del
+		/// rotulo, no el texto ya resuelto. Un renglon oculto por falta de sitio devuelve texto
+		/// vacio (no se dibuja ni cuenta para las autopruebas de espaciado).</summary>
+		private void Dato(UIElement padre, string clave, System.Func<string> valor, bool colapsable)
+		{
+			int indice = _renglones.Count;
+			// Ancho del rotulo = hasta la columna de valores (menos 4 px), no 150: con 150 la caja del
+			// rotulo invadia 10 px la del valor, que empieza en ColumnaValor (140).
+			EtiquetaTk nombre = new EtiquetaTk(
+				() => Visible(indice) ? Idiomas.Texto("Exploracion.Mundo.Dato." + clave) : "",
+				EscalaTextoFicha, ColumnaValor - 4f, AltoRenglonFicha);
+			nombre.ColorTexto = EstiloTk.TextoSuave;
+			padre.Append(nombre);
+
+			EtiquetaTk contenido = new EtiquetaTk(() => Visible(indice) ? valor() : "",
+				EscalaTextoFicha, 250f, AltoRenglonFicha);
+			contenido.Left.Set(ColumnaValor, 0f);
+			padre.Append(contenido);
+
+			_renglones.Add(new RenglonFicha { Nombre = nombre, Valor = contenido, Colapsable = colapsable });
+		}
+
+		private bool Visible(int indice)
+		{
+			return _visibles == null || indice >= _visibles.Length || _visibles[indice];
+		}
+
+		// ---- Invasiones vencidas (paridad con Terrakeep escritorio 3.3.0, commit cc1d4ddc) -------
+
+		private void ConstruirInvasiones(UIPanel caja)
 		{
 			EtiquetaTk nombre = new EtiquetaTk(
-				() => Idiomas.Texto("Exploracion.Mundo.Dato.Invasiones"), 0.8f, ColumnaValor - 4f, 22f);
+				() => Idiomas.Texto("Exploracion.Mundo.Dato.Invasiones"), EscalaTextoFicha, ColumnaValor - 4f, AltoRenglonFicha);
 			nombre.ColorTexto = EstiloTk.TextoSuave;
-			nombre.Top.Set(y, 0f);
 			caja.Append(nombre);
-			_filasFicha.Add(new FilaFicha(nombre, y, 0.8f, 22f));
 
+			var botones = new List<BotonTk>();
 			foreach (InvasionesMundo.Invasion invasion in InvasionesMundo.Todas) {
 				InvasionesMundo.Invasion cerrada = invasion;
 				BotonTk boton = new BotonTk(InvasionesMundo.NombreCorto(invasion), EscalaBotonInvasion);
 				boton.Clave = invasion.ToString();
-				boton.Height.Set(AltoBotonInvasion, 0f);
-				boton.Top.Set(y, 0f);
+				boton.Height.Set(AltoRenglonFicha, 0f);
 				boton.AlPulsar += () => InvasionesMundo.Alternar(cerrada, "ficha de Exploración > Este mundo");
 				boton.Ayuda = () => AyudaInvasion(cerrada);
 				caja.Append(boton);
 				_botonesInvasion.Add(new KeyValuePair<InvasionesMundo.Invasion, BotonTk>(invasion, boton));
-				_filasFicha.Add(new FilaFicha(boton, y, EscalaBotonInvasion, AltoBotonInvasion));
+				botones.Add(boton);
 			}
 
-			_altoNaturalFicha = y + 24f;
+			_renglones.Add(new RenglonFicha { Nombre = nombre, Botones = botones, Colapsable = false });
+
+			_colapsables = new bool[_renglones.Count];
+			for (int i = 0; i < _renglones.Count; i++) {
+				_colapsables[i] = _renglones[i].Colapsable;
+			}
 		}
 
 		private static string AyudaInvasion(InvasionesMundo.Invasion invasion)
@@ -201,13 +254,15 @@ namespace TerrakeepMod.UI.Exploracion
 		}
 
 		/// <summary>
-		/// Cada fotograma: estado real de los tres botones (resaltado = vencida, igual que el modo
-		/// actual en los botones de dificultad), ancho repartido en lo que de verdad queda a la
-		/// derecha de la columna de rotulos, y compresion vertical de la ficha entera si no cabe.
+		/// Cada fotograma: estado real de los tres botones de invasion (resaltado = vencida, igual
+		/// que el modo actual en los botones de dificultad) y reparto de la ficha en el alto REAL de
+		/// su caja con <see cref="ReflowVertical.DistribuirRenglones"/>: primero se ocultan los datos
+		/// que ya repite la cabecera, luego se aprieta el interlineado y solo en ultimo caso se
+		/// encoge la letra - nunca un solape.
 		/// </summary>
 		private void ActualizarFicha()
 		{
-			if (_cajaFicha == null) {
+			if (_cajaFicha == null || _colapsables == null) {
 				return;
 			}
 
@@ -223,65 +278,69 @@ namespace TerrakeepMod.UI.Exploracion
 				return;
 			}
 
-			float factor = ReflowVertical.FactorDeCompresion(_altoNaturalFicha, interior.Height);
-			foreach (FilaFicha fila in _filasFicha) {
-				fila.Elemento.Top.Set(fila.TopNatural * factor, 0f);
-				EtiquetaTk etiqueta = fila.Elemento as EtiquetaTk;
-				if (etiqueta != null) {
-					etiqueta.EscalaTexto = fila.EscalaBase * factor;
-				}
-				BotonTk boton = fila.Elemento as BotonTk;
-				if (boton != null) {
-					boton.Height.Set(fila.AltoBase * factor, 0f);
-				}
-			}
+			bool[] visibles = new bool[_colapsables.Length];
+			float factorLetra;
+			float factor = ReflowVertical.DistribuirRenglones(CabeceraFicha, PasoFicha, _colapsables, interior.Height,
+				FraccionPasoMinimoFicha, visibles, out factorLetra);
+			_visibles = visibles;
+			FactorPasoFicha = factor;
+			FactorLetraFicha = factorLetra;
 
-			// Los tres botones se reparten el hueco real de la columna de valores; si el rotulo mas
-			// largo no cabe a su escala base, se baja la escala comun lo justo (nunca se recorta con
-			// "...", regla del proyecto - mismo criterio que AjustarEscalaDeLasPestanas).
-			float anchoValor = interior.Width - ColumnaValor;
+			_tituloFicha.EscalaTexto = EscalaTituloFicha * factorLetra;
+			float paso = PasoFicha * factor;
+			float alto = System.Math.Min(AltoRenglonFicha, paso - 1f);
+			float y = CabeceraFicha * factor;
+			int ocultos = 0;
+			for (int i = 0; i < _renglones.Count; i++) {
+				RenglonFicha renglon = _renglones[i];
+				if (!visibles[i]) {
+					ocultos++;
+					continue;
+				}
+				renglon.Nombre.Top.Set(y, 0f);
+				renglon.Nombre.Height.Set(alto, 0f);
+				renglon.Nombre.EscalaTexto = EscalaTextoFicha * factorLetra;
+				if (renglon.Valor != null) {
+					renglon.Valor.Top.Set(y, 0f);
+					renglon.Valor.Height.Set(alto, 0f);
+					renglon.Valor.EscalaTexto = EscalaTextoFicha * factorLetra;
+				}
+				if (renglon.Botones != null) {
+					ColocarBotonesInvasion(renglon.Botones, interior.Width, y, alto, factorLetra);
+				}
+				y += paso;
+			}
+			RenglonesOcultosFicha = ocultos;
+
+			_cajaFicha.Recalculate();
+		}
+
+		/// <summary>Los tres botones se reparten el hueco real de la columna de valores; si el rotulo
+		/// mas largo no cabe a su escala, se baja la escala comun lo justo (nunca se recorta con
+		/// "...", regla del proyecto - mismo criterio que AjustarEscalaDeLasPestanas).</summary>
+		private static void ColocarBotonesInvasion(List<BotonTk> botones, float anchoInterior, float y, float alto, float factorLetra)
+		{
+			float anchoValor = anchoInterior - ColumnaValor;
 			float anchoBoton = (anchoValor - SeparacionBotonesInvasion * 2f) / 3f;
 			if (anchoBoton > 120f) {
 				anchoBoton = 120f;
 			}
 			var fuente = Terraria.GameContent.FontAssets.MouseText.Value;
-			float escala = EscalaBotonInvasion * factor;
-			foreach (KeyValuePair<InvasionesMundo.Invasion, BotonTk> par in _botonesInvasion) {
-				float anchoTexto = fuente.MeasureString(par.Value.Texto).X * escala + 12f;
+			float escala = EscalaBotonInvasion * factorLetra;
+			foreach (BotonTk boton in botones) {
+				float anchoTexto = fuente.MeasureString(boton.Texto).X * escala + 12f;
 				if (anchoTexto > anchoBoton && anchoTexto > 0f) {
 					escala *= anchoBoton / anchoTexto;
 				}
 			}
-			for (int i = 0; i < _botonesInvasion.Count; i++) {
-				BotonTk boton = _botonesInvasion[i].Value;
+			for (int i = 0; i < botones.Count; i++) {
+				BotonTk boton = botones[i];
 				boton.EscalaTexto = escala;
 				boton.Width.Set(anchoBoton, 0f);
+				boton.Height.Set(alto, 0f);
+				boton.Top.Set(y, 0f);
 				boton.Left.Set(ColumnaValor + i * (anchoBoton + SeparacionBotonesInvasion), 0f);
 			}
-
-			_cajaFicha.Recalculate();
-		}
-
-		/// <summary>Una fila "rotulo: valor" de la ficha. Recibe la CLAVE de localizacion del
-		/// rotulo, no el texto ya resuelto.</summary>
-		private float Dato(UIElement padre, float y, string clave, System.Func<string> valor)
-		{
-			// Ancho del rotulo = hasta la columna de valores (menos 4 px), no 150: con 150 la caja del
-			// rotulo invadia 10 px la del valor, que empieza en ColumnaValor (140).
-			EtiquetaTk nombre = new EtiquetaTk(
-				() => Idiomas.Texto("Exploracion.Mundo.Dato." + clave), 0.8f, ColumnaValor - 4f, 22f);
-			nombre.ColorTexto = EstiloTk.TextoSuave;
-			nombre.Top.Set(y, 0f);
-			padre.Append(nombre);
-			_filasFicha.Add(new FilaFicha(nombre, y, 0.8f, 22f));
-
-			EtiquetaTk contenido = new EtiquetaTk(valor, 0.8f, 250f, 22f);
-			contenido.Left.Set(ColumnaValor, 0f);
-			contenido.Top.Set(y, 0f);
-			padre.Append(contenido);
-			_filasFicha.Add(new FilaFicha(contenido, y, 0.8f, 22f));
-
-			return y + 24f;
 		}
 
 		private void ConstruirDificultad()
@@ -293,35 +352,54 @@ namespace TerrakeepMod.UI.Exploracion
 			Append(derecha);
 			_derecha = derecha;
 
+			_listaDerecha = new UIList();
+			_listaDerecha.Width.Set(0f, 1f);
+			_listaDerecha.Height.Set(0f, 1f);
+			_listaDerecha.ListPadding = 0f;
+			// Mismo motivo real que ContenidoGuia/PestanaVecindad: List.Sort no es estable y UIList lo
+			// usa por defecto - el orden de las piezas es el de insercion y nada mas.
+			_listaDerecha.ManualSortMethod = elementos => { };
+			derecha.Append(_listaDerecha);
+
+			_scrollDerecha = new UIScrollbar();
+			_scrollDerecha.Width.Set(16f, 0f);
+			_scrollDerecha.Height.Set(0f, 1f);
+			_scrollDerecha.HAlign = 1f;
+			_listaDerecha.SetScrollbar(_scrollDerecha);
+
+			UIElement cabecera = new UIElement();
+			cabecera.Width.Set(0f, 1f);
+			cabecera.Height.Set(62f, 0f);
 			EtiquetaTk titulo = new EtiquetaTk(
 				() => Idiomas.Texto("Exploracion.Mundo.Dificultad"), 0.95f, 500f, 26f);
-			derecha.Append(titulo);
-
+			cabecera.Append(titulo);
 			EtiquetaTk actual = new EtiquetaTk(
 				() => Idiomas.Texto("Exploracion.Mundo.AhoraMismo", MundoActual.ModoDeJuegoLegible),
 				0.85f, 500f, 24f);
 			actual.Top.Set(30f, 0f);
-			derecha.Append(actual);
+			cabecera.Append(actual);
+			_listaDerecha.Add(cabecera);
 
 			// DOS por fila y en porcentaje: tres botones de 140 px fijos no caben en la columna
 			// derecha de una ventana de 800 (el tercero se salia del marco).
-			float y = 62f;
+			UIElement rejilla = new UIElement();
+			rejilla.Width.Set(0f, 1f);
 			int i = 0;
 			foreach (int modo in MundoActual.ModosDisponibles()) {
 				int valor = modo;
 				BotonTk boton = new BotonTk(MundoActual.NombreDeModo(modo), 0.85f);
 				boton.Clave = modo.ToString();
 				boton.Left.Set(0f, (i % 2) * 0.5f);
-				boton.Top.Set(y + (i / 2) * 40f, 0f);
+				boton.Top.Set((i / 2) * 40f, 0f);
 				boton.Width.Set(-6f, 0.5f);
 				boton.Height.Set(34f, 0f);
 				boton.AlPulsar += () => Elegir(valor);
-				derecha.Append(boton);
+				rejilla.Append(boton);
 				_botonesModo.Add(new KeyValuePair<int, BotonTk>(valor, boton));
 				i++;
 			}
-			y += ((i + 1) / 2) * 40f + 8f;
-			_yAntesDeAviso = y;
+			rejilla.Height.Set(((i + 1) / 2) * 40f + 8f, 0f);
+			_listaDerecha.Add(rejilla);
 
 			// El aviso de permanencia va SIEMPRE visible, antes de tocar nada. Su altura NO es fija:
 			// las tres frases se parten en las lineas que quepan en el ancho real de la caja (en una
@@ -329,17 +407,16 @@ namespace TerrakeepMod.UI.Exploracion
 			// y el numero de lineas cambia con el idioma y con el estado del autoguardado (la frase
 			// de permanencia es mas larga con el autoguardado apagado). Con una altura fija de 120 px
 			// el texto se salia igualmente por ABAJO del propio rectangulo (visto en captura real):
-			// aqui se mide el texto YA partido con la fuente real y se ajusta la caja entera (y lo
-			// que va debajo, el boton de confirmar y el mensaje) a la altura que de verdad hace falta,
-			// recalculado cada fotograma en <see cref="RecalcularAviso"/>.
+			// aqui se mide el texto YA partido con la fuente real y se ajusta la caja entera a la
+			// altura que de verdad hace falta, recalculado cada fotograma en RecalcularAviso; la lista
+			// recoloca sola lo que va debajo (el boton de confirmar y el mensaje).
 			_cajaAviso = new UIPanel();
 			_cajaAviso.Width.Set(0f, 1f);
-			_cajaAviso.Top.Set(y, 0f);
 			_cajaAviso.Height.Set(120f, 0f);
 			_cajaAviso.BackgroundColor = new Color(92, 60, 30) * 0.92f;
 			_cajaAviso.BorderColor = new Color(0, 0, 0, 0);
 			_cajaAviso.SetPadding(PaddingCajaAviso);
-			derecha.Append(_cajaAviso);
+			_listaDerecha.Add(_cajaAviso);
 
 			_etiquetaAviso = new EtiquetaTk(
 				() => TextoEnLineas("⚠  " + DificultadMundo.AvisoDePermanencia(), _cajaAviso, EscalaAviso),
@@ -362,22 +439,47 @@ namespace TerrakeepMod.UI.Exploracion
 			_etiquetaDeshacer.Width.Set(0f, 1f);
 			_cajaAviso.Append(_etiquetaDeshacer);
 
+			_listaDerecha.Add(Hueco(SeparacionTrasCajaAviso));
+
 			_confirmar = new BotonTk(Idiomas.Texto("Exploracion.Mundo.EligeModo"), 0.85f);
 			_confirmar.Width.Set(0f, 1f);
 			_confirmar.Height.Set(AltoBotonConfirmar, 0f);
 			_confirmar.Habilitado = false;
 			_confirmar.AlPulsar += Confirmar;
-			derecha.Append(_confirmar);
+			_listaDerecha.Add(_confirmar);
 
-			_mensaje = new EtiquetaTk(() => _ultimoMensaje, 0.75f, 500f, 44f);
+			_listaDerecha.Add(Hueco(SeparacionTrasConfirmar));
+
+			// Partido con el ancho REAL (antes era un renglon de 500 px fijos: un "No se puede: ..."
+			// largo se salia por la derecha) y con alto 0 mientras no hay nada que decir.
+			_mensaje = new EtiquetaTk(() => _mensajePartido, EscalaMensaje, 0f, 0f);
+			_mensaje.Width.Set(0f, 1f);
 			_mensaje.ColorTexto = EstiloTk.TextoAviso;
-			derecha.Append(_mensaje);
+			_listaDerecha.Add(_mensaje);
 
 			// Con la altura real de la caja de aviso todavia sin calcular (depende de
 			// GetInnerDimensions, que solo existe tras el primer Recalculate del arbol), se deja el
 			// primer ajuste de verdad para el primer Update: RecalcularAviso() se reintenta sola cada
 			// fotograma hasta que el ancho interior deja de ser cero.
 		}
+
+		private const float EscalaMensaje = 0.75f;
+
+		private static UIElement Hueco(float alto)
+		{
+			UIElement hueco = new UIElement();
+			hueco.Width.Set(0f, 1f);
+			hueco.Height.Set(alto, 0f);
+			return hueco;
+		}
+
+		/// <summary>true si la columna de dificultad no cabe entera y enseña su barra de
+		/// desplazamiento. Lo lee la autoprueba de espaciado.</summary>
+		public bool ScrollDificultadVisible => _scrollDerechaVisible;
+
+		/// <summary>La lista de la columna de dificultad, para que la autoprueba compruebe que su
+		/// contenido visible no se sale de la pestaña.</summary>
+		public UIList ListaDificultad => _listaDerecha;
 
 		/// <summary>
 		/// Mide con la fuente REAL el texto ya partido de los tres avisos, ajusta la altura de
@@ -421,13 +523,31 @@ namespace TerrakeepMod.UI.Exploracion
 			_etiquetaDeshacer.Top.Set(yDeshacer, 0f);
 			_cajaAviso.Height.Set(alturaCaja, 0f);
 
-			float yTrasCaja = _yAntesDeAviso + alturaCaja + SeparacionTrasCajaAviso;
-			_confirmar.Top.Set(yTrasCaja, 0f);
-			_mensaje.Top.Set(yTrasCaja + AltoBotonConfirmar + SeparacionTrasConfirmar, 0f);
+			_mensajePartido = string.IsNullOrEmpty(_ultimoMensaje)
+				? ""
+				: EtiquetaTk.PartirEnLineas(_ultimoMensaje, _listaDerecha.GetInnerDimensions().Width, EscalaMensaje);
+			_mensaje.Height.Set(_mensajePartido.Length == 0 ? 0f : fuente.MeasureString(_mensajePartido).Y * EscalaMensaje, 0f);
 
-			if (_derecha != null) {
-				_derecha.Recalculate();
+			_listaDerecha.Recalculate();
+
+			// Barra de desplazamiento solo si de verdad no cabe. Sin oscilar: con la barra puesta la
+			// lista es 20 px mas estrecha, el texto parte en mas lineas y el total solo puede crecer,
+			// asi que una vez que hace falta sigue haciendo falta; y al quitarla, lo mismo al reves.
+			bool hace = _listaDerecha.GetTotalHeight() > _derecha.GetInnerDimensions().Height + 0.5f;
+			if (hace != _scrollDerechaVisible) {
+				_scrollDerechaVisible = hace;
+				if (hace) {
+					_listaDerecha.Width.Set(-20f, 1f);
+					_derecha.Append(_scrollDerecha);
+				}
+				else {
+					_listaDerecha.Width.Set(0f, 1f);
+					_derecha.RemoveChild(_scrollDerecha);
+					_scrollDerecha.ViewPosition = 0f;
+				}
 			}
+
+			_derecha.Recalculate();
 		}
 
 		/// <summary>

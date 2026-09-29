@@ -58,6 +58,54 @@ namespace TerrakeepMod.Common.Panel
 		}
 
 		/// <summary>
+		/// Reparto de una ficha de renglones de paso fijo (Exploracion &gt; Este mundo) en un hueco que
+		/// puede ser mas bajo de lo que necesita, priorizando la LEGIBILIDAD sin permitir nunca un
+		/// solape:
+		/// <list type="number">
+		/// <item>Si ni apretando el interlineado hasta <paramref name="fraccionPasoMinimo"/> cabe
+		/// todo, se ocultan primero los renglones <paramref name="colapsable"/> (en la ficha, los que
+		/// ya repite la cabecera de Exploracion: nombre, tamaño, modo, posicion y explorado).</item>
+		/// <item>Con lo que queda visible, se aprieta el INTERLINEADO (cabecera y paso) en la
+		/// proporcion justa, sin tocar la letra, mientras el paso no baje de
+		/// <paramref name="fraccionPasoMinimo"/> de su valor natural.</item>
+		/// <item>Solo si aun asi no cabe, la letra se reduce en la MISMA proporcion que el paso a
+		/// partir de ese punto (asi el glifo sigue cabiendo en su renglon igual que al paso minimo).</item>
+		/// </list>
+		/// Devuelve el factor que hay que aplicar a la cabecera y al paso; con el, lo ocupado
+		/// (cabecera + renglones visibles) nunca pasa de <paramref name="altoDisponible"/>.
+		/// </summary>
+		/// <param name="visible">Salida: que renglones se enseñan (mismo largo que <paramref name="colapsable"/>).</param>
+		/// <param name="factorLetra">Salida: factor sobre la escala base de la letra (1 = sin tocar).</param>
+		public static float DistribuirRenglones(float altoCabecera, float paso, bool[] colapsable, float altoDisponible,
+			float fraccionPasoMinimo, bool[] visible, out float factorLetra)
+		{
+			int total = colapsable.Length;
+			int colapsables = 0;
+			for (int i = 0; i < total; i++) {
+				visible[i] = true;
+				if (colapsable[i]) {
+					colapsables++;
+				}
+			}
+
+			float necesario = altoCabecera + total * paso;
+			if (altoDisponible > 0f && colapsables > 0 && necesario * fraccionPasoMinimo > altoDisponible) {
+				for (int i = 0; i < total; i++) {
+					if (colapsable[i]) {
+						visible[i] = false;
+					}
+				}
+				necesario = altoCabecera + (total - colapsables) * paso;
+			}
+
+			float factor = altoDisponible <= 0f || necesario <= 0f || altoDisponible >= necesario
+				? 1f
+				: altoDisponible / necesario;
+			factorLetra = factor >= fraccionPasoMinimo ? 1f : factor / fraccionPasoMinimo;
+			return factor;
+		}
+
+		/// <summary>
 		/// Escala de texto mas pequeña que el mod usa para texto que hay que LEER (no un suelo de
 		/// emergencia): 0,68, la de los avisos secundarios de Exploracion (<c>PestanaMundo.
 		/// EscalaAvisoSecundario</c>), el titulo de tramo de la Guia, la ruta de carpetas de Buffs o
