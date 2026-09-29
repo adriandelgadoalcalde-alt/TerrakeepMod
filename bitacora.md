@@ -11648,3 +11648,38 @@ Minor (tres funciones nuevas). `build.txt`, README (Novedades 0.7.0, "Qué hace"
 
 El known-diff "revisión cruzada pendiente" se resuelve con el commit de la auditoría; los cinco
 criterios llevan evidencia CURRENT de esta pasada y el requirement pasa a DONE.
+
+## 29-sep-2026 (noche) - v0.7.1: un solo editor de objeto en la Librería (revisión de la captura del README de la v0.7.0)
+
+Revisión del coordinador sobre `06-editar-objeto.png` de la v0.7.0. Tres puntos, los tres
+comprobados contra el código, la bitácora y capturas nuevas del juego:
+
+1. **Dos editores del mismo objeto a la vez: FALLO, no diseño.** Con TM2 (20-sep) la tarjeta
+   flotante se añadió JUNTO al mini-panel fijo "Editar objeto" sin retirar nada de él. La cabecera
+   de `TarjetaEdicionFlotanteTk` justificaba que el prefijo fuera solo informativo "para no
+   duplicar el mismo control en dos sitios a la vez", pero la cantidad ("-", campo, "+", "Aplicar")
+   y la papelera SÍ estaban duplicadas; la bitácora del 20-sep hablaba de MOVER los widgets a la
+   tarjeta y solo se llegó a copiarlos. Arreglo: la tarjeta es el único editor (cantidad con
+   +10/+100/Máx, `EditorPrefijoTk` interactivo y papelera) y
+   `PanelHerramientasLibreriaTk.AjustarEditoresDelMiniPanel` esconde título, papelera, cantidad y
+   prefijo del mini-panel mientras está abierta; queda solo el recuadro "Seleccionar" (hace falta
+   para arrastrar el objeto fuera y cerrarla). El desplegable del prefijo cuelga de la capa de
+   superposición, que desde la v0.7.0 va por encima del hospedaje de la tarjeta y recibe el ratón
+   primero. Las autopruebas pulsan ya el editor VISIBLE (`EditorCantidadVisible`/
+   `EditorPrefijoVisible`) y el paso 27a nuevo cuenta los widgets colgados del panel: 1
+   EditorCantidadTk, 1 EditorPrefijoTk, 1 papelera, y la tarjeta sin tapar el recuadro.
+2. **Solape**: el texto tenue detrás de "Champiñón" era real - la tarjeta usaba `EstiloTk.FondoCaja`
+   (alfa 0,92) y se transparentaban los números de las ranuras y la pista de la rejilla de debajo.
+   Ahora es opaca. Que la tarjeta flote sobre parte de la rejilla de la Mochila es el diseño de TM2
+   (editor flotante, no modal: los clics fuera de ella siguen llegando a lo de debajo), pero se
+   reduce: ahora termina justo antes del recuadro de selección, en el hueco que deja libre el
+   mini-panel, y tapa 4 columnas en vez de 6.
+3. **Captura del README**: el paso 24 dejaba el buscador con "es" y dos resultados. El paso 26 vacía
+   ya el buscador y abre la primera carpeta real con objetos (Materiales, 1583) antes de fotografiar.
+
+Verificación: `verificar-libreria.ps1` (inglés y español) COMPLETA sin ningún FALLO/NO CUADRA,
+pasos 16-23 ya sobre el editor de la tarjeta, 19-21 (desplegable por encima de la tarjeta) en
+verde, 27a y 27b OK; `verificar-personaje.ps1` (el mismo mini-panel en Personaje) COMPLETA;
+`dotnet test` 95/95. Capturas abiertas: `docs/screenshots/06-editar-objeto.png` (rehecha) y la de
+Personaje con el desplegable abierto. Turno de pantalla tomado y liberado; hashes de las 116
+partidas reales idénticos antes y después.
