@@ -11337,3 +11337,107 @@ marca DONE el requirement 0446b3c9-9108-4c1d-be03-66e050d7d1d6 hasta tener esa e
 - `UI/Exploracion/PestanaMapa.cs` - reflujo del bloque de texto completo (posicion + escala).
 - `UI/Ajustes/ContenidoAjustes.cs` - reflujo de la caja "Atajos" (posicion + escala + alto propio).
 - `bitacora.md` (esta entrada).
+
+## 29-sep-2026 (aplicador de arreglo, verificacion en vivo tras la via libre) - Los 3 defectos ya NO reproducen; el arreglo es legible pero mide notablemente mas pequeño en el peor caso - documentado con datos reales, no dado por bueno a ciegas
+
+Via libre recibida del coordinador tras el commit del arreglo. Verificacion en vivo en el sandbox
+`tModLoader-TerrakeepWS7`, mismo `.tmod` ya reconstruido (842081 bytes, con `ReflowVertical` +
+los tres arreglos), reusando el arnes y los scripts reales del verificador anterior
+(`scratchpad/uiscale-audit/auditoria-uiscale-v2.ps1` + `Win32Audit.cs` + `hash-real.ps1`, misma
+sesion): personaje/mundo `TerrakeepPrueba`, `SetWindowPos(HWND_TOPMOST)` activo, `WindowFromPoint`+
+`GetAncestor(GA_ROOT)` confirmado contra el hWnd del juego antes de cada captura (0 INCONCLUSIVE en
+las 3 pasadas x 8 areas = 24/24 capturas). Hashes SHA256 de `config.json`, `input profiles.json`,
+`Mods\enabled.json` y todos los `Players`/`Worlds` REALES del usuario (78 archivos) identicos antes
+y despues. Sandbox restaurado a `UIScale=1` / `2560x1440` (su estado original) al terminar. Cero
+procesos `dontstarve*`/`Terrakeep`/`tModLoader`/`Terraria`/`dotnet` residuales, comprobado antes y
+despues de las 3 pasadas.
+
+### 1. La combinacion que fallaba: 1366x768 @ UIScale 150% - los 3 defectos YA NO reproducen
+
+**Personaje** (nota de `PestanaInventario`): la nota ("Arrastra, apila y usa el clic derecho...")
+se dibuja ahora en 2 lineas DENTRO del fondo navy del panel, encima de "Mochila: 4 de 50 ranuras
+ocupadas.", sin tocar el pie compartido. Como este arreglo NO comprime escala (solo reposiciona,
+ver la entrada anterior), el texto se ve exactamente igual de grande que siempre - confirmado
+visualmente y por comparacion directa con la captura de Personaje del control 1366x768@100% (mismo
+tamaño de letra en las dos). **OBSERVED OK, sin perdida de legibilidad.**
+
+**Exploracion** (bloque de texto de `PestanaMapa`): "Zoom: 2,50 px por tile" ya NO se solapa con el
+parrafo "El mapa grande del juego no puede convivir con este panel...". Los 5 elementos del bloque
+(aviso partido en 3 lineas, "Marcadores", "Sin búsqueda: usa la pestaña Búsqueda", hueco vacio de
+"bajo el raton", "Zoom") aparecen apilados sin solape, con el boton "Cerrar (P)" debajo sin tocarlos
+(capturas de zoom real: `scratchpad/uiscale-audit/crop_exploracion_lateral_150.png`). **OBSERVED
+OK, defecto cerrado - pero con una perdida de legibilidad real que se documenta abajo.**
+
+**Ajustes** (caja "Atajos" de `ContenidoAjustes`): las 4 lineas ("Cada tecla abre Terrakeep...",
+"Personaje [K] · Libreria [O] · ...", "Deshacer y rehacer: [Z] y [Y]...", "También se abre con el
+icono de Terrakeep...") aparecen apiladas sin solaparse entre si ni con el pie compartido del panel
+("El idioma cambia en vivo...") que queda claramente separado, fuera de la caja (captura de zoom
+real: `scratchpad/uiscale-audit/crop_ajustes_atajos_150.png`). **OBSERVED OK, defecto cerrado - con
+la misma perdida de legibilidad, mas moderada, documentada abajo.**
+
+### 2. Legibilidad medida con pixeles reales (pedido explicito del coordinador), no solo "se ve bien"
+
+Medido con `PIL` sobre el PNG real (perfil de brillo fila a fila del recorte exacto del texto,
+`scratchpad/uiscale-audit/medir_texto.py`): alto real del glifo (numero de filas de pixeles por
+encima del fondo, de punta a punta del trazo, sin contar antialiasing suelto) para la MISMA linea
+de texto en tres condiciones distintas:
+
+| Texto medido | Comprimido (1366x768@150%, el caso que fallaba) | Referencia 100% (mismo panel, sin comprimir) | Referencia 150% sin comprimir (1920x1080@150%) |
+|---|---|---|---|
+| Exploracion, "Zoom: 2,50 px por tile" | **11 px** | 16 px | 24 px |
+| Ajustes, "También se abre con el icono..." | **12-13 px** | 14-16 px | 21-24 px |
+
+Interpretacion honesta:
+
+- **Exploracion es el caso mas comprimido**: 11px son el **69% del tamaño que ese mismo texto tiene
+  siempre a UIScale 100%** (16px) y el **46% del tamaño que deberia tener a UIScale 150% sin
+  comprimir** (24px, medido en el control 1920x1080@150%). Es una reduccion real y medible, no
+  cosmetica.
+- **Ajustes se comprime menos**: 12-13px son el **80-86% de la referencia al 100%** (14-16px) - una
+  reduccion mas moderada.
+- En los dos casos el numero de pixeles de alto final (11-13px) es **igual o ligeramente por
+  DEBAJO** del tamaño que ya usa hoy TODO el resto de la interfaz del mod a UIScale 100% (14-16px) -
+  o sea, el arreglo nunca deja el texto mas pequeño que "lo mas pequeño que ya se considera legible
+  en el resto del mod", pero en Exploracion se queda un poco por debajo incluso de eso (11 vs
+  14-16px de referencia).
+- Revisadas las capturas ampliadas a 3x (`crop_exploracion_lateral_150.png`,
+  `crop_ajustes_atajos_150.png`) a ojo humano: **el texto se lee sin esfuerzo en las dos**, ninguna
+  letra se confunde con otra, no hay pixelado que rompa la forma de los caracteres. No es un texto
+  "roto" ni "ilegible" en sentido estricto.
+- **Conclusion, sin suavizarlo**: el arreglo cierra el defecto de solape/desbordamiento (el problema
+  original, que era mucho peor: texto directamente inintelegible por solaparse letra sobre letra o
+  desbordarse fuera del panel) a costa de un texto mas pequeño de lo habitual en el peor caso
+  (Exploracion, 1366x768@150%, la UNICA celda de la matriz 48/48 donde esto pasa). Es una mejora
+  real y neta frente al estado anterior (0 defectos de solape vs 3), pero el propio `escalaMinima`
+  de `ReflowVertical` (0.55 por defecto) permite, combinado con la escala base ya reducida de esas
+  etiquetas (0.7-0.75), llegar a un tamaño final mas pequeño de lo ideal en el caso mas extremo. NO
+  se ha tocado el `escalaMinima` en esta pasada (cambiarlo sin poder volver a medir en vivo seria
+  ajustar a ciegas) - queda anotado aqui como posible ajuste futuro si se quiere un suelo mas alto
+  para Exploracion en concreto (p.ej. un `escalaMinima` mayor solo para ese bloque, o priorizar
+  ocultar el renglon "Sin búsqueda"/"bajo el raton" cuando sobren antes de encoger el resto).
+
+### 3. Controles: 1920x1080 @ UIScale 150% y 1366x768 @ UIScale 100% - sin regresion
+
+Las 8 areas de cada control (Personaje, Libreria, Builds, Investigacion, Exploracion, Ajustes,
+Guia, Album) revisadas: **16/16 OBSERVED OK**, ningun solape ni recorte nuevo. `FactorDeCompresion`
+no llega a activarse en ninguna de las dos (factor=1, texto a su tamaño base) - confirmado tanto
+visualmente como midiendo pixeles: "Zoom" mide 16px a 1366x768@100% y 24px a 1920x1080@150% (las
+dos cifras de referencia de la tabla de arriba), coherente con "sin compresion, tamaño normal".
+Personaje/Libreria/Guia revisadas ademas como muestra de las areas NO tocadas por este arreglo:
+identicas a como se veian antes, sin ningun efecto colateral de los cambios en
+`PestanaInventario`/`PestanaMapa`/`ContenidoAjustes`.
+
+### Evidencia
+
+Capturas completas (24, las 3 pasadas x 8 areas) en `scratchpad/uiscale-audit/<resolucion>-<escala>-
+despues-arreglo/*.png` de esta sesion (no forman parte del repo), mas los dos recortes ampliados a
+3x citados arriba. Requirement `0446b3c9-9108-4c1d-be03-66e050d7d1d6`: evidencia añadida con
+`--fuente aplicador-fix --agente aplicador-fix-terrakeepmod-uiscale-verificacion-29sep2026`, solo
+lo OBSERVED OK de esta pasada (cierre de los 3 defectos + controles sin regresion + medicion de
+legibilidad); NO marcado DONE - la nota de legibilidad de Exploracion queda como matiz documentado,
+no como bloqueo, pero cerrar el requirement del todo es decision del coordinador, no de este agente.
+
+### Cierre
+
+tModLoader/Terraria cerrado (proceso terminado tras cada una de las 3 pasadas, sin ventana residual
+- confirmado con `Get-Process`). Escritorio libre al terminar.
