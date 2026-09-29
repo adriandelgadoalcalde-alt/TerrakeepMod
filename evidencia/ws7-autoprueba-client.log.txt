@@ -5,9 +5,9 @@
 [01:42:27.688] [Main Thread/INFO] [tML]: FrameworkDescription: .NET 8.0.0
 [01:42:27.688] [Main Thread/INFO] [tML]: Executable: C:\Program Files (x86)\Steam\steamapps\common\tModLoader\tModLoader.dll
 [01:42:27.688] [Main Thread/INFO] [tML]: Working Directory: C:\Program Files (x86)\Steam\steamapps\common\tModLoader
-[01:42:27.689] [Main Thread/INFO] [tML]: Launch Parameters: -tmlsavedirectory C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS7 -skipselect TerrakeepPrueba:TerrakeepPrueba
-[01:42:27.690] [Main Thread/INFO] [tML]: Parsed Launch Parameters: -tmlsavedirectory C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS7 -skipselect TerrakeepPrueba:TerrakeepPrueba
-[01:42:27.860] [Main Thread/INFO] [tML]: Saves Are Located At: C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS7
+[01:42:27.689] [Main Thread/INFO] [tML]: Launch Parameters: -tmlsavedirectory %USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepWS7 -skipselect TerrakeepPrueba:TerrakeepPrueba
+[01:42:27.690] [Main Thread/INFO] [tML]: Parsed Launch Parameters: -tmlsavedirectory %USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepWS7 -skipselect TerrakeepPrueba:TerrakeepPrueba
+[01:42:27.860] [Main Thread/INFO] [tML]: Saves Are Located At: %USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepWS7
 [01:42:27.866] [Main Thread/INFO] [tML]: Display DPI: Diagonal DPI is 96. Vertical DPI is 96. Horizontal DPI is 96
 [01:42:27.866] [Main Thread/INFO] [tML]: High DPI Display detected: setting FNA to highdpi mode
 [01:42:27.868] [Main Thread/DEBUG] [FNA]: Querying linked library versions...

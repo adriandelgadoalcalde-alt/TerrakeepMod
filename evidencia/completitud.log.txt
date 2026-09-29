@@ -65,12 +65,12 @@
 [21:18:54.805] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.bioma total de filas=40 (bestiario.Total=540) | OK: hay desglose real por bioma.
 [21:18:54.806] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.dondeConseguir receta real (Wooden Sword, type=24) -> "Terrakeep: se fabrica con Madera" (ingrediente real esperado: "Madera") | OK: la receta real aparece en el texto.
 [21:18:54.806] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO0.dondeConseguir tienda real (primer objeto de tienda sin receta, type=88) -> "Terrakeep: lo vende Mercader" | OK: la via de tienda real funciona.
-[21:18:55.257] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO1 (es) captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS7\terrakeep-capturas\completitud-01-es.png"
+[21:18:55.257] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO1 (es) captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepWS7\terrakeep-capturas\completitud-01-es.png"
 [21:18:55.289] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma cambiado EN VIVO via ModConfig.OnChanged: es-ES -> en-US. Prueba real de la recarga, clave propia del mod "Ajustes.Titulo" = "Terrakeep - Settings".
 [21:18:55.289] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma guardado en ModConfig (persistente entre partidas): English. Resultado de SaveChanges: Success.
 [21:18:55.291] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Completion".
 [21:18:55.291] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Character" (via cambio de idioma en vivo).
-[21:18:55.717] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO2 (en) cultura activa=en-US captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS7\terrakeep-capturas\completitud-02-en.png"
+[21:18:55.717] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO2 (en) cultura activa=en-US captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepWS7\terrakeep-capturas\completitud-02-en.png"
 [21:18:55.760] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma cambiado EN VIVO via ModConfig.OnChanged: en-US -> es-ES. Prueba real de la recarga, clave propia del mod "Ajustes.Titulo" = "Terrakeep - Ajustes".
 [21:18:55.760] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma guardado en ModConfig (persistente entre partidas): Espanol. Resultado de SaveChanges: Success.
 [21:18:55.761] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Completitud".

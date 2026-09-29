@@ -53,6 +53,6 @@
 [08:52:11.983] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] AUTOPRUEBA ALBUM/1 - CLIC REAL en la pestaña "Álbum" (en x=1037 y=61 126x30, clic en 1100,76). Pestaña activa ahora: "Álbum" -> OK
 [08:52:12.305] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] AUTOPRUEBA ALBUM/2 - espaciado real: "Actualizar"=x=854 y=99 150x28 "Abrir carpeta"=x=1020 y=99 150x28 caja-lista=x=110 y=135 1060x508 -> OK: sin solapes.
 [08:52:12.307] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] AUTOPRUEBA ALBUM/3 - entradas montadas en la pestaña: 1155. Entradas reales en album.json: 1155 -> OK: coinciden y el álbum no está vacío.
-[08:52:12.763] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] AUTOPRUEBA ALBUM - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS7\terrakeep-capturas\hitos-1-album.png"
+[08:52:12.763] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] AUTOPRUEBA ALBUM - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepWS7\terrakeep-capturas\hitos-1-album.png"
 [08:52:13.085] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PANEL CERRADO via autoprueba del álbum terminada. Pestaña al cerrar: "Álbum".
 [08:52:13.432] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] AUTOPRUEBA ALBUM COMPLETA.

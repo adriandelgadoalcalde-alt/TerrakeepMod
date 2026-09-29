@@ -15,7 +15,7 @@
 [02:28:24.811] [Terrakeep]   requisito 3/5: [FALTA] No llevas ningún arma; hacen falta 16 de daño (0/16)
 [02:28:24.811] [Terrakeep]   requisito 4/5: [FALTA] Llevar encima: Abejaminación (0/1, recomendado)
 [02:28:24.811] [Terrakeep]   requisito 5/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:28:25.154] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-1-refugio.png"
+[02:28:25.154] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-1-refugio.png"
 [02:28:25.374] [Terrakeep] AUTOPRUEBA GUIA - creados 1 vecinos de verdad con NPC.NewNPC. Vecinos vivos ahora: 1.
 [02:28:25.624] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "Defensa" ("Armadura: más de 10 de defensa"), esperado "Defensa" porque ya hay un vecino -> OK. Preparacion 6% (0/1 obligatorios). Direccion: "Hacia abajo, en el subsuelo".
 [02:28:25.624] [Terrakeep] AUTOPRUEBA GUIA - medidor en pantalla: 0,061, color ROJO -> OK: coincide con el calculo.
@@ -32,7 +32,7 @@
 [02:28:26.624] [Terrakeep]   requisito 2/4: [FALTA] No llevas ningún arma; hacen falta 16 de daño (0/16)
 [02:28:26.624] [Terrakeep]   requisito 3/4: [FALTA] Llevar encima: Abejaminación (0/1, recomendado)
 [02:28:26.624] [Terrakeep]   requisito 4/4: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:28:26.972] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-2-cristales.png"
+[02:28:26.972] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-2-cristales.png"
 [02:28:27.192] [Terrakeep] AUTOPRUEBA GUIA - vida maxima subida a mano a 200 (como haria el editor de Terrakeep). ConsumedLifeCrystals: 0 -> 0. OK: no se mueve, porque es un contador guardado aparte y no (statLifeMax-100)/20. La guia lee el contador, que es lo que mira Main.UpdateTime_StartNight, asi que sigue diciendo la verdad.
 [02:28:27.441] [Terrakeep] AUTOPRUEBA GUIA - Player.ConsumedLifeCrystals puesto a 5 (el contador real que sube Player.ItemCheck al usar un Cristal de Vida, sItem.type == 29). Lo que lee la guia ahora: 5.
 [02:28:27.692] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "PuebloDeCuatro" ("Cuatro vecinos"), esperado "PuebloDeCuatro" porque ya hay 5 cristales de vida USADOS -> OK. Preparacion 13% (0/1 obligatorios). Direccion: "Estás donde toca: la superficie".
@@ -56,7 +56,7 @@
 [02:28:28.442] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Ojo de Cthulhu: 2800 de vida, 12 de defensa y 15 de daño en modo normal.
 No llevas ningún arma encima, así que ahora mismo no puedes hacerle nada.
-[02:28:28.794] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-3-arma-y-arena.png"
+[02:28:28.794] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-3-arma-y-arena.png"
 [02:28:29.013] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Bumerán encantado" (Item.damage=21). Lo que lee la guia, pasado por Player.GetWeaponDamage: "Bumerán encantado" con 21.
 [02:28:29.263] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma de verdad): vida 200 (cristales consumidos 5), defensa 13, vecinos 4, mejor arma "Bumerán encantado" con 21 de daño, gancho=no, capa=Superficie, downedBoss1=False.
 [02:28:29.513] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "InvocarElOjo" ("Llamarlo tú, en vez de esperarlo"), esperado "InvocarElOjo" porque arma con daño suficiente -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Estás donde toca: la superficie".
@@ -68,17 +68,17 @@ No llevas ningún arma encima, así que ahora mismo no puedes hacerle nada.
 [02:28:29.764] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Ojo de Cthulhu: 2800 de vida, 12 de defensa y 15 de daño en modo normal.
 Tu mejor arma (Bumerán encantado, 21 de daño) le quita 15 por golpe: harían falta unos 187 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:28:30.111] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-4-invocar-el-ojo.png"
+[02:28:30.111] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-4-invocar-el-ojo.png"
 [02:28:30.330] [Terrakeep] AUTOPRUEBA GUIA - NPC.downedBoss1 puesto a true a mano (la bandera real que enciende NPC.SetEventFlagCleared al morir el Ojo, NPC.cs case 4). Se restaura al terminar.
 [02:28:30.650] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerLaMaldad" ("Derrotarlo"), esperado "VencerLaMaldad" porque el Ojo ya cayo (downedBoss1=true) y la Furia de estrellas que llevas desde antes (25 de daño) ya cumple ella sola el unico requisito obligatorio del primer paso de la maldad del mundo, asi que el compas salta directo al segundo -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Hacia abajo, en las cavernas".
 [02:28:30.651] [Terrakeep] AUTOPRUEBA GUIA - medidor en pantalla: 0,000, color ROJO -> OK: coincide con el calculo.
 [02:28:30.651] [Terrakeep]   requisito 1/2: [FALTA] Derrotar al Devorador de Mundos o al Cerebro de Cthulhu (0/1)
 [02:28:30.651] [Terrakeep]   requisito 2/2: [FALTA] Derrotar a la Reina Abeja (0/1)
-[02:28:31.004] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-5-tramo-terminado.png"
+[02:28:31.004] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-5-tramo-terminado.png"
 [02:28:31.223] [Terrakeep] AUTOPRUEBA GUIA - downedBoss1 vuelto a false para la pasada en español. Objetivo ahora: "InvocarElOjo".
 [02:28:31.473] [Terrakeep] AUTOPRUEBA GUIA - idioma cambiado a Espanol. Cultura activa: es-ES. Prueba real de la recarga, clave propia de la Guia "Guia.ObjetivoActual" = "Tu objetivo ahora mismo".
 [02:28:31.723] [Terrakeep] AUTOPRUEBA GUIA/2 - barra de 8 pestañas: escala de texto comun 0,668 (la de reposo son 0,800). Holgura de cada rotulo dentro de su boton: "Personaje"=33,7px "Librería"=42,2px "Builds"=50,7px "Investigación"=16,0px "Exploración"=22,4px "Ajustes"=47,9px "Guía"=60,6px "Álbum"=52,1px  -> OK: las 8 caben enteras.
-[02:28:32.070] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-6-en-espanol.png"
+[02:28:32.070] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-6-en-espanol.png"
 [02:28:32.289] [Terrakeep] AUTOPRUEBA GUIA - texto visible en "es-ES": 57 parrafos, 111 lineas. La linea mas justa se queda a 0,4 px del borde de su caja: "8000 de vida, en el Infierno. Al morir el mundo entra en". OK: ninguna se sale.
 [02:28:32.539] [Terrakeep] AUTOPRUEBA GUIA - idioma cambiado a SeguirElJuego. Cultura activa: es-ES. Prueba real de la recarga, clave propia de la Guia "Guia.ObjetivoActual" = "Tu objetivo ahora mismo".
 [02:28:32.789] [Terrakeep] AUTOPRUEBA GUIA - restaurado: downedBoss1=False, vecinos de prueba retirados=4, vecinos originales devueltos=2, vecinos vivos ahora=2.
@@ -103,7 +103,7 @@ Tu mejor arma (Bumerán encantado, 21 de daño) le quita 15 por golpe: harían f
 [02:28:34.108] [Terrakeep]   requisito 5/7: [FALTA] No llevas ningún arma; hacen falta 16 de daño (0/16)
 [02:28:34.108] [Terrakeep]   requisito 6/7: [FALTA] Llevar encima: Abejaminación (0/1, recomendado)
 [02:28:34.108] [Terrakeep]   requisito 7/7: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:28:34.461] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-7-maldad-preparativos.png"
+[02:28:34.461] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-7-maldad-preparativos.png"
 [02:28:34.680] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Bumerán encantado" (Item.damage=21). Lo que lee la guia: "Bumerán encantado" con 21.
 [02:28:34.930] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra la maldad del mundo): vida 100 (cristales consumidos 0), defensa 0, vecinos 2, mejor arma "Bumerán encantado" con 21 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:28:35.180] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerLaMaldad" ("Derrotarlo"), esperado "VencerLaMaldad" porque arma de 20+ de daño puesta: el unico requisito obligatorio del primer paso ya esta cumplido, así que el paso siguiente pasa a ser el actual -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Hacia abajo, en las cavernas".
@@ -114,7 +114,7 @@ Tu mejor arma (Bumerán encantado, 21 de daño) le quita 15 por golpe: harían f
 [02:28:35.430] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Devoramundos: 150 de vida, 2 de defensa y 22 de daño en modo normal.
 Tu mejor arma (Bumerán encantado, 21 de daño) le quita 20 por golpe: harían falta unos 8 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:28:35.783] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-8-maldad-vencer.png"
+[02:28:35.783] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-8-maldad-vencer.png"
 [02:28:36.003] [Terrakeep] AUTOPRUEBA GUIA - NPC.downedBoss2 puesto a true a mano (la bandera real que enciende NPC.SetEventFlagCleared al morir el Devorador o el Cerebro). Se restaura al terminar.
 [02:28:36.004] [Terrakeep] Brujula de la Guia: objetivo cambiado a zona "Mazmorra", buscando "Mazmorra" SOLO en lo ya explorado. "Mazmorra" (Pared, tipos=7/8/9/94/95/96/97/98/99) solo en lo explorado: en marcha, columna 0 de 8401 (0%).
 [02:28:36.215] [Terrakeep] Brujula de la Guia: "Mazmorra" (Pared, tipos=7/8/9/94/95/96/97/98/99) solo en lo explorado: 0 tiles encontrados en 20170801 mirados, agrupados en 0 zonas, 16,7 ms de CPU en total. -> nada explorado todavia de esta zona, sin marcador (brujula, no GPS).
@@ -146,7 +146,7 @@ Tu mejor arma (Bumerán encantado, 21 de daño) le quita 20 por golpe: harían f
 [02:28:38.082] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Esqueletrón: 4400 de vida, 10 de defensa y 32 de daño en modo normal.
 Tu mejor arma (Bumerán encantado, 21 de daño) le quita 16 por golpe: harían falta unos 275 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:28:38.428] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-9-esqueletron.png"
+[02:28:38.428] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-9-esqueletron.png"
 [02:28:38.647] [Terrakeep] AUTOPRUEBA GUIA - NPC.downedBoss3 puesto a true a mano. Se restaura al terminar.
 [02:28:38.975] [Terrakeep] AUTOPRUEBA GUIA - preparado el tramo del Muro de Carne: Main.hardMode=false (a mano, por si el mundo de pruebas ya lo traia puesto).
 [02:28:39.225] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
@@ -159,7 +159,7 @@ Tu mejor arma (Bumerán encantado, 21 de daño) le quita 16 por golpe: harían f
 [02:28:39.476] [Terrakeep]   requisito 5/7: [FALTA] No llevas ningún arma; hacen falta 16 de daño (0/16)
 [02:28:39.477] [Terrakeep]   requisito 6/7: [FALTA] Llevar encima: Abejaminación (0/1, recomendado)
 [02:28:39.477] [Terrakeep]   requisito 7/7: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:28:39.829] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-11-muro-preparativos.png"
+[02:28:39.829] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-11-muro-preparativos.png"
 [02:28:40.048] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Furia de estrellas" (Item.damage=25). Lo que lee la guia: "Furia de estrellas" con 25.
 [02:28:40.298] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra el Muro de Carne): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Furia de estrellas" con 25 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:28:40.548] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerAlMuro" ("Derrotarlo: el mundo cambia para siempre"), esperado "VencerAlMuro" porque arma de 25+ de daño puesta: el unico requisito obligatorio del primer paso ya esta cumplido, asi que el paso siguiente pasa a ser el actual -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Hacia abajo, en el Infierno".
@@ -170,7 +170,7 @@ Tu mejor arma (Bumerán encantado, 21 de daño) le quita 16 por golpe: harían f
 [02:28:40.798] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Muro carnoso: 8000 de vida, 12 de defensa y 50 de daño en modo normal.
 Tu mejor arma (Furia de estrellas, 25 de daño) le quita 19 por golpe: harían falta unos 422 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:28:41.152] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-12-muro-vencer.png"
+[02:28:41.152] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-12-muro-vencer.png"
 [02:28:41.372] [Terrakeep] AUTOPRUEBA GUIA - Main.hardMode puesto a true a mano (la bandera real que enciende WorldGen.StartHardmode al morir el Muro de Carne, NPC.cs case 113). Se restaura al terminar.
 [02:28:41.705] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:28:41.955] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "ArmaParaLosMecanicos" ("Un arma capaz de un jefe de Hardmode de verdad"), esperado "ArmaParaLosMecanicos" porque hardMode=true a mano (el siguiente tramo implementado son los tres mecanicos) y sin arma todavia en la mochila -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Estás donde toca: la superficie".
@@ -181,7 +181,7 @@ Tu mejor arma (Furia de estrellas, 25 de daño) le quita 19 por golpe: harían f
 [02:28:41.956] [Terrakeep]   requisito 4/6: [FALTA] No llevas ningún arma; hacen falta 16 de daño (0/16)
 [02:28:41.956] [Terrakeep]   requisito 5/6: [FALTA] Llevar encima: Abejaminación (0/1, recomendado)
 [02:28:41.956] [Terrakeep]   requisito 6/6: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:28:42.307] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-14-mecanicos-preparativos.png"
+[02:28:42.307] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-14-mecanicos-preparativos.png"
 [02:28:42.528] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Bumerán en llamas" (Item.damage=40). Lo que lee la guia: "Bumerán en llamas" con 40.
 [02:28:42.778] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra los mecanicos): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Bumerán en llamas" con 40 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:28:43.028] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerAUnMecanico" ("Derrotar a los tres"), esperado "VencerAUnMecanico" porque arma de 40+ de daño puesta: el unico requisito obligatorio del primer paso ya esta cumplido, asi que el paso siguiente pasa a ser el actual -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Estás donde toca: la superficie".
@@ -192,7 +192,7 @@ Tu mejor arma (Furia de estrellas, 25 de daño) le quita 19 por golpe: harían f
 [02:28:43.278] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 El Destructor: 64000 de vida, 0 de defensa y 56 de daño en modo normal.
 Tu mejor arma (Bumerán en llamas, 40 de daño) le quita 40 por golpe: harían falta unos 1600 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:28:43.627] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-15-mecanicos-vencer.png"
+[02:28:43.627] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-15-mecanicos-vencer.png"
 [02:28:43.847] [Terrakeep] AUTOPRUEBA GUIA - NPC.downedMechBoss1/2/3 y downedMechBossAny puestos a true a mano (los campos reales que enciende NPC.SetEventFlagCleared al morir el Destructor, los Gemelos y Esqueletron Prime; los bulbos de Plantera exigen los tres, WorldGen.cs:68792). Se restaura al terminar.
 [02:28:43.848] [Terrakeep] Brujula de la Guia: objetivo cambiado a zona "Jungla", buscando "Jungla" SOLO en lo ya explorado. "Jungla" (Tile, tipos=60) solo en lo explorado: en marcha, columna 0 de 8401 (0%).
 [02:28:44.157] [Terrakeep] Brujula de la Guia: "Jungla" (Tile, tipos=60) solo en lo explorado: 0 tiles encontrados en 20170801 mirados, agrupados en 0 zonas, 30,2 ms de CPU en total. -> nada explorado todavia de esta zona, sin marcador (brujula, no GPS).
@@ -204,7 +204,7 @@ Tu mejor arma (Bumerán en llamas, 40 de daño) le quita 40 por golpe: harían f
 [02:28:44.422] [Terrakeep]   requisito 3/5: [FALTA] No llevas ningún arma; hacen falta 16 de daño (0/16)
 [02:28:44.423] [Terrakeep]   requisito 4/5: [FALTA] Llevar encima: Abejaminación (0/1, recomendado)
 [02:28:44.423] [Terrakeep]   requisito 5/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:28:44.774] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-17-plantera-preparativos.png"
+[02:28:44.774] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-17-plantera-preparativos.png"
 [02:28:44.993] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Granada" (Item.damage=60). Lo que lee la guia: "Granada" con 60.
 [02:28:45.243] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra Plantera): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Granada" con 60 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:28:45.493] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerAPlantera" ("Derrotarla"), esperado "VencerAPlantera" porque arma de 45+ de daño puesta: el unico requisito obligatorio del primer paso ya esta cumplido, asi que el paso siguiente pasa a ser el actual -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Hacia abajo, en la jungla subterránea".
@@ -215,7 +215,7 @@ Tu mejor arma (Bumerán en llamas, 40 de daño) le quita 40 por golpe: harían f
 [02:28:45.744] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Plantera: 30000 de vida, 14 de defensa y 50 de daño en modo normal.
 Tu mejor arma (Granada, 60 de daño) le quita 53 por golpe: harían falta unos 567 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:28:46.092] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-18-plantera-vencer.png"
+[02:28:46.092] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-18-plantera-vencer.png"
 [02:28:46.312] [Terrakeep] AUTOPRUEBA GUIA - NPC.downedPlantBoss puesto a true a mano (la bandera real que enciende NPC.SetEventFlagCleared al morir Plantera, NPC.cs case 262 - la misma que abre la puerta de piedra del Templo). Se restaura al terminar.
 [02:28:46.312] [Terrakeep] Brujula de la Guia: objetivo cambiado a zona "TemploLihzahrd", buscando "Templo lihzahrd" SOLO en lo ya explorado. "Templo lihzahrd" (Pared, tipos=87) solo en lo explorado: en marcha, columna 0 de 8401 (0%).
 [02:28:46.502] [Terrakeep] Brujula de la Guia: "Templo lihzahrd" (Pared, tipos=87) solo en lo explorado: 0 tiles encontrados en 20170801 mirados, agrupados en 0 zonas, 14,6 ms de CPU en total. -> nada explorado todavia de esta zona, sin marcador (brujula, no GPS).
@@ -228,7 +228,7 @@ Tu mejor arma (Granada, 60 de daño) le quita 53 por golpe: harían falta unos 5
 [02:28:46.886] [Terrakeep]   requisito 4/6: [FALTA] No llevas ningún arma; hacen falta 16 de daño (0/16)
 [02:28:46.886] [Terrakeep]   requisito 5/6: [FALTA] Llevar encima: Abejaminación (0/1, recomendado)
 [02:28:46.886] [Terrakeep]   requisito 6/6: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:28:47.238] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-19-templo-preparativos.png"
+[02:28:47.238] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-19-templo-preparativos.png"
 [02:28:47.458] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Granada" (Item.damage=60). Lo que lee la guia: "Granada" con 60.
 [02:28:47.708] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra el Golem): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Granada" con 60 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:28:47.958] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerAlGolem" ("Derrotarlo"), esperado "VencerAlGolem" porque arma de 55+ de daño puesta: el unico requisito obligatorio del primer paso ya esta cumplido, asi que el paso siguiente pasa a ser el actual -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Hacia abajo, en el Templo de la Selva".
@@ -239,7 +239,7 @@ Tu mejor arma (Granada, 60 de daño) le quita 53 por golpe: harían falta unos 5
 [02:28:48.208] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Gólem: 15000 de vida, 26 de defensa y 72 de daño en modo normal.
 Tu mejor arma (Granada, 60 de daño) le quita 47 por golpe: harían falta unos 320 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:28:48.558] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-20-templo-vencer.png"
+[02:28:48.558] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-20-templo-vencer.png"
 [02:28:48.777] [Terrakeep] AUTOPRUEBA GUIA - NPC.downedGolemBoss puesto a true a mano (la bandera real que enciende NPC.SetEventFlagCleared al morir el Golem, NPC.cs case 245). Se restaura al terminar.
 [02:28:48.777] [Terrakeep] Brujula de la Guia: objetivo cambiado a zona "Mazmorra", buscando "Mazmorra" SOLO en lo ya explorado. "Mazmorra" (Pared, tipos=7/8/9/94/95/96/97/98/99) solo en lo explorado: en marcha, columna 0 de 8401 (0%).
 [02:28:48.969] [Terrakeep] Brujula de la Guia: "Mazmorra" (Pared, tipos=7/8/9/94/95/96/97/98/99) solo en lo explorado: 0 tiles encontrados en 20170801 mirados, agrupados en 0 zonas, 14,2 ms de CPU en total. -> nada explorado todavia de esta zona, sin marcador (brujula, no GPS).
@@ -251,7 +251,7 @@ Tu mejor arma (Granada, 60 de daño) le quita 47 por golpe: harían falta unos 3
 [02:28:49.353] [Terrakeep]   requisito 3/5: [FALTA] No llevas ningún arma; hacen falta 16 de daño (0/16)
 [02:28:49.353] [Terrakeep]   requisito 4/5: [FALTA] Llevar encima: Abejaminación (0/1, recomendado)
 [02:28:49.353] [Terrakeep]   requisito 5/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:28:49.701] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-22-cultista-preparativos.png"
+[02:28:49.701] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-22-cultista-preparativos.png"
 [02:28:49.920] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Flagelo Taoísta" (Item.damage=85). Lo que lee la guia: "Flagelo Taoísta" con 85.
 [02:28:50.170] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra el Cultista): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Flagelo Taoísta" con 85 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:28:50.420] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerAlCultista" ("Derrotarlo"), esperado "VencerAlCultista" porque arma de 65+ de daño puesta: el unico requisito obligatorio del primer paso ya esta cumplido, asi que el paso siguiente pasa a ser el actual -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Estás donde toca: la entrada de la Mazmorra, a tu derecha".
@@ -262,7 +262,7 @@ Tu mejor arma (Granada, 60 de daño) le quita 47 por golpe: harían falta unos 3
 [02:28:50.670] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Sectario lunático: 32000 de vida, 42 de defensa y 50 de daño en modo normal.
 Tu mejor arma (Flagelo Taoísta, 85 de daño) le quita 64 por golpe: harían falta unos 500 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:28:51.017] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-23-cultista-vencer.png"
+[02:28:51.017] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-23-cultista-vencer.png"
 [02:28:51.237] [Terrakeep] AUTOPRUEBA GUIA - NPC.downedAncientCultist puesto a true a mano (la bandera real que enciende NPC.SetEventFlagCleared al morir el Cultista, NPC.cs case 439 - la misma linea llama tambien a WorldGen.TriggerLunarApocalypse(), que aqui NO se ejecuta a proposito para no encender el evento de verdad sobre el mundo de pruebas). Se restaura al terminar.
 [02:28:51.487] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:28:51.737] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "PrepararLasTorres" ("Aguantar cuatro asedios seguidos"), esperado "PrepararLasTorres" porque downedAncientCultist=true a mano (tercer paso del mismo tramo: las torres) y sin arma todavia en la mochila -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Estás donde toca: la superficie".
@@ -272,14 +272,14 @@ Tu mejor arma (Flagelo Taoísta, 85 de daño) le quita 64 por golpe: harían fal
 [02:28:51.737] [Terrakeep]   requisito 3/5: [FALTA] No llevas ningún arma; hacen falta 16 de daño (0/16)
 [02:28:51.737] [Terrakeep]   requisito 4/5: [FALTA] Llevar encima: Abejaminación (0/1, recomendado)
 [02:28:51.738] [Terrakeep]   requisito 5/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:28:52.086] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-24-torres-preparativos.png"
+[02:28:52.086] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-24-torres-preparativos.png"
 [02:28:52.306] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Flagelo Taoísta" (Item.damage=85). Lo que lee la guia: "Flagelo Taoísta" con 85.
 [02:28:52.556] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra las torres): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Flagelo Taoísta" con 85 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:28:52.806] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerALasTorres" ("Derrotar a las cuatro"), esperado "VencerALasTorres" porque arma de 75+ de daño puesta: el unico requisito obligatorio del tercer paso ya esta cumplido, asi que el cuarto paso pasa a ser el actual -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Estás donde toca: la superficie".
 [02:28:52.807] [Terrakeep] AUTOPRUEBA GUIA - medidor en pantalla: 0,000, color ROJO -> OK: coincide con el calculo.
 [02:28:52.807] [Terrakeep]   requisito 1/2: [FALTA] Derrotar a las cuatro torres celestiales (0/1)
 [02:28:52.807] [Terrakeep]   requisito 2/2: [FALTA] Derrotar a la Reina Abeja (0/1)
-[02:28:53.154] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-25-torres-vencer.png"
+[02:28:53.154] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-25-torres-vencer.png"
 [02:28:53.374] [Terrakeep] AUTOPRUEBA GUIA - las cuatro downedTower* puestas a true a mano. NPC.downedTowers (la propiedad calculada) ahora: True. Se restaura al terminar.
 [02:28:54.399] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:28:54.649] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "ArmaParaMoonLord" ("El final: un arma para 145000 de vida repartida"), esperado "ArmaParaMoonLord" porque downedTowers=true a mano (el siguiente tramo implementado es Moon Lord) y sin arma todavia en la mochila -> OK. Preparacion 4% (0/1 obligatorios). Direccion: "Estás donde toca: la superficie".
@@ -291,7 +291,7 @@ Tu mejor arma (Flagelo Taoísta, 85 de daño) le quita 64 por golpe: harían fal
 [02:28:54.651] [Terrakeep]   requisito 5/7: [FALTA] No llevas ningún arma; hacen falta 16 de daño (0/16)
 [02:28:54.651] [Terrakeep]   requisito 6/7: [FALTA] Llevar encima: Abejaminación (0/1, recomendado)
 [02:28:54.651] [Terrakeep]   requisito 7/7: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:28:55.004] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-26-moonlord-preparativos.png"
+[02:28:55.004] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-26-moonlord-preparativos.png"
 [02:28:55.224] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Llave-espada" (Item.damage=105). Lo que lee la guia: "Llave-espada" con 105.
 [02:28:55.474] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra Moon Lord): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Llave-espada" con 105 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:28:55.724] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerAMoonLord" ("Derrotarlo: el final de esta guía"), esperado "VencerAMoonLord" porque arma de 90+ de daño puesta: el unico requisito obligatorio del primer paso ya esta cumplido, asi que el paso siguiente pasa a ser el actual -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Estás donde toca: la superficie".
@@ -302,7 +302,7 @@ Tu mejor arma (Flagelo Taoísta, 85 de daño) le quita 64 por golpe: harían fal
 [02:28:55.975] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Núcleo del Señor de la Luna: 50000 de vida, 70 de defensa y 0 de daño en modo normal.
 Tu mejor arma (Llave-espada, 105 de daño) le quita 70 por golpe: harían falta unos 715 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:28:56.324] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-27-moonlord-vencer.png"
+[02:28:56.324] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-27-moonlord-vencer.png"
 [02:28:56.543] [Terrakeep] AUTOPRUEBA GUIA - NPC.downedMoonlord puesto a true a mano (la bandera real que enciende NPC.SetEventFlagCleared al morir Moon Lord, NPC.cs case 398). Se restaura al terminar.
 [02:28:56.543] [Terrakeep] Brujula de la Guia: objetivo cambiado a zona "Jungla", buscando "Jungla" SOLO en lo ya explorado. "Jungla" (Tile, tipos=60) solo en lo explorado: en marcha, columna 0 de 8401 (0%).
 [02:28:56.751] [Terrakeep] Brujula de la Guia: "Jungla" (Tile, tipos=60) solo en lo explorado: 0 tiles encontrados en 20170801 mirados, agrupados en 0 zonas, 16,7 ms de CPU en total. -> nada explorado todavia de esta zona, sin marcador (brujula, no GPS).
@@ -311,14 +311,14 @@ Tu mejor arma (Llave-espada, 105 de daño) le quita 70 por golpe: harían falta 
 [02:28:57.117] [Terrakeep] AUTOPRUEBA GUIA - con todos los tramos IMPLEMENTADOS dados por hechos no queda ningun paso pendiente: paso en pantalla=(ninguno) -> OK: se da por cerrado.
 [02:28:57.118] [Terrakeep] AUTOPRUEBA GUIA - hoja de ruta con todo cerrado (camino obligatorio entero, incluido Moon Lord): ReinaAbeja, InicioModoDificil, JefesOpcionalesTardios -> OK: ninguno de los nueve tramos ya superados vuelve a aparecer.
 [02:28:57.118] [Terrakeep] AUTOPRUEBA GUIA - los tres tramos opcionales, ninguno superado todavia (ReinaAbeja=True, InicioModoDificil=True, JefesOpcionalesTardios=True) -> OK: los tres siguen en la hoja de ruta pese a que su Orden ya quedo atras.
-[02:28:57.458] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-28-todo-lo-implementado-hecho.png"
+[02:28:57.458] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-28-todo-lo-implementado-hecho.png"
 [02:28:57.677] [Terrakeep] AUTOPRUEBA GUIA - restaurado tras el camino obligatorio entero: downedBoss1=False, downedBoss2=False, downedBoss3=False, shadowOrbSmashed=False, hardMode=False, downedMechBoss1=False, downedMechBossAny=False, downedPlantBoss=False, downedGolemBoss=False, downedAncientCultist=False, downedTowers=False, downedMoonlord=False, NPC de prueba retirados=0.
 [02:28:57.927] [Terrakeep] AUTOPRUEBA GUIA - preparados los dos opcionales tempranos: downedSlimeKing=false, downedDeerclops=false (a mano, estaban en true desde Arrancar() para no interferir con el resto de la prueba). El camino OBLIGATORIO se cierra entero de nuevo (mismos flags que ComprobarSinObjetivo) para que la seccion "Objetivo opcional" suba a la parte visible del back buffer en las capturas de este bloque, en vez de quedar tapada por el objetivo obligatorio. Se restaura todo al terminar.
 [02:28:59.053] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "ReySlime/ArmaParaElReySlime" ("Cualquier arma, aunque sea de la primera capa"), esperado "ReySlime/ArmaParaElReySlime" porque ningun opcional sin superar todavia (EjercitoGoblin y LegionDeEscarcha siguen remarcados desde Arrancar()): ReySlime es el de menor Orden (5) de todos los tramos opcionales de vanilla, por delante incluso de PreOjo (10) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:28:59.054] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 12 de daño (0/12)
 [02:28:59.054] [Terrakeep]   requisito opcional 2/3: [FALTA] Llevar encima: Corona de slime (0/1, recomendado)
 [02:28:59.054] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:28:59.401] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-29-reyslime-preparativos.png"
+[02:28:59.401] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-29-reyslime-preparativos.png"
 [02:28:59.620] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Espada larga de hierro" (Item.damage=12). Lo que lee la guia: "Espada larga de hierro" con 12.
 [02:28:59.870] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra el Rey Slime): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Espada larga de hierro" con 12 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:29:00.120] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "ReySlime/VencerAlReySlime" ("Derrotarlo (opcional)"), esperado "ReySlime/VencerAlReySlime" porque arma de 12+ de daño puesta: el unico requisito obligatorio del primer paso ya esta cumplido, asi que el paso siguiente pasa a ser el objetivo opcional -> OK. Preparacion 0% (0/1 obligatorios).
@@ -327,14 +327,14 @@ Tu mejor arma (Llave-espada, 105 de daño) le quita 70 por golpe: harían falta 
 [02:29:00.370] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Rey slime: 2000 de vida, 10 de defensa y 40 de daño en modo normal.
 Tu mejor arma (Espada larga de hierro, 12 de daño) le quita 7 por golpe: harían falta unos 286 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:29:00.717] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-30-reyslime-vencer.png"
+[02:29:00.717] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-30-reyslime-vencer.png"
 [02:29:00.936] [Terrakeep] AUTOPRUEBA GUIA - NPC.downedSlimeKing puesto a true a mano (la bandera real que enciende NPC.SetEventFlagCleared al morir el Rey Slime, NPC.cs case 50). Se restaura al terminar.
 [02:29:01.255] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:01.505] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "Deerclops/ArmaParaDeerclops" ("Un arma capaz de aguantar el frío"), esperado "Deerclops/ArmaParaDeerclops" porque ReySlime ya superado (downedSlimeKing=true a mano) y EjercitoGoblin (Orden 12) sigue remarcado desde Arrancar(): el siguiente opcional por Orden es Deerclops (15), por delante todavia de ReinaAbeja (25) y LegionDeEscarcha (43) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:01.505] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 16 de daño (0/16)
 [02:29:01.506] [Terrakeep]   requisito opcional 2/3: [FALTA] Llevar encima: Trasto de ciervo (0/1, recomendado)
 [02:29:01.506] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:29:01.853] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-31-deerclops-preparativos.png"
+[02:29:01.853] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-31-deerclops-preparativos.png"
 [02:29:02.072] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Azote de la luz" (Item.damage=16). Lo que lee la guia: "Azote de la luz" con 16.
 [02:29:02.322] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra Deerclops): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Azote de la luz" con 16 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:29:02.572] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "Deerclops/VencerADeerclops" ("Derrotarlo (opcional)"), esperado "Deerclops/VencerADeerclops" porque arma de 16+ de daño puesta: el unico requisito obligatorio del primer paso ya esta cumplido, asi que el paso siguiente pasa a ser el objetivo opcional -> OK. Preparacion 0% (0/1 obligatorios).
@@ -343,7 +343,7 @@ Tu mejor arma (Espada larga de hierro, 12 de daño) le quita 7 por golpe: haría
 [02:29:02.822] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Ciervíclope: 7000 de vida, 10 de defensa y 20 de daño en modo normal.
 Tu mejor arma (Azote de la luz, 16 de daño) le quita 11 por golpe: harían falta unos 637 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:29:03.168] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-32-deerclops-vencer.png"
+[02:29:03.168] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-32-deerclops-vencer.png"
 [02:29:03.387] [Terrakeep] AUTOPRUEBA GUIA - NPC.downedDeerclops puesto a true a mano (la bandera real que enciende NPC.SetEventFlagCleared al morir Deerclops, NPC.cs case 668, linea ~85353). Se restaura al terminar.
 [02:29:03.706] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:03.956] [Terrakeep] AUTOPRUEBA GUIA - con ReySlime y Deerclops superados, hoja de ruta: ReySlime presente=False (debe ser false, ya superado), Deerclops presente=False (debe ser false, ya superado), ReinaAbeja presente=True (debe seguir true, no se ha tocado) -> OK.
@@ -364,15 +364,15 @@ Tu mejor arma (Azote de la luz, 16 de daño) le quita 11 por golpe: harían falt
 [02:29:05.643] [Terrakeep]   requisito 5/6: [FALTA] Llevar encima: Corona de slime (0/1, recomendado)
 [02:29:05.643] [Terrakeep]   requisito 6/6: [FALTA] No llevas ningún gancho (0/1, recomendado)
 [02:29:06.142] [Terrakeep] AUTOPRUEBA GUIA - estado de la brujula para "Mazmorra": SinExplorar, esperado SinExplorar porque nada del mapa revelado todavia en la zona real de la Mazmorra -> OK. Marcadores ahora mismo: 0.
-[02:29:06.493] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-33-brujula-sin-explorar.png"
+[02:29:06.493] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-33-brujula-sin-explorar.png"
 [02:29:06.737] [Terrakeep] AUTOPRUEBA GUIA - "Mazmorra" (Pared, tipos=7/8/9/94/95/96/97/98/99) en TODO el mundo: 98601 tiles encontrados en 20170801 mirados, agrupados en 150 zonas, 24,5 ms de CPU en total. -> area REAL de la Mazmorra encontrada en (3240, 536) (Main.dungeonX de este mundo=3355), revelados 6400 tiles de mapa a su alrededor con Main.Map.Update. Esto NO es funcionalidad del mod: es la misma preparacion de escenario que ya usa AutopruebaExploracion.
 [02:29:06.962] [Terrakeep] Brujula de la Guia: objetivo cambiado a zona "Mazmorra", buscando "Mazmorra" SOLO en lo ya explorado. "Mazmorra" (Pared, tipos=7/8/9/94/95/96/97/98/99) solo en lo explorado: en marcha, columna 0 de 8401 (0%).
 [02:29:07.064] [Terrakeep] Brujula de la Guia: "Mazmorra" (Pared, tipos=7/8/9/94/95/96/97/98/99) solo en lo explorado: 3841 tiles encontrados en 20170801 mirados, agrupados en 17 zonas, 14 ms de CPU en total. -> marcador en (3219, 564), a 1161 tiles del jugador.
 [02:29:07.462] [Terrakeep] AUTOPRUEBA GUIA - estado de la brujula para "Mazmorra": Marcado, esperado Marcado porque el area REAL de la Mazmorra de este mundo, ya revelada: la brujula debe encontrarla -> OK. Marcadores ahora mismo: 1.
-[02:29:07.812] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-34-brujula-marcado.png"
+[02:29:07.812] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-34-brujula-marcado.png"
 [02:29:08.032] [Terrakeep] PANEL CERRADO via salto al mapa vanilla (autoprueba de la Guia (brujula)). Pestaña al cerrar: "Guía".
 [02:29:08.032] [Terrakeep] AUTOPRUEBA GUIA - saltado al mapa vanilla via PanelExploracionSystem.VerEnElMapa, centrado en el marcador real de la brujula (3219, 564). Main.mapFullscreen=True. Marcadores de la brujula pendientes de dibujar: 1 (color dorado, distinto del ambar de Exploracion).
-[02:29:08.311] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-35-brujula-mapa-vanilla.png"
+[02:29:08.311] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-35-brujula-mapa-vanilla.png"
 [02:29:08.532] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
 [02:29:08.532] [Terrakeep] PANEL ABIERTO via autoprueba de la Guia: vuelta del mapa vanilla tras la brujula. Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPrueba". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
 [02:29:08.532] [Terrakeep] AUTOPRUEBA GUIA - mapa vanilla cerrado (Main.mapFullscreen=False), panel de la Guia reabierto. Fotogramas en los que CapaMapaExploracion llego a dibujar algo: 30.
@@ -385,12 +385,12 @@ Tu mejor arma (Azote de la luz, 16 de daño) le quita 11 por golpe: harían falt
 [02:29:09.532] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 15 de daño (0/15)
 [02:29:09.532] [Terrakeep]   requisito opcional 2/3: [FALTA] Cristales de vida usados: 0 de 5 (0/5, recomendado)
 [02:29:09.533] [Terrakeep]   requisito opcional 3/3: [FALTA] Llevar encima: Estandarte de batalla duende (0/1, recomendado)
-[02:29:09.875] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-36-goblin-preparativos.png"
+[02:29:09.875] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-36-goblin-preparativos.png"
 [02:29:10.094] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Azote de la luz" (Item.damage=16). Lo que lee la guia: "Azote de la luz" con 16.
 [02:29:10.344] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra el Ejercito Goblin): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Azote de la luz" con 16 de daño, gancho=no, capa=Superficie, downedBoss1=False.
 [02:29:10.594] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "EjercitoGoblin/VencerAlEjercitoGoblin" ("Derrotarla (opcional)"), esperado "EjercitoGoblin/VencerAlEjercitoGoblin" porque arma de 15+ de daño puesta: el unico requisito obligatorio del primer paso ya esta cumplido, asi que el paso siguiente pasa a ser el objetivo opcional -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:10.595] [Terrakeep]   requisito opcional 1/1: [FALTA] Derrotar al Ejército Goblin (0/1)
-[02:29:10.940] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-37-goblin-vencer.png"
+[02:29:10.940] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-37-goblin-vencer.png"
 [02:29:11.159] [Terrakeep] AUTOPRUEBA GUIA - NPC.downedGoblins puesto a true a mano. Se restaura al terminar.
 [02:29:11.483] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:11.734] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "LegionDeEscarcha/ArmaParaLaLegionDeEscarcha" ("Un arma capaz de aguantar el frío de otra oleada"), esperado "LegionDeEscarcha/ArmaParaLaLegionDeEscarcha" porque EjercitoGoblin ya superado (downedGoblins=true a mano) y ReinaAbeja (25) remarcada superada por PrepararEventosDeInvasionTempranos: el siguiente opcional por Orden es LegionDeEscarcha (43, ya en Modo Dificil - hardMode=true a mano) -> OK. Preparacion 33% (1/2 obligatorios).
@@ -398,12 +398,12 @@ Tu mejor arma (Azote de la luz, 16 de daño) le quita 11 por golpe: harían falt
 [02:29:11.734] [Terrakeep]   requisito opcional 2/4: [FALTA] No llevas ningún arma; hacen falta 28 de daño (0/28)
 [02:29:11.734] [Terrakeep]   requisito opcional 3/4: [FALTA] Cristales de vida usados: 0 de 5 (0/5, recomendado)
 [02:29:11.734] [Terrakeep]   requisito opcional 4/4: [FALTA] Llevar encima: Globo de nieve (0/1, recomendado)
-[02:29:12.077] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-38-legion-preparativos.png"
+[02:29:12.077] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-38-legion-preparativos.png"
 [02:29:12.296] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Flor de fuego" (Item.damage=37). Lo que lee la guia: "Flor de fuego" con 37.
 [02:29:12.546] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra la Legion de Escarcha): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Flor de fuego" con 37 de daño, gancho=no, capa=Superficie, downedBoss1=False.
 [02:29:12.796] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "LegionDeEscarcha/VencerALaLegionDeEscarcha" ("Derrotarla (opcional)"), esperado "LegionDeEscarcha/VencerALaLegionDeEscarcha" porque arma de 28+ de daño puesta: el unico requisito obligatorio del primer paso ya esta cumplido, asi que el paso siguiente pasa a ser el objetivo opcional -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:12.796] [Terrakeep]   requisito opcional 1/1: [FALTA] Derrotar a la Legión de Escarcha (0/1)
-[02:29:13.141] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-39-legion-vencer.png"
+[02:29:13.141] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-39-legion-vencer.png"
 [02:29:13.360] [Terrakeep] AUTOPRUEBA GUIA - NPC.downedFrost puesto a true a mano (el nombre real del campo, no "downedFrostLegion"); downedQueenBee y hardMode devueltos a su valor real (False/False). Se restaura al terminar.
 [02:29:13.678] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:13.928] [Terrakeep] AUTOPRUEBA GUIA - con los cuatro opcionales tempranos superados, hoja de ruta: ReySlime=False, EjercitoGoblin=False, Deerclops=False, LegionDeEscarcha=False (los cuatro deben ser false, ya superados), ReinaAbeja=True (debe seguir true, no se ha tocado) -> OK.
@@ -415,105 +415,105 @@ Tu mejor arma (Azote de la luz, 16 de daño) le quita 11 por golpe: harían falt
 [02:29:15.342] [Terrakeep]   requisito opcional 2/4: [FALTA] No llevas ningún arma; hacen falta 35 de daño (0/35)
 [02:29:15.342] [Terrakeep]   requisito opcional 3/4: [FALTA] Cristales de vida usados: 0 de 5 (0/5, recomendado)
 [02:29:15.342] [Terrakeep]   requisito opcional 4/4: [FALTA] Llevar encima: Mapa pirata (0/1, recomendado)
-[02:29:15.685] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-40-piratas-preparativos.png"
+[02:29:15.685] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-40-piratas-preparativos.png"
 [02:29:15.904] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Flor de fuego" (Item.damage=37). Lo que lee la guia: "Flor de fuego" con 37.
 [02:29:16.154] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra los Piratas): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Flor de fuego" con 37 de daño, gancho=no, capa=Superficie, downedBoss1=False.
 [02:29:16.404] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "Piratas/VencerALosPiratas" ("Derrotarlos (opcional)"), esperado "Piratas/VencerALosPiratas" porque arma de 35+ de daño puesta: el unico requisito obligatorio del primer paso ya esta cumplido, asi que el paso siguiente pasa a ser el objetivo opcional -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:16.404] [Terrakeep]   requisito opcional 1/1: [FALTA] Derrotar a los Piratas (0/1)
-[02:29:16.749] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-41-piratas-vencer.png"
+[02:29:16.749] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-41-piratas-vencer.png"
 [02:29:16.968] [Terrakeep] AUTOPRUEBA GUIA - NPC.downedPirates puesto a true a mano. Se restaura al terminar.
 [02:29:17.286] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:17.536] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "LocuraMarciana/PrepararLocuraMarciana" ("Un arma capaz del enemigo mejor blindado"), esperado "LocuraMarciana/PrepararLocuraMarciana" porque Piratas ya superado (downedPirates=true a mano): el siguiente opcional por Orden es LocuraMarciana (71), sin objeto de invocacion que probar -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:17.536] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 60 de daño (0/60)
 [02:29:17.536] [Terrakeep]   requisito opcional 2/3: [FALTA] Cristales de vida usados: 0 de 5 (0/5, recomendado)
 [02:29:17.536] [Terrakeep]   requisito opcional 3/3: [FALTA] Activo en el mundo ahora mismo: Sonda marciana (0/1, recomendado)
-[02:29:17.879] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-42-marciana-preparativos.png"
+[02:29:17.879] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-42-marciana-preparativos.png"
 [02:29:18.098] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Granada" (Item.damage=60). Lo que lee la guia: "Granada" con 60.
 [02:29:18.348] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra la Locura Marciana): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Granada" con 60 de daño, gancho=no, capa=Superficie, downedBoss1=False.
 [02:29:18.598] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "LocuraMarciana/VencerALaLocuraMarciana" ("Derrotarla (opcional)"), esperado "LocuraMarciana/VencerALaLocuraMarciana" porque arma de 60+ de daño puesta: el unico requisito obligatorio del primer paso ya esta cumplido, asi que el paso siguiente pasa a ser el objetivo opcional -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:18.599] [Terrakeep]   requisito opcional 1/1: [FALTA] Superar la Locura Marciana (0/1)
-[02:29:18.943] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-43-marciana-vencer.png"
+[02:29:18.943] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-43-marciana-vencer.png"
 [02:29:19.162] [Terrakeep] AUTOPRUEBA GUIA - NPC.downedMartians puesto a true a mano. Se restaura al terminar.
 [02:29:19.480] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:19.730] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "LunaDeCalabazas/ArmaParaMourningWood" ("Un arma para el primero de los dos jefes del evento"), esperado "LunaDeCalabazas/ArmaParaMourningWood" porque LocuraMarciana ya superada (downedMartians=true a mano): el siguiente opcional por Orden es LunaDeCalabazas (72) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:19.730] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 58 de daño (0/58)
 [02:29:19.730] [Terrakeep]   requisito opcional 2/3: [FALTA] Llevar encima: Medallón de luna calabaza (0/1, recomendado)
 [02:29:19.731] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:29:20.072] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-44-calabazas-mourningwood-preparativos.png"
+[02:29:20.072] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-44-calabazas-mourningwood-preparativos.png"
 [02:29:20.291] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Granada" (Item.damage=60). Lo que lee la guia: "Granada" con 60.
 [02:29:20.541] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra Mourning Wood): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Granada" con 60 de daño, gancho=no, capa=Superficie, downedBoss1=False.
 [02:29:20.791] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "LunaDeCalabazas/VencerAMourningWood" ("Derrotarlo (opcional)"), esperado "LunaDeCalabazas/VencerAMourningWood" porque arma de 58+ de daño puesta: el unico requisito obligatorio del primer paso ya esta cumplido -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:20.792] [Terrakeep]   requisito opcional 1/1: [FALTA] Derrotar a Mourning Wood (0/1)
-[02:29:21.136] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-45-calabazas-mourningwood-vencer.png"
+[02:29:21.136] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-45-calabazas-mourningwood-vencer.png"
 [02:29:21.355] [Terrakeep] AUTOPRUEBA GUIA - NPC.downedHalloweenTree puesto a true a mano (NPC.cs, SetEventFlagCleared al morir Mourning Wood, type==325). Se restaura al terminar.
 [02:29:21.605] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:21.855] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "LunaDeCalabazas/ArmaParaPumpking" ("Un arma para el jefe que cierra el evento"), esperado "LunaDeCalabazas/ArmaParaPumpking" porque Mourning Wood ya superado (downedHalloweenTree=true a mano): tercer paso del mismo tramo, sin arma todavia en la mochila -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:21.855] [Terrakeep]   requisito opcional 1/2: [FALTA] No llevas ningún arma; hacen falta 63 de daño (0/63)
 [02:29:21.856] [Terrakeep]   requisito opcional 2/2: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:29:22.199] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-46-calabazas-pumpking-preparativos.png"
+[02:29:22.199] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-46-calabazas-pumpking-preparativos.png"
 [02:29:22.418] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Alabarda de mithril" (Item.damage=65). Lo que lee la guia: "Alabarda de mithril" con 65.
 [02:29:22.668] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra Pumpking): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Alabarda de mithril" con 65 de daño, gancho=no, capa=Superficie, downedBoss1=False.
 [02:29:22.918] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "LunaDeCalabazas/VencerAPumpking" ("Derrotarlo: cierra el evento"), esperado "LunaDeCalabazas/VencerAPumpking" porque arma de 63+ de daño puesta: el unico requisito obligatorio del tercer paso ya esta cumplido -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:22.918] [Terrakeep]   requisito opcional 1/1: [FALTA] Derrotar a Pumpking (0/1)
-[02:29:23.263] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-47-calabazas-pumpking-vencer.png"
+[02:29:23.263] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-47-calabazas-pumpking-vencer.png"
 [02:29:23.482] [Terrakeep] AUTOPRUEBA GUIA - NPC.downedHalloweenKing puesto a true a mano (NPC.cs, SetEventFlagCleared al morir Pumpking, type==327). Cierra la Luna de Calabazas entera. Se restaura al terminar.
 [02:29:23.801] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:24.051] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "LunaHelada/ArmaParaEverscream" ("Un arma para el primero de los tres jefes del evento"), esperado "LunaHelada/ArmaParaEverscream" porque LunaDeCalabazas ya superada del todo (downedHalloweenTree y downedHalloweenKing ambos a true a mano): el siguiente opcional por Orden es LunaHelada (73) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:24.051] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 58 de daño (0/58)
 [02:29:24.052] [Terrakeep]   requisito opcional 2/3: [FALTA] Llevar encima: Regalo asqueroso (0/1, recomendado)
 [02:29:24.052] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:29:24.394] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-48-helada-everscream-preparativos.png"
+[02:29:24.394] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-48-helada-everscream-preparativos.png"
 [02:29:24.613] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Granada" (Item.damage=60). Lo que lee la guia: "Granada" con 60.
 [02:29:24.863] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra Everscream): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Granada" con 60 de daño, gancho=no, capa=Superficie, downedBoss1=False.
 [02:29:25.113] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "LunaHelada/VencerAEverscream" ("Derrotarlo (opcional)"), esperado "LunaHelada/VencerAEverscream" porque arma de 58+ de daño puesta: el unico requisito obligatorio del primer paso ya esta cumplido -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:25.114] [Terrakeep]   requisito opcional 1/1: [FALTA] Derrotar a Everscream (0/1)
-[02:29:25.458] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-49-helada-everscream-vencer.png"
+[02:29:25.458] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-49-helada-everscream-vencer.png"
 [02:29:25.677] [Terrakeep] AUTOPRUEBA GUIA - NPC.downedChristmasTree puesto a true a mano (NPC.cs, SetEventFlagCleared al morir Everscream, type==344). Se restaura al terminar.
 [02:29:25.927] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:26.177] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "LunaHelada/ArmaParaSantaNK1" ("Un arma para el segundo jefe: el más blindado de los tres"), esperado "LunaHelada/ArmaParaSantaNK1" porque Everscream ya superado (downedChristmasTree=true a mano): tercer paso del mismo tramo, sin arma todavia en la mochila -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:26.178] [Terrakeep]   requisito opcional 1/2: [FALTA] No llevas ningún arma; hacen falta 66 de daño (0/66)
 [02:29:26.178] [Terrakeep]   requisito opcional 2/2: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:29:26.520] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-50-helada-santank-preparativos.png"
+[02:29:26.520] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-50-helada-santank-preparativos.png"
 [02:29:26.739] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Flagelo Taoísta" (Item.damage=85). Lo que lee la guia: "Flagelo Taoísta" con 85.
 [02:29:26.989] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra Santa-NK1): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Flagelo Taoísta" con 85 de daño, gancho=no, capa=Superficie, downedBoss1=False.
 [02:29:27.239] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "LunaHelada/VencerASantaNK1" ("Derrotarlo (opcional)"), esperado "LunaHelada/VencerASantaNK1" porque arma de 66+ de daño puesta: el unico requisito obligatorio del tercer paso ya esta cumplido -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:27.239] [Terrakeep]   requisito opcional 1/1: [FALTA] Derrotar a Santa-NK1 (0/1)
-[02:29:27.585] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-51-helada-santank-vencer.png"
+[02:29:27.585] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-51-helada-santank-vencer.png"
 [02:29:27.804] [Terrakeep] AUTOPRUEBA GUIA - NPC.downedChristmasSantank puesto a true a mano (NPC.cs, SetEventFlagCleared al morir Santa-NK1, type==346). Se restaura al terminar.
 [02:29:28.054] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:28.304] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "LunaHelada/ArmaParaIceQueen" ("Un arma para el jefe que cierra el evento"), esperado "LunaHelada/ArmaParaIceQueen" porque Santa-NK1 ya superado (downedChristmasSantank=true a mano): quinto paso del mismo tramo, sin arma todavia en la mochila -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:28.304] [Terrakeep]   requisito opcional 1/2: [FALTA] No llevas ningún arma; hacen falta 62 de daño (0/62)
 [02:29:28.304] [Terrakeep]   requisito opcional 2/2: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:29:28.647] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-52-helada-icequeen-preparativos.png"
+[02:29:28.647] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-52-helada-icequeen-preparativos.png"
 [02:29:28.870] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Alabarda de mithril" (Item.damage=65). Lo que lee la guia: "Alabarda de mithril" con 65.
 [02:29:29.120] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra la Reina de Hielo): vida 100 (cristales consumidos 0), defensa 0, vecinos 2, mejor arma "Alabarda de mithril" con 65 de daño, gancho=no, capa=Superficie, downedBoss1=False.
 [02:29:29.371] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "LunaHelada/VencerAIceQueen" ("Derrotarla: cierra el evento"), esperado "LunaHelada/VencerAIceQueen" porque arma de 62+ de daño puesta: el unico requisito obligatorio del quinto paso ya esta cumplido -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:29.371] [Terrakeep]   requisito opcional 1/1: [FALTA] Derrotar a la Reina de Hielo (0/1)
-[02:29:29.716] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-53-helada-icequeen-vencer.png"
+[02:29:29.716] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-53-helada-icequeen-vencer.png"
 [02:29:29.935] [Terrakeep] AUTOPRUEBA GUIA - NPC.downedChristmasIceQueen puesto a true a mano (NPC.cs, SetEventFlagCleared al morir la Reina de Hielo, type==345). Cierra la Luna Helada entera. Se restaura al terminar.
 [02:29:30.259] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:30.509] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "EjercitoD2/ArmaParaElEjercitoD2" ("Un arma capaz de un asedio entero"), esperado "EjercitoD2/ArmaParaElEjercitoD2" porque LunaHelada ya superada del todo (las tres banderas a true a mano): el siguiente opcional por Orden es EjercitoD2 (74) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:30.510] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 65 de daño (0/65)
 [02:29:30.510] [Terrakeep]   requisito opcional 2/3: [FALTA] Llevar encima: Cristal eternia (0/1, recomendado)
 [02:29:30.510] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:29:30.853] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-54-d2-preparativos.png"
+[02:29:30.853] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-54-d2-preparativos.png"
 [02:29:31.072] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Flagelo Taoísta" (Item.damage=85). Lo que lee la guia: "Flagelo Taoísta" con 85.
 [02:29:31.322] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (con arma contra Betsy): vida 100 (cristales consumidos 0), defensa 0, vecinos 2, mejor arma "Flagelo Taoísta" con 85 de daño, gancho=no, capa=Superficie, downedBoss1=False.
 [02:29:31.572] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "EjercitoD2/VencerAlEjercitoD2" ("Superar un asedio entero (opcional)"), esperado "EjercitoD2/VencerAlEjercitoD2" porque arma de 65+ de daño puesta: el unico requisito obligatorio del primer paso ya esta cumplido -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:31.572] [Terrakeep]   requisito opcional 1/1: [FALTA] Superar el Antiguo Ejército D2 (cualquier dificultad) (0/1)
-[02:29:31.918] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-55-d2-vencer.png"
+[02:29:31.918] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-55-d2-vencer.png"
 [02:29:32.137] [Terrakeep] AUTOPRUEBA GUIA - Player.downedDD2EventAnyDifficulty puesto a true a mano (campo de Player, no de NPC - Player.cs ~linea 23413). Se restaura al terminar.
 [02:29:32.454] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:32.704] [Terrakeep] AUTOPRUEBA GUIA - con los nueve opcionales de esta prueba superados, hoja de ruta: ReySlime=False, EjercitoGoblin=False, Deerclops=False, LegionDeEscarcha=False, Piratas=False, LocuraMarciana=False, LunaDeCalabazas=False, LunaHelada=False, EjercitoD2=False, ReinaAbeja=False, InicioModoDificil=False (los once deben ser false: los nueve de esta prueba ya superados de verdad, ReinaAbeja/InicioModoDificil remarcados superados a proposito por PrepararOpcionalesRestantes), JefesOpcionalesTardios=True (debe seguir true: nunca se ha tocado) -> OK.
 [02:29:32.704] [Terrakeep] AUTOPRUEBA GUIA - objetivo opcional tras superar los nueve (sin arma en la mochila): "JefesOpcionalesTardios/ArmaParaFishron", esperado "JefesOpcionalesTardios/ArmaParaFishron" (el UNICO opcional que sigue de verdad pendiente de todos los que hay) -> OK.
-[02:29:33.047] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-56-todos-los-opcionales-superados.png"
+[02:29:33.047] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-56-todos-los-opcionales-superados.png"
 [02:29:33.266] [Terrakeep] AUTOPRUEBA GUIA - restaurados los cuatro opcionales tempranos (downedSlimeKing=False, downedDeerclops=False, downedGoblins=False, downedFrost=False) y los cinco tramos opcionales nuevos de esta sesion y la anterior a su valor original: downedPirates=False, downedMartians=False, downedHalloweenTree=False, downedHalloweenKing=False, downedChristmasTree=False, downedChristmasSantank=False, downedChristmasIceQueen=False, downedDD2EventAnyDifficulty=False.
 [02:29:33.516] [Terrakeep] AUTOPRUEBA GUIA - preparado el recorrido EN VIVO de 25 tramos nuevos de Calamity (60 pasos): camino obligatorio de vanilla y los doce tramos opcionales de vanilla, todos superados a mano; las 33 banderas propias de Calamity, todas en false. Cola de acciones: 299.
 [02:29:35.759] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "DesertScourge/ArmaParaDesertScourge" ("Cualquier arma con algo de alcance"), esperado "DesertScourge/ArmaParaDesertScourge" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional DesertScourge, Orden 3) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:35.759] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 14 de daño (0/14)
 [02:29:35.759] [Terrakeep]   requisito opcional 2/3: [FALTA] Llevar encima: Desert Medallion (0/1, recomendado)
 [02:29:35.759] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:29:36.105] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-DesertScourge-ArmaParaDesertScourge.png"
+[02:29:36.105] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-DesertScourge-ArmaParaDesertScourge.png"
 [02:29:36.324] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Azote de la luz" (Item.damage=16). Lo que lee la guia: "Azote de la luz" con 16.
 [02:29:36.574] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra El Desert Scourge (opcional, Calamity)): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Azote de la luz" con 16 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:29:36.824] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "DesertScourge/VencerADesertScourge" ("Derrotarlo (opcional)"), esperado "DesertScourge/VencerADesertScourge" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional DesertScourge, Orden 3) -> OK. Preparacion 0% (0/1 obligatorios).
@@ -522,14 +522,14 @@ Tu mejor arma (Azote de la luz, 16 de daño) le quita 11 por golpe: harían falt
 [02:29:37.075] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Desert Scourge: 4000 de vida, 4 de defensa y 40 de daño en modo normal.
 Tu mejor arma (Azote de la luz, 16 de daño) le quita 14 por golpe: harían falta unos 286 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:29:37.421] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-DesertScourge-VencerADesertScourge.png"
+[02:29:37.421] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-DesertScourge-VencerADesertScourge.png"
 [02:29:37.640] [Terrakeep] AUTOPRUEBA GUIA - DesertScourge/VencerADesertScourge: bandera real "downedDesertScourge" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:29:37.959] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:38.459] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "GiantClam/PrepararGiantClam" ("Cualquier arma, y haber derrotado ya al Desert Scourge"), esperado "GiantClam/PrepararGiantClam" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional GiantClam, Orden 4) -> OK. Preparacion 25% (0/1 obligatorios).
 [02:29:38.459] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 14 de daño (0/14)
 [02:29:38.459] [Terrakeep]   requisito opcional 2/3: [HECHO] Derrotar al Desert Scourge (1/1, recomendado)
 [02:29:38.459] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:29:38.805] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-GiantClam-PrepararGiantClam.png"
+[02:29:38.805] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-GiantClam-PrepararGiantClam.png"
 [02:29:39.025] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Azote de la luz" (Item.damage=16). Lo que lee la guia: "Azote de la luz" con 16.
 [02:29:39.274] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra El Giant Clam (opcional, Calamity)): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Azote de la luz" con 16 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:29:39.525] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "GiantClam/VencerAGiantClam" ("Derrotarlo (opcional)"), esperado "GiantClam/VencerAGiantClam" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional GiantClam, Orden 4) -> OK. Preparacion 0% (0/1 obligatorios).
@@ -538,14 +538,14 @@ Tu mejor arma (Azote de la luz, 16 de daño) le quita 14 por golpe: harían falt
 [02:29:39.775] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Giant Clam: 7500 de vida, 9999 de defensa y 100 de daño en modo normal.
 Tu mejor arma (Azote de la luz, 16 de daño) le quita 1 por golpe: harían falta unos 7500 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:29:40.121] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-GiantClam-VencerAGiantClam.png"
+[02:29:40.121] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-GiantClam-VencerAGiantClam.png"
 [02:29:40.341] [Terrakeep] AUTOPRUEBA GUIA - GiantClam/VencerAGiantClam: bandera real "downedCLAM" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:29:40.659] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:41.159] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "Crabulon/ArmaParaCrabulon" ("Un arma capaz de perforar su caparazon"), esperado "Crabulon/ArmaParaCrabulon" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional Crabulon, Orden 6) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:41.159] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 16 de daño (0/16)
 [02:29:41.160] [Terrakeep]   requisito opcional 2/3: [FALTA] Llevar encima: Decapodita Sprout (0/1, recomendado)
 [02:29:41.160] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:29:41.506] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Crabulon-ArmaParaCrabulon.png"
+[02:29:41.506] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Crabulon-ArmaParaCrabulon.png"
 [02:29:41.725] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Azote de la luz" (Item.damage=16). Lo que lee la guia: "Azote de la luz" con 16.
 [02:29:41.975] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Crabulon (opcional, Calamity)): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Azote de la luz" con 16 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:29:42.225] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "Crabulon/VencerACrabulon" ("Derrotarlo (opcional)"), esperado "Crabulon/VencerACrabulon" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional Crabulon, Orden 6) -> OK. Preparacion 0% (0/1 obligatorios).
@@ -554,14 +554,14 @@ Tu mejor arma (Azote de la luz, 16 de daño) le quita 1 por golpe: harían falta
 [02:29:42.476] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Crabulon: 3500 de vida, 8 de defensa y 40 de daño en modo normal.
 Tu mejor arma (Azote de la luz, 16 de daño) le quita 12 por golpe: harían falta unos 292 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:29:42.821] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Crabulon-VencerACrabulon.png"
+[02:29:42.821] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Crabulon-VencerACrabulon.png"
 [02:29:43.040] [Terrakeep] AUTOPRUEBA GUIA - Crabulon/VencerACrabulon: bandera real "downedCrabulon" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:29:43.359] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:43.859] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "HiveMindOPerforator/ArmaParaHiveMindOPerforator" ("Un arma que aguante una pelea larga"), esperado "HiveMindOPerforator/ArmaParaHiveMindOPerforator" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional HiveMindOPerforator, Orden 21) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:43.860] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 20 de daño (0/20)
 [02:29:43.860] [Terrakeep]   requisito opcional 2/3: [FALTA] Cualquiera de estos (Teratoma / Bloody Worm Food): llevas 0 de 1 (0/1, recomendado)
 [02:29:43.860] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:29:44.207] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-HiveMindOPerforator-ArmaParaHiveMindOPerforator.png"
+[02:29:44.207] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-HiveMindOPerforator-ArmaParaHiveMindOPerforator.png"
 [02:29:44.426] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Bumerán encantado" (Item.damage=21). Lo que lee la guia: "Bumerán encantado" con 21.
 [02:29:44.677] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra The Hive Mind / The Perforators (opcional, Calamity)): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Bumerán encantado" con 21 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:29:44.927] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "HiveMindOPerforator/VencerAHiveMindOPerforator" ("Derrotarlo (opcional)"), esperado "HiveMindOPerforator/VencerAHiveMindOPerforator" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional HiveMindOPerforator, Orden 21) -> OK. Preparacion 0% (0/1 obligatorios).
@@ -570,14 +570,14 @@ Tu mejor arma (Azote de la luz, 16 de daño) le quita 12 por golpe: harían falt
 [02:29:45.177] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 The Hive Mind: 5000 de vida, 8 de defensa y 40 de daño en modo normal.
 Tu mejor arma (Bumerán encantado, 21 de daño) le quita 17 por golpe: harían falta unos 295 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:29:45.525] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-HiveMindOPerforator-VencerAHiveMindOPerforator.png"
+[02:29:45.525] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-HiveMindOPerforator-VencerAHiveMindOPerforator.png"
 [02:29:45.745] [Terrakeep] AUTOPRUEBA GUIA - HiveMindOPerforator/VencerAHiveMindOPerforator: bandera real "downedHiveMind" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:29:46.063] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:46.563] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "SlimeGod/ArmaParaSlimeGod" ("Un arma capaz de dos fases seguidas"), esperado "SlimeGod/ArmaParaSlimeGod" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional SlimeGod, Orden 31) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:46.564] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 20 de daño (0/20)
 [02:29:46.564] [Terrakeep]   requisito opcional 2/3: [FALTA] Llevar encima: Overloaded Sludge (0/1, recomendado)
 [02:29:46.564] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:29:46.911] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-SlimeGod-ArmaParaSlimeGod.png"
+[02:29:46.911] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-SlimeGod-ArmaParaSlimeGod.png"
 [02:29:47.129] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Bumerán encantado" (Item.damage=21). Lo que lee la guia: "Bumerán encantado" con 21.
 [02:29:47.379] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra The Slime God (opcional, Calamity)): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Bumerán encantado" con 21 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:29:47.629] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "SlimeGod/VencerASlimeGod" ("Derrotarlo (opcional)"), esperado "SlimeGod/VencerASlimeGod" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional SlimeGod, Orden 31) -> OK. Preparacion 0% (0/1 obligatorios).
@@ -586,14 +586,14 @@ Tu mejor arma (Bumerán encantado, 21 de daño) le quita 17 por golpe: harían f
 [02:29:47.880] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 The Slime God: 420 de vida, 6 de defensa y 0 de daño en modo normal.
 Tu mejor arma (Bumerán encantado, 21 de daño) le quita 18 por golpe: harían falta unos 24 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:29:48.228] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-SlimeGod-VencerASlimeGod.png"
+[02:29:48.228] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-SlimeGod-VencerASlimeGod.png"
 [02:29:48.447] [Terrakeep] AUTOPRUEBA GUIA - SlimeGod/VencerASlimeGod: bandera real "downedSlimeGod" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:29:48.770] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:49.270] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "DreadnautilusYHorribleHog/PrepararDreadnautilus" ("Estar listo para una Luna de Sangre"), esperado "DreadnautilusYHorribleHog/PrepararDreadnautilus" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional DreadnautilusYHorribleHog, Orden 32) -> OK. Preparacion 25% (0/1 obligatorios).
 [02:29:49.270] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 20 de daño (0/20)
 [02:29:49.270] [Terrakeep]   requisito opcional 2/3: [HECHO] Derrotar al Ojo de Cthulhu (1/1, recomendado)
 [02:29:49.270] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:29:49.617] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-DreadnautilusYHorribleHog-PrepararDreadnautilus.png"
+[02:29:49.617] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-DreadnautilusYHorribleHog-PrepararDreadnautilus.png"
 [02:29:49.836] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Bumerán encantado" (Item.damage=21). Lo que lee la guia: "Bumerán encantado" con 21.
 [02:29:50.086] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Dreadnautilus y Horrible Hog (opcional, Calamity)): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Bumerán encantado" con 21 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:29:50.337] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "DreadnautilusYHorribleHog/VencerADreadnautilusYHorribleHog" ("Derrotar a cualquiera de los dos (opcional)"), esperado "DreadnautilusYHorribleHog/VencerADreadnautilusYHorribleHog" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional DreadnautilusYHorribleHog, Orden 32) -> OK. Preparacion 0% (0/1 obligatorios).
@@ -602,14 +602,14 @@ Tu mejor arma (Bumerán encantado, 21 de daño) le quita 18 por golpe: harían f
 [02:29:50.587] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Nautilo terrible: 7000 de vida, 24 de defensa y 55 de daño en modo normal.
 Tu mejor arma (Bumerán encantado, 21 de daño) le quita 9 por golpe: harían falta unos 778 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:29:50.934] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-DreadnautilusYHorribleHog-VencerADreadnautilusYHorribleHog.png"
+[02:29:50.934] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-DreadnautilusYHorribleHog-VencerADreadnautilusYHorribleHog.png"
 [02:29:51.154] [Terrakeep] AUTOPRUEBA GUIA - DreadnautilusYHorribleHog/VencerADreadnautilusYHorribleHog: bandera real "downedDreadnautilus" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:29:51.480] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:51.980] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "Cryogen/ArmaParaCryogen" ("Tu primer arma de Modo Dificil de Calamity"), esperado "Cryogen/ArmaParaCryogen" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional Cryogen, Orden 46) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:51.980] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 35 de daño (0/35)
 [02:29:51.980] [Terrakeep]   requisito opcional 2/3: [FALTA] Llevar encima: Cryo Key (0/1, recomendado)
 [02:29:51.981] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:29:52.328] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Cryogen-ArmaParaCryogen.png"
+[02:29:52.328] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Cryogen-ArmaParaCryogen.png"
 [02:29:52.547] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Flor de fuego" (Item.damage=37). Lo que lee la guia: "Flor de fuego" con 37.
 [02:29:52.797] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Cryogen (opcional, Calamity)): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Flor de fuego" con 37 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:29:53.047] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "Cryogen/VencerACryogen" ("Derrotarlo (opcional)"), esperado "Cryogen/VencerACryogen" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional Cryogen, Orden 46) -> OK. Preparacion 0% (0/1 obligatorios).
@@ -618,14 +618,14 @@ Tu mejor arma (Bumerán encantado, 21 de daño) le quita 9 por golpe: harían fa
 [02:29:53.297] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Cryogen: 25000 de vida, 15 de defensa y 69 de daño en modo normal.
 Tu mejor arma (Flor de fuego, 37 de daño) le quita 30 por golpe: harían falta unos 834 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:29:53.644] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Cryogen-VencerACryogen.png"
+[02:29:53.644] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Cryogen-VencerACryogen.png"
 [02:29:53.863] [Terrakeep] AUTOPRUEBA GUIA - Cryogen/VencerACryogen: bandera real "downedCryogen" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:29:54.184] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:54.684] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "AquaticScourge/ArmaParaAquaticScourge" ("Un arma que aguante un gusano largo"), esperado "AquaticScourge/ArmaParaAquaticScourge" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional AquaticScourge, Orden 47) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:54.684] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 35 de daño (0/35)
 [02:29:54.685] [Terrakeep]   requisito opcional 2/3: [FALTA] Llevar encima: Seafood (0/1, recomendado)
 [02:29:54.685] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:29:55.032] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-AquaticScourge-ArmaParaAquaticScourge.png"
+[02:29:55.032] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-AquaticScourge-ArmaParaAquaticScourge.png"
 [02:29:55.251] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Flor de fuego" (Item.damage=37). Lo que lee la guia: "Flor de fuego" con 37.
 [02:29:55.501] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Aquatic Scourge (opcional, Calamity)): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Flor de fuego" con 37 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:29:55.752] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "AquaticScourge/VencerAAquaticScourge" ("Derrotarlo (opcional)"), esperado "AquaticScourge/VencerAAquaticScourge" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional AquaticScourge, Orden 47) -> OK. Preparacion 0% (0/1 obligatorios).
@@ -634,14 +634,14 @@ Tu mejor arma (Flor de fuego, 37 de daño) le quita 30 por golpe: harían falta 
 [02:29:56.002] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Aquatic Scourge: 80000 de vida, 10 de defensa y 85 de daño en modo normal.
 Tu mejor arma (Flor de fuego, 37 de daño) le quita 32 por golpe: harían falta unos 2500 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:29:56.349] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-AquaticScourge-VencerAAquaticScourge.png"
+[02:29:56.349] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-AquaticScourge-VencerAAquaticScourge.png"
 [02:29:56.569] [Terrakeep] AUTOPRUEBA GUIA - AquaticScourge/VencerAAquaticScourge: bandera real "downedAquaticScourge" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:29:56.889] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:29:57.389] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "BrimstoneElemental/ArmaParaBrimstoneElemental" ("Un arma capaz de un jefe defensivo"), esperado "BrimstoneElemental/ArmaParaBrimstoneElemental" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional BrimstoneElemental, Orden 48) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:29:57.390] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 38 de daño (0/38)
 [02:29:57.390] [Terrakeep]   requisito opcional 2/3: [FALTA] Llevar encima: Charred Idol (0/1, recomendado)
 [02:29:57.390] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:29:57.740] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-BrimstoneElemental-ArmaParaBrimstoneElemental.png"
+[02:29:57.740] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-BrimstoneElemental-ArmaParaBrimstoneElemental.png"
 [02:29:57.958] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Bumerán en llamas" (Item.damage=40). Lo que lee la guia: "Bumerán en llamas" con 40.
 [02:29:58.208] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Brimstone Elemental (opcional, Calamity)): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Bumerán en llamas" con 40 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:29:58.458] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "BrimstoneElemental/VencerABrimstoneElemental" ("Derrotarlo (opcional)"), esperado "BrimstoneElemental/VencerABrimstoneElemental" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional BrimstoneElemental, Orden 48) -> OK. Preparacion 0% (0/1 obligatorios).
@@ -650,14 +650,14 @@ Tu mejor arma (Flor de fuego, 37 de daño) le quita 32 por golpe: harían falta 
 [02:29:58.709] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Brimstone Elemental: 30000 de vida, 15 de defensa y 56 de daño en modo normal.
 Tu mejor arma (Bumerán en llamas, 40 de daño) le quita 33 por golpe: harían falta unos 910 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:29:59.056] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-BrimstoneElemental-VencerABrimstoneElemental.png"
+[02:29:59.056] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-BrimstoneElemental-VencerABrimstoneElemental.png"
 [02:29:59.276] [Terrakeep] AUTOPRUEBA GUIA - BrimstoneElemental/VencerABrimstoneElemental: bandera real "downedBrimstoneElemental" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:29:59.596] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:30:00.097] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "LluviaAcidaCragmawMire/PrepararLluviaAcida2" ("Estar listo para la Lluvia Acida (fase 2)"), esperado "LluviaAcidaCragmawMire/PrepararLluviaAcida2" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional LluviaAcidaCragmawMire, Orden 49) -> OK. Preparacion 25% (0/1 obligatorios).
 [02:30:00.097] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 40 de daño (0/40)
 [02:30:00.097] [Terrakeep]   requisito opcional 2/3: [HECHO] Derrotar al Aquatic Scourge (1/1, recomendado)
 [02:30:00.097] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:00.446] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-LluviaAcidaCragmawMire-PrepararLluviaAcida2.png"
+[02:30:00.446] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-LluviaAcidaCragmawMire-PrepararLluviaAcida2.png"
 [02:30:00.665] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Bumerán en llamas" (Item.damage=40). Lo que lee la guia: "Bumerán en llamas" con 40.
 [02:30:00.916] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Lluvia Acida: Cragmaw Mire (opcional, Calamity)): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Bumerán en llamas" con 40 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:01.166] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "LluviaAcidaCragmawMire/VencerACragmawMire" ("Derrotarlo (opcional)"), esperado "LluviaAcidaCragmawMire/VencerACragmawMire" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional LluviaAcidaCragmawMire, Orden 49) -> OK. Preparacion 0% (0/1 obligatorios).
@@ -666,14 +666,14 @@ Tu mejor arma (Bumerán en llamas, 40 de daño) le quita 33 por golpe: harían f
 [02:30:01.416] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Cragmaw Mire: 4000 de vida, 25 de defensa y 66 de daño en modo normal.
 Tu mejor arma (Bumerán en llamas, 40 de daño) le quita 28 por golpe: harían falta unos 143 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:01.763] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-LluviaAcidaCragmawMire-VencerACragmawMire.png"
+[02:30:01.763] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-LluviaAcidaCragmawMire-VencerACragmawMire.png"
 [02:30:01.982] [Terrakeep] AUTOPRUEBA GUIA - LluviaAcidaCragmawMire/VencerACragmawMire: bandera real "downedCragmawMire" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:02.310] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:30:02.810] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "AstrumAureus/ArmaParaAstrumAureus" ("Un arma capaz de defensa alta"), esperado "AstrumAureus/ArmaParaAstrumAureus" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional AstrumAureus, Orden 51) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:30:02.810] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 55 de daño (0/55)
 [02:30:02.810] [Terrakeep]   requisito opcional 2/3: [FALTA] Llevar encima: Astral Chunk (0/1, recomendado)
 [02:30:02.810] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:03.158] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-AstrumAureus-ArmaParaAstrumAureus.png"
+[02:30:03.158] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-AstrumAureus-ArmaParaAstrumAureus.png"
 [02:30:03.377] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Granada" (Item.damage=60). Lo que lee la guia: "Granada" con 60.
 [02:30:03.627] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Astrum Aureus (opcional, Calamity)): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Granada" con 60 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:03.877] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "AstrumAureus/VencerAAstrumAureus" ("Derrotarlo (opcional)"), esperado "AstrumAureus/VencerAAstrumAureus" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional AstrumAureus, Orden 51) -> OK. Preparacion 0% (0/1 obligatorios).
@@ -682,14 +682,14 @@ Tu mejor arma (Bumerán en llamas, 40 de daño) le quita 28 por golpe: harían f
 [02:30:04.127] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Astrum Aureus: 75000 de vida, 40 de defensa y 80 de daño en modo normal.
 Tu mejor arma (Granada, 60 de daño) le quita 40 por golpe: harían falta unos 1875 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:04.475] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-AstrumAureus-VencerAAstrumAureus.png"
+[02:30:04.475] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-AstrumAureus-VencerAAstrumAureus.png"
 [02:30:04.694] [Terrakeep] AUTOPRUEBA GUIA - AstrumAureus/VencerAAstrumAureus: bandera real "downedAstrumAureus" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:05.015] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:30:05.515] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "CalamitasClone/ArmaParaCalamitasClone" ("Un arma a la altura de Plantera"), esperado "CalamitasClone/ArmaParaCalamitasClone" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional CalamitasClone, Orden 55) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:30:05.516] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 55 de daño (0/55)
 [02:30:05.516] [Terrakeep]   requisito opcional 2/3: [FALTA] Llevar encima: Eye of Desolation (0/1, recomendado)
 [02:30:05.516] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:05.863] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-CalamitasClone-ArmaParaCalamitasClone.png"
+[02:30:05.863] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-CalamitasClone-ArmaParaCalamitasClone.png"
 [02:30:06.083] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Granada" (Item.damage=60). Lo que lee la guia: "Granada" con 60.
 [02:30:06.333] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Calamitas Clone (opcional, Calamity)): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Granada" con 60 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:06.583] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "CalamitasClone/VencerACalamitasClone" ("Derrotarlo (opcional)"), esperado "CalamitasClone/VencerACalamitasClone" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional CalamitasClone, Orden 55) -> OK. Preparacion 0% (0/1 obligatorios).
@@ -698,14 +698,14 @@ Tu mejor arma (Granada, 60 de daño) le quita 40 por golpe: harían falta unos 1
 [02:30:06.833] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Calamitas Clone: 30000 de vida, 25 de defensa y 70 de daño en modo normal.
 Tu mejor arma (Granada, 60 de daño) le quita 48 por golpe: harían falta unos 625 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:07.181] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-CalamitasClone-VencerACalamitasClone.png"
+[02:30:07.181] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-CalamitasClone-VencerACalamitasClone.png"
 [02:30:07.400] [Terrakeep] AUTOPRUEBA GUIA - CalamitasClone/VencerACalamitasClone: bandera real "downedCalamitasClone" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:07.726] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:30:08.226] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "GreatSandShark/ArmaParaGreatSandShark" ("Un arma capaz de un miniboss post-Plantera"), esperado "GreatSandShark/ArmaParaGreatSandShark" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional GreatSandShark, Orden 62) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:30:08.227] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 60 de daño (0/60)
 [02:30:08.227] [Terrakeep]   requisito opcional 2/3: [FALTA] Llevar encima: Sandstorm's Core (0/1, recomendado)
 [02:30:08.227] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:08.575] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-GreatSandShark-ArmaParaGreatSandShark.png"
+[02:30:08.575] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-GreatSandShark-ArmaParaGreatSandShark.png"
 [02:30:08.794] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Granada" (Item.damage=60). Lo que lee la guia: "Granada" con 60.
 [02:30:09.044] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Great Sand Shark (opcional, Calamity)): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Granada" con 60 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:09.294] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "GreatSandShark/VencerAGreatSandShark" ("Derrotarlo (opcional)"), esperado "GreatSandShark/VencerAGreatSandShark" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional GreatSandShark, Orden 62) -> OK. Preparacion 0% (0/1 obligatorios).
@@ -714,14 +714,14 @@ Tu mejor arma (Granada, 60 de daño) le quita 48 por golpe: harían falta unos 6
 [02:30:09.545] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Great Sand Shark: 9200 de vida, 40 de defensa y 100 de daño en modo normal.
 Tu mejor arma (Granada, 60 de daño) le quita 40 por golpe: harían falta unos 230 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:09.892] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-GreatSandShark-VencerAGreatSandShark.png"
+[02:30:09.892] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-GreatSandShark-VencerAGreatSandShark.png"
 [02:30:10.111] [Terrakeep] AUTOPRUEBA GUIA - GreatSandShark/VencerAGreatSandShark: bandera real "downedGSS" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:10.433] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:30:10.933] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "Ravager/ArmaParaRavager" ("Un arma pensada para el nivel del Golem"), esperado "Ravager/ArmaParaRavager" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional Ravager, Orden 68) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:30:10.933] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 65 de daño (0/65)
 [02:30:10.933] [Terrakeep]   requisito opcional 2/3: [FALTA] Llevar encima: Death Whistle (0/1, recomendado)
 [02:30:10.934] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:11.281] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Ravager-ArmaParaRavager.png"
+[02:30:11.281] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Ravager-ArmaParaRavager.png"
 [02:30:11.500] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Flagelo Taoísta" (Item.damage=85). Lo que lee la guia: "Flagelo Taoísta" con 85.
 [02:30:11.750] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Ravager (opcional, Calamity)): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Flagelo Taoísta" con 85 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:12.000] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "Ravager/VencerARavager" ("Derrotarlo (opcional)"), esperado "Ravager/VencerARavager" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional Ravager, Orden 68) -> OK. Preparacion 0% (0/1 obligatorios).
@@ -730,14 +730,14 @@ Tu mejor arma (Granada, 60 de daño) le quita 40 por golpe: harían falta unos 2
 [02:30:12.251] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Ravager: 30000 de vida, 55 de defensa y 90 de daño en modo normal.
 Tu mejor arma (Flagelo Taoísta, 85 de daño) le quita 58 por golpe: harían falta unos 518 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:12.597] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Ravager-VencerARavager.png"
+[02:30:12.597] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Ravager-VencerARavager.png"
 [02:30:12.817] [Terrakeep] AUTOPRUEBA GUIA - Ravager/VencerARavager: bandera real "downedRavager" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:13.143] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:30:13.643] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "Plaguebringer/ArmaParaPlaguebringer" ("Un arma capaz de un jefe post-Golem"), esperado "Plaguebringer/ArmaParaPlaguebringer" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional Plaguebringer, Orden 76) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:30:13.644] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 68 de daño (0/68)
 [02:30:13.644] [Terrakeep]   requisito opcional 2/3: [FALTA] Llevar encima: Abombination (0/1, recomendado)
 [02:30:13.644] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:13.992] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Plaguebringer-ArmaParaPlaguebringer.png"
+[02:30:13.992] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Plaguebringer-ArmaParaPlaguebringer.png"
 [02:30:14.211] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Flagelo Taoísta" (Item.damage=85). Lo que lee la guia: "Flagelo Taoísta" con 85.
 [02:30:14.461] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra The Plaguebringer Goliath (opcional, Calamity)): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Flagelo Taoísta" con 85 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:14.711] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "Plaguebringer/VencerAPlaguebringer" ("Derrotarlo (opcional)"), esperado "Plaguebringer/VencerAPlaguebringer" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional Plaguebringer, Orden 76) -> OK. Preparacion 0% (0/1 obligatorios).
@@ -746,14 +746,14 @@ Tu mejor arma (Flagelo Taoísta, 85 de daño) le quita 58 por golpe: harían fal
 [02:30:14.961] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 The Plaguebringer Goliath: 70000 de vida, 50 de defensa y 75 de daño en modo normal.
 Tu mejor arma (Flagelo Taoísta, 85 de daño) le quita 60 por golpe: harían falta unos 1167 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:15.307] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Plaguebringer-VencerAPlaguebringer.png"
+[02:30:15.307] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Plaguebringer-VencerAPlaguebringer.png"
 [02:30:15.527] [Terrakeep] AUTOPRUEBA GUIA - Plaguebringer/VencerAPlaguebringer: bandera real "downedPlaguebringer" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:15.847] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:30:16.347] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "Dragonfolly/ArmaParaDragonfolly" ("Un arma del nivel de justo tras la luna"), esperado "Dragonfolly/ArmaParaDragonfolly" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional Dragonfolly, Orden 81) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:30:16.347] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 85 de daño (0/85)
 [02:30:16.347] [Terrakeep]   requisito opcional 2/3: [FALTA] Llevar encima: Exotic Pheromones (0/1, recomendado)
 [02:30:16.348] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:16.696] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Dragonfolly-ArmaParaDragonfolly.png"
+[02:30:16.696] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Dragonfolly-ArmaParaDragonfolly.png"
 [02:30:16.915] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Flagelo Taoísta" (Item.damage=85). Lo que lee la guia: "Flagelo Taoísta" con 85.
 [02:30:17.165] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Dragonfolly (opcional, Calamity)): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Flagelo Taoísta" con 85 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:17.415] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "Dragonfolly/VencerADragonfolly" ("Derrotarlo (opcional)"), esperado "Dragonfolly/VencerADragonfolly" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional Dragonfolly, Orden 81) -> OK. Preparacion 0% (0/1 obligatorios).
@@ -762,7 +762,7 @@ Tu mejor arma (Flagelo Taoísta, 85 de daño) le quita 60 por golpe: harían fal
 [02:30:17.666] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Dragonfolly: 150000 de vida, 40 de defensa y 80 de daño en modo normal.
 Tu mejor arma (Flagelo Taoísta, 85 de daño) le quita 65 por golpe: harían falta unos 2308 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:18.012] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Dragonfolly-VencerADragonfolly.png"
+[02:30:18.012] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Dragonfolly-VencerADragonfolly.png"
 [02:30:18.232] [Terrakeep] AUTOPRUEBA GUIA - Dragonfolly/VencerADragonfolly: bandera real "downedDragonfolly" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:18.550] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:30:19.050] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "PrepararAstrumDeus" ("Un arma capaz del jefe que abre el mineral Astral"), esperado "PrepararAstrumDeus" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral AstrumDeus, Orden 82) -> OK. Preparacion 25% (0/1 obligatorios). Direccion: "Estás donde toca: la superficie".
@@ -772,7 +772,7 @@ Tu mejor arma (Flagelo Taoísta, 85 de daño) le quita 65 por golpe: harían fal
 [02:30:19.052] [Terrakeep]   requisito 3/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
 [02:30:19.052] [Terrakeep]   requisito 4/5: [FALTA] No llevas ningún arma; hacen falta 150 de daño (0/150)
 [02:30:19.052] [Terrakeep]   requisito 5/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:19.398] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-AstrumDeus-PrepararAstrumDeus.png"
+[02:30:19.398] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-AstrumDeus-PrepararAstrumDeus.png"
 [02:30:19.618] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Flagelo Taoísta" (Item.damage=85). Lo que lee la guia: "Flagelo Taoísta" con 85.
 [02:30:19.868] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Astrum Deus): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Flagelo Taoísta" con 85 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:20.118] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerAAstrumDeus" ("Derrotarlo"), esperado "VencerAAstrumDeus" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral AstrumDeus, Orden 82) -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Estás donde toca: la superficie".
@@ -784,7 +784,7 @@ Tu mejor arma (Flagelo Taoísta, 85 de daño) le quita 65 por golpe: harían fal
 [02:30:20.368] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Astrum Deus: 150000 de vida, 20 de defensa y 120 de daño en modo normal.
 Tu mejor arma (Flagelo Taoísta, 85 de daño) le quita 75 por golpe: harían falta unos 2000 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:20.715] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-AstrumDeus-VencerAAstrumDeus.png"
+[02:30:20.715] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-AstrumDeus-VencerAAstrumDeus.png"
 [02:30:20.935] [Terrakeep] AUTOPRUEBA GUIA - AstrumDeus/VencerAAstrumDeus: bandera real "downedAstrumDeus" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:21.255] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:30:21.755] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "ArmaParaGuardianes" ("Un arma capaz de tres guardianes a la vez"), esperado "ArmaParaGuardianes" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral ProfanedGuardiansYProvidence, Orden 91) -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Hacia abajo, en el Infierno".
@@ -794,7 +794,7 @@ Tu mejor arma (Flagelo Taoísta, 85 de daño) le quita 75 por golpe: harían fal
 [02:30:21.756] [Terrakeep]   requisito 3/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
 [02:30:21.756] [Terrakeep]   requisito 4/5: [FALTA] No llevas ningún arma; hacen falta 150 de daño (0/150)
 [02:30:21.756] [Terrakeep]   requisito 5/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:22.100] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-ProfanedGuardiansYProvidence-ArmaParaGuardianes.png"
+[02:30:22.100] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-ProfanedGuardiansYProvidence-ArmaParaGuardianes.png"
 [02:30:22.320] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Gungnir" (Item.damage=130). Lo que lee la guia: "Gungnir" con 130.
 [02:30:22.570] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Los Guardianes Profanos y Providence): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Gungnir" con 130 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:22.820] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerAGuardianes" ("Derrotarlos"), esperado "VencerAGuardianes" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral ProfanedGuardiansYProvidence, Orden 91) -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Hacia abajo, en el Infierno".
@@ -806,7 +806,7 @@ Tu mejor arma (Flagelo Taoísta, 85 de daño) le quita 75 por golpe: harían fal
 [02:30:23.071] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Guardian Commander: 80000 de vida, 40 de defensa y 120 de daño en modo normal.
 Tu mejor arma (Gungnir, 130 de daño) le quita 110 por golpe: harían falta unos 728 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:23.417] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-ProfanedGuardiansYProvidence-VencerAGuardianes.png"
+[02:30:23.417] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-ProfanedGuardiansYProvidence-VencerAGuardianes.png"
 [02:30:23.636] [Terrakeep] AUTOPRUEBA GUIA - ProfanedGuardiansYProvidence/VencerAGuardianes: bandera real "downedGuardians" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:23.886] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:30:24.386] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "ArmaParaProvidence" ("Un arma de nivel final de Calamity"), esperado "ArmaParaProvidence" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral ProfanedGuardiansYProvidence, Orden 91) -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Hacia abajo, en el Infierno".
@@ -816,7 +816,7 @@ Tu mejor arma (Gungnir, 130 de daño) le quita 110 por golpe: harían falta unos
 [02:30:24.387] [Terrakeep]   requisito 3/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
 [02:30:24.388] [Terrakeep]   requisito 4/5: [FALTA] No llevas ningún arma; hacen falta 150 de daño (0/150)
 [02:30:24.388] [Terrakeep]   requisito 5/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:24.733] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-ProfanedGuardiansYProvidence-ArmaParaProvidence.png"
+[02:30:24.733] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-ProfanedGuardiansYProvidence-ArmaParaProvidence.png"
 [02:30:24.952] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Gungnir" (Item.damage=130). Lo que lee la guia: "Gungnir" con 130.
 [02:30:25.202] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Los Guardianes Profanos y Providence): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Gungnir" con 130 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:25.452] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerAProvidence" ("Derrotarla"), esperado "VencerAProvidence" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral ProfanedGuardiansYProvidence, Orden 91) -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Hacia abajo, en el Infierno".
@@ -828,7 +828,7 @@ Tu mejor arma (Gungnir, 130 de daño) le quita 110 por golpe: harían falta unos
 [02:30:25.703] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Providence, the Profaned Goddess: 250000 de vida, 50 de defensa y 0 de daño en modo normal.
 Tu mejor arma (Gungnir, 130 de daño) le quita 105 por golpe: harían falta unos 2381 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:26.049] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-ProfanedGuardiansYProvidence-VencerAProvidence.png"
+[02:30:26.049] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-ProfanedGuardiansYProvidence-VencerAProvidence.png"
 [02:30:26.268] [Terrakeep] AUTOPRUEBA GUIA - ProfanedGuardiansYProvidence/VencerAProvidence: bandera real "downedProvidence" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:26.269] [Terrakeep] Brujula de la Guia: objetivo cambiado a zona "Mazmorra", buscando "Mazmorra" SOLO en lo ya explorado. "Mazmorra" (Pared, tipos=7/8/9/94/95/96/97/98/99) solo en lo explorado: en marcha, columna 0 de 8401 (0%).
 [02:30:26.465] [Terrakeep] Brujula de la Guia: "Mazmorra" (Pared, tipos=7/8/9/94/95/96/97/98/99) solo en lo explorado: 3841 tiles encontrados en 20170801 mirados, agrupados en 17 zonas, 14,4 ms de CPU en total. -> marcador en (3219, 564), a 1161 tiles del jugador.
@@ -840,7 +840,7 @@ Tu mejor arma (Gungnir, 130 de daño) le quita 105 por golpe: harían falta unos
 [02:30:27.099] [Terrakeep]   requisito 3/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
 [02:30:27.099] [Terrakeep]   requisito 4/5: [FALTA] No llevas ningún arma; hacen falta 150 de daño (0/150)
 [02:30:27.099] [Terrakeep]   requisito 5/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:27.448] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-TrioPostProvidence-ArmaParaCeaselessVoid.png"
+[02:30:27.448] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-TrioPostProvidence-ArmaParaCeaselessVoid.png"
 [02:30:27.668] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Excalibur" (Item.damage=170). Lo que lee la guia: "Excalibur" con 170.
 [02:30:27.918] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra El trio de Providence: Ceaseless Void, Storm Weaver y Signus): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Excalibur" con 170 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:28.168] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerACeaselessVoid" ("Derrotarlo"), esperado "VencerACeaselessVoid" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral TrioPostProvidence, Orden 92) -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Estás donde toca: la entrada de la Mazmorra, a tu derecha".
@@ -851,7 +851,7 @@ Tu mejor arma (Gungnir, 130 de daño) le quita 105 por golpe: harían falta unos
 [02:30:28.418] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Ceaseless Void: 50000 de vida, 80 de defensa y 180 de daño en modo normal.
 Tu mejor arma (Excalibur, 170 de daño) le quita 130 por golpe: harían falta unos 385 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:28.761] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-TrioPostProvidence-VencerACeaselessVoid.png"
+[02:30:28.761] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-TrioPostProvidence-VencerACeaselessVoid.png"
 [02:30:28.981] [Terrakeep] AUTOPRUEBA GUIA - TrioPostProvidence/VencerACeaselessVoid: bandera real "downedCeaselessVoid" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:29.230] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:30:29.731] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "ArmaParaStormWeaver" ("Un arma capaz de un gusano de defensa muy alta"), esperado "ArmaParaStormWeaver" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral TrioPostProvidence, Orden 92) -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Estás donde toca: la superficie".
@@ -861,7 +861,7 @@ Tu mejor arma (Excalibur, 170 de daño) le quita 130 por golpe: harían falta un
 [02:30:29.732] [Terrakeep]   requisito 3/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
 [02:30:29.732] [Terrakeep]   requisito 4/5: [FALTA] No llevas ningún arma; hacen falta 150 de daño (0/150)
 [02:30:29.732] [Terrakeep]   requisito 5/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:30.076] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-TrioPostProvidence-ArmaParaStormWeaver.png"
+[02:30:30.076] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-TrioPostProvidence-ArmaParaStormWeaver.png"
 [02:30:30.295] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Filomiau" (Item.damage=200). Lo que lee la guia: "Filomiau" con 200.
 [02:30:30.545] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra El trio de Providence: Ceaseless Void, Storm Weaver y Signus): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Filomiau" con 200 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:30.795] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerAStormWeaver" ("Derrotarlo"), esperado "VencerAStormWeaver" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral TrioPostProvidence, Orden 92) -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Estás donde toca: la superficie".
@@ -872,7 +872,7 @@ Tu mejor arma (Excalibur, 170 de daño) le quita 130 por golpe: harían falta un
 [02:30:31.045] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Storm Weaver: 825000 de vida, 150 de defensa y 180 de daño en modo normal.
 Tu mejor arma (Filomiau, 200 de daño) le quita 125 por golpe: harían falta unos 6600 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:31.389] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-TrioPostProvidence-VencerAStormWeaver.png"
+[02:30:31.389] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-TrioPostProvidence-VencerAStormWeaver.png"
 [02:30:31.607] [Terrakeep] AUTOPRUEBA GUIA - TrioPostProvidence/VencerAStormWeaver: bandera real "downedStormWeaver" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:31.857] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:30:32.358] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "ArmaParaSignus" ("Un arma equilibrada para el tercero del trio"), esperado "ArmaParaSignus" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral TrioPostProvidence, Orden 92) -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Hacia abajo, en el Infierno".
@@ -882,7 +882,7 @@ Tu mejor arma (Filomiau, 200 de daño) le quita 125 por golpe: harían falta uno
 [02:30:32.359] [Terrakeep]   requisito 3/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
 [02:30:32.359] [Terrakeep]   requisito 4/5: [FALTA] No llevas ningún arma; hacen falta 150 de daño (0/150)
 [02:30:32.359] [Terrakeep]   requisito 5/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:32.701] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-TrioPostProvidence-ArmaParaSignus.png"
+[02:30:32.701] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-TrioPostProvidence-ArmaParaSignus.png"
 [02:30:32.921] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Excalibur" (Item.damage=170). Lo que lee la guia: "Excalibur" con 170.
 [02:30:33.171] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra El trio de Providence: Ceaseless Void, Storm Weaver y Signus): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Excalibur" con 170 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:33.421] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerASignus" ("Derrotarlo"), esperado "VencerASignus" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral TrioPostProvidence, Orden 92) -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Hacia abajo, en el Infierno".
@@ -893,7 +893,7 @@ Tu mejor arma (Filomiau, 200 de daño) le quita 125 por golpe: harían falta uno
 [02:30:33.671] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Signus: 250000 de vida, 60 de defensa y 160 de daño en modo normal.
 Tu mejor arma (Excalibur, 170 de daño) le quita 140 por golpe: harían falta unos 1786 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:34.014] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-TrioPostProvidence-VencerASignus.png"
+[02:30:34.014] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-TrioPostProvidence-VencerASignus.png"
 [02:30:34.234] [Terrakeep] AUTOPRUEBA GUIA - TrioPostProvidence/VencerASignus: bandera real "downedSignus" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:34.234] [Terrakeep] Brujula de la Guia: objetivo cambiado a zona "Mazmorra", buscando "Mazmorra" SOLO en lo ya explorado. "Mazmorra" (Pared, tipos=7/8/9/94/95/96/97/98/99) solo en lo explorado: en marcha, columna 0 de 8401 (0%).
 [02:30:34.403] [Terrakeep] Brujula de la Guia: "Mazmorra" (Pared, tipos=7/8/9/94/95/96/97/98/99) solo en lo explorado: 3841 tiles encontrados en 20170801 mirados, agrupados en 17 zonas, 13,5 ms de CPU en total. -> marcador en (3219, 564), a 1161 tiles del jugador.
@@ -905,7 +905,7 @@ Tu mejor arma (Excalibur, 170 de daño) le quita 140 por golpe: harían falta un
 [02:30:35.053] [Terrakeep]   requisito 3/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
 [02:30:35.053] [Terrakeep]   requisito 4/5: [FALTA] No llevas ningún arma; hacen falta 150 de daño (0/150)
 [02:30:35.053] [Terrakeep]   requisito 5/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:35.397] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Polterghast-ArmaParaPolterghast.png"
+[02:30:35.397] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Polterghast-ArmaParaPolterghast.png"
 [02:30:35.616] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Excalibur" (Item.damage=170). Lo que lee la guia: "Excalibur" con 170.
 [02:30:35.866] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Polterghast): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Excalibur" con 170 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:36.116] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerAPolterghast" ("Derrotarlo"), esperado "VencerAPolterghast" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral Polterghast, Orden 93) -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Estás donde toca: la entrada de la Mazmorra, a tu derecha".
@@ -916,7 +916,7 @@ Tu mejor arma (Excalibur, 170 de daño) le quita 140 por golpe: harían falta un
 [02:30:36.366] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Polterghast: 280000 de vida, 90 de defensa y 120 de daño en modo normal.
 Tu mejor arma (Excalibur, 170 de daño) le quita 125 por golpe: harían falta unos 2240 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:36.710] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Polterghast-VencerAPolterghast.png"
+[02:30:36.710] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Polterghast-VencerAPolterghast.png"
 [02:30:36.929] [Terrakeep] AUTOPRUEBA GUIA - Polterghast/VencerAPolterghast: bandera real "downedPolterghast" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:37.247] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:30:37.747] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "ArmaParaOldDuke" ("Un arma de nivel avanzado de postgame"), esperado "ArmaParaOldDuke" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral OldDukeYDoG, Orden 94) -> OK. Preparacion 25% (0/1 obligatorios). Direccion: "Hacia abajo, en el Sunken Sea".
@@ -926,7 +926,7 @@ Tu mejor arma (Excalibur, 170 de daño) le quita 125 por golpe: harían falta un
 [02:30:37.748] [Terrakeep]   requisito 3/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
 [02:30:37.748] [Terrakeep]   requisito 4/5: [FALTA] No llevas ningún arma; hacen falta 150 de daño (0/150)
 [02:30:37.748] [Terrakeep]   requisito 5/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:38.093] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-OldDukeYDoG-ArmaParaOldDuke.png"
+[02:30:38.093] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-OldDukeYDoG-ArmaParaOldDuke.png"
 [02:30:38.313] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Espada de titanio" (Item.damage=185). Lo que lee la guia: "Espada de titanio" con 185.
 [02:30:38.563] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra The Old Duke y The Devourer of Gods): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Espada de titanio" con 185 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:38.813] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerAOldDuke" ("Derrotarlo"), esperado "VencerAOldDuke" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral OldDukeYDoG, Orden 94) -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Hacia abajo, en el Sunken Sea".
@@ -937,7 +937,7 @@ Tu mejor arma (Excalibur, 170 de daño) le quita 125 por golpe: harían falta un
 [02:30:39.063] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 The Old Duke: 400000 de vida, 90 de defensa y 140 de daño en modo normal.
 Tu mejor arma (Espada de titanio, 185 de daño) le quita 140 por golpe: harían falta unos 2858 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:39.407] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-OldDukeYDoG-VencerAOldDuke.png"
+[02:30:39.407] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-OldDukeYDoG-VencerAOldDuke.png"
 [02:30:39.627] [Terrakeep] AUTOPRUEBA GUIA - OldDukeYDoG/VencerAOldDuke: bandera real "downedBoomerDuke" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:39.877] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:30:40.377] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "ArmaParaDoG" ("Un arma de nivel final de Calamity"), esperado "ArmaParaDoG" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral OldDukeYDoG, Orden 94) -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "la superficie".
@@ -947,7 +947,7 @@ Tu mejor arma (Espada de titanio, 185 de daño) le quita 140 por golpe: harían 
 [02:30:40.378] [Terrakeep]   requisito 3/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
 [02:30:40.378] [Terrakeep]   requisito 4/5: [FALTA] No llevas ningún arma; hacen falta 150 de daño (0/150)
 [02:30:40.378] [Terrakeep]   requisito 5/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:40.719] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-OldDukeYDoG-ArmaParaDoG.png"
+[02:30:40.719] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-OldDukeYDoG-ArmaParaDoG.png"
 [02:30:40.937] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Filomiau" (Item.damage=200). Lo que lee la guia: "Filomiau" con 200.
 [02:30:41.187] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra The Old Duke y The Devourer of Gods): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Filomiau" con 200 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:41.437] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerADoG" ("Derrotarlo"), esperado "VencerADoG" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral OldDukeYDoG, Orden 94) -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "la superficie".
@@ -958,7 +958,7 @@ Tu mejor arma (Espada de titanio, 185 de daño) le quita 140 por golpe: harían 
 [02:30:41.688] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 The Devourer of Gods: 750000 de vida, 50 de defensa y 235 de daño en modo normal.
 Tu mejor arma (Filomiau, 200 de daño) le quita 175 por golpe: harían falta unos 4286 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:42.031] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-OldDukeYDoG-VencerADoG.png"
+[02:30:42.031] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-OldDukeYDoG-VencerADoG.png"
 [02:30:42.250] [Terrakeep] AUTOPRUEBA GUIA - OldDukeYDoG/VencerADoG: bandera real "downedDoG" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:42.251] [Terrakeep] Brujula de la Guia: objetivo cambiado a zona "Jungla", buscando "Jungla" SOLO en lo ya explorado. "Jungla" (Tile, tipos=60) solo en lo explorado: en marcha, columna 0 de 8401 (0%).
 [02:30:42.521] [Terrakeep] Brujula de la Guia: "Jungla" (Tile, tipos=60) solo en lo explorado: 0 tiles encontrados en 20170801 mirados, agrupados en 0 zonas, 24,5 ms de CPU en total. -> nada explorado todavia de esta zona, sin marcador (brujula, no GPS).
@@ -970,7 +970,7 @@ Tu mejor arma (Filomiau, 200 de daño) le quita 175 por golpe: harían falta uno
 [02:30:43.072] [Terrakeep]   requisito 3/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
 [02:30:43.072] [Terrakeep]   requisito 4/5: [FALTA] No llevas ningún arma; hacen falta 150 de daño (0/150)
 [02:30:43.072] [Terrakeep]   requisito 5/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:43.420] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Yharon-ArmaParaYharon.png"
+[02:30:43.420] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Yharon-ArmaParaYharon.png"
 [02:30:43.639] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Furia del dragón celestial" (Item.damage=225). Lo que lee la guia: "Furia del dragón celestial" con 225.
 [02:30:43.889] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Yharon, Dragon of Rebirth): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Furia del dragón celestial" con 225 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:44.139] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerAYharon" ("Derrotarlo"), esperado "VencerAYharon" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral Yharon, Orden 95) -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Hacia abajo, en la jungla subterránea".
@@ -981,7 +981,7 @@ Tu mejor arma (Filomiau, 200 de daño) le quita 175 por golpe: harían falta uno
 [02:30:44.390] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Yharon, Dragon of Rebirth: 1000000 de vida, 90 de defensa y 210 de daño en modo normal.
 Tu mejor arma (Furia del dragón celestial, 225 de daño) le quita 180 por golpe: harían falta unos 5556 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:44.737] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Yharon-VencerAYharon.png"
+[02:30:44.737] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-Yharon-VencerAYharon.png"
 [02:30:44.956] [Terrakeep] AUTOPRUEBA GUIA - Yharon/VencerAYharon: bandera real "downedYharon" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:45.283] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:30:45.783] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "ArmaParaExoMechs" ("El arma mas fuerte que tengas"), esperado "ArmaParaExoMechs" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral ExoMechsYSupremeCalamitas, Orden 96) -> OK. Preparacion 25% (0/1 obligatorios). Direccion: "Estás donde toca: la superficie".
@@ -991,7 +991,7 @@ Tu mejor arma (Furia del dragón celestial, 225 de daño) le quita 180 por golpe
 [02:30:45.784] [Terrakeep]   requisito 3/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
 [02:30:45.784] [Terrakeep]   requisito 4/5: [FALTA] No llevas ningún arma; hacen falta 150 de daño (0/150)
 [02:30:45.784] [Terrakeep]   requisito 5/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:46.125] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-ExoMechsYSupremeCalamitas-ArmaParaExoMechs.png"
+[02:30:46.125] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-ExoMechsYSupremeCalamitas-ArmaParaExoMechs.png"
 [02:30:46.344] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Astral Staff" (Item.damage=245). Lo que lee la guia: "Astral Staff" con 245.
 [02:30:46.594] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Exo Mechs y Supreme Witch, Calamitas: el final): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Astral Staff" con 245 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:46.844] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerAExoMechs" ("Derrotar a los tres"), esperado "VencerAExoMechs" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral ExoMechsYSupremeCalamitas, Orden 96) -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Estás donde toca: la superficie".
@@ -1002,7 +1002,7 @@ Tu mejor arma (Furia del dragón celestial, 225 de daño) le quita 180 por golpe
 [02:30:47.094] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 XF-09 Ares: 1000000 de vida, 100 de defensa y 0 de daño en modo normal.
 Tu mejor arma (Astral Staff, 245 de daño) le quita 195 por golpe: harían falta unos 5129 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:47.440] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-ExoMechsYSupremeCalamitas-VencerAExoMechs.png"
+[02:30:47.440] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-ExoMechsYSupremeCalamitas-VencerAExoMechs.png"
 [02:30:47.659] [Terrakeep] AUTOPRUEBA GUIA - ExoMechsYSupremeCalamitas/VencerAExoMechs: bandera real "downedExoMechs" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:47.909] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:30:48.409] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "ArmaParaSupremeCalamitas" ("El arma final de todo el arbol"), esperado "ArmaParaSupremeCalamitas" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral ExoMechsYSupremeCalamitas, Orden 96) -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Hacia abajo, en el Infierno".
@@ -1012,7 +1012,7 @@ Tu mejor arma (Astral Staff, 245 de daño) le quita 195 por golpe: harían falta
 [02:30:48.410] [Terrakeep]   requisito 3/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
 [02:30:48.410] [Terrakeep]   requisito 4/5: [FALTA] No llevas ningún arma; hacen falta 150 de daño (0/150)
 [02:30:48.410] [Terrakeep]   requisito 5/5: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:48.753] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-ExoMechsYSupremeCalamitas-ArmaParaSupremeCalamitas.png"
+[02:30:48.753] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-ExoMechsYSupremeCalamitas-ArmaParaSupremeCalamitas.png"
 [02:30:48.973] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Astral Staff" (Item.damage=245). Lo que lee la guia: "Astral Staff" con 245.
 [02:30:49.223] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Exo Mechs y Supreme Witch, Calamitas: el final): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Astral Staff" con 245 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:49.473] [Terrakeep] AUTOPRUEBA GUIA - objetivo actual: "VencerASupremeCalamitas" ("Derrotarla: el final del arbol de Calamity"), esperado "VencerASupremeCalamitas" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo vertebral ExoMechsYSupremeCalamitas, Orden 96) -> OK. Preparacion 0% (0/1 obligatorios). Direccion: "Hacia abajo, en el Infierno".
@@ -1023,13 +1023,13 @@ Tu mejor arma (Astral Staff, 245 de daño) le quita 195 por golpe: harían falta
 [02:30:49.723] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Supreme Witch, Calamitas: 750000 de vida, 100 de defensa y 210 de daño en modo normal.
 Tu mejor arma (Astral Staff, 245 de daño) le quita 195 por golpe: harían falta unos 3847 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:50.070] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-ExoMechsYSupremeCalamitas-VencerASupremeCalamitas.png"
+[02:30:50.070] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-ExoMechsYSupremeCalamitas-VencerASupremeCalamitas.png"
 [02:30:50.290] [Terrakeep] AUTOPRUEBA GUIA - ExoMechsYSupremeCalamitas/VencerASupremeCalamitas: bandera real "downedCalamitas" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:50.609] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:30:51.109] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "PrimordialWyrm/ArmaParaPrimordialWyrm" ("Un arma de nivel muy avanzado de postgame"), esperado "PrimordialWyrm/ArmaParaPrimordialWyrm" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional PrimordialWyrm, Orden 97) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:30:51.109] [Terrakeep]   requisito opcional 1/2: [FALTA] No llevas ningún arma; hacen falta 150 de daño (0/150)
 [02:30:51.110] [Terrakeep]   requisito opcional 2/2: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:51.449] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-PrimordialWyrm-ArmaParaPrimordialWyrm.png"
+[02:30:51.449] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-PrimordialWyrm-ArmaParaPrimordialWyrm.png"
 [02:30:51.667] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Excalibur" (Item.damage=170). Lo que lee la guia: "Excalibur" con 170.
 [02:30:51.917] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Primordial Wyrm (opcional y secreto, Calamity)): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Excalibur" con 170 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:52.167] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "PrimordialWyrm/VencerAPrimordialWyrm" ("Derrotarlo (opcional, secreto)"), esperado "PrimordialWyrm/VencerAPrimordialWyrm" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional PrimordialWyrm, Orden 97) -> OK. Preparacion 0% (0/1 obligatorios).
@@ -1038,19 +1038,19 @@ Tu mejor arma (Astral Staff, 245 de daño) le quita 195 por golpe: harían falta
 [02:30:52.418] [Terrakeep] AUTOPRUEBA GUIA - lectura que ve el jugador:
 Primordial Wyrm: 2500000 de vida, 100 de defensa y 300 de daño en modo normal.
 Tu mejor arma (Excalibur, 170 de daño) le quita 120 por golpe: harían falta unos 20834 golpes. Un enemigo resta la mitad de su defensa a cada golpe que recibe, con un mínimo de 1.
-[02:30:52.759] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-PrimordialWyrm-VencerAPrimordialWyrm.png"
+[02:30:52.759] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-PrimordialWyrm-VencerAPrimordialWyrm.png"
 [02:30:52.978] [Terrakeep] AUTOPRUEBA GUIA - PrimordialWyrm/VencerAPrimordialWyrm: bandera real "downedPrimordialWyrm" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:53.293] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:30:53.793] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "LluviaAcidaTier3/PrepararLluviaAcida3" ("Estar listo para la Lluvia Acida (fase 3)"), esperado "LluviaAcidaTier3/PrepararLluviaAcida3" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional LluviaAcidaTier3, Orden 99) -> OK. Preparacion 25% (0/1 obligatorios).
 [02:30:53.794] [Terrakeep]   requisito opcional 1/3: [FALTA] No llevas ningún arma; hacen falta 180 de daño (0/180)
 [02:30:53.794] [Terrakeep]   requisito opcional 2/3: [HECHO] Derrotar a Polterghast (1/1, recomendado)
 [02:30:53.794] [Terrakeep]   requisito opcional 3/3: [FALTA] No llevas ningún gancho (0/1, recomendado)
-[02:30:54.133] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-LluviaAcidaTier3-PrepararLluviaAcida3.png"
+[02:30:54.133] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-LluviaAcidaTier3-PrepararLluviaAcida3.png"
 [02:30:54.353] [Terrakeep] AUTOPRUEBA GUIA - arma puesta en la mochila: "Espada de titanio" (Item.damage=185). Lo que lee la guia: "Espada de titanio" con 185.
 [02:30:54.603] [Terrakeep] AUTOPRUEBA GUIA - estado REAL del jugador (contra Lluvia Acida: Mauler y Nuclear Terror (opcional, Calamity)): vida 100 (cristales consumidos 0), defensa 0, vecinos 1, mejor arma "Espada de titanio" con 185 de daño, gancho=no, capa=Superficie, downedBoss1=True.
 [02:30:54.853] [Terrakeep] AUTOPRUEBA GUIA - objetivo OPCIONAL: "LluviaAcidaTier3/VencerALluviaAcida3" ("Derrotar a cualquiera de los dos (opcional)"), esperado "LluviaAcidaTier3/VencerALluviaAcida3" porque recorrido generico de los 25 tramos nuevos de Calamity (tramo opcional LluviaAcidaTier3, Orden 99) -> OK. Preparacion 0% (0/1 obligatorios).
 [02:30:54.853] [Terrakeep]   requisito opcional 1/1: [FALTA] Derrotar a Mauler o a Nuclear Terror (0/1)
-[02:30:55.189] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-LluviaAcidaTier3-VencerALluviaAcida3.png"
+[02:30:55.189] [Terrakeep] AUTOPRUEBA GUIA - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuia\terrakeep-capturas\guia-calamity-LluviaAcidaTier3-VencerALluviaAcida3.png"
 [02:30:55.409] [Terrakeep] AUTOPRUEBA GUIA - LluviaAcidaTier3/VencerALluviaAcida3: bandera real "downedMauler" puesta a true por reflexion contra CalamityMod.DownedBossSystem (escrita -> OK). Valor que lee ahora la guia: True.
 [02:30:55.717] [Terrakeep] AUTOPRUEBA GUIA - arma quitada de la mochila antes de Esqueletron. Mejor arma que lee la guia ahora: "(ninguna)" con 0.
 [02:30:56.217] [Terrakeep] AUTOPRUEBA GUIA - recorrido de los 25 tramos nuevos de Calamity terminado: 60 pasos comprobados, cola vacia=True, objetivo obligatorio restante=(ninguno) -> OK: los 25 tramos nuevos de Calamity quedan superados de verdad.

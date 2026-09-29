@@ -60,12 +60,12 @@
 [08:52:56.262] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO3 armor[0] cambiado a Casco Dorado Antiguo, luego Aplicar preset "Preset de pruebas": armor[0] ahora="Casco fundido" | OK: el preset se aplico sobre el conjunto activo de verdad.
 [08:52:56.612] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO4a puedeDeshacer=True, tras Ctrl+Z ("Aplicar preset "Preset de pruebas""): armor[0]="Casco de oro antiguo" | OK: aplicar un preset quedo deshacible por el historial general de WS7.
 [08:52:56.612] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO4b tras Ctrl+Y ("Aplicar preset "Preset de pruebas""): armor[0]="Casco fundido" | OK: rehecho tambien.
-[08:52:57.070] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO5 (es) captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS7\terrakeep-capturas\conjuntos-01-es.png"
+[08:52:57.070] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO5 (es) captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepWS7\terrakeep-capturas\conjuntos-01-es.png"
 [08:52:57.098] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma cambiado EN VIVO via ModConfig.OnChanged: es-ES -> en-US. Prueba real de la recarga, clave propia del mod "Ajustes.Titulo" = "Terrakeep - Settings".
 [08:52:57.098] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma guardado en ModConfig (persistente entre partidas): English. Resultado de SaveChanges: Success.
 [08:52:57.099] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Loadouts".
 [08:52:57.099] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Pestaña activa: "Character" (via cambio de idioma en vivo).
-[08:52:57.526] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO6 (en) cultura activa=en-US captura real del back buffer guardada en "C:\Users\adrian\Documents\My Games\Terraria\tModLoader-TerrakeepWS7\terrakeep-capturas\conjuntos-02-en.png"
+[08:52:57.526] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO6 (en) cultura activa=en-US captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepWS7\terrakeep-capturas\conjuntos-02-en.png"
 [08:52:57.885] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma cambiado EN VIVO via ModConfig.OnChanged: en-US -> es-ES. Prueba real de la recarga, clave propia del mod "Ajustes.Titulo" = "Terrakeep - Ajustes".
 [08:52:57.885] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] Idioma guardado en ModConfig (persistente entre partidas): Espanol. Resultado de SaveChanges: Success.
 [08:52:57.885] [Main Thread/INFO] [TerrakeepMod]: [Terrakeep] PASO7 idioma restaurado a Espanol (cultura activa=es-ES).
