@@ -156,6 +156,9 @@ namespace TerrakeepMod.Common.Panel
 					_acciones.Enqueue(() => CambiarIdioma(idi.Idioma, idi.Nombre));
 					_acciones.Enqueue(() => AbrirMundo(res.Nombre, idi.Nombre));
 					_acciones.Enqueue(() => MedirYCapturarAviso(res.Nombre, idi.Nombre));
+					// v0.7.0 (paridad con escritorio 3.3.0): la ficha gana la fila de invasiones
+					// vencidas - se audita el arbol ENTERO de "Este mundo", no solo el recuadro naranja.
+					_acciones.Enqueue(() => AuditarYCapturarExploracion("mundo", res.Nombre, idi.Nombre));
 					_acciones.Enqueue(() => AbrirBuffs(res.Nombre, idi.Nombre));
 					_acciones.Enqueue(() => MedirYCapturarBuffs(res.Nombre, idi.Nombre));
 
@@ -186,6 +189,11 @@ namespace TerrakeepMod.Common.Panel
 
 					_acciones.Enqueue(() => AbrirExploracionPestana(0, res.Nombre, idi.Nombre)); // Mapa
 					_acciones.Enqueue(() => AuditarYCapturarExploracion("mapa", res.Nombre, idi.Nombre));
+					_acciones.Enqueue(() => ComprobarLegibilidadZoom(res.Nombre, idi.Nombre));
+					// v0.7.0: Vecindad gana "Traer vecino" y un boton "Echar" por fila.
+					_acciones.Enqueue(() => AbrirExploracionPestana(3, res.Nombre, idi.Nombre)); // Vecindad
+					_acciones.Enqueue(() => EsperarFotogramas(45)); // primer refresco real de la lista
+					_acciones.Enqueue(() => AuditarYCapturarExploracion("vecindad", res.Nombre, idi.Nombre));
 					_acciones.Enqueue(() => AbrirExploracionPestana(1, res.Nombre, idi.Nombre)); // Busqueda
 					_acciones.Enqueue(() => PrepararBusqueda(res.Nombre, idi.Nombre));
 					_acciones.Enqueue(() => EsperarFotogramas(180)); // dar tiempo a que el buscador progrese/termine
@@ -795,6 +803,38 @@ namespace TerrakeepMod.Common.Panel
 			AuditarArbol(exploracion, nombreCorto + " (" + nombreRes + "/" + nombreIdioma + ")");
 			Registro.Linea("AUTOPRUEBA ESPACIADO/" + nombreCorto + " (" + nombreRes + "/" + nombreIdioma + ") - " +
 				CapturaDePantalla.Guardar(nombreCorto + "-" + nombreRes + "-" + nombreIdioma));
+		}
+
+		/// <summary>
+		/// Cierre de la legibilidad de "Zoom" (requirement 0446b3c9, v0.7.0): la escala REAL con la
+		/// que se esta dibujando "Zoom" tras el reflujo nunca puede bajar de
+		/// <see cref="ReflowVertical.EscalaMinimaLegible"/>, y su caja tiene que seguir por encima del
+		/// borde inferior de la pestaña (la regla 2 de <see cref="AuditarArbol"/> ya cubre el solape con
+		/// los renglones de encima). Se registra tambien el tamaño aproximado en pixeles de pantalla
+		/// (escala x UIScale x alto de linea de la fuente) para poder compararlo con la medicion de
+		/// pixeles de la bitacora.
+		/// </summary>
+		private static void ComprobarLegibilidadZoom(string nombreRes, string nombreIdioma)
+		{
+			PestanaMapa mapa = PanelTerrakeepSystem.Panel != null && PanelTerrakeepSystem.Panel.Exploracion != null
+				? PanelTerrakeepSystem.Panel.Exploracion.Mapa : null;
+			if (mapa == null || mapa.EtiquetaZoom == null) {
+				Registro.Linea("AUTOPRUEBA ESPACIADO/zoom (" + nombreRes + "/" + nombreIdioma + "): no se encontro PestanaMapa.");
+				return;
+			}
+
+			float escala = mapa.EscalaZoomActual;
+			CalculatedStyle zoom = mapa.EtiquetaZoom.GetDimensions();
+			CalculatedStyle pestana = mapa.GetDimensions();
+			float textoAlto = FontAssets.MouseText.Value.MeasureString("Zoom").Y * escala;
+			bool legible = escala >= ReflowVertical.EscalaMinimaLegible - 0.001f;
+			bool dentro = zoom.Y + textoAlto <= pestana.Y + pestana.Height + 0.5f;
+			Registro.Linea("AUTOPRUEBA ESPACIADO/zoom (" + nombreRes + "/" + nombreIdioma + ") - escala real de \"Zoom\"=" +
+				escala.ToString("0.000") + " (minimo legible " + ReflowVertical.EscalaMinimaLegible.ToString("0.00") +
+				", UIScale " + Main.UIScale.ToString("0.00") + ", ~" + (textoAlto * Main.UIScale).ToString("0.0") +
+				" px de linea en pantalla) -> " + (legible ? "OK: legible." : "FALLO LEGIBILIDAD: por debajo del minimo.") +
+				" Borde inferior del texto y=" + (int)(zoom.Y + textoAlto) + " vs pestaña " + (int)(pestana.Y + pestana.Height) +
+				" -> " + (dentro ? "OK: dentro." : "FALLO: se sale por debajo de la pestaña."));
 		}
 
 		/// <summary>Lanza una busqueda real (mena de cobre, la usa tambien AutopruebaExploracion:

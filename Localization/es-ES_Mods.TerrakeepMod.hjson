@@ -150,6 +150,9 @@ Personaje: {
 		CantidadAplicar: Aplicar
 		CantidadAyuda: Escribe un número y pulsa Aplicar (o Intro), o usa - / +. El límite es el máximo real del objeto.
 		CantidadHistorial: Cantidad de "{0}": {1} -> {2}
+		CantidadMaximo: Máx
+		CantidadMas: Suma {0} sin pasar nunca del máximo real de este objeto ({1}).
+		CantidadMaximoAyuda: Llena la pila hasta el máximo real de este objeto ({0}).
 	}
 
 	Buffs: {
@@ -672,6 +675,14 @@ Exploracion: {
 		Lejos: A {0} tiles - acércate a su casa para una lectura real (este informe puede estar leyendo tu bioma actual, no el suyo).
 		MarcarEnMapa: Marcar casas en el mapa
 		MarcarEnMapaAyuda: Pinta un marcador real en la casa de cada vecino (NPC.homeTileX/homeTileY) en el mini-mapa y en el mapa del juego.
+		SoloUnJugador: "Solo en partidas de un jugador: en multijugador los vecinos los decide el servidor."
+		Traer: Traer vecino...
+		TraerNinguno: Ya viven todos
+		TraerAyuda: Trae al punto de aparición, sin casa, a uno de los {0} vecinos de la lista oficial que todavía no viven aquí (igual que Terrakeep de escritorio). El juego le busca casa solo. Se deshace con Ctrl+Z.
+		Echar: Echar
+		EcharAyuda: Retira a {0} del mundo sin matarlo (ni botín ni tumba). Se deshace con Ctrl+Z; si sigues cumpliendo sus condiciones, el juego puede volver a mudarlo.
+		HistorialTraer: Traer a {0}
+		HistorialEchar: Echar a {0}
 	}
 
 	// Functions catalogue idea 10 ("rewind the world"): a terrain undo, same idea as the object
@@ -808,6 +819,7 @@ Exploracion: {
 			EstasEn: Estás en
 			Explorado: Explorado
 			Autoguardado: Autoguardado
+			Invasiones: Invasiones
 		}
 
 		ModoValor: "{0}  (Main.GameMode = {1})"
@@ -830,6 +842,26 @@ Exploracion: {
 		Hecho: Hecho: el mundo está en modo {0}. Se grabará en el siguiente guardado.
 		AyudaModoActual: Es el modo que tiene el mundo ahora mismo.
 		AyudaElegirModo: Pulsa para elegirlo; después habrá que confirmar.
+
+		Invasiones: {
+			Nombre: {
+				Goblins: Ejército Goblin
+				LegionEscarcha: Legión de Escarcha
+				Piratas: Piratas
+			}
+
+			Corto: {
+				Goblins: Goblins
+				LegionEscarcha: Escarcha
+				Piratas: Piratas
+			}
+
+			SoloUnJugador: "Solo en partidas de un jugador: en multijugador las banderas del mundo las decide el servidor."
+			AyudaVencida: "{0}: VENCIDA en este mundo (resaltado). Pulsa para marcarla como no vencida; se graba en el mundo en el siguiente guardado y se deshace con Ctrl+Z."
+			AyudaPendiente: "{0}: todavía NO vencida en este mundo. Pulsa para marcarla como vencida; se graba en el mundo en el siguiente guardado y se deshace con Ctrl+Z."
+			HistorialVencida: "{0}: marcada como vencida"
+			HistorialPendiente: "{0}: marcada como no vencida"
+		}
 	}
 
 	Modo: {

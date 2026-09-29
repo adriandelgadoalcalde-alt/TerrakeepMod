@@ -8,6 +8,7 @@ using Terraria.GameContent.UI;
 using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
+using TerrakeepMod.Common.Personaje;
 using TerrakeepMod.Common.Prefijos;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -82,7 +83,9 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 	public class TarjetaEdicionFlotanteTk : UIPanel
 	{
 		public const float Ancho = 240f;
-		public const float Alto = 204f;
+		/// <summary>204 hasta la v0.6.2; +28 desde la v0.7.0 para la fila "+10 / +100 / Máx" del
+		/// editor de cantidad (paridad con Terrakeep escritorio 3.3.0, ver <see cref="CantidadRapida"/>).</summary>
+		public const float Alto = 232f;
 
 		/// <summary>2x real de la escala de ranura que ya usa la rejilla de destino de la Librería
 		/// (<c>ContenidoLibreria.EscalaSlotDestino</c> = 0.7f) - "sprite a 2x" tal cual pide TM2.</summary>
@@ -107,13 +110,14 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 			SetPadding(8f);
 
 			float filaCantidad = EscalaSprite * 52f + 16f;
-			_editorCantidad = new EditorCantidadTk(() => _proveedor != null ? _proveedor() : null, Ancho - 16f);
+			_editorCantidad = new EditorCantidadTk(() => _proveedor != null ? _proveedor() : null, Ancho - 16f,
+				filaRapida: true);
 			_editorCantidad.Top.Set(filaCantidad, 0f);
 			Append(_editorCantidad);
 
 			// Informativo, no interactivo - ver el XMLdoc de la clase (por qué no es un
 			// EditorPrefijoTk anidado aquí dentro).
-			float filaPrefijo = filaCantidad + 26f + 8f;
+			float filaPrefijo = filaCantidad + EditorCantidadTk.AltoConFilaRapida + 8f;
 			_lineaPrefijo = new EtiquetaTk(TextoPrefijo, 0.68f, Ancho - 16f, 18f);
 			_lineaPrefijo.ColorTexto = EstiloTk.TextoSuave;
 			_lineaPrefijo.Top.Set(filaPrefijo, 0f);
@@ -137,6 +141,10 @@ namespace TerrakeepMod.UI.Libreria.Widgets
 		/// para poder vaciarla junto con la del mini-panel fijo cuando hace falta (ver
 		/// <c>ActualizarTarjetaFlotante</c>) y la autoprueba para comprobarla en el juego real.</summary>
 		public SlotPapeleraTk Papelera => _papelera;
+
+		/// <summary>El editor de cantidad de esta tarjeta (con la fila "+10 / +100 / Máx"), para la
+		/// autoprueba.</summary>
+		public EditorCantidadTk EditorCantidad => _editorCantidad;
 
 		/// <summary>El texto de la línea informativa de prefijo: el que lleva puesto ahora mismo, y
 		/// si no coincide con el "mejor prefijo" ya calculado (<see cref="CatalogoMejorPrefijo"/>,

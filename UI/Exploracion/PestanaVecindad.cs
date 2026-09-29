@@ -84,7 +84,13 @@ namespace TerrakeepMod.UI.Exploracion
 		private UIScrollbar _scroll;
 		private EtiquetaTk _resumen;
 		private BotonTk _botonMarcar;
+		private DesplegableTk _traer;
 		private int _contadorRefresco;
+
+		/// <summary>Tipos de la lista oficial que no viven ahora mismo en el mundo (ver
+		/// <see cref="VecindadEditable.Faltan"/>), recalculados con el mismo temporizador que la lista
+		/// - nunca cada fotograma - para el desplegable "Traer vecino".</summary>
+		private List<int> _faltan = new List<int>();
 		private int _totalNpcs;
 
 		/// <summary>
@@ -119,8 +125,23 @@ namespace TerrakeepMod.UI.Exploracion
 
 			_resumen = new EtiquetaTk(() => Idiomas.Texto("Exploracion.Vecindad.Resumen", _totalNpcs),
 				0.8f, 700f, 22f);
+			// Ancho en fraccion (lo que dejan libre los dos controles de la derecha), no 700 fijos:
+			// con el desplegable "Traer vecino" la cabecera ya no tiene sitio para una caja tan ancha.
+			_resumen.Width.Set(-(AnchoControlCabecera * 2f + SeparacionCabecera * 2f), 1f);
 			_resumen.ColorTexto = EstiloTk.TextoSuave;
 			Append(_resumen);
+
+			// Paridad con Terrakeep escritorio 3.3.0 (commit ec916e8b): traer un vecino de la lista
+			// oficial que todavia no vive en el mundo. La primera opcion es el propio rotulo; elegir
+			// cualquier otra lo trae al punto de aparicion, sin casa (ver VecindadEditable).
+			_traer = new DesplegableTk(OpcionesTraer, () => 0, ElegirTraer, 0.72f);
+			_traer.Width.Set(AnchoControlCabecera, 0f);
+			_traer.Height.Set(24f, 0f);
+			_traer.HAlign = 1f;
+			_traer.Left.Set(-(AnchoControlCabecera + SeparacionCabecera), 0f);
+			_traer.BotonToggle.Ayuda = () => VecindadEditable.MotivoParaNoPoder()
+				?? Idiomas.Texto("Exploracion.Vecindad.TraerAyuda", _faltan.Count);
+			Append(_traer);
 
 			// Re-lectura literal del catalogo (20-sep-2026): la idea 5 pedia ADEMAS "marcar las
 			// casas en el minimapa", pieza real que faltaba (las "recolocaciones" siguen siendo el
@@ -129,7 +150,7 @@ namespace TerrakeepMod.UI.Exploracion
 			// que ya usa la pestaña "Búsqueda" (MarcadoresExploracion.Fijar +
 			// CapaMapaExploracion), nunca un mecanismo aparte.
 			_botonMarcar = new BotonTk(Idiomas.Texto("Exploracion.Vecindad.MarcarEnMapa"), 0.72f);
-			_botonMarcar.Width.Set(200f, 0f);
+			_botonMarcar.Width.Set(AnchoControlCabecera, 0f);
 			_botonMarcar.Height.Set(24f, 0f);
 			_botonMarcar.HAlign = 1f;
 			_botonMarcar.Ayuda = () => Idiomas.Texto("Exploracion.Vecindad.MarcarEnMapaAyuda");
@@ -165,8 +186,40 @@ namespace TerrakeepMod.UI.Exploracion
 			Refrescar();
 		}
 
+		private const float AnchoControlCabecera = 200f;
+		private const float SeparacionCabecera = 8f;
+
+		private IReadOnlyList<string> OpcionesTraer()
+		{
+			var opciones = new List<string>(_faltan.Count + 1);
+			opciones.Add(_faltan.Count == 0
+				? Idiomas.Texto("Exploracion.Vecindad.TraerNinguno")
+				: Idiomas.Texto("Exploracion.Vecindad.Traer"));
+			foreach (int tipo in _faltan) {
+				opciones.Add(VecindadEditable.NombreDeTipo(tipo));
+			}
+			return opciones;
+		}
+
+		private void ElegirTraer(int indice)
+		{
+			if (indice <= 0 || indice > _faltan.Count) {
+				return;
+			}
+			if (VecindadEditable.Traer(_faltan[indice - 1], "Exploración > Vecindad > Traer vecino")) {
+				_contadorRefresco = FotogramasEntreRefrescos; // refresco inmediato, sin esperar al temporizador
+			}
+		}
+
+		/// <summary>Tipos que faltan ahora mismo, para la autoprueba.</summary>
+		public IReadOnlyList<int> FaltanParaPrueba => _faltan;
+
+		/// <summary>El desplegable "Traer vecino", para la autoprueba.</summary>
+		public DesplegableTk DesplegableTraer => _traer;
+
 		public override void Update(GameTime gameTime)
 		{
+			_traer.BotonToggle.Habilitado = VecindadEditable.MotivoParaNoPoder() == null;
 			base.Update(gameTime);
 			if (++_contadorRefresco >= FotogramasEntreRefrescos) {
 				_contadorRefresco = 0;
@@ -180,6 +233,7 @@ namespace TerrakeepMod.UI.Exploracion
 		/// Público para que la autoprueba pueda forzarlo sin esperar el temporizador.</summary>
 		public void Refrescar()
 		{
+			_faltan = MundoActual.HayMundo ? VecindadEditable.Faltan() : new List<int>();
 			Player jugador = Main.LocalPlayer;
 			if (jugador == null) {
 				// Sin jugador no hay nada real que leer (ni ShopHelper ni posición) - se limpia una
@@ -305,7 +359,7 @@ namespace TerrakeepMod.UI.Exploracion
 			string nombre = npc.FullName;
 			string porcentaje = Idiomas.Texto("Exploracion.Vecindad.Precio", (int)System.Math.Round(ajustes.PriceAdjustment * 100.0));
 
-			_lista.Add(NuevaLinea(() => nombre + "  ·  " + porcentaje, colorPrecio, 0.8f));
+			_lista.Add(new FilaVecinoTk(npc, NuevaLinea(() => nombre + "  ·  " + porcentaje, colorPrecio, 0.8f), this));
 
 			string informe = string.IsNullOrEmpty(ajustes.HappinessReport)
 				? Idiomas.Texto("Exploracion.Vecindad.SinInforme")
@@ -337,5 +391,92 @@ namespace TerrakeepMod.UI.Exploracion
 
 		/// <summary>Cuántos NPC de pueblo se están enseñando ahora mismo. Lo lee la autoprueba.</summary>
 		public int TotalNpcsParaPrueba => _totalNpcs;
+
+		/// <summary>El boton "Echar" de la fila del vecino de tipo <paramref name="tipo"/>, o null si
+		/// esa fila no se esta enseñando ahora mismo. Para la autoprueba.</summary>
+		public BotonTk BotonEcharDe(int tipo)
+		{
+			BotonTk encontrado = null;
+			_lista.ExecuteRecursively(elemento => {
+				FilaVecinoTk fila = elemento as FilaVecinoTk;
+				if (encontrado == null && fila != null && fila.Tipo == tipo) {
+					encontrado = fila.BotonEchar;
+				}
+			});
+			return encontrado;
+		}
+
+		internal void AlEcharDesdeFila()
+		{
+			_contadorRefresco = FotogramasEntreRefrescos; // refresco inmediato
+		}
+
+		/// <summary>
+		/// Primera linea de cada vecino: nombre + precio a la izquierda y el boton "Echar" a la
+		/// derecha (paridad con el "✕" por fila de escritorio, commit ec916e8b). El alto sigue al
+		/// del parrafo (si el nombre parte en dos lineas en una ventana estrecha, la fila crece con
+		/// el, nunca se pisa con la de abajo).
+		/// </summary>
+		private sealed class FilaVecinoTk : UIElement
+		{
+			private const float AnchoBoton = 74f;
+			private const float AltoBoton = 22f;
+
+			private readonly UIElement _texto;
+			private readonly BotonTk _echar;
+
+			public BotonTk BotonEchar => _echar;
+
+			/// <summary>Tipo de NPC de esta fila.</summary>
+			public int Tipo { get; }
+
+			public FilaVecinoTk(NPC npc, UIElement texto, PestanaVecindad dueno)
+			{
+				Width.Set(0f, 1f);
+				Height.Set(AltoBoton, 0f);
+
+				_texto = texto;
+				_texto.Width.Set(-(AnchoBoton + 8f), 1f);
+				Append(_texto);
+
+				Tipo = npc.type;
+				int indice = npc.whoAmI;
+				string nombre = npc.FullName;
+				_echar = new BotonTk(Idiomas.Texto("Exploracion.Vecindad.Echar"), 0.7f);
+				_echar.Width.Set(AnchoBoton, 0f);
+				_echar.Height.Set(AltoBoton, 0f);
+				_echar.HAlign = 1f;
+				_echar.Ayuda = () => VecindadEditable.MotivoParaNoPoder()
+					?? Idiomas.Texto("Exploracion.Vecindad.EcharAyuda", nombre);
+				int tipo = npc.type;
+				_echar.AlPulsar += () => {
+					// El hueco de Main.npc[] se puede reutilizar para OTRO NPC entre dos refrescos de la
+					// lista: solo se echa si sigue siendo el mismo tipo de vecino que enseña esta fila.
+					NPC actual = Main.npc[indice];
+					if (actual == null || !actual.active || actual.type != tipo) {
+						dueno.AlEcharDesdeFila();
+						return;
+					}
+					if (VecindadEditable.Echar(actual, "Exploración > Vecindad > Echar")) {
+						dueno.AlEcharDesdeFila();
+					}
+				};
+				Append(_echar);
+			}
+
+			public override void Update(GameTime gameTime)
+			{
+				_echar.Habilitado = VecindadEditable.MotivoParaNoPoder() == null;
+				_echar.FijarTexto(Idiomas.Texto("Exploracion.Vecindad.Echar"));
+				base.Update(gameTime);
+				float alto = System.Math.Max(AltoBoton, _texto.Height.Pixels);
+				if (System.Math.Abs(Height.Pixels - alto) >= 0.5f) {
+					Height.Set(alto, 0f);
+					if (Parent != null) {
+						Parent.Recalculate();
+					}
+				}
+			}
+		}
 	}
 }

@@ -127,11 +127,93 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// objeto vacio/null si no hay ninguno seleccionado.</param>
 		/// <param name="ancho">Ancho total del control, en pixeles. 220 por defecto: cabe
 		/// "-"/campo/"+"/Aplicar sin ninguna etiqueta de texto.</param>
-		public EditorCantidadTk(Func<Item> proveedorExplicito, float ancho = 220f)
+		/// <param name="filaRapida">true = añade debajo una segunda fila con "+10", "+100" y "Máx"
+		/// (paridad con Terrakeep escritorio 3.3.0, ver <see cref="CantidadRapida"/>). El control pasa
+		/// a medir <see cref="AltoConFilaRapida"/> de alto en vez de 26: quien lo coloque tiene que
+		/// dejarle ese hueco.</param>
+		public EditorCantidadTk(Func<Item> proveedorExplicito, float ancho = 220f, bool filaRapida = false)
 		{
 			_proveedorExplicito = proveedorExplicito;
 			_compacto = true;
 			ConstruirControles(ancho);
+			if (filaRapida) {
+				ConstruirFilaRapida(ancho);
+			}
+		}
+
+		/// <summary>Alto real del control con la fila de botones rapidos: la fila de siempre (26) +
+		/// separacion (4) + la fila rapida (24).</summary>
+		public const float AltoConFilaRapida = 54f;
+
+		private BotonTk _mas10;
+		private BotonTk _mas100;
+		private BotonTk _maximo;
+
+		/// <summary>Los tres botones rapidos (null si el control se construyo sin fila rapida), para
+		/// que la autoprueba los pulse por su ruta REAL (<c>BotonTk.LeftClick</c>).</summary>
+		public BotonTk BotonMas10 => _mas10;
+		public BotonTk BotonMas100 => _mas100;
+		public BotonTk BotonMaximo => _maximo;
+
+		/// <summary>
+		/// Segunda fila "+10 / +100 / Máx", repartida en tres partes iguales del ancho real. Mismo
+		/// widget (<see cref="BotonTk"/>) y mismo camino de escritura (<see cref="EscribirCantidad"/>,
+		/// con su historial Ctrl+Z) que "-"/"+": un salto rapido es solo un delta mas grande, nunca
+		/// una segunda forma de escribir la pila.
+		/// </summary>
+		private void ConstruirFilaRapida(float ancho)
+		{
+			Height.Set(AltoConFilaRapida, 0f);
+
+			const float Separacion = 6f;
+			float anchoBoton = (ancho - Separacion * 2f) / 3f;
+			float top = 26f + 4f;
+
+			_mas10 = new BotonTk("+" + CantidadRapida.PasoCorto, 0.72f);
+			_mas100 = new BotonTk("+" + CantidadRapida.PasoLargo, 0.72f);
+			_maximo = new BotonTk(Idiomas.Texto("Personaje.Herramientas.CantidadMaximo"), 0.72f);
+
+			BotonTk[] fila = { _mas10, _mas100, _maximo };
+			for (int i = 0; i < fila.Length; i++) {
+				fila[i].Width.Set(anchoBoton, 0f);
+				fila[i].Height.Set(24f, 0f);
+				fila[i].Left.Set(i * (anchoBoton + Separacion), 0f);
+				fila[i].Top.Set(top, 0f);
+				Append(fila[i]);
+			}
+
+			_mas10.AlPulsar += () => SaltoRapido(CantidadRapida.PasoCorto);
+			_mas100.AlPulsar += () => SaltoRapido(CantidadRapida.PasoLargo);
+			_maximo.AlPulsar += IrAlMaximo;
+
+			_mas10.Ayuda = () => AyudaRapida("Personaje.Herramientas.CantidadMas", CantidadRapida.PasoCorto);
+			_mas100.Ayuda = () => AyudaRapida("Personaje.Herramientas.CantidadMas", CantidadRapida.PasoLargo);
+			_maximo.Ayuda = () => AyudaRapida("Personaje.Herramientas.CantidadMaximoAyuda", 0);
+		}
+
+		private string AyudaRapida(string clave, int paso)
+		{
+			Item objeto = ObjetivoActual;
+			int tope = objeto != null && !objeto.IsAir ? CantidadRapida.Maximo(objeto.maxStack) : 0;
+			return paso > 0 ? Idiomas.Texto(clave, paso, tope) : Idiomas.Texto(clave, tope);
+		}
+
+		private void SaltoRapido(int paso)
+		{
+			Item objeto = ObjetivoActual;
+			if (objeto == null || objeto.IsAir) {
+				return;
+			}
+			EscribirCantidad(objeto, CantidadRapida.Sumar(objeto.stack, paso, objeto.maxStack));
+		}
+
+		private void IrAlMaximo()
+		{
+			Item objeto = ObjetivoActual;
+			if (objeto == null || objeto.IsAir) {
+				return;
+			}
+			EscribirCantidad(objeto, CantidadRapida.Maximo(objeto.maxStack));
 		}
 
 		private void ConstruirControles(float anchoCompacto = 0f)
@@ -251,6 +333,17 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			_mas.Habilitado = hay;
 			_aplicar.Habilitado = hay;
 			_aplicar.FijarTexto(Idiomas.Texto("Personaje.Herramientas.CantidadAplicar"));
+
+			if (_maximo != null) {
+				// Con la pila ya llena los tres se apagan: no hay nada que sumar (mismo criterio que
+				// escritorio, que deshabilita los comandos en vez de "pulsar sin efecto").
+				bool puedeSubir = hay && CantidadRapida.PuedeSubir(objeto.stack, objeto.maxStack);
+				_mas10.Habilitado = puedeSubir;
+				_mas100.Habilitado = puedeSubir;
+				_maximo.Habilitado = puedeSubir;
+				// El rotulo "Máx"/"Max" sigue al idioma en vivo, igual que "Aplicar".
+				_maximo.FijarTexto(Idiomas.Texto("Personaje.Herramientas.CantidadMaximo"));
+			}
 
 			// Mientras el jugador esta escribiendo no se le pisa lo que lleva tecleado.
 			if (hay && !_campo.Enfocado) {

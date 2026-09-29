@@ -150,6 +150,9 @@ Personaje: {
 		CantidadAplicar: Apply
 		CantidadAyuda: Type a number and press Apply (or Enter), or use - / +. The limit is the item's real maximum.
 		CantidadHistorial: Quantity of "{0}": {1} -> {2}
+		CantidadMaximo: Max
+		CantidadMas: Adds {0} without ever going over this item's real maximum ({1}).
+		CantidadMaximoAyuda: Fills the stack up to this item's real maximum ({0}).
 	}
 
 	Buffs: {
@@ -672,6 +675,14 @@ Exploracion: {
 		Lejos: "{0} tiles away - get closer to their house for a real reading (this report may be reading your current biome, not theirs)."
 		MarcarEnMapa: Mark houses on map
 		MarcarEnMapaAyuda: Paints a real marker on each neighbor's house (NPC.homeTileX/homeTileY) on the minimap and the game's map.
+		SoloUnJugador: "Single-player only: in multiplayer the town NPCs are decided by the server."
+		Traer: Bring a resident...
+		TraerNinguno: Everyone lives here
+		TraerAyuda: Brings one of the {0} residents from the official list who do not live here yet to the spawn point, homeless (same as Terrakeep desktop). The game finds them a house on its own. Undo with Ctrl+Z.
+		Echar: Evict
+		EcharAyuda: Removes {0} from the world without killing them (no loot, no tombstone). Undo with Ctrl+Z; if you still meet their conditions, the game may move them back in.
+		HistorialTraer: Bring {0}
+		HistorialEchar: Evict {0}
 	}
 
 	// Functions catalogue idea 10 ("rewind the world"): a terrain undo, same idea as the object
@@ -808,6 +819,7 @@ Exploracion: {
 			EstasEn: You are at
 			Explorado: Explored
 			Autoguardado: Autosave
+			Invasiones: Invasions
 		}
 
 		ModoValor: "{0}  (Main.GameMode = {1})"
@@ -830,6 +842,26 @@ Exploracion: {
 		Hecho: Done: the world is now in {0} mode. It will be written on the next save.
 		AyudaModoActual: This is the mode the world is in right now.
 		AyudaElegirModo: Click to pick it; you will have to confirm afterwards.
+
+		Invasiones: {
+			Nombre: {
+				Goblins: Goblin Army
+				LegionEscarcha: Frost Legion
+				Piratas: Pirates
+			}
+
+			Corto: {
+				Goblins: Goblins
+				LegionEscarcha: Frost
+				Piratas: Pirates
+			}
+
+			SoloUnJugador: "Single-player only: in multiplayer the world flags are decided by the server."
+			AyudaVencida: "{0}: DEFEATED in this world (highlighted). Click to mark it as not defeated; it is written to the world on the next save and can be undone with Ctrl+Z."
+			AyudaPendiente: "{0}: NOT defeated yet in this world. Click to mark it as defeated; it is written to the world on the next save and can be undone with Ctrl+Z."
+			HistorialVencida: "{0}: marked as defeated"
+			HistorialPendiente: "{0}: marked as not defeated"
+		}
 	}
 
 	Modo: {

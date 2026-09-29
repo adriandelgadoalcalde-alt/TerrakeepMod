@@ -37,6 +37,11 @@
 
 		<!-- 29-sep-2026 (v0.6.1): orden real del Álbum por fecha, logica pura sin Terraria. -->
 		<Compile Include="..\Common\Hitos\OrdenAlbum.cs" Link="OrdenAlbum.cs" />
+
+		<!-- 29-sep-2026 (v0.7.0, paridad con Terrakeep escritorio 3.3.0): aritmetica de los botones
+		     rapidos de cantidad y calculo de los vecinos que faltan, las dos sin Terraria. -->
+		<Compile Include="..\Common\Personaje\CantidadRapida.cs" Link="CantidadRapida.cs" />
+		<Compile Include="..\Common\Exploracion\VecinosQueFaltan.cs" Link="VecinosQueFaltan.cs" />
 	</ItemGroup>
 
 </Project>

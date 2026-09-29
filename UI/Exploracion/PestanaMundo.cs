@@ -5,6 +5,7 @@ using Terraria.GameContent.UI.Elements;
 using Terraria.UI;
 using TerrakeepMod.Common.Exploracion;
 using TerrakeepMod.Common.Ajustes;
+using TerrakeepMod.Common.Panel;
 using TerrakeepMod.UI.Personaje.Widgets;
 
 namespace TerrakeepMod.UI.Exploracion
@@ -118,25 +119,167 @@ namespace TerrakeepMod.UI.Exploracion
 			y = Dato(caja, y, "Explorado",
 				() => Idiomas.Texto("Exploracion.Mundo.Porcentaje",
 					MundoActual.PorcentajeExplorado().ToString("0.0")));
-			Dato(caja, y, "Autoguardado", () => Idiomas.Texto(Main.autoSave
+			y = Dato(caja, y, "Autoguardado", () => Idiomas.Texto(Main.autoSave
 				? "Exploracion.Mundo.Activado"
 				: "Exploracion.Mundo.Desactivado"));
+			ConstruirInvasiones(caja, y);
+			_cajaFicha = caja;
+		}
+
+		// ---- Invasiones vencidas (paridad con Terrakeep escritorio 3.3.0, commit cc1d4ddc) -------
+
+		/// <summary>Donde empieza la columna de valores de la ficha (la misma de <see cref="Dato"/>).</summary>
+		private const float ColumnaValor = 140f;
+		private const float SeparacionBotonesInvasion = 4f;
+		private const float AltoBotonInvasion = 22f;
+		private const float EscalaBotonInvasion = 0.72f;
+
+		private UIPanel _cajaFicha;
+		private readonly List<KeyValuePair<InvasionesMundo.Invasion, BotonTk>> _botonesInvasion =
+			new List<KeyValuePair<InvasionesMundo.Invasion, BotonTk>>();
+
+		/// <summary>Cada fila de la ficha con su Top NATURAL y su escala base, para poder
+		/// comprimirla entera con <see cref="ReflowVertical"/> si el hueco real es mas bajo de lo
+		/// habitual (mismo patron que <c>PestanaMapa</c>): la fila de invasiones es la 13.ª y no se
+		/// quiere que ninguna resolucion la saque por debajo de la caja.</summary>
+		private readonly List<FilaFicha> _filasFicha = new List<FilaFicha>();
+		private float _altoNaturalFicha;
+
+		private readonly struct FilaFicha
+		{
+			public readonly UIElement Elemento;
+			public readonly float TopNatural;
+			public readonly float EscalaBase;
+			public readonly float AltoBase;
+
+			public FilaFicha(UIElement elemento, float topNatural, float escalaBase, float altoBase)
+			{
+				Elemento = elemento;
+				TopNatural = topNatural;
+				EscalaBase = escalaBase;
+				AltoBase = altoBase;
+			}
+		}
+
+		/// <summary>Los tres botones de invasion, para la autoprueba (los pulsa por su ruta real).</summary>
+		public IReadOnlyList<KeyValuePair<InvasionesMundo.Invasion, BotonTk>> BotonesInvasion => _botonesInvasion;
+
+		private void ConstruirInvasiones(UIPanel caja, float y)
+		{
+			EtiquetaTk nombre = new EtiquetaTk(
+				() => Idiomas.Texto("Exploracion.Mundo.Dato.Invasiones"), 0.8f, ColumnaValor - 4f, 22f);
+			nombre.ColorTexto = EstiloTk.TextoSuave;
+			nombre.Top.Set(y, 0f);
+			caja.Append(nombre);
+			_filasFicha.Add(new FilaFicha(nombre, y, 0.8f, 22f));
+
+			foreach (InvasionesMundo.Invasion invasion in InvasionesMundo.Todas) {
+				InvasionesMundo.Invasion cerrada = invasion;
+				BotonTk boton = new BotonTk(InvasionesMundo.NombreCorto(invasion), EscalaBotonInvasion);
+				boton.Clave = invasion.ToString();
+				boton.Height.Set(AltoBotonInvasion, 0f);
+				boton.Top.Set(y, 0f);
+				boton.AlPulsar += () => InvasionesMundo.Alternar(cerrada, "ficha de Exploración > Este mundo");
+				boton.Ayuda = () => AyudaInvasion(cerrada);
+				caja.Append(boton);
+				_botonesInvasion.Add(new KeyValuePair<InvasionesMundo.Invasion, BotonTk>(invasion, boton));
+				_filasFicha.Add(new FilaFicha(boton, y, EscalaBotonInvasion, AltoBotonInvasion));
+			}
+
+			_altoNaturalFicha = y + 24f;
+		}
+
+		private static string AyudaInvasion(InvasionesMundo.Invasion invasion)
+		{
+			string motivo = InvasionesMundo.MotivoParaNoPoder();
+			if (motivo != null) {
+				return motivo;
+			}
+			return Idiomas.Texto(InvasionesMundo.Vencida(invasion)
+				? "Exploracion.Mundo.Invasiones.AyudaVencida"
+				: "Exploracion.Mundo.Invasiones.AyudaPendiente", InvasionesMundo.Nombre(invasion));
+		}
+
+		/// <summary>
+		/// Cada fotograma: estado real de los tres botones (resaltado = vencida, igual que el modo
+		/// actual en los botones de dificultad), ancho repartido en lo que de verdad queda a la
+		/// derecha de la columna de rotulos, y compresion vertical de la ficha entera si no cabe.
+		/// </summary>
+		private void ActualizarFicha()
+		{
+			if (_cajaFicha == null) {
+				return;
+			}
+
+			bool sePuede = InvasionesMundo.MotivoParaNoPoder() == null;
+			foreach (KeyValuePair<InvasionesMundo.Invasion, BotonTk> par in _botonesInvasion) {
+				par.Value.Activo = InvasionesMundo.Vencida(par.Key);
+				par.Value.Habilitado = sePuede;
+				par.Value.FijarTexto(InvasionesMundo.NombreCorto(par.Key));
+			}
+
+			CalculatedStyle interior = _cajaFicha.GetInnerDimensions();
+			if (interior.Width <= 0f || interior.Height <= 0f) {
+				return;
+			}
+
+			float factor = ReflowVertical.FactorDeCompresion(_altoNaturalFicha, interior.Height);
+			foreach (FilaFicha fila in _filasFicha) {
+				fila.Elemento.Top.Set(fila.TopNatural * factor, 0f);
+				EtiquetaTk etiqueta = fila.Elemento as EtiquetaTk;
+				if (etiqueta != null) {
+					etiqueta.EscalaTexto = fila.EscalaBase * factor;
+				}
+				BotonTk boton = fila.Elemento as BotonTk;
+				if (boton != null) {
+					boton.Height.Set(fila.AltoBase * factor, 0f);
+				}
+			}
+
+			// Los tres botones se reparten el hueco real de la columna de valores; si el rotulo mas
+			// largo no cabe a su escala base, se baja la escala comun lo justo (nunca se recorta con
+			// "...", regla del proyecto - mismo criterio que AjustarEscalaDeLasPestanas).
+			float anchoValor = interior.Width - ColumnaValor;
+			float anchoBoton = (anchoValor - SeparacionBotonesInvasion * 2f) / 3f;
+			if (anchoBoton > 120f) {
+				anchoBoton = 120f;
+			}
+			var fuente = Terraria.GameContent.FontAssets.MouseText.Value;
+			float escala = EscalaBotonInvasion * factor;
+			foreach (KeyValuePair<InvasionesMundo.Invasion, BotonTk> par in _botonesInvasion) {
+				float anchoTexto = fuente.MeasureString(par.Value.Texto).X * escala + 12f;
+				if (anchoTexto > anchoBoton && anchoTexto > 0f) {
+					escala *= anchoBoton / anchoTexto;
+				}
+			}
+			for (int i = 0; i < _botonesInvasion.Count; i++) {
+				BotonTk boton = _botonesInvasion[i].Value;
+				boton.EscalaTexto = escala;
+				boton.Width.Set(anchoBoton, 0f);
+				boton.Left.Set(ColumnaValor + i * (anchoBoton + SeparacionBotonesInvasion), 0f);
+			}
+
+			_cajaFicha.Recalculate();
 		}
 
 		/// <summary>Una fila "rotulo: valor" de la ficha. Recibe la CLAVE de localizacion del
 		/// rotulo, no el texto ya resuelto.</summary>
-		private static float Dato(UIElement padre, float y, string clave, System.Func<string> valor)
+		private float Dato(UIElement padre, float y, string clave, System.Func<string> valor)
 		{
+			// Ancho del rotulo = hasta la columna de valores (menos 4 px), no 150: con 150 la caja del
+			// rotulo invadia 10 px la del valor, que empieza en ColumnaValor (140).
 			EtiquetaTk nombre = new EtiquetaTk(
-				() => Idiomas.Texto("Exploracion.Mundo.Dato." + clave), 0.8f, 150f, 22f);
+				() => Idiomas.Texto("Exploracion.Mundo.Dato." + clave), 0.8f, ColumnaValor - 4f, 22f);
 			nombre.ColorTexto = EstiloTk.TextoSuave;
 			nombre.Top.Set(y, 0f);
 			padre.Append(nombre);
+			_filasFicha.Add(new FilaFicha(nombre, y, 0.8f, 22f));
 
 			EtiquetaTk contenido = new EtiquetaTk(valor, 0.8f, 250f, 22f);
-			contenido.Left.Set(140f, 0f);
+			contenido.Left.Set(ColumnaValor, 0f);
 			contenido.Top.Set(y, 0f);
 			padre.Append(contenido);
+			_filasFicha.Add(new FilaFicha(contenido, y, 0.8f, 22f));
 
 			return y + 24f;
 		}
@@ -383,6 +526,7 @@ namespace TerrakeepMod.UI.Exploracion
 			// Igual que los botones: el aviso de permanencia puede cambiar de numero de lineas sin
 			// pasar por aqui (idioma, autoguardado), asi que su altura tambien se recalcula sola.
 			RecalcularAviso();
+			ActualizarFicha();
 		}
 	}
 }

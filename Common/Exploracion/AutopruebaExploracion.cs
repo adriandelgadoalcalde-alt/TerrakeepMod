@@ -4,7 +4,9 @@ using Terraria;
 using Terraria.ID;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Panel;
+using TerrakeepMod.Common.Undo;
 using TerrakeepMod.UI.Exploracion;
+using TerrakeepMod.UI.Personaje.Widgets;
 
 namespace TerrakeepMod.Common.Exploracion
 {
@@ -650,7 +652,133 @@ namespace TerrakeepMod.Common.Exploracion
 					Siguiente(5);
 					break;
 
-				case 36:
+				// ---------------------------------------------------------------------------
+				// PARIDAD 3.3.0 (v0.7.0, requirement 0446b3c9): las dos novedades de escritorio que
+				// se portan a Exploracion - invasiones vencidas editables (cc1d4ddc) y traer/echar
+				// vecinos (ec916e8b). Por la ruta REAL de la interfaz (clic en el BotonTk, desplegable
+				// abierto y fila elegida), y comprobando tambien que Ctrl+Z (Historial.Deshacer) deja
+				// el mundo EXACTAMENTE como estaba.
+				// ---------------------------------------------------------------------------
+
+				case 36: {
+					panel.CambiarPestana(2);
+					Siguiente(10);
+					break;
+				}
+
+				case 37: {
+					_goblinsAntes = NPC.downedGoblins;
+					BotonTk goblins = BotonInvasion(panel, InvasionesMundo.Invasion.Goblins);
+					RegistroExploracion.Linea(Terrakeep.LogTag + " PARIDAD 3.3.0/invasiones - NPC.downedGoblins antes=" +
+						_goblinsAntes + "; clic real en " + Pulsar(goblins) + ".");
+					Siguiente(10);
+					break;
+				}
+
+				case 38: {
+					bool cambiada = NPC.downedGoblins == !_goblinsAntes;
+					BotonTk goblins = BotonInvasion(panel, InvasionesMundo.Invasion.Goblins);
+					bool resaltado = goblins != null && goblins.Activo == NPC.downedGoblins;
+					RegistroExploracion.Linea(Terrakeep.LogTag + " PARIDAD 3.3.0/invasiones - tras el clic NPC.downedGoblins=" +
+						NPC.downedGoblins + " -> " + (cambiada ? "OK, invertida." : "MAL: no ha cambiado.") +
+						" Boton resaltado=" + (goblins != null && goblins.Activo) + " -> " +
+						(resaltado ? "OK, el boton refleja el valor real." : "MAL: el boton no refleja el valor real.") + " " +
+						CapturaDePantalla.Guardar("paridad-invasiones-tras-clic"));
+					string deshecho = Historial.Deshacer();
+					RegistroExploracion.Linea(Terrakeep.LogTag + " PARIDAD 3.3.0/invasiones - Ctrl+Z (\"" + deshecho +
+						"\") -> NPC.downedGoblins=" + NPC.downedGoblins + " -> " +
+						(NPC.downedGoblins == _goblinsAntes ? "OK, vuelve a como estaba." : "MAL: el deshacer no la devuelve."));
+					Siguiente(10);
+					break;
+				}
+
+				case 39:
+					panel.CambiarPestana(3);
+					Siguiente(45); // primer refresco real de la lista de Vecindad
+					break;
+
+				case 40: {
+					System.Collections.Generic.IReadOnlyList<int> faltan = panel.Vecindad.FaltanParaPrueba;
+					_tipoTraido = -1;
+					foreach (int tipo in faltan) {
+						// Un vecino "de verdad" (no una mascota de pueblo) para que la fila salga en la lista.
+						if (!Terraria.ID.NPCID.Sets.IsTownPet[tipo]) {
+							_tipoTraido = tipo;
+							break;
+						}
+					}
+					DesplegableTk traer = panel.Vecindad.DesplegableTraer;
+					RegistroExploracion.Linea(Terrakeep.LogTag + " PARIDAD 3.3.0/vecindad - faltan " + faltan.Count +
+						" tipos de la lista oficial; se trae el tipo " + _tipoTraido + " (" +
+						(_tipoTraido >= 0 ? VecindadEditable.NombreDeTipo(_tipoTraido) : "-") + "). Clic real en el desplegable " +
+						Pulsar(traer.BotonToggle) + ".");
+					Siguiente(5);
+					break;
+				}
+
+				case 41: {
+					DesplegableTk traer = panel.Vecindad.DesplegableTraer;
+					System.Collections.Generic.List<BotonTk> filas = traer.FilasParaAutoprueba();
+					int indiceFila = -1;
+					System.Collections.Generic.IReadOnlyList<int> faltan = panel.Vecindad.FaltanParaPrueba;
+					for (int i = 0; i < faltan.Count; i++) {
+						if (faltan[i] == _tipoTraido) {
+							indiceFila = i + 1; // la fila 0 es el propio rotulo "Traer vecino..."
+							break;
+						}
+					}
+					string clic = indiceFila >= 0 && indiceFila < filas.Count ? Pulsar(filas[indiceFila]) : "(fila no encontrada)";
+					RegistroExploracion.Linea(Terrakeep.LogTag + " PARIDAD 3.3.0/vecindad - desplegable abierto=" + traer.Abierto +
+						" con " + filas.Count + " filas; clic real en la fila " + indiceFila + " " + clic + ".");
+					Siguiente(45);
+					break;
+				}
+
+				case 42: {
+					bool hay = _tipoTraido >= 0 && NPC.AnyNPCs(_tipoTraido);
+					NPC traido = null;
+					for (int i = 0; i < Main.maxNPCs; i++) {
+						if (Main.npc[i].active && Main.npc[i].type == _tipoTraido) {
+							traido = Main.npc[i];
+							break;
+						}
+					}
+					RegistroExploracion.Linea(Terrakeep.LogTag + " PARIDAD 3.3.0/vecindad - tras Traer: NPC.AnyNPCs(" + _tipoTraido +
+						")=" + hay + " -> " + (hay ? "OK, ha llegado." : "MAL: no ha llegado.") +
+						(traido != null ? " homeless=" + traido.homeless + " en el tile (" + (int)(traido.Center.X / 16f) + ", " +
+							(int)(traido.Center.Y / 16f) + "), punto de aparicion (" + Main.spawnTileX + ", " + Main.spawnTileY + ") -> " +
+							(traido.homeless ? "OK, sin casa como un recien llegado." : "MAL: deberia llegar sin casa.") : "") +
+						" Faltan ahora " + panel.Vecindad.FaltanParaPrueba.Count + ". " +
+						CapturaDePantalla.Guardar("paridad-vecindad-traido"));
+					Siguiente(5);
+					break;
+				}
+
+				case 43: {
+					BotonTk echar = panel.Vecindad.BotonEcharDe(_tipoTraido);
+					RegistroExploracion.Linea(Terrakeep.LogTag + " PARIDAD 3.3.0/vecindad - clic real en Echar de la fila del tipo " +
+						_tipoTraido + ": " + (echar != null ? Pulsar(echar) : "MAL: la fila no tiene boton Echar") + ".");
+					Siguiente(10);
+					break;
+				}
+
+				case 44: {
+					bool fuera = !NPC.AnyNPCs(_tipoTraido);
+					RegistroExploracion.Linea(Terrakeep.LogTag + " PARIDAD 3.3.0/vecindad - tras Echar: " +
+						(fuera ? "OK, ya no esta en el mundo." : "MAL: sigue en el mundo."));
+					string d1 = Historial.Deshacer();
+					bool vuelve = NPC.AnyNPCs(_tipoTraido);
+					RegistroExploracion.Linea(Terrakeep.LogTag + " PARIDAD 3.3.0/vecindad - Ctrl+Z (\"" + d1 + "\") -> " +
+						(vuelve ? "OK, el vecino echado vuelve." : "MAL: el deshacer de Echar no lo devuelve."));
+					string d2 = Historial.Deshacer();
+					bool comoAntes = !NPC.AnyNPCs(_tipoTraido);
+					RegistroExploracion.Linea(Terrakeep.LogTag + " PARIDAD 3.3.0/vecindad - Ctrl+Z (\"" + d2 + "\") -> " +
+						(comoAntes ? "OK, el mundo queda sin ese vecino, como estaba antes de traerlo." : "MAL: el deshacer de Traer no lo retira."));
+					Siguiente(5);
+					break;
+				}
+
+				case 45:
 					RegistroExploracion.Linea(Terrakeep.LogTag + " AUTOPRUEBA WS6 COMPLETA.");
 					_enMarcha = false;
 					break;
@@ -1060,6 +1188,33 @@ namespace TerrakeepMod.Common.Exploracion
 			return objeto == null || objeto.IsAir
 				? "(vacio)"
 				: "\"" + objeto.Name + "\" x" + objeto.stack + " (type=" + objeto.type + ")";
+		}
+
+		private static bool _goblinsAntes;
+		private static int _tipoTraido = -1;
+
+		private static BotonTk BotonInvasion(ContenidoExploracion panel, InvasionesMundo.Invasion invasion)
+		{
+			foreach (var par in panel.Mundo.BotonesInvasion) {
+				if (par.Key == invasion) {
+					return par.Value;
+				}
+			}
+			return null;
+		}
+
+		/// <summary>Clic REAL (<c>LeftClick</c> con un <c>UIMouseEvent</c> en su centro) sobre un
+		/// boton concreto, igual que <c>ContenidoExploracion.PulsarBoton</c> pero sin buscarlo por texto.</summary>
+		private static string Pulsar(BotonTk boton)
+		{
+			if (boton == null) {
+				return "(boton null)";
+			}
+			Terraria.UI.CalculatedStyle dim = boton.GetDimensions();
+			Vector2 centro = new Vector2(dim.X + dim.Width / 2f, dim.Y + dim.Height / 2f);
+			boton.LeftClick(new Terraria.UI.UIMouseEvent(boton, centro));
+			return "\"" + boton.Texto + "\" (habilitado=" + boton.Habilitado + ", en x=" + (int)dim.X + " y=" + (int)dim.Y +
+				" " + (int)dim.Width + "x" + (int)dim.Height + ")";
 		}
 
 		private static void Siguiente(int esperaEnFotogramas)

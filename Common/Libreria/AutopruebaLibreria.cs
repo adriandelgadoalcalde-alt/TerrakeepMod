@@ -10,6 +10,7 @@ using Terraria.ModLoader;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Panel;
+using TerrakeepMod.Common.Personaje;
 using TerrakeepMod.Common.Prefijos;
 using TerrakeepMod.Common.Undo;
 using TerrakeepMod.UI.Libreria;
@@ -806,6 +807,73 @@ namespace TerrakeepMod.Common.Libreria
 				+ " (" + (hayObjeto == tarjetaAbierta ? "OK: coincide con si hay objeto" : "NO CUADRA") + "), "
 				+ "linea de prefijo=\"" + textoPrefijo + "\". "
 				+ CapturaDePantalla.Guardar("ws3-tarjeta-flotante"));
+
+			ComprobarFilaRapidaDeCantidad(herramientas);
+		}
+
+		/// <summary>
+		/// PARIDAD 3.3.0 (v0.7.0, requirement 0446b3c9; escritorio commit 09195ce0): los tres
+		/// botones rapidos "+10 / +100 / Máx" de la tarjeta, pulsados por su ruta REAL
+		/// (<c>BotonTk.LeftClick</c>), contra el <c>maxStack</c> REAL del objeto, y deshechos despues
+		/// con Ctrl+Z (Historial) hasta dejar la pila exactamente como estaba.
+		/// </summary>
+		private static void ComprobarFilaRapidaDeCantidad(PanelHerramientasLibreriaTk herramientas)
+		{
+			EditorCantidadTk editor = herramientas.TarjetaFlotante != null ? herramientas.TarjetaFlotante.EditorCantidad : null;
+			Item objeto = editor != null ? editor.ObjetivoActual : null;
+			if (editor == null || editor.BotonMaximo == null || objeto == null || objeto.IsAir || objeto.maxStack <= 1) {
+				Registrar("Paso 27b - PARIDAD 3.3.0/cantidad rapida: NO CUADRA, no hay tarjeta con fila rapida u objeto apilable ("
+					+ (objeto != null ? Describir(objeto) : "null") + ").");
+				return;
+			}
+
+			int inicial = objeto.stack;
+			int maximo = objeto.maxStack;
+			// Parte de 1 para que +10 y +100 tengan margen de verdad con cualquier maxStack >= 101.
+			objeto.stack = 1;
+			editor.Update(new GameTime());
+
+			var informe = new StringBuilder("Paso 27b - PARIDAD 3.3.0/cantidad rapida sobre \"" + objeto.Name
+				+ "\" (maxStack real " + maximo + ", pila de partida 1): ");
+			bool todoBien = true;
+			int esperado = 1;
+			int cambiosReales = 0;
+			foreach (var paso in new (BotonTk Boton, string Nombre, int Delta)[] {
+				(editor.BotonMas10, "+10", CantidadRapida.PasoCorto),
+				(editor.BotonMas100, "+100", CantidadRapida.PasoLargo),
+				(editor.BotonMaximo, "Máx", -1),
+			}) {
+				editor.Update(new GameTime());
+				CalculatedStyle dim = paso.Boton.GetDimensions();
+				paso.Boton.LeftClick(new UIMouseEvent(paso.Boton, new Vector2(dim.X + dim.Width / 2f, dim.Y + dim.Height / 2f)));
+				int antesDelClic = esperado;
+				esperado = paso.Delta < 0 ? CantidadRapida.Maximo(maximo) : CantidadRapida.Sumar(esperado, paso.Delta, maximo);
+				if (esperado != antesDelClic) {
+					cambiosReales++;
+				}
+				bool ok = objeto.stack == esperado;
+				todoBien &= ok;
+				informe.Append(paso.Nombre + " -> " + objeto.stack + " (esperado " + esperado + ", "
+					+ (ok ? "OK" : "NO CUADRA") + "); ");
+			}
+
+			editor.Update(new GameTime());
+			bool apagados = !editor.BotonMas10.Habilitado && !editor.BotonMas100.Habilitado && !editor.BotonMaximo.Habilitado;
+			todoBien &= apagados;
+			informe.Append("con la pila llena los tres se apagan: " + (apagados ? "OK" : "NO CUADRA") + "; ");
+
+			// Solo tantos Ctrl+Z como cambios reales hubo (con un maxStack pequeño "Máx" no cambia
+			// nada y no deja entrada en el historial): nunca deshacer algo ajeno a esta prueba.
+			for (int i = 0; i < cambiosReales; i++) {
+				Historial.Deshacer();
+			}
+			bool vuelve = objeto.stack == 1;
+			todoBien &= vuelve;
+			informe.Append("Ctrl+Z x" + cambiosReales + " -> " + objeto.stack + " (esperado 1, " + (vuelve ? "OK" : "NO CUADRA") + "). ");
+
+			objeto.stack = inicial;
+			informe.Append(todoBien ? "Resultado: OK." : "Resultado: NO CUADRA.");
+			Registrar(informe.ToString());
 		}
 
 		// =========================================================================================
