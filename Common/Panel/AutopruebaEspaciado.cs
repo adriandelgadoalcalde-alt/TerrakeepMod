@@ -201,6 +201,54 @@ namespace TerrakeepMod.Common.Panel
 					_acciones.Enqueue(() => AuditarYCapturarExploracion("busqueda", res.Nombre, idi.Nombre));
 				}
 			}
+
+			// --- v0.7.0: el caso MAS apretado que admite el motor ------------------------------
+			// Main.UIScaleMax = max(1, min(alto/600, ancho/800)) (Main.cs decompilado): con la
+			// escala de interfaz al maximo, la pantalla logica nunca baja de 600 de alto. Es donde
+			// "Zoom" (Exploracion > Mapa) tiene que comprimirse de verdad y donde la ficha de "Este
+			// mundo" tiene menos sitio: se comprueba aqui que ni "Zoom" ni la ficha bajan del minimo
+			// legible y que nada se solapa ni se sale.
+			foreach (var idioma in Idiomas_) {
+				var idi = idioma;
+				const string Extremo = "1600x900-uiscale-max";
+				// Escala a 1 ANTES de cambiar de resolucion: con la escala ya al maximo, el motor
+				// devuelve la resolucion de SetDisplayMode en unidades de interfaz (visto en la
+				// primera pasada: "1066x600"), y la cuenta de la pantalla logica salia doble.
+				_acciones.Enqueue(RestaurarUiScale);
+				_acciones.Enqueue(() => CambiarResolucion(1600, 900, Extremo));
+				_acciones.Enqueue(FijarUiScaleMaxima);
+				_acciones.Enqueue(() => CambiarIdioma(idi.Idioma, idi.Nombre));
+				_acciones.Enqueue(() => AbrirMundo(Extremo, idi.Nombre));
+				_acciones.Enqueue(() => AuditarYCapturarExploracion("mundo", Extremo, idi.Nombre));
+				_acciones.Enqueue(() => ComprobarMundo(Extremo, idi.Nombre));
+				_acciones.Enqueue(() => AbrirExploracionPestana(0, Extremo, idi.Nombre)); // Mapa
+				_acciones.Enqueue(() => AuditarYCapturarExploracion("mapa", Extremo, idi.Nombre));
+				_acciones.Enqueue(() => ComprobarLegibilidadZoom(Extremo, idi.Nombre));
+				_acciones.Enqueue(() => AbrirExploracionPestana(3, Extremo, idi.Nombre)); // Vecindad
+				_acciones.Enqueue(() => EsperarFotogramas(45));
+				_acciones.Enqueue(() => AuditarYCapturarExploracion("vecindad", Extremo, idi.Nombre));
+			}
+			_acciones.Enqueue(RestaurarUiScale);
+		}
+
+		private static float _uiScaleAntes = -1f;
+
+		private static void FijarUiScaleMaxima()
+		{
+			if (_uiScaleAntes < 0f) {
+				_uiScaleAntes = Main.UIScaleWanted;
+			}
+			Main.UIScale = Main.instance.UIScaleMax;
+			Registro.Linea("AUTOPRUEBA ESPACIADO - escala de interfaz al MAXIMO del motor: UIScale=" +
+				Main.UIScale.ToString("0.00") + " -> pantalla logica " + (int)(Main.screenWidth / Main.UIScale) + "x" +
+				(int)(Main.screenHeight / Main.UIScale) + ".");
+			_espera = FotogramasTrasResolucion;
+		}
+
+		private static void RestaurarUiScale()
+		{
+			Main.UIScale = _uiScaleAntes > 0f ? _uiScaleAntes : 1f;
+			Registro.Linea("AUTOPRUEBA ESPACIADO - escala de interfaz restaurada a " + Main.UIScale.ToString("0.00") + ".");
 		}
 
 		// -----------------------------------------------------------------------------------
@@ -878,7 +926,8 @@ namespace TerrakeepMod.Common.Panel
 			float textoAlto = FontAssets.MouseText.Value.MeasureString("Zoom").Y * escala;
 			bool legible = escala >= ReflowVertical.EscalaMinimaLegible - 0.001f;
 			bool dentro = zoom.Y + textoAlto <= pestana.Y + pestana.Height + 0.5f;
-			Registro.Linea("AUTOPRUEBA ESPACIADO/zoom (" + nombreRes + "/" + nombreIdioma + ") - escala real de \"Zoom\"=" +
+			Registro.Linea("AUTOPRUEBA ESPACIADO/zoom (" + nombreRes + "/" + nombreIdioma + ") - renglones prescindibles ocultos por falta de sitio: " +
+				mapa.RenglonesOcultosPorSitio + ". Escala real de \"Zoom\"=" +
 				escala.ToString("0.000") + " (minimo legible " + ReflowVertical.EscalaMinimaLegible.ToString("0.00") +
 				", UIScale " + Main.UIScale.ToString("0.00") + ", ~" + (textoAlto * Main.UIScale).ToString("0.0") +
 				" px de linea en pantalla) -> " + (legible ? "OK: legible." : "FALLO LEGIBILIDAD: por debajo del minimo.") +

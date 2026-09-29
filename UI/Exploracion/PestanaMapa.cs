@@ -55,12 +55,17 @@ namespace TerrakeepMod.UI.Exploracion
 			/// "Zoom: X"), asi que reservarles hueco siempre es lo correcto.</summary>
 			public readonly bool ColapsaSiVacio;
 
-			public BloqueTexto(EtiquetaTk etiqueta, float escalaBase, float altoLinea, bool colapsaSiVacio)
+			/// <summary>0 = siempre se enseña; 1 y 2 = orden en que se deja de enseñar si no cabe
+			/// (v0.7.0, ver <see cref="Update"/>).</summary>
+			public readonly int Prescindible;
+
+			public BloqueTexto(EtiquetaTk etiqueta, float escalaBase, float altoLinea, bool colapsaSiVacio, int prescindible = 0)
 			{
 				Etiqueta = etiqueta;
 				EscalaBase = escalaBase;
 				AltoLinea = altoLinea;
 				ColapsaSiVacio = colapsaSiVacio;
+				Prescindible = prescindible;
 			}
 		}
 
@@ -132,17 +137,25 @@ namespace TerrakeepMod.UI.Exploracion
 				return;
 			}
 
-			// Alto NATURAL del bloque con el estado ACTUAL de cada renglon (ver el "ampliado otra
-			// vez" de arriba): un renglon colapsable que ahora mismo no tiene texto no cuenta.
-			float altoNatural = 0f;
-			for (int i = 0; i < _bloqueTexto.Count; i++) {
-				BloqueTexto item = _bloqueTexto[i];
-				if (!item.ColapsaSiVacio || !string.IsNullOrEmpty(item.Etiqueta.TextoActual)) {
-					altoNatural += item.AltoLinea;
+			float altoDisponible = GetDimensions().Height - _inicioBloqueTexto - MargenInferior;
+
+			// v0.7.0 (caso mas apretado que admite el motor: escala de interfaz al maximo, pantalla
+			// logica de 600 de alto): el hueco que queda bajo los botones puede ser de ~64 px, y ahi
+			// ni comprimiendo al suelo duro caben el aviso de tres lineas + "Marcadores" + detalle +
+			// "Zoom" (visto con AutopruebaEspaciado: "Zoom" salia por debajo de la pestaña). Antes de
+			// encoger letra se dejan de enseñar, por este orden, el aviso del mapa exclusivo (lo mismo
+			// lo dice el tooltip de "Ver en el mapa del juego") y el rotulo "Marcadores" (el detalle
+			// de debajo ya dice de que es). La decision reserva SIEMPRE el hueco de "bajo el raton",
+			// para que no parpadee al pasar el raton por encima del mapa.
+			_avisoOculto = false;
+			_leyendaOculta = false;
+			if (AltoNatural(reservarColapsables: true) > altoDisponible) {
+				_avisoOculto = true;
+				if (AltoNatural(reservarColapsables: true) > altoDisponible) {
+					_leyendaOculta = true;
 				}
 			}
-
-			float altoDisponible = GetDimensions().Height - _inicioBloqueTexto - MargenInferior;
+			float altoNatural = AltoNatural(reservarColapsables: false);
 
 			// Cierre de la legibilidad de "Zoom" (requirement 0446b3c9, v0.7.0): "Zoom" es el ULTIMO
 			// renglon del bloque y nunca baja de ReflowVertical.EscalaMinimaLegible (0,68, la escala
@@ -158,17 +171,50 @@ namespace TerrakeepMod.UI.Exploracion
 			float yRel = 0f;
 			for (int i = 0; i < _bloqueTexto.Count; i++) {
 				BloqueTexto item = _bloqueTexto[i];
-				item.Etiqueta.EscalaTexto = i == _bloqueTexto.Count - 1 ? escalaUltimo : item.EscalaBase * factor;
+				bool esUltimo = i == _bloqueTexto.Count - 1;
+				float factorItem = esUltimo ? escalaUltimo / item.EscalaBase : factor;
+				item.Etiqueta.EscalaTexto = item.EscalaBase * factorItem;
 				item.Etiqueta.Top.Set(_inicioBloqueTexto + yRel * factor, 0f);
+				// La caja tambien, no solo la letra: con la caja a su alto natural y los Top
+				// comprimidos, dos cajas vecinas se montaban aunque el texto no se tocara.
+				item.Etiqueta.Height.Set(System.Math.Max(0f, item.AltoLinea * factorItem - 1f), 0f);
 				// Sin este Recalculate el Top/escala nuevos se guardan pero GetDimensions() (lo que
 				// Draw usa de verdad) se queda con el valor calculado la vez anterior: se vio en vivo
 				// que cambiar Top.Set aqui no movia nada en pantalla hasta añadir esta llamada.
 				item.Etiqueta.Recalculate();
-				if (!item.ColapsaSiVacio || !string.IsNullOrEmpty(item.Etiqueta.TextoActual)) {
+				if (Cuenta(item, reservarColapsables: false)) {
 					yRel += item.AltoLinea;
 				}
 			}
 		}
+
+		private bool _avisoOculto;
+		private bool _leyendaOculta;
+
+		/// <summary>true si el renglon ocupa sitio ahora mismo: no esta oculto por falta de sitio y,
+		/// si es colapsable, tiene texto (o se le esta reservando el hueco a proposito).</summary>
+		private bool Cuenta(BloqueTexto item, bool reservarColapsables)
+		{
+			if ((item.Prescindible == 1 && _avisoOculto) || (item.Prescindible == 2 && _leyendaOculta)) {
+				return false;
+			}
+			return !item.ColapsaSiVacio || reservarColapsables || !string.IsNullOrEmpty(item.Etiqueta.TextoActual);
+		}
+
+		private float AltoNatural(bool reservarColapsables)
+		{
+			float alto = 0f;
+			foreach (BloqueTexto item in _bloqueTexto) {
+				if (Cuenta(item, reservarColapsables)) {
+					alto += item.AltoLinea;
+				}
+			}
+			return alto;
+		}
+
+		/// <summary>Cuantos renglones prescindibles se han dejado de enseñar ahora mismo por falta de
+		/// sitio (0, 1 = el aviso, 2 = aviso y "Marcadores"). Lo lee la autoprueba de espaciado.</summary>
+		public int RenglonesOcultosPorSitio => (_avisoOculto ? 1 : 0) + (_leyendaOculta ? 1 : 0);
 
 		private void ConstruirMapa()
 		{
@@ -242,7 +288,7 @@ namespace TerrakeepMod.UI.Exploracion
 			// derecha (visto en una captura real del juego).
 			string textoAvisoPartido = EtiquetaTk.PartirEnLineas(
 				Idiomas.Texto("Exploracion.Mapa.AvisoExclusivo"), AnchoLateral - 4f, 0.7f);
-			EtiquetaTk aviso = new EtiquetaTk(() => textoAvisoPartido, 0.7f, AnchoLateral, 50f);
+			EtiquetaTk aviso = new EtiquetaTk(() => _avisoOculto ? "" : textoAvisoPartido, 0.7f, AnchoLateral, 50f);
 			aviso.ColorTexto = EstiloTk.TextoSuave;
 			aviso.Top.Set(_inicioBloqueTexto + yRel, 0f);
 			lateral.Append(aviso);
@@ -260,14 +306,14 @@ namespace TerrakeepMod.UI.Exploracion
 			float avisoAltoLinea = Terraria.GameContent.FontAssets.MouseText.Value.MeasureString("Ay").Y * 0.7f;
 			float avisoAlto = avisoLineas * avisoAltoLinea;
 			float avisoAltoTotal = avisoAlto + 4f;
-			_bloqueTexto.Add(new BloqueTexto(aviso, 0.7f, avisoAltoTotal, colapsaSiVacio: false));
+			_bloqueTexto.Add(new BloqueTexto(aviso, 0.7f, avisoAltoTotal, colapsaSiVacio: false, prescindible: 1));
 			yRel += avisoAltoTotal;
 
 			EtiquetaTk leyenda = new EtiquetaTk(
-				() => Idiomas.Texto("Exploracion.Mapa.Marcadores"), 0.85f, AnchoLateral, 22f);
+				() => _leyendaOculta ? "" : Idiomas.Texto("Exploracion.Mapa.Marcadores"), 0.85f, AnchoLateral, 22f);
 			leyenda.Top.Set(_inicioBloqueTexto + yRel, 0f);
 			lateral.Append(leyenda);
-			_bloqueTexto.Add(new BloqueTexto(leyenda, 0.85f, 22f, colapsaSiVacio: false));
+			_bloqueTexto.Add(new BloqueTexto(leyenda, 0.85f, 22f, colapsaSiVacio: false, prescindible: 2));
 			yRel += 22f;
 
 			EtiquetaTk detalleLeyenda = new EtiquetaTk(
