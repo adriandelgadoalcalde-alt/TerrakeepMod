@@ -851,8 +851,8 @@ T += [
 
     ("Guia.AvisoCalamityTitulo", "Tienes Calamity instalado", "You have Calamity installed"),
     ("Guia.AvisoCalamity",
-     "Con Calamity la progresión cambia de arriba abajo: otros jefes, otro orden y otras cifras. Esta guía todavía es la de Terraria a secas, así que úsala como referencia de vanilla y no como el orden completo de tu partida. El árbol de Calamity está pendiente, y se dice en vez de inventárselo.",
-     "Calamity changes progression from top to bottom: different bosses, different order, different numbers. This guide still covers plain Terraria, so treat it as the vanilla reference and not as your run's full order. The Calamity tree is pending, and that is said out loud rather than made up."),
+     "Con Calamity la progresión cambia de arriba abajo: otros jefes, otro orden y otras cifras. Esta guía YA incluye el árbol propio de Calamity (más abajo, en la hoja de ruta y en los objetivos opcionales) además del de Terraria a secas - Calamity no elimina la progresión vanilla, solo le añade la suya encima. Los tramos con \"(Calamity)\" en el nombre son los suyos; el resto sigue siendo el mismo camino de siempre.",
+     "With Calamity, progression changes from top to bottom: different bosses, a different order, different numbers. This guide NOW includes Calamity's own tree (further down, in the roadmap and the optional objectives) on top of plain Terraria's - Calamity doesn't remove vanilla progression, it just adds its own on top. Stages with \"(Calamity)\" in the name are its own; the rest is still the same path as always."),
 
     ("Guia.Direccion.YaEstas", "Estás donde toca: {0}", "You are where you need to be: {0}"),
     ("Guia.Direccion.Baja", "Hacia abajo, en {0}", "Downwards, in {0}"),

@@ -204,10 +204,12 @@ namespace TerrakeepMod.Common.Hitos
 						Jefe = (string)o["jefe"] ?? ""
 					};
 
+					// Fecha ilegible -> DateTime.MinValue (al final de la lista), nunca DateTime.Now
+					// (el valor por defecto del campo), que la subia arriba del todo como si fuera el
+					// hito mas reciente. Ver OrdenAlbum.
 					DateTime fecha;
-					if (DateTime.TryParse((string)o["fecha"], out fecha)) {
-						entrada.Fecha = fecha;
-					}
+					OrdenAlbum.IntentarLeerFecha((string)o["fecha"], out fecha);
+					entrada.Fecha = fecha;
 					salida.Add(entrada);
 				}
 			}
@@ -215,8 +217,9 @@ namespace TerrakeepMod.Common.Hitos
 				// Álbum ilegible: se enseña vacío en vez de reventar el panel (ver la cabecera).
 			}
 
-			salida.Reverse();
-			return salida;
+			// Orden REAL por fecha, más reciente primero (antes: solo Reverse() del orden de
+			// inserción, que no es cronológico si el índice se copió o fusionó - ver OrdenAlbum).
+			return OrdenAlbum.MasRecientePrimero(salida, e => e.Fecha);
 		}
 
 		/// <summary>Nombre de archivo seguro: letras/dígitos tal cual, cualquier otra cosa (tildes,

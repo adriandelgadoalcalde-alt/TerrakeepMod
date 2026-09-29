@@ -103,6 +103,18 @@ tecnología externa al juego.
 
 ## Novedades
 
+### 0.6.1 (29-sep-2026)
+
+- **Tildes restauradas en la Guía**: el aviso "Tienes Calamity instalado" y casi todo el texto de
+  los 25 tramos de Calamity salían sin tildes ("progresion", "arbol", "Lluvia Acida", "Modo
+  Dificil"...). Corregidas 88 líneas del español, "¡Práctica superada!" en el informe del
+  entrenador de jefe y la concordancia de "La Feromona Exótica"; en inglés, "Tramos with" pasa a
+  "Stages with". Una prueba automática vigila que no vuelvan a perderse.
+- **El Álbum se ordena de verdad por fecha**, del hito más reciente al más antiguo. Antes solo se
+  invertía el orden en que estaban guardados, así que un álbum copiado o fusionado salía mezclado,
+  y una entrada con la fecha ilegible saltaba arriba del todo; ahora se va al final.
+- Versión del mod: `0.6.0` → `0.6.1`.
+
 ### 0.6.0 (29-sep-2026)
 
 - **Rediseño visual del panel** (TM1-TM6): pestañas con el sprite real del objeto/jefe en vez de

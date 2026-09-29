@@ -34,6 +34,9 @@
 		<!-- KeepQA (29-sep-2026, arreglo UIScale/resolucion): mismo patron - ReflowVertical.cs es
 		     aritmetica pura (cero Terraria/FNA), enlazada tal cual desde Common/Panel. -->
 		<Compile Include="..\Common\Panel\ReflowVertical.cs" Link="ReflowVertical.cs" />
+
+		<!-- 29-sep-2026 (v0.6.1): orden real del Álbum por fecha, logica pura sin Terraria. -->
+		<Compile Include="..\Common\Hitos\OrdenAlbum.cs" Link="OrdenAlbum.cs" />
 	</ItemGroup>
 
 </Project>

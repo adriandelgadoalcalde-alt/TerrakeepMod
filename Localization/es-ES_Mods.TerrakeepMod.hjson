@@ -976,7 +976,7 @@ Guia: {
 		Practicar: Practicar contra este jefe
 		PracticarAyuda: Te teletransporta a una arena, invoca al jefe con sus stats reales de esta partida y lo restaura TODO al acabar (posición, vida, maná, terreno y si lo has derrotado de verdad o no) - ganes, pierdas o canceles.
 		EnMarcha: Practicando: {0} s  ·  daño hecho: {1}  ·  daño recibido: {2}
-		InformeVictoria: ¡Practica superada! DPS medio: {0}  ·  daño recibido: {1}  ·  duración: {2} s. No cuenta como derrota real: el tramo sigue como estaba.
+		InformeVictoria: ¡Práctica superada! DPS medio: {0}  ·  daño recibido: {1}  ·  duración: {2} s. No cuenta como derrota real: el tramo sigue como estaba.
 		InformeDerrota: Has caído en la práctica. DPS medio: {0}  ·  daño recibido: {1}  ·  duración: {2} s. Todo restaurado - vida, posición y terreno.
 		InformeCancelado: Práctica cancelada a los {0} s. Todo restaurado.
 		Cancelar: Cancelar
@@ -984,7 +984,7 @@ Guia: {
 	}
 
 	AvisoCalamityTitulo: Tienes Calamity instalado
-	AvisoCalamity: Con Calamity la progresion cambia de arriba abajo: otros jefes, otro orden y otras cifras. Esta guia YA incluye el arbol propio de Calamity (mas abajo, en la hoja de ruta y en los objetivos opcionales) ademas del de Terraria a secas - Calamity no elimina la progresion vanilla, solo le añade la suya encima. Los tramos con "(Calamity)" en el nombre son los suyos; el resto sigue siendo el mismo camino de siempre.
+	AvisoCalamity: Con Calamity la progresión cambia de arriba abajo: otros jefes, otro orden y otras cifras. Esta guía YA incluye el árbol propio de Calamity (más abajo, en la hoja de ruta y en los objetivos opcionales) además del de Terraria a secas - Calamity no elimina la progresión vanilla, solo le añade la suya encima. Los tramos con "(Calamity)" en el nombre son los suyos; el resto sigue siendo el mismo camino de siempre.
 
 	Direccion: {
 		YaEstas: Estás donde toca: {0}
@@ -1221,22 +1221,22 @@ Guia: {
 
 		GiantClam: {
 			Nombre: El Giant Clam (opcional, Calamity)
-			Resumen: 10 de defensa (35 en Modo Dificil), en el Sunken Sea. Solo aparece tras derrotar al Desert Scourge.
+			Resumen: 10 de defensa (35 en Modo Difícil), en el Sunken Sea. Solo aparece tras derrotar al Desert Scourge.
 		}
 
 		Crabulon: {
 			Nombre: Crabulon (opcional, Calamity)
-			Resumen: 3500-4400 de vida, en Hongos Luminosos. Pensado para justo despues del Ojo de Cthulhu.
+			Resumen: 3500-4400 de vida, en Hongos Luminosos. Pensado para justo después del Ojo de Cthulhu.
 		}
 
 		HiveMindOPerforator: {
 			Nombre: The Hive Mind / The Perforators (opcional, Calamity)
-			Resumen: Segun tu mundo: Hive Mind (Corrupcion, 5000-7000 de vida) o Perforators (Carmesi, 4000-5750). Justo despues de la maldad de tu mundo.
+			Resumen: Según tu mundo: Hive Mind (Corrupción, 5000-7000 de vida) o Perforators (Carmesí, 4000-5750). Justo después de la maldad de tu mundo.
 		}
 
 		SlimeGod: {
 			Nombre: The Slime God (opcional, Calamity)
-			Resumen: Dos Paladines que se fusionan en un nucleo final. El ultimo gran opcional de prehardmode, justo despues de Esqueletron.
+			Resumen: Dos Paladines que se fusionan en un núcleo final. El último gran opcional de prehardmode, justo después de Esqueletron.
 		}
 
 		DreadnautilusYHorribleHog: {
@@ -1246,12 +1246,12 @@ Guia: {
 
 		Cryogen: {
 			Nombre: Cryogen (opcional, Calamity)
-			Resumen: 25000-48000 de vida, en el bioma de Nieve. El primer jefe de Modo Dificil propio de Calamity.
+			Resumen: 25000-48000 de vida, en el bioma de Nieve. El primer jefe de Modo Difícil propio de Calamity.
 		}
 
 		AquaticScourge: {
 			Nombre: Aquatic Scourge (opcional, Calamity)
-			Resumen: 80000-96000 de vida, en el Sulphurous Sea. Su derrota desbloquea la fase 2 de la Lluvia Acida.
+			Resumen: 80000-96000 de vida, en el Sulphurous Sea. Su derrota desbloquea la fase 2 de la Lluvia Ácida.
 		}
 
 		BrimstoneElemental: {
@@ -1260,13 +1260,13 @@ Guia: {
 		}
 
 		LluviaAcidaCragmawMire: {
-			Nombre: Lluvia Acida: Cragmaw Mire (opcional, Calamity)
-			Resumen: Miniboss del evento Lluvia Acida, fase 2. Solo aparece tras derrotar al Aquatic Scourge.
+			Nombre: Lluvia Ácida: Cragmaw Mire (opcional, Calamity)
+			Resumen: Miniboss del evento Lluvia Ácida, fase 2. Solo aparece tras derrotar al Aquatic Scourge.
 		}
 
 		AstrumAureus: {
 			Nombre: Astrum Aureus (opcional, Calamity)
-			Resumen: 75000-120000 de vida y 40 de defensa, en la Infeccion Astral. No confundir con Astrum Deus, mas adelante.
+			Resumen: 75000-120000 de vida y 40 de defensa, en la Infección Astral. No confundir con Astrum Deus, más adelante.
 		}
 
 		CalamitasClone: {
@@ -1276,7 +1276,7 @@ Guia: {
 
 		GreatSandShark: {
 			Nombre: Great Sand Shark (opcional, Calamity)
-			Resumen: 9200-11000 de vida, en el Desierto. Miniboss opcional para despues de Plantera.
+			Resumen: 9200-11000 de vida, en el Desierto. Miniboss opcional para después de Plantera.
 		}
 
 		Ravager: {
@@ -1291,7 +1291,7 @@ Guia: {
 
 		Dragonfolly: {
 			Nombre: Dragonfolly (opcional, Calamity)
-			Resumen: 150000-225000 de vida, en la Jungla. Pensado para poco despues del Señor de la Luna.
+			Resumen: 150000-225000 de vida, en la Jungla. Pensado para poco después del Señor de la Luna.
 		}
 
 		PrimordialWyrm: {
@@ -1300,38 +1300,38 @@ Guia: {
 		}
 
 		LluviaAcidaTier3: {
-			Nombre: Lluvia Acida: Mauler y Nuclear Terror (opcional, Calamity)
-			Resumen: Minibosses del evento Lluvia Acida, fase 3. Solo aparecen tras derrotar a Polterghast.
+			Nombre: Lluvia Ácida: Mauler y Nuclear Terror (opcional, Calamity)
+			Resumen: Minibosses del evento Lluvia Ácida, fase 3. Solo aparecen tras derrotar a Polterghast.
 		}
 
 		AstrumDeus: {
 			Nombre: Astrum Deus
-			Resumen: 150000-240000 de vida. Desbloquea el Mineral Astral. Pensado para justo despues del Cultista, antes del Señor de la Luna.
+			Resumen: 150000-240000 de vida. Desbloquea el Mineral Astral. Pensado para justo después del Cultista, antes del Señor de la Luna.
 		}
 
 		ProfanedGuardiansYProvidence: {
 			Nombre: Los Guardianes Profanos y Providence
-			Resumen: Los Guardianes (80000-120000 de vida) dan el Nucleo Profano; Providence (250000-375000) es el arranque real del postgame de Calamity.
+			Resumen: Los Guardianes (80000-120000 de vida) dan el Núcleo Profano; Providence (250000-375000) es el arranque real del postgame de Calamity.
 		}
 
 		TrioPostProvidence: {
-			Nombre: El trio de Providence: Ceaseless Void, Storm Weaver y Signus
+			Nombre: El trío de Providence: Ceaseless Void, Storm Weaver y Signus
 			Resumen: Tres jefes (50000-380000 de vida cada uno) que Providence desbloquea. Muy recomendados antes de Polterghast.
 		}
 
 		Polterghast: {
 			Nombre: Polterghast
-			Resumen: 280000-420000 de vida, en la Mazmorra (postgame). Muy recomendado tras el trio de Providence.
+			Resumen: 280000-420000 de vida, en la Mazmorra (postgame). Muy recomendado tras el trío de Providence.
 		}
 
 		OldDukeYDoG: {
 			Nombre: The Old Duke y The Devourer of Gods
-			Resumen: Old Duke (400000-600000 de vida) entre Polterghast y DoG; The Devourer of Gods (750000-900000) tras el trio de Providence y Polterghast.
+			Resumen: Old Duke (400000-600000 de vida) entre Polterghast y DoG; The Devourer of Gods (750000-900000) tras el trío de Providence y Polterghast.
 		}
 
 		Yharon: {
 			Nombre: Yharon, Dragon of Rebirth
-			Resumen: 1000000-1560000 de vida, en la Jungla (se enfurece si sales de ella). Tras el Devourer of Gods, antes del ultimo tramo.
+			Resumen: 1000000-1560000 de vida, en la Jungla (se enfurece si sales de ella). Tras el Devourer of Gods, antes del último tramo.
 		}
 
 		ExoMechsYSupremeCalamitas: {
@@ -1374,7 +1374,7 @@ Guia: {
 		InvocarElOjo: {
 			Titulo: Llamarlo tú, en vez de esperarlo
 			Porque: Cumpliendo todo lo anterior, el Ojo puede aparecer solo al caer la noche, pero solo una de cada tres noches: puedes pasarte varias noches preparado y sin que llegue. El Vidente Sospechoso lo llama cuando tú quieras, que es lo que te deja elegir el momento en vez de que te pille a medias.
-			Como: Seis lentes en un Altar Demoniaco o Carmesí. Las lentes las sueltan los ojos que vuelan de noche por la superficie, así que salen solas mientras preparas el resto.
+			Como: Seis lentes en un Altar Demoníaco o Carmesí. Las lentes las sueltan los ojos que vuelan de noche por la superficie, así que salen solas mientras preparas el resto.
 		}
 
 		ArmaParaElReySlime: {
@@ -1469,7 +1469,7 @@ Guia: {
 
 		VencerAlMuro: {
 			Titulo: Derrotarlo: el mundo cambia para siempre
-			Porque: Aquí no hay medias tintas: en cuanto muere, tu mundo entero cruza al Modo Difícil, y no hay vuelta atrás en esta partida. A partir de ahí todo sube de golpe -enemigos nuevos y más duros hasta en zonas que ya dabas por seguras- pero también se abre lo que necesitas para seguir: suelta siempre el Gran martillo (Pwnhammer), el único martillo capaz de romper los Altares Demoniacos o Carmesíes, y cada altar roto reparte mineral nuevo por el mundo (Cobalto o Paladio con el primero, Mithril u Oricalco con el segundo, Adamantita o Titanio con el tercero). Con Calamity y su opción "Early Hardmode Progression Rework" (activada por defecto) el reparto cambia: los altares sueltan Almas de la noche, el Cobalto/Paladio brota solo al morir el Muro, y el resto lo sueltan los jefes mecánicos.
+			Porque: Aquí no hay medias tintas: en cuanto muere, tu mundo entero cruza al Modo Difícil, y no hay vuelta atrás en esta partida. A partir de ahí todo sube de golpe -enemigos nuevos y más duros hasta en zonas que ya dabas por seguras- pero también se abre lo que necesitas para seguir: suelta siempre el Gran martillo (Pwnhammer), el único martillo capaz de romper los Altares Demoníacos o Carmesíes, y cada altar roto reparte mineral nuevo por el mundo (Cobalto o Paladio con el primero, Mithril u Oricalco con el segundo, Adamantita o Titanio con el tercero). Con Calamity y su opción "Early Hardmode Progression Rework" (activada por defecto) el reparto cambia: los altares sueltan Almas de la noche, el Cobalto/Paladio brota solo al morir el Muro, y el resto lo sueltan los jefes mecánicos.
 			Como: Construye un puente largo y llano sobre la lava antes de invocarlo: el Muro avanza solo hacia ti, así que necesitas sitio para retroceder disparando en vez de terreno irregular que te frene. Los ojos son su parte sin defensa; la boca, la más blindada.
 		}
 
@@ -1679,31 +1679,31 @@ Guia: {
 
 		ArmaParaDesertScourge: {
 			Titulo: Cualquier arma con algo de alcance
-			Porque: El Desert Scourge tiene 4 de defensa y entre 4000 y 5000 de vida segun el modo - menos vida que el Ojo de Cthulhu. Es intencionadamente el primer jefe opcional de Calamity, pensado para antes o justo despues del Rey Slime.
+			Porque: El Desert Scourge tiene 4 de defensa y entre 4000 y 5000 de vida según el modo - menos vida que el Ojo de Cthulhu. Es intencionadamente el primer jefe opcional de Calamity, pensado para antes o justo después del Rey Slime.
 			Como: No aparece nunca solo: el Medallón del Desierto, usado dentro del Desierto, es la única forma de invocarlo.
 		}
 
 		VencerADesertScourge: {
 			Titulo: Derrotarlo (opcional)
 			Porque: No te abre ningún camino obligatorio: es el reto opcional más temprano de todo lo que trae Calamity. Deja materiales para la primera tanda de armas y armadura propias del mod.
-			Como: Se mueve en linea recta hacia ti bajo la arena: mantente en el aire o sobre una plataforma alta para esquivar sus embestidas.
+			Como: Se mueve en línea recta hacia ti bajo la arena: mantente en el aire o sobre una plataforma alta para esquivar sus embestidas.
 		}
 
 		PrepararGiantClam: {
 			Titulo: Cualquier arma, y haber derrotado ya al Desert Scourge
 			Porque: El Giant Clam tiene 10 de defensa en prehardmode (35 en Modo Difícil, la misma criatura pero curtida) y solo se deja ver, RARA vez, nadando por el Sunken Sea - y solo después de que hayas dejado atrás al Desert Scourge, por eso este tramo llega justo detrás.
-			Como: No tiene objeto de invocacion: nada mas que explorar el Sunken Sea (bajo el Oceano, mas alla de la Cripta Carmesi/Corrupta submarina) hasta que aparezca uno nadando.
+			Como: No tiene objeto de invocación: nada más que explorar el Sunken Sea (bajo el Océano, más allá de la Cripta Carmesí/Corrupta submarina) hasta que aparezca uno nadando.
 		}
 
 		VencerAGiantClam: {
 			Titulo: Derrotarlo (opcional)
 			Porque: Es puro extra: el primer miniboss de verdad que guarda el Sunken Sea. Hay una versión de Modo Difícil bastante más curtida (35 de defensa) que suelta mejor botín - la misma criatura, no un tramo aparte.
-			Como: Ataca embistiendo en linea recta bajo el agua: un respirador o pocion de respiracion acuatica evita que el aire se convierta en el problema real de la pelea.
+			Como: Ataca embistiendo en línea recta bajo el agua: un respirador o poción de respiración acuática evita que el aire se convierta en el problema real de la pelea.
 		}
 
 		ArmaParaCrabulon: {
-			Titulo: Un arma capaz de perforar su caparazon
-			Porque: Crabulon tiene 8 de defensa y 3500-4400 de vida - un pelin mas duro que el Rey Slime, pensado para justo despues del Ojo de Cthulhu.
+			Titulo: Un arma capaz de perforar su caparazón
+			Porque: Crabulon tiene 8 de defensa y 3500-4400 de vida - un pelín más duro que el Rey Slime, pensado para justo después del Ojo de Cthulhu.
 			Como: No brota solo: el Decapodita Sprout lo invoca, y solo se puede usar dentro de un bioma de Hongos Luminosos que esté bajo tierra, por debajo de la superficie.
 		}
 
@@ -1716,7 +1716,7 @@ Guia: {
 		ArmaParaHiveMindOPerforator: {
 			Titulo: Un arma que aguante una pelea larga
 			Porque: Igual que el Devorador de Mundos y el Cerebro de Cthulhu en vanilla, tu mundo decide cuál de los dos monstruos de Calamity te toca enfrentar: The Hive Mind en Corrupción (8 de defensa, 5000-7000 de vida) o The Perforators en Carmesí (4 de defensa, 4000-5750 de vida) - cualquiera de los dos vale para seguir adelante.
-			Como: Rompe un Hive Tumor (Corrupcion) o un Perforator Cyst (Carmesi) para invocarlo la primera vez; despues, Teratoma o Cebo de Gusanos Sangriento lo repiten.
+			Como: Rompe un Hive Tumor (Corrupción) o un Perforator Cyst (Carmesí) para invocarlo la primera vez; después, Teratoma o Cebo de Gusanos Sangriento lo repiten.
 		}
 
 		VencerAHiveMindOPerforator: {
@@ -1727,50 +1727,50 @@ Guia: {
 
 		ArmaParaSlimeGod: {
 			Titulo: Un arma capaz de dos fases seguidas
-			Porque: The Slime God empieza como dos Paladines (Crimulan y Ebonian) que se fusionan en el nucleo final. Pensado por la propia wiki para justo despues de Esqueletron, el ultimo tramo importante de prehardmode de Calamity.
-			Como: El Overloaded Sludge lo invoca en cualquier sitio. Prepara curacion para dos fases distintas: los Paladines primero, el nucleo fusionado despues.
+			Porque: The Slime God empieza como dos Paladines (Crimulan y Ebonian) que se fusionan en el núcleo final. Pensado por la propia wiki para justo después de Esqueletron, el último tramo importante de prehardmode de Calamity.
+			Como: El Overloaded Sludge lo invoca en cualquier sitio. Prepara curación para dos fases distintas: los Paladines primero, el núcleo fusionado después.
 		}
 
 		VencerASlimeGod: {
 			Titulo: Derrotarlo (opcional)
 			Porque: No bloquea nada obligatorio: es el último gran reto opcional antes del Muro de Carne. Deja el equipo tope de prehardmode de Calamity, lo mejor que vas a llevar puesto antes de cruzar al Modo Difícil.
-			Como: Los dos Paladines se potencian entre si mientras vivan los dos: prioriza rematar a uno rapido en vez de repartir el daño por igual.
+			Como: Los dos Paladines se potencian entre sí mientras vivan los dos: prioriza rematar a uno rápido en vez de repartir el daño por igual.
 		}
 
 		PrepararDreadnautilus: {
 			Titulo: Estar listo para una Luna de Sangre
 			Porque: El Nautilo terrible ya es en vanilla un miniboss que se pesca en Luna de Sangre (7000 de vida, 55 de daño, 24 de defensa); Calamity le reescribe la inteligencia entera y lo vuelve mucho más peligroso. El Horrible Hog es la otra sorpresa de la misma noche: un cerdo salvaje corriente que, por algún motivo, ha crecido mucho más de lo normal - solo sale en Luna de Sangre y con el Ojo de Cthulhu ya derrotado.
-			Como: Ninguno de los dos tiene objeto de invocacion de verdad: solo aparecen durante una Luna de Sangre real. Un anillo/reloj de Luna de Sangre o esperar la aleatoria de cada noche es la unica via.
+			Como: Ninguno de los dos tiene objeto de invocación de verdad: solo aparecen durante una Luna de Sangre real. Un anillo/reloj de Luna de Sangre o esperar la aleatoria de cada noche es la única vía.
 		}
 
 		VencerADreadnautilusYHorribleHog: {
 			Titulo: Derrotar a cualquiera de los dos (opcional)
 			Porque: Ninguno de los dos bloquea nada obligatorio: son las dos curiosidades que la Luna de Sangre de Calamity guarda para quien se atreva a salir esa noche, pensadas para el mismo tramo que Esqueletron y el Slime God.
-			Como: El Dreadnautilus nada en linea recta y muerde fuerte para prehardmode; el Horrible Hog embiste en tierra. Los dos se pueden esquivar con plataformas y distancia.
+			Como: El Dreadnautilus nada en línea recta y muerde fuerte para prehardmode; el Horrible Hog embiste en tierra. Los dos se pueden esquivar con plataformas y distancia.
 		}
 
 		ArmaParaCryogen: {
-			Titulo: Tu primer arma de Modo Dificil de Calamity
-			Porque: Cryogen tiene 15 de defensa y 25000-48000 de vida - el primer jefe hardmode PROPIO de Calamity, pensado para el mismo momento que los mecanicos de vanilla.
+			Titulo: Tu primer arma de Modo Difícil de Calamity
+			Porque: Cryogen tiene 15 de defensa y 25000-48000 de vida - el primer jefe hardmode PROPIO de Calamity, pensado para el mismo momento que los mecánicos de vanilla.
 			Como: La Llave Criogénica lo invoca dentro del bioma de Nieve. Se fabrica en un yunque con 50 bloques de hielo, 5 Almas de luz, 5 Almas de noche y 8 Esencias de Eleum (las sueltan los enemigos de la nieve en Modo Difícil): se puede intentar nada más cruzar al Modo Difícil. Su primera muerte hace brotar el Mineral Criónico en la nieve.
 		}
 
 		VencerACryogen: {
 			Titulo: Derrotarlo (opcional)
 			Porque: No bloquea nada del camino obligatorio de Calamity, pero te abre la primera tanda de verdad de equipo hardmode del mod - vale la pena antes de ir a por los mecánicos.
-			Como: Alterna entre varias fases de proyectiles helados: los patrones son predecibles, pero se acumulan rapido si no mantienes distancia.
+			Como: Alterna entre varias fases de proyectiles helados: los patrones son predecibles, pero se acumulan rápido si no mantienes distancia.
 		}
 
 		ArmaParaAquaticScourge: {
 			Titulo: Un arma que aguante un gusano largo
-			Porque: Aquatic Scourge tiene 10 de defensa y 80000-96000 de vida - mucha mas vida que Cryogen, pero menos defensa. Su derrota desbloquea la fase 2 del evento Lluvia Acida.
+			Porque: Aquatic Scourge tiene 10 de defensa y 80000-96000 de vida - mucha más vida que Cryogen, pero menos defensa. Su derrota desbloquea la fase 2 del evento Lluvia Ácida.
 			Como: El Marisco (Seafood) lo invoca, pero solo dentro del Sulphurous Sea; también puede aparecer solo, rarísimamente, nadando en sus aguas.
 		}
 
 		VencerAAquaticScourge: {
 			Titulo: Derrotarlo (opcional)
 			Porque: No bloquea el camino obligatorio, pero SÍ hace que el cielo se ponga peor: desbloquea la segunda fase de la Lluvia Ácida de Calamity, y con ella la posibilidad de que aparezca el Cragmaw Mire.
-			Como: Es un gusano segmentado largisimo: como el Devorador de Mundos de vanilla, cada segmento cuenta como un golpe, asi que un arma de area rinde mas que una de un solo objetivo.
+			Como: Es un gusano segmentado larguísimo: como el Devorador de Mundos de vanilla, cada segmento cuenta como un golpe, así que un arma de área rinde más que una de un solo objetivo.
 		}
 
 		ArmaParaBrimstoneElemental: {
@@ -1786,7 +1786,7 @@ Guia: {
 		}
 
 		PrepararLluviaAcida2: {
-			Titulo: Estar listo para la Lluvia Acida (fase 2)
+			Titulo: Estar listo para la Lluvia Ácida (fase 2)
 			Porque: Cragmaw Mire es un miniboss que solo entra en la lista de la Lluvia Ácida cuando el Aquatic Scourge ya ha caído: es la bandera de ese jefe, no un contador de puntos, la que cambia la fase del evento (y sube lo que hay que matar de 110 a 135 enemigos para un jugador).
 			Como: La Lluvia Ácida empieza sola, por probabilidad, o al instante con una Lágrima Cáustica - pero solo con el Ojo de Cthulhu ya derrotado o el mundo en Modo Difícil. Se corta sola si pasan dos minutos y medio sin matar nada.
 		}
@@ -1794,13 +1794,13 @@ Guia: {
 		VencerACragmawMire: {
 			Titulo: Derrotarlo (opcional)
 			Porque: No bloquea nada obligatorio: un miniboss extra que la Lluvia Ácida trae consigo, pensado para la misma franja que Brimstone Elemental.
-			Como: Se mueve rapido bajo el agua acida: cuidado con el propio ambiente, no solo con el enemigo, la lluvia acida daña por su cuenta.
+			Como: Se mueve rápido bajo el agua ácida: cuidado con el propio ambiente, no solo con el enemigo, la lluvia ácida daña por su cuenta.
 		}
 
 		ArmaParaAstrumAureus: {
 			Titulo: Un arma capaz de defensa alta
-			Porque: Astrum Aureus tiene 40 de defensa (mas que cualquier opcional anterior de Calamity) y 75000-120000 de vida, en la Infeccion Astral - el bioma que va apareciendo solo en Modo Dificil.
-			Como: El Fragmento Astral lo invoca dentro de la Infeccion Astral.
+			Porque: Astrum Aureus tiene 40 de defensa (más que cualquier opcional anterior de Calamity) y 75000-120000 de vida, en la Infección Astral - el bioma que va apareciendo solo en Modo Difícil.
+			Como: El Fragmento Astral lo invoca dentro de la Infección Astral.
 		}
 
 		VencerAAstrumAureus: {
@@ -1811,26 +1811,26 @@ Guia: {
 
 		ArmaParaCalamitasClone: {
 			Titulo: Un arma a la altura de Plantera
-			Porque: Calamitas Clone tiene 25 de defensa y 30000-46875 de vida - la propia wiki la sitúa "a un nivel similar a Plantera", recomendada tras los tres jefes mecanicos.
-			Como: El Ojo de la Desolacion la invoca en cualquier sitio.
+			Porque: Calamitas Clone tiene 25 de defensa y 30000-46875 de vida - la propia wiki la sitúa "a un nivel similar a Plantera", recomendada tras los tres jefes mecánicos.
+			Como: El Ojo de la Desolación la invoca en cualquier sitio.
 		}
 
 		VencerACalamitasClone: {
 			Titulo: Derrotarlo (opcional)
 			Porque: No bloquea nada obligatorio, pero deja equipo a la altura de Plantera - vale la pena afrontarlo en la misma franja. No lo confundas con Supreme Calamitas, un jefe final completamente distinto que espera mucho más adelante, pese al nombre casi idéntico.
-			Como: Dispara aros de fuego que cubren casi toda la pantalla: mira los huecos en el patron antes de que se cierre, no intentes esquivar dentro de el.
+			Como: Dispara aros de fuego que cubren casi toda la pantalla: mira los huecos en el patrón antes de que se cierre, no intentes esquivar dentro de él.
 		}
 
 		ArmaParaGreatSandShark: {
 			Titulo: Un arma capaz de un miniboss post-Plantera
-			Porque: Great Sand Shark es un miniboss opcional del Desierto, pensado para despues de Plantera.
-			Como: El Nucleo de Tormenta de Arena lo invoca en el Desierto, o mata 10 tiburones de arena durante una tormenta para que aparezca solo.
+			Porque: Great Sand Shark es un miniboss opcional del Desierto, pensado para después de Plantera.
+			Como: El Núcleo de Tormenta de Arena lo invoca en el Desierto, o mata 10 tiburones de arena durante una tormenta para que aparezca solo.
 		}
 
 		VencerAGreatSandShark: {
 			Titulo: Derrotarlo (opcional)
 			Porque: No bloquea nada obligatorio: un depredador extra que el Desierto esconde para quien vuelva por esa zona después de Plantera.
-			Como: Nada rapido bajo la arena y sale a embestir: quedarte en el aire, fuera de la arena, lo obliga a saltar hacia ti en vez de perseguirte a ciegas.
+			Como: Nada rápido bajo la arena y sale a embestir: quedarte en el aire, fuera de la arena, lo obliga a saltar hacia ti en vez de perseguirte a ciegas.
 		}
 
 		ArmaParaRavager: {
@@ -1848,25 +1848,25 @@ Guia: {
 		ArmaParaPlaguebringer: {
 			Titulo: Un arma capaz de un jefe post-Golem
 			Porque: The Plaguebringer Goliath tiene 50 de defensa y 70000-105000 de vida - la propia wiki la describe como "la fuerza central de la plaga que se instala en la Jungla tras la derrota del Golem".
-			Como: El Abombination la invoca en la Jungla o Jungla subterranea.
+			Como: El Abombination la invoca en la Jungla o Jungla subterránea.
 		}
 
 		VencerAPlaguebringer: {
 			Titulo: Derrotarlo (opcional)
 			Porque: No bloquea nada obligatorio, pero suelta las riendas del resto de la Plaga sobre la Jungla -enemigos y recursos nuevos- para lo que queda de hardmode.
-			Como: Alterna fases de vuelo y de tierra con ataques muy distintos: no asumas que el patron que ya viste sigue valiendo al cambiar de fase.
+			Como: Alterna fases de vuelo y de tierra con ataques muy distintos: no asumas que el patrón que ya viste sigue valiendo al cambiar de fase.
 		}
 
 		ArmaParaDragonfolly: {
 			Titulo: Un arma del nivel de justo tras la luna
-			Porque: Dragonfolly tiene 40 de defensa y 150000-225000 de vida - la propia wiki lo situa "pensado para pelearse poco despues de derrotar al Señor de la Luna", aunque ya se puede desde el Cultista.
-			Como: El Feromona Exotica lo invoca en la Jungla.
+			Porque: Dragonfolly tiene 40 de defensa y 150000-225000 de vida - la propia wiki lo sitúa "pensado para pelearse poco después de derrotar al Señor de la Luna", aunque ya se puede desde el Cultista.
+			Como: La Feromona Exótica lo invoca en la Jungla.
 		}
 
 		VencerADragonfolly: {
 			Titulo: Derrotarlo (opcional)
 			Porque: No bloquea nada obligatorio: un opcional de la franja posterior a la luna, pensado para asomarte justo después del Señor de la Luna aunque nada te obliga a ello.
-			Como: Vuela erraticamente por toda la pantalla y suelta huevos que eclosionan en enemigos menores: revienta los huevos rapido antes de que se acumulen.
+			Como: Vuela erráticamente por toda la pantalla y suelta huevos que eclosionan en enemigos menores: revienta los huevos rápido antes de que se acumulen.
 		}
 
 		ArmaParaPrimordialWyrm: {
@@ -1882,9 +1882,9 @@ Guia: {
 		}
 
 		PrepararLluviaAcida3: {
-			Titulo: Estar listo para la Lluvia Acida (fase 3)
+			Titulo: Estar listo para la Lluvia Ácida (fase 3)
 			Porque: Mauler y Nuclear Terror son los dos minibosses de la fase 3 del evento Lluvia Ácida - la que abre la bandera de Polterghast derrotado (170 enemigos para un jugador), la misma fase en la que The Old Duke aparece al llegar al final del evento.
-			Como: La Lluvia Acida empieza sola o con una Lagrima Caustica; con Polterghast ya derrotado, la fase 3 puede llegar a soltar cualquiera de los dos.
+			Como: La Lluvia Ácida empieza sola o con una Lágrima Cáustica; con Polterghast ya derrotado, la fase 3 puede llegar a soltar cualquiera de los dos.
 		}
 
 		VencerALluviaAcida3: {
@@ -1895,8 +1895,8 @@ Guia: {
 
 		PrepararAstrumDeus: {
 			Titulo: Un arma capaz del jefe que abre el mineral Astral
-			Porque: Astrum Deus tiene 20 de defensa y 150000-240000 de vida. La Calamity Mod Wiki confirma que "debe ser derrotado para poder minar el Mineral Astral" y que esta pensado para justo despues del Cultista Lunatico, antes del Señor de la Luna.
-			Como: Coloca un Faro Astral (mueble) y haz clic derecho de noche con un Corazon de Titan o un Nucleo Estelar en el inventario para invocarlo - no es un objeto que se "use" directamente.
+			Porque: Astrum Deus tiene 20 de defensa y 150000-240000 de vida. La Calamity Mod Wiki confirma que "debe ser derrotado para poder minar el Mineral Astral" y que está pensado para justo después del Cultista Lunático, antes del Señor de la Luna.
+			Como: Coloca un Faro Astral (mueble) y haz clic derecho de noche con un Corazón de Titán o un Núcleo Estelar en el inventario para invocarlo - no es un objeto que se "use" directamente.
 		}
 
 		VencerAAstrumDeus: {
@@ -1907,54 +1907,54 @@ Guia: {
 
 		ArmaParaGuardianes: {
 			Titulo: Un arma capaz de tres guardianes a la vez
-			Porque: Los Profaned Guardians son tres jefes que luchan JUNTOS. La wiki confirma que "hace falta matarlos para conseguir el Profaned Core, que invoca a Providence" - el unico requisito de invocacion realmente DURO de todo el postgame de Calamity.
+			Porque: Los Profaned Guardians son tres jefes que luchan JUNTOS. La wiki confirma que "hace falta matarlos para conseguir el Profaned Core, que invoca a Providence" - el único requisito de invocación realmente DURO de todo el postgame de Calamity.
 			Como: El Fragmento Profano los invoca en el Sagrado o el Infierno.
 		}
 
 		VencerAGuardianes: {
 			Titulo: Derrotarlos
 			Porque: Con los tres en el suelo, te dejan el Profaned Core: la ÚNICA llave real para invocar a Providence - sáltate este paso y no hay otra forma de llegar hasta ella.
-			Como: Los tres se potencian entre si: el Comandante es el mas resistente, pero centrarte solo en el deja vivos a los otros dos disparando sin parar.
+			Como: Los tres se potencian entre sí: el Comandante es el más resistente, pero centrarte solo en él deja vivos a los otros dos disparando sin parar.
 		}
 
 		ArmaParaProvidence: {
 			Titulo: Un arma de nivel final de Calamity
-			Porque: Providence, the Profaned Goddess tiene 50 de defensa y 250000-375000 de vida - el verdadero arranque del postgame de Calamity, justo despues del Señor de la Luna en la progresion real (no antes, pese a lo que sugiere de memoria el nombre "Goddess").
-			Como: El Nucleo Profano (el drop de los Guardianes) la invoca en el Sagrado o el Infierno.
+			Porque: Providence, the Profaned Goddess tiene 50 de defensa y 250000-375000 de vida - el verdadero arranque del postgame de Calamity, justo después del Señor de la Luna en la progresión real (no antes, pese a lo que sugiere de memoria el nombre "Goddess").
+			Como: El Núcleo Profano (el drop de los Guardianes) la invoca en el Sagrado o el Infierno.
 		}
 
 		VencerAProvidence: {
 			Titulo: Derrotarla
 			Porque: Con ella caída, se abre el resto del postgame de Calamity: deja el Mark of Providence, la marca que invoca a Ceaseless Void, Storm Weaver y Signus - muy recomendable hacerlo antes de plantarles cara a esos tres, aunque nada te lo impide si decides saltártelo.
-			Como: Cambia de fase segun su propio daño acumulado, no segun el tuyo: cada fase tiene un patron de proyectiles distinto, y todas se pueden repetir si la pierdes de vuelta a la anterior.
+			Como: Cambia de fase según su propio daño acumulado, no según el tuyo: cada fase tiene un patrón de proyectiles distinto, y todas se pueden repetir si la pierdes de vuelta a la anterior.
 		}
 
 		ArmaParaCeaselessVoid: {
 			Titulo: Un arma de nivel postgame
-			Porque: Ceaseless Void tiene 80 de defensa y 50000-78000 de vida - de los tres jefes que abre Providence, el que menos vida tiene pero mas defensa.
+			Porque: Ceaseless Void tiene 80 de defensa y 50000-78000 de vida - de los tres jefes que abre Providence, el que menos vida tiene pero más defensa.
 			Como: El Mark of Providence (lo suelta Providence la primera vez, y también se fabrica) invoca a uno de los tres según dónde lo uses: a Ceaseless Void dentro de la Mazmorra. Muy recomendado hacerlo tras Providence, aunque técnicamente no lo exige.
 		}
 
 		VencerACeaselessVoid: {
 			Titulo: Derrotarlo
 			Porque: Junto a Storm Weaver y Signus, dejarlo atrás allana el terreno para Polterghast - muy recomendable, aunque nada te obliga a pasar por aquí antes.
-			Como: Crea un agujero negro central que atrae proyectiles: usalo a tu favor para limpiar el area en vez de solo esquivarlo.
+			Como: Crea un agujero negro central que atrae proyectiles: úsalo a tu favor para limpiar el área en vez de solo esquivarlo.
 		}
 
 		ArmaParaStormWeaver: {
 			Titulo: Un arma capaz de un gusano de defensa muy alta
-			Porque: Storm Weaver tiene 150 de defensa - la mas alta de todo este tramo, muy por delante de Ceaseless Void (80) y Signus (60).
+			Porque: Storm Weaver tiene 150 de defensa - la más alta de todo este tramo, muy por delante de Ceaseless Void (80) y Signus (60).
 			Como: El Mark of Providence lo invoca en el cielo/espacio.
 		}
 
 		VencerAStormWeaver: {
 			Titulo: Derrotarlo
 			Porque: Junto a Ceaseless Void y Signus, dejarlo atrás allana el terreno para Polterghast. Storm Weaver y Signus comparten algo más que el vecindario -están relacionados de verdad- aunque enfrentarte a uno no te exige haber tumbado al otro.
-			Como: Es un gusano segmentado volador: como con Aquatic Scourge, un arma de area rinde mas que apuntar a un solo segmento.
+			Como: Es un gusano segmentado volador: como con Aquatic Scourge, un arma de área rinde más que apuntar a un solo segmento.
 		}
 
 		ArmaParaSignus: {
-			Titulo: Un arma equilibrada para el tercero del trio
+			Titulo: Un arma equilibrada para el tercero del trío
 			Porque: Signus, Envoy of the Devourer tiene 60 de defensa y 250000-380000 de vida - el tercero de los jefes que abre Providence.
 			Como: El Mark of Providence lo invoca en el Infierno.
 		}
@@ -1962,79 +1962,79 @@ Guia: {
 		VencerASignus: {
 			Titulo: Derrotarlo
 			Porque: Con él caído, se cierra el trío que Providence dejó abierto. Con los tres en el suelo -este, Ceaseless Void y Storm Weaver- llevas encima el mejor equipo posible antes de Polterghast, aunque de nuevo ninguno de los tres es un requisito estricto para seguir.
-			Como: Se teletransporta sin parar por toda la pantalla dejando estelas cosmicas: no persigas la estela, anticipa donde va a reaparecer.
+			Como: Se teletransporta sin parar por toda la pantalla dejando estelas cósmicas: no persigas la estela, anticipa dónde va a reaparecer.
 		}
 
 		ArmaParaPolterghast: {
 			Titulo: Un arma de nivel muy avanzado de postgame
-			Porque: Polterghast tiene 90 de defensa y 280000-420000 de vida. La wiki confirma que se puede pelear antes de cualquier jefe postgame, pero que "se recomienda muchisimo" derrotar antes a Storm Weaver, Ceaseless Void y Signus.
-			Como: La primera vez hace falta matar 30 Phantom Spirits dentro de la Mazmorra (ya en postgame) para que aparezca. Despues, el Necroplasmic Beacon lo repite directamente.
+			Porque: Polterghast tiene 90 de defensa y 280000-420000 de vida. La wiki confirma que se puede pelear antes de cualquier jefe postgame, pero que "se recomienda muchísimo" derrotar antes a Storm Weaver, Ceaseless Void y Signus.
+			Como: La primera vez hace falta matar 30 Phantom Spirits dentro de la Mazmorra (ya en postgame) para que aparezca. Después, el Necroplasmic Beacon lo repite directamente.
 		}
 
 		VencerAPolterghast: {
 			Titulo: Derrotarlo
 			Porque: Con él caído, la Lluvia Ácida desata su tercera fase (Mauler, Nuclear Terror y The Old Duke), y es un paso recomendado antes de ir a por Old Duke o el Devourer of Gods.
-			Como: Se vuelve intangible por fases y solo se puede golpear en ciertos momentos: guarda tus ataques mas fuertes para cuando este solido de verdad.
+			Como: Se vuelve intangible por fases y solo se puede golpear en ciertos momentos: guarda tus ataques más fuertes para cuando esté sólido de verdad.
 		}
 
 		ArmaParaOldDuke: {
 			Titulo: Un arma de nivel avanzado de postgame
-			Porque: The Old Duke tiene 90 de defensa y 400000-600000 de vida - convive con el Duque Pezhongo de vanilla, no lo sustituye (confirmado: comparten estilo de pelea pero son NPC distintos). La wiki lo situa textualmente "entre Polterghast y The Devourer of Gods".
-			Como: Aparece en la fase 3 de la Lluvia Acida (tras Polterghast), o pescando con un Bloodworm en el Sulphurous Sea ya en postgame.
+			Porque: The Old Duke tiene 90 de defensa y 400000-600000 de vida - convive con el Duque Pezhongo de vanilla, no lo sustituye (confirmado: comparten estilo de pelea pero son NPC distintos). La wiki lo sitúa textualmente "entre Polterghast y The Devourer of Gods".
+			Como: Aparece en la fase 3 de la Lluvia Ácida (tras Polterghast), o pescando con un Bloodworm en el Sulphurous Sea ya en postgame.
 		}
 
 		VencerAOldDuke: {
 			Titulo: Derrotarlo
 			Porque: Se recomienda dejarlo en el fondo del mar antes de ir a por el Devourer of Gods, aunque el juego no te obliga a seguir ese orden.
-			Como: Cambia de forma varias veces durante la pelea, cada una con ataques distintos: no bajes la guardia entre transformaciones, el cambio en si no da tregua.
+			Como: Cambia de forma varias veces durante la pelea, cada una con ataques distintos: no bajes la guardia entre transformaciones, el cambio en sí no da tregua.
 		}
 
 		ArmaParaDoG: {
 			Titulo: Un arma de nivel final de Calamity
-			Porque: The Devourer of Gods tiene 50 de defensa pero 750000-900000 de vida - mas del doble que Polterghast. La wiki confirma que esta "pensado para pelearse despues de Storm Weaver, Ceaseless Void, Signus y Polterghast".
+			Porque: The Devourer of Gods tiene 50 de defensa pero 750000-900000 de vida - más del doble que Polterghast. La wiki confirma que está "pensado para pelearse después de Storm Weaver, Ceaseless Void, Signus y Polterghast".
 			Como: El Cosmic Worm lo invoca en cualquier sitio.
 		}
 
 		VencerADoG: {
 			Titulo: Derrotarlo
 			Porque: Con él caído, se abren las Barras de Cosmilite: un material real que necesitas para gran parte del equipo de final de partida, no un simple trofeo para presumir.
-			Como: Es el gusano mas largo y rapido de todo el arbol: un arma de area con buen alcance importa mas aqui que en cualquier otro segmentado anterior.
+			Como: Es el gusano más largo y rápido de todo el árbol: un arma de área con buen alcance importa más aquí que en cualquier otro segmentado anterior.
 		}
 
 		ArmaParaYharon: {
-			Titulo: Un arma capaz del penultimo tramo de Calamity
-			Porque: Yharon, Dragon of Rebirth tiene 90 de defensa y 1000000-1560000 de vida - casi el doble que el Devourer of Gods. La wiki confirma que esta "pensado para pelearse despues de The Devourer of Gods".
+			Titulo: Un arma capaz del penúltimo tramo de Calamity
+			Porque: Yharon, Dragon of Rebirth tiene 90 de defensa y 1000000-1560000 de vida - casi el doble que el Devourer of Gods. La wiki confirma que está "pensado para pelearse después de The Devourer of Gods".
 			Como: El Huevo de Yharon lo invoca: se fabrica en el Manipulador antiguo con 10 Aleaciones de vida y 15 Plumas fulgentes, y esas plumas las suelta Dragonfolly (o sus crías salvajes), así que Dragonfolly es en la práctica su requisito. Invócalo en la Jungla: se enfurece si sales de ella.
 		}
 
 		VencerAYharon: {
 			Titulo: Derrotarlo
 			Porque: Con él caído, se abre paso al último tramo de todo Calamity: los Exo Mechs y Supreme Calamitas, dos amenazas pensadas para afrontarse casi a la vez.
-			Como: Se cura si le dejas demasiado tiempo entre fases sin bajarle mas vida: manten la presion constante en vez de repartir el daño con pausas largas.
+			Como: Se cura si le dejas demasiado tiempo entre fases sin bajarle más vida: mantén la presión constante en vez de repartir el daño con pausas largas.
 		}
 
 		ArmaParaExoMechs: {
-			Titulo: El arma mas fuerte que tengas
-			Porque: Los Exo Mechs se luchan JUNTOS bajo el control de Draedon, en una batalla de varias fases - tu eliges por cual empezar, los otros dos se suman despues.
-			Como: Se construye "El Descifrador" (Decryption Computer + Celula de Enfriamiento Cuantico Aurica) y se habla con Draedon para empezar - no es un objeto que se use directamente.
+			Titulo: El arma más fuerte que tengas
+			Porque: Los Exo Mechs se luchan JUNTOS bajo el control de Draedon, en una batalla de varias fases - tú eliges por cuál empezar, los otros dos se suman después.
+			Como: Se construye "El Descifrador" (Decryption Computer + Célula de Enfriamiento Cuántico Áurica) y se habla con Draedon para empezar - no es un objeto que se use directamente.
 		}
 
 		VencerAExoMechs: {
 			Titulo: Derrotar a los tres
 			Porque: Se da la batalla por ganada en cuanto cae el primero de los tres mechs, porque los tres luchan juntos desde el principio - en la práctica, acabas con los tres en la misma sesión de combate.
-			Como: Cada mech tiene su propio patron: Ares dispara laseres fijos, Thanatos es un gusano volador, Artemis y Apollo cazan en pareja. Aprende los tres antes de intentarlo, aparecen juntos.
+			Como: Cada mech tiene su propio patrón: Ares dispara láseres fijos, Thanatos es un gusano volador, Artemis y Apollo cazan en pareja. Aprende los tres antes de intentarlo, aparecen juntos.
 		}
 
 		ArmaParaSupremeCalamitas: {
-			Titulo: El arma final de todo el arbol
+			Titulo: El arma final de todo el árbol
 			Porque: Supreme Witch, Calamitas tiene 100 de defensa y 750000-1150000 de vida. La propia wiki la describe como que "actúa actualmente como jefe final junto a los Exo Mechs" - distinta de Calamitas Clone (mucho más temprana, nivel Plantera).
 			Como: Las Cenizas de Calamidad se usan en el Altar de los Malditos para invocarla.
 		}
 
 		VencerASupremeCalamitas: {
-			Titulo: Derrotarla: el final del arbol de Calamity
+			Titulo: Derrotarla: el final del árbol de Calamity
 			Porque: Con ella caída, se cierra todo el árbol de Calamity tal y como está hoy - junto a los Exo Mechs, el propio mod la trata como su final de verdad.
-			Como: Cambia de fase con patrones muy distintos entre si: no hay un truco unico que valga para toda la pelea, cada fase exige su propia lectura.
+			Como: Cambia de fase con patrones muy distintos entre sí: no hay un truco único que valga para toda la pelea, cada fase exige su propia lectura.
 		}
 	}
 }
