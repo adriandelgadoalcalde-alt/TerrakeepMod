@@ -10859,3 +10859,144 @@ ultima pasada no queda ningun proceso `tModLoader.exe` colgado bloqueando nada.
 - `evidencia/investigacion-3bugs.log.txt`, `evidencia/investigacion-3bugs-capturas/*.png` - log/capturas
   reales de la ULTIMA pasada (post-arreglo, paso=8, 3 reconstrucciones en 30s).
 - `bitacora.md` (esta entrada).
+
+## 29-sep-2026 — Paridad TerrakeepMod vs Terrakeep escritorio: cierra el hueco 1 (terminología ES), confirma 2 huecos como YA CUBIERTOS con evidencia real, deja 1 pendiente honesto
+
+Encargo recibido ya con el trabajo de investigación hecho por un agente previo
+(`auditoria-paridad-29sep.md`): el cierre anterior de "paridad ya está hecha" en TerrakeepMod era
+**REINTERPRETADO** - se basaba en el `PROJECT_HANDOFF_GATE` (un checklist de cierre de proyecto),
+nunca en una comparación función por función contra Terrakeep escritorio. La auditoría dejó 4
+huecos reales priorizados. Este encargo los cierra uno a uno con evidencia real, sin forzar
+ninguno que de verdad no aplique.
+
+### Hueco 1 (Alta, barata) — Terminología oficial de Terraria/Calamity en ES: CERRADO
+
+`Assets/vanilla_library_labels_es.json` (el catálogo real que `ArbolLibreria.ParsearArchivos`
+lee como recurso empaquetado y pasa a `LibraryLabelCatalog.LoadFromStream` para traducir los
+nombres de carpeta de la Libreria) llevaba congelada la versión SIN corregir de
+`Terrasavr.es-ES.json` real: sin tildes/eñes ("Dificil", "Carmesi", "Vortice", "Marmol",
+"Categorias"...), con erratas reales ("Librera", "Sofa", "Accessorios" con doble ese, "Objectos"
+con "ct") y con terminología NO oficial en varias carpetas ("Clorofila" en vez de "Clorofita" -
+es un mineral, no el pigmento -, "Pearlwood"/"Bamboo" sin traducir, "Dorado" en vez de "Oro",
+"Lavabos"/"Inodoros" en vez de "Fregaderos"/"Retretes", "Carritos de Mina" en vez de "Vagonetas",
+"Hongo" en vez de "Champiñón"...). Terrakeep escritorio ya corrigió exactamente este mismo lote
+hoy mismo (commit `968d6e67` + los de L-01 de la FASE D del responsive global,
+`scripts/extraer-etiquetas-libreria-es.js`, contrastado con `es-ES.Items.json` real).
+
+Comprobación previa real (no asumida): las 336 claves de los dos catálogos son **idénticas**
+(mismo namespace `lib.item` de `Terrasavr.es-ES.json` + mismas carpetas nuevas por subtipo) -
+confirmado con un script Node que compara ambos JSON clave a clave, cero claves solo-en-mod y
+cero claves solo-en-escritorio. El mod no necesitaba una retraducción propia, solo los VALORES ya
+corregidos de escritorio.
+
+**Canario nuevo** `TerrakeepMod.Tests/EtiquetasLibreriaEsTests.cs` (`EtiquetasLibreriaEsTests`,
+`[Theory]` con 19 casos, lee el JSON real del repo por ruta relativa desde
+`AppContext.BaseDirectory`, sin depender de `LibraryLabelCatalog` para no arrastrar la referencia
+a `Terrakeep.Core`): confirmado en **rojo** contra el archivo sin corregir (19/19 fallos reales,
+ej. `"Bamboo"` esperado `"Bambú"` obtenido `"Bamboo"`, `"Hardmode"` esperado `"Modo Difícil"`
+obtenido `"Modo Dificil"`).
+
+**Arreglo real aplicado**: `Assets/vanilla_library_labels_es.json` sustituido por el contenido
+íntegro y ya corregido de `Terrakeep.App/Assets/vanilla_library_labels_es.json` (mismo repo
+hermano, misma fuente de datos, sin duplicar traducción a mano) - confirmado byte-idéntico con
+`diff` tras la copia.
+
+**Verificación**: canario en **verde** (19/19), `dotnet test TerrakeepMod.Tests` completo **43/43
+en verde, sin regresión** (los 24 tests previos de `GramaticaBusqueda*` siguen pasando). Sin
+proceso de tModLoader/Terraria en marcha en la máquina (`Get-CimInstance Win32_Process` sin
+resultado), así que se compiló con seguridad: `scripts/compilar.ps1` en verde (solo los avisos
+benignos ya documentados, `CS1701`/`WARN: Image loading failed`), `.tmod` real desplegado en
+`Documents\My Games\Terraria\tModLoader\Mods\TerrakeepMod.tmod` (840.471 bytes,
+29/09/2026 02:19:05). Confirmado leyendo el `.tmod` empaquetado byte a byte con
+`tmod-extract.js` (formato real `TmodFile.cs`, sin descomprimir a mano) que el recurso interno
+`Assets/vanilla_library_labels_es.json` ya lleva los valores corregidos (`"Pre-Hardmode" ->
+"Pre-Modo Difícil"`, `"Hallowed & Chlorophyte" -> "Sagrado & Clorofita"`, `"Golden" -> "Oro"`...).
+No se lanzó tModLoader/Terraria (restricción activa de turno del escritorio compartido) - la
+confirmación VISUAL en el árbol real de la Libreria queda para el guion de verificación de abajo.
+
+### Hueco 3 (Media) — Persistencia de ediciones de Exploración/cofres: YA CUBIERTO, con evidencia real (no un hueco)
+
+Investigado leyendo el código real (no asumido): las únicas dos superficies de edición de mundo
+del mod son (a) el cambio de dificultad en `UI/Exploracion/PestanaMundo.cs` y (b) dar/editar
+objetos de un cofre real del mundo en `UI/Libreria/Widgets/SelectorCofreMundoTk.cs`
+(`Chest.item[]` vía `ItemSlot.Handle`, el mismo mecanismo que usa cualquier cofre abierto a mano
+en vanilla). Las dos escriben sobre el **mundo YA CARGADO en la partida en curso**, no sobre un
+`.wld` offline como hace Terrakeep escritorio (por eso escritorio necesitaba un botón "Guardar
+mundo" explícito, commit `580d398b`: sin partida viva no hay otro mecanismo de guardado). En el
+mod, el propio motor de Terraria ya persiste ese estado con su autoguardado/guardado al salir -
+el mismo camino que ya usa cualquier acción nativa del juego.
+
+Y lo más importante: `PestanaMundo` YA avisa de esto explícitamente, con código real anterior a
+este encargo (no añadido ahora): la fila "Autoguardado: Activado/Desactivado" de la ficha del
+mundo (línea ~121, lee `Main.autoSave` en vivo) y el aviso de permanencia SIEMPRE visible antes de
+tocar nada ("`⚠ ... queda grabado en el mundo en el siguiente guardado`",
+`DificultadMundo.AvisoDePermanencia()`/`AvisoDeEfecto()`, más `Exploracion.Mundo.AvisoDeshacer`) -
+documentado también en el XMLdoc de la propia clase (líneas 12-20) contrastando explícitamente
+con el comportamiento de escritorio. Conclusión: no aplica un botón "Guardar mundo" nuevo por la
+misma razón real por la que no aplica el Responsive Global tal cual (arquitectura distinta:
+mod = partida viva con autoguardado nativo; escritorio = archivo offline sin ningún guardado
+automático) - la indicación equivalente que pedía el encargo ("dentro de lo que se pueda") **ya
+existe**, no es un hueco.
+
+### Hueco 4 (Baja) — Ghost de arrastre de la Libreria: NO APLICA, confirmado con evidencia real (no un hueco)
+
+Investigado leyendo `UI/SlotObjetoVanilla.cs`: el mod nunca reimplementa un "ghost" de arrastre
+propio - usa `ItemSlot.Draw`/`ItemSlot.Handle` de vanilla tal cual (líneas 93/143/148), el mismo
+código que dibuja y mueve CUALQUIER slot de inventario, cofre o banco de trabajo del juego base.
+Cuando se coge un objeto, es el propio motor (`Main.mouseItem` + el dibujado nativo del cursor)
+el que lo pinta pegado al ratón - sin rectángulo/recuadro OLE (eso es un artefacto específico del
+`DragDrop` de Windows/WPF, que el mod nunca usa) y sin ninguna superficie propia que pueda
+desincronizarse del estándar de escritorio. No hay nada que "reconfirmar" porque no hay una
+implementación paralela que mantener sincronizada: es el mismo comportamiento que ya tiene
+cualquier slot de vanilla, correcto por construcción.
+
+### Hueco 2 (Media) — Auditoría sistemática de UIScale/resolución: PENDIENTE, honesto
+
+No se ha hecho. Es el único de los 4 huecos que de verdad necesita el juego en marcha (los
+arneses reales de geometría, `Common/Panel/Diagnostico*.cs`, corren DENTRO del cliente con
+`TERRAKEEP_INVESTIGACION_3BUGS=1`/variables equivalentes) y este encargo llegó con una
+restricción activa de turno compartido del escritorio ("NO lances tModLoader/Terraria... hasta
+vía libre"). Queda documentado como pendiente real, no como "ya está" - siguiente paso concreto:
+extender el patrón ya real de `DiagnosticoAnilloBuildsDesbordado.cs` (medir `GetDimensions()`/
+`GetInnerDimensions()` reales, nunca una fórmula recalculada aparte) a un barrido sistemático de
+los paneles principales (Builds, Libreria, Exploración, Personaje) contra varias combinaciones
+reales de `Main.UIScale`/resolución, igual que hizo escritorio con las FASES A-E del Responsive
+Global. Se puede programar y preparar el arnés ahora mismo sin infringir la restricción; lo que
+falta es la ejecución en el cliente real.
+
+### Novedades de escritorio desde ~20-sep (`git log --since=2026-09-20` de Terrasavr-Native), una a una
+
+| Novedad de escritorio | Estado en el mod | Motivo |
+|---|---|---|
+| FASES A-F del Responsive Global (columnas adaptativas, un solo scroll owner...) | No aplica tal cual | El mod no tiene ventana redimensionable de verdad: la "resolución" la fija Terraria/UIScale, no un `Window` de WPF. El equivalente real es el hueco 2 de arriba (auditoría de UIScale), no un port literal. |
+| L-01: terminología oficial de Terraria + prefijos Calamity en ES | **Cerrado hoy** | Hueco 1 de arriba. |
+| Botón "Guardar mundo" en Exploración (`580d398b`) | **No aplica, ya cubierto** | Hueco 3 de arriba. |
+| Cursor de mano que agarra, sin recuadro OLE, sprite 1.5x (`02f82f5f`/`bb8c76cd`/`020fde86`) | **No aplica, correcto por construcción** | Hueco 4 de arriba. |
+| Doble-toggle del botón Personaje de cabecera (`dc68bf66`) | No aplica | El mod usa pestañas exclusivas (`ContenidoExploracion`, panel único con barra de 7), no un desplegable que se abra/cierre con el mismo botón - patrón de navegación distinto, sin equivalente real. |
+| Sprite real del Devorador de Mundos en la Guía (`8f4515fc`) | **Ya cerrado**, mismo día | Commit `6ff88f5` de este mismo repo, propagado el mismo minuto (ver entrada del 28-sep de arriba). |
+| Backups con guardas (`ViewModels.Tests` no escribe en la carpeta real) | **Ya compartido** | `SincronizacionEscritorio.cs` ya comparte el mismo historial real de backups que escritorio - no es un puerto pendiente. |
+
+### Archivos tocados
+
+- `Assets/vanilla_library_labels_es.json` - arreglo real: terminología ES sincronizada con la ya
+  corregida de Terrakeep escritorio (336 claves, mismo origen de datos).
+- `TerrakeepMod.Tests/EtiquetasLibreriaEsTests.cs` (nuevo) - canario real, 19 casos, confirmado
+  rojo→verde.
+- `bitacora.md` (esta entrada).
+
+### Guion de verificación en vivo (pendiente de "vía libre para tModLoader")
+
+1. `-tmlsavedirectory Documents\My Games\Terraria\tModLoader-TerrakeepWS0 -skipselect
+   Personaje:Mundo`, entrar en la Libreria (idioma español).
+2. Capturar el árbol de carpetas de "Materials" (Pre-Modo Difícil/Modo Difícil con tilde,
+   Mineral Endemoniado & Mineral Carmesí, Sagrado & Clorofita, Piñonita & Ectoplasma, Vórtice,
+   Nebulosa) y de "Furniture"/"Furniture (cont.)" (Fregaderos, Retretes, Librerías, Sofás,
+   Aparadores, Candelabros, Bancos de Trabajo) - contrastar pixel a pixel con la captura real
+   `Terrasavr-Win/Terrasavr-Native/.../04-libreria.png` o equivalente ya corregida de escritorio.
+3. Cambiar a inglés y confirmar que el árbol sigue en inglés (catálogo vacío a propósito, ver
+   comentario real de `ArbolLibreria.ParsearArchivos`) - control negativo de que el arreglo no
+   rompe el idioma inglés.
+4. Con el hueco 2 (UIScale) ya con arnés preparado: lanzar el barrido a 800x720, 1280x720,
+   1600x900 y 1920x1080 con UIScale Pequeña/Mediana/Grande, capturas reales de Builds/Libreria/
+   Exploración/Personaje, y anotar cualquier corte/solape encontrado como hallazgo nuevo (no
+   asumir "sin problema" solo porque compila).
