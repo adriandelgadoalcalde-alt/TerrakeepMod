@@ -27,7 +27,7 @@ Terrakeep junto al bestiario y los emotes, con el inventario abierto.
 </p>
 <p align="center">
   <img src="docs/screenshots/05-este-mundo.png" width="49%" alt="Exploración > Este mundo: ficha del mundo con la fila nueva de Invasiones (Goblins, Escarcha, Piratas) y, a la derecha, la dificultad en vivo con su aviso de permanencia" />
-  <img src="docs/screenshots/06-editar-objeto.png" width="49%" alt="Librería con la tarjeta Editar objeto abierta sobre un Champiñón: cantidad con los botones rápidos +10, +100 y Máx, prefijo y papelera" />
+  <img src="docs/screenshots/06-editar-objeto.png" width="49%" alt="Librería en la carpeta Materiales con la tarjeta Editar objeto abierta sobre un Champiñón: el único editor, con cantidad, botones rápidos +10, +100 y Máx, prefijo y papelera, junto al recuadro Seleccionar" />
 </p>
 
 ## Qué hace
@@ -108,6 +108,17 @@ Toda la interfaz está construida con los bloques nativos de Terraria (`IngameFa
 tecnología externa al juego.
 
 ## Novedades
+
+### 0.7.1 (29-sep-2026)
+
+- **Un solo editor de objeto**: con un objeto en el recuadro de selección se veían a la vez la
+  tarjeta flotante "Editar objeto" y el mini-panel fijo, los dos con cantidad, "Aplicar", prefijo
+  y papelera. Ahora la tarjeta es el único editor (con el prefijo ya interactivo dentro) y el
+  mini-panel se queda solo con el recuadro "Seleccionar", que es donde se arrastra el objeto de
+  vuelta fuera para cerrarla.
+- **La tarjeta ya no transparenta lo de debajo** (se veían los números de las ranuras detrás del
+  nombre del objeto) y **tapa menos la mochila**: ocupa el hueco que deja libre el mini-panel.
+- Versión del mod: `0.7.0` → `0.7.1`.
 
 ### 0.7.0 (29-sep-2026)
 
