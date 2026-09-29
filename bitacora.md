@@ -11562,3 +11562,89 @@ limpio, 0 commits sin push, `task.js validate` en `ok:true`.
 Turno de pantalla (`PANTALLA.lock`) respetado en las dos ventanas de juego que hizo falta abrir
 (esperado ~3,5 min a que otro agente familiar terminara su turno antes de la segunda). Cero
 procesos `tModLoader`/`dotnet` de este agente residuales al terminar, confirmado con `Get-Process`.
+
+## 29-sep-2026 (tarde) - v0.7.0: auditoría completa de paridad con Terrakeep escritorio 3.3.0 (289 commits, uno a uno), tres funciones portadas, "Zoom" legible de verdad y requirement 0446b3c9 cerrado
+
+Encargo: cerrar DE VERDAD el requirement `0446b3c9` (paridad con escritorio). Su criterio "cada
+novedad de escritorio revisada una a una" estaba como known-diff aceptado porque faltaba la
+auditoría cruzada; el usuario quiere que no quede nada pendiente. Terrakeep escritorio solo se ha
+leído.
+
+### 1. Auditoría (docs/paridad-escritorio-3.3.0.md)
+
+Rango: todos los commits de `Terrasavr-Native` desde el 20-sep-2026 (la última ronda de paridad de
+esta bitácora, "Catálogos de funciones y de rediseño visual") hasta `b18aa8c5` (HEAD de la 3.3.0
+al auditar): **289 commits**. `scripts/generar-paridad-escritorio.py` asigna cada commit a
+exactamente un grupo de funcionalidad visible (o al apéndice de commits solo de bitácora) y se
+PARA si alguno queda sin asignar o repetido - la cobertura la comprueba el script, no la vista.
+
+Resultado: 34 grupos. **(a) ya existe: 13** (terminología ES y árboles de Terrakeep.Core, banderas
+y sprites de la Guía, vista previa por `Main.PlayerRenderer`, cofres del mundo, bestiario nativo...).
+**(b) aplica y faltaba: 3**, portados abajo. **(c) no aplica dentro del juego: 18**, cada uno con
+su motivo real (responsive de ventanas WPF, arrastre OLE/cursor de mano, "Guardar mundo" frente al
+autoguardado nativo, comparadores y búsqueda entre partidas guardadas, pantalla de Inicio, refactors
+internos...). 93 commits solo de bitácora.
+
+### 2. Lo portado (comportamiento, nunca código WPF)
+
+- **B1 +10 / +100 / Máx** (escritorio `09195ce0`): fila nueva en la tarjeta "Editar objeto" de la
+  Librería contra `Item.maxStack` del objeto vivo; mismo camino de escritura e historial que "-"/"+",
+  apagados con la pila llena. Lógica pura `CantidadRapida` (+ tests). En el juego:
+  `AutopruebaLibreria` paso 27b (+10 -> 11, +100 -> 111, Máx -> 9999, Ctrl+Z x3 -> 1: OK).
+- **B2 invasiones vencidas** (escritorio `cc1d4ddc`): fila "Invasiones" en Exploración > Este mundo
+  sobre `NPC.downedGoblins/downedFrost/downedPirates`, Ctrl+Z, solo un jugador. En el juego:
+  `AutopruebaExploracion` 36-38 (clic real, bandera invertida, botón resaltado, Ctrl+Z la devuelve).
+- **B3 traer/echar vecinos** (escritorio `ec916e8b`): "Traer vecino..." con la lista oficial
+  `VanillaTownNpcRoster` de Terrakeep.Core (llega al punto de aparición, sin casa) y "Echar" por
+  fila (retira sin matar), las dos con Ctrl+Z. Lógica pura `VecinosQueFaltan` (+ tests). En el
+  juego: `AutopruebaExploracion` 39-44 (traído el Mercader homeless=True, echado, Ctrl+Z x2 deja el
+  mundo como estaba).
+
+### 3. Hallazgos reales por el camino (vistos en capturas y autopruebas, no supuestos)
+
+- **"Este mundo" se salía por debajo a 1280x720** (anterior a este encargo): el botón de confirmar
+  y el mensaje de la dificultad pisaban "Cerrar (P)"; y con la fila nueva la ficha se comprimía
+  entera hasta letra 0,66. Arreglo: `ReflowVertical.DistribuirRenglones` (oculta primero lo que ya
+  repite la cabecera, luego aprieta el interlineado hasta 19 px y solo al final la letra) y la
+  columna de dificultad pasa a `UIList` con barra de desplazamiento solo si hace falta.
+- **Desplegable de prefijo "sordo" con la tarjeta abierta** (rojo en `verificar-libreria.ps1`
+  pasos 19-21 desde el 25-sep): el hospedaje de la tarjeta se colgaba DESPUÉS de la capa de
+  desplegables y `UIElement.GetElementAt` reparte el ratón del último hijo al primero. Colgado antes.
+- **"Zoom" a 11 px**: `ReflowVertical.FactorConUltimoMinimo` fija el último renglón en
+  `EscalaMinimaLegible` (0,68, la escala más pequeña que usa el mod para texto que hay que leer:
+  avisos secundarios, título de tramo de la Guía, ruta de Buffs) y reparte el resto. Al probar el
+  caso MÁS apretado que admite el motor (`Main.UIScaleMax` = max(1, min(alto/600, ancho/800)),
+  decompilado: pantalla lógica 1066x600) apareció otro fallo real: ni al suelo duro cabía el bloque
+  (aviso de 3 líneas + Marcadores + detalle + Zoom en ~64 px) y "Zoom" se salía de la pestaña.
+  Ahora se ocultan antes el aviso del mapa exclusivo (lo repite el tooltip de "Ver en el mapa del
+  juego") y el rótulo "Marcadores"; "Zoom" queda a 0,75 en TODAS las celdas.
+
+### 4. Verificación
+
+- `dotnet test TerrakeepMod.Tests`: **95/95** (64 anteriores + 31 nuevos en
+  `ParidadEscritorio330Tests.cs`).
+- `verificar-exploracion.ps1`, `verificar-libreria.ps1`, `verificar-panel-unico.ps1`: COMPLETA, sin
+  una sola línea MAL/FALLO/NO CUADRA; mundo de prueba byte a byte igual.
+- `verificar-espaciado.ps1` y `-Calamity`: "Ninguna comprobacion en rojo" en 1600x900, 1280x720 y
+  800x720 (es/en) más el caso nuevo `1600x900-uiscale-max`. La autoprueba audita ya el árbol entero
+  de Este mundo y de Vecindad, que la ficha y la dificultad caben en la pestaña y que ni la letra de
+  la ficha ni "Zoom" bajan de 0,68. Capturas revisadas a mano: Este mundo y Mapa a 1280x720 y
+  1600x900, Vecindad, tarjeta con +10/+100/Máx. Nota honesta: a escala de interfaz máxima
+  `CapturaDePantalla` devuelve un recorte ampliado del back buffer (no sirve como imagen); en esa
+  celda la evidencia es la geometría medida del propio árbol de UI, no la captura.
+- Turno de pantalla respetado (`PANTALLA.lock` esperado ~1 h a que otro agente terminara, tomado y
+  liberado). Hashes SHA-256 de 116 archivos de partidas reales y configuración antes y después:
+  idénticos. Solo sandboxes aislados.
+- Privacidad: los 30 logs de `evidencia/` llevaban la ruta del perfil de Windows; saneada a
+  `%USERPROFILE%` en un commit propio.
+
+### 5. Publicación v0.7.0
+
+Minor (tres funciones nuevas). `build.txt`, README (Novedades 0.7.0, "Qué hace", capturas nuevas
+`05-este-mundo.png` y `06-editar-objeto.png`) y `description*.txt`. `.tmod` limpio con
+`limpiar-tmod.ps1` (20 archivos, sin `.pdb`, docs, scripts, tests ni evidencia).
+
+### 6. Requirement 0446b3c9
+
+El known-diff "revisión cruzada pendiente" se resuelve con el commit de la auditoría; los cinco
+criterios llevan evidencia CURRENT de esta pasada y el requirement pasa a DONE.
