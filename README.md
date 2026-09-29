@@ -103,6 +103,38 @@ tecnología externa al juego.
 
 ## Novedades
 
+### 0.6.0 (29-sep-2026)
+
+- **Rediseño visual del panel** (TM1-TM6): pestañas con el sprite real del objeto/jefe en vez de
+  solo texto, chips de cabecera con un tercer indicador de DPS en tiempo real, transición suave al
+  cambiar de pestaña, alto dinámico del panel y checklist con icono real por requisito.
+- **Diez funciones nuevas**: entrenador de jefe en la Guía (vida/defensa/daño de tu partida real,
+  con el Muro de Carne excluido por un límite real del juego), sonar de estructuras (incluida la
+  isla flotante de Calamity), diario automático de la partida (día/equipo/tiempo por cada hito),
+  pestaña **Vecindad** en Exploración (felicidad real de los NPC de pueblo), los cofres del mundo
+  como octavo destino navegable de la Librería, **rebobinado de terreno** (deshacer cambios de
+  tiles y cofres con una foto real del estado anterior), marcadores de casas de NPC en el mapa,
+  Laboratorio de Draedon (Calamity), aviso de "El grupo está listo" en partidas multijugador y
+  códigos de build compartibles (`TKBUILD1:...`).
+- **Builds** rediseñada: de cuatro filas de filtros a dos (alternador + desplegable + anillo de
+  progreso), con el reparto de equipo por clase corregido para que ya no se solape.
+- **Arreglos reales**: el anillo de progreso de Builds se salía de su marco; el texto de "Vecindad"
+  se solapaba consigo mismo a UIScale alto; el desplegable de etapa de Builds recortaba texto;
+  Rebobinar perdía la foto de referencia al cerrar el panel; el chip de DPS de la cabecera se salía
+  de su pastilla con "Sin golpes recientes"; el editor de objeto flotante de Librería/Personaje
+  tenía dos bugs reales (uno de ellos quedaba "atrapado" sin poder cerrarse); renombrar un conjunto
+  desplazaba el texto al parpadear el cursor; la pestaña Vecindad reconstruía su lista y parpadeaba
+  sin que hubiera ningún cambio real; el mini-mapa interno de Exploración ya dibuja los NPC de
+  pueblo reales.
+- **Auditoría de UIScale/resolución** completa (48 combinaciones de resolución × escala): 3 defectos
+  reales de solape/desbordamiento, todos acotados a 1366×768 al 150%, cerrados con un reflujo
+  vertical general que comprime posición y escala de texto a la vez (nunca solo una de las dos).
+- **Paridad de terminología** con Terrakeep de escritorio (español e inglés) y sincronización de las
+  etiquetas de la Librería.
+- Preparación técnica para el Steam Workshop de tModLoader (sin publicar todavía: falta el paso
+  manual de "Publish" desde dentro del juego) - ver [`PUBLICAR-WORKSHOP.md`](PUBLICAR-WORKSHOP.md).
+- Versión del mod: `0.5.0` → `0.6.0`.
+
 ### 0.5.0 (16-sep-2026, madrugada)
 
 - **Arreglado un bug real**: la Guía podía quedarse marcando un paso muy temprano como pendiente

@@ -1,6 +1,6 @@
 displayName = Terrakeep
 author = IncrediBad
-version = 0.5.0
+version = 0.6.0
 # El repositorio ya es publico (8-sep-2026) - homepage real, para que el boton "Visitar sitio
 # web del mod" de UIModInfo (solo aparece si hay url, codigo real del tModLoader instalado)
 # lleve de verdad al proyecto en vez de a la portada de GitHub a secas, que era lo que habia
