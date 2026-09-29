@@ -37,15 +37,36 @@ namespace TerrakeepMod.UI.Exploracion
 
 		/// <summary>
 		/// El bloque de texto que cuelga bajo los botones (aviso del mapa exclusivo, marcadores,
-		/// detalle, tile bajo el raton y "Zoom"), con su Top NATURAL (relativo al inicio del
-		/// bloque, <see cref="_inicioBloqueTexto"/>) y la escala BASE con la que se construyo cada
-		/// uno. <see cref="Update"/> los reancla y reescala juntos cada fotograma - ver su XMLdoc.
+		/// detalle, tile bajo el raton y "Zoom"): su ESCALA BASE y su alto de linea a escala 1
+		/// (para poder recalcular el Top de cada uno sumando los anteriores), mas si se
+		/// <see cref="ColapsaSiVacio"/> cuando no tiene nada que enseñar ahora mismo. <see
+		/// cref="Update"/> reancla y reescala TODO el bloque cada fotograma - ver su XMLdoc.
 		/// </summary>
-		private readonly List<(EtiquetaTk Etiqueta, float TopNatural, float EscalaBase)> _bloqueTexto =
-			new List<(EtiquetaTk, float, float)>();
+		private readonly struct BloqueTexto
+		{
+			public readonly EtiquetaTk Etiqueta;
+			public readonly float EscalaBase;
+			public readonly float AltoLinea;
+
+			/// <summary>true si esta linea no debe reservar hueco cuando <see
+			/// cref="EtiquetaTk.TextoActual"/> esta vacio (ver el "porque" completo en el XMLdoc de
+			/// <see cref="Update"/>). Solo "bajo el raton" lo usa: el resto del bloque SIEMPRE
+			/// tiene algo que enseñar (avisos fijos, "Marcadores", el resumen de la busqueda o
+			/// "Zoom: X"), asi que reservarles hueco siempre es lo correcto.</summary>
+			public readonly bool ColapsaSiVacio;
+
+			public BloqueTexto(EtiquetaTk etiqueta, float escalaBase, float altoLinea, bool colapsaSiVacio)
+			{
+				Etiqueta = etiqueta;
+				EscalaBase = escalaBase;
+				AltoLinea = altoLinea;
+				ColapsaSiVacio = colapsaSiVacio;
+			}
+		}
+
+		private readonly List<BloqueTexto> _bloqueTexto = new List<BloqueTexto>();
 
 		private float _inicioBloqueTexto;
-		private float _altoNaturalBloqueTexto;
 
 		/// <summary>El mini-mapa, para que la autoprueba pueda mirarlo y accionarlo.</summary>
 		public MiniMapaTk Mapa => _mapa;
@@ -78,6 +99,23 @@ namespace TerrakeepMod.UI.Exploracion
 		/// ENTERO (posicion Y escala de cada elemento, con el MISMO factor -
 		/// <see cref="ReflowVertical.FactorDeCompresion"/>): eso garantiza matematicamente que
 		/// ningun elemento se solape con el siguiente, sea cual sea el hueco real disponible.
+		/// <para />
+		/// <b>Ampliado otra vez el 29-sep-2026</b> (cierre final, mismo requirement): medido con
+		/// pixeles reales (bitacora.md), el caso mas comprimido (1366x768@150%) dejaba "Zoom" en
+		/// 11px, por debajo de los 14-16px que usa de referencia el resto del mod - el propio
+		/// <c>escalaMinima</c> de <see cref="ReflowVertical"/> (0.55, un suelo DURO para que el
+		/// texto nunca desaparezca del todo) no se podia subir sin más sin que "Zoom" volviera a
+		/// solaparse con el pie en ese mismo caso extremo, asi que subirlo a ciegas no era la
+		/// solucion (queda documentado en la entrada de bitacora anterior). La solucion real que
+		/// SI reduce cuanto hace falta comprimir, sin tocar el suelo duro: "bajo el raton" (el
+		/// tile que hay bajo el cursor) esta vacio la inmensa mayoria de los fotogramas -el raton
+		/// no siempre esta sobre el mapa- y aun asi reservaba sus 20px SIEMPRE, incluso vacio. Con
+		/// <see cref="BloqueTexto.ColapsaSiVacio"/> ese hueco solo se reserva cuando de verdad hay
+		/// algo que enseñar: el bloque entero necesita menos alto la mayoria del tiempo, asi que
+		/// <see cref="ReflowVertical.FactorDeCompresion"/> comprime MENOS (a menudo nada) y "Zoom"
+		/// se enseña a su tamaño base con mucha mas frecuencia, sin arriesgar el solape que ya se
+		/// verifico cerrado en la pasada anterior (el suelo <c>escalaMinima</c> sigue intacto para
+		/// el caso raro en que el raton SI este sobre el mapa a la vez que el hueco es minimo).
 		/// </summary>
 		public override void Update(GameTime gameTime)
 		{
@@ -86,17 +124,31 @@ namespace TerrakeepMod.UI.Exploracion
 				return;
 			}
 
-			float altoDisponible = GetDimensions().Height - _inicioBloqueTexto - MargenInferior;
-			float factor = ReflowVertical.FactorDeCompresion(_altoNaturalBloqueTexto, altoDisponible);
-
+			// Alto NATURAL del bloque con el estado ACTUAL de cada renglon (ver el "ampliado otra
+			// vez" de arriba): un renglon colapsable que ahora mismo no tiene texto no cuenta.
+			float altoNatural = 0f;
 			for (int i = 0; i < _bloqueTexto.Count; i++) {
-				(EtiquetaTk etiqueta, float topNatural, float escalaBase) = _bloqueTexto[i];
-				etiqueta.EscalaTexto = escalaBase * factor;
-				etiqueta.Top.Set(_inicioBloqueTexto + topNatural * factor, 0f);
+				BloqueTexto item = _bloqueTexto[i];
+				if (!item.ColapsaSiVacio || !string.IsNullOrEmpty(item.Etiqueta.TextoActual)) {
+					altoNatural += item.AltoLinea;
+				}
+			}
+
+			float altoDisponible = GetDimensions().Height - _inicioBloqueTexto - MargenInferior;
+			float factor = ReflowVertical.FactorDeCompresion(altoNatural, altoDisponible);
+
+			float yRel = 0f;
+			for (int i = 0; i < _bloqueTexto.Count; i++) {
+				BloqueTexto item = _bloqueTexto[i];
+				item.Etiqueta.EscalaTexto = item.EscalaBase * factor;
+				item.Etiqueta.Top.Set(_inicioBloqueTexto + yRel * factor, 0f);
 				// Sin este Recalculate el Top/escala nuevos se guardan pero GetDimensions() (lo que
 				// Draw usa de verdad) se queda con el valor calculado la vez anterior: se vio en vivo
 				// que cambiar Top.Set aqui no movia nada en pantalla hasta añadir esta llamada.
-				etiqueta.Recalculate();
+				item.Etiqueta.Recalculate();
+				if (!item.ColapsaSiVacio || !string.IsNullOrEmpty(item.Etiqueta.TextoActual)) {
+					yRel += item.AltoLinea;
+				}
 			}
 		}
 
@@ -176,7 +228,6 @@ namespace TerrakeepMod.UI.Exploracion
 			aviso.ColorTexto = EstiloTk.TextoSuave;
 			aviso.Top.Set(_inicioBloqueTexto + yRel, 0f);
 			lateral.Append(aviso);
-			_bloqueTexto.Add((aviso, yRel, 0.7f));
 			// BUG REAL visto en captura del juego (16-sep-2026, ronda de juego-libre/dossier de
 			// KeepQA, en-US a 1600x900): un "96" fijo (a mano, "~21 px por linea, hasta 4 lineas
 			// caben") se quedaba corto de verdad para el numero de lineas + interlineado REALES que
@@ -190,13 +241,15 @@ namespace TerrakeepMod.UI.Exploracion
 			int avisoLineas = textoAvisoPartido.Split('\n').Length;
 			float avisoAltoLinea = Terraria.GameContent.FontAssets.MouseText.Value.MeasureString("Ay").Y * 0.7f;
 			float avisoAlto = avisoLineas * avisoAltoLinea;
-			yRel += avisoAlto + 4f;
+			float avisoAltoTotal = avisoAlto + 4f;
+			_bloqueTexto.Add(new BloqueTexto(aviso, 0.7f, avisoAltoTotal, colapsaSiVacio: false));
+			yRel += avisoAltoTotal;
 
 			EtiquetaTk leyenda = new EtiquetaTk(
 				() => Idiomas.Texto("Exploracion.Mapa.Marcadores"), 0.85f, AnchoLateral, 22f);
 			leyenda.Top.Set(_inicioBloqueTexto + yRel, 0f);
 			lateral.Append(leyenda);
-			_bloqueTexto.Add((leyenda, yRel, 0.85f));
+			_bloqueTexto.Add(new BloqueTexto(leyenda, 0.85f, 22f, colapsaSiVacio: false));
 			yRel += 22f;
 
 			EtiquetaTk detalleLeyenda = new EtiquetaTk(
@@ -208,14 +261,19 @@ namespace TerrakeepMod.UI.Exploracion
 			detalleLeyenda.ColorTexto = EstiloTk.TextoSuave;
 			detalleLeyenda.Top.Set(_inicioBloqueTexto + yRel, 0f);
 			lateral.Append(detalleLeyenda);
-			_bloqueTexto.Add((detalleLeyenda, yRel, 0.75f));
+			_bloqueTexto.Add(new BloqueTexto(detalleLeyenda, 0.75f, 22f, colapsaSiVacio: false));
 			yRel += 22f;
 
+			// "bajo el raton" es el UNICO renglon del bloque que puede quedarse vacio buena parte
+			// de los fotogramas (el raton no siempre esta sobre el mapa, ver TextoBajoElRaton):
+			// ColapsaSiVacio deja de reservarle sus 20px cuando no tiene nada que enseñar, para
+			// que el resto del bloque (sobre todo "Zoom") necesite menos compresion - ver el
+			// "ampliado otra vez" del XMLdoc de Update().
 			EtiquetaTk bajoElRaton = new EtiquetaTk(TextoBajoElRaton, 0.75f, AnchoLateral, 20f);
 			bajoElRaton.ColorTexto = EstiloTk.TextoAviso;
 			bajoElRaton.Top.Set(_inicioBloqueTexto + yRel, 0f);
 			lateral.Append(bajoElRaton);
-			_bloqueTexto.Add((bajoElRaton, yRel, 0.75f));
+			_bloqueTexto.Add(new BloqueTexto(bajoElRaton, 0.75f, 20f, colapsaSiVacio: true));
 			yRel += 20f;
 
 			// Posicion NATURAL en el flujo (nunca pisa lo de arriba); Update() comprime TODO el
@@ -230,9 +288,7 @@ namespace TerrakeepMod.UI.Exploracion
 			estado.Top.Set(_inicioBloqueTexto + yRel, 0f);
 			lateral.Append(estado);
 			_estado = estado;
-			_bloqueTexto.Add((estado, yRel, 0.75f));
-
-			_altoNaturalBloqueTexto = yRel + estado.Height.Pixels;
+			_bloqueTexto.Add(new BloqueTexto(estado, 0.75f, estado.Height.Pixels, colapsaSiVacio: false));
 		}
 
 		private string TextoBajoElRaton()
