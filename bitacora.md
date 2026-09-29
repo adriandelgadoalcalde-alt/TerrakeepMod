@@ -9615,7 +9615,7 @@ explicito del mandato de esta noche.
 
 ## Tres bugs reales reportados en vivo en Builds/Rebobinar (21-sep-2026, madrugada, continuacion)
 
-El usuario, jugando en vivo (mundo real "adriandres", personaje "Eldelgas"), reporto tres cosas mas
+El usuario, jugando en vivo (mundo y personaje reales de prueba), reporto tres cosas mas
 mientras probaba el `.tmod` recien desplegado. Confirmado ANTES de tocar nada que dos de ellas YA
 estaban documentadas y sin cerrar (el usuario tenia razon: "esto ya lo reporte ayer"):
 
@@ -9716,7 +9716,7 @@ vigilar) para no repetir esta investigacion desde cero.
 
 **Obstaculo real encontrado**: `scripts\compilar.ps1` fallo con `TML003: Please close tModLoader or
 disable the mod in-game to build mods directly` - la sesion REAL del usuario (jugando en vivo,
-mundo "adriandres") tenia el mod cargado, bloqueando la fase 2 (el `-build` real de tModLoader
+mundo de prueba) tenia el mod cargado, bloqueando la fase 2 (el `-build` real de tModLoader
 escribe al `.tmod` COMPARTIDO). **No se le ha pedido cerrar el juego ni se ha forzado el cierre de su
 proceso** (regla de sentido comun: no interrumpir una sesion real en curso). **Solucion real
 encontrada**: `-tmlsavedirectory` tambien redirige donde escribe el `-build` en si, no solo donde
