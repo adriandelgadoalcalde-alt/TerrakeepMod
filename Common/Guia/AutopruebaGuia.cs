@@ -64,7 +64,41 @@ namespace TerrakeepMod.Common.Guia
 		// falta de datos. Si algun dia aparece uno, es real y hay que verlo - de ahi este contador y
 		// el "NO EVALUABLE" nuevo en el resumen final (Terminar()), que SI cae dentro del patron rojo
 		// del script.
-		private static int _contadorNoEvaluable;
+		//
+		// Matiz real añadido el 29-sep-2026 (limpieza final, requirement 0446b3c9): la suposicion de
+		// arriba ("con Has* siempre true, [?] solo sale por un tipo no reconocido") era INCOMPLETA -
+		// habia una tercera via, real y esperada, que el recorrido entero dispara decenas de veces
+		// A PROPOSITO: <c>TipoRequisito.DanoArma</c> es NoEvaluable (no "0 de daño") cuando el
+		// personaje NO lleva NINGUN arma encima ahora mismo (ver EvaluarDanoArma en
+		// GuideEvaluationEngine.cs, decision de diseño de Fase A REABIERTA, 26-sep-2026: un "0"
+		// contaria como progreso parcial real, que seria mentira). Este mismo archivo comprueba CADA
+		// tramo de jefe DOS VECES aposta - "VolcarEstadoDelJugador(...) y sin arma todavia en la
+		// mochila" ANTES de <c>PonerArma()</c>, luego otra vez despues - precisamente para demostrar
+		// que el paso NO se da por completo sin arma. En un personaje recien creado sin armas
+		// tambien pasaria en una partida real: no es un tipo sin implementar, es el mod
+		// evaluando de verdad "no hay arma que medir" - transitorio, nunca un fallo. Iba
+		// TODO mezclado en el mismo contador (84 lineas "NO EVALUABLE" en el primer diagnostico
+		// -Calamity, todas esta misma causa) y hacia caer el gate por una condicion esperada del
+		// propio recorrido de prueba, sin distinguir el otro caso REAL (un tipo/bandera que el mod
+		// de verdad no reconoce, que si es un defecto). Separado en dos contadores: solo el segundo
+		// (_contadorNoEvaluableReal) cae dentro del patron rojo "NO EVALUABLE:" del script; el
+		// primero se informa aparte, sin bloquear, con su propia etiqueta.
+		private static int _contadorSinArmaTransitorio;
+		private static int _contadorNoEvaluableReal;
+
+		/// <summary>
+		/// true si <paramref name="estado"/> es el caso NoEvaluable ESPERADO y transitorio
+		/// documentado arriba: un requisito de daño de arma en el instante exacto en que el
+		/// personaje no lleva ninguna encima. Cualquier otro NoEvaluable (tipo/bandera no
+		/// reconocidos, o esta MISMA razon en un tipo que no sea DanoArma, que no deberia pasar
+		/// nunca) sigue siendo un defecto real.
+		/// </summary>
+		private static bool EsSinArmaTransitorio(ResultadoRequisito estado)
+		{
+			return estado.Requisito != null &&
+				estado.Requisito.Tipo == TipoRequisito.DanoArma &&
+				estado.TextoClave == "Guia.Req.DanoArmaSinArma";
+		}
 
 		private static bool _downedBoss1Original;
 		private static bool _downedBoss2Original;
@@ -1025,7 +1059,11 @@ namespace TerrakeepMod.Common.Guia
 			for (int i = 0; i < filas.Count; i++) {
 				ResultadoRequisito estado = filas[i].Estado();
 				if (estado.NoEvaluable) {
-					_contadorNoEvaluable++;
+					if (EsSinArmaTransitorio(estado)) {
+						_contadorSinArmaTransitorio++;
+					} else {
+						_contadorNoEvaluableReal++;
+					}
 				}
 				RegistroGuia.Linea(Terrakeep.LogTag + "   requisito " + (i + 1) + "/" + filas.Count + ": [" +
 					(estado.NoEvaluable ? "?" : (estado.Cumplido ? "HECHO" : "FALTA")) + "] " +
@@ -1694,7 +1732,11 @@ namespace TerrakeepMod.Common.Guia
 				for (int i = 0; i < resultados.Count; i++) {
 					ResultadoRequisito estado = resultados[i];
 					if (estado.NoEvaluable) {
-						_contadorNoEvaluable++;
+						if (EsSinArmaTransitorio(estado)) {
+							_contadorSinArmaTransitorio++;
+						} else {
+							_contadorNoEvaluableReal++;
+						}
 					}
 					RegistroGuia.Linea(Terrakeep.LogTag + "   requisito opcional " + (i + 1) + "/" +
 						resultados.Count + ": [" +
@@ -2964,8 +3006,19 @@ namespace TerrakeepMod.Common.Guia
 		private static void Terminar()
 		{
 			_terminada = true;
+			// Dos contadores separados (ver el "matiz real" de la cabecera de la clase, 29-sep-2026):
+			// "sin arma en ese instante" es DanoArma sin ningun arma en la mochila AHORA MISMO -
+			// esperado, transitorio, lo dispara a proposito el propio recorrido de prueba varias
+			// decenas de veces (cada tramo de jefe lo comprueba ANTES de dar el arma) - se informa
+			// pero NUNCA cae en el patron rojo de verificar-guia.ps1. "NO EVALUABLE" real es
+			// cualquier OTRA razon (tipo/bandera que el mod de verdad no reconoce, o esta misma razon
+			// en un requisito que no sea DanoArma) - eso SI cae en el patron rojo del script.
+			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - requisitos [?] \"sin arma en ese " +
+				"instante\" (DanoArma, transitorio y esperado) vistos en todo el recorrido: " +
+				_contadorSinArmaTransitorio + " -> informativo, no bloquea (el propio recorrido " +
+				"comprueba cada tramo de jefe ANTES de dar el arma a proposito).");
 			RegistroGuia.Linea(Terrakeep.LogTag + " AUTOPRUEBA GUIA - requisitos [?] (no evaluable) " +
-				"vistos en todo el recorrido: " + _contadorNoEvaluable + (_contadorNoEvaluable == 0
+				"vistos en todo el recorrido: " + _contadorNoEvaluableReal + (_contadorNoEvaluableReal == 0
 					? " -> OK: con partida real en marcha (ProveedorEstadoGuiaMod, Has* siempre true) " +
 					  "ningun requisito deberia quedarse sin poder comprobarse."
 					: " -> NO EVALUABLE: con partida real en marcha esto NO deberia pasar nunca - " +

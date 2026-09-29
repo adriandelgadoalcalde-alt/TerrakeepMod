@@ -206,6 +206,14 @@ if ($encontrado) {
 	# (NoEvaluable) se imprimia linea a linea pero nunca hacia caer este gate, y no habia invariante
 	# de que con partida real en marcha (Has* siempre true en ProveedorEstadoGuiaMod) deberia salir
 	# 0 - ver el contador nuevo en AutopruebaGuia.Terminar().
+	#
+	# Afinado el 29-sep-2026 (limpieza final, requirement 0446b3c9): la invariante de arriba era
+	# incompleta - un DanoArma sin NINGUN arma en la mochila AHORA MISMO tambien es [?], y el propio
+	# recorrido de esta autoprueba lo dispara a proposito decenas de veces (cada tramo de jefe se
+	# comprueba ANTES de darle el arma). AutopruebaGuia.Terminar() ahora separa ese caso en su propia
+	# linea ("sin arma en ese instante", SIN el texto "NO EVALUABLE:") de la que sigue siendo un
+	# defecto real (tipo/bandera que el mod de verdad no reconoce) - asi este patron solo cae por la
+	# segunda, la que de verdad importa.
 	$malos = Select-String -Path $evidencia -Pattern 'NO CUADRA|EXCEPCION|NO COINCIDE|NO CABE|NO EVALUABLE:' -Encoding UTF8
 	if ($malos) {
 		Write-Host "PERO hay comprobaciones en rojo:" -ForegroundColor Red
