@@ -11227,3 +11227,113 @@ tModLoader/Terraria cerrado por proceso al terminar (sin quedar residual, compro
 Get-Process). SetWindowPos(HWND_NOTOPMOST) no hizo falta aplicarlo aparte: cada combinacion mata
 el proceso del juego (y con el, la ventana) antes de pasar a la siguiente, asi que no queda
 ninguna ventana TOPMOST viva al final de la sesion. Escritorio libre.
+
+## 29-sep-2026 (aplicador de arreglo) - Cierra los 3 defectos reales de la auditoria de UIScale/resolucion (Personaje, Exploracion, Ajustes a 1366x768@150%): reflujo vertical general, sin parches por pantalla
+
+Continuacion directa de las dos entradas anteriores del mismo dia. Recibido el hallazgo YA
+investigado (causa acotada por el verificador QA independiente a 1366x768@150%, los tres defectos
+descritos con capturas reales en `scratchpad/uiscale-audit/1366x768-150/*.png` de esta misma
+sesion): se aplica el arreglo de codigo de produccion, sin reinvestigar la causa desde cero.
+
+### Causa real (mirando el codigo, no solo la explicacion del verificador)
+
+El causa-raiz que dejo escrito el verificador (`_marco.MaxWidth`=1080 UI-px sin llegar a aplicar)
+explica POR QUE esta es la unica de las 48 celdas que falla, pero mirando el codigo de cerca los
+tres defectos concretos no son de ANCHO sino de ALTO: los tres textos implicados
+(`PestanaInventario`'s nota, el bloque de texto de `PestanaMapa` y la caja "Atajos" de
+`ContenidoAjustes`) usan anchos FIJOS independientes de la resolucion (`RejillaSlots.Paso`,
+`AnchoLateral=240f`, `900f`), asi que su reflujo por ancho no cambia entre combinaciones. Lo que SI
+cambia en esta unica celda es el ALTO REAL del marco: `PanelTerrakeepState.OnInitialize` fija
+`_marco.Height.Set(0f, 0.94f)` (94% del alto del `UIState` raiz, que segun
+`UserInterface.GetDimensions()` - `Terraria/UI/UserInterface.cs:410-417`, real, decompilado - es
+`Main.screenHeight / Main.UIScale`, EXACTAMENTE el mismo criterio de "ancho fisico entre UIScale"
+que ya uso el verificador para el ancho) con un tope `AjustarAltoMaximo` = `Main.screenHeight *
+0.82` (fisico, SIN dividir por UIScale). En 45 de las 48 celdas ese tope (constante, en unidades
+fisicas) gana a la fraccion y el marco sale a su alto "de referencia"; en 1366x768@150% la fraccion
+(0.94 * 768/1.5 = 481 UI-px) es MENOR que el tope (629 UI-px), asi que el marco sale mas BAJO de lo
+habitual ademas de mas estrecho - los tres bloques de texto, calibrados con Tops absolutos y alturas
+fijas pensadas para el alto "de referencia", dejan de caber y se solapan con el pie compartido del
+panel o entre si. (Nota honesta: la formula de `AjustarAltoMaximo` en si misma tiene una
+inconsistencia de unidades - fisico sin dividir por UIScale, cuando el resto del sistema opera en
+UI-px - pero "arreglarla" habria dado un tope AUN mas bajo en este caso, empeorando el defecto; no
+se toca, queda fuera de alcance de este arreglo y documentado aqui por si hace falta revisarla en el
+futuro con otra auditoria de por medio.)
+
+### El arreglo: reflujo vertical general (posicion Y escala, nunca solo posicion)
+
+Nuevo `Common/Panel/ReflowVertical.cs` (aritmetica pura, sin Terraria/FNA, enlazada en
+`TerrakeepMod.LogicaPura` con el mismo patron real que `GramaticaBusqueda.cs`):
+`FactorDeCompresion(altoNecesario, altoDisponible, escalaMinima=0.55f)` devuelve 1 si sobra sitio, y
+si no, `altoDisponible/altoNecesario` con un suelo duro de 0.55 (mismo criterio que
+`AjustarEscalaDeLasPestanas`). La cabecera del archivo documenta la propiedad matematica clave: hay
+que aplicar el MISMO factor a la posicion de cada elemento Y a su escala de texto - comprimir solo
+la posicion dejando el alto de cada elemento fijo NO garantiza que el ultimo elemento del flujo
+quepa (demostrado con un test, `ElFactorAplicadoALaPosicionYAlAltoNuncaSeSale_DelHuecoDisponible`).
+
+`EtiquetaTk` (`UI/Personaje/Widgets/EtiquetaTk.cs`) gana `EscalaTexto` (get/set), mismo patron que
+`BotonTk.EscalaTexto` ya establecido para "encoger para caber" (`AjustarEscalaDeLasPestanas`,
+`AjustarEscalaChip`) - `_escala` pasa de `readonly` a mutable.
+
+Los tres arreglos aplicados:
+
+1. **`PestanaInventario.cs`** (Personaje > Inventario): la nota ("Arrastra, apila y usa el clic
+   derecho...") ya no cuelga de un Top absoluto fijo. Nuevo `Update()` (mismo patron YA establecido
+   en `PestanaMapa` desde el 16-sep) la reancla cada fotograma contra el alto REAL de la pestaña
+   (`GetDimensions().Height`), sin dejar que se salga por debajo. Al ser el ULTIMO elemento del
+   flujo y no tener nada despues, no hace falta comprimir escala: basta con reposicionar.
+2. **`PestanaMapa.cs`** (Exploracion > Mapa): el `Update()` original SOLO recortaba el ultimo
+   elemento (`_estado`, "Zoom"), lo que en este caso tan estrecho lo empujaba a solaparse con el
+   AVISO de arriba en vez de con el pie. Reescrito para tratar el bloque entero (aviso, marcadores,
+   detalle, tile bajo el raton, zoom) como una lista `_bloqueTexto` de (elemento, Top natural,
+   escala base), y comprimir TODOS con el mismo factor cada fotograma - garantiza matematicamente
+   que ningun elemento se solape con el siguiente, sea cual sea el hueco real.
+3. **`ContenidoAjustes.cs`** (Ajustes): la caja "Atajos de teclado" (la unica de las tres con
+   contenido variable) gana `Update()` (fusionado con el `Update()` ya existente de refresco de
+   idioma, no un segundo metodo suelto) que comprime su propio alto Y sus 4 renglones internos
+   (nota/lista/atajos-de-historial/icono) con el mismo factor. Las cajas "Idioma" e "Historial" NO
+   se tocan: ninguna auditoria las ha visto desbordar nunca, y tocarlas sin evidencia real habria
+   sido un cambio sin base (regla del encargo: no ampliar alcance sin evidencia).
+
+### Tests
+
+`TerrakeepMod.Tests/ReflowVerticalTests.cs` (nuevo, 10 casos): sobra sitio -> 1; hueco exacto -> 1;
+comprime en la proporcion real; nunca baja del suelo duro (con su valor por defecto Y uno
+configurado); datos invalidos (alto/disponible <= 0) nunca agranda ni revienta; y la prueba de
+propiedad que demuestra que aplicar el factor a posicion+alto nunca se sale del hueco disponible.
+Es la UNICA pieza de este arreglo sin dependencia del motor (todo lo demas necesita `FontAssets`/
+`UIElement` reales), asi que es la UNICA que se puede probar aqui - documentado en la cabecera del
+archivo, mismo criterio ya establecido en `TerrakeepMod.Tests.csproj` ("LIMITE REAL").
+
+`dotnet test TerrakeepMod.Tests`: **53/53 en verde** (43 base + 10 nuevos), sin regresion.
+
+### Build y despliegue
+
+`scripts\compilar.ps1`: compilacion real con el Roslyn propio de tModLoader (sin `-eac`), SIN
+errores (los unicos avisos son los ya conocidos: `CS1701` de `Newtonsoft.Json`/`System.Runtime` y
+`WARN: Image loading failed` de `icon_small.png`, ninguno de este cambio). `.tmod` reconstruido y
+desplegado en la ubicacion REAL que usa el juego instalado:
+`C:\Users\adrian\Documents\My Games\Terraria\tModLoader\Mods\TerrakeepMod.tmod` (842081 bytes,
+29-sep-2026 08:39:44) - el propio script deja el `.tmod` ahi, no hace falta un paso de despliegue
+aparte para la copia real (a diferencia de los sandboxes de prueba, que son copias adicionales).
+
+### Restriccion activa: verificacion en vivo PENDIENTE
+
+Otro agente estaba usando tModLoader en el escritorio durante esta sesion - por eso este arreglo se
+quedo en "codigo + tests + build + despliegue del `.tmod` real", sin relanzar el juego ni tocar
+raton/teclado reales, tal y como pedia el encargo. **Pendiente para cuando llegue la via libre**:
+desplegar el `.tmod` en el sandbox `tModLoader-TerrakeepWS7` y repetir la auditoria
+(`TERRAKEEP_AUDITORIA_UISCALE`) de las 3 combinaciones que fallaban (Personaje/Exploracion/Ajustes a
+1366x768@150%) mas una muestra de las que ya iban bien (1920x1080@150% y 1366x768@100%, minimo),
+comprobando que los tres solapes/desbordamientos ya no aparecen y que nada nuevo se rompe. No se
+marca DONE el requirement 0446b3c9-9108-4c1d-be03-66e050d7d1d6 hasta tener esa evidencia en vivo.
+
+### Archivos tocados
+
+- `Common/Panel/ReflowVertical.cs` (nuevo) - aritmetica pura de compresion vertical.
+- `TerrakeepMod.LogicaPura/TerrakeepMod.LogicaPura.csproj` - enlaza el archivo anterior.
+- `TerrakeepMod.Tests/ReflowVerticalTests.cs` (nuevo) - 10 tests del helper puro.
+- `UI/Personaje/Widgets/EtiquetaTk.cs` - `EscalaTexto` mutable (antes `_escala` era `readonly`).
+- `UI/Personaje/PestanaInventario.cs` - reancla la nota contra el alto real (`Update()` nuevo).
+- `UI/Exploracion/PestanaMapa.cs` - reflujo del bloque de texto completo (posicion + escala).
+- `UI/Ajustes/ContenidoAjustes.cs` - reflujo de la caja "Atajos" (posicion + escala + alto propio).
+- `bitacora.md` (esta entrada).

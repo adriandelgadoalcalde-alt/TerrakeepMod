@@ -19,7 +19,7 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 	public class EtiquetaTk : UIElement
 	{
 		private readonly Func<string> _texto;
-		private readonly float _escala;
+		private float _escala;
 
 		/// <summary>Color del texto. Se puede cambiar en cualquier momento.</summary>
 		public Color ColorTexto = Color.White;
@@ -43,6 +43,18 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// <summary>Escala real con la que se dibuja el texto. La usa la autoprueba de espaciado
 		/// para medir con la MISMA escala que <see cref="DrawSelf"/>, no una supuesta a mano.</summary>
 		public float Escala => _escala;
+
+		/// <summary>
+		/// Misma escala que <see cref="Escala"/>, pero con SETTER: la reescriben en caliente los
+		/// paneles que necesitan encoger su texto cuando el hueco real disponible es mas pequeño de
+		/// lo habitual (arreglo UIScale/resolucion del 29-sep-2026, ver
+		/// <see cref="TerrakeepMod.Common.Panel.ReflowVertical"/>) - mismo patron ya establecido en
+		/// <see cref="BotonTk.EscalaTexto"/> para el mismo tipo de caso limite.
+		/// </summary>
+		public float EscalaTexto {
+			get => _escala;
+			set => _escala = value;
+		}
 
 		/// <summary>
 		/// Parte un texto en las lineas que quepan en <paramref name="ancho"/> pixeles, midiendolas

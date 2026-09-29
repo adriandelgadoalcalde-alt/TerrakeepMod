@@ -30,6 +30,10 @@
 		     mismo GramaticaBusqueda.cs que se empaqueta dentro del .tmod real, asi que nunca puede
 		     desincronizarse con lo que de verdad se juega. -->
 		<Compile Include="..\Common\Libreria\GramaticaBusqueda.cs" Link="GramaticaBusqueda.cs" />
+
+		<!-- KeepQA (29-sep-2026, arreglo UIScale/resolucion): mismo patron - ReflowVertical.cs es
+		     aritmetica pura (cero Terraria/FNA), enlazada tal cual desde Common/Panel. -->
+		<Compile Include="..\Common\Panel\ReflowVertical.cs" Link="ReflowVertical.cs" />
 	</ItemGroup>
 
 </Project>

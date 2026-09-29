@@ -34,6 +34,15 @@ namespace TerrakeepMod.UI.Ajustes
 		private const float AltoCaja = 118f;
 		private const float Separacion = 10f;
 
+		/// <summary>Alto NATURAL (a escala 1) de la caja "Atajos de teclado", la unica de las tres
+		/// que lleva contenido variable (4 renglones de texto) capaz de no caber - ver
+		/// <see cref="ConstruirCajaAtajos"/> y <see cref="Update"/>.</summary>
+		private const float AltoCajaAtajos = AltoCaja + 44f;
+
+		/// <summary>Margen de seguridad bajo el ultimo renglon de la caja "Atajos", mismo nombre/
+		/// valor que ya usan <c>PestanaMapa</c>/<c>PestanaInventario</c> para el mismo proposito.</summary>
+		private const float MargenInferior = 8f;
+
 		private EtiquetaTk _culturaActiva;
 		private EtiquetaTk _estadoHistorial;
 
@@ -42,6 +51,15 @@ namespace TerrakeepMod.UI.Ajustes
 		private BotonTk _botonIngles;
 		private BotonTk _botonDeshacer;
 		private BotonTk _botonRehacer;
+
+		private UIPanel _cajaAtajos;
+		private float _topCajaAtajos;
+
+		/// <summary>Los 4 renglones de la caja "Atajos" con su Top NATURAL (relativo al Top de la
+		/// caja) y su escala BASE - <see cref="Update"/> los comprime juntos cuando hace falta, mismo
+		/// mecanismo que <c>PestanaMapa</c> (arreglo UIScale/resolucion del 29-sep-2026).</summary>
+		private readonly List<(EtiquetaTk Etiqueta, float TopNatural, float EscalaBase)> _filasAtajos =
+			new List<(EtiquetaTk, float, float)>();
 
 		public ContenidoAjustes()
 		{
@@ -121,12 +139,26 @@ namespace TerrakeepMod.UI.Ajustes
 		/// aqui se ve la que tiene de verdad. Es nuevo de la fusion: ahora que las cinco teclas
 		/// antiguas son atajos directos a una pestaña, hacia falta un sitio donde verlas.
 		/// </summary>
+		/// <remarks>
+		/// BUG REAL encontrado por la auditoria de UIScale/resolucion del 29-sep-2026 (bitacora.md,
+		/// requirement 0446b3c9), acotado a 1366x768@150%: los 4 renglones de esta caja se colgaban
+		/// de un Top absoluto fijo (26/50/76/102) dentro de una caja de alto FIJO
+		/// (<see cref="AltoCajaAtajos"/>), asumiendo que el marco tenia su tamaño habitual. En esa
+		/// combinacion concreta el marco pierde a la vez su tope de ancho Y su tope de alto (ver la
+		/// cabecera de <see cref="TerrakeepMod.Common.Panel.ReflowVertical"/>), y el ultimo renglon
+		/// ("También se abre con el icono...") acababa solapandose con el pie compartido del panel.
+		/// <see cref="Update"/> comprime esta caja entera (su propio alto Y sus 4 renglones, todos
+		/// con el MISMO factor) contra el alto real disponible cada fotograma.
+		/// </remarks>
 		private void ConstruirCajaAtajos(float arriba)
 		{
+			_topCajaAtajos = arriba;
+
 			// Las cuatro lineas de esta caja iban FIJAS en español y se veian en español dentro de
 			// un panel que estaba en ingles: se vio en una captura real del juego. Ahora salen del
 			// mismo sistema de localizacion que el resto del area.
-			UIPanel caja = NuevaCaja(arriba, AltoCaja + 44f, () => Idiomas.Texto("Ajustes.Atajos"));
+			UIPanel caja = NuevaCaja(arriba, AltoCajaAtajos, () => Idiomas.Texto("Ajustes.Atajos"));
+			_cajaAtajos = caja;
 
 			EtiquetaTk nota = new EtiquetaTk(
 				() => Idiomas.Texto("Ajustes.AtajosNota"),
@@ -134,10 +166,12 @@ namespace TerrakeepMod.UI.Ajustes
 			nota.ColorTexto = EstiloTk.TextoSuave;
 			nota.Top.Set(26f, 0f);
 			caja.Append(nota);
+			_filasAtajos.Add((nota, 26f, 0.72f));
 
 			EtiquetaTk lista = new EtiquetaTk(TextoAtajos, 0.75f, 900f, 24f);
 			lista.Top.Set(50f, 0f);
 			caja.Append(lista);
+			_filasAtajos.Add((lista, 50f, 0.75f));
 
 			EtiquetaTk historial = new EtiquetaTk(
 				() => Idiomas.Texto("Ajustes.AtajosHistorial", TeclaDe("Deshacer"), TeclaDe("Rehacer")),
@@ -145,6 +179,7 @@ namespace TerrakeepMod.UI.Ajustes
 			historial.ColorTexto = EstiloTk.TextoSuave;
 			historial.Top.Set(76f, 0f);
 			caja.Append(historial);
+			_filasAtajos.Add((historial, 76f, 0.75f));
 
 			EtiquetaTk icono = new EtiquetaTk(
 				() => Idiomas.Texto("Ajustes.AtajosIcono"),
@@ -152,6 +187,35 @@ namespace TerrakeepMod.UI.Ajustes
 			icono.ColorTexto = EstiloTk.TextoSuave;
 			icono.Top.Set(102f, 0f);
 			caja.Append(icono);
+			_filasAtajos.Add((icono, 102f, 0.75f));
+		}
+
+		/// <summary>
+		/// Comprime la caja "Atajos" (su propio alto y sus 4 renglones internos) contra el alto REAL
+		/// disponible - ver el <c>remarks</c> de <see cref="ConstruirCajaAtajos"/> y la cabecera de
+		/// <see cref="TerrakeepMod.Common.Panel.ReflowVertical"/>. Se llama desde el <c>Update</c>
+		/// unico de la clase (mas abajo). Las otras dos cajas (Idioma/Historial) no lo necesitan:
+		/// ninguna auditoria las ha visto desbordar nunca, y tocarlas sin evidencia real seria un
+		/// cambio sin base.
+		/// </summary>
+		private void ComprimirCajaAtajosSiHaceFalta()
+		{
+			if (_cajaAtajos == null || _filasAtajos.Count == 0) {
+				return;
+			}
+
+			float altoDisponible = GetDimensions().Height - _topCajaAtajos - MargenInferior;
+			float factor = ReflowVertical.FactorDeCompresion(AltoCajaAtajos, altoDisponible);
+
+			_cajaAtajos.Height.Set(AltoCajaAtajos * factor, 0f);
+			_cajaAtajos.Recalculate();
+
+			for (int i = 0; i < _filasAtajos.Count; i++) {
+				(EtiquetaTk etiqueta, float topNatural, float escalaBase) = _filasAtajos[i];
+				etiqueta.EscalaTexto = escalaBase * factor;
+				etiqueta.Top.Set(topNatural * factor, 0f);
+				etiqueta.Recalculate();
+			}
 		}
 
 		/// <summary>
@@ -226,6 +290,7 @@ namespace TerrakeepMod.UI.Ajustes
 		{
 			base.Update(gameTime);
 			RefrescarTextos();
+			ComprimirCajaAtajosSiHaceFalta();
 		}
 
 		private void Elegir(IdiomaDeTerrakeep idioma)

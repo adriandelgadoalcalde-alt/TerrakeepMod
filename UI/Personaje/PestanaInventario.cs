@@ -1,3 +1,4 @@
+using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
@@ -36,6 +37,13 @@ namespace TerrakeepMod.UI.Personaje
 	{
 		private const float Escala = 0.9f;
 
+		/// <summary>Margen de seguridad bajo el ultimo renglon de <see cref="_ayuda"/>, mismo
+		/// nombre/valor que ya usa <c>PestanaMapa.MargenInferior</c> para el mismo proposito.</summary>
+		private const float MargenInferior = 6f;
+
+		private EtiquetaTk _ayuda;
+		private float _ayudaTopNatural;
+
 		public PestanaInventario()
 		{
 			Width.Set(0f, 1f);
@@ -71,14 +79,24 @@ namespace TerrakeepMod.UI.Personaje
 			// en las lineas que hagan falta con la fuente REAL (mismo patron que PestanaMundo.
 			// RecalcularAviso), en vez de recortarla o moverla debajo del panel (a 800x720 ya no
 			// cabria ahi). Debajo de la mochila no hay nada mas, asi que dos o tres lineas caben.
+			//
+			// BUG REAL encontrado por la auditoria de UIScale/resolucion del 29-sep-2026 (bitacora.md,
+			// requirement 0446b3c9), acotado a 1366x768@150%: esta posicion era un Top ABSOLUTO fijo
+			// que asumia que el marco tenia su alto habitual. En esa combinacion concreta el marco
+			// pierde a la vez su tope de ancho Y su tope de alto (ver la cabecera de
+			// TerrakeepMod.Common.Panel.ReflowVertical), y esta nota se dibujaba por DEBAJO del
+			// marco, encima del pie compartido del panel. Update() de mas abajo la reancla cada
+			// fotograma contra el alto REAL disponible - nunca contra el numero calculado aqui.
 			float anchoNota = derecha - 12f;
+			_ayudaTopNatural = 24f + 5f * paso + 10f;
 			EtiquetaTk ayuda = new EtiquetaTk(
 				() => EtiquetaTk.PartirEnLineas(Idiomas.Texto("Personaje.Inventario.Nota"), anchoNota, 0.75f),
 				0.75f, anchoNota, 60f);
 			ayuda.ColorTexto = EstiloTk.TextoSuave;
 			ayuda.Left.Set(0f, 0f);
-			ayuda.Top.Set(24f + 5f * paso + 10f, 0f);
+			ayuda.Top.Set(_ayudaTopNatural, 0f);
 			Append(ayuda);
+			_ayuda = ayuda;
 
 			float arribaOcupacion = 24f + 2f * paso + 46f;
 			EtiquetaTk ocupacion = new EtiquetaTk(TextoOcupacion, 0.8f, 400f, 20f);
@@ -90,6 +108,27 @@ namespace TerrakeepMod.UI.Personaje
 			herramientas.Left.Set(derecha, 0f);
 			herramientas.Top.Set(arribaOcupacion + 20f + 14f, 0f);
 			Append(herramientas);
+		}
+
+		/// <summary>
+		/// Reancla <see cref="_ayuda"/> contra el alto REAL disponible cada fotograma - mismo patron
+		/// ya establecido en <c>PestanaMapa.Update</c> (arreglo UIScale/resolucion del 29-sep-2026):
+		/// la geometria real de esta pestaña solo se conoce cuando el layout ya ha corrido, y la
+		/// resolucion/escala de interfaz pueden cambiar en vivo.
+		/// </summary>
+		public override void Update(GameTime gameTime)
+		{
+			base.Update(gameTime);
+			if (_ayuda == null) {
+				return;
+			}
+
+			float techo = GetDimensions().Height - _ayuda.Height.Pixels - MargenInferior;
+			_ayuda.Top.Set(techo > 0f ? System.Math.Min(_ayudaTopNatural, techo) : _ayudaTopNatural, 0f);
+			// Sin este Recalculate el Top nuevo se guarda pero GetDimensions() (lo que Draw usa de
+			// verdad) se queda con el valor calculado la vez anterior - mismo hallazgo real que ya
+			// documenta PestanaMapa.Update.
+			_ayuda.Recalculate();
 		}
 
 		/// <summary>Rotulo de una zona de la pestaña. Recibe la CLAVE de localizacion, no el texto:

@@ -1,3 +1,4 @@
+using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
 using Terraria.GameContent.UI.Elements;
@@ -5,6 +6,7 @@ using Terraria.Map;
 using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Exploracion;
+using TerrakeepMod.Common.Panel;
 using TerrakeepMod.UI.Personaje.Widgets;
 
 namespace TerrakeepMod.UI.Exploracion
@@ -32,7 +34,18 @@ namespace TerrakeepMod.UI.Exploracion
 
 		private MiniMapaTk _mapa;
 		private EtiquetaTk _estado;
-		private float _estadoTopDeFlujo;
+
+		/// <summary>
+		/// El bloque de texto que cuelga bajo los botones (aviso del mapa exclusivo, marcadores,
+		/// detalle, tile bajo el raton y "Zoom"), con su Top NATURAL (relativo al inicio del
+		/// bloque, <see cref="_inicioBloqueTexto"/>) y la escala BASE con la que se construyo cada
+		/// uno. <see cref="Update"/> los reancla y reescala juntos cada fotograma - ver su XMLdoc.
+		/// </summary>
+		private readonly List<(EtiquetaTk Etiqueta, float TopNatural, float EscalaBase)> _bloqueTexto =
+			new List<(EtiquetaTk, float, float)>();
+
+		private float _inicioBloqueTexto;
+		private float _altoNaturalBloqueTexto;
 
 		/// <summary>El mini-mapa, para que la autoprueba pueda mirarlo y accionarlo.</summary>
 		public MiniMapaTk Mapa => _mapa;
@@ -54,20 +67,36 @@ namespace TerrakeepMod.UI.Exploracion
 		/// podia acabar entrando en la franja del pie del panel. La geometria real de esta pestaña
 		/// (<see cref="UIElement.GetDimensions"/>) solo se conoce cuando el layout ya ha corrido,
 		/// nunca en el constructor (medido en vivo: esta pestaña solo tiene ~308-310px reales de
-		/// alto, no los 444 del area de contenido entera que reporta el panel para OTRAS pestañas) -
-		/// por eso el recorte se hace aqui, en <c>Update</c>, contra el alto REAL medido cada
-		/// fotograma, no contra una constante calculada a mano.
+		/// alto, no los 444 del area de contenido entera que reporta el panel para OTRAS pestañas).
+		/// <para />
+		/// <b>Ampliado el 29-sep-2026</b> (auditoria de UIScale/resolucion, bitacora.md, requirement
+		/// 0446b3c9): el recorte original SOLO tocaba <c>_estado</c> (el ultimo elemento), asi que
+		/// cuando el hueco real es MUCHO mas pequeño de lo habitual (1366x768@150%: el marco pierde
+		/// a la vez su tope de ancho Y su tope de alto, ver la cabecera de
+		/// <see cref="ReflowVertical"/>) el recorte empujaba "Zoom" hacia ARRIBA hasta solaparse con
+		/// el propio parrafo del aviso, en vez de con el pie. Ahora se comprime el bloque de texto
+		/// ENTERO (posicion Y escala de cada elemento, con el MISMO factor -
+		/// <see cref="ReflowVertical.FactorDeCompresion"/>): eso garantiza matematicamente que
+		/// ningun elemento se solape con el siguiente, sea cual sea el hueco real disponible.
 		/// </summary>
 		public override void Update(GameTime gameTime)
 		{
 			base.Update(gameTime);
-			if (_estado != null) {
-				float techo = GetDimensions().Height - _estado.Height.Pixels - MargenInferior;
-				_estado.Top.Set(techo > 0f ? System.Math.Min(_estadoTopDeFlujo, techo) : _estadoTopDeFlujo, 0f);
-				// Sin este Recalculate el Top nuevo se guarda pero GetDimensions() (lo que Draw usa
-				// de verdad) se queda con el valor calculado la vez anterior: se vio en vivo que
-				// cambiar Top.Set aqui no movia nada en pantalla hasta añadir esta llamada.
-				_estado.Recalculate();
+			if (_bloqueTexto.Count == 0) {
+				return;
+			}
+
+			float altoDisponible = GetDimensions().Height - _inicioBloqueTexto - MargenInferior;
+			float factor = ReflowVertical.FactorDeCompresion(_altoNaturalBloqueTexto, altoDisponible);
+
+			for (int i = 0; i < _bloqueTexto.Count; i++) {
+				(EtiquetaTk etiqueta, float topNatural, float escalaBase) = _bloqueTexto[i];
+				etiqueta.EscalaTexto = escalaBase * factor;
+				etiqueta.Top.Set(_inicioBloqueTexto + topNatural * factor, 0f);
+				// Sin este Recalculate el Top/escala nuevos se guardan pero GetDimensions() (lo que
+				// Draw usa de verdad) se queda con el valor calculado la vez anterior: se vio en vivo
+				// que cambiar Top.Set aqui no movia nada en pantalla hasta añadir esta llamada.
+				etiqueta.Recalculate();
 			}
 		}
 
@@ -131,6 +160,13 @@ namespace TerrakeepMod.UI.Exploracion
 			verEnMapa.AlPulsar += SaltarAlMapaVanilla;
 			y += 42f;
 
+			// A partir de aqui, "y" es el INICIO del bloque de texto comprimible (aviso, marcadores,
+			// detalle, bajo el raton y "Zoom") - Update() reancla y reescala TODO este bloque junto
+			// contra el alto real disponible (ver su XMLdoc), asi que las posiciones que se calculan
+			// aqui abajo son solo las NATURALES (relativas al inicio del bloque, escala 1).
+			_inicioBloqueTexto = y;
+			float yRel = 0f;
+
 			// Se parte con el ancho REAL: los tres renglones con saltos escritos a mano estaban
 			// medidos para el texto en español y en ingles la tercera linea se salia del marco por la
 			// derecha (visto en una captura real del juego).
@@ -138,8 +174,9 @@ namespace TerrakeepMod.UI.Exploracion
 				Idiomas.Texto("Exploracion.Mapa.AvisoExclusivo"), AnchoLateral - 4f, 0.7f);
 			EtiquetaTk aviso = new EtiquetaTk(() => textoAvisoPartido, 0.7f, AnchoLateral, 50f);
 			aviso.ColorTexto = EstiloTk.TextoSuave;
-			aviso.Top.Set(y, 0f);
+			aviso.Top.Set(_inicioBloqueTexto + yRel, 0f);
 			lateral.Append(aviso);
+			_bloqueTexto.Add((aviso, yRel, 0.7f));
 			// BUG REAL visto en captura del juego (16-sep-2026, ronda de juego-libre/dossier de
 			// KeepQA, en-US a 1600x900): un "96" fijo (a mano, "~21 px por linea, hasta 4 lineas
 			// caben") se quedaba corto de verdad para el numero de lineas + interlineado REALES que
@@ -153,13 +190,14 @@ namespace TerrakeepMod.UI.Exploracion
 			int avisoLineas = textoAvisoPartido.Split('\n').Length;
 			float avisoAltoLinea = Terraria.GameContent.FontAssets.MouseText.Value.MeasureString("Ay").Y * 0.7f;
 			float avisoAlto = avisoLineas * avisoAltoLinea;
-			y += avisoAlto + 4f;
+			yRel += avisoAlto + 4f;
 
 			EtiquetaTk leyenda = new EtiquetaTk(
 				() => Idiomas.Texto("Exploracion.Mapa.Marcadores"), 0.85f, AnchoLateral, 22f);
-			leyenda.Top.Set(y, 0f);
+			leyenda.Top.Set(_inicioBloqueTexto + yRel, 0f);
 			lateral.Append(leyenda);
-			y += 22f;
+			_bloqueTexto.Add((leyenda, yRel, 0.85f));
+			yRel += 22f;
 
 			EtiquetaTk detalleLeyenda = new EtiquetaTk(
 				() => MarcadoresExploracion.HayAlgo
@@ -168,28 +206,33 @@ namespace TerrakeepMod.UI.Exploracion
 					: Idiomas.Texto("Exploracion.Mapa.SinBusqueda"),
 				0.75f, AnchoLateral, 22f);
 			detalleLeyenda.ColorTexto = EstiloTk.TextoSuave;
-			detalleLeyenda.Top.Set(y, 0f);
+			detalleLeyenda.Top.Set(_inicioBloqueTexto + yRel, 0f);
 			lateral.Append(detalleLeyenda);
-			y += 22f;
+			_bloqueTexto.Add((detalleLeyenda, yRel, 0.75f));
+			yRel += 22f;
 
 			EtiquetaTk bajoElRaton = new EtiquetaTk(TextoBajoElRaton, 0.75f, AnchoLateral, 20f);
 			bajoElRaton.ColorTexto = EstiloTk.TextoAviso;
-			bajoElRaton.Top.Set(y, 0f);
+			bajoElRaton.Top.Set(_inicioBloqueTexto + yRel, 0f);
 			lateral.Append(bajoElRaton);
-			y += 20f;
+			_bloqueTexto.Add((bajoElRaton, yRel, 0.75f));
+			yRel += 20f;
 
-			// Posicion NATURAL en el flujo (nunca pisa lo de arriba); Update() la recorta contra el
-			// pie real del panel si hiciera falta - ver el comentario de Update() mas arriba.
+			// Posicion NATURAL en el flujo (nunca pisa lo de arriba); Update() comprime TODO el
+			// bloque contra el pie real del panel si hiciera falta - ver el comentario de Update()
+			// mas arriba.
 			EtiquetaTk estado = new EtiquetaTk(
 				() => _mapa != null
 					? Idiomas.Texto("Exploracion.Mapa.Zoom", _mapa.Escala.ToString("0.00"))
 					: "",
 				0.75f, AnchoLateral, 22f);
 			estado.ColorTexto = EstiloTk.TextoSuave;
-			estado.Top.Set(y, 0f);
+			estado.Top.Set(_inicioBloqueTexto + yRel, 0f);
 			lateral.Append(estado);
 			_estado = estado;
-			_estadoTopDeFlujo = y;
+			_bloqueTexto.Add((estado, yRel, 0.75f));
+
+			_altoNaturalBloqueTexto = yRel + estado.Height.Pixels;
 		}
 
 		private string TextoBajoElRaton()
