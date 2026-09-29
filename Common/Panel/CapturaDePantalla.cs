@@ -127,7 +127,15 @@ namespace TerrakeepMod.Common.Panel
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
 						Guia.AutopruebaGrupo.VariableObservador))
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
-						Guia.AutopruebaGrupo.VariableCompanero));
+						Guia.AutopruebaGrupo.VariableCompanero))
+					// Auditoria UIScale/resolucion (29-sep-2026, requirement 0446b3c9): hasta ahora
+					// esta pasada dependia ENTERA de un script externo con Win32 CopyFromScreen
+					// sobre la ventana real (foco, SetForegroundWindow, WindowFromPoint...) - mucha
+					// mas maquinaria que el back buffer del propio motor, que ya usan TODAS las
+					// demas autopruebas de esta lista. Con esto la propia auditoria deja su
+					// evidencia sin depender de nada externo ni del foco de la ventana.
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
+						AutopruebaAuditoriaUiScale.Variable));
 			}
 		}
 

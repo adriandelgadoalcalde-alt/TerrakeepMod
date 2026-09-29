@@ -98,6 +98,12 @@ namespace TerrakeepMod.Common.Panel
 			}
 
 			_fotogramasEnArea++;
+			// A mitad del tiempo que el area se deja abierta: el layout ya ha corrido de sobra
+			// (Update() de PestanaMapa, por ejemplo, reancla/reescala su bloque de texto cada
+			// fotograma) y todavia queda margen antes de pasar a la siguiente area.
+			if (_fotogramasEnArea == FotogramasPorArea / 2) {
+				CapturarAreaActual();
+			}
 			if (_fotogramasEnArea < FotogramasPorArea) {
 				return;
 			}
@@ -122,6 +128,21 @@ namespace TerrakeepMod.Common.Panel
 				" (" + (_indiceArea + 1) + "/" + Orden.Length + "). PanelAbierto=" + PanelTerrakeepSystem.PanelAbierto +
 				" AreaAbierta=" + PanelTerrakeepSystem.AreaAbierta +
 				" UIScale=" + Main.UIScale + " Resolucion=" + Main.screenWidth + "x" + Main.screenHeight + ".");
+		}
+
+		/// <summary>
+		/// Fotografia el AREA ACTUAL con el back buffer del propio motor (ver CapturaDePantalla),
+		/// nombrada con la resolucion/UIScale reales para poder comparar varias pasadas sin que un
+		/// nombre pise al anterior. Se llama unos fotogramas DESPUES de <see cref="AbrirAreaActual"/>
+		/// (nunca en el mismo fotograma: hace falta que el layout ya haya corrido al menos una vez
+		/// con el area nueva puesta) - <see cref="Avanzar"/> la dispara a mitad del tiempo que esa
+		/// area se deja abierta.</summary>
+		private static void CapturarAreaActual()
+		{
+			TerrakeepMod.Common.Panel.AreaTerrakeep area = Orden[_indiceArea];
+			string escala = Main.UIScale.ToString("0.00").Replace(",", "_").Replace(".", "_");
+			string nombre = "uiscale-" + area + "-" + Main.screenWidth + "x" + Main.screenHeight + "-" + escala;
+			RegistroPanel.Linea(Terrakeep.LogTag + " AUDITORIA UISCALE: " + CapturaDePantalla.Guardar(nombre));
 		}
 	}
 }
