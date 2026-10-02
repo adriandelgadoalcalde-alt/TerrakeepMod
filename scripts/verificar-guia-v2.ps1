@@ -35,7 +35,18 @@ $sandbox   = Join-Path $env:USERPROFILE 'Documents\My Games\Terraria\tModLoader-
 $mundo     = if ($Mundo) { $Mundo } else { 'TerrakeepPrueba' }
 $personaje = 'TerrakeepPrueba'
 if (-not $Lock) {
-	$Lock = Join-Path $env:LOCALAPPDATA 'Temp\claude\C--Users-adrian-Downloads-Keep-Terrasavr-Win-Terrasavr-Calamity-Beta-resources-app\d38ffe35-118f-4719-b326-0ca425888fe7\scratchpad\PANTALLA.lock'
+	# Turno de pantalla compartido entre agentes: el PANTALLA.lock del scratchpad de la sesion
+	# coordinadora (la carpeta "scratchpad" mas reciente bajo Temp\claude), o la variable
+	# KEEP_PANTALLA_LOCK si se define. Sin rutas personales escritas en el repo publico.
+	if ($env:KEEP_PANTALLA_LOCK) {
+		$Lock = $env:KEEP_PANTALLA_LOCK
+	} else {
+		$scratch = Get-ChildItem (Join-Path $env:LOCALAPPDATA 'Temp\claude') -Directory -ErrorAction SilentlyContinue |
+			ForEach-Object { Get-ChildItem $_.FullName -Directory -ErrorAction SilentlyContinue } |
+			ForEach-Object { Join-Path $_.FullName 'scratchpad' } | Where-Object { Test-Path $_ } |
+			Sort-Object { (Get-Item $_).LastWriteTime } -Descending | Select-Object -First 1
+		$Lock = if ($scratch) { Join-Path $scratch 'PANTALLA.lock' } else { Join-Path $env:TEMP 'keep-PANTALLA.lock' }
+	}
 }
 
 # ---- hashes de las partidas REALES (deben quedar identicos) ---------------------------------

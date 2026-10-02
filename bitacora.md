@@ -11700,3 +11700,65 @@ Para la F3 (UI del mod):
   `downedNuclearTerror`, `downedBossRush`).
 - Marcador permanente en el mapa con `GuiaV2Ubicaciones` sobre `Main.tile`; objeto que falta → ficha de
   obtención (receta/botín/tienda real) y después atajo a la Librería; progreso manual en `ModPlayer`.
+
+## 2-oct-2026 - Guía v2 (Fase F3): la Guía nueva dentro del juego
+
+Encargo "guía grande vanilla + Calamity" (requirement 798ecebe), fase F3, más el añadido literal del usuario para el mod:
+"que te marcara en el mapa qué hacer cada vez con una marca permanente en el mapa que apunte al siguiente lugar, y si
+no tienes los objetos que cliques y te lleve a la librería a cogerlos, aunque lo mejor sería que la guía te guiara para
+tener todo".
+
+**Qué hay (commits 121abca, 744e06a, f62d7fd, 64e66c1 y siguientes):**
+- `lib\Terrakeep.Core.dll` en 8524cc48 (F0 + F1): guías `calamity` (47 paradas, 186 tareas) y `vanilla` (49 paradas,
+  210 tareas) incrustadas. El mod elige sola la que toca según haya Calamity; si faltara la de la partida lo dice y no
+  enseña la otra (con Calamity descargado, la de Calamity citaría jefes que no existen).
+- `Common/GuiaV2/`: `ProveedorEstadoGuiaV2Mod` (IGuideStateProviderV2 en vivo: inventario, ratón, equipo de los tres
+  conjuntos, equipo variado, 4 huchas, mejoras vanilla de `Player` y de `CalamityPlayer` por reflexión, estado de mundo de
+  Calamity, `WorldGen.crimson`, modo real), `ReflexionCalamity`, `GuiaV2Sistema` (carga, resolutor `ModContent.TryFind`,
+  evaluación cada 30 fotogramas, clase propuesta por el `DamageType` del mejor arma), `GuiaV2Jugador` (progreso manual en
+  `ModPlayer.SaveData`, clave `guiaV2.<guía>`, el mismo JSON que el escritorio; un JSON ilegible se conserva, no se pisa),
+  `MundoGuiaVivo` (IMundoGuia sobre `Main.tile`, puntos de laboratorio y "altar"), `UbicacionGuia` + `CapaMarcaGuia`
+  (marca permanente) y `ObtencionGuia` (ficha "cómo conseguirlo").
+- `BanderasGuia`: +`downedEoCAcidRain`, `downedAquaticScourgeAcidRain`, `downedBossRush` (Calamity; las otras 3 de la
+  lista de F0 ya estaban) y +`downedDD2InvasionT1/T2/T3`, `combatBookWasUsed`, `combatBookVolumeTwoWasUsed`,
+  `peddlersSatchelWasUsed` (vanilla, pedidas por F1). Las listas viven en `ContratoGuiaV2` (lógica pura) y una prueba
+  comprueba que TODA bandera de cada guía incrustada la lee el mod.
+- UI (`UI/GuiaV2/`): Mi guía, Ruta (todas las paradas a la izquierda; a la derecha la parada completa: cabecera con vida
+  objetivo y dónde/en tu mapa, cómo empezar, 1 Prepárate con matiz de clase, objetos y escalera, 2 Haz esto con casillas,
+  3 combate, 4 desbloquea, Listo para seguir, No vendas, fuentes, Hecha/Aplazar/Anterior/Siguiente), Equipo (escalera de
+  la clase, etapa actual resaltada), Manual, Estoy perdido, Algo raro, buscador y selector de clase. La guía v1 sigue como
+  sub-pestaña **Brújula** (entrenador de jefe y guía de grupo no tienen equivalente en la v2).
+- Marca del mapa: diana dorada en pantalla completa, superpuesto y minimapa; si cae fuera de lo visible, flecha en el borde
+  apuntando hacia ella; anillo de zona; tooltip con parada, lugar, precisión (APROXIMADA cuando lo es) y dirección desde
+  el jugador. Se recalcula sola al cambiar la siguiente parada. Interruptor en Ajustes (caja "Guía") y en el ModConfig,
+  activado por defecto. **Cambia el criterio "brújula, nunca GPS" de la v1 solo para la v2, porque lo ha pedido el
+  usuario.**
+- Ficha de objeto: receta (ingredientes clicables con "tienes N"), estación y si estás al lado (`adjTile`) o la llevas,
+  botín, bolsa, tienda, condiciones legibles, archivo:línea de la fuente; sin datos → recetas vivas de `Main.recipe`; sin
+  nada → "se consigue en el mundo". En vanilla usa `RefObjeto.ObtencionPara("vanilla")`. Botones "Coger en la Librería"
+  (abre la Librería con el objeto buscado por su nombre o `#id`), "Ver el altar más cercano" y "Atrás".
+
+**Obstáculo y cómo se resolvió (autonomía técnica):** el cliente gráfico NO arranca: `client.log` → FATAL "Please ensure
+Steam is logged in and running" (`CoreSocialModule.Initialize` → `SteamAPI.Init()` falla). Steam estaba cerrado; al
+abrirlo pidió INICIAR SESIÓN (el usuario cerró sesión a las 00:45, `connection_log.txt`). Eso es cuenta del usuario: se
+cerró el Steam que abrí sin tocar nada. Como el servidor dedicado no necesita Steam (`SocialAPI.Initialize`: modo None
+con `dedServ`), se añadió `verificar-guia-v2.ps1 -Servidor [-Calamity] [-Mundo X]`, pasada sin pantalla. Tres hallazgos
+del motor por el camino (también en CLAUDE.md):
+1. Un servidor sin clientes no actualiza el mundo (`Main.ShouldUpdateEntities`): `PostUpdateWorld` no corre.
+2. `ModSystem.OnWorldLoad` va ANTES de `WorldIO.Load` (`WorldFile.cs:643-644`): sin tiles de mod ni datos del `.twld`
+   (primera pasada: 0 tiles de mod en un mundo con Calamity). La autoprueba usa `WorldFile.OnWorldLoad`, el último paso.
+3. Calamity 2.2.2 instalado exige `CalamityModMusic` (`ModSortingException` → Calamity deshabilitado): el script lo copia.
+
+**Evidencia (`evidencia/guia-v2-servidor*.log.txt`):** vanilla sobre TerrakeepPrueba: 39 comprobaciones, 0 en rojo
+(1211/1211 objetos y 372/372 NPC resueltos; 19 zonas situadas con su firma real alrededor; 47 de 49 paradas situables,
+17 aproximadas que lo dicen, 2 sin lugar porque el mundo no tiene Lo Sagrado; 95 fichas sin ningún dato de Calamity).
+Calamity sobre TerrakeepPruebaCal (generado con Calamity por el propio script): 38 comprobaciones, 0 en rojo (2174/2174
+objetos, 532/532 NPC, las 6 banderas nuevas legibles, Mar Hundido/Mar Sulfúrico/Abismo/Peñascos de Azufre situados con
+miles de casillas reales de su firma, 5 laboratorios de Draedon con sus planchas reales; la Infección Astral no existe aún
+y se dice). `dotnet test` 116/116. Hashes de las 23 partidas reales idénticos antes y después en cada pasada.
+
+**PENDIENTE-ESCRITORIO (necesita Steam con sesión iniciada):** `scripts\verificar-guia-v2.ps1 -Calamity` y sin
+`-Calamity` (cliente real con turno de pantalla): marca dibujada en pantalla completa y minimapa, interruptor de Ajustes,
+clic en objeto que falta → ficha → Librería, casillas manuales guardadas, todas las sub-pestañas y las cuatro
+resoluciones (1280x720, 1600x900, 1920x1080, 2560x1440) con UIScale normal y máxima, con capturas `guiav2-*.png`.
+`verificar-espaciado.ps1` también es de cliente y queda en el mismo turno.

@@ -145,6 +145,17 @@ compiló MSBuild ("Loading pre-compiled TerrakeepMod.dll") en vez de compilarlo 
   falta. No bloquea nada, pero **hay que relajar `$ErrorActionPreference` alrededor del
   `-build`** o PowerShell 5.1 lo trata como error terminante con exit code 0.
 
+- **El cliente gráfico exige Steam abierto y con sesión iniciada** (`CoreSocialModule.Initialize` →
+  `SteamAPI.Init()` → FatalExit "Please ensure Steam is logged in and running"). Si Steam pide iniciar sesión, eso es
+  del usuario: no se toca. El **servidor dedicado** con `-nosteam` sí arranca sin Steam (`SocialAPI.Initialize`: modo
+  None con `dedServ`): `scriptserificar-guia-v2.ps1 -Servidor` es la vía sin pantalla.
+- **Un servidor sin clientes no actualiza el mundo** (`Main.ShouldUpdateEntities`): `PostUpdateWorld` no corre.
+- **`ModSystem.OnWorldLoad` va ANTES de `WorldIO.Load`** (`WorldFile.cs:643-644`): ahí todavía no hay tiles de mod ni
+  datos del `.twld` (laboratorios de Calamity, etc.). Para "mundo cargado del todo": evento `WorldFile.OnWorldLoad`.
+- **Calamity 2.2.x exige `CalamityModMusic`**: en un sandbox hay que copiar y habilitar los dos `.tmod`.
+- **Guía v2** (02-oct-2026): contenido y evaluador en `lib\Terrakeep.Core.dll` (repo hermano, `docs/guia-v2-diseno.md`);
+  aquí solo fuente de estado en vivo, resolutor, progreso en `ModPlayer`, marca del mapa y UI. Ver bitácora.
+
 ### Menús, idioma y localización (ronda de cierre)
 - **`ModSystem.UpdateUI` NO se llama en el menú**: `SystemLoader.UpdateUI` empieza con
   `if (!Main.gameMenu)`. Para hacer algo cada fotograma en los menús, el hook es
