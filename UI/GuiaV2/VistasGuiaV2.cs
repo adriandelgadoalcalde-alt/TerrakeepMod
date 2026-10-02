@@ -464,11 +464,19 @@ namespace TerrakeepMod.UI.GuiaV2
 			}
 			EtapaEscalera etapa = GuiaV2Sistema.Evaluador.EtapaParaParada(clase, p.Id);
 			if (etapa != null) {
-				lista.Add(Parrafo("**" + Idiomas.Texto("GuiaV2.Ruta.EquipoRecomendado", GuiaV2Sistema.NombreClase(clase)) + "** " + etapa.Momento, 0.76f));
-				lista.Add(new RejillaObjetosTk(etapa.Armas.Concat(etapa.Armadura).Concat(etapa.Accesorios).Concat(etapa.Otros), doc.LeyendaEscaleras));
+				// Agrupado y rotulado igual que la vista Equipo (Armas / Armadura por conjunto /
+				// Accesorios / Otros): antes era UNA rejilla de ~30 iconos mezclados y sin rotulos,
+				// imposible de leer sin pasar el raton por cada uno (revision de capturas de F3b).
+				PilaTk equipo = new PilaTk { Fondo = EstiloTk.FondoCaja * 0.75f, Relleno = 9f, Separacion = 4f };
+				equipo.Append(Parrafo("**" + Idiomas.Texto("GuiaV2.Ruta.EquipoRecomendado", GuiaV2Sistema.NombreClase(clase)) + "** " + etapa.Momento, 0.76f));
+				AnadirGrupo(equipo, "GuiaV2.Equipo.Armas", etapa.Armas, doc);
+				AnadirArmadura(equipo, etapa.Armadura, doc);
+				AnadirGrupo(equipo, "GuiaV2.Equipo.Accesorios", etapa.Accesorios, doc);
+				AnadirGrupo(equipo, "GuiaV2.Equipo.Otros", etapa.Otros, doc);
 				if (!string.IsNullOrEmpty(etapa.Nota)) {
-					lista.Add(Parrafo("**" + Idiomas.Texto("GuiaV2.Equipo.Despues") + "** " + etapa.Nota, 0.72f, EstiloTk.TextoSuave));
+					equipo.Append(Parrafo("**" + Idiomas.Texto("GuiaV2.Equipo.Despues") + "** " + etapa.Nota, 0.72f, EstiloTk.TextoSuave));
 				}
+				lista.Add(equipo);
 			}
 
 			// ---- 2 · Haz esto, en este orden ----

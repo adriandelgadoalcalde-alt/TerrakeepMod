@@ -95,7 +95,8 @@ namespace TerrakeepMod.UI.GuiaV2
 				Celda c = _celdas[_sobre];
 				string nombre = GuiaV2Sistema.NombreObjeto(c.Ref);
 				int tienes = c.Tipo > 0 ? ProveedorEstadoGuiaV2Mod.CuantosPoseeDe(Main.LocalPlayer, c.Tipo) : 0;
-				BotonTk.PedirTooltip(nombre + (tienes > 0 ? "  (" + Idiomas.Texto("GuiaV2.Objeto.LoTienes") + ")" : "") +
+				// Estado SIEMPRE explicito (lo tienes / te falta), no solo cuando lo tienes.
+				BotonTk.PedirTooltip(nombre + "  (" + Idiomas.Texto(tienes > 0 ? "GuiaV2.Objeto.LoTienes" : "GuiaV2.Objeto.TeFalta") + ")" +
 					(string.IsNullOrEmpty(c.Ayuda) ? "" : "\n" + c.Ayuda) + "\n" + Idiomas.Texto("GuiaV2.Enlace.ObjetoCorto"));
 			}
 		}
