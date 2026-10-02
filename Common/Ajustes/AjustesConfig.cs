@@ -21,6 +21,21 @@ namespace TerrakeepMod.Common.Ajustes
 		English
 	}
 
+	/// <summary>Donde se pinta el indicador de la Guía en la pantalla de juego
+	/// (<see cref="TerrakeepMod.Common.GuiaV2.IndicadorGuiaHud"/>).</summary>
+	public enum PosicionIndicadorGuia
+	{
+		/// <summary>Arriba, en la franja libre entre el inventario y la vida; si no cabe (pantallas
+		/// casi 4:3), junto al personaje.</summary>
+		Automatica,
+
+		/// <summary>Arriba, centrado en la pantalla.</summary>
+		ArribaCentro,
+
+		/// <summary>Junto al personaje, siguiendolo.</summary>
+		JuntoAlPersonaje
+	}
+
 	/// <summary>
 	/// Configuracion persistente de Terrakeep. <c>ModConfig</c> es el mecanismo oficial de
 	/// tModLoader para esto: el propio motor serializa esta clase a
@@ -70,6 +85,25 @@ namespace TerrakeepMod.Common.Ajustes
 		[Header("Guia")]
 		[DefaultValue(true)]
 		public bool MarcaGuiaEnMapa { get; set; } = true;
+
+		/// <summary>
+		/// Punto 4 del encargo del usuario (02-oct-2026): "la gracia es que te guíe desde la pantalla
+		/// principal y no desde ningún menú", con su aclaración ("La guía no..... sino las
+		/// indicaciones"): un indicador de DIRECCION permanente en la pantalla de juego (flecha,
+		/// distancia y a qué apunta). Activado por defecto.
+		/// </summary>
+		[DefaultValue(true)]
+		public bool IndicadorGuia { get; set; } = true;
+
+		[DefaultValue(PosicionIndicadorGuia.Automatica)]
+		public PosicionIndicadorGuia PosicionIndicador { get; set; } = PosicionIndicadorGuia.Automatica;
+
+		/// <summary>Tamaño del indicador, en porcentaje.</summary>
+		[Range(75, 150)]
+		[Increment(25)]
+		[Slider]
+		[DefaultValue(100)]
+		public int TamanoIndicador { get; set; } = 100;
 
 		/// <summary>
 		/// Atajos del mod a los que ya se les ha puesto su tecla por defecto alguna vez (ver

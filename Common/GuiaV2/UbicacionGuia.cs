@@ -53,6 +53,9 @@ namespace TerrakeepMod.Common.GuiaV2
 			public string ParadaId = "";
 			/// <summary>Tipo de NPC para el icono (jefe o vecino), 0 si no hay.</summary>
 			public int Npc;
+			/// <summary>Nombre de ese NPC como lo da la Guía (traducción oficial de Terraria/Calamity),
+			/// no el del juego: el Calamity instalado deja varios jefes en inglés.</summary>
+			public string NombreNpc = "";
 			/// <summary>Radio aproximado de la zona en casillas (para el anillo del mapa).</summary>
 			public float RadioTiles;
 		}
@@ -141,7 +144,7 @@ namespace TerrakeepMod.Common.GuiaV2
 				if (npc != null) {
 					return new Objetivo {
 						Tile = npc.Center / 16f, Aproximada = false, Origen = "jefe", Titulo = titulo, ParadaId = parada.Id,
-						Lugar = GuiaV2Sistema.NombreNpc(j), Npc = npc.type, RadioTiles = 0f,
+						Lugar = GuiaV2Sistema.NombreNpc(j), Npc = npc.type, NombreNpc = GuiaV2Sistema.NombreNpc(j), RadioTiles = 0f,
 					};
 				}
 			}
@@ -158,7 +161,7 @@ namespace TerrakeepMod.Common.GuiaV2
 					if (npc != null) {
 						return new Objetivo {
 							Tile = npc.Center / 16f, Aproximada = false, Origen = u.Tipo, Titulo = titulo, ParadaId = parada.Id,
-							Lugar = GuiaV2Sistema.NombreNpc(u.Id), Npc = npc.type,
+							Lugar = GuiaV2Sistema.NombreNpc(u.Id), Npc = npc.type, NombreNpc = GuiaV2Sistema.NombreNpc(u.Id),
 						};
 					}
 					continue;
@@ -170,13 +173,15 @@ namespace TerrakeepMod.Common.GuiaV2
 				}
 				string lugar = u.Tipo == "zona" ? GuiaV2Sistema.NombreZona(u.Id) : Idiomas.Texto("GuiaV2.Punto." + u.Id);
 				int npcIcono = 0;
+				string nombreNpc = "";
 				if (parada.Jefes.Count > 0) {
 					int t = GuiaV2Sistema.TipoNpc(parada.Jefes[0]);
 					npcIcono = t > 0 ? t : 0;
+					if (npcIcono > 0) nombreNpc = GuiaV2Sistema.NombreNpc(parada.Jefes[0]);
 				}
 				return new Objetivo {
 					Tile = new Vector2(r.X, r.Y), Aproximada = r.Aproximada, Origen = r.Origen, Titulo = titulo,
-					ParadaId = parada.Id, Lugar = lugar, Npc = npcIcono,
+					ParadaId = parada.Id, Lugar = lugar, Npc = npcIcono, NombreNpc = nombreNpc,
 					RadioTiles = r.Aproximada ? 90f : (r.Origen == "firma" ? 32f : 0f),
 				};
 			}

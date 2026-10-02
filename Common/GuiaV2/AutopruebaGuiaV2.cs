@@ -318,10 +318,46 @@ namespace TerrakeepMod.Common.GuiaV2
 			Esperar(40);
 			Paso("ajustes: comprobar visible", () => ComprobarMarcaOculta(false));
 
+			// ---- indicador de direccion en la pantalla de juego (punto 4 del encargo) ----
+			Paso("hud: preparar", PrepararHud);
+			foreach ((string Nombre, float Dx, float Dy) caso in new[] {
+				("al-este", 110f, 0f), ("al-oeste", -110f, 0f), ("encima", 0f, -60f), ("debajo", 0f, 60f), ("al-noreste", 90f, -60f) }) {
+				(string Nombre, float Dx, float Dy) c = caso;
+				Paso("hud: jugador " + c.Nombre, () => PonerJugadorRespectoAlObjetivo(c.Dx, c.Dy));
+				Esperar(25);
+				Paso("hud: flecha " + c.Nombre, () => ComprobarFlecha(c.Nombre, c.Dx, c.Dy));
+			}
+			Paso("hud: en el objetivo", () => PonerJugadorRespectoAlObjetivo(0f, 0f));
+			Esperar(25);
+			Paso("hud: llegado", ComprobarLlegado);
+			Paso("hud: ajustes", () => PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Ajustes, "autoprueba guia v2"));
+			Esperar(20);
+			Paso("hud: ocultar", () => PulsarInterruptorIndicador(false));
+			Esperar(20);
+			Paso("hud: comprobar oculto", () => ComprobarHudVisible(false, "con el indicador desactivado en Ajustes"));
+			Paso("hud: ajustes 2", () => PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Ajustes, "autoprueba guia v2"));
+			Esperar(20);
+			Paso("hud: mostrar", () => PulsarInterruptorIndicador(true));
+			Esperar(20);
+			Paso("hud: comprobar visible", () => ComprobarHudVisible(true, "al volver a activarlo"));
+			Paso("hud: lejos otra vez", () => PonerJugadorRespectoAlObjetivo(110f, -20f));
+			Esperar(25);
+			Paso("hud: junto al personaje", () => { FijarPosicionIndicador(PosicionIndicadorGuia.JuntoAlPersonaje); });
+			Esperar(15);
+			Paso("hud: comprobar junto al personaje", ComprobarJuntoAlPersonaje);
+			Paso("hud: tamaño 150", () => { FijarPosicionIndicador(PosicionIndicadorGuia.Automatica); AjustesConfig.Instance.TamanoIndicador = 150; });
+			Esperar(15);
+			Paso("hud: comprobar tamaño", ComprobarTamano150);
+			Paso("hud: clic", ClicEnIndicador);
+			Esperar(30);
+			Paso("hud: comprobar clic", ComprobarClicIndicador);
+			Esperar(20);
+
 			// ---- la marca se actualiza sola al completar paradas ----
 			Paso("hasta la mazmorra", () => LlevarHastaParada("skeletron"));
 			Esperar(40);
 			Paso("marca mazmorra", () => ComprobarMarcaSiguiente("skeletron"));
+			Paso("hud: nuevo destino", ComprobarNuevoDestino);
 			Paso("mapa mazmorra", () => AbrirMapaEn(UbicacionGuia.Siguiente));
 			Esperar(180);
 			Paso("captura mapa mazmorra", () => ComprobarMarcaDibujada("mazmorra"));
@@ -448,6 +484,12 @@ namespace TerrakeepMod.Common.GuiaV2
 					Paso("libreria " + ancho + e, () => PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Libreria, "autoprueba guia v2"));
 					Esperar(30);
 					Paso("medir libreria " + ancho + e, () => { string s = ancho + "x" + alto + "-" + e; AuditarLibreria("libreria-" + s); Capturar("libreria-" + s); });
+					Paso("hud sin inventario " + ancho + e, () => { PanelTerrakeepSystem.CerrarPanel("autoprueba guia v2: indicador"); Main.playerInventory = false; IndicadorGuiaHud.FotogramasDibujado = 0; });
+					Esperar(20);
+					Paso("medir hud " + ancho + e, () => { string s = ancho + "x" + alto + "-" + e; AuditarHud("hud-" + s, false); Capturar("hud-" + s); });
+					Paso("hud con inventario " + ancho + e, () => { Main.playerInventory = true; IndicadorGuiaHud.FotogramasDibujado = 0; });
+					Esperar(20);
+					Paso("medir hud inventario " + ancho + e, () => { string s = ancho + "x" + alto + "-" + e; AuditarHud("hud-inventario-" + s, true); Capturar("hud-inventario-" + s); Main.playerInventory = false; });
 				}
 			}
 			Paso("restaurar resolucion", () => {
@@ -456,6 +498,7 @@ namespace TerrakeepMod.Common.GuiaV2
 			});
 			Esperar(30);
 			Paso("restaurar estado", RestaurarEstado);
+			Paso("restaurar jugador", RestaurarHud);
 			Paso("cerrar", () => PanelTerrakeepSystem.CerrarPanel("autoprueba guia v2"));
 		}
 
@@ -978,6 +1021,216 @@ namespace TerrakeepMod.Common.GuiaV2
 				if (exceso > 1f) { fuera++; peor = Math.Max(peor, exceso); }
 			});
 			Ok(fuera == 0, contexto + ": las " + ranuras + " ranuras del contenedor elegido quedan dentro del panel (" + fuera + " fuera, la peor " + peor.ToString("0") + " px)");
+		}
+
+		// ---- indicador de direccion -------------------------------------------------------------
+
+		private static Vector2 _posicionAntes;
+		private static bool _indicadorAntes = true;
+		private static PosicionIndicadorGuia _posicionIndicadorAntes;
+		private static int _tamanoAntes = 100;
+
+		private static void PrepararHud()
+		{
+			Player j = Main.LocalPlayer;
+			_posicionAntes = j.position;
+			AjustesConfig c = AjustesConfig.Instance;
+			_indicadorAntes = c.IndicadorGuia;
+			_posicionIndicadorAntes = c.PosicionIndicador;
+			_tamanoAntes = c.TamanoIndicador;
+			c.IndicadorGuia = true;
+			c.PosicionIndicador = PosicionIndicadorGuia.Automatica;
+			c.TamanoIndicador = 100;
+			Main.playerInventory = false;
+			// Caida de pluma: sin daño por caida y sin que el jugador se aleje mucho del punto en el
+			// que se le pone (personaje del sandbox).
+			j.AddBuff(BuffID.Featherfall, 60 * 60 * 5);
+			L("indicador: destino = " + (UbicacionGuia.Siguiente != null ? UbicacionGuia.Siguiente.ParadaId + " en (" + (int)UbicacionGuia.Siguiente.Tile.X + ", " +
+				(int)UbicacionGuia.Siguiente.Tile.Y + ")" : "-") + "; jugador en (" + (int)(j.Center.X / 16f) + ", " + (int)(j.Center.Y / 16f) + ").");
+		}
+
+		private static void RestaurarHud()
+		{
+			Player j = Main.LocalPlayer;
+			j.position = _posicionAntes;
+			j.velocity = Vector2.Zero;
+			j.fallStart = (int)(j.position.Y / 16f);
+			AjustesConfig c = AjustesConfig.Instance;
+			c.IndicadorGuia = _indicadorAntes;
+			c.PosicionIndicador = _posicionIndicadorAntes;
+			c.TamanoIndicador = _tamanoAntes;
+			c.SaveChanges();
+		}
+
+		/// <summary>Pone al jugador a (dx, dy) casillas del objetivo (dx &gt; 0 = al este, dy &gt; 0 =
+		/// debajo).</summary>
+		private static void PonerJugadorRespectoAlObjetivo(float dx, float dy)
+		{
+			UbicacionGuia.Objetivo o = UbicacionGuia.Siguiente;
+			if (o == null) { Ok(false, "hay destino para el indicador"); return; }
+			Player j = Main.LocalPlayer;
+			Vector2 centro = IndicadorGuiaHud.CentroObjetivo(o) + new Vector2(dx, dy) * 16f;
+			centro.X = MathHelper.Clamp(centro.X, 800f, Main.maxTilesX * 16f - 800f);
+			centro.Y = MathHelper.Clamp(centro.Y, 800f, Main.maxTilesY * 16f - 800f);
+			j.position = centro - new Vector2(j.width / 2f, j.height / 2f);
+			j.velocity = Vector2.Zero;
+			j.fallStart = (int)(j.position.Y / 16f);
+			Main.playerInventory = false;
+			PanelTerrakeepSystem.CerrarPanel("autoprueba guia v2: indicador");
+			IndicadorGuiaHud.FotogramasDibujado = 0;
+		}
+
+		private static void ComprobarFlecha(string nombre, float dx, float dy)
+		{
+			UbicacionGuia.Objetivo o = UbicacionGuia.Siguiente;
+			Player j = Main.LocalPlayer;
+			Ok(IndicadorGuiaHud.FotogramasDibujado > 10 && IndicadorGuiaHud.Estado == "en_ruta",
+				"indicador dibujado en la pantalla de juego (" + IndicadorGuiaHud.FotogramasDibujado + " fotogramas, estado " + IndicadorGuiaHud.Estado + ", " +
+				IndicadorGuiaHud.UltimaColocacion + ")");
+			if (o == null) return;
+			// Direccion NOMINAL: el jugador esta a (dx, dy) del objetivo, asi que la flecha tiene que
+			// apuntar a (-dx, -dy). Y la REAL, desde donde haya quedado el jugador tras caer un poco.
+			float nominal = (float)Math.Atan2(-dy, -dx);
+			Vector2 real = IndicadorGuiaHud.CentroObjetivo(o) - j.Center;
+			float geometrico = (float)Math.Atan2(real.Y, real.X);
+			float flecha = IndicadorGuiaHud.UltimoAngulo;
+			float difNominal = Math.Abs(MathHelper.ToDegrees(MathHelper.WrapAngle(flecha - nominal)));
+			float difReal = Math.Abs(MathHelper.ToDegrees(MathHelper.WrapAngle(flecha - geometrico)));
+			Ok(difNominal < 25f && difReal < 3f, "jugador " + nombre + " del objetivo: la flecha apunta a " + MathHelper.ToDegrees(flecha).ToString("0") +
+				"° (esperado " + MathHelper.ToDegrees(nominal).ToString("0") + "° por la colocacion, " + MathHelper.ToDegrees(geometrico).ToString("0") +
+				"° desde donde ha quedado; 0° = este, 90° = abajo); distancia mostrada \"" + IndicadorGuiaHud.TextoDistancia(IndicadorGuiaHud.UltimaDistancia) +
+				"\" (" + IndicadorGuiaHud.UltimaDistancia.ToString("0") + " casillas reales); destino \"" + IndicadorGuiaHud.UltimoNombre + "\"");
+			List<string> pisa = PisaInterfaz(IndicadorGuiaHud.UltimoRectangulo, Main.playerInventory);
+			Ok(pisa.Count == 0, "jugador " + nombre + ": el indicador (" + IndicadorGuiaHud.UltimoRectangulo + ", " + IndicadorGuiaHud.UltimaColocacion + ") " +
+				(pisa.Count == 0 ? "no pisa la interfaz del juego (inventario, vida, minimapa, aire, sigilo)" : "PISA: " + string.Join(", ", pisa)));
+			Capturar("hud-jugador-" + nombre);
+		}
+
+		private static void ComprobarLlegado()
+		{
+			Ok(IndicadorGuiaHud.Estado == "llegado", "en el objetivo el indicador dice que has llegado (estado " + IndicadorGuiaHud.Estado + ", " +
+				IndicadorGuiaHud.UltimaDistancia.ToString("0") + " casillas)");
+			string esperado = Idiomas.Texto("GuiaV2.Indicador.HasLlegado", IndicadorGuiaHud.UltimoNombre);
+			Ok(IndicadorGuiaHud.UltimoAviso == esperado, "aviso breve al llegar: \"" + IndicadorGuiaHud.UltimoAviso + "\"");
+			Capturar("hud-llegado");
+		}
+
+		private static void PulsarInterruptorIndicador(bool debeQuedar)
+		{
+			ContenidoAjustes a = PanelTerrakeepSystem.Panel != null ? PanelTerrakeepSystem.Panel.Ajustes : null;
+			if (a == null || a.BotonIndicador == null) { Ok(false, "Ajustes abierto con su interruptor del indicador"); return; }
+			BotonTk b = a.BotonIndicador;
+			CalculatedStyle d = b.GetDimensions();
+			b.LeftClick(new UIMouseEvent(b, new Vector2(d.X + d.Width / 2f, d.Y + d.Height / 2f)));
+			Ok(AjustesConfig.Instance.IndicadorGuia == debeQuedar, "clic real en el interruptor del indicador en Ajustes: IndicadorGuia = " + AjustesConfig.Instance.IndicadorGuia);
+			PanelTerrakeepSystem.CerrarPanel("autoprueba guia v2: indicador");
+			IndicadorGuiaHud.FotogramasDibujado = 0;
+		}
+
+		private static void ComprobarHudVisible(bool visible, string cuando)
+		{
+			bool dibujado = IndicadorGuiaHud.FotogramasDibujado > 0;
+			Ok(visible == dibujado, cuando + " el indicador " + (dibujado ? "se dibuja" : "no se dibuja") + " (" + IndicadorGuiaHud.FotogramasDibujado + " fotogramas)");
+			Capturar(visible ? "hud-reactivado" : "hud-desactivado");
+		}
+
+		private static void FijarPosicionIndicador(PosicionIndicadorGuia p)
+		{
+			AjustesConfig.Instance.PosicionIndicador = p;
+			IndicadorGuiaHud.FotogramasDibujado = 0;
+		}
+
+		private static void ComprobarJuntoAlPersonaje()
+		{
+			Rectangle r = IndicadorGuiaHud.UltimoRectangulo;
+			Player jg = Main.LocalPlayer;
+			Vector2 izq = Vector2.Transform(jg.TopLeft - Main.screenPosition, Main.GameViewMatrix.ZoomMatrix) / Main.UIScale;
+			Vector2 centro = Vector2.Transform(jg.Center - Main.screenPosition, Main.GameViewMatrix.ZoomMatrix) / Main.UIScale;
+			bool junto = r.Right <= izq.X - 10f && r.Right >= izq.X - 50f && Math.Abs(r.Center.Y - centro.Y) < 8f;
+			Ok(junto, "con la posicion \"junto al personaje\" el indicador va a su izquierda, a media altura (caja " + r + ", borde izquierdo del personaje en " +
+				(int)izq.X + ", centro en " + (int)centro.Y + ")");
+			List<string> pisa = PisaInterfaz(r, Main.playerInventory);
+			Ok(pisa.Count == 0, "junto al personaje: " + (pisa.Count == 0 ? "no pisa la interfaz del juego (inventario, vida, minimapa, aire, sigilo)" : "PISA: " + string.Join(", ", pisa)));
+			Capturar("hud-junto-al-personaje");
+		}
+
+		private static void ComprobarTamano150()
+		{
+			Rectangle r = IndicadorGuiaHud.UltimoRectangulo;
+			float esperado = (IndicadorGuiaHud.Esfera + IndicadorGuiaHud.HuecoTexto + IndicadorGuiaHud.AnchoTexto + IndicadorGuiaHud.Relleno * 2f) * 1.5f;
+			Ok(Math.Abs(r.Width - esperado) <= 1f, "a tamaño 150 % el indicador mide " + r.Width + " px (esperado " + esperado.ToString("0") + "), colocado " + IndicadorGuiaHud.UltimaColocacion);
+			Capturar("hud-tamano-150");
+			AjustesConfig.Instance.TamanoIndicador = 100;
+		}
+
+		private static void ClicEnIndicador()
+		{
+			L("se pulsa el indicador (mismo camino que el clic: IndicadorGuiaHud.Pulsar).");
+			IndicadorGuiaHud.Pulsar("autoprueba");
+		}
+
+		private static void ComprobarClicIndicador()
+		{
+			string id = UbicacionGuia.Siguiente != null ? UbicacionGuia.Siguiente.ParadaId : null;
+			bool ok = PanelTerrakeepSystem.AreaAbierta == AreaTerrakeep.Guia && Guia != null && Guia.VistaActual == ContenidoGuiaV2.Vista.Ruta &&
+				ContenidoGuiaV2.ParadaSeleccionada == id;
+			Ok(ok, "al pulsar el indicador se abre la parada " + id + " en Guía > Ruta (área " + PanelTerrakeepSystem.AreaAbierta + ", vista " +
+				(Guia != null ? Guia.VistaActual.ToString() : "-") + ", parada " + ContenidoGuiaV2.ParadaSeleccionada + ")");
+			Capturar("hud-clic-abre-parada");
+			PanelTerrakeepSystem.CerrarPanel("autoprueba guia v2: indicador");
+		}
+
+		private static void ComprobarNuevoDestino()
+		{
+			string esperado = Idiomas.Texto("GuiaV2.Indicador.NuevoDestino", IndicadorGuiaHud.NombreCorto(UbicacionGuia.Siguiente));
+			Ok(IndicadorGuiaHud.UltimoAviso == esperado, "al cambiar la siguiente parada el indicador avisa: \"" + IndicadorGuiaHud.UltimoAviso + "\" (esperado \"" + esperado + "\")");
+			AuditarHud("hud-nuevo-destino", Main.playerInventory);
+			Capturar("hud-nuevo-destino");
+		}
+
+		/// <summary>El indicador se ve, cabe en la pantalla y no pisa la interfaz de vanilla: barra
+		/// rapida o inventario abierto (con monedas y municion), vida y mana, y minimapa. Medidas del
+		/// codigo decompilado (ver la cabecera de IndicadorGuiaHud).</summary>
+		/// <summary>Zonas de interfaz que se pintan junto al PERSONAJE: el medidor de aire (formula de
+		/// Main.DrawInterface_Resources_Breath: Top - 100, o a la altura de los pies con el inventario
+		/// abierto en pantallas de menos de 1000 de alto; burbujas en val + (26·i - 125, 32), dos filas
+		/// de 10) y, con Calamity, su barra de sigilo (50,1 %, 55,8 % por defecto).</summary>
+		private static List<string> PisaInterfaz(Rectangle r, bool inventario)
+		{
+			List<string> pisa = new List<string>();
+			int an = Main.screenWidth, al = Main.screenHeight;
+			Rectangle izquierdaArriba = inventario ? new Rectangle(0, 0, 572, 300) : new Rectangle(0, 0, 500, 74);
+			if (r.Intersects(izquierdaArriba)) pisa.Add(inventario ? "inventario" : "barra rapida");
+			if (r.Intersects(new Rectangle(an - 330, 0, 330, 86))) pisa.Add("vida/mana");
+			if (Main.mapEnabled && Main.mapStyle == 1 && r.Intersects(new Rectangle(an - 52 - 240 - 12, 90 - 12, 240 + 24, 240 + 24))) pisa.Add("minimapa");
+			// Fila de iconos que el juego pinta a la izquierda de la vida con el inventario abierto
+			// (medida en las capturas reales; ver IndicadorGuiaHud.ArribaConInventario).
+			if (inventario && r.Intersects(new Rectangle(an - 456, 36, 170, 38))) pisa.Add("iconos junto a la vida");
+			Player p = Main.LocalPlayer;
+			Vector2 v = p.Top + new Vector2(0f, p.gfxOffY);
+			if (inventario && al < 1000) v.Y += p.height - 20;
+			v = Vector2.Transform(v - Main.screenPosition, Main.GameViewMatrix.ZoomMatrix);
+			if (!inventario || al >= 1000) v.Y -= 100f;
+			v /= Main.UIScale;
+			Rectangle aire = new Rectangle((int)v.X - 125, (int)v.Y + 32, 260, 52);
+			if (r.Intersects(aire)) pisa.Add("medidor de aire " + aire);
+			if (CatalogoGuia.HayCalamity) {
+				Rectangle sigilo = new Rectangle((int)(an * 0.501f) - 60, (int)(al * 0.5577f) - 14, 120, 28);
+				if (r.Intersects(sigilo)) pisa.Add("barra de sigilo de Calamity " + sigilo);
+			}
+			return pisa;
+		}
+
+		private static void AuditarHud(string contexto, bool inventario)
+		{
+			Rectangle r = IndicadorGuiaHud.UltimoRectangulo;
+			int an = Main.screenWidth, al = Main.screenHeight;
+			bool visto = IndicadorGuiaHud.FotogramasDibujado > 5;
+			bool dentro = r.X >= 0 && r.Y >= 0 && r.Right <= an && r.Bottom <= al;
+			List<string> pisa = PisaInterfaz(r, inventario);
+			Ok(visto && dentro && pisa.Count == 0, contexto + ": indicador en " + r + " (" + IndicadorGuiaHud.UltimaColocacion + ") en pantalla logica " + an + "x" + al +
+				(inventario ? " con inventario abierto" : "") + "; " + (pisa.Count == 0 ? "no pisa la interfaz del juego" : "PISA: " + string.Join(", ", pisa)) +
+				"; destino \"" + IndicadorGuiaHud.UltimoNombre + "\", " + (visto ? "dibujado" : "SIN DIBUJAR"));
 		}
 
 		private static void AuditarCabecera(string contexto)

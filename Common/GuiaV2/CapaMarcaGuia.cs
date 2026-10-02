@@ -176,7 +176,24 @@ namespace TerrakeepMod.Common.GuiaV2
 	/// tres formas simples no merecen un .png, y asi se tiñen al dibujar).</summary>
 	public static class TexturasMarca
 	{
-		private static Texture2D _diana, _anillo, _flecha;
+		private static Texture2D _diana, _anillo, _flecha, _disco;
+
+		/// <summary>Esfera del indicador de la pantalla de juego (IndicadorGuiaHud): circulo blanco
+		/// semitransparente con aro opaco, para teñirlo al dibujar.</summary>
+		public static Texture2D Disco(GraphicsDevice gd)
+		{
+			if (_disco == null || _disco.IsDisposed) {
+				_disco = Generar(gd, 64, (x, y, c) => {
+					float d = (float)Math.Sqrt((x - c) * (x - c) + (y - c) * (y - c));
+					if (d > c + 0.5f) return Color.Transparent;
+					if (d > c - 1.5f) return new Color(0, 0, 0, 220);
+					if (d > c - 4.5f) return Color.White;
+					if (d > c - 6f) return new Color(0, 0, 0, 160);
+					return new Color(255, 255, 255, 200);
+				});
+			}
+			return _disco;
+		}
 
 		public static Texture2D Diana(GraphicsDevice gd)
 		{
@@ -248,7 +265,8 @@ namespace TerrakeepMod.Common.GuiaV2
 			if (_diana != null && !_diana.IsDisposed) _diana.Dispose();
 			if (_anillo != null && !_anillo.IsDisposed) _anillo.Dispose();
 			if (_flecha != null && !_flecha.IsDisposed) _flecha.Dispose();
-			_diana = _anillo = _flecha = null;
+			if (_disco != null && !_disco.IsDisposed) _disco.Dispose();
+			_diana = _anillo = _flecha = _disco = null;
 		}
 	}
 }

@@ -923,9 +923,19 @@ Ajustes: {
 	AtajosIcono: También se abre con el icono de Terrakeep, junto al bestiario y los emotes, cuando tienes el inventario abierto.
 	SinTecla: "[sin tecla]"
 	Guia: Guía
-	MarcaMapaSi: Marca de la siguiente parada en el mapa: activada
-	MarcaMapaNo: Marca de la siguiente parada en el mapa: oculta
+	MarcaMapaSi: Marca en el mapa: sí
+	MarcaMapaNo: Marca en el mapa: no
 	MarcaMapaAyuda: La Guía marca en el mapa del juego (pantalla completa, minimapa y superpuesto) el lugar de tu siguiente parada. Pulsa para mostrarla u ocultarla.
+	IndicadorSi: Indicador: sí
+	IndicadorNo: Indicador: no
+	IndicadorAyuda: Una flecha en la pantalla de juego que apunta a tu siguiente parada, con la distancia y a qué apunta. Pulsa para mostrarla u ocultarla.
+	PosicionIndicador: Posición: {0}
+	PosicionAutomatica: automática
+	PosicionArribaCentro: arriba
+	PosicionJuntoAlPersonaje: junto a ti
+	PosicionIndicadorAyuda: Automática: arriba, en el hueco libre entre el inventario y la vida (y junto al personaje si no cabe). Pulsa para cambiarla.
+	TamanoIndicador: Tamaño: {0} %
+	TamanoIndicadorAyuda: Pulsa para cambiar el tamaño: 75, 100, 125 o 150 %.
 }
 
 Historial: {
@@ -2176,6 +2186,40 @@ Configs: {
 			Label: Marca de la Guía en el mapa
 			Tooltip: Marca permanente en el mapa del juego con el lugar de la siguiente parada de la Guía. Se actualiza sola al avanzar.
 		}
+
+		IndicadorGuia: {
+			Label: Indicador de dirección en pantalla
+			Tooltip: Flecha en la pantalla de juego que apunta a la siguiente parada de la Guía, con la distancia y a qué apunta. Sin abrir ningún menú.
+		}
+
+		PosicionIndicador: {
+			Label: Posición del indicador
+			Tooltip: Automática: arriba, en el hueco libre entre el inventario y la vida (junto al personaje si no cabe).
+		}
+
+		TamanoIndicador: {
+			Label: Tamaño del indicador (%)
+			Tooltip: ""
+		}
+	}
+
+	PosicionIndicadorGuia: {
+		Tooltip: ""
+
+		Automatica: {
+			Label: Automática
+			Tooltip: ""
+		}
+
+		ArribaCentro: {
+			Label: Arriba al centro
+			Tooltip: ""
+		}
+
+		JuntoAlPersonaje: {
+			Label: Junto al personaje
+			Tooltip: ""
+		}
 	}
 
 	IdiomaDeTerrakeep: {
@@ -2208,7 +2252,7 @@ GuiaV2: {
 		Manual: Manual
 		Perdido: Estoy perdido
 		Raro: Algo raro
-		Brujula: Brújula
+		Brujula: Guía clásica
 	}
 
 	Ambito: {
@@ -2280,12 +2324,12 @@ GuiaV2: {
 	Cerrar: Cerrar
 	Atras: Atrás
 	VerEnMapa: Ver en el mapa
-	IrABrujula: Ir a la Brújula
+	IrABrujula: Ir a la guía clásica
 	Fuentes: Fuentes
 	Relacionado: Relacionado:
 	ErrorVista: No se pudo montar esta vista: {0}
 	SinGuiaTitulo: La guía de esta partida todavía no viene incluida
-	SinGuiaVanilla: Juegas sin Calamity, así que te toca la guía de Terraria sin mods, y esta versión de Terrakeep todavía no la trae incluida (llegará en la próxima actualización). No se enseña la de Calamity en su lugar: hablaría de jefes y objetos que no existen en tu partida. Mientras tanto, la **Brújula** sigue funcionando con tu progreso real.
+	SinGuiaVanilla: Juegas sin Calamity, así que te toca la guía de Terraria sin mods, y esta versión de Terrakeep todavía no la trae incluida (llegará en la próxima actualización). No se enseña la de Calamity en su lugar: hablaría de jefes y objetos que no existen en tu partida. Mientras tanto, la **Guía clásica** sigue funcionando con tu progreso real.
 	SinGuiaError: No se pudo cargar el contenido de la guía (mira el registro client.log del juego).
 
 	MiGuia: {
@@ -2306,7 +2350,7 @@ GuiaV2: {
 		TuEquipo: Tu etapa de equipo ({0})
 		VerEscalera: Ver la escalera completa
 		Avisos: Avisos para tu modo de juego
-		Brujula: Tu brújula durante la partida
+		Brujula: Accesos rápidos
 		Mapa: Mapa y biomas
 		EmpiezaAqui: Empieza aquí
 		Referencia: Referencia: Terraria {0} · Calamity {1} · investigación del {2}. Contenido en español de España.
@@ -2424,6 +2468,16 @@ GuiaV2: {
 		Arriba: "{0} hacia arriba"
 		DireccionDoble: A {0} y {1}.
 		DireccionSimple: A {0}.
+	}
+
+	Indicador: {
+		NuevoDestino: Nuevo destino: {0}
+		HasLlegado: Has llegado: {0}
+		Distancia: ~{0} casillas
+		EstasAhi: ¡Estás ahí!
+		SinRumbo: sin lugar en el mapa
+		TooltipSinRumbo: Terrakeep · Guía: siguiente parada — {0}. No tiene un lugar concreto en tu mundo: se hace donde estés.
+		Pulsa: Pulsa para abrir la parada en Terrakeep.
 	}
 
 	Zona: {

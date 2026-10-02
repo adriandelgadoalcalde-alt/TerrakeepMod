@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Terraria;
@@ -43,11 +44,15 @@ namespace TerrakeepMod.UI.Ajustes
 		/// valor que ya usan <c>PestanaMapa</c>/<c>PestanaInventario</c> para el mismo proposito.</summary>
 		private const float MargenInferior = 8f;
 
-		/// <summary>Caja "Guía" (Guía v2, 02-oct-2026): un solo interruptor, la marca de la
-		/// siguiente parada en el mapa del juego.</summary>
+		/// <summary>Caja "Guía" (Guía v2, 02-oct-2026): marca de la siguiente parada en el mapa del
+		/// juego e indicador de dirección en la pantalla de juego (activarlo, posición y tamaño).</summary>
 		private const float AltoCajaGuia = 76f;
 
 		private BotonTk _botonMarcaMapa;
+		private BotonTk _botonIndicador, _botonPosicionIndicador, _botonTamanoIndicador;
+
+		/// <summary>Interruptor del indicador de la pantalla de juego (autoprueba de la Guía v2).</summary>
+		public BotonTk BotonIndicador => _botonIndicador;
 
 		/// <summary>El interruptor de la marca del mapa (autoprueba de la Guía v2).</summary>
 		public BotonTk BotonMarcaMapa => _botonMarcaMapa;
@@ -67,8 +72,8 @@ namespace TerrakeepMod.UI.Ajustes
 		/// <summary>Los 4 renglones de la caja "Atajos" con su Top NATURAL (relativo al Top de la
 		/// caja) y su escala BASE - <see cref="Update"/> los comprime juntos cuando hace falta, mismo
 		/// mecanismo que <c>PestanaMapa</c> (arreglo UIScale/resolucion del 29-sep-2026).</summary>
-		private readonly List<(EtiquetaTk Etiqueta, float TopNatural, float EscalaBase)> _filasAtajos =
-			new List<(EtiquetaTk, float, float)>();
+		private readonly List<(EtiquetaTk Etiqueta, float TopNatural, float EscalaBase, float AltoNatural)> _filasAtajos =
+			new List<(EtiquetaTk, float, float, float)>();
 
 		public ContenidoAjustes()
 		{
@@ -146,9 +151,59 @@ namespace TerrakeepMod.UI.Ajustes
 		private void ConstruirCajaGuia(float arriba)
 		{
 			UIPanel caja = NuevaCaja(arriba, AltoCajaGuia, () => Idiomas.Texto("Ajustes.Guia"));
-			_botonMarcaMapa = CrearBoton(caja, 0f, 30f, 1f);
+			// Una sola fila de cuatro: con dos filas la caja crecia 36 px y la de Atajos se aplastaba
+			// hasta solapar sus lineas a 1280x720 y 800x720 (verificar-espaciado.ps1, F3b). Rotulos
+			// cortos; el detalle va en la ayuda de cada boton.
+			_botonMarcaMapa = CrearBoton(caja, 0f, 30f, 0.25f);
 			_botonMarcaMapa.Ayuda = () => Idiomas.Texto("Ajustes.MarcaMapaAyuda");
 			_botonMarcaMapa.AlPulsar += AlternarMarcaMapa;
+			_botonIndicador = CrearBoton(caja, 0.25f, 30f, 0.25f);
+			_botonIndicador.Ayuda = () => Idiomas.Texto("Ajustes.IndicadorAyuda");
+			_botonIndicador.AlPulsar += AlternarIndicador;
+			_botonPosicionIndicador = CrearBoton(caja, 0.5f, 30f, 0.25f);
+			_botonPosicionIndicador.Ayuda = () => Idiomas.Texto("Ajustes.PosicionIndicadorAyuda");
+			_botonPosicionIndicador.AlPulsar += SiguientePosicionIndicador;
+			_botonTamanoIndicador = CrearBoton(caja, 0.75f, 30f, 0.25f);
+			_botonTamanoIndicador.Ayuda = () => Idiomas.Texto("Ajustes.TamanoIndicadorAyuda");
+			_botonTamanoIndicador.AlPulsar += SiguienteTamanoIndicador;
+		}
+
+		/// <summary>Muestra u oculta el indicador de dirección de la pantalla de juego.</summary>
+		public static void AlternarIndicador()
+		{
+			AjustesConfig config = AjustesConfig.Instance;
+			if (config == null) {
+				return;
+			}
+			config.IndicadorGuia = !config.IndicadorGuia;
+			config.SaveChanges();
+			TerrakeepMod.Common.Guia.RegistroGuia.Linea(Terrakeep.LogTag + " Ajustes: indicador de la Guía en pantalla = " +
+				config.IndicadorGuia + " (guardado en ModConfig).");
+		}
+
+		/// <summary>Automática -> arriba al centro -> junto al personaje -> Automática.</summary>
+		public static void SiguientePosicionIndicador()
+		{
+			AjustesConfig config = AjustesConfig.Instance;
+			if (config == null) {
+				return;
+			}
+			config.PosicionIndicador = (PosicionIndicadorGuia)(((int)config.PosicionIndicador + 1) % 3);
+			config.SaveChanges();
+			TerrakeepMod.Common.Guia.RegistroGuia.Linea(Terrakeep.LogTag + " Ajustes: posición del indicador = " + config.PosicionIndicador + ".");
+		}
+
+		/// <summary>75 -> 100 -> 125 -> 150 -> 75 %.</summary>
+		public static void SiguienteTamanoIndicador()
+		{
+			AjustesConfig config = AjustesConfig.Instance;
+			if (config == null) {
+				return;
+			}
+			int t = config.TamanoIndicador + 25;
+			config.TamanoIndicador = t > 150 ? 75 : t;
+			config.SaveChanges();
+			TerrakeepMod.Common.Guia.RegistroGuia.Linea(Terrakeep.LogTag + " Ajustes: tamaño del indicador = " + config.TamanoIndicador + " %.");
 		}
 
 		/// <summary>Muestra u oculta la marca de la Guía en el mapa (se guarda en el ModConfig, como
@@ -198,12 +253,12 @@ namespace TerrakeepMod.UI.Ajustes
 			nota.ColorTexto = EstiloTk.TextoSuave;
 			nota.Top.Set(26f, 0f);
 			caja.Append(nota);
-			_filasAtajos.Add((nota, 26f, 0.72f));
+			_filasAtajos.Add((nota, 26f, 0.72f, 20f));
 
 			EtiquetaTk lista = new EtiquetaTk(TextoAtajos, 0.75f, 900f, 24f);
 			lista.Top.Set(50f, 0f);
 			caja.Append(lista);
-			_filasAtajos.Add((lista, 50f, 0.75f));
+			_filasAtajos.Add((lista, 50f, 0.75f, 24f));
 
 			EtiquetaTk historial = new EtiquetaTk(
 				() => Idiomas.Texto("Ajustes.AtajosHistorial", TeclaDe("Deshacer"), TeclaDe("Rehacer")),
@@ -211,7 +266,7 @@ namespace TerrakeepMod.UI.Ajustes
 			historial.ColorTexto = EstiloTk.TextoSuave;
 			historial.Top.Set(76f, 0f);
 			caja.Append(historial);
-			_filasAtajos.Add((historial, 76f, 0.75f));
+			_filasAtajos.Add((historial, 76f, 0.75f, 24f));
 
 			EtiquetaTk icono = new EtiquetaTk(
 				() => Idiomas.Texto("Ajustes.AtajosIcono"),
@@ -219,7 +274,7 @@ namespace TerrakeepMod.UI.Ajustes
 			icono.ColorTexto = EstiloTk.TextoSuave;
 			icono.Top.Set(102f, 0f);
 			caja.Append(icono);
-			_filasAtajos.Add((icono, 102f, 0.75f));
+			_filasAtajos.Add((icono, 102f, 0.75f, 24f));
 		}
 
 		/// <summary>
@@ -237,15 +292,29 @@ namespace TerrakeepMod.UI.Ajustes
 			}
 
 			float altoDisponible = GetDimensions().Height - _topCajaAtajos - MargenInferior;
-			float factor = ReflowVertical.FactorDeCompresion(AltoCajaAtajos, altoDisponible);
 
-			_cajaAtajos.Height.Set(AltoCajaAtajos * factor, 0f);
+			// El titulo de la caja (26 px) NO se comprime; solo los cuatro renglones de debajo, que
+			// se reparten en el hueco que queda con posicion, ALTO y letra escalados por el mismo
+			// factor. Antes se escalaban la posicion y la letra pero no el alto ni se respetaba el
+			// titulo: con la caja "Guía" de la Guía v2 encima, a 1280x720 y 800x720 las cajas de los
+			// renglones se pisaban entre si y con el titulo (verificar-espaciado.ps1, F3b).
+			const float Titulo = 26f, Relleno = 20f;
+			float ultimoRenglon = 0f;
+			foreach ((EtiquetaTk _, float top, float _, float alto) in _filasAtajos) {
+				ultimoRenglon = Math.Max(ultimoRenglon, top + alto);
+			}
+			float filasNaturales = ultimoRenglon - Titulo;
+			float factor = ReflowVertical.FactorDeCompresion(filasNaturales, altoDisponible - Relleno - Titulo);
+
+			float altoCaja = Math.Min(AltoCajaAtajos, Math.Max(altoDisponible, Relleno + Titulo + filasNaturales * factor));
+			_cajaAtajos.Height.Set(altoCaja, 0f);
 			_cajaAtajos.Recalculate();
 
 			for (int i = 0; i < _filasAtajos.Count; i++) {
-				(EtiquetaTk etiqueta, float topNatural, float escalaBase) = _filasAtajos[i];
+				(EtiquetaTk etiqueta, float topNatural, float escalaBase, float altoNatural) = _filasAtajos[i];
 				etiqueta.EscalaTexto = escalaBase * factor;
-				etiqueta.Top.Set(topNatural * factor, 0f);
+				etiqueta.Top.Set(Titulo + (topNatural - Titulo) * factor, 0f);
+				etiqueta.Height.Set(altoNatural * factor, 0f);
 				etiqueta.Recalculate();
 			}
 		}
@@ -340,6 +409,15 @@ namespace TerrakeepMod.UI.Ajustes
 				bool marca = AjustesConfig.Instance == null || AjustesConfig.Instance.MarcaGuiaEnMapa;
 				_botonMarcaMapa.FijarTexto(Idiomas.Texto(marca ? "Ajustes.MarcaMapaSi" : "Ajustes.MarcaMapaNo"));
 				_botonMarcaMapa.Activo = marca;
+			}
+			if (_botonIndicador != null) {
+				AjustesConfig c = AjustesConfig.Instance;
+				bool indicador = c == null || c.IndicadorGuia;
+				_botonIndicador.FijarTexto(Idiomas.Texto(indicador ? "Ajustes.IndicadorSi" : "Ajustes.IndicadorNo"));
+				_botonIndicador.Activo = indicador;
+				PosicionIndicadorGuia pos = c != null ? c.PosicionIndicador : PosicionIndicadorGuia.Automatica;
+				_botonPosicionIndicador.FijarTexto(Idiomas.Texto("Ajustes.PosicionIndicador", Idiomas.Texto("Ajustes.Posicion" + pos)));
+				_botonTamanoIndicador.FijarTexto(Idiomas.Texto("Ajustes.TamanoIndicador", c != null ? c.TamanoIndicador : 100));
 			}
 
 			IdiomaDeTerrakeep actual = Idiomas.IdiomaConfigurado;

@@ -923,9 +923,19 @@ Ajustes: {
 	AtajosIcono: It also opens from the Terrakeep icon next to the bestiary and emote buttons, while the inventory is open.
 	SinTecla: "[no key]"
 	Guia: Guide
-	MarcaMapaSi: Next-stop marker on the map: on
-	MarcaMapaNo: Next-stop marker on the map: hidden
+	MarcaMapaSi: Map marker: on
+	MarcaMapaNo: Map marker: off
 	MarcaMapaAyuda: The Guide marks your next stop on the game map (fullscreen, minimap and overlay). Click to show or hide it.
+	IndicadorSi: Indicator: on
+	IndicadorNo: Indicator: off
+	IndicadorAyuda: An arrow on the game screen pointing at your next stop, with the distance and what it points at. Click to show or hide it.
+	PosicionIndicador: Position: {0}
+	PosicionAutomatica: automatic
+	PosicionArribaCentro: top
+	PosicionJuntoAlPersonaje: next to you
+	PosicionIndicadorAyuda: Automatic: at the top, in the free gap between the inventory and your life (next to your character if it does not fit). Click to change it.
+	TamanoIndicador: Size: {0} %
+	TamanoIndicadorAyuda: Click to change the size: 75, 100, 125 or 150 %.
 }
 
 Historial: {
@@ -2176,6 +2186,40 @@ Configs: {
 			Label: Guide marker on the map
 			Tooltip: Permanent marker on the game map showing where the Guide's next stop is. It updates itself as you progress.
 		}
+
+		IndicadorGuia: {
+			Label: On-screen direction indicator
+			Tooltip: Arrow on the game screen pointing at the Guide's next stop, with the distance and what it points at. No menu needed.
+		}
+
+		PosicionIndicador: {
+			Label: Indicator position
+			Tooltip: Automatic: at the top, in the free gap between the inventory and your life (next to your character if it does not fit).
+		}
+
+		TamanoIndicador: {
+			Label: Indicator size (%)
+			Tooltip: ""
+		}
+	}
+
+	PosicionIndicadorGuia: {
+		Tooltip: ""
+
+		Automatica: {
+			Label: Automatic
+			Tooltip: ""
+		}
+
+		ArribaCentro: {
+			Label: Top centre
+			Tooltip: ""
+		}
+
+		JuntoAlPersonaje: {
+			Label: Next to your character
+			Tooltip: ""
+		}
 	}
 
 	IdiomaDeTerrakeep: {
@@ -2208,7 +2252,7 @@ GuiaV2: {
 		Manual: Manual
 		Perdido: I'm lost
 		Raro: Something odd
-		Brujula: Compass
+		Brujula: Classic guide
 	}
 
 	Ambito: {
@@ -2280,12 +2324,12 @@ GuiaV2: {
 	Cerrar: Close
 	Atras: Back
 	VerEnMapa: Show on map
-	IrABrujula: Go to the Compass
+	IrABrujula: Go to the classic guide
 	Fuentes: Sources
 	Relacionado: Related:
 	ErrorVista: This view could not be built: {0}
 	SinGuiaTitulo: This game's guide is not included yet
-	SinGuiaVanilla: You are playing without Calamity, so your guide is the unmodded Terraria one, and this version of Terrakeep does not include it yet (it comes in the next update). The Calamity guide is not shown instead: it would talk about bosses and items that do not exist in your game. Meanwhile, the **Compass** still works with your real progress.
+	SinGuiaVanilla: You are playing without Calamity, so your guide is the unmodded Terraria one, and this version of Terrakeep does not include it yet (it comes in the next update). The Calamity guide is not shown instead: it would talk about bosses and items that do not exist in your game. Meanwhile, the **Classic guide** still works with your real progress.
 	SinGuiaError: The guide content could not be loaded (see the game's client.log).
 
 	MiGuia: {
@@ -2306,7 +2350,7 @@ GuiaV2: {
 		TuEquipo: Your gear stage ({0})
 		VerEscalera: See the full ladder
 		Avisos: Notes for your game mode
-		Brujula: Your compass during the game
+		Brujula: Quick links
 		Mapa: Map and biomes
 		EmpiezaAqui: Start here
 		Referencia: Reference: Terraria {0} · Calamity {1} · researched on {2}. Content written in Spanish.
@@ -2424,6 +2468,16 @@ GuiaV2: {
 		Arriba: "{0} up"
 		DireccionDoble: "{0} and {1}."
 		DireccionSimple: "{0}."
+	}
+
+	Indicador: {
+		NuevoDestino: New destination: {0}
+		HasLlegado: You have arrived: {0}
+		Distancia: ~{0} tiles
+		EstasAhi: You are there!
+		SinRumbo: no place on the map
+		TooltipSinRumbo: Terrakeep · Guide: next stop — {0}. It has no specific place in your world: do it wherever you are.
+		Pulsa: Click to open the stop in Terrakeep.
 	}
 
 	Zona: {
