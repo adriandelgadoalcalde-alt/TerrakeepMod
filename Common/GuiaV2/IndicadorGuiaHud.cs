@@ -63,6 +63,7 @@ namespace TerrakeepMod.Common.GuiaV2
 		public const float AnchoTexto = 96f;
 		public const float Alto = 44f;
 		public const float Relleno = 3f;
+		public const float MargenTextoDerecho = 6f;
 
 		/// <summary>Borde derecho de lo que ocupa el inventario abierto (monedas/municion y su rotulo),
 		/// con margen.</summary>
@@ -389,7 +390,9 @@ namespace TerrakeepMod.Common.GuiaV2
 			// subsuelo" pisaba "~110 casillas" y se salia por abajo) ----
 			DynamicSpriteFont fuente = FontAssets.MouseText.Value;
 			float altoLinea = fuente.MeasureString("Ay").Y;
-			float anchoTexto = AnchoTexto * escala;
+			// Margen propio a la derecha del texto (revision visual F4: "Azote del Desierto" quedaba a
+			// 2 px del borde de la caja).
+			float anchoTexto = (AnchoTexto - MargenTextoDerecho) * escala;
 			float medido = fuente.MeasureString(nombre).X;
 			float escNombre = medido > 0f ? Math.Min(0.78f * escala, anchoTexto / medido) : 0.78f * escala;
 			string nombreDibujado = nombre;

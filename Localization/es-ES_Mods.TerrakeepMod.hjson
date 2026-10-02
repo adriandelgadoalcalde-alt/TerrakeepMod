@@ -2473,7 +2473,7 @@ GuiaV2: {
 	Indicador: {
 		NuevoDestino: Nuevo destino: {0}
 		HasLlegado: Has llegado: {0}
-		Distancia: ~{0} casillas
+		Distancia: a {0} casillas
 		EstasAhi: ¡Estás ahí!
 		SinRumbo: sin lugar en el mapa
 		TooltipSinRumbo: Terrakeep · Guía: siguiente parada — {0}. No tiene un lugar concreto en tu mundo: se hace donde estés.

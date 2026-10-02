@@ -49,6 +49,10 @@ namespace TerrakeepMod.Common.GuiaV2
 			public List<Linea> Lineas = new List<Linea>();
 			/// <summary>true si alguna receta pide un altar (para ofrecer "Ver el altar más cercano").</summary>
 			public bool PideAltar;
+			/// <summary>Ultima linea "dato del código del juego" pintada: varias formas de
+			/// conseguirlo seguidas suelen salir del MISMO archivo:linea (p. ej. cinco botines de
+			/// ItemDropDatabase.cs:1104) y repetirla en cada una era ruido (revisión visual F4).</summary>
+			public string UltimaFuente;
 		}
 
 		public static Ficha Construir(string referencia, int cantidadNecesaria)
@@ -175,9 +179,10 @@ namespace TerrakeepMod.Common.GuiaV2
 					Anadir(f, Legible(ob.Tipo + " " + (ob.De ?? "") + " " + ob.Condicion), Color.White, 0.78f);
 					break;
 			}
-			if (!string.IsNullOrEmpty(ob.FuenteCodigo)) {
+			if (!string.IsNullOrEmpty(ob.FuenteCodigo) && ob.FuenteCodigo != f.UltimaFuente) {
 				Anadir(f, Idiomas.Texto("GuiaV2.Ficha.FuenteCodigo", ob.FuenteCodigo), Colores.Tenue, 0.62f);
 			}
+			f.UltimaFuente = ob.FuenteCodigo;
 		}
 
 		private static void AnadirRecetaViva(Ficha f, Recipe r)
