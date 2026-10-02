@@ -96,7 +96,12 @@ namespace TerrakeepMod.UI.GuiaV2
 				string nombre = GuiaV2Sistema.NombreObjeto(c.Ref);
 				int tienes = c.Tipo > 0 ? ProveedorEstadoGuiaV2Mod.CuantosPoseeDe(Main.LocalPlayer, c.Tipo) : 0;
 				// Estado SIEMPRE explicito (lo tienes / te falta), no solo cuando lo tienes.
+				// Sprite + ID de cada objeto, como la escalera de la guia HTML del usuario ("ID 65" en
+				// vanilla, "CalamityMod/Nombre" en Calamity); en la rejilla solo cabe el sprite.
+				string id = c.Ref != null && c.Ref.StartsWith("Terraria/", StringComparison.Ordinal) && c.Tipo > 0 && c.Tipo < ItemID.Count
+					? "ID " + c.Tipo : c.Ref;
 				BotonTk.PedirTooltip(nombre + "  (" + Idiomas.Texto(tienes > 0 ? "GuiaV2.Objeto.LoTienes" : "GuiaV2.Objeto.TeFalta") + ")" +
+					"\n" + id +
 					(string.IsNullOrEmpty(c.Ayuda) ? "" : "\n" + c.Ayuda) + "\n" + Idiomas.Texto("GuiaV2.Enlace.ObjetoCorto"));
 			}
 		}
