@@ -11762,3 +11762,20 @@ y se dice). `dotnet test` 116/116. Hashes de las 23 partidas reales idénticos a
 clic en objeto que falta → ficha → Librería, casillas manuales guardadas, todas las sub-pestañas y las cuatro
 resoluciones (1280x720, 1600x900, 1920x1080, 2560x1440) con UIScale normal y máxima, con capturas `guiav2-*.png`.
 `verificar-espaciado.ps1` también es de cliente y queda en el mismo turno.
+
+
+## 2-oct-2026 - Guía v2, Fase F2b: una sola guía en el mapa y textos que faltaban
+
+- **Mapa del juego:** la brújula v1 (rombos dorados de la zona del paso v1, a pantalla completa) ya no se pinta
+  cuando la marca de la Guía v2 está activa (`ContratoGuiaV2.BrujulaV1EnElMapa`, en `CapaMapaExploracion`): el
+  mapa podía señalar dos objetivos distintos. Con la marca v2 apagada en Ajustes vuelve la brújula v1.
+- **Sub-pestaña Brújula (v1):** su línea del mapa dice ahora lo que de verdad marca el mapa
+  (`Guia.Brujula.MapaV2`: la siguiente parada de la pestaña Guía), nunca «Marcado» sin marca.
+- El chip «Objetivo» de la cabecera ya leía la v2 desde F3; la HUD no tiene más piezas con la guía v1.
+- **Textos:** las seis `Guia.Bandera.*` de F1 ya estaban (F3) en los dos `.hjson`; faltaban
+  `downedMechBoss1/2/3` (la fila del requisito enseñaba la clave cruda): añadidas en ES/EN con los nombres
+  oficiales (El Destructor, Gemelos, Esqueletrón mayor). `GuiaUnicaTests` comprueba que toda bandera de las
+  guías incrustadas tiene texto en los dos idiomas.
+- `lib\Terrakeep.Core.dll` actualizado (rótulos de conjunto y nombres oficiales de F2b).
+- Verificación: compilación fase 1 (`dotnet build -p:BuildMod=false`) correcta y `dotnet test` 124/124. Sin
+  `-build` de tModLoader ni juego: otra fase (F3b) tenía trabajo en curso en este repo y Steam sin sesión.

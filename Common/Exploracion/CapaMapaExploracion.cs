@@ -6,6 +6,7 @@ using Terraria.DataStructures;
 using Terraria.Map;
 using Terraria.ModLoader;
 using Terraria.UI;
+using TerrakeepMod.Common.GuiaV2;
 
 namespace TerrakeepMod.Common.Exploracion
 {
@@ -44,7 +45,11 @@ namespace TerrakeepMod.Common.Exploracion
 
 		public override void Draw(ref MapOverlayDrawContext context, ref string text)
 		{
-			if (!Main.mapFullscreen || (!MarcadoresExploracion.HayAlgo && !MarcadoresGuia.HayAlgo)) {
+			// F2b: con la Guia v2 marcando su siguiente parada (CapaMarcaGuia), la brujula v1 no se
+			// pinta: una sola guia en el mapa (ContratoGuiaV2.BrujulaV1EnElMapa).
+			bool brujulaV1 = MarcadoresGuia.HayAlgo
+				&& ContratoGuiaV2.BrujulaV1EnElMapa(GuiaV2Sistema.HayGuia, UbicacionGuia.Visible);
+			if (!Main.mapFullscreen || (!MarcadoresExploracion.HayAlgo && !brujulaV1)) {
 				DibujadosUltimoFotograma = 0;
 				return;
 			}
@@ -58,8 +63,10 @@ namespace TerrakeepMod.Common.Exploracion
 			// La brujula de la Guia se dibuja DESPUES (encima): sus resultados son como mucho uno,
 			// nunca compiten en cantidad con una busqueda manual, y conviene que se lea claro si las
 			// dos coinciden en el mismo punto del mapa.
-			dibujados += DibujarConjunto(ref context, ref text, icono,
-				MarcadoresGuia.Resultados, MarcadoresGuia.Color);
+			if (brujulaV1) {
+				dibujados += DibujarConjunto(ref context, ref text, icono,
+					MarcadoresGuia.Resultados, MarcadoresGuia.Color);
+			}
 
 			DibujadosUltimoFotograma = dibujados;
 			if (dibujados > 0) {

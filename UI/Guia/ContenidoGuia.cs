@@ -10,6 +10,7 @@ using Terraria.UI;
 using TerrakeepMod.Common.Ajustes;
 using TerrakeepMod.Common.Builds;
 using TerrakeepMod.Common.Exploracion;
+using TerrakeepMod.Common.GuiaV2;
 using TerrakeepMod.Common.Guia;
 using TerrakeepMod.UI.Personaje.Widgets;
 
@@ -386,6 +387,14 @@ namespace TerrakeepMod.UI.Guia
 			// ya puede o no señalarlo, para no fingir una precision que no existe.
 			if (BrujulaGuia.ZonaTieneBrujula(elPaso.Zona)) {
 				AnadirAObjetivo(new ParrafoTk(() => {
+					// F2b: si la Guia v2 marca su siguiente parada, el mapa ya no enseña la brujula v1:
+					// se dice lo que de verdad señala el mapa, nunca "marcado" sin marca.
+					if (!ContratoGuiaV2.BrujulaV1EnElMapa(GuiaV2Sistema.HayGuia, UbicacionGuia.Visible)) {
+						global::Terrakeep.Core.Guia.V2.ResumenGuiaV2 resumenV2 = GuiaV2Sistema.Resumen;
+						return resumenV2 != null && resumenV2.Siguiente != null
+							? Idiomas.Texto("Guia.Brujula.MapaV2", GuiaV2Sistema.PlanoLocal(resumenV2.Siguiente.Parada.Titulo))
+							: Idiomas.Texto("Guia.Brujula.MapaV2SinParada");
+					}
 					switch (BrujulaGuia.EstadoParaZona(elPaso.Zona)) {
 						case BrujulaGuia.EstadoBrujula.Marcado: return Idiomas.Texto("Guia.Brujula.Marcado");
 						case BrujulaGuia.EstadoBrujula.Buscando: return Idiomas.Texto("Guia.Brujula.Buscando");

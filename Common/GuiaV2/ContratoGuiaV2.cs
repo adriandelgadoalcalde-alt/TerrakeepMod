@@ -10,6 +10,11 @@ namespace TerrakeepMod.Common.GuiaV2
 	/// </summary>
 	public static class ContratoGuiaV2
 	{
+		/// <summary>F2b (02-oct-2026, una sola guia): los rombos dorados de la brujula v1 (zona del
+		/// paso v1 en el mapa a pantalla completa) solo se dibujan si la Guia v2 NO esta marcando su
+		/// siguiente parada; con las dos a la vez el mapa podia señalar dos objetivos distintos.</summary>
+		public static bool BrujulaV1EnElMapa(bool hayGuiaV2, bool marcaV2Visible) => !(hayGuiaV2 && marcaV2Visible);
+
 		/// <summary>Banderas vanilla de <c>BanderasGuia</c> (mismos nombres que su tabla; el propio
 		/// BanderasGuia avisa en el log si las dos listas se separan).</summary>
 		public static readonly string[] BanderasVanilla = {

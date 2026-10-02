@@ -1035,6 +1035,8 @@ Guia: {
 		Marcado: Marcado en el mapa del juego (M): ya has explorado por ahí.
 		Buscando: Mirando en lo que ya has explorado...
 		SinExplorar: Todavía no has explorado esa zona: el mapa no puede señalarla, solo tú puedes encontrarla.
+		MapaV2: El mapa del juego (M) marca la siguiente parada de la pestaña Guía: {0}.
+		MapaV2SinParada: El mapa del juego (M) marca la siguiente parada de la pestaña Guía; ahora mismo no queda ninguna.
 	}
 
 	Modo: {
@@ -1082,6 +1084,9 @@ Guia: {
 		hardMode: Que el mundo entre en Modo Difícil (derrotar al Muro de Carne)
 		downedMechBossAny: Derrotar a cualquiera de los tres mecánicos (Destructor, Gemelos o Esqueletrón mayor)
 		downedMechBossAll: Derrotar a los TRES mecánicos (Destructor, Gemelos y Esqueletrón mayor)
+		downedMechBoss1: Derrotar al Destructor
+		downedMechBoss2: Derrotar a los Gemelos
+		downedMechBoss3: Derrotar a Esqueletrón mayor
 		downedPlantBoss: Derrotar a Plantera
 		downedGolemBoss: Derrotar al Gólem
 		downedAncientCultist: Derrotar al Cultista Lunático

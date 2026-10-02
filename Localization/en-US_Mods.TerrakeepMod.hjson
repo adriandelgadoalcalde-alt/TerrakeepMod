@@ -1035,6 +1035,8 @@ Guia: {
 		Marcado: Marked on the game map (M): you have already explored around there.
 		Buscando: Checking what you have already explored...
 		SinExplorar: You have not explored that area yet: the map cannot point to it, only you can find it.
+		MapaV2: The game map (M) marks the next stop of the Guide tab: {0}.
+		MapaV2SinParada: The game map (M) marks the next stop of the Guide tab; there is none left right now.
 	}
 
 	Modo: {
@@ -1082,6 +1084,9 @@ Guia: {
 		hardMode: Getting the world into Hardmode (defeating the Wall of Flesh)
 		downedMechBossAny: Defeating any of the three mechanical bosses (The Destroyer, The Twins or Skeletron Prime)
 		downedMechBossAll: Defeating ALL THREE mechanical bosses (The Destroyer, The Twins and Skeletron Prime)
+		downedMechBoss1: Defeat The Destroyer
+		downedMechBoss2: Defeat The Twins
+		downedMechBoss3: Defeat Skeletron Prime
 		downedPlantBoss: Defeat Plantera
 		downedGolemBoss: Defeat Golem
 		downedAncientCultist: Defeat the Lunatic Cultist
