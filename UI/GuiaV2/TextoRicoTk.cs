@@ -140,6 +140,7 @@ namespace TerrakeepMod.UI.GuiaV2
 		private string _ultimo;
 		private float _ultimoAncho = -1f;
 		private bool _ultimoEspanol;
+		private float _ultimaEscalaUi = -1f;
 		private int _enlaceSobre = -1;
 		private int _lineas;
 
@@ -204,7 +205,7 @@ namespace TerrakeepMod.UI.GuiaV2
 			_atomos.Clear();
 			_enlaces.Clear();
 			DynamicSpriteFont fuente = FontAssets.MouseText.Value;
-			float espacio = fuente.MeasureString(" ").X * _escala;
+			float espacio = EscribirTk.Ancho(" ", _escala);
 			float lado = AltoLinea * 0.86f;
 
 			foreach (SegmentoTexto s in GuiaV2Texto.Analizar(crudo)) {
@@ -297,7 +298,7 @@ namespace TerrakeepMod.UI.GuiaV2
 				}
 				string palabra = GlifosTk.Seguro(texto.Substring(i, fin - i));
 				Atomo a = new Atomo {
-					Texto = palabra, Ancho = fuente.MeasureString(palabra).X * _escala, Color = color, Enlace = enlace,
+					Texto = palabra, Ancho = EscribirTk.Ancho(palabra, _escala), Color = color, Enlace = enlace,
 				};
 				// Si el atomo anterior no dejo espacio (p. ej. "{o:X}," o un icono), van pegados.
 				if (_atomos.Count > 0) {
@@ -347,17 +348,17 @@ namespace TerrakeepMod.UI.GuiaV2
 					string resto = a.Texto;
 					while (resto.Length > 0) {
 						int n = resto.Length;
-						while (n > 1 && fuente.MeasureString(resto.Substring(0, n)).X * _escala > ancho - x) {
+						while (n > 1 && EscribirTk.Ancho(resto.Substring(0, n), _escala) > ancho - x) {
 							n--;
 						}
 						string trozo = resto.Substring(0, n);
 						resto = resto.Substring(n);
 						if (resto.Length == 0) {
 							a.Texto = trozo;
-							a.Ancho = fuente.MeasureString(trozo).X * _escala;
+							a.Ancho = EscribirTk.Ancho(trozo, _escala);
 							break;
 						}
-						_atomos.Insert(i, new Atomo { Texto = trozo, Ancho = fuente.MeasureString(trozo).X * _escala, Color = a.Color, Enlace = a.Enlace, X = x, Y = y });
+						_atomos.Insert(i, new Atomo { Texto = trozo, Ancho = EscribirTk.Ancho(trozo, _escala), Color = a.Color, Enlace = a.Enlace, X = x, Y = y });
 						i++;
 						maximo = Math.Max(maximo, x + _atomos[i - 1].Ancho);
 						x = 0f;
@@ -391,9 +392,12 @@ namespace TerrakeepMod.UI.GuiaV2
 				return;
 			}
 			bool espanol = Idiomas.EnEspanol;
-			if (crudo == _ultimo && Math.Abs(ancho - _ultimoAncho) < 0.5f && espanol == _ultimoEspanol) {
+			// La escala de interfaz entra en la clave: cambia como mide EscribirTk (letra a letra por
+			// encima de escala 1 en pantalla).
+			if (crudo == _ultimo && Math.Abs(ancho - _ultimoAncho) < 0.5f && espanol == _ultimoEspanol && Main.UIScale == _ultimaEscalaUi) {
 				return;
 			}
+			_ultimaEscalaUi = Main.UIScale;
 			_ultimo = crudo;
 			_ultimoAncho = ancho;
 			_ultimoEspanol = espanol;

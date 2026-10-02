@@ -65,6 +65,29 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// - sustituye esa llamada tal cual en cualquier sitio del panel. Devuelve el tamaño real
 		/// dibujado (ancho total, alto de linea), igual que la funcion vainilla.
 		/// </summary>
+		/// <summary>
+		/// Ancho que de verdad ocupa <see cref="Dibujar"/> con esa escala: por encima del limite se
+		/// dibuja letra a letra y queda un poco MAS ancho que <c>MeasureString</c> de la palabra
+		/// entera (que aplica el kerning negativo). Quien maquete palabra a palabra con
+		/// <c>MeasureString</c> ve como la palabra se come el espacio siguiente a la escala de interfaz
+		/// maxima (revision visual F4: "AlmejaGigante" en la Ruta de la Guía).
+		/// </summary>
+		public static float Ancho(string texto, float escala = 1f)
+		{
+			if (string.IsNullOrEmpty(texto)) {
+				return 0f;
+			}
+			DynamicSpriteFont fuente = FontAssets.MouseText.Value;
+			if (escala * Main.UIScale <= LimiteEscalaSegura || texto.IndexOf('\n') >= 0) {
+				return fuente.MeasureString(texto).X * escala;
+			}
+			float x = 0f;
+			for (int i = 0; i < texto.Length; i++) {
+				x += fuente.MeasureString(texto[i].ToString()).X * escala;
+			}
+			return x;
+		}
+
 		public static Vector2 Dibujar(SpriteBatch spriteBatch, string texto, Vector2 posicion, Color color, float escala = 1f)
 		{
 			if (string.IsNullOrEmpty(texto)) {
