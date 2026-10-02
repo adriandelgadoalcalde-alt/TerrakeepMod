@@ -11779,3 +11779,62 @@ resoluciones (1280x720, 1600x900, 1920x1080, 2560x1440) con UIScale normal y má
 - `lib\Terrakeep.Core.dll` actualizado (rótulos de conjunto y nombres oficiales de F2b).
 - Verificación: compilación fase 1 (`dotnet build -p:BuildMod=false`) correcta y `dotnet test` 124/124. Sin
   `-build` de tModLoader ni juego: otra fase (F3b) tenía trabajo en curso en este repo y Steam sin sesión.
+
+## 2-oct-2026 (tarde) - Guía v2 (Fase F3b): prueba DENTRO del juego, indicador de dirección en pantalla y arreglos
+
+Steam ya tenía sesión (usuario activo 120523711): se hizo la pasada de cliente que quedó pendiente en F3, con
+turno de pantalla (`PANTALLA.lock` = "f3b-tmodloader"), sandbox `tModLoader-TerrakeepGuiaV2` (TerrakeepPrueba y
+TerrakeepPruebaCal) y `tModLoader-TerrakeepEspaciado`. Hashes de las 23 partidas reales idénticos antes y después
+(línea base propia + la de cada script). Solo se mataron los PID propios.
+
+**Obstáculo y cómo se resolvió (autonomía técnica):** el primer cliente se quedó en "Select language": el
+`config.json` del sandbox lo habían dejado las pasadas de SERVIDOR sin clave `Language`
+(`Main.cs: _needsLanguageSelect = !configuration.Contains("Language")` -> `menuMode = 1212`) y `-skipselect` nunca
+llegaba a correr. `verificar-guia-v2.ps1` y `verificar-espaciado.ps1` ahora garantizan `Language` (es-ES).
+
+**Defectos reales encontrados mirando las capturas, todos arreglados y re-verificados:**
+- Panel descolocado al cambiar resolución/UIScale con él abierto (a 2560x1440 con UIScale máximo salía cortado por
+  la derecha y por abajo): el motor solo recalcula `UserInterface.ActiveInstance` en `SetDisplayMode` y el setter de
+  `UIScale` no recalcula nada; `_marco.Recalculate()` dejaba al `UIState` con sus dimensiones viejas.
+  `PanelTerrakeepState.AjustarAltoMaximo` vigila el tamaño lógico entero y recalcula el estado.
+- Ayuda del pie con ancho fijo de 820 px: a 800x720 el final quedaba debajo de "Cerrar". Ahora usa el hueco real y
+  encoge lo justo.
+- Anillo de zona de la marca del mapa: disco naranja macizo que tapaba el mapa (textura generada SIN premultiplicar
+  y `SpriteBatch` mezcla con alfa premultiplicado). Flecha del minimapa de 8x6 px: agrandada.
+- Librería: a 800x720 la Mochila se salía 136 px por debajo del panel; escala adaptable de las ranuras de destino.
+- Ajustes > Atajos: `ComprimirCajaAtajosSiHaceFalta` escalaba posición y letra pero no el alto ni respetaba el
+  título; con la caja "Guía" de F3 encima, `verificar-espaciado.ps1` salía en rojo (solapes a 1280x720 y 800x720).
+- Ruta: el "Equipo recomendado" era una rejilla de ~30 iconos mezclados; ahora agrupado como la vista Equipo
+  (Armas / Armadura por conjunto / Accesorios / Otros), y el tooltip dice siempre "lo tienes" o "te falta".
+- `verificar-espaciado.ps1 -Calamity` no copiaba `CalamityModMusic` (Calamity quedaba deshabilitado) y copiaba la
+  evidencia con rutas personales; arreglado y saneado.
+- Autoprueba: capturas de UIScale máximo que se pisaban (dentro de `UpdateUI`, `Main.screenWidth` es la pantalla
+  LÓGICA), falso OK del ingrediente, captura de Ajustes tomada antes del clic (el back buffer es el fotograma
+  anterior), mapa sin explorar bajo la marca (ahora se revela y repinta; `refreshMap` solo actúa con `updateMap`).
+  Nuevas comprobaciones: encuadre del panel, pie contra Cerrar, ranuras de la Librería dentro del panel.
+
+**Indicador de dirección en la pantalla de juego (punto 4 del encargo + aclaración "La guía no..... sino las
+indicaciones"):** `Common/GuiaV2/IndicadorGuiaHud.cs`. Solo flecha que gira hacia la siguiente parada + distancia
+("~410 casillas") + a qué apunta (jefe con el nombre de la Guía, bioma o estructura), aviso breve al cambiar de
+destino o al llegar, tooltip con el detalle y clic que abre la parada en Guía > Ruta. Mismo destino que la marca
+del mapa (`UbicacionGuia.Siguiente`). Ajustes (panel y ModConfig): activado por defecto, posición (automática /
+arriba / junto a ti) y tamaño (75-150 %). Colocación medida contra el código decompilado y las capturas: franja
+superior libre entre el inventario abierto (x≈576) y la vida (`screenWidth - 332`); con el inventario abierto baja
+a y=74 (el juego pinta ahí una fila de cuatro iconos a la izquierda de la vida, sin identificar en el decompilado,
+medida en capturas); si la franja no cabe (pantalla lógica estrecha), a la IZQUIERDA del personaje a media altura
+(encima va el medidor de aire, debajo la barra de sigilo de Calamity y a la derecha el minimapa: las tres cosas se
+vieron pisadas en capturas intermedias). Se oculta con el panel o el mapa abiertos, F11, diálogo con NPC/cartel y,
+en la posición junto al personaje, con cofre o tienda abiertos. Capa justo antes de "Vanilla: Mouse Text" (los
+estandartes de vivienda del mundo lo tapaban). La sub-pestaña "Brújula" pasa a llamarse "Guía clásica".
+
+**Evidencia final** (`evidencia/guia-v2.log.txt`, `guia-v2-calamity.log.txt`, `espaciado*.log.txt`):
+`verificar-guia-v2.ps1` 199 comprobaciones / 0 en rojo (vanilla) y 210 / 0 (Calamity), con flecha comprobada desde
+cinco posiciones alrededor del objetivo, llegada, cambio de destino, interruptor, posición, tamaño, clic, y las 16
+combinaciones de 1280x720/1600x900/1920x1080/2560x1440 × UIScale normal/máximo × inventario cerrado/abierto sin pisar
+la interfaz del juego. `verificar-espaciado.ps1` con y sin Calamity: ninguna comprobación en rojo. `dotnet test`
+124/124. Capturas revisadas una a una.
+
+**Observaciones que quedan (no son de F3b):** el Calamity instalado deja algunos nombres en inglés en el propio
+juego ("Desert Medallion" en la búsqueda de la Librería, "Stormlion Mandible" en la línea de una condición), porque
+salen de `Lang` y no de la Guía; la Librería sí encuentra el objeto. Las líneas de Ajustes > Atajos quedan en la
+compresión mínima (0,55) a 1280x720 y 800x720: legibles pero pequeñas.

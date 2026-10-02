@@ -106,7 +106,7 @@ if ($Calamity) {
 	Copy-Item $origenCalamity.FullName (Join-Path $sandbox 'Mods\CalamityMod.tmod') -Force
 	# Calamity 2.2.x declara CalamityModMusic como dependencia dura ("Missing mod: CalamityModMusic
 	# required by CalamityMod" -> Calamity DESHABILITADO y la pasada "con Calamity" iba sin el).
-	$musica = Get-ChildItem (Join-Path $env:USERPROFILE 'Documents\My Games\Terraria	ModLoader\Mods') -Filter '*CalamityModMusic.tmod' | Select-Object -First 1
+	$musica = Get-ChildItem (Join-Path $env:USERPROFILE 'Documents\My Games\Terraria\tModLoader\Mods') -Filter '*CalamityModMusic.tmod' | Select-Object -First 1
 	if (-not $musica) { throw 'No se encuentra CalamityModMusic.tmod (dependencia de Calamity).' }
 	Copy-Item $musica.FullName (Join-Path $sandbox 'Mods\CalamityModMusic.tmod') -Force
 	'["TerrakeepMod","CalamityMod","CalamityModMusic"]' | Out-File (Join-Path $sandbox 'Mods\enabled.json') -Encoding utf8
@@ -179,7 +179,8 @@ if (Test-Path $evidencia) {
 	$sufijo = if ($Calamity) { '-calamity' } else { '' }
 	$destino = Join-Path $repo ('evidencia\espaciado' + $sufijo + '.log.txt')
 	New-Item -ItemType Directory -Force -Path (Split-Path -Parent $destino) | Out-Null
-	Copy-Item $evidencia $destino -Force
+	# Sin rutas personales en el repo publico (mismo saneado que verificar-guia-v2.ps1).
+	(Get-Content $evidencia -Encoding UTF8) -replace [regex]::Escape($env:USERPROFILE), '%USERPROFILE%' | Out-File $destino -Encoding utf8
 	Write-Host "(copia guardada en $destino)" -ForegroundColor DarkGray
 
 	$capturas = Join-Path $sandbox 'terrakeep-capturas'

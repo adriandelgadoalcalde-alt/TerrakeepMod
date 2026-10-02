@@ -156,6 +156,26 @@ compiló MSBuild ("Loading pre-compiled TerrakeepMod.dll") en vez de compilarlo 
 - **Guía v2** (02-oct-2026): contenido y evaluador en `lib\Terrakeep.Core.dll` (repo hermano, `docs/guia-v2-diseno.md`);
   aquí solo fuente de estado en vivo, resolutor, progreso en `ModPlayer`, marca del mapa y UI. Ver bitácora.
 
+- **Un sandbox sin clave `Language` en `config.json` deja el cliente en "Select language"** (`_needsLanguageSelect`)
+  y `-skipselect` no corre nunca. Las pasadas de servidor dejan el config así: los scripts lo rellenan.
+- **`Main.SetDisplayMode` solo recalcula `UserInterface.ActiveInstance` y el setter de `Main.UIScale` no recalcula
+  nada**: un `UIState` abierto tiene que recalcularse solo (`PanelTerrakeepState.AjustarAltoMaximo`).
+- **Dentro de `UpdateUI` y de las capas con `InterfaceScaleType.UI`, `Main.screenWidth/Height` son la pantalla
+  LÓGICA** (`PlayerInput.SetZoom_UI`); `screenPosition` no cambia. Mundo -> UI:
+  `Vector2.Transform(p - screenPosition, GameViewMatrix.ZoomMatrix) / UIScale`.
+- **Texturas generadas por código: alfa PREMULTIPLICADO** (`SpriteBatch` usa `BlendState.AlphaBlend`); si no, un
+  blanco con alfa 34 se pinta casi opaco.
+- **`Main.refreshMap` solo se atiende junto con `Main.updateMap = true`**, y el mapa se repinta por secciones
+  (5 ms por fotograma): esperar ~180 fotogramas antes de capturar.
+- **Una captura tomada en el mismo paso que un clic enseña el fotograma ANTERIOR** (back buffer): capturar en un
+  paso posterior.
+- **El filtro de los scripts busca `NO CABE`/`NO CUADRA` sin distinguir mayúsculas**: ningún mensaje OK puede
+  contener "no cabe" (ni "destino caben").
+- Interfaz de vanilla junto al indicador de la Guía (`IndicadorGuiaHud`): vida desde `screenWidth - 300/322`,
+  minimapa desde y=90, monedas/munición hasta x≈563, fila de 4 iconos a la izquierda de la vida con el inventario
+  abierto (y 40-70), medidor de aire en `Top - 100` (o a la altura de los pies con inventario y pantalla < 1000),
+  barra de sigilo de Calamity en (50 %, 55,8 %). La autoprueba lo comprueba en cada captura.
+
 ### Menús, idioma y localización (ronda de cierre)
 - **`ModSystem.UpdateUI` NO se llama en el menú**: `SystemLoader.UpdateUI` empieza con
   `if (!Main.gameMenu)`. Para hacer algo cada fotograma en los menús, el hook es
