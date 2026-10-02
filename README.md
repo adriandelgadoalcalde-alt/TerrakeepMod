@@ -25,15 +25,18 @@ Terrakeep junto al bestiario y los emotes, con el inventario abierto.
   <img src="docs/screenshots/08-mapa-marca.png" width="49%" alt="Mapa a pantalla completa con la marca permanente de la Guía sobre el desierto real del mundo y el anillo de la zona" />
 </p>
 <p align="center">
-  <img src="docs/screenshots/09-ficha.png" width="49%" alt="Ficha cómo conseguirlo del Medallón del Desierto: receta con cuántos tienes de cada ingrediente, estación y botón Coger en la Librería" />
+  <img src="docs/screenshots/09-ficha.png" width="49%" alt="Ficha cómo conseguirlo del Medallón del desierto: receta con cuántos tienes de cada ingrediente, estación y botón Coger en la Librería" />
+  <img src="docs/screenshots/10-equipo.png" width="49%" alt="Guía > Equipo: escalera de cuerpo a cuerpo con el sprite, el nombre y el ID de cada objeto, agrupada en armas y armaduras" />
+</p>
+<p align="center">
   <img src="docs/screenshots/02-album.png" width="49%" alt="Pestaña Álbum con doce hitos reales ordenados del más reciente al más antiguo, bajo la barra de pestañas con icono de sprite" />
-</p>
-<p align="center">
   <img src="docs/screenshots/03-builds.png" width="49%" alt="Pestaña Builds con dos filas de filtros, el anillo de progreso 0/13 junto al alternador Vanilla, las tres columnas de armadura, armas y accesorios y los códigos de build" />
-  <img src="docs/screenshots/04-libreria.png" width="49%" alt="Pestaña Librería navegando la carpeta Mascotas de Jefes, con los ocho destinos (incluido Cofre) abajo" />
 </p>
 <p align="center">
+  <img src="docs/screenshots/04-libreria.png" width="49%" alt="Pestaña Librería navegando la carpeta Mascotas de Jefes, con los ocho destinos (incluido Cofre) abajo" />
   <img src="docs/screenshots/05-este-mundo.png" width="49%" alt="Exploración > Este mundo: ficha del mundo con la fila nueva de Invasiones (Goblins, Escarcha, Piratas) y, a la derecha, la dificultad en vivo con su aviso de permanencia" />
+</p>
+<p align="center">
   <img src="docs/screenshots/06-editar-objeto.png" width="49%" alt="Librería en la carpeta Materiales con la tarjeta Editar objeto abierta sobre un Champiñón: el único editor, con cantidad, botones rápidos +10, +100 y Máx, prefijo y papelera, junto al recuadro Seleccionar" />
 </p>
 
@@ -130,7 +133,7 @@ tecnología externa al juego.
 
 - **Guía nueva, grande y paso a paso**, vanilla (49 paradas, 210 tareas) y Calamity (47 paradas,
   186 tareas), con el mismo contenido que Terrakeep de escritorio 3.4.0: estructura completa de
-  cada parada, escalera de equipo por clase (incluido pícaro en Calamity), Manual, Estoy perdido,
+  cada parada, escalera de equipo por clase (incluido pícaro en Calamity) con el nombre y el ID junto a cada sprite, Manual, Estoy perdido,
   He encontrado algo raro y buscador, con nombres oficiales en español y comprobación automática
   en vivo contra tu personaje y tu mundo. Lo que no se puede comprobar se marca a mano y se guarda
   con el personaje.
