@@ -2126,6 +2126,12 @@ Guia: {
 	Bandera.downedCLAMHardMode: "Defeat the Giant Clam in Hardmode"
 	Bandera.downedNuclearTerror: "Defeat the Nuclear Terror"
 	Bandera.downedBossRush: "Complete the Boss Rush"
+	Bandera.downedDD2InvasionT1: "Beat the Old One's Army at tier 1 (after the Eye of Cthulhu or an evil boss)"
+	Bandera.downedDD2InvasionT2: "Beat the Old One's Army at tier 2 (after a mechanical boss)"
+	Bandera.downedDD2InvasionT3: "Beat the Old One's Army at tier 3 (after Golem)"
+	Bandera.combatBookWasUsed: "Advanced Combat Techniques used in this world"
+	Bandera.combatBookVolumeTwoWasUsed: "Advanced Combat Techniques: Volume Two used in this world"
+	Bandera.peddlersSatchelWasUsed: "Peddler's Satchel used in this world"
 }
 
 Keybinds: {
@@ -2238,7 +2244,7 @@ GuiaV2: {
 	ErrorVista: "This view could not be built: {0}"
 	SinGuiaTitulo: "This game's guide is not included yet"
 	SinGuiaVanilla: "You are playing without Calamity, so your guide is the unmodded Terraria one, and this version of Terrakeep does not include it yet (it comes in the next update). The Calamity guide is not shown instead: it would talk about bosses and items that do not exist in your game. Meanwhile, the **Compass** still works with your real progress."
-	SinGuiaError: "The guide content could not be loaded (see client.log, [Terrakeep] Guia v2 lines)."
+	SinGuiaError: "The guide content could not be loaded (see the game's client.log)."
 	MiGuia.Partida: "Your game: {0} · class {1} ({2})"
 	MiGuia.ClaseElegida: "chosen by you"
 	MiGuia.ClasePropuesta: "suggested by your best weapon; change it above"
@@ -2384,4 +2390,6 @@ GuiaV2: {
 	Busqueda.Zona: "World area"
 	Busqueda.Nada: "Nothing matches. Try another word (accents don't matter)."
 	Busqueda.Muchos: "Showing the first {0}: refine the search."
+	Punto.eter: "Aether (opposite side to the Dungeon, approximate)"
+	MiGuia.ReferenciaVanilla: "Reference: Terraria {0} · researched on {1}. Content written in Spanish."
 }

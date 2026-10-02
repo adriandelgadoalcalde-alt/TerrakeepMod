@@ -2126,6 +2126,12 @@ Guia: {
 	Bandera.downedCLAMHardMode: "Derrotar a la Almeja Gigante en modo difícil"
 	Bandera.downedNuclearTerror: "Derrotar al Terror Nuclear"
 	Bandera.downedBossRush: "Completar el Boss Rush"
+	Bandera.downedDD2InvasionT1: "Superar el Antiguo Ejército D2 en el nivel 1 (tras el Ojo de Cthulhu o un jefe de la maldad)"
+	Bandera.downedDD2InvasionT2: "Superar el Antiguo Ejército D2 en el nivel 2 (tras un jefe mecánico)"
+	Bandera.downedDD2InvasionT3: "Superar el Antiguo Ejército D2 en el nivel 3 (tras el Gólem)"
+	Bandera.combatBookWasUsed: "Haber usado Técnicas de combate avanzadas en este mundo"
+	Bandera.combatBookVolumeTwoWasUsed: "Haber usado Técnicas de combate avanzadas: volumen 2 en este mundo"
+	Bandera.peddlersSatchelWasUsed: "Haber usado la Mochila de vendedor ambulante en este mundo"
 }
 
 Keybinds: {
@@ -2238,7 +2244,7 @@ GuiaV2: {
 	ErrorVista: "No se pudo montar esta vista: {0}"
 	SinGuiaTitulo: "La guía de esta partida todavía no viene incluida"
 	SinGuiaVanilla: "Juegas sin Calamity, así que te toca la guía de Terraria sin mods, y esta versión de Terrakeep todavía no la trae incluida (llegará en la próxima actualización). No se enseña la de Calamity en su lugar: hablaría de jefes y objetos que no existen en tu partida. Mientras tanto, la **Brújula** sigue funcionando con tu progreso real."
-	SinGuiaError: "No se pudo cargar el contenido de la guía (mira client.log, líneas [Terrakeep] Guia v2)."
+	SinGuiaError: "No se pudo cargar el contenido de la guía (mira el registro client.log del juego)."
 	MiGuia.Partida: "Tu partida: {0} · clase {1} ({2})"
 	MiGuia.ClaseElegida: "elegida por ti"
 	MiGuia.ClasePropuesta: "propuesta por tu mejor arma; cámbiala arriba"
@@ -2384,4 +2390,6 @@ GuiaV2: {
 	Busqueda.Zona: "Zona del mundo"
 	Busqueda.Nada: "Nada coincide. Prueba con otra palabra (los acentos dan igual)."
 	Busqueda.Muchos: "Se enseñan los {0} primeros: afina la búsqueda."
+	Punto.eter: "Éter (lado opuesto a la Mazmorra, aproximado)"
+	MiGuia.ReferenciaVanilla: "Referencia: Terraria {0} · investigación del {1}. Contenido en español de España."
 }

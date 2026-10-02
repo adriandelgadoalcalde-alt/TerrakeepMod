@@ -51,6 +51,15 @@
 	</ItemGroup>
 
 	<ItemGroup>
+		<!-- 02-oct-2026 (Guia v2, F3): el MISMO lib\Terrakeep.Core.dll que se empaqueta en el .tmod,
+		     para comprobar el contrato del mod (banderas, consulta de la Libreria) contra el
+		     contenido real de la guia incrustado en esa DLL. -->
+		<Reference Include="Terrakeep.Core">
+			<HintPath>..\lib\Terrakeep.Core.dll</HintPath>
+		</Reference>
+	</ItemGroup>
+
+	<ItemGroup>
 		<!-- TerrakeepMod.LogicaPura enlaza (no copia) el mismo GramaticaBusqueda.cs real del mod -
 		     ver su propia cabecera para el porque de este proyecto intermedio (lo exige
 		     Stryker.NET, que necesita una referencia de proyecto real para saber que mutar). -->

@@ -95,8 +95,34 @@ namespace TerrakeepMod.Common.Guia
 				// NPC/WorldGen/Main (Player.cs, ~linea 2171/23413/55965). Player.cs comprobado:
 				// se guarda y se lee del .plr sin condicion, como cualquier otro downed*.
 				{ "downedDD2EventAnyDifficulty", () =>
-					Main.LocalPlayer != null && Main.LocalPlayer.downedDD2EventAnyDifficulty }
+					Main.LocalPlayer != null && Main.LocalPlayer.downedDD2EventAnyDifficulty },
+
+				// --- Guia v2 (F3, 02-oct-2026), pedidas por el contenido vanilla de F1 (seccion 12 de
+				// docs/guia-v2-diseno.md del repo hermano). Campos estaticos REALES del 1.4.4.9:
+				// DD2Event.DownedInvasionT1..T3 (DD2Event.cs:25-29, una por nivel del Antiguo Ejercito,
+				// guardadas en el .wld) y NPC.combatBookWasUsed / combatBookVolumeTwoWasUsed /
+				// peddlersSatchelWasUsed (NPC.cs:802-806, las mejoras de mundo de los libros de combate
+				// y la bolsa del buhonero). Mismos nombres que GuideFlags del escritorio.
+				{ "downedDD2InvasionT1", () => Terraria.GameContent.Events.DD2Event.DownedInvasionT1 },
+				{ "downedDD2InvasionT2", () => Terraria.GameContent.Events.DD2Event.DownedInvasionT2 },
+				{ "downedDD2InvasionT3", () => Terraria.GameContent.Events.DD2Event.DownedInvasionT3 },
+				{ "combatBookWasUsed", () => NPC.combatBookWasUsed },
+				{ "combatBookVolumeTwoWasUsed", () => NPC.combatBookVolumeTwoWasUsed },
+				{ "peddlersSatchelWasUsed", () => NPC.peddlersSatchelWasUsed }
 			};
+
+			// Contrato con la logica pura (ContratoGuiaV2.BanderasVanilla), que es la que comprueban
+			// las pruebas contra el contenido real de la guia: si las dos listas se separan, se dice.
+			foreach (string nombre in GuiaV2.ContratoGuiaV2.BanderasVanilla) {
+				if (!tabla.ContainsKey(nombre)) {
+					RegistroGuia.Aviso(Terrakeep.LogTag + " Guia: ContratoGuiaV2.BanderasVanilla cita \"" + nombre +
+						"\" y la tabla de BanderasGuia no la tiene.");
+				}
+			}
+			if (tabla.Count != GuiaV2.ContratoGuiaV2.BanderasVanilla.Length) {
+				RegistroGuia.Aviso(Terrakeep.LogTag + " Guia: la tabla vanilla de BanderasGuia (" + tabla.Count +
+					") y ContratoGuiaV2.BanderasVanilla (" + GuiaV2.ContratoGuiaV2.BanderasVanilla.Length + ") no coinciden.");
+			}
 
 			AgregarBanderasCalamity(tabla);
 			return tabla;
@@ -114,25 +140,12 @@ namespace TerrakeepMod.Common.Guia
 		/// 15-sep-2026 (<c>ilspycmd -t CalamityMod.DownedBossSystem CalamityMod.dll</c>), no una
 		/// lista de memoria - ver bitacora.md para el detalle completo de esa sesion.
 		/// </summary>
-		private static readonly string[] NombresBanderasCalamity = {
-			"downedDesertScourge", "downedCrabulon", "downedHiveMind", "downedPerforator",
-			"downedSlimeGod", "downedDreadnautilus", "downedCryogen", "downedAquaticScourge",
-			"downedBrimstoneElemental", "downedCalamitasClone", "downedLeviathan",
-			"downedAstrumAureus", "downedPlaguebringer", "downedRavager", "downedAstrumDeus",
-			"downedGuardians", "downedDragonfolly", "downedProvidence", "downedCeaselessVoid",
-			"downedStormWeaver", "downedSignus", "downedPolterghast", "downedBoomerDuke",
-			"downedDoG", "downedYharon", "downedExoMechs", "downedCalamitas",
-			"downedPrimordialWyrm", "downedHorribleHog", "downedCLAM", "downedCLAMHardMode",
-			"downedCragmawMire", "downedGSS", "downedMauler", "downedNuclearTerror",
-			"downedAres", "downedThanatos", "downedArtemisAndApollo",
-			// Guia v2 (F3, 02-oct-2026): las que usa la guia v2 de Calamity y faltaban. Comprobadas
-			// en el decompilado de Calamity 2.2.4 (DownedBossSystem.cs: downedEoCAcidRain linea
-			// 830, downedAquaticScourgeAcidRain 849, downedBossRush 880; downedLeviathan,
-			// downedCLAMHardMode y downedNuclearTerror ya estaban arriba). downedBossRush entra
-			// ahora porque la guia v2 tiene una parada final de desafio (Terminus y Boss Rush),
-			// opcional y aplazable: no es progresion obligatoria, pero si una casilla real.
-			"downedEoCAcidRain", "downedAquaticScourgeAcidRain", "downedBossRush"
-		};
+		/// <remarks>Guia v2 (F3, 02-oct-2026): la lista vive ahora en <c>ContratoGuiaV2.BanderasCalamity</c>
+		/// (logica pura, probada contra el contenido real de la guia) y suma <c>downedEoCAcidRain</c>,
+		/// <c>downedAquaticScourgeAcidRain</c> y <c>downedBossRush</c> (DownedBossSystem.cs 2.2.4,
+		/// lineas 830, 849 y 880). El Boss Rush entra porque la guia v2 tiene una parada final de
+		/// desafio, opcional y aplazable; sigue sin ser progresion obligatoria.</remarks>
+		private static readonly string[] NombresBanderasCalamity = GuiaV2.ContratoGuiaV2.BanderasCalamity;
 
 		/// <summary>
 		/// Añade las banderas de Calamity a la tabla, leidas por REFLEXION contra el ensamblado ya

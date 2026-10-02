@@ -454,7 +454,7 @@ namespace TerrakeepMod.UI.GuiaV2
 				return;
 			}
 			string nombre = Lang.GetItemNameValue(tipo);
-			string consulta = string.IsNullOrEmpty(nombre) || nombre.IndexOf(',') >= 0 || nombre.Trim().Length < 2 ? "#" + tipo : nombre;
+			string consulta = ContratoGuiaV2.ConsultaLibreria(nombre, tipo);
 			CerrarVentana();
 			panel.CambiarArea(AreaTerrakeep.Libreria, "Guía v2: Coger en la Librería (" + referencia + ")");
 			ArbolLibreria.ConstruirSiHaceFalta();

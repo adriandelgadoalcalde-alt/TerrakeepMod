@@ -74,9 +74,14 @@ namespace TerrakeepMod.Common.GuiaV2
 			}
 
 			bool algo = false;
-			if (o != null && o.Obtencion.Count > 0) {
+			// La tabla es comun a las dos guias y trae recetas/botin que AÑADE Calamity: en una partida
+			// sin Calamity solo se enseña lo vanilla (RefObjeto.ObtencionPara, seccion 12 del diseño).
+			List<Obtencion> obtencion = o != null
+				? new List<Obtencion>(o.ObtencionPara(GuiaV2Sistema.IdGuia == "calamity" ? "calamity" : "vanilla"))
+				: new List<Obtencion>();
+			if (obtencion.Count > 0) {
 				AnadirTitulo(f, Idiomas.Texto("GuiaV2.Ficha.ComoConseguirlo"));
-				foreach (Obtencion ob in o.Obtencion) {
+				foreach (Obtencion ob in obtencion) {
 					AnadirObtencion(f, ob);
 				}
 				algo = true;
@@ -328,31 +333,7 @@ namespace TerrakeepMod.Common.GuiaV2
 			return total;
 		}
 
-		/// <summary>Condicion del codigo (p. ej. "CalamityConditions.DownedOldDuke") en forma legible:
-		/// sin espacio de nombres y con las palabras separadas. No traduce: es el nombre real del
-		/// codigo, y se enseña tal cual para no inventar una interpretacion.</summary>
-		public static string Legible(string condicion)
-		{
-			if (string.IsNullOrEmpty(condicion)) {
-				return "";
-			}
-			string c = condicion.Trim();
-			int paren = c.IndexOf('(');
-			string cabeza = paren > 0 ? c.Substring(0, paren) : c;
-			int punto = cabeza.LastIndexOf('.');
-			if (punto >= 0 && paren < 0) {
-				c = cabeza.Substring(punto + 1);
-			}
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < c.Length; i++) {
-				char ch = c[i];
-				if (i > 0 && char.IsUpper(ch) && char.IsLower(c[i - 1])) {
-					sb.Append(' ');
-				}
-				sb.Append(ch);
-			}
-			return sb.ToString();
-		}
+		public static string Legible(string condicion) => ContratoGuiaV2.Legible(condicion);
 
 		private static void Anadir(Ficha f, string texto, Color color, float escala)
 		{

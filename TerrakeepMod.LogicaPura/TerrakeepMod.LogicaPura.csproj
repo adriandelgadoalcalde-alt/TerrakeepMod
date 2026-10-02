@@ -42,6 +42,9 @@
 		     rapidos de cantidad y calculo de los vecinos que faltan, las dos sin Terraria. -->
 		<Compile Include="..\Common\Personaje\CantidadRapida.cs" Link="CantidadRapida.cs" />
 		<Compile Include="..\Common\Exploracion\VecinosQueFaltan.cs" Link="VecinosQueFaltan.cs" />
+		<!-- 02-oct-2026 (Guia v2, F3): nombres de banderas que lee el mod, consulta de "Coger en la
+		     Librería" y forma legible de las condiciones del codigo - sin Terraria. -->
+		<Compile Include="..\Common\GuiaV2\ContratoGuiaV2.cs" Link="ContratoGuiaV2.cs" />
 	</ItemGroup>
 
 </Project>

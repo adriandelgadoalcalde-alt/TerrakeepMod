@@ -204,8 +204,10 @@ namespace TerrakeepMod.UI.GuiaV2
 
 			// ---- referencia y creditos ----
 			lista.Hueco(6f);
-			lista.Add(Parrafo(Idiomas.Texto("GuiaV2.MiGuia.Referencia", doc.Referencia.Terraria, doc.Referencia.Calamity ?? "-",
-				doc.Referencia.FechaInvestigacion), 0.64f, EstiloTk.Neutro));
+			lista.Add(Parrafo(string.IsNullOrEmpty(doc.Referencia.Calamity)
+				? Idiomas.Texto("GuiaV2.MiGuia.ReferenciaVanilla", doc.Referencia.Terraria, doc.Referencia.FechaInvestigacion)
+				: Idiomas.Texto("GuiaV2.MiGuia.Referencia", doc.Referencia.Terraria, doc.Referencia.Calamity, doc.Referencia.FechaInvestigacion),
+				0.64f, EstiloTk.Neutro));
 			if (!string.IsNullOrEmpty(doc.Creditos)) {
 				lista.Add(Parrafo(doc.Creditos, 0.64f, EstiloTk.Neutro));
 			}
