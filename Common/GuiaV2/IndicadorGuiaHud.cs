@@ -246,7 +246,9 @@ namespace TerrakeepMod.Common.GuiaV2
 				float izq = BordeInventario, der = ancho - MargenVida;
 				if (der - izq >= w) {
 					como = "franja superior libre (" + (int)izq + "-" + (int)der + ")";
-					return new Rectangle((int)((izq + der) / 2f - w / 2f), (int)(Main.playerInventory ? ArribaConInventario : Arriba), (int)w, (int)h);
+					float fx = (izq + der) / 2f - w / 2f, fy = Main.playerInventory ? ArribaConInventario : Arriba;
+					como += EvitarIndicadorModo(ref fx, ref fy, w, h, izq);
+					return new Rectangle((int)fx, (int)fy, (int)w, (int)h);
 				}
 				pos = PosicionIndicadorGuia.JuntoAlPersonaje;
 				como = "junto al personaje (la franja de arriba mide " + (int)(der - izq) + " px, demasiado estrecha)";
@@ -258,6 +260,7 @@ namespace TerrakeepMod.Common.GuiaV2
 			if (pos == PosicionIndicadorGuia.ArribaCentro) {
 				x = ancho / 2f - w / 2f;
 				y = Main.playerInventory ? ArribaConInventario : Arriba;
+				como += EvitarIndicadorModo(ref x, ref y, w, h, 4f);
 			}
 			else {
 				// Del mundo a la pantalla logica: zoom del juego y luego escala de interfaz
@@ -277,6 +280,37 @@ namespace TerrakeepMod.Common.GuiaV2
 			x = MathHelper.Clamp(x, 4f, Math.Max(4f, ancho - w - 4f));
 			y = MathHelper.Clamp(y, 4f, Math.Max(4f, Main.screenHeight - h - 4f));
 			return new Rectangle((int)x, (int)y, (int)w, (int)h);
+		}
+
+		/// <summary>Margen alrededor del indicador de dificultad de Calamity.</summary>
+		public const float MargenIndicadorModo = 6f;
+
+		/// <summary>
+		/// Con el inventario abierto, Calamity pinta su indicador de dificultad (el icono redondo del
+		/// modo, 74x74) a la izquierda de la vida, justo en la franja superior: a 1280x720 con la escala
+		/// de interfaz maxima (pantalla logica de 1066) el indicador caia encima (captura real
+		/// <c>guiav2-hud-inventario-1280x720-max.png</c> de F3b con Calamity). Si se pisan, primero se
+		/// corre a la IZQUIERDA lo justo, sin entrar en el inventario (<paramref name="izq"/>); si no
+		/// cabe, baja por DEBAJO del icono, en la misma columna (ahi no pinta nada el juego).
+		/// </summary>
+		/// <returns>Texto para <see cref="UltimaColocacion"/> ("" si no hacia falta).</returns>
+		public static string EvitarIndicadorModo(ref float x, ref float y, float w, float h, float izq)
+		{
+			Rectangle? area = ReflexionCalamity.AreaIndicadorModo();
+			if (area == null) {
+				return "";
+			}
+			Rectangle zona = area.Value;
+			zona.Inflate((int)MargenIndicadorModo, (int)MargenIndicadorModo);
+			if (!new Rectangle((int)x, (int)y, (int)w, (int)h).Intersects(zona)) {
+				return "";
+			}
+			if (zona.Left - w >= izq) {
+				x = zona.Left - w;
+				return "; a la izquierda del indicador de dificultad de Calamity";
+			}
+			y = zona.Bottom;
+			return "; debajo del indicador de dificultad de Calamity";
 		}
 
 		/// <summary>Si el indicador va (o iria) en la franja superior libre.</summary>

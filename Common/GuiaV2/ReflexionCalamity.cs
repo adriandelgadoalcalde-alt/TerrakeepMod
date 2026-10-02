@@ -147,6 +147,27 @@ namespace TerrakeepMod.Common.GuiaV2
 			return v is bool b ? b : (bool?)null;
 		}
 
+		/// <summary>
+		/// Zona (pantalla LOGICA) del indicador de dificultad que Calamity pinta junto a la vida con el
+		/// inventario abierto (<c>CalamityMod.UI.ModeIndicator.ModeIndicatorUI</c>, capa "Mode Indicator
+		/// UI" con escala de interfaz; solo se dibuja con <c>Main.playerInventory</c>). Se lee su
+		/// <c>MainClickArea</c> real; si no se pudiera, la formula del decompilado de la 2.2.4
+		/// (<c>DrawCenter</c> = (screenWidth - 400 - ancho de la fila/2, 82) + 37, marco de 74x74) con
+		/// una sola dificultad por fila. Null sin Calamity o con el inventario cerrado.
+		/// </summary>
+		public static Rectangle? AreaIndicadorModo()
+		{
+			if (!Cargado || !Main.playerInventory) {
+				return null;
+			}
+			MemberInfo m = Miembro("CalamityMod.UI.ModeIndicator.ModeIndicatorUI", "MainClickArea");
+			object v = m != null ? Leer(m) : null;
+			if (v is Rectangle r && r.Width > 0 && r.Height > 0) {
+				return r;
+			}
+			return new Rectangle(Main.screenWidth - 400, 82, 74, 74);
+		}
+
 		/// <summary>Centro de un laboratorio de Draedon en CASILLAS (CalamityWorld.*LabCenter esta
 		/// en pixeles de mundo). Null si no existe o no se genero (0,0).</summary>
 		public static (int X, int Y)? CentroLaboratorio(string clave)

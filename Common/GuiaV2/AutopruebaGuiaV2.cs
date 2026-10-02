@@ -1206,6 +1206,10 @@ namespace TerrakeepMod.Common.GuiaV2
 			// Fila de iconos que el juego pinta a la izquierda de la vida con el inventario abierto
 			// (medida en las capturas reales; ver IndicadorGuiaHud.ArribaConInventario).
 			if (inventario && r.Intersects(new Rectangle(an - 456, 36, 170, 38))) pisa.Add("iconos junto a la vida");
+			// Indicador de dificultad de Calamity con el inventario abierto: formula del decompilado de
+			// la 2.2.4 (ModeIndicatorUI.DrawCenter = (screenWidth - 400, 82) + 37, marco 74x74), escrita
+			// aqui aparte a proposito para no fiarse de la lectura por reflexion que usa el indicador.
+			if (inventario && CatalogoGuia.HayCalamity && r.Intersects(new Rectangle(an - 402, 80, 78, 78))) pisa.Add("indicador de dificultad de Calamity");
 			Player p = Main.LocalPlayer;
 			Vector2 v = p.Top + new Vector2(0f, p.gfxOffY);
 			if (inventario && al < 1000) v.Y += p.height - 20;
