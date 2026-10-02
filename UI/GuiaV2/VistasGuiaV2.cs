@@ -646,7 +646,7 @@ namespace TerrakeepMod.UI.GuiaV2
 		{
 			if (opciones == null || opciones.Count == 0) return;
 			tarjeta.Append(Parrafo("**" + Idiomas.Texto(clave) + "**", 0.72f, EstiloTk.TextoSuave));
-			tarjeta.Append(new RejillaObjetosTk(opciones, doc.LeyendaEscaleras));
+			tarjeta.Append(new RejillaObjetosTk(opciones, doc.LeyendaEscaleras) { ConNombre = true });
 		}
 
 		private static void AnadirArmadura(PilaTk tarjeta, List<OpcionEquipo> opciones, GuiaV2Doc doc)
@@ -657,7 +657,7 @@ namespace TerrakeepMod.UI.GuiaV2
 				if (g.Key.Length > 0) {
 					tarjeta.Append(Parrafo(g.Key, 0.68f, EstiloTk.Neutro));
 				}
-				tarjeta.Append(new RejillaObjetosTk(g, doc.LeyendaEscaleras));
+				tarjeta.Append(new RejillaObjetosTk(g, doc.LeyendaEscaleras) { ConNombre = true });
 			}
 		}
 

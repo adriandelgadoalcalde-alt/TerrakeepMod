@@ -34,6 +34,18 @@ namespace TerrakeepMod.UI.GuiaV2
 		}
 
 		private readonly List<Celda> _celdas = new List<Celda>();
+
+		/// <summary>Ancho de cada celda con nombre (sprite + nombre + ID al lado).</summary>
+		public const float AnchoConNombre = 196f;
+
+		/// <summary>
+		/// Con nombre: cada objeto enseña su sprite, su nombre y su ID al lado, como la escalera de la
+		/// guia HTML del usuario ("sprite e ID de cada objeto"). La revision visual F4 (ronda 4) dio por
+		/// corta la escalera del mod con solo sprites: habia que pasar el raton por cada icono.
+		/// </summary>
+		public bool ConNombre { get; set; }
+
+		private float AnchoCelda => ConNombre ? AnchoConNombre : Lado;
 		private int _sobre = -1;
 		private float _anchoUltimo = -1f;
 
@@ -74,7 +86,10 @@ namespace TerrakeepMod.UI.GuiaV2
 			return string.Join("\n", partes);
 		}
 
-		private int PorFila(float ancho) => Math.Max(1, (int)((ancho + Hueco) / (Lado + Hueco)));
+		private int PorFila(float ancho) => Math.Max(1, (int)((ancho + Hueco) / (AnchoCelda + Hueco)));
+
+		private static string IdDe(Celda c) => c.Ref != null && c.Ref.StartsWith("Terraria/", StringComparison.Ordinal) && c.Tipo > 0 && c.Tipo < ItemID.Count
+			? "ID " + c.Tipo : c.Ref;
 
 		public override void Update(GameTime gameTime)
 		{
@@ -98,8 +113,7 @@ namespace TerrakeepMod.UI.GuiaV2
 				// Estado SIEMPRE explicito (lo tienes / te falta), no solo cuando lo tienes.
 				// Sprite + ID de cada objeto, como la escalera de la guia HTML del usuario ("ID 65" en
 				// vanilla, "CalamityMod/Nombre" en Calamity); en la rejilla solo cabe el sprite.
-				string id = c.Ref != null && c.Ref.StartsWith("Terraria/", StringComparison.Ordinal) && c.Tipo > 0 && c.Tipo < ItemID.Count
-					? "ID " + c.Tipo : c.Ref;
+				string id = IdDe(c);
 				BotonTk.PedirTooltip(nombre + "  (" + Idiomas.Texto(tienes > 0 ? "GuiaV2.Objeto.LoTienes" : "GuiaV2.Objeto.TeFalta") + ")" +
 					"\n" + id +
 					(string.IsNullOrEmpty(c.Ayuda) ? "" : "\n" + c.Ayuda) + "\n" + Idiomas.Texto("GuiaV2.Enlace.ObjetoCorto"));
@@ -111,7 +125,7 @@ namespace TerrakeepMod.UI.GuiaV2
 		{
 			CalculatedStyle d = GetInnerDimensions();
 			int pf = PorFila(d.Width);
-			return new Vector2(d.X + (i % pf) * (Lado + Hueco) + Lado / 2f, d.Y + (i / pf) * (Lado + Hueco) + Lado / 2f);
+			return new Vector2(d.X + (i % pf) * (AnchoCelda + Hueco) + Lado / 2f, d.Y + (i / pf) * (Lado + Hueco) + Lado / 2f);
 		}
 
 		private int CeldaEn(Vector2 punto)
@@ -120,8 +134,8 @@ namespace TerrakeepMod.UI.GuiaV2
 			int pf = PorFila(d.Width);
 			float x = punto.X - d.X, y = punto.Y - d.Y;
 			if (x < 0 || y < 0) return -1;
-			int col = (int)(x / (Lado + Hueco)), fila = (int)(y / (Lado + Hueco));
-			if (col >= pf || x - col * (Lado + Hueco) > Lado || y - fila * (Lado + Hueco) > Lado) return -1;
+			int col = (int)(x / (AnchoCelda + Hueco)), fila = (int)(y / (Lado + Hueco));
+			if (col >= pf || x - col * (AnchoCelda + Hueco) > AnchoCelda || y - fila * (Lado + Hueco) > Lado) return -1;
 			int i = fila * pf + col;
 			return i < _celdas.Count ? i : -1;
 		}
@@ -150,7 +164,7 @@ namespace TerrakeepMod.UI.GuiaV2
 			Texture2D fondo = TextureAssets.InventoryBack.Value;
 			for (int i = 0; i < _celdas.Count; i++) {
 				Celda c = _celdas[i];
-				float x = d.X + (i % pf) * (Lado + Hueco), y = d.Y + (i / pf) * (Lado + Hueco);
+				float x = d.X + (i % pf) * (AnchoCelda + Hueco), y = d.Y + (i / pf) * (Lado + Hueco);
 				Rectangle r = new Rectangle((int)x, (int)y, (int)Lado, (int)Lado);
 				bool tiene = c.Tipo > 0 && ProveedorEstadoGuiaV2Mod.CuantosPoseeDe(Main.LocalPlayer, c.Tipo) > 0;
 				Color tinte = i == _sobre ? new Color(200, 220, 255) : (tiene ? new Color(150, 230, 170) : new Color(120, 130, 190));
@@ -164,6 +178,21 @@ namespace TerrakeepMod.UI.GuiaV2
 				if (tiene) {
 					Rectangle m = new Rectangle(r.Right - 11, r.Y + 3, 8, 8);
 					spriteBatch.Draw(TextureAssets.MagicPixel.Value, m, EstiloTk.Correcto);
+				}
+				if (ConNombre) {
+					float anchoTexto = AnchoCelda - Lado - 8f;
+					string nombre = GlifosTk.Seguro(GuiaV2Sistema.NombreObjeto(c.Ref));
+					float esc = 0.68f;
+					while (esc > 0.55f && EscribirTk.Ancho(nombre, esc) > anchoTexto) esc -= 0.02f;
+					if (EscribirTk.Ancho(nombre, esc) > anchoTexto) {
+						while (nombre.Length > 1 && EscribirTk.Ancho(nombre + "...", esc) > anchoTexto) nombre = nombre.Substring(0, nombre.Length - 1);
+						nombre += "...";
+					}
+					EscribirTk.Dibujar(spriteBatch, nombre, new Vector2(x + Lado + 6f, y + 2f), tiene ? EstiloTk.Correcto : (i == _sobre ? Color.White : EstiloTk.TextoSuave), esc);
+					string id = GlifosTk.Seguro(IdDe(c));
+					float escId = 0.52f;
+					while (escId > 0.42f && EscribirTk.Ancho(id, escId) > anchoTexto) escId -= 0.02f;
+					EscribirTk.Dibujar(spriteBatch, id, new Vector2(x + Lado + 6f, y + Lado / 2f + 2f), EstiloTk.Neutro, escId);
 				}
 			}
 		}
