@@ -1,0 +1,126 @@
+﻿# Evidencia de la Guia en tiempo real - 2026-10-02 16:29:46
+[16:29:46.318] [Terrakeep] Guia: arbol de progresion cargado. 46 tramos (46 con requisitos evaluables), 116 pasos, 230 requisitos, 0 avisos. Calamity cargado=True.
+[16:29:46.367] [Terrakeep] Guia v2: guias incrustadas en Terrakeep.Core = [calamity, vanilla]; Calamity cargado=True; guia activa=calamity (47 paradas, 186 tareas); referencias=2174 objetos/532 NPC.
+[16:29:47.938] [Terrakeep] AUTOPRUEBA GUIA V2 - pasada de SERVIDOR (sin interfaz). Mundo TerrakeepPruebaCal 4200x1200, carmesi=True, Calamity=True.
+[16:29:47.945] [Terrakeep] AUTOPRUEBA GUIA V2 - guias incrustadas en Terrakeep.Core: [calamity, vanilla]; esperada para esta partida: calamity.
+[16:29:47.945] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: guía activa = calamity (47 paradas, 186 tareas, 10 articulos)
+[16:29:47.946] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: referencias de objeto resueltas con ModContent.TryFind/ItemID: 2174 de 2174
+[16:29:47.947] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: referencias de NPC resueltas: 532 de 532
+[16:29:47.947] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: bandera de Calamity downedLeviathan legible (valor False)
+[16:29:47.947] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: bandera de Calamity downedEoCAcidRain legible (valor False)
+[16:29:47.947] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: bandera de Calamity downedAquaticScourgeAcidRain legible (valor False)
+[16:29:47.947] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: bandera de Calamity downedCLAMHardMode legible (valor False)
+[16:29:47.947] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: bandera de Calamity downedNuclearTerror legible (valor False)
+[16:29:47.947] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: bandera de Calamity downedBossRush legible (valor False)
+[16:29:47.948] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: estado de mundo (revenge=False) y mejoras de CalamityPlayer (mFruit=) legibles por reflexion
+[16:29:47.957] [Terrakeep] AUTOPRUEBA GUIA V2 - tiles de mod en el mundo (muestreo 1 de 4): 195 tipos; los mas abundantes: CalamityMod/BrimstoneSlag=19823, CalamityMod/Voidstone=14231, CalamityMod/AbyssGravel=7803, CalamityMod/PyreMantle=7495, CalamityMod/EutrophicSand=4862, CalamityMod/SulphurousSand=4558, CalamityMod/HardenedSulphurousSandstone=3292, CalamityMod/LaboratoryPlating=1862, CalamityMod/ScorchedRemains=1683, CalamityMod/Navystone=1608, CalamityMod/SulphurousShale=1283, CalamityMod/BrimstoneSlab=1038, CalamityMod/PlantyMush=434, CalamityMod/SulphurousSandstone=394, CalamityMod/RustedPipes=380, CalamityMod/ScoriaOre=372, CalamityMod/LaboratoryPipePlating=330, CalamityMod/VernalSoil=283, CalamityMod/AerialiteOreDisenchanted=272, CalamityMod/InfernalSuevite=221, CalamityMod/SulphurousColumn=219, CalamityMod/LaboratoryPanels=204, CalamityMod/LaboratoryShelf=171, CalamityMod/PyreMantleMolten=167, CalamityMod/RustedPlating=147.
+[16:29:47.962] [Terrakeep] Guia v2: ubicacion zona:nieve -> (2974, 283) origen=firma aproximada=False casillas=171872 [4 ms]
+[16:29:47.962] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona nieve situada en (2974, 283): 5746 casillas REALES de su firma en 40 casillas a la redonda
+[16:29:47.966] [Terrakeep] Guia v2: ubicacion zona:desierto -> (1693, 292) origen=firma aproximada=False casillas=88400 [3 ms]
+[16:29:47.966] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona desierto situada en (1693, 292): 4291 casillas REALES de su firma en 40 casillas a la redonda
+[16:29:47.969] [Terrakeep] Guia v2: ubicacion zona:desierto_subterraneo -> (1758, 542) origen=firma aproximada=False casillas=41472 [3 ms]
+[16:29:47.970] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona desierto_subterraneo situada en (1758, 542): 2565 casillas REALES de su firma en 40 casillas a la redonda
+[16:29:47.973] [Terrakeep] Guia v2: ubicacion zona:jungla -> (1051, 411) origen=firma aproximada=False casillas=36912 [3 ms]
+[16:29:47.974] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona jungla situada en (1051, 411): 977 casillas REALES de su firma en 40 casillas a la redonda
+[16:29:47.978] [Terrakeep] Guia v2: ubicacion zona:jungla_subterranea -> (1054, 350) origen=firma aproximada=False casillas=248624 [3 ms]
+[16:29:47.978] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona jungla_subterranea situada en (1054, 350): 4683 casillas REALES de su firma en 40 casillas a la redonda
+[16:29:47.981] [Terrakeep] Guia v2: ubicacion zona:setas -> (1943, 597) origen=firma aproximada=False casillas=4592 [3 ms]
+[16:29:47.981] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona setas situada en (1943, 597): 566 casillas REALES de su firma en 40 casillas a la redonda
+[16:29:47.985] [Terrakeep] Guia v2: ubicacion zona:corrupcion -> NO EXISTE en este mundo [3 ms]
+[16:29:47.985] [Terrakeep] AUTOPRUEBA GUIA V2 - zona corrupcion (La Corrupción): no existe en este mundo.
+[16:29:47.988] [Terrakeep] Guia v2: ubicacion zona:carmesi -> (538, 351) origen=firma aproximada=False casillas=33968 [3 ms]
+[16:29:47.989] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona carmesi situada en (538, 351): 2389 casillas REALES de su firma en 40 casillas a la redonda
+[16:29:47.992] [Terrakeep] Guia v2: ubicacion zona:colmena -> (1184, 538) origen=firma aproximada=False casillas=11232 [3 ms]
+[16:29:47.993] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona colmena situada en (1184, 538): 1083 casillas REALES de su firma en 40 casillas a la redonda
+[16:29:47.993] [Terrakeep] Guia v2: ubicacion zona:mazmorra -> (3295, 229) origen=punto:mazmorra aproximada=False casillas=0 [0 ms]
+[16:29:47.993] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona mazmorra situada en (3295, 229): 3282 casillas REALES de su firma en 40 casillas a la redonda
+[16:29:47.997] [Terrakeep] Guia v2: ubicacion zona:inframundo -> (2783, 1117) origen=firma aproximada=False casillas=320016 [3 ms]
+[16:29:47.997] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona inframundo situada en (2783, 1117): 5394 casillas REALES de su firma en 40 casillas a la redonda
+[16:29:48.000] [Terrakeep] Guia v2: ubicacion zona:sagrado -> NO EXISTE en este mundo [3 ms]
+[16:29:48.001] [Terrakeep] AUTOPRUEBA GUIA V2 - zona sagrado (Lo Sagrado): no existe en este mundo.
+[16:29:48.004] [Terrakeep] Guia v2: ubicacion zona:templo -> (924, 602) origen=firma aproximada=False casillas=29856 [3 ms]
+[16:29:48.004] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona templo situada en (924, 602): 5593 casillas REALES de su firma en 40 casillas a la redonda
+[16:29:48.006] [Terrakeep] Guia v2: ubicacion zona:mar_sulfuroso -> (3871, 288) origen=firma aproximada=False casillas=32672 [1 ms]
+[16:29:48.006] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona mar_sulfuroso situada en (3871, 288): 4267 casillas REALES de su firma en 40 casillas a la redonda
+[16:29:48.008] [Terrakeep] Guia v2: ubicacion zona:abismo -> (3934, 926) origen=firma aproximada=False casillas=117152 [1 ms]
+[16:29:48.009] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona abismo situada en (3934, 926): 6365 casillas REALES de su firma en 40 casillas a la redonda
+[16:29:48.011] [Terrakeep] Guia v2: ubicacion zona:abismo_capa4 -> (3934, 926) origen=firma aproximada=False casillas=56384 [1 ms]
+[16:29:48.011] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona abismo_capa4 situada en (3934, 926): 6365 casillas REALES de su firma en 40 casillas a la redonda
+[16:29:48.013] [Terrakeep] Guia v2: ubicacion zona:mar_hundido -> (1566, 802) origen=firma aproximada=False casillas=25552 [1 ms]
+[16:29:48.013] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona mar_hundido situada en (1566, 802): 3889 casillas REALES de su firma en 40 casillas a la redonda
+[16:29:48.015] [Terrakeep] Guia v2: ubicacion zona:penascos_azufre -> (3422, 1118) origen=firma aproximada=False casillas=87008 [1 ms]
+[16:29:48.015] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona penascos_azufre situada en (3422, 1118): 6344 casillas REALES de su firma en 40 casillas a la redonda
+[16:29:48.017] [Terrakeep] Guia v2: ubicacion zona:infeccion_astral -> NO EXISTE en este mundo [1 ms]
+[16:29:48.017] [Terrakeep] AUTOPRUEBA GUIA V2 - zona infeccion_astral (Infección Astral): no existe en este mundo (tiles de mod que este mundo no tiene, o todavía no: p. ej. la Infección Astral llega en modo difícil).
+[16:29:48.019] [Terrakeep] Guia v2: ubicacion zona:faro_astral -> NO EXISTE en este mundo [1 ms]
+[16:29:48.019] [Terrakeep] AUTOPRUEBA GUIA V2 - zona faro_astral (Baliza Astral): no existe en este mundo (tiles de mod que este mundo no tiene, o todavía no: p. ej. la Infección Astral llega en modo difícil).
+[16:29:48.019] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: laboratorio SunkenSeaLabCenter en (1541, 666): 1618 casillas de laboratorio REALES alrededor
+[16:29:48.020] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: laboratorio PlanetoidLabCenter en (2239, 128): 1011 casillas de laboratorio REALES alrededor
+[16:29:48.020] [Terrakeep] AUTOPRUEBA GUIA V2 - laboratorio JungleLabCenter: no generado en este mundo.
+[16:29:48.020] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: laboratorio HellLabCenter en (504, 1089): 2023 casillas de laboratorio REALES alrededor
+[16:29:48.020] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: laboratorio IceLabCenter en (3128, 570): 1866 casillas de laboratorio REALES alrededor
+[16:29:48.020] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: laboratorio CavernLabCenter en (1908, 954): 962 casillas de laboratorio REALES alrededor
+[16:29:48.020] [Terrakeep] Guia v2: ubicacion punto:spawn -> (2103, 215) origen=punto:spawn aproximada=False casillas=0 [0 ms]
+[16:29:48.020] [Terrakeep] AUTOPRUEBA GUIA V2 - parada inicio -> (2103, 215) punto:spawn · spawn point
+[16:29:48.021] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada inicio: la marca cae en el punto de aparicion real
+[16:29:48.021] [Terrakeep] Guia v2: ubicacion zona:superficie -> (2103, 291) origen=capa:superficie aproximada=True casillas=0 [0 ms]
+[16:29:48.021] [Terrakeep] AUTOPRUEBA GUIA V2 - parada slime -> (2103, 291) capa:superficie APROXIMADA · Superficie
+[16:29:48.021] [Terrakeep] AUTOPRUEBA GUIA V2 - parada desert -> (1693, 292) firma · Desierto
+[16:29:48.021] [Terrakeep] AUTOPRUEBA GUIA V2 - parada sunken -> (1566, 802) firma · Mar Hundido
+[16:29:48.021] [Terrakeep] AUTOPRUEBA GUIA V2 - parada eye -> (2103, 291) capa:superficie APROXIMADA · Superficie
+[16:29:48.021] [Terrakeep] AUTOPRUEBA GUIA V2 - parada acid1 -> (3871, 288) firma · Mar Sulfúrico
+[16:29:48.021] [Terrakeep] AUTOPRUEBA GUIA V2 - parada crabulon -> (1943, 597) firma · Champiñón en el subsuelo
+[16:29:48.021] [Terrakeep] AUTOPRUEBA GUIA V2 - parada evil -> (538, 351) firma · El Carmesí
+[16:29:48.021] [Terrakeep] AUTOPRUEBA GUIA V2 - parada hive -> (538, 351) firma · El Carmesí
+[16:29:48.022] [Terrakeep] AUTOPRUEBA GUIA V2 - parada bee -> (1184, 538) firma · Colmena
+[16:29:48.022] [Terrakeep] Guia v2: ubicacion punto:mazmorra -> (3295, 229) origen=punto:mazmorra aproximada=False casillas=0 [0 ms]
+[16:29:48.022] [Terrakeep] AUTOPRUEBA GUIA V2 - parada skeletron -> (3295, 229) punto:mazmorra · Dungeon entrance
+[16:29:48.022] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada skeletron: la marca cae en la entrada real de la Mazmorra (3295, 229)
+[16:29:48.022] [Terrakeep] AUTOPRUEBA GUIA V2 - parada abyss1 -> (3934, 926) firma · Abismo
+[16:29:48.022] [Terrakeep] AUTOPRUEBA GUIA V2 - parada slimegod -> (2103, 291) capa:superficie APROXIMADA · Superficie
+[16:29:48.022] [Terrakeep] AUTOPRUEBA GUIA V2 - parada wall -> (2783, 1117) firma · El Inframundo
+[16:29:48.022] [Terrakeep] AUTOPRUEBA GUIA V2 - parada hardstart -> (1054, 350) firma · Jungla en el subsuelo
+[16:29:48.022] [Terrakeep] AUTOPRUEBA GUIA V2 - parada queenslime: su lugar NO existe en este mundo (zona:sagrado).
+[16:29:48.023] [Terrakeep] AUTOPRUEBA GUIA V2 - parada cryogen -> (2974, 283) firma · Nieve
+[16:29:48.023] [Terrakeep] AUTOPRUEBA GUIA V2 - parada mech1 -> (2103, 291) capa:superficie APROXIMADA · Superficie
+[16:29:48.023] [Terrakeep] AUTOPRUEBA GUIA V2 - parada aquatic -> (3871, 288) firma · Mar Sulfúrico
+[16:29:48.023] [Terrakeep] AUTOPRUEBA GUIA V2 - parada mech2 -> (2103, 291) capa:superficie APROXIMADA · Superficie
+[16:29:48.023] [Terrakeep] AUTOPRUEBA GUIA V2 - parada brimstone -> (3422, 1118) firma · Peñascos de Azufre
+[16:29:48.023] [Terrakeep] AUTOPRUEBA GUIA V2 - parada mech3 -> (2103, 291) capa:superficie APROXIMADA · Superficie
+[16:29:48.023] [Terrakeep] AUTOPRUEBA GUIA V2 - parada clone -> (2103, 291) capa:superficie APROXIMADA · Superficie
+[16:29:48.023] [Terrakeep] AUTOPRUEBA GUIA V2 - parada plantera -> (1054, 350) firma · Jungla en el subsuelo
+[16:29:48.023] [Terrakeep] Guia v2: ubicacion zona:oceano -> (60, 281) origen=punto:oceano_lado_opuesto aproximada=True casillas=0 [0 ms]
+[16:29:48.024] [Terrakeep] AUTOPRUEBA GUIA V2 - parada leviathan -> (60, 281) punto:oceano_lado_opuesto APROXIMADA · Océano
+[16:29:48.024] [Terrakeep] AUTOPRUEBA GUIA V2 - parada aureus: su lugar NO existe en este mundo (zona:infeccion_astral).
+[16:29:48.024] [Terrakeep] AUTOPRUEBA GUIA V2 - parada golem -> (924, 602) firma · El Templo
+[16:29:48.024] [Terrakeep] AUTOPRUEBA GUIA V2 - parada plague -> (1051, 411) firma · La jungla
+[16:29:48.024] [Terrakeep] AUTOPRUEBA GUIA V2 - parada ravager -> (2103, 291) capa:superficie APROXIMADA · Superficie
+[16:29:48.024] [Terrakeep] AUTOPRUEBA GUIA V2 - parada hardextras -> (60, 281) punto:oceano_lado_opuesto APROXIMADA · Océano
+[16:29:48.024] [Terrakeep] AUTOPRUEBA GUIA V2 - parada cultist -> (3295, 229) punto:mazmorra · Dungeon entrance
+[16:29:48.024] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada cultist: la marca cae en la entrada real de la Mazmorra (3295, 229)
+[16:29:48.024] [Terrakeep] AUTOPRUEBA GUIA V2 - parada deus: su lugar NO existe en este mundo (zona:faro_astral, zona:infeccion_astral).
+[16:29:48.025] [Terrakeep] AUTOPRUEBA GUIA V2 - parada moon -> (2103, 291) capa:superficie APROXIMADA · Superficie
+[16:29:48.025] [Terrakeep] AUTOPRUEBA GUIA V2 - parada guardians -> (2783, 1117) firma · El Inframundo
+[16:29:48.025] [Terrakeep] AUTOPRUEBA GUIA V2 - parada dragonfolly -> (1051, 411) firma · La jungla
+[16:29:48.025] [Terrakeep] AUTOPRUEBA GUIA V2 - parada providence -> (2783, 1117) firma · El Inframundo
+[16:29:48.025] [Terrakeep] Guia v2: ubicacion zona:cielo -> (2103, 77) origen=capa:espacio aproximada=True casillas=0 [0 ms]
+[16:29:48.025] [Terrakeep] AUTOPRUEBA GUIA V2 - parada markbosses -> (2103, 77) capa:espacio APROXIMADA · Cielo
+[16:29:48.025] [Terrakeep] AUTOPRUEBA GUIA V2 - parada polter -> (3295, 229) punto:mazmorra · La Mazmorra
+[16:29:48.025] [Terrakeep] AUTOPRUEBA GUIA V2 - parada oldduke -> (3871, 288) firma · Mar Sulfúrico
+[16:29:48.025] [Terrakeep] AUTOPRUEBA GUIA V2 - parada dog -> (2103, 291) capa:superficie APROXIMADA · Superficie
+[16:29:48.025] [Terrakeep] AUTOPRUEBA GUIA V2 - parada eventsdog -> (2103, 291) capa:superficie APROXIMADA · Superficie
+[16:29:48.026] [Terrakeep] AUTOPRUEBA GUIA V2 - parada yharon -> (2103, 291) capa:superficie APROXIMADA · Superficie
+[16:29:48.026] [Terrakeep] AUTOPRUEBA GUIA V2 - parada exo -> (2103, 291) capa:superficie APROXIMADA · Superficie
+[16:29:48.026] [Terrakeep] AUTOPRUEBA GUIA V2 - parada calamitas -> (2103, 291) capa:superficie APROXIMADA · Superficie
+[16:29:48.026] [Terrakeep] AUTOPRUEBA GUIA V2 - parada shadowspec -> (2103, 215) punto:spawn · spawn point
+[16:29:48.026] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada shadowspec: la marca cae en el punto de aparicion real
+[16:29:48.026] [Terrakeep] AUTOPRUEBA GUIA V2 - parada rush -> (3934, 926) firma · El Vacío
+[16:29:48.026] [Terrakeep] AUTOPRUEBA GUIA V2 - parada wyrm -> (3934, 926) firma · El Vacío
+[16:29:48.026] [Terrakeep] AUTOPRUEBA GUIA V2 - paradas situadas en este mundo: 27 exactas, 17 aproximadas (lo dicen), 3 sin lugar en este mundo, 0 sin ubicacion en el contenido.
+[16:29:48.026] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la mayoria de paradas se puede marcar en el mapa de este mundo
+[16:29:48.028] [Terrakeep] AUTOPRUEBA GUIA V2 - fichas de los 34 objetos que pide la ruta: 33 con receta/botin/bolsa/tienda, 1 «se consigue en el mundo», 0 sin objeto en esta partida.
+[16:29:48.029] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ninguna ficha enseña recetas o botin de Calamity sin Calamity cargado (RefObjeto.ObtencionPara)
+[16:29:48.029] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: todos los objetos que pide la ruta existen en esta partida
+[16:29:48.029] [Terrakeep] AUTOPRUEBA GUIA V2 - ejemplo de ficha (Terraria/SlimeCrown): You don't have it yet. | How to get it | Recipe: 20 × Gel (you have 0) + 1 × Gold Crown (you have 0) | Station: Demon Altar / Crimson Altar — it is in the world (can't be carried): use the map button | from the game code: Terraria/Recipe.cs:14429 | Recipe: 20 × Gel (you have 0) + 1 × Platinum Crown (you have 0) | Station: Demon Altar / Crimson Altar — it is in the world (can't be carried): use the map button | from the game code: Terraria/Recipe.cs:14435
+[16:29:48.029] [Terrakeep] AUTOPRUEBA GUIA V2 - RESUMEN: 38 comprobaciones, 0 en rojo. Barridos de zona: 25.
+[16:29:48.029] [Terrakeep] AUTOPRUEBA GUIA V2 COMPLETA

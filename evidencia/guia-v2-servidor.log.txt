@@ -1,0 +1,163 @@
+﻿# Evidencia de la Guia en tiempo real - 2026-10-02 16:29:59
+[16:29:59.597] [Terrakeep] Guia: arbol de progresion cargado. 46 tramos (46 con requisitos evaluables), 116 pasos, 230 requisitos, 36 avisos. Calamity cargado=False.
+[16:29:59.598] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedDesertScourge" en el paso "VencerADesertScourge"
+[16:29:59.598] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedDesertScourge" en el paso "PrepararGiantClam"
+[16:29:59.598] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCLAM" en el paso "VencerAGiantClam"
+[16:29:59.605] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCrabulon" en el paso "VencerACrabulon"
+[16:29:59.605] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedHiveMind" en el paso "VencerAHiveMindOPerforator"
+[16:29:59.605] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedSlimeGod" en el paso "VencerASlimeGod"
+[16:29:59.605] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedDreadnautilus" en el paso "VencerADreadnautilusYHorribleHog"
+[16:29:59.606] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCryogen" en el paso "VencerACryogen"
+[16:29:59.606] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedAquaticScourge" en el paso "VencerAAquaticScourge"
+[16:29:59.606] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedBrimstoneElemental" en el paso "VencerABrimstoneElemental"
+[16:29:59.606] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedAquaticScourge" en el paso "PrepararLluviaAcida2"
+[16:29:59.606] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCragmawMire" en el paso "VencerACragmawMire"
+[16:29:59.606] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedAstrumAureus" en el paso "VencerAAstrumAureus"
+[16:29:59.606] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCalamitasClone" en el paso "VencerACalamitasClone"
+[16:29:59.606] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedGSS" en el paso "VencerAGreatSandShark"
+[16:29:59.606] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedRavager" en el paso "VencerARavager"
+[16:29:59.606] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedPlaguebringer" en el paso "VencerAPlaguebringer"
+[16:29:59.606] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedDragonfolly" en el paso "VencerADragonfolly"
+[16:29:59.607] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedPrimordialWyrm" en el paso "VencerAPrimordialWyrm"
+[16:29:59.607] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedPolterghast" en el paso "PrepararLluviaAcida3"
+[16:29:59.607] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedMauler" en el paso "VencerALluviaAcida3"
+[16:29:59.607] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedAstrumDeus" en el paso "VencerAAstrumDeus"
+[16:29:59.607] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedGuardians" en el paso "VencerAGuardianes"
+[16:29:59.607] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedProvidence" en el paso "VencerAProvidence"
+[16:29:59.607] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCeaselessVoid" en el paso "VencerACeaselessVoid"
+[16:29:59.607] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedStormWeaver" en el paso "VencerAStormWeaver"
+[16:29:59.607] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedSignus" en el paso "VencerASignus"
+[16:29:59.607] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedSignus" en el paso "ArmaParaPolterghast"
+[16:29:59.608] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedPolterghast" en el paso "VencerAPolterghast"
+[16:29:59.608] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedPolterghast" en el paso "ArmaParaOldDuke"
+[16:29:59.608] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedBoomerDuke" en el paso "VencerAOldDuke"
+[16:29:59.608] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedDoG" en el paso "VencerADoG"
+[16:29:59.608] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedYharon" en el paso "VencerAYharon"
+[16:29:59.608] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedYharon" en el paso "ArmaParaExoMechs"
+[16:29:59.608] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedExoMechs" en el paso "VencerAExoMechs"
+[16:29:59.608] [Terrakeep] Guia: AVISO de datos - bandera desconocida "downedCalamitas" en el paso "VencerASupremeCalamitas"
+[16:29:59.647] [Terrakeep] Guia v2: guias incrustadas en Terrakeep.Core = [calamity, vanilla]; Calamity cargado=False; guia activa=vanilla (49 paradas, 210 tareas); referencias=2174 objetos/532 NPC.
+[16:30:00.445] [Terrakeep] AUTOPRUEBA GUIA V2 - pasada de SERVIDOR (sin interfaz). Mundo TerrakeepPrueba 4200x1200, carmesi=False, Calamity=False.
+[16:30:00.445] [Terrakeep] AUTOPRUEBA GUIA V2 - guias incrustadas en Terrakeep.Core: [calamity, vanilla]; esperada para esta partida: vanilla.
+[16:30:00.445] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: guía activa = vanilla (49 paradas, 210 tareas, 16 articulos)
+[16:30:00.446] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: referencias de objeto resueltas con ModContent.TryFind/ItemID: 1211 de 1211
+[16:30:00.446] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: referencias de NPC resueltas: 372 de 372
+[16:30:00.453] [Terrakeep] AUTOPRUEBA GUIA V2 - tiles de mod en el mundo (muestreo 1 de 4): 0 tipos; los mas abundantes: .
+[16:30:00.456] [Terrakeep] Guia v2: ubicacion zona:cielo -> (3546, 111) origen=firma aproximada=False casillas=7152 [3 ms]
+[16:30:00.456] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona cielo situada en (3546, 111): 1567 casillas REALES de su firma en 40 casillas a la redonda
+[16:30:00.459] [Terrakeep] Guia v2: ubicacion zona:nieve -> (3100, 415) origen=firma aproximada=False casillas=151360 [2 ms]
+[16:30:00.459] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona nieve situada en (3100, 415): 5198 casillas REALES de su firma en 40 casillas a la redonda
+[16:30:00.462] [Terrakeep] Guia v2: ubicacion zona:desierto -> (3997, 284) origen=firma aproximada=False casillas=111168 [2 ms]
+[16:30:00.462] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona desierto situada en (3997, 284): 5735 casillas REALES de su firma en 40 casillas a la redonda
+[16:30:00.465] [Terrakeep] Guia v2: ubicacion zona:desierto_subterraneo -> (1758, 412) origen=firma aproximada=False casillas=65056 [2 ms]
+[16:30:00.465] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona desierto_subterraneo situada en (1758, 412): 2568 casillas REALES de su firma en 40 casillas a la redonda
+[16:30:00.468] [Terrakeep] Guia v2: ubicacion zona:jungla -> (993, 674) origen=firma aproximada=False casillas=51840 [2 ms]
+[16:30:00.468] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona jungla situada en (993, 674): 956 casillas REALES de su firma en 40 casillas a la redonda
+[16:30:00.471] [Terrakeep] Guia v2: ubicacion zona:jungla_subterranea -> (862, 606) origen=firma aproximada=False casillas=339952 [2 ms]
+[16:30:00.471] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona jungla_subterranea situada en (862, 606): 5127 casillas REALES de su firma en 40 casillas a la redonda
+[16:30:00.474] [Terrakeep] Guia v2: ubicacion zona:setas -> (3102, 859) origen=firma aproximada=False casillas=4672 [2 ms]
+[16:30:00.474] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona setas situada en (3102, 859): 623 casillas REALES de su firma en 40 casillas a la redonda
+[16:30:00.477] [Terrakeep] Guia v2: ubicacion zona:corrupcion -> (3609, 284) origen=firma aproximada=False casillas=35648 [2 ms]
+[16:30:00.477] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona corrupcion situada en (3609, 284): 2965 casillas REALES de su firma en 40 casillas a la redonda
+[16:30:00.480] [Terrakeep] Guia v2: ubicacion zona:carmesi -> NO EXISTE en este mundo [2 ms]
+[16:30:00.480] [Terrakeep] AUTOPRUEBA GUIA V2 - zona carmesi (El Carmesí): no existe en este mundo.
+[16:30:00.482] [Terrakeep] Guia v2: ubicacion zona:colmena -> (991, 479) origen=firma aproximada=False casillas=5392 [2 ms]
+[16:30:00.483] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona colmena situada en (991, 479): 859 casillas REALES de su firma en 40 casillas a la redonda
+[16:30:00.483] [Terrakeep] Guia v2: ubicacion zona:mazmorra -> (3355, 225) origen=punto:mazmorra aproximada=False casillas=0 [0 ms]
+[16:30:00.483] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona mazmorra situada en (3355, 225): 3021 casillas REALES de su firma en 40 casillas a la redonda
+[16:30:00.486] [Terrakeep] Guia v2: ubicacion zona:inframundo -> (862, 1118) origen=firma aproximada=False casillas=422672 [2 ms]
+[16:30:00.486] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona inframundo situada en (862, 1118): 5836 casillas REALES de su firma en 40 casillas a la redonda
+[16:30:00.489] [Terrakeep] Guia v2: ubicacion zona:sagrado -> NO EXISTE en este mundo [2 ms]
+[16:30:00.489] [Terrakeep] AUTOPRUEBA GUIA V2 - zona sagrado (Lo Sagrado): no existe en este mundo.
+[16:30:00.491] [Terrakeep] Guia v2: ubicacion zona:templo -> (856, 739) origen=firma aproximada=False casillas=24064 [2 ms]
+[16:30:00.492] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona templo situada en (856, 739): 4984 casillas REALES de su firma en 40 casillas a la redonda
+[16:30:00.494] [Terrakeep] Guia v2: ubicacion zona:granito -> (1250, 935) origen=firma aproximada=False casillas=9984 [2 ms]
+[16:30:00.494] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona granito situada en (1250, 935): 1471 casillas REALES de su firma en 40 casillas a la redonda
+[16:30:00.497] [Terrakeep] Guia v2: ubicacion zona:marmol -> (3418, 987) origen=firma aproximada=False casillas=12432 [2 ms]
+[16:30:00.497] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona marmol situada en (3418, 987): 2414 casillas REALES de su firma en 40 casillas a la redonda
+[16:30:00.500] [Terrakeep] Guia v2: ubicacion zona:meteorito -> NO EXISTE en este mundo [2 ms]
+[16:30:00.500] [Terrakeep] AUTOPRUEBA GUIA V2 - zona meteorito (Meteorito): no existe en este mundo.
+[16:30:00.503] [Terrakeep] Guia v2: ubicacion zona:altares -> (2572, 349) origen=firma aproximada=False casillas=240 [2 ms]
+[16:30:00.503] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona altares situada en (2572, 349): 30 casillas REALES de su firma en 40 casillas a la redonda
+[16:30:00.503] [Terrakeep] Guia v2: ubicacion punto:spawn -> (2096, 270) origen=punto:spawn aproximada=False casillas=0 [0 ms]
+[16:30:00.503] [Terrakeep] AUTOPRUEBA GUIA V2 - parada inicio -> (2096, 270) punto:spawn · spawn point
+[16:30:00.503] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada inicio: la marca cae en el punto de aparicion real
+[16:30:00.503] [Terrakeep] Guia v2: ubicacion zona:subsuelo -> (2096, 369) origen=capa:subterraneo aproximada=True casillas=0 [0 ms]
+[16:30:00.503] [Terrakeep] AUTOPRUEBA GUIA V2 - parada subsuelo -> (2096, 369) capa:subterraneo APROXIMADA · Subsuelo
+[16:30:00.503] [Terrakeep] AUTOPRUEBA GUIA V2 - parada pueblo -> (2096, 270) punto:spawn · spawn point
+[16:30:00.503] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada pueblo: la marca cae en el punto de aparicion real
+[16:30:00.504] [Terrakeep] Guia v2: ubicacion zona:cavernas -> (2096, 713) origen=capa:cavernas aproximada=True casillas=0 [0 ms]
+[16:30:00.504] [Terrakeep] AUTOPRUEBA GUIA V2 - parada movilidad -> (2096, 713) capa:cavernas APROXIMADA · Cavernas
+[16:30:00.504] [Terrakeep] Guia v2: ubicacion zona:superficie -> (2096, 292) origen=capa:superficie aproximada=True casillas=0 [0 ms]
+[16:30:00.504] [Terrakeep] AUTOPRUEBA GUIA V2 - parada slime -> (2096, 292) capa:superficie APROXIMADA · Superficie
+[16:30:00.504] [Terrakeep] AUTOPRUEBA GUIA V2 - parada eye -> (2096, 292) capa:superficie APROXIMADA · Superficie
+[16:30:00.504] [Terrakeep] AUTOPRUEBA GUIA V2 - parada lunasangre -> (2096, 292) capa:superficie APROXIMADA · Superficie
+[16:30:00.504] [Terrakeep] AUTOPRUEBA GUIA V2 - parada evil -> (3609, 284) firma · La Corrupción
+[16:30:00.504] [Terrakeep] AUTOPRUEBA GUIA V2 - parada meteorito -> (2096, 292) capa:superficie APROXIMADA · Superficie
+[16:30:00.504] [Terrakeep] AUTOPRUEBA GUIA V2 - parada goblins -> (2096, 270) punto:spawn · spawn point
+[16:30:00.504] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada goblins: la marca cae en el punto de aparicion real
+[16:30:00.505] [Terrakeep] AUTOPRUEBA GUIA V2 - parada dd2t1 -> (2096, 270) punto:spawn · spawn point
+[16:30:00.505] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada dd2t1: la marca cae en el punto de aparicion real
+[16:30:00.505] [Terrakeep] AUTOPRUEBA GUIA V2 - parada jungla -> (862, 606) firma · Jungla en el subsuelo
+[16:30:00.505] [Terrakeep] AUTOPRUEBA GUIA V2 - parada bee -> (991, 479) firma · Colmena
+[16:30:00.505] [Terrakeep] AUTOPRUEBA GUIA V2 - parada deerclops -> (3100, 415) firma · Nieve
+[16:30:00.505] [Terrakeep] Guia v2: ubicacion zona:oceano -> (60, 282) origen=punto:oceano_lado_opuesto aproximada=True casillas=0 [0 ms]
+[16:30:00.505] [Terrakeep] AUTOPRUEBA GUIA V2 - parada pesca -> (60, 282) punto:oceano_lado_opuesto APROXIMADA · Océano
+[16:30:00.505] [Terrakeep] Guia v2: ubicacion punto:mazmorra -> (3355, 225) origen=punto:mazmorra aproximada=False casillas=0 [0 ms]
+[16:30:00.505] [Terrakeep] AUTOPRUEBA GUIA V2 - parada skeletron -> (3355, 225) punto:mazmorra · Dungeon entrance
+[16:30:00.505] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada skeletron: la marca cae en la entrada real de la Mazmorra (3355, 225)
+[16:30:00.506] [Terrakeep] AUTOPRUEBA GUIA V2 - parada mazmorra -> (3355, 225) punto:mazmorra · Dungeon entrance
+[16:30:00.506] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada mazmorra: la marca cae en la entrada real de la Mazmorra (3355, 225)
+[16:30:00.506] [Terrakeep] AUTOPRUEBA GUIA V2 - parada antorchas -> (2096, 713) capa:cavernas APROXIMADA · Cavernas
+[16:30:00.506] [Terrakeep] Guia v2: ubicacion zona:eter -> (331, 579) origen=punto:eter aproximada=True casillas=0 [0 ms]
+[16:30:00.506] [Terrakeep] AUTOPRUEBA GUIA V2 - parada eter -> (331, 579) punto:eter APROXIMADA · Éter
+[16:30:00.506] [Terrakeep] AUTOPRUEBA GUIA V2 - parada inframundo -> (862, 1118) firma · El Inframundo
+[16:30:00.506] [Terrakeep] AUTOPRUEBA GUIA V2 - parada armapre -> (2096, 270) punto:spawn · spawn point
+[16:30:00.506] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada armapre: la marca cae en el punto de aparicion real
+[16:30:00.506] [Terrakeep] AUTOPRUEBA GUIA V2 - parada wall -> (862, 1118) firma · El Inframundo
+[16:30:00.506] [Terrakeep] AUTOPRUEBA GUIA V2 - parada hardstart -> (2572, 349) firma · Altar demoníaco / Altar carmesí
+[16:30:00.506] [Terrakeep] AUTOPRUEBA GUIA V2 - parada sagrado -> (3609, 284) firma · La Corrupción
+[16:30:00.507] [Terrakeep] AUTOPRUEBA GUIA V2 - parada queenslime: su lugar NO existe en este mundo (zona:sagrado).
+[16:30:00.507] [Terrakeep] AUTOPRUEBA GUIA V2 - parada pirates -> (2096, 270) punto:spawn · spawn point
+[16:30:00.507] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada pirates: la marca cae en el punto de aparicion real
+[16:30:00.507] [Terrakeep] AUTOPRUEBA GUIA V2 - parada frostlegion -> (2096, 270) punto:spawn · spawn point
+[16:30:00.507] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada frostlegion: la marca cae en el punto de aparicion real
+[16:30:00.507] [Terrakeep] AUTOPRUEBA GUIA V2 - parada mech1 -> (2096, 292) capa:superficie APROXIMADA · Superficie
+[16:30:00.507] [Terrakeep] AUTOPRUEBA GUIA V2 - parada mech2 -> (2096, 292) capa:superficie APROXIMADA · Superficie
+[16:30:00.507] [Terrakeep] AUTOPRUEBA GUIA V2 - parada mech3 -> (2096, 292) capa:superficie APROXIMADA · Superficie
+[16:30:00.508] [Terrakeep] AUTOPRUEBA GUIA V2 - parada frutas -> (862, 606) firma · Jungla en el subsuelo
+[16:30:00.508] [Terrakeep] AUTOPRUEBA GUIA V2 - parada dd2t2 -> (2096, 270) punto:spawn · spawn point
+[16:30:00.508] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada dd2t2: la marca cae en el punto de aparicion real
+[16:30:00.508] [Terrakeep] AUTOPRUEBA GUIA V2 - parada eclipse -> (2096, 292) capa:superficie APROXIMADA · Superficie
+[16:30:00.508] [Terrakeep] AUTOPRUEBA GUIA V2 - parada plantera -> (862, 606) firma · Jungla en el subsuelo
+[16:30:00.508] [Terrakeep] AUTOPRUEBA GUIA V2 - parada mazmorra2 -> (3355, 225) punto:mazmorra · Dungeon entrance
+[16:30:00.508] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada mazmorra2: la marca cae en la entrada real de la Mazmorra (3355, 225)
+[16:30:00.508] [Terrakeep] AUTOPRUEBA GUIA V2 - parada templo -> (856, 739) firma · El Templo
+[16:30:00.508] [Terrakeep] AUTOPRUEBA GUIA V2 - parada golem -> (856, 739) firma · El Templo
+[16:30:00.508] [Terrakeep] AUTOPRUEBA GUIA V2 - parada fishron -> (60, 282) punto:oceano_lado_opuesto APROXIMADA · Océano
+[16:30:00.508] [Terrakeep] AUTOPRUEBA GUIA V2 - parada empress: su lugar NO existe en este mundo (zona:sagrado).
+[16:30:00.509] [Terrakeep] AUTOPRUEBA GUIA V2 - parada pumpkin -> (2096, 270) punto:spawn · spawn point
+[16:30:00.509] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada pumpkin: la marca cae en el punto de aparicion real
+[16:30:00.509] [Terrakeep] AUTOPRUEBA GUIA V2 - parada frostmoon -> (2096, 270) punto:spawn · spawn point
+[16:30:00.509] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada frostmoon: la marca cae en el punto de aparicion real
+[16:30:00.509] [Terrakeep] AUTOPRUEBA GUIA V2 - parada dd2t3 -> (2096, 270) punto:spawn · spawn point
+[16:30:00.509] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada dd2t3: la marca cae en el punto de aparicion real
+[16:30:00.509] [Terrakeep] AUTOPRUEBA GUIA V2 - parada martians -> (2096, 292) capa:superficie APROXIMADA · Superficie
+[16:30:00.509] [Terrakeep] AUTOPRUEBA GUIA V2 - parada cultist -> (3355, 225) punto:mazmorra · Dungeon entrance
+[16:30:00.509] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada cultist: la marca cae en la entrada real de la Mazmorra (3355, 225)
+[16:30:00.509] [Terrakeep] AUTOPRUEBA GUIA V2 - parada pillars -> (2096, 292) capa:superficie APROXIMADA · Superficie
+[16:30:00.510] [Terrakeep] AUTOPRUEBA GUIA V2 - parada moonlord -> (2096, 270) punto:spawn · spawn point
+[16:30:00.510] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada moonlord: la marca cae en el punto de aparicion real
+[16:30:00.510] [Terrakeep] AUTOPRUEBA GUIA V2 - parada postmoon -> (2096, 270) punto:spawn · spawn point
+[16:30:00.510] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada postmoon: la marca cae en el punto de aparicion real
+[16:30:00.510] [Terrakeep] AUTOPRUEBA GUIA V2 - parada mejoras -> (331, 579) punto:eter APROXIMADA · Éter
+[16:30:00.510] [Terrakeep] AUTOPRUEBA GUIA V2 - parada zenith -> (2096, 270) punto:spawn · spawn point
+[16:30:00.510] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: parada zenith: la marca cae en el punto de aparicion real
+[16:30:00.510] [Terrakeep] AUTOPRUEBA GUIA V2 - paradas situadas en este mundo: 30 exactas, 17 aproximadas (lo dicen), 2 sin lugar en este mundo, 0 sin ubicacion en el contenido.
+[16:30:00.510] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la mayoria de paradas se puede marcar en el mapa de este mundo
+[16:30:00.518] [Terrakeep] AUTOPRUEBA GUIA V2 - fichas de los 95 objetos que pide la ruta: 91 con receta/botin/bolsa/tienda, 4 «se consigue en el mundo», 0 sin objeto en esta partida.
+[16:30:00.519] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ninguna ficha enseña recetas o botin de Calamity sin Calamity cargado (RefObjeto.ObtencionPara)
+[16:30:00.519] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: todos los objetos que pide la ruta existen en esta partida
+[16:30:00.519] [Terrakeep] AUTOPRUEBA GUIA V2 - ejemplo de ficha (Terraria/WorkBench): You don't have it yet. | How to get it | Recipe: 10 × Wood (you have 0) | Crafted by hand, no station needed. | from the game code: Terraria/Recipe.cs:4641
+[16:30:00.519] [Terrakeep] AUTOPRUEBA GUIA V2 - RESUMEN: 39 comprobaciones, 0 en rojo. Barridos de zona: 25.
+[16:30:00.519] [Terrakeep] AUTOPRUEBA GUIA V2 COMPLETA

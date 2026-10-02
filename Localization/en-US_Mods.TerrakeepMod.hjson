@@ -43,7 +43,7 @@ Panel: {
 		Investigacion: It writes through Journey Mode's official API, so the game's own menu shows the same.
 		Exploracion: Drag the mini-map to pan and use the wheel to zoom.
 		Ajustes: The language changes live. Ctrl+Z undoes any Terrakeep action.
-		Guia: "Your step-by-step route, read from your real game. The next stop is marked on the game map."
+		Guia: Your step-by-step route, read from your real game. The next stop is marked on the game map.
 		Album: Snaps a screenshot on its own every time you close a Guide milestone. Nothing to remember to press.
 	}
 }
@@ -922,10 +922,10 @@ Ajustes: {
 	AtajosHistorial: Undo and redo: {0} and {1} (holding Ctrl).
 	AtajosIcono: It also opens from the Terrakeep icon next to the bestiary and emote buttons, while the inventory is open.
 	SinTecla: "[no key]"
-	Guia: "Guide"
-	MarcaMapaSi: "Next-stop marker on the map: on"
-	MarcaMapaNo: "Next-stop marker on the map: hidden"
-	MarcaMapaAyuda: "The Guide marks your next stop on the game map (fullscreen, minimap and overlay). Click to show or hide it."
+	Guia: Guide
+	MarcaMapaSi: Next-stop marker on the map: on
+	MarcaMapaNo: Next-stop marker on the map: hidden
+	MarcaMapaAyuda: The Guide marks your next stop on the game map (fullscreen, minimap and overlay). Click to show or hide it.
 }
 
 Historial: {
@@ -1067,6 +1067,11 @@ Guia: {
 		DanoArmaSinArma: You are not carrying a weapon; {0} damage needed
 		GanchoSi: You carry a hook: {0}
 		GanchoNo: You are not carrying a hook
+		ObjetoPoseido: Have it anywhere on the character (inventory, equipment or banks): {0}
+		ObjetoPoseidoVarios: "{0}: you have {1} of {2} (counting equipment and banks)"
+		Equipado: Have it equipped: {0}
+		FrutasVida: Life Fruits consumed: {0} of {1}
+		ManaMaxima: Max mana: {0} of {1}
 	}
 
 	Bandera: {
@@ -1129,6 +1134,18 @@ Guia: {
 		downedYharon: Defeat Yharon
 		downedExoMechs: Defeat all three Exo Mechs
 		downedCalamitas: Defeat Supreme Witch, Calamitas
+		downedLeviathan: Defeat the Leviathan and Anahita
+		downedEoCAcidRain: Complete Acid Rain tier 1
+		downedAquaticScourgeAcidRain: Complete Acid Rain tier 2
+		downedCLAMHardMode: Defeat the Giant Clam in Hardmode
+		downedNuclearTerror: Defeat the Nuclear Terror
+		downedBossRush: Complete the Boss Rush
+		downedDD2InvasionT1: Beat the Old One's Army at tier 1 (after the Eye of Cthulhu or an evil boss)
+		downedDD2InvasionT2: Beat the Old One's Army at tier 2 (after a mechanical boss)
+		downedDD2InvasionT3: Beat the Old One's Army at tier 3 (after Golem)
+		combatBookWasUsed: Advanced Combat Techniques used in this world
+		combatBookVolumeTwoWasUsed: Advanced Combat Techniques: Volume Two used in this world
+		peddlersSatchelWasUsed: Peddler's Satchel used in this world
 	}
 
 	Zona: {
@@ -2073,65 +2090,54 @@ Guia: {
 			Como: She changes phase with very different patterns each time: there's no single trick that covers the whole fight, every phase demands its own read.
 		}
 	}
-	Req.ObjetoPoseido: "Have it anywhere on the character (inventory, equipment or banks): {0}"
-	Req.ObjetoPoseidoVarios: "{0}: you have {1} of {2} (counting equipment and banks)"
-	Req.Equipado: "Have it equipped: {0}"
-	Req.FrutasVida: "Life Fruits consumed: {0} of {1}"
-	Req.ManaMaxima: "Max mana: {0} of {1}"
-	Mejora.demonHeart: "Demon Heart consumed (extra accessory slot)"
-	Mejora.torchGod: "Torch God's Favor obtained"
-	Mejora.artisanBread: "Artisan Loaf eaten"
-	Mejora.aegisCrystal: "Vital Crystal used"
-	Mejora.aegisFruit: "Aegis Fruit used"
-	Mejora.arcaneCrystal: "Arcane Crystal used"
-	Mejora.galaxyPearl: "Galaxy Pearl used"
-	Mejora.gummyWorm: "Gummy Worm used"
-	Mejora.ambrosia: "Ambrosia used"
-	Mejora.miracleFruit: "Miracle Fruit consumed (+25 life)"
-	Mejora.bloodOrange: "Sanguine Tangerine consumed (+25 life)"
-	Mejora.elderBerry: "Tainted Cloudberry consumed (+25 life)"
-	Mejora.dragonFruit: "Sacred Strawberry consumed (+25 life)"
-	Mejora.etherealCore: "Ethereal Core consumed"
-	Mejora.phantomHeart: "Phantom Heart consumed"
-	Mejora.cometShard: "Comet Shard consumed"
-	Mejora.revJam: "Revengeance upgrade consumed"
-	Mejora.extraAccessoryML: "Celestial Onion consumed (extra accessory slot)"
-	Mejora.rageOne: "First Rage upgrade consumed"
-	Mejora.rageTwo: "Second Rage upgrade consumed"
-	Mejora.rageThree: "Third Rage upgrade consumed"
-	Mejora.adrenalineOne: "First Adrenaline upgrade consumed"
-	Mejora.adrenalineTwo: "Second Adrenaline upgrade consumed"
-	Mejora.adrenalineThree: "Third Adrenaline upgrade consumed"
-	Mejora.HasTalkedAtCodebreaker: "Contacted Draedon from the Codebreaker"
-	Mejora.HasCraftedDraedonsForge: "Crafted Draedon's Forge"
-	EstadoMundo.revenge: "Revengeance enabled in the world"
-	EstadoMundo.death: "Death enabled in the world"
-	EstadoMundo.TalkedToDraedon: "Talked to Draedon in this world"
-	EstadoMundo.abyssSide: "The Abyss is on the left side of the world"
-	EstadoMundo.HasGeneratedLuminitePlanetoids: "Luminite planetoids generated"
-	EstadoMundo.HasFoundSunkenSeaSchematic: "Sunken Sea schematic found"
-	EstadoMundo.HasFoundPlanetoidSchematic: "Planetoid schematic decrypted"
-	EstadoMundo.HasFoundJungleSchematic: "Jungle schematic decrypted"
-	EstadoMundo.HasFoundHellSchematic: "Underworld schematic decrypted"
-	EstadoMundo.HasFoundIceSchematic: "Ice schematic decrypted"
-	EstadoMundo.HasUnlockedT1ArsenalRecipes: "Tier 1 Arsenal recipes unlocked"
-	EstadoMundo.HasUnlockedT2ArsenalRecipes: "Tier 2 Arsenal recipes unlocked"
-	EstadoMundo.HasUnlockedT3ArsenalRecipes: "Tier 3 Arsenal recipes unlocked"
-	EstadoMundo.HasUnlockedT4ArsenalRecipes: "Tier 4 Arsenal recipes unlocked"
-	EstadoMundo.HasUnlockedT5ArsenalRecipes: "Tier 5 Arsenal recipes unlocked"
-	EstadoMundo.mundoCarmesi: "Your world evil is the Crimson"
-	Bandera.downedLeviathan: "Defeat the Leviathan and Anahita"
-	Bandera.downedEoCAcidRain: "Complete Acid Rain tier 1"
-	Bandera.downedAquaticScourgeAcidRain: "Complete Acid Rain tier 2"
-	Bandera.downedCLAMHardMode: "Defeat the Giant Clam in Hardmode"
-	Bandera.downedNuclearTerror: "Defeat the Nuclear Terror"
-	Bandera.downedBossRush: "Complete the Boss Rush"
-	Bandera.downedDD2InvasionT1: "Beat the Old One's Army at tier 1 (after the Eye of Cthulhu or an evil boss)"
-	Bandera.downedDD2InvasionT2: "Beat the Old One's Army at tier 2 (after a mechanical boss)"
-	Bandera.downedDD2InvasionT3: "Beat the Old One's Army at tier 3 (after Golem)"
-	Bandera.combatBookWasUsed: "Advanced Combat Techniques used in this world"
-	Bandera.combatBookVolumeTwoWasUsed: "Advanced Combat Techniques: Volume Two used in this world"
-	Bandera.peddlersSatchelWasUsed: "Peddler's Satchel used in this world"
+
+	Mejora: {
+		demonHeart: Demon Heart consumed (extra accessory slot)
+		torchGod: Torch God's Favor obtained
+		artisanBread: Artisan Loaf eaten
+		aegisCrystal: Vital Crystal used
+		aegisFruit: Aegis Fruit used
+		arcaneCrystal: Arcane Crystal used
+		galaxyPearl: Galaxy Pearl used
+		gummyWorm: Gummy Worm used
+		ambrosia: Ambrosia used
+		miracleFruit: Miracle Fruit consumed (+25 life)
+		bloodOrange: Sanguine Tangerine consumed (+25 life)
+		elderBerry: Tainted Cloudberry consumed (+25 life)
+		dragonFruit: Sacred Strawberry consumed (+25 life)
+		etherealCore: Ethereal Core consumed
+		phantomHeart: Phantom Heart consumed
+		cometShard: Comet Shard consumed
+		revJam: Revengeance upgrade consumed
+		extraAccessoryML: Celestial Onion consumed (extra accessory slot)
+		rageOne: First Rage upgrade consumed
+		rageTwo: Second Rage upgrade consumed
+		rageThree: Third Rage upgrade consumed
+		adrenalineOne: First Adrenaline upgrade consumed
+		adrenalineTwo: Second Adrenaline upgrade consumed
+		adrenalineThree: Third Adrenaline upgrade consumed
+		HasTalkedAtCodebreaker: Contacted Draedon from the Codebreaker
+		HasCraftedDraedonsForge: Crafted Draedon's Forge
+	}
+
+	EstadoMundo: {
+		revenge: Revengeance enabled in the world
+		death: Death enabled in the world
+		TalkedToDraedon: Talked to Draedon in this world
+		abyssSide: The Abyss is on the left side of the world
+		HasGeneratedLuminitePlanetoids: Luminite planetoids generated
+		HasFoundSunkenSeaSchematic: Sunken Sea schematic found
+		HasFoundPlanetoidSchematic: Planetoid schematic decrypted
+		HasFoundJungleSchematic: Jungle schematic decrypted
+		HasFoundHellSchematic: Underworld schematic decrypted
+		HasFoundIceSchematic: Ice schematic decrypted
+		HasUnlockedT1ArsenalRecipes: Tier 1 Arsenal recipes unlocked
+		HasUnlockedT2ArsenalRecipes: Tier 2 Arsenal recipes unlocked
+		HasUnlockedT3ArsenalRecipes: Tier 3 Arsenal recipes unlocked
+		HasUnlockedT4ArsenalRecipes: Tier 4 Arsenal recipes unlocked
+		HasUnlockedT5ArsenalRecipes: Tier 5 Arsenal recipes unlocked
+		mundoCarmesi: Your world evil is the Crimson
+	}
 }
 
 Keybinds: {
@@ -2150,11 +2156,20 @@ Keybinds: {
 Configs: {
 	AjustesConfig: {
 		DisplayName: Settings
-		Headers.Interfaz: Interface
+
+		Headers: {
+			Interfaz: Interface
+			Guia: Guide
+		}
 
 		Idioma: {
 			Label: Interface language
 			Tooltip: Which language Terrakeep uses for its panels. Picking Spanish or English switches the whole game's language right away, because tModLoader only has one active language at a time.
+		}
+
+		MarcaGuiaEnMapa: {
+			Label: Guide marker on the map
+			Tooltip: Permanent marker on the game map showing where the Guide's next stop is. It updates itself as you progress.
 		}
 	}
 
@@ -2176,220 +2191,277 @@ Configs: {
 			Tooltip: ""
 		}
 	}
-	AjustesConfig.Headers.Guia: "Guide"
-	AjustesConfig.MarcaGuiaEnMapa.Label: "Guide marker on the map"
-	AjustesConfig.MarcaGuiaEnMapa.Tooltip: "Permanent marker on the game map showing where the Guide's next stop is. It updates itself as you progress."
 }
 
 Widgets.Desplegable.SinOpciones: (no options)
 
-
 GuiaV2: {
-	Pestana.MiGuia: "My guide"
-	Pestana.Ruta: "Route"
-	Pestana.Equipo: "Gear"
-	Pestana.Manual: "Manual"
-	Pestana.Perdido: "I'm lost"
-	Pestana.Raro: "Something odd"
-	Pestana.Brujula: "Compass"
-	Ambito.Calamity: "Calamity guide"
-	Ambito.Vanilla: "Terraria guide"
+	Pestana: {
+		MiGuia: My guide
+		Ruta: Route
+		Equipo: Gear
+		Manual: Manual
+		Perdido: I'm lost
+		Raro: Something odd
+		Brujula: Compass
+	}
+
+	Ambito: {
+		Calamity: Calamity guide
+		Vanilla: Terraria guide
+	}
+
 	Resumen: "{0} · {1}/{2} stops · {3}/{4} tasks"
-	SinGuiaCorto: "Guide not available in this version"
-	ClaseBoton: "Class: {0}"
-	ClaseAyuda: "Click to change class: the guide adapts gear and tips. Your best weapon suggests: {0}."
-	BuscarPista: "Search: boss, item, biome..."
-	Clase.cuerpo_a_cuerpo: "Melee"
-	Clase.distancia: "Ranged"
-	Clase.magia: "Magic"
-	Clase.invocacion: "Summoner"
-	Clase.picaro: "Rogue"
-	Modo.clasico: "Classic"
-	Modo.experto: "Expert"
-	Modo.maestro: "Master"
-	Modo.viaje: "Journey"
-	Modo.revengeance: "Revengeance"
-	Modo.death: "Death"
-	Modo.SinMundo: "no world loaded"
-	Tipo.jefe: "Boss"
-	Tipo.evento: "Event"
-	Tipo.exploracion: "Exploration"
-	Tipo.preparacion: "Preparation"
-	Tipo.desafio: "Challenge"
-	Capa.superficie: "surface"
-	Capa.subterraneo: "underground"
-	Capa.cavernas: "caverns"
-	Capa.infierno: "Underworld"
-	Capa.espacio: "space"
-	Capa.cualquiera: "several layers"
-	Punto.spawn: "spawn point"
-	Punto.mazmorra: "Dungeon entrance"
-	Punto.oceano_lado_mazmorra: "ocean on the Dungeon side"
-	Punto.oceano_lado_opuesto: "ocean opposite the Dungeon"
-	Punto.altar: "nearest demon or crimson altar"
-	Punto.SunkenSeaLabCenter: "Sunken Sea laboratory"
-	Punto.PlanetoidLabCenter: "planetoid laboratory"
-	Punto.JungleLabCenter: "jungle laboratory"
-	Punto.HellLabCenter: "Underworld laboratory"
-	Punto.IceLabCenter: "ice laboratory"
-	Punto.CavernLabCenter: "cavern laboratory"
-	Motivo.invocador: "summon item"
-	Motivo.Invocador: "Summon item for this encounter"
-	Cerrar: "Close"
-	Atras: "Back"
-	VerEnMapa: "Show on map"
-	IrABrujula: "Go to the Compass"
-	Fuentes: "Sources"
-	Relacionado: "Related:"
-	ErrorVista: "This view could not be built: {0}"
-	SinGuiaTitulo: "This game's guide is not included yet"
-	SinGuiaVanilla: "You are playing without Calamity, so your guide is the unmodded Terraria one, and this version of Terrakeep does not include it yet (it comes in the next update). The Calamity guide is not shown instead: it would talk about bosses and items that do not exist in your game. Meanwhile, the **Compass** still works with your real progress."
-	SinGuiaError: "The guide content could not be loaded (see the game's client.log)."
-	MiGuia.Partida: "Your game: {0} · class {1} ({2})"
-	MiGuia.ClaseElegida: "chosen by you"
-	MiGuia.ClasePropuesta: "suggested by your best weapon; change it above"
-	MiGuia.Progreso: "{0} of {1} stops done · {2} of {3} tasks · {4} postponed"
-	MiGuia.Siguiente: "YOUR NEXT STOP"
-	MiGuia.TareasDeParada: "Tasks for this stop: {0} of {1} done"
-	MiGuia.AbrirParada: "Open this stop"
-	MiGuia.RutaTerminada: "You have finished the route"
-	MiGuia.RutaTerminadaTexto: "No pending or postponed stops left. Review postponed detours in Route if you want to complete everything."
-	MiGuia.TeFalta: "What you still need for this stop"
-	MiGuia.TeFaltaAyuda: "Click each item: the guide tells you how to get it (recipe, station, drop, vendor) and takes you to the Library if you want to grab it now."
-	MiGuia.LoTienesTodo: "You have everything this stop asks for."
-	MiGuia.NadaQueReunir: "This stop does not ask for specific items: follow its tasks."
-	MiGuia.Pendientes: "Next tasks"
-	MiGuia.TuEquipo: "Your gear stage ({0})"
-	MiGuia.VerEscalera: "See the full ladder"
-	MiGuia.Avisos: "Notes for your game mode"
-	MiGuia.Brujula: "Your compass during the game"
-	MiGuia.Mapa: "Map and biomes"
-	MiGuia.EmpiezaAqui: "Start here"
-	MiGuia.Referencia: "Reference: Terraria {0} · Calamity {1} · researched on {2}. Content written in Spanish."
-	Ruta.Numero: "{0} / {1}"
-	Ruta.Hecha: "Done (checked in your game)"
-	Ruta.HechaAMano: "Done (marked by you)"
-	Ruta.Aplazada: "Postponed"
-	Ruta.Pendiente: "Pending"
-	Ruta.TareasHechas: "{0} of {1} tasks"
-	Ruta.Vida: "TARGET LIFE"
-	Ruta.VidaTras: "LIFE AFTER THE UPGRADE"
-	Ruta.VidaOk: "you have {0}"
-	Ruta.VidaFalta: "you have {0}: raise it first"
-	Ruta.Donde: "WHERE"
-	Ruta.ComoEmpezar: "How to start this encounter"
-	Ruta.Preparate: "1 · Get ready"
-	Ruta.ParaTuClase: "For {0}:"
-	Ruta.Necesitas: "Items you need:"
-	Ruta.EquipoRecomendado: "Recommended gear ({0}):"
-	Ruta.HazEsto: "2 · Do this, in this order"
-	Ruta.Combate: "3 · During the fight / exploration"
-	Ruta.Desbloquea: "4 · What just unlocked"
-	Ruta.ListoCuando: "Ready to move on when…"
-	Ruta.Conserva: "Don't sell / keep"
-	Ruta.BotonHecha: "Mark stop as done"
-	Ruta.BotonDeshacer: "Unmark as done"
-	Ruta.BotonHechaAuto: "Done in your game"
-	Ruta.BotonAplazar: "Postpone"
-	Ruta.BotonRetomar: "Resume"
-	Ruta.Anterior: "Previous"
-	Ruta.SiguienteBoton: "Next"
-	Ruta.NotaHecha: "\"Mark as done\" records the whole stop even if the game does not say so. \"Postpone\" (optional detours only) lets you move on and come back later. Everything is saved on the character."
-	Tarea.Opcional: "(optional)"
-	Tarea.Manual: "Manual box: tick it yourself when done."
-	Tarea.ManualHecha: "Ticked by you."
-	Tarea.Comprobada: "Checked in your game"
-	Tarea.MarcadaPeroNo: "Ticked by you (the game does not confirm it yet)"
-	Tarea.NoEvaluable: "The guide cannot check this in this game: tick it yourself."
-	Tarea.Pendiente: "Pending (ticks itself)"
-	Tarea.Marcar: "Tick as done (saved on the character)"
-	Tarea.Desmarcar: "Remove your tick"
-	Objeto.LoTienes: "you have it"
-	Objeto.TeFalta: "missing"
-	Objeto.TienesDe: "you have {0} of {1}"
-	Objeto.NoExiste: "not in this game"
-	Ficha.ComoConseguirlo: "How to get it"
-	Ficha.YaLoTienes: "You already have it ({0})."
-	Ficha.NoLoTienes: "You don't have it yet."
-	Ficha.TienesDe: "You have {0} of {1}."
-	Ficha.NoExiste: "This item does not exist in your game (missing the mod that adds it?)."
-	Ficha.Receta: "Recipe"
-	Ficha.TienesCorto: "(you have {0})"
-	Ficha.Estacion: "Station: {0} — {1}"
-	Ficha.EstacionCerca: "you are next to one right now"
-	Ficha.EstacionLaLlevas: "you carry one: place it"
-	Ficha.EstacionNoLaTienes: "you don't have one at hand"
-	Ficha.EstacionAltar: "it is in the world (can't be carried): use the map button"
-	Ficha.EstacionDesconocida: "station from another game version"
-	Ficha.SinEstacion: "Crafted by hand, no station needed."
-	Ficha.Condicion: "Game condition: {0}"
-	Ficha.Botin: "**Drop**: from {0} — {1}"
-	Ficha.Bolsa: "**Treasure bag**: from {0} — {1}"
-	Ficha.Tienda: "**Shop**: sold by {0}"
-	Ficha.FuenteCodigo: "from the game code: {0}"
-	Ficha.RecetaViva: "recipe read from your game"
-	Ficha.EnElMundo: "According to the game code it does not come from recipes, drops or shops: you find it in the world (chests, mining, fishing or events). See the **Map and biomes** chapter of the Manual."
-	Ficha.EnLaGuia: "Where the guide asks for it"
-	Ficha.CogerEnLibreria: "Grab in the Library"
-	Ficha.CogerEnLibreriaAyuda: "Shortcut: opens the Library with this item already searched so you can grab it with the mouse."
-	Ficha.VerAltar: "Show the nearest altar"
-	Ficha.SinAltar: "There is no demon or crimson altar in this world (did you smash them all?)."
-	Ficha.SinTraduccion: "no official translation"
-	Enlace.Objeto: "{0}: click to see how to get it"
-	Enlace.ObjetoCorto: "Click to see how to get it"
-	Enlace.Zona: "{0}: what it is and where it is in your world"
-	Enlace.Parada: "Go to this route stop"
-	Enlace.Articulo: "Open this Manual chapter"
-	Enlace.Web: "Open in the browser: {0}"
-	Mapa.TooltipSiguiente: "Terrakeep · Guide: next stop — {0}"
-	Mapa.TooltipConsulta: "Terrakeep · Guide: {0}"
-	Mapa.Exacta: "{0} (position saved by the game)"
-	Mapa.Zona: "{0}: the densest part of that biome in your world"
-	Mapa.EnVivo: "{0}, right now"
-	Mapa.Aproximada: "{0}: APPROXIMATE position (the guide only knows the layer or the side of the world)"
-	Mapa.EnTuMapa: "On your map:"
-	Mapa.LineaExacta: "{0}."
-	Mapa.LineaAproximada: "{0}, approximate position."
-	Mapa.Marcada: "Marked on the game map."
-	Mapa.MarcaOculta: "(Marker hidden in Settings.)"
-	Mapa.NoExiste: "That place does not exist in this world (generated without the mod that creates it?)."
-	Mapa.SinUbicacion: "This stop has no specific place: do it wherever you are."
-	Mapa.EstasAhi: "You are there."
-	Mapa.Este: "{0} tiles east"
-	Mapa.Oeste: "{0} tiles west"
-	Mapa.Abajo: "{0} down"
-	Mapa.Arriba: "{0} up"
-	Mapa.DireccionDoble: "{0} and {1}."
-	Mapa.DireccionSimple: "{0}."
-	Zona.Sub: "Area · {0}"
-	Zona.Situada: "Located in your world."
-	Zona.Aproximada: "Approximately located in your world."
-	Zona.NoExiste: "Not found in this world."
-	Equipo.Titulo: "Gear ladder · {0}"
-	Equipo.Intro: "What to use at each point of the route. The highlighted stage is yours now. Green = you have it. Click any item to see how to get it."
-	Equipo.SinEscalera: "This guide has no ladder for this class."
-	Equipo.Momento: "Moment:"
-	Equipo.Ahora: "<- NOW"
-	Equipo.Desde: "from"
-	Equipo.Armas: "Weapons"
-	Equipo.Armadura: "Armor"
-	Equipo.Accesorios: "Accessories"
-	Equipo.Otros: "Other"
-	Equipo.Despues: "What you do next:"
-	Equipo.Leyenda: "Mark legend"
-	Perdido.Titulo: "I'm lost / something is wrong"
-	Perdido.Intro: "Find your symptom: each card says what to check and which stop to go back to."
-	Raro.Titulo: "I found something odd"
-	Raro.Intro: "Structures, altars, chests and buildings: what they are and what to do now."
-	Busqueda.Titulo: "Results for \"{0}\""
-	Busqueda.Parada: "Stop"
-	Busqueda.EnTitulo: "in the title"
-	Busqueda.EnTareas: "in its tasks"
-	Busqueda.EnTexto: "in its text"
-	Busqueda.Articulo: "Manual chapter"
-	Busqueda.Zona: "World area"
-	Busqueda.Nada: "Nothing matches. Try another word (accents don't matter)."
-	Busqueda.Muchos: "Showing the first {0}: refine the search."
-	Punto.eter: "Aether (opposite side to the Dungeon, approximate)"
-	MiGuia.ReferenciaVanilla: "Reference: Terraria {0} · researched on {1}. Content written in Spanish."
+	SinGuiaCorto: Guide not available in this version
+	ClaseBoton: Class: {0}
+	ClaseAyuda: Click to change class: the guide adapts gear and tips. Your best weapon suggests: {0}.
+	BuscarPista: Search: boss, item, biome...
+
+	Clase: {
+		cuerpo_a_cuerpo: Melee
+		distancia: Ranged
+		magia: Magic
+		invocacion: Summoner
+		picaro: Rogue
+	}
+
+	Modo: {
+		clasico: Classic
+		experto: Expert
+		maestro: Master
+		viaje: Journey
+		revengeance: Revengeance
+		death: Death
+		SinMundo: no world loaded
+	}
+
+	Tipo: {
+		jefe: Boss
+		evento: Event
+		exploracion: Exploration
+		preparacion: Preparation
+		desafio: Challenge
+	}
+
+	Capa: {
+		superficie: surface
+		subterraneo: underground
+		cavernas: caverns
+		infierno: Underworld
+		espacio: space
+		cualquiera: several layers
+	}
+
+	Punto: {
+		spawn: spawn point
+		mazmorra: Dungeon entrance
+		oceano_lado_mazmorra: ocean on the Dungeon side
+		oceano_lado_opuesto: ocean opposite the Dungeon
+		altar: nearest demon or crimson altar
+		SunkenSeaLabCenter: Sunken Sea laboratory
+		PlanetoidLabCenter: planetoid laboratory
+		JungleLabCenter: jungle laboratory
+		HellLabCenter: Underworld laboratory
+		IceLabCenter: ice laboratory
+		CavernLabCenter: cavern laboratory
+		eter: Aether (opposite side to the Dungeon, approximate)
+	}
+
+	Motivo: {
+		invocador: summon item
+		Invocador: Summon item for this encounter
+	}
+
+	Cerrar: Close
+	Atras: Back
+	VerEnMapa: Show on map
+	IrABrujula: Go to the Compass
+	Fuentes: Sources
+	Relacionado: Related:
+	ErrorVista: This view could not be built: {0}
+	SinGuiaTitulo: This game's guide is not included yet
+	SinGuiaVanilla: You are playing without Calamity, so your guide is the unmodded Terraria one, and this version of Terrakeep does not include it yet (it comes in the next update). The Calamity guide is not shown instead: it would talk about bosses and items that do not exist in your game. Meanwhile, the **Compass** still works with your real progress.
+	SinGuiaError: The guide content could not be loaded (see the game's client.log).
+
+	MiGuia: {
+		Partida: Your game: {0} · class {1} ({2})
+		ClaseElegida: chosen by you
+		ClasePropuesta: suggested by your best weapon; change it above
+		Progreso: "{0} of {1} stops done · {2} of {3} tasks · {4} postponed"
+		Siguiente: YOUR NEXT STOP
+		TareasDeParada: Tasks for this stop: {0} of {1} done
+		AbrirParada: Open this stop
+		RutaTerminada: You have finished the route
+		RutaTerminadaTexto: No pending or postponed stops left. Review postponed detours in Route if you want to complete everything.
+		TeFalta: What you still need for this stop
+		TeFaltaAyuda: Click each item: the guide tells you how to get it (recipe, station, drop, vendor) and takes you to the Library if you want to grab it now.
+		LoTienesTodo: You have everything this stop asks for.
+		NadaQueReunir: This stop does not ask for specific items: follow its tasks.
+		Pendientes: Next tasks
+		TuEquipo: Your gear stage ({0})
+		VerEscalera: See the full ladder
+		Avisos: Notes for your game mode
+		Brujula: Your compass during the game
+		Mapa: Map and biomes
+		EmpiezaAqui: Start here
+		Referencia: Reference: Terraria {0} · Calamity {1} · researched on {2}. Content written in Spanish.
+		ReferenciaVanilla: Reference: Terraria {0} · researched on {1}. Content written in Spanish.
+	}
+
+	Ruta: {
+		Numero: "{0} / {1}"
+		Hecha: Done (checked in your game)
+		HechaAMano: Done (marked by you)
+		Aplazada: Postponed
+		Pendiente: Pending
+		TareasHechas: "{0} of {1} tasks"
+		Vida: TARGET LIFE
+		VidaTras: LIFE AFTER THE UPGRADE
+		VidaOk: you have {0}
+		VidaFalta: you have {0}: raise it first
+		Donde: WHERE
+		ComoEmpezar: How to start this encounter
+		Preparate: 1 · Get ready
+		ParaTuClase: For {0}:
+		Necesitas: Items you need:
+		EquipoRecomendado: Recommended gear ({0}):
+		HazEsto: 2 · Do this, in this order
+		Combate: 3 · During the fight / exploration
+		Desbloquea: 4 · What just unlocked
+		ListoCuando: Ready to move on when…
+		Conserva: Don't sell / keep
+		BotonHecha: Mark stop as done
+		BotonDeshacer: Unmark as done
+		BotonHechaAuto: Done in your game
+		BotonAplazar: Postpone
+		BotonRetomar: Resume
+		Anterior: Previous
+		SiguienteBoton: Next
+		NotaHecha: '''"Mark as done" records the whole stop even if the game does not say so. "Postpone" (optional detours only) lets you move on and come back later. Everything is saved on the character.'''
+	}
+
+	Tarea: {
+		Opcional: (optional)
+		Manual: Manual box: tick it yourself when done.
+		ManualHecha: Ticked by you.
+		Comprobada: Checked in your game
+		MarcadaPeroNo: Ticked by you (the game does not confirm it yet)
+		NoEvaluable: The guide cannot check this in this game: tick it yourself.
+		Pendiente: Pending (ticks itself)
+		Marcar: Tick as done (saved on the character)
+		Desmarcar: Remove your tick
+	}
+
+	Objeto: {
+		LoTienes: you have it
+		TeFalta: missing
+		TienesDe: you have {0} of {1}
+		NoExiste: not in this game
+	}
+
+	Ficha: {
+		ComoConseguirlo: How to get it
+		YaLoTienes: You already have it ({0}).
+		NoLoTienes: You don't have it yet.
+		TienesDe: You have {0} of {1}.
+		NoExiste: This item does not exist in your game (missing the mod that adds it?).
+		Receta: Recipe
+		TienesCorto: (you have {0})
+		Estacion: Station: {0} — {1}
+		EstacionCerca: you are next to one right now
+		EstacionLaLlevas: you carry one: place it
+		EstacionNoLaTienes: you don't have one at hand
+		EstacionAltar: it is in the world (can't be carried): use the map button
+		EstacionDesconocida: station from another game version
+		SinEstacion: Crafted by hand, no station needed.
+		Condicion: Game condition: {0}
+		Botin: **Drop**: from {0} — {1}
+		Bolsa: **Treasure bag**: from {0} — {1}
+		Tienda: **Shop**: sold by {0}
+		FuenteCodigo: from the game code: {0}
+		RecetaViva: recipe read from your game
+		EnElMundo: According to the game code it does not come from recipes, drops or shops: you find it in the world (chests, mining, fishing or events). See the **Map and biomes** chapter of the Manual.
+		EnLaGuia: Where the guide asks for it
+		CogerEnLibreria: Grab in the Library
+		CogerEnLibreriaAyuda: Shortcut: opens the Library with this item already searched so you can grab it with the mouse.
+		VerAltar: Show the nearest altar
+		SinAltar: There is no demon or crimson altar in this world (did you smash them all?).
+		SinTraduccion: no official translation
+	}
+
+	Enlace: {
+		Objeto: "{0}: click to see how to get it"
+		ObjetoCorto: Click to see how to get it
+		Zona: "{0}: what it is and where it is in your world"
+		Parada: Go to this route stop
+		Articulo: Open this Manual chapter
+		Web: Open in the browser: {0}
+	}
+
+	Mapa: {
+		TooltipSiguiente: Terrakeep · Guide: next stop — {0}
+		TooltipConsulta: Terrakeep · Guide: {0}
+		Exacta: "{0} (position saved by the game)"
+		Zona: "{0}: the densest part of that biome in your world"
+		EnVivo: "{0}, right now"
+		Aproximada: "{0}: APPROXIMATE position (the guide only knows the layer or the side of the world)"
+		EnTuMapa: On your map:
+		LineaExacta: "{0}."
+		LineaAproximada: "{0}, approximate position."
+		Marcada: Marked on the game map.
+		MarcaOculta: (Marker hidden in Settings.)
+		NoExiste: That place does not exist in this world (generated without the mod that creates it?).
+		SinUbicacion: This stop has no specific place: do it wherever you are.
+		EstasAhi: You are there.
+		Este: "{0} tiles east"
+		Oeste: "{0} tiles west"
+		Abajo: "{0} down"
+		Arriba: "{0} up"
+		DireccionDoble: "{0} and {1}."
+		DireccionSimple: "{0}."
+	}
+
+	Zona: {
+		Sub: Area · {0}
+		Situada: Located in your world.
+		Aproximada: Approximately located in your world.
+		NoExiste: Not found in this world.
+	}
+
+	Equipo: {
+		Titulo: Gear ladder · {0}
+		Intro: What to use at each point of the route. The highlighted stage is yours now. Green = you have it. Click any item to see how to get it.
+		SinEscalera: This guide has no ladder for this class.
+		Momento: Moment:
+		Ahora: <- NOW
+		Desde: from
+		Armas: Weapons
+		Armadura: Armor
+		Accesorios: Accessories
+		Otros: Other
+		Despues: What you do next:
+		Leyenda: Mark legend
+	}
+
+	Perdido: {
+		Titulo: I'm lost / something is wrong
+		Intro: Find your symptom: each card says what to check and which stop to go back to.
+	}
+
+	Raro: {
+		Titulo: I found something odd
+		Intro: Structures, altars, chests and buildings: what they are and what to do now.
+	}
+
+	Busqueda: {
+		Titulo: Results for "{0}"
+		Parada: Stop
+		EnTitulo: in the title
+		EnTareas: in its tasks
+		EnTexto: in its text
+		Articulo: Manual chapter
+		Zona: World area
+		Nada: Nothing matches. Try another word (accents don't matter).
+		Muchos: Showing the first {0}: refine the search.
+	}
 }

@@ -16,6 +16,11 @@
 param(
 	[switch]$Calamity,
 	[switch]$SoloCompilar,
+	[switch]$Servidor,
+	# Mundo del sandbox para la pasada de servidor. Si no existe, se GENERA con el servidor
+	# (-autocreate 1, mundo pequeño) con los mods del sandbox habilitados: con -Calamity sale un
+	# mundo con los biomas de Calamity (Mar Sulfurico, Abismo, Mar Hundido, laboratorios...).
+	[string]$Mundo = '',
 	[int]$SegundosEspera = 1500,
 	[string]$Lock = ''
 )
@@ -27,7 +32,7 @@ $tmlDir    = 'C:\Program Files (x86)\Steam\steamapps\common\tModLoader'
 $tmlDotnet = Join-Path $tmlDir 'dotnet\dotnet.exe'
 $logDir    = Join-Path $tmlDir 'tModLoader-Logs'
 $sandbox   = Join-Path $env:USERPROFILE 'Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2'
-$mundo     = 'TerrakeepPrueba'
+$mundo     = if ($Mundo) { $Mundo } else { 'TerrakeepPrueba' }
 $personaje = 'TerrakeepPrueba'
 if (-not $Lock) {
 	$Lock = Join-Path $env:LOCALAPPDATA 'Temp\claude\C--Users-adrian-Downloads-Keep-Terrasavr-Win-Terrasavr-Calamity-Beta-resources-app\d38ffe35-118f-4719-b326-0ca425888fe7\scratchpad\PANTALLA.lock'
@@ -52,9 +57,9 @@ function Get-HashesReales {
 }
 
 # ---- 0. Sandbox propio, clonado del de WS0 la primera vez ------------------------------------
-if (-not (Test-Path (Join-Path $sandbox "Worlds\$mundo.wld"))) {
+if (-not (Test-Path (Join-Path $sandbox 'Worlds\TerrakeepPrueba.wld'))) {
 	$origen = Join-Path $env:USERPROFILE 'Documents\My Games\Terraria\tModLoader-TerrakeepWS0'
-	if (-not (Test-Path (Join-Path $origen "Worlds\$mundo.wld"))) { throw "No hay sandbox de WS0 del que clonar ($origen)." }
+	if (-not (Test-Path (Join-Path $origen 'Worlds\TerrakeepPrueba.wld'))) { throw "No hay sandbox de WS0 del que clonar ($origen)." }
 	Write-Host "== Clonando el sandbox de prueba en $sandbox ==" -ForegroundColor Cyan
 	New-Item -ItemType Directory -Force -Path "$sandbox\Worlds", "$sandbox\Players", "$sandbox\Mods" | Out-Null
 	Copy-Item "$origen\Worlds\*" "$sandbox\Worlds" -Recurse -Force
@@ -96,10 +101,71 @@ if ($Calamity) {
 	}
 	if (-not $origen) { throw 'No se encuentra CalamityMod.tmod.' }
 	Copy-Item $origen.FullName (Join-Path $sandbox 'Mods\CalamityMod.tmod') -Force
-	'["TerrakeepMod","CalamityMod"]' | Out-File (Join-Path $sandbox 'Mods\enabled.json') -Encoding utf8
+	# Calamity 2.2.x declara CalamityModMusic como dependencia dura (server.log real: "Missing mod:
+	# CalamityModMusic required by CalamityMod" -> Calamity deshabilitado). Se copia tambien.
+	$musica = Get-ChildItem (Join-Path $env:USERPROFILE 'Documents\My Games\Terraria\tModLoader\Mods') -Filter '*CalamityModMusic.tmod' | Select-Object -First 1
+	if (-not $musica) { throw 'No se encuentra CalamityModMusic.tmod (dependencia de Calamity).' }
+	Copy-Item $musica.FullName (Join-Path $sandbox 'Mods\CalamityModMusic.tmod') -Force
+	'["TerrakeepMod","CalamityMod","CalamityModMusic"]' | Out-File (Join-Path $sandbox 'Mods\enabled.json') -Encoding utf8
 	Write-Host "Calamity: $($origen.FullName)" -ForegroundColor DarkGray
 } else {
 	'["TerrakeepMod"]' | Out-File (Join-Path $sandbox 'Mods\enabled.json') -Encoding utf8
+}
+
+# ---- 2.5 Pasada de servidor (sin pantalla, sin Steam) ----------------------------------------
+if ($Servidor) {
+	$hashesAntes = Get-HashesReales
+	$evidencia = Join-Path $sandbox 'terrakeep-guia-evidencia.log'
+	Remove-Item $evidencia -Force -ErrorAction SilentlyContinue
+	$env:TERRAKEEP_AUTOTEST_GUIAV2 = '1'
+	$rutaMundo = Join-Path $sandbox "Worlds\$mundo.wld"
+	if (-not (Test-Path $rutaMundo)) {
+		Write-Host "== Generando el mundo de prueba $mundo con el servidor (puede tardar unos minutos) ==" -ForegroundColor Cyan
+		$env:TERRAKEEP_AUTOTEST_GUIAV2 = ''
+		$pg = Start-Process -FilePath $tmlDotnet -WorkingDirectory $tmlDir -PassThru -WindowStyle Hidden `
+			-ArgumentList @('tModLoader.dll', '-server', '-tmlsavedirectory', "`"$sandbox`"", '-autocreate', '1',
+				'-worldname', $mundo, '-world', "`"$rutaMundo`"", '-difficulty', '1', '-players', '1', '-port', '7824', '-nosteam')
+		for ($i = 0; $i -lt 900 -and -not (Test-Path $rutaMundo); $i++) { Start-Sleep -Seconds 1; if ($pg.HasExited) { break } }
+		Start-Sleep -Seconds 10
+		Get-Process -Id $pg.Id -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+		Get-CimInstance Win32_Process -Filter "Name='dotnet.exe'" -ErrorAction SilentlyContinue |
+			Where-Object { $_.CommandLine -like "*$sandbox*" -and $_.CommandLine -like '*-server*' } |
+			ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+		if (-not (Test-Path $rutaMundo)) { throw "No se pudo generar el mundo $rutaMundo" }
+		Write-Host "Mundo generado: $rutaMundo ($((Get-Item $rutaMundo).Length) bytes)" -ForegroundColor Green
+		$env:TERRAKEEP_AUTOTEST_GUIAV2 = '1'
+	}
+	Write-Host '== Servidor dedicado (headless, -nosteam) ==' -ForegroundColor Cyan
+	$ps = Start-Process -FilePath $tmlDotnet -WorkingDirectory $tmlDir -PassThru -WindowStyle Hidden `
+		-ArgumentList @('tModLoader.dll', '-server', '-tmlsavedirectory', "`"$sandbox`"",
+			'-world', "`"$sandbox\Worlds\$mundo.wld`"", '-players', '1', '-port', '7823', '-nosteam')
+	$encontrado = $false
+	for ($i = 0; $i -lt 900; $i++) {
+		Start-Sleep -Seconds 1
+		if ((Test-Path $evidencia) -and (Select-String -Path $evidencia -Pattern 'AUTOPRUEBA GUIA V2 COMPLETA' -Quiet -ErrorAction SilentlyContinue)) { $encontrado = $true; break }
+		if ($ps.HasExited) { break }
+	}
+	Get-Process -Id $ps.Id -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+	Get-CimInstance Win32_Process -Filter "Name='dotnet.exe'" -ErrorAction SilentlyContinue |
+		Where-Object { $_.CommandLine -like "*$sandbox*" -and $_.CommandLine -like '*-server*' } |
+		ForEach-Object { Stop-Process -Id $_.ProcessId -Force -ErrorAction SilentlyContinue }
+	$hashesDespues = Get-HashesReales
+	$cambiados = @($hashesAntes.Keys | Where-Object { $hashesDespues[$_] -ne $hashesAntes[$_] })
+	Write-Host "Hashes de partidas reales: $($hashesAntes.Count) antes, $($hashesDespues.Count) despues, cambiados: $($cambiados.Count)." -ForegroundColor $(if ($cambiados.Count -eq 0) { 'Green' } else { 'Red' })
+	$destino = Join-Path $repo ('evidencia\guia-v2-servidor' + $(if ($Calamity) { '-calamity' } else { '' }) + '.log.txt')
+	if (Test-Path $evidencia) {
+		(Get-Content $evidencia -Encoding UTF8) -replace [regex]::Escape($env:USERPROFILE), '%USERPROFILE%' | Out-File $destino -Encoding utf8
+		Get-Content $destino -Encoding UTF8 | Where-Object { $_ -match 'GUIA V2|Guia v2' } | Select-Object -First 400 | ForEach-Object { $_ }
+	} else {
+		Write-Host 'El servidor no llego a escribir evidencia. Ultimas lineas de server.log:' -ForegroundColor Red
+		Get-Content (Join-Path $logDir 'server.log') -Tail 40 -ErrorAction SilentlyContinue
+	}
+	if ($cambiados.Count -gt 0) { exit 1 }
+	if (-not $encontrado) { Write-Host 'NO se encontro AUTOPRUEBA GUIA V2 COMPLETA.' -ForegroundColor Red; exit 1 }
+	$malos = Select-String -Path $evidencia -Pattern 'NO CUADRA|EXCEPCION|NO CABE' -Encoding UTF8
+	if ($malos) { Write-Host 'Comprobaciones en rojo:' -ForegroundColor Red; $malos | ForEach-Object { Write-Host "  $($_.Line)" -ForegroundColor Red }; exit 1 }
+	Write-Host 'OK: pasada de servidor completa y ninguna comprobacion en rojo.' -ForegroundColor Green
+	return
 }
 
 # ---- 3. Turno de pantalla ---------------------------------------------------------------------

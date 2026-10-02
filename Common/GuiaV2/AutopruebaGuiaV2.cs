@@ -73,6 +73,150 @@ namespace TerrakeepMod.Common.GuiaV2
 
 		private static void Capturar(string nombre) => L(CapturaDePantalla.Guardar("guiav2-" + nombre));
 
+		/// <summary>
+		/// Pasada SIN PANTALLA en el servidor dedicado (verificar-guia-v2.ps1 -Servidor): el cliente
+		/// grafico exige Steam con sesion iniciada (CoreSocialModule.Initialize -> FatalExit
+		/// "Please ensure Steam is logged in and running"), el servidor no. Aqui no hay jugador ni
+		/// interfaz, pero si el contenido, las referencias, las banderas, el mundo real y las fichas.
+		/// </summary>
+		/// <remarks>Se lanza desde el evento <c>WorldFile.OnWorldLoad</c> (el ULTIMO paso de
+		/// <c>WorldFile.LoadWorld</c>) y no desde un hook por fotograma ni desde
+		/// <c>ModSystem.OnWorldLoad</c>: un servidor dedicado SIN clientes no actualiza el mundo
+		/// (Main.ShouldUpdateEntities), y <c>ModSystem.OnWorldLoad</c> corre ANTES de
+		/// <c>WorldIO.Load</c> (WorldFile.cs:643-644 del decompilado), o sea sin los tiles de mod ni
+		/// los datos de Calamity del .twld todavia - visto en la primera pasada: 0 tiles de mod en un
+		/// mundo generado con Calamity.</remarks>
+		public override void Load()
+		{
+			Terraria.IO.WorldFile.OnWorldLoad += PasadaDeServidor;
+		}
+
+		public override void Unload()
+		{
+			Terraria.IO.WorldFile.OnWorldLoad -= PasadaDeServidor;
+		}
+
+		private static void PasadaDeServidor()
+		{
+			if (!Main.dedServ || !Activa || _terminada) {
+				return;
+			}
+			_terminada = true;
+			try {
+				L("pasada de SERVIDOR (sin interfaz). Mundo " + Main.worldName + " " + Main.maxTilesX + "x" + Main.maxTilesY +
+					", carmesi=" + WorldGen.crimson + ", Calamity=" + CatalogoGuia.HayCalamity + ".");
+				ComprobarCarga();
+				HistogramaTilesDeMod();
+				if (GuiaV2Sistema.HayGuia) {
+					ComprobarZonasContraElMundo();
+					ComprobarLaboratorios();
+					ComprobarParadasEnElMundo();
+					ComprobarFichasSinJugador();
+				}
+			}
+			catch (Exception e) {
+				_fallos++;
+				L("EXCEPCION en la pasada de servidor: " + e);
+			}
+			_terminada = false;
+			Terminar();
+		}
+
+		/// <summary>Que tiles de mod hay de verdad en el mundo (diagnostico: si una zona de Calamity
+		/// "no existe", se ve aqui si es porque el mundo no los tiene o porque el nombre no casa).</summary>
+		private static void HistogramaTilesDeMod()
+		{
+			MundoGuiaVivo m = new MundoGuiaVivo();
+			Dictionary<string, int> cuenta = new Dictionary<string, int>();
+			for (int x = 0; x < Main.maxTilesX; x += 2) {
+				for (int y = 0; y < Main.maxTilesY; y += 2) {
+					string n = m.TileMod(x, y);
+					if (n == null) continue;
+					cuenta.TryGetValue(n, out int c);
+					cuenta[n] = c + 1;
+				}
+			}
+			L("tiles de mod en el mundo (muestreo 1 de 4): " + cuenta.Count + " tipos; los mas abundantes: " +
+				string.Join(", ", cuenta.OrderByDescending(k => k.Value).Take(25).Select(k => k.Key + "=" + k.Value)) + ".");
+		}
+
+		/// <summary>Centros de los laboratorios de Draedon leidos por reflexion de CalamityWorld y
+		/// comprobados contra las casillas reales (planchas de laboratorio alrededor).</summary>
+		private static void ComprobarLaboratorios()
+		{
+			if (!CatalogoGuia.HayCalamity) {
+				return;
+			}
+			MundoGuiaVivo m = new MundoGuiaVivo();
+			foreach (string clave in new[] { "SunkenSeaLabCenter", "PlanetoidLabCenter", "JungleLabCenter", "HellLabCenter", "IceLabCenter", "CavernLabCenter" }) {
+				(int X, int Y)? c = ReflexionCalamity.CentroLaboratorio(clave);
+				if (!c.HasValue) { L("laboratorio " + clave + ": no generado en este mundo."); continue; }
+				int n = 0;
+				for (int x = c.Value.X - 40; x < c.Value.X + 40; x++) {
+					for (int y = c.Value.Y - 40; y < c.Value.Y + 40; y++) {
+						if (x < 0 || y < 0 || x >= Main.maxTilesX || y >= Main.maxTilesY) continue;
+						string t = m.TileMod(x, y);
+						if (t != null && t.StartsWith("CalamityMod/Laboratory", StringComparison.Ordinal)) n++;
+					}
+				}
+				Ok(n >= 30, "laboratorio " + clave + " en (" + c.Value.X + ", " + c.Value.Y + "): " + n + " casillas de laboratorio REALES alrededor");
+			}
+		}
+
+		/// <summary>Situa TODAS las paradas en el mundo real: cuantas exactas, aproximadas o sin lugar.</summary>
+		private static void ComprobarParadasEnElMundo()
+		{
+			int exactas = 0, aproximadas = 0, nulas = 0, sinUbicacion = 0;
+			foreach (Parada p in GuiaV2Sistema.Doc.Paradas) {
+				if (p.Ubicaciones.Count == 0) { sinUbicacion++; continue; }
+				UbicacionGuia.Objetivo o = UbicacionGuia.ResolverParada(p);
+				if (o == null) { nulas++; L("parada " + p.Id + ": su lugar NO existe en este mundo (" + string.Join(", ", p.Ubicaciones.Select(u => u.Tipo + ":" + u.Id)) + ")."); continue; }
+				if (o.Aproximada) aproximadas++; else exactas++;
+				L("parada " + p.Id + " -> (" + (int)o.Tile.X + ", " + (int)o.Tile.Y + ") " + o.Origen + (o.Aproximada ? " APROXIMADA" : "") + " · " + o.Lugar);
+				if (p.Ubicaciones[0].Tipo == "punto" && p.Ubicaciones[0].Id == "mazmorra") {
+					Ok(Vector2.Distance(o.Tile, new Vector2(Main.dungeonX, Main.dungeonY)) < 2f,
+						"parada " + p.Id + ": la marca cae en la entrada real de la Mazmorra (" + Main.dungeonX + ", " + Main.dungeonY + ")");
+				}
+				if (p.Ubicaciones[0].Tipo == "punto" && p.Ubicaciones[0].Id == "spawn") {
+					Ok((int)o.Tile.X == Main.spawnTileX && (int)o.Tile.Y == Main.spawnTileY, "parada " + p.Id + ": la marca cae en el punto de aparicion real");
+				}
+			}
+			L("paradas situadas en este mundo: " + exactas + " exactas, " + aproximadas + " aproximadas (lo dicen), " + nulas +
+				" sin lugar en este mundo, " + sinUbicacion + " sin ubicacion en el contenido.");
+			Ok(exactas + aproximadas > GuiaV2Sistema.Doc.Paradas.Count / 2, "la mayoria de paradas se puede marcar en el mapa de este mundo");
+		}
+
+		/// <summary>Fichas "cómo conseguirlo" de los objetos que pide la ruta, sin jugador: contenido
+		/// y, en una partida sin Calamity, que NO aparezca nada que solo exista con Calamity.</summary>
+		private static void ComprobarFichasSinJugador()
+		{
+			HashSet<string> refs = new HashSet<string>();
+			foreach (Parada p in GuiaV2Sistema.Doc.Paradas) {
+				if (p.Invocacion != null && !string.IsNullOrEmpty(p.Invocacion.Objeto)) refs.Add(p.Invocacion.Objeto);
+				foreach (ObjetoNecesario n in p.Necesitas) refs.Add(n.Ref);
+			}
+			int conComo = 0, enElMundo = 0, sinTipo = 0, deCalamity = 0;
+			foreach (string r in refs) {
+				ObtencionGuia.Ficha f = ObtencionGuia.Construir(r, 1);
+				if (f.Tipo <= 0) { sinTipo++; L("ficha " + r + ": el objeto no existe en esta partida."); continue; }
+				string todo = string.Join(" | ", f.Lineas.Select(l => GuiaV2Sistema.PlanoLocal(l.Texto)));
+				if (todo.Contains(Idiomas.Texto("GuiaV2.Ficha.EnElMundo").Substring(0, 20))) enElMundo++; else conComo++;
+				if (!CatalogoGuia.HayCalamity && f.Lineas.Any(l => l.Texto.Contains("CalamityMod"))) {
+					deCalamity++;
+					L("NO CUADRA: la ficha de " + r + " enseña datos de Calamity en una partida sin Calamity: " + todo);
+				}
+			}
+			L("fichas de los " + refs.Count + " objetos que pide la ruta: " + conComo + " con receta/botin/bolsa/tienda, " + enElMundo +
+				" «se consigue en el mundo», " + sinTipo + " sin objeto en esta partida.");
+			Ok(deCalamity == 0, "ninguna ficha enseña recetas o botin de Calamity sin Calamity cargado (RefObjeto.ObtencionPara)");
+			Ok(sinTipo == 0, "todos los objetos que pide la ruta existen en esta partida");
+			string ejemplo = refs.FirstOrDefault(x => GuiaV2Sistema.TipoObjeto(x) > 0);
+			if (ejemplo != null) {
+				ObtencionGuia.Ficha f = ObtencionGuia.Construir(ejemplo, 1);
+				L("ejemplo de ficha (" + ejemplo + "): " + string.Join(" | ", f.Lineas.Select(l => GuiaV2Sistema.PlanoLocal(l.Texto))));
+			}
+		}
+
 		public override void UpdateUI(GameTime gameTime)
 		{
 			if (!Activa || _terminada || Main.dedServ) {
@@ -142,13 +286,14 @@ namespace TerrakeepMod.Common.GuiaV2
 			Paso("evaluacion", ComprobarEvaluacion);
 			Paso("zonas reales", ComprobarZonasContraElMundo);
 
-			// ---- marca en el mapa: siguiente parada = desierto ----
-			Paso("llevar al desierto", () => LlevarHastaParada("desert"));
+			// ---- marca en el mapa: siguiente parada = una zona con firma de casillas ----
+			string paradaZona = ParadaDeZona();
+			Paso("llevar a la zona", () => LlevarHastaParada(paradaZona));
 			Esperar(40);
-			Paso("marca desierto", () => ComprobarMarcaSiguiente("desert"));
+			Paso("marca zona", () => ComprobarMarcaSiguiente(paradaZona));
 			Paso("mapa pantalla completa", () => AbrirMapaEn(UbicacionGuia.Siguiente));
 			Esperar(50);
-			Paso("captura mapa", () => ComprobarMarcaDibujada("desierto"));
+			Paso("captura mapa", () => ComprobarMarcaDibujada(paradaZona));
 			Paso("cerrar mapa", () => { Main.mapFullscreen = false; });
 			Esperar(40);
 			Paso("minimapa", PonerMinimapa);
@@ -176,10 +321,12 @@ namespace TerrakeepMod.Common.GuiaV2
 			Paso("captura mapa mazmorra", () => ComprobarMarcaDibujada("mazmorra"));
 			Paso("cerrar mapa 2", () => { Main.mapFullscreen = false; });
 			Esperar(40);
-			Paso("zona de Calamity", () => LlevarHastaParada("sunken"));
-			Esperar(30);
-			Paso("marca zona de Calamity", ComprobarMarcaCalamity);
-			Paso("volver al desierto", () => LlevarHastaParada("desert"));
+			if (GuiaV2Sistema.IdGuia == "calamity") {
+				Paso("zona de Calamity", () => LlevarHastaParada("sunken"));
+				Esperar(30);
+				Paso("marca zona de Calamity", ComprobarMarcaCalamity);
+			}
+			Paso("volver a la zona", () => LlevarHastaParada(paradaZona));
 			Esperar(30);
 
 			// ---- la guia te guia: objeto que falta -> ficha -> Libreria ----
@@ -386,7 +533,7 @@ namespace TerrakeepMod.Common.GuiaV2
 				if (z.Firma.Tiles.Count == 0 && z.Firma.TilesMod.Count == 0) continue;
 				UbicacionGuia.Objetivo o = UbicacionGuia.ResolverZona(z.Id);
 				if (o == null) {
-					L("zona " + z.Id + " (" + z.Nombre + "): no existe en este mundo" + (z.Firma.TilesMod.Count > 0 ? " (tiles de mod; mundo generado sin ellos)" : "") + ".");
+					L("zona " + z.Id + " (" + z.Nombre + "): no existe en este mundo" + (z.Firma.TilesMod.Count > 0 ? " (tiles de mod que este mundo no tiene, o todavía no: p. ej. la Infección Astral llega en modo difícil)" : "") + ".");
 					continue;
 				}
 				int cuenta = ContarFirma(z, (int)o.Tile.X, (int)o.Tile.Y, 40);
@@ -437,10 +584,18 @@ namespace TerrakeepMod.Common.GuiaV2
 				", lugar \"" + o.Lugar + "\"" : "") + "; jugador en (" + (int)(Main.LocalPlayer.Center.X / 16f) + ", " + (int)(Main.LocalPlayer.Center.Y / 16f) +
 				"), spawn (" + Main.spawnTileX + ", " + Main.spawnTileY + "), mazmorra (" + Main.dungeonX + ", " + Main.dungeonY + ")");
 			if (o == null) return;
-			if (paradaEsperada == "desert") {
-				Zona z = GuiaV2Sistema.ZonaPorId("desierto");
-				int n = ContarFirma(z, (int)o.Tile.X, (int)o.Tile.Y, 40);
-				Ok(n >= 30, "la marca del desierto cae sobre arena real: " + n + " casillas de arena (TileID 53) en 40 casillas a la redonda");
+			if (o.Origen == "firma") {
+				Parada parada = GuiaV2Sistema.ParadaPorId(paradaEsperada);
+				Zona z = null;
+				foreach (Ubicacion u in parada.Ubicaciones) {
+					Zona zz = u.Tipo == "zona" ? GuiaV2Sistema.ZonaPorId(u.Id) : null;
+					if (zz != null && (zz.Firma.Tiles.Count > 0 || zz.Firma.TilesMod.Count > 0) && zz.Nombre == o.Lugar) { z = zz; break; }
+				}
+				if (z != null) {
+					int n = ContarFirma(z, (int)o.Tile.X, (int)o.Tile.Y, 40);
+					Ok(n >= 30, "la marca de " + z.Id + " cae sobre casillas REALES de su firma (TileID " + string.Join("/", z.Firma.Tiles) +
+						"): " + n + " en 40 casillas a la redonda");
+				}
 			}
 			if (paradaEsperada == "skeletron") {
 				float d = Vector2.Distance(o.Tile, new Vector2(Main.dungeonX, Main.dungeonY));
@@ -650,9 +805,23 @@ namespace TerrakeepMod.Common.GuiaV2
 			}
 		}
 
+		/// <summary>Parada de prueba para la marca sobre una zona con firma: el desierto de Desert
+		/// Scourge en Calamity, la jungla en vanilla; si no existiera, la primera cuya primera
+		/// ubicacion sea una zona con firma de casillas.</summary>
+		private static string ParadaDeZona()
+		{
+			string preferida = GuiaV2Sistema.IdGuia == "calamity" ? "desert" : "jungla";
+			if (GuiaV2Sistema.ParadaPorId(preferida) != null) return preferida;
+			foreach (Parada p in GuiaV2Sistema.Doc.Paradas) {
+				Zona z = p.Ubicaciones.Count > 0 && p.Ubicaciones[0].Tipo == "zona" ? GuiaV2Sistema.ZonaPorId(p.Ubicaciones[0].Id) : null;
+				if (z != null && z.Firma.Tiles.Count > 0) return p.Id;
+			}
+			return GuiaV2Sistema.Doc.Paradas[0].Id;
+		}
+
 		private static string PrimeraRefFicha()
 		{
-			Parada p = GuiaV2Sistema.ParadaPorId("desert") ?? GuiaV2Sistema.Doc.Paradas[0];
+			Parada p = GuiaV2Sistema.ParadaPorId(ParadaDeZona()) ?? GuiaV2Sistema.Doc.Paradas[0];
 			return p.Necesitas.Count > 0 ? p.Necesitas[0].Ref : (p.Invocacion?.Objeto ?? "Terraria/Gel");
 		}
 

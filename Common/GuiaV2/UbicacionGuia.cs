@@ -187,7 +187,7 @@ namespace TerrakeepMod.Common.GuiaV2
 		public static Objetivo ResolverZona(string zonaId)
 		{
 			Zona z = GuiaV2Sistema.ZonaPorId(zonaId);
-			if (z == null || !EstadoJugadorGuia.HayPartida) {
+			if (z == null || !(EstadoJugadorGuia.HayPartida || (Main.dedServ && Main.maxTilesX > 0))) {
 				return null;
 			}
 			UbicacionResuelta r = ResolverUbicacion(new Ubicacion { Tipo = "zona", Id = zonaId });
