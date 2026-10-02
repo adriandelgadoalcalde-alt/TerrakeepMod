@@ -135,7 +135,12 @@ namespace TerrakeepMod.Common.Panel
 					// demas autopruebas de esta lista. Con esto la propia auditoria deja su
 					// evidencia sin depender de nada externo ni del foco de la ventana.
 					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
-						AutopruebaAuditoriaUiScale.Variable));
+						AutopruebaAuditoriaUiScale.Variable))
+					// Guia v2 (F3, 02-oct-2026): capturas de la marca del mapa, la ficha "cómo
+					// conseguirlo", la Libreria con el objeto buscado y cada sub-pestaña a las
+					// cuatro resoluciones del encargo.
+					|| !string.IsNullOrEmpty(Environment.GetEnvironmentVariable(
+						GuiaV2.AutopruebaGuiaV2.Variable));
 			}
 		}
 

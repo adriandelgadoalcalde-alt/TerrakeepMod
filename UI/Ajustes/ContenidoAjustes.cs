@@ -43,6 +43,15 @@ namespace TerrakeepMod.UI.Ajustes
 		/// valor que ya usan <c>PestanaMapa</c>/<c>PestanaInventario</c> para el mismo proposito.</summary>
 		private const float MargenInferior = 8f;
 
+		/// <summary>Caja "Guía" (Guía v2, 02-oct-2026): un solo interruptor, la marca de la
+		/// siguiente parada en el mapa del juego.</summary>
+		private const float AltoCajaGuia = 76f;
+
+		private BotonTk _botonMarcaMapa;
+
+		/// <summary>El interruptor de la marca del mapa (autoprueba de la Guía v2).</summary>
+		public BotonTk BotonMarcaMapa => _botonMarcaMapa;
+
 		private EtiquetaTk _culturaActiva;
 		private EtiquetaTk _estadoHistorial;
 
@@ -68,7 +77,8 @@ namespace TerrakeepMod.UI.Ajustes
 
 			ConstruirCajaIdioma(0f);
 			ConstruirCajaHistorial(AltoCaja + Separacion);
-			ConstruirCajaAtajos(2f * (AltoCaja + Separacion));
+			ConstruirCajaGuia(2f * (AltoCaja + Separacion));
+			ConstruirCajaAtajos(2f * (AltoCaja + Separacion) + AltoCajaGuia + Separacion);
 
 			RefrescarTextos();
 		}
@@ -131,6 +141,28 @@ namespace TerrakeepMod.UI.Ajustes
 			_botonRehacer = CrearBoton(caja, 0.5f, 54f, 0.5f);
 			_botonRehacer.AlPulsar += () =>
 				HistorialSystem.RehacerConAviso("botón Rehacer del área de Ajustes");
+		}
+
+		private void ConstruirCajaGuia(float arriba)
+		{
+			UIPanel caja = NuevaCaja(arriba, AltoCajaGuia, () => Idiomas.Texto("Ajustes.Guia"));
+			_botonMarcaMapa = CrearBoton(caja, 0f, 30f, 1f);
+			_botonMarcaMapa.Ayuda = () => Idiomas.Texto("Ajustes.MarcaMapaAyuda");
+			_botonMarcaMapa.AlPulsar += AlternarMarcaMapa;
+		}
+
+		/// <summary>Muestra u oculta la marca de la Guía en el mapa (se guarda en el ModConfig, como
+		/// el idioma, asi que sobrevive a cerrar el juego).</summary>
+		public static void AlternarMarcaMapa()
+		{
+			AjustesConfig config = AjustesConfig.Instance;
+			if (config == null) {
+				return;
+			}
+			config.MarcaGuiaEnMapa = !config.MarcaGuiaEnMapa;
+			config.SaveChanges();
+			TerrakeepMod.Common.Guia.RegistroGuia.Linea(Terrakeep.LogTag + " Ajustes: marca de la Guía en el mapa = " +
+				config.MarcaGuiaEnMapa + " (guardado en ModConfig).");
 		}
 
 		/// <summary>
@@ -304,6 +336,11 @@ namespace TerrakeepMod.UI.Ajustes
 			_botonSeguirElJuego.FijarTexto(Idiomas.Texto("Ajustes.IdiomaSeguirElJuego"));
 			_botonEspanol.FijarTexto(Idiomas.Texto("Ajustes.IdiomaEspanol"));
 			_botonIngles.FijarTexto(Idiomas.Texto("Ajustes.IdiomaIngles"));
+			if (_botonMarcaMapa != null) {
+				bool marca = AjustesConfig.Instance == null || AjustesConfig.Instance.MarcaGuiaEnMapa;
+				_botonMarcaMapa.FijarTexto(Idiomas.Texto(marca ? "Ajustes.MarcaMapaSi" : "Ajustes.MarcaMapaNo"));
+				_botonMarcaMapa.Activo = marca;
+			}
 
 			IdiomaDeTerrakeep actual = Idiomas.IdiomaConfigurado;
 			_botonSeguirElJuego.Activo = actual == IdiomaDeTerrakeep.SeguirElJuego;

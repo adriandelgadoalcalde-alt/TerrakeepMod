@@ -63,6 +63,15 @@ namespace TerrakeepMod.Common.Ajustes
 		public IdiomaDeTerrakeep Idioma { get; set; }
 
 		/// <summary>
+		/// Guía v2 (02-oct-2026, punto 3 del encargo del usuario): marca PERMANENTE de la siguiente
+		/// parada en el mapa del juego (pantalla completa, minimapa y mapa superpuesto). Activada por
+		/// defecto, como pidio el usuario; se puede ocultar desde aqui o desde Ajustes del panel.
+		/// </summary>
+		[Header("Guia")]
+		[DefaultValue(true)]
+		public bool MarcaGuiaEnMapa { get; set; } = true;
+
+		/// <summary>
 		/// Atajos del mod a los que ya se les ha puesto su tecla por defecto alguna vez (ver
 		/// <see cref="SembradorDeAtajos"/>, y el porque en su documentacion). Se guarda para no
 		/// volver a ponersela a un atajo al que el usuario se la quito a proposito.

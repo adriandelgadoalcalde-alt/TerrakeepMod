@@ -14,6 +14,8 @@ using TerrakeepMod.UI.Ajustes;
 using TerrakeepMod.UI.Builds;
 using TerrakeepMod.UI.Exploracion;
 using TerrakeepMod.UI.Guia;
+using TerrakeepMod.UI.GuiaV2;
+using TerrakeepMod.Common.GuiaV2;
 using TerrakeepMod.UI.Hitos;
 using TerrakeepMod.UI.Investigacion;
 using TerrakeepMod.UI.Libreria;
@@ -227,7 +229,12 @@ namespace TerrakeepMod.UI.Panel
 		public ContenidoInvestigacion Investigacion => _contenidoActual as ContenidoInvestigacion;
 		public ContenidoExploracion Exploracion => _contenidoActual as ContenidoExploracion;
 		public ContenidoAjustes Ajustes => _contenidoActual as ContenidoAjustes;
-		public ContenidoGuia Guia => _contenidoActual as ContenidoGuia;
+		/// <summary>La guia v1 (Brújula) si esta a la vista: dentro de la pestaña Guía v2, en su
+		/// sub-pestaña "Brújula". La usan las autopruebas de la v1 (GuiaSystem.PanelActual).</summary>
+		public ContenidoGuia Guia => _contenidoActual is ContenidoGuiaV2 v2 ? v2.Brujula : _contenidoActual as ContenidoGuia;
+
+		/// <summary>La pestaña Guía (v2, 02-oct-2026).</summary>
+		public ContenidoGuiaV2 GuiaV2 => _contenidoActual as ContenidoGuiaV2;
 		public ContenidoAlbum Album => _contenidoActual as ContenidoAlbum;
 
 		public override void OnInitialize()
@@ -392,7 +399,15 @@ namespace TerrakeepMod.UI.Panel
 
 				TramoGuia tramo;
 				EstadoGuia.PasoActual(out tramo);
-				if (tramo != null) {
+				// Guia v2: si hay guia y partida, el chip apunta a SU siguiente parada (la misma que
+				// marca el mapa); la v1 queda para cuando la v2 no esta disponible.
+				global::Terrakeep.Core.Guia.V2.ResumenGuiaV2 resumenV2 = GuiaV2Sistema.Resumen;
+				if (resumenV2 != null) {
+					_objetivoActualParaAyuda = resumenV2.Siguiente != null
+						? Idiomas.Texto("Panel.Cabecera.Objetivo", GuiaV2Sistema.PlanoLocal(resumenV2.Siguiente.Parada.Titulo))
+						: Idiomas.Texto("Panel.Cabecera.GuiaCompleta");
+				}
+				else if (tramo != null) {
 					_objetivoActualParaAyuda = Idiomas.Texto("Panel.Cabecera.Objetivo", tramo.Nombre());
 				}
 				else if (EstadoJugadorGuia.HayPartida) {
@@ -780,7 +795,7 @@ namespace TerrakeepMod.UI.Panel
 				case AreaTerrakeep.Ajustes:
 					return new ContenidoAjustes();
 				case AreaTerrakeep.Guia:
-					return new ContenidoGuia();
+					return new ContenidoGuiaV2();
 				case AreaTerrakeep.Album:
 					return new ContenidoAlbum();
 				default:

@@ -62,7 +62,8 @@ namespace TerrakeepMod.Common.Guia
 
 		private static void EscribirEnArchivo(string linea)
 		{
-			if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaGuia.Variable))) {
+			if (string.IsNullOrEmpty(Environment.GetEnvironmentVariable(AutopruebaGuia.Variable)) &&
+				string.IsNullOrEmpty(Environment.GetEnvironmentVariable(TerrakeepMod.Common.GuiaV2.AutopruebaGuiaV2.Variable))) {
 				return;
 			}
 

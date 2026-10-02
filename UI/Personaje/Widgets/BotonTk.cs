@@ -450,6 +450,16 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// comprobar el estado interno de verdad, no solo lo que se ve en una captura.</summary>
 		public static string TooltipPendienteParaPrueba => _tooltipPendiente;
 
+		/// <summary>Pide el MISMO tooltip de los botones para cualquier otro elemento del panel (lo
+		/// usan los enlaces de la Guía v2: objetos, zonas y paradas dentro del texto). Se dibuja y
+		/// se consume igual que el de un boton.</summary>
+		public static void PedirTooltip(string texto)
+		{
+			if (!string.IsNullOrEmpty(texto)) {
+				_tooltipPendiente = texto;
+			}
+		}
+
 		/// <summary>
 		/// Limpia a mano cualquier tooltip pedido y todavia no dibujado. <see cref="DibujarTooltipPendiente"/>
 		/// solo se llama desde dentro de <c>PanelTerrakeepState.Draw</c>, que deja de correr en

@@ -124,7 +124,14 @@ namespace TerrakeepMod.Common.Guia
 			"downedDoG", "downedYharon", "downedExoMechs", "downedCalamitas",
 			"downedPrimordialWyrm", "downedHorribleHog", "downedCLAM", "downedCLAMHardMode",
 			"downedCragmawMire", "downedGSS", "downedMauler", "downedNuclearTerror",
-			"downedAres", "downedThanatos", "downedArtemisAndApollo"
+			"downedAres", "downedThanatos", "downedArtemisAndApollo",
+			// Guia v2 (F3, 02-oct-2026): las que usa la guia v2 de Calamity y faltaban. Comprobadas
+			// en el decompilado de Calamity 2.2.4 (DownedBossSystem.cs: downedEoCAcidRain linea
+			// 830, downedAquaticScourgeAcidRain 849, downedBossRush 880; downedLeviathan,
+			// downedCLAMHardMode y downedNuclearTerror ya estaban arriba). downedBossRush entra
+			// ahora porque la guia v2 tiene una parada final de desafio (Terminus y Boss Rush),
+			// opcional y aplazable: no es progresion obligatoria, pero si una casilla real.
+			"downedEoCAcidRain", "downedAquaticScourgeAcidRain", "downedBossRush"
 		};
 
 		/// <summary>
