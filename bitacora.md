@@ -11871,3 +11871,17 @@ del indicador "no pisa la interfaz del juego" en cada pasada; hashes de las 23 p
 **Observaciones que quedan:** nombres de Calamity en inglés que vienen de CalamityModEsp ("Gladiator's Locket",
 "Desert Medallion" en el buscador de la Librería): se resolverán con la traducción propia en curso. Con UIScale
 máxima a 1280x720 (pantalla lógica 1066x600) el detalle de la parada necesita scroll desde la cabecera.
+
+## 2-oct-2026 (21:40) - PAUSA de F4 pedida por el usuario: punto exacto y siguiente paso
+
+- **Hecho y comiteado (sin push, sin release):** 0.8.0 en local (build.txt, README con novedades y capturas
+  del juego, description*.txt). `.tmod` limpio verificado por el verificador independiente de la ronda 3:
+  1.248.790 bytes, SHA256 `706843feacb5ce8cc7c05b96315ead6d9e183981fa748a0ee10422dcb73add55`, versión 0.8.0, sin
+  archivos de desarrollo. `dotnet test` 127/127.
+- **Badges:** el usuario dice que el mod no tiene el problema de las píldoras; no se ha tocado nada.
+- **Pendiente visual (bloqueado por la pausa):** pasada `verificar-guia-v2.ps1 -Calamity -Mundo TerrakeepPruebaCal`
+  sobre el HEAD final (la última en el juego fue en 853eee8: 210/0; desde entonces solo cambió el texto del
+  tooltip de la escalera, 57331b6), y `verificar-libreria.ps1`/`verificar-exploracion.ps1` para refrescar la
+  evidencia del requirement 0446b3c9 por criterio.
+- **Siguiente paso al reanudar:** esas pasadas, confirmar en capturas que el mod no tiene píldoras, y con la
+  decisión del coordinador push + release v0.8.0 con el `.tmod` limpio.
