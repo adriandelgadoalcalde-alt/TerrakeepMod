@@ -2473,7 +2473,7 @@ GuiaV2: {
 	Indicador: {
 		NuevoDestino: New destination: {0}
 		HasLlegado: You have arrived: {0}
-		Distancia: {0} tiles away
+		Distancia: "{0} tiles away"
 		EstasAhi: You are there!
 		SinRumbo: no place on the map
 		TooltipSinRumbo: Terrakeep · Guide: next stop — {0}. It has no specific place in your world: do it wherever you are.
