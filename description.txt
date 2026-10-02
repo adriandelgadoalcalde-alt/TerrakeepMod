@@ -14,7 +14,7 @@ Un solo panel (tecla K) con ocho pestañas, todas con la interfaz nativa de Terr
 
 - Ajustes: idioma (Español / English) en vivo, historial de deshacer y rehacer, y la lista real de atajos de teclado.
 
-- Guia: brujula de progresion en tiempo real, vanilla Y Calamity (46 tramos, 176 pasos), con el objetivo de ahora mismo, por que hace falta y como conseguirlo, requisitos con numeros reales de la partida, y un marcador dorado en el mapa cuando el objetivo tiene un sitio real que señalar.
+- Guia: la guia grande paso a paso, vanilla (49 paradas, 210 tareas) y Calamity (47 paradas, 186 tareas), con escalera de equipo por clase, comprobacion automatica en vivo, ficha de como conseguir cada objeto con atajo a la Libreria, una marca permanente en el mapa en el lugar de la siguiente parada y un indicador en la pantalla de juego (flecha, distancia y destino) sin abrir ningun menu. La guia anterior sigue como "Guia clasica".
 
 - Album: la lista de capturas automaticas de hito, una por cada tramo de la Guia que cierras de verdad jugando, mas reciente primero.
 

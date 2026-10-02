@@ -175,6 +175,12 @@ compiló MSBuild ("Loading pre-compiled TerrakeepMod.dll") en vez de compilarlo 
   minimapa desde y=90, monedas/munición hasta x≈563, fila de 4 iconos a la izquierda de la vida con el inventario
   abierto (y 40-70), medidor de aire en `Top - 100` (o a la altura de los pies con inventario y pantalla < 1000),
   barra de sigilo de Calamity en (50 %, 55,8 %). La autoprueba lo comprueba en cada captura.
+  Con el inventario abierto, Calamity pinta además su **icono de dificultad** (`ModeIndicatorUI`, 74x74 en
+  `screenWidth - 400`, y = 82, capa con escala de interfaz) justo en esa franja: el indicador lo esquiva
+  (`IndicadorGuiaHud.EvitarIndicadorModo`) y la autoprueba lo comprueba con la fórmula escrita aparte.
+- **`EscribirTk.Dibujar` pinta letra a letra cuando escala x `Main.UIScale` > 1** y entonces la palabra mide más que
+  `MeasureString` de la palabra entera: para maquetar palabra a palabra hay que medir con `EscribirTk.Ancho`
+  (si no, cada palabra se come el espacio siguiente con la escala de interfaz máxima).
 
 ### Menús, idioma y localización (ronda de cierre)
 - **`ModSystem.UpdateUI` NO se llama en el menú**: `SystemLoader.UpdateUI` empieza con

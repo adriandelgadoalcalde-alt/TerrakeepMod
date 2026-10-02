@@ -18,7 +18,14 @@ Terrakeep junto al bestiario y los emotes, con el inventario abierto.
 ## Capturas
 
 <p align="center">
-  <img src="docs/screenshots/01-guia-calamity.png" width="49%" alt="Pestaña Guía con Calamity instalado: cabecera con reloj, objetivo y chip de DPS, tarjeta con el sprite real de Yharon, lo que te falta y la lectura del jefe" />
+  <img src="docs/screenshots/01-guia-calamity.png" width="98%" alt="Guía > Ruta con Calamity: lista de paradas con su sprite a la izquierda y, a la derecha, la parada Azote del Desierto con vida objetivo, dónde cae en tu mapa, cómo empezar el encuentro y lo que te falta" />
+</p>
+<p align="center">
+  <img src="docs/screenshots/07-indicador.png" width="49%" alt="Indicador en la pantalla de juego: flecha hacia el Azote del Desierto a 110 casillas, junto a la vida y el minimapa con la marca de la Guía" />
+  <img src="docs/screenshots/08-mapa-marca.png" width="49%" alt="Mapa a pantalla completa con la marca permanente de la Guía sobre el desierto real del mundo y el anillo de la zona" />
+</p>
+<p align="center">
+  <img src="docs/screenshots/09-ficha.png" width="49%" alt="Ficha cómo conseguirlo del Medallón del Desierto: receta con cuántos tienes de cada ingrediente, estación y botón Coger en la Librería" />
   <img src="docs/screenshots/02-album.png" width="49%" alt="Pestaña Álbum con doce hitos reales ordenados del más reciente al más antiguo, bajo la barra de pestañas con icono de sprite" />
 </p>
 <p align="center">
@@ -58,20 +65,30 @@ Ocho pestañas, todas con la interfaz nativa de Terraria (sin ninguna ventana ex
   la que también puedes traer a un vecino que falte o echar a uno que ya viva aquí.
 - **Ajustes** - idioma (Español/English) en vivo sin reiniciar, historial de deshacer/rehacer,
   y la lista real de atajos de teclado.
-- **Guía** - brújula de progresión en tiempo real, la pestaña más nueva del panel. Cubre **el
-  juego entero**: 46 tramos y 176 pasos, los 21 tramos vanilla (jefes y eventos, del Ojo de
-  Cthulhu a la Luna de Escarcha) y, si tienes Calamity instalado, 25 tramos más propios del mod
-  (desde el Desert Scourge hasta Supreme Calamitas) que se suman encima de la progresión vanilla
-  sin sustituirla. Para el objetivo de ahora mismo te dice **qué es, hacia dónde cae** (con una
-  brújula dorada real sobre el mapa del juego cuando hay un sitio concreto que señalar - mazmorra,
-  templo, jungla, nieve -, y una dirección en vertical cuando no lo hay), un **medidor de
-  preparación** con los requisitos que de verdad te faltan (arma con el daño mínimo real,
-  accesorios recomendados, vida/maná mínimos...), el **por qué** (qué mecánica del juego hay
-  detrás, contado como lo contaría la propia wiki, nunca con jerga de programador) y el **cómo**.
-  A la derecha, la **lectura del jefe** (su vida, defensa y daño reales de tu partida y tu
-  dificultad) y la **hoja de ruta** de lo que viene después. Todo se lee en vivo de tu personaje y
-  tu mundo, fotograma a fotograma - equípate algo o mata a un jefe con el panel abierto y se nota
-  al instante.
+- **Guía** - la guía grande paso a paso, la misma que Terrakeep de escritorio 3.4.0 y con el
+  mismo contenido: **vanilla** (49 paradas, 210 tareas) y, si tienes Calamity instalado,
+  **Calamity** (47 paradas, 186 tareas), elegida sola según tu partida. Cada parada trae cómo
+  empezar el encuentro, *Prepárate* (vida objetivo, objetos y equipo de tu clase), *Haz esto, en
+  este orden* con sus casillas, qué hacer durante el combate o la exploración, lo que se
+  desbloquea, *Listo para seguir cuando…* y lo que no conviene vender. Además: **Mi guía**
+  (siguiente parada y progreso), **Equipo** (escalera por etapas para cuerpo a cuerpo, a
+  distancia, magia, invocación y, en Calamity, pícaro), **Manual**, **Estoy perdido**, **He
+  encontrado algo raro** y buscador. Las tareas se comprueban solas contra tu personaje y tu mundo
+  en vivo (objetos, jefes y eventos, NPC, mejoras permanentes, modo de juego); las que no se
+  pueden comprobar son casillas que marcas tú y viajan con el personaje.
+  - **Marca permanente en el mapa** (pantalla completa, superpuesto y minimapa) en el lugar real
+    de la siguiente parada en tu mundo - jefe, bioma, estructura o laboratorio -, con flecha en el
+    borde si cae fuera de lo visible y zona marcada como aproximada cuando no hay una posición
+    exacta. Se mueve sola al avanzar.
+  - **Indicador en la pantalla de juego**, sin abrir ningún menú: una flecha que gira hacia la
+    siguiente parada, la distancia en casillas y a qué apunta, con un aviso breve al llegar o al
+    cambiar de destino. Clic para abrir la parada. Se coloca sin tapar la vida, el maná, el
+    minimapa, el inventario ni los iconos de Calamity, y se configura en Ajustes (mostrar,
+    posición y tamaño).
+  - **Ficha "cómo conseguirlo"** de cada objeto que te falta: receta con sus ingredientes (también
+    clicables, con cuántos tienes), estación y si la tienes cerca, botín, bolsa de jefe y tienda.
+    Desde ahí, **Coger en la Librería** abre la Librería con ese objeto ya buscado.
+  - La guía de antes (entrenador de jefe y guía de grupo) sigue en la sub-pestaña **Guía clásica**.
 - **Álbum** - el diario visual de tu progreso: en cuanto cierras de verdad un tramo de la Guía
   (obligatorio u opcional) jugando, se dispara sola una captura real de pantalla que queda listada
   aquí con su nombre y su fecha, sin que tengas que acordarte de pulsar nada. Pulsa una entrada
@@ -108,6 +125,34 @@ Toda la interfaz está construida con los bloques nativos de Terraria (`IngameFa
 tecnología externa al juego.
 
 ## Novedades
+
+### 0.8.0 (2-oct-2026)
+
+- **Guía nueva, grande y paso a paso**, vanilla (49 paradas, 210 tareas) y Calamity (47 paradas,
+  186 tareas), con el mismo contenido que Terrakeep de escritorio 3.4.0: estructura completa de
+  cada parada, escalera de equipo por clase (incluido pícaro en Calamity), Manual, Estoy perdido,
+  He encontrado algo raro y buscador, con nombres oficiales en español y comprobación automática
+  en vivo contra tu personaje y tu mundo. Lo que no se puede comprobar se marca a mano y se guarda
+  con el personaje.
+- **Indicador en la pantalla de juego**: flecha hacia la siguiente parada, distancia y destino,
+  siempre a la vista sin abrir el panel, con aviso al llegar y clic para abrir la parada.
+  Configurable en Ajustes (mostrar, posición y tamaño). Probado a 1280x720, 1600x900, 1920x1080 y
+  2560x1440 con la escala de interfaz normal y máxima, con el inventario cerrado y abierto, sin
+  tapar la interfaz del juego ni el icono de dificultad de Calamity.
+- **Marca permanente en el mapa** (pantalla completa, superpuesto y minimapa) en el lugar real de
+  la siguiente parada en tu mundo, que se mueve sola al avanzar.
+- **Ficha "cómo conseguirlo"** de cada objeto que falta (receta, estación, botín, bolsa, tienda) y
+  atajo **Coger en la Librería** con el objeto ya buscado.
+- La guía anterior queda como sub-pestaña **Guía clásica**; su brújula deja de pintarse en el mapa
+  mientras la marca nueva está activa, para que el mapa no señale dos sitios a la vez.
+- Arreglos: el panel se recoloca bien si cambias la resolución o la escala de interfaz con él
+  abierto; la ayuda del pie ya no queda debajo de "Cerrar" en pantallas estrechas; la Mochila de
+  la Librería cabe a 800x720; Ajustes > Atajos ya no se solapa con la caja nueva de la Guía; con la
+  escala de interfaz máxima el texto de la Guía ya no pega unas palabras con otras.
+- En curso: algunos nombres de Calamity siguen en inglés (por ejemplo "Gladiator's Locket")
+  porque vienen de la traducción comunitaria CalamityModEsp; se cambiarán con la traducción
+  propia que está en preparación.
+- Versión del mod: `0.7.1` → `0.8.0`.
 
 ### 0.7.1 (29-sep-2026)
 

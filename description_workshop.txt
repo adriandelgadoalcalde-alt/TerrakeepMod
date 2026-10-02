@@ -10,7 +10,7 @@ Un solo panel (tecla [b]K[/b]) con ocho pestañas, todas con la interfaz nativa 
 [*][b]Investigación[/b] - cuánto llevas investigado de cada carpeta en Modo Viaje, y cómo completarlo o quitarlo, pasando por la API oficial del juego.
 [*][b]Exploración[/b] - mini-mapa navegable con las texturas reales del juego, búsqueda de minerales, gemas, tesoros, cofres, NPC, líquidos y paredes por todo el mundo, cambio de dificultad en vivo con salvaguardas, las invasiones vencidas del mundo editables y una pestaña Vecindad con la felicidad real de cada vecino, desde la que puedes traer a un vecino que falte o echar a uno.
 [*][b]Ajustes[/b] - idioma (Español / English) en vivo, historial de deshacer y rehacer, y la lista real de atajos de teclado.
-[*][b]Guía[/b] - brújula de progresión en tiempo real, vanilla Y Calamity (46 tramos, 176 pasos), con el objetivo de ahora mismo, por qué hace falta, cómo conseguirlo, requisitos con números reales de la partida, y un marcador dorado en el mapa cuando el objetivo tiene un sitio real que señalar.
+[*][b]Guía[/b] - la guía grande paso a paso, vanilla (49 paradas, 210 tareas) y Calamity (47 paradas, 186 tareas), con escalera de equipo por clase, comprobación automática en vivo, ficha de cómo conseguir cada objeto con atajo a la Librería, una marca permanente en el mapa en el lugar de la siguiente parada y un indicador en la pantalla de juego (flecha, distancia y destino) sin abrir ningún menú. La guía anterior sigue como «Guía clásica».
 [*][b]Álbum[/b] - la lista de capturas automáticas de hito, una por cada tramo de la Guía que cierras de verdad jugando, más reciente primero.
 [/list]
 
