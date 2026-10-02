@@ -149,9 +149,10 @@ tecnología externa al juego.
   abierto; la ayuda del pie ya no queda debajo de "Cerrar" en pantallas estrechas; la Mochila de
   la Librería cabe a 800x720; Ajustes > Atajos ya no se solapa con la caja nueva de la Guía; con la
   escala de interfaz máxima el texto de la Guía ya no pega unas palabras con otras.
-- En curso: algunos nombres de Calamity siguen en inglés (por ejemplo "Gladiator's Locket")
-  porque vienen de la traducción comunitaria CalamityModEsp; se cambiarán con la traducción
-  propia que está en preparación.
+- Los nombres de Calamity de la Guía salen de la traducción propia de la familia Keep
+  (CalamityKeep-Traduccion-ES), sin ninguno en inglés. Lo que el juego pinta por su cuenta (por
+  ejemplo, el buscador de la Librería) usa los nombres del Calamity instalado: con el mod de
+  traducción de la familia activo, también en español.
 - Versión del mod: `0.7.1` → `0.8.0`.
 
 ### 0.7.1 (29-sep-2026)
