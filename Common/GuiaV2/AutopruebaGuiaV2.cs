@@ -292,7 +292,7 @@ namespace TerrakeepMod.Common.GuiaV2
 			Esperar(40);
 			Paso("marca zona", () => ComprobarMarcaSiguiente(paradaZona));
 			Paso("mapa pantalla completa", () => AbrirMapaEn(UbicacionGuia.Siguiente));
-			Esperar(50);
+			Esperar(180);
 			Paso("captura mapa", () => ComprobarMarcaDibujada(paradaZona));
 			Paso("cerrar mapa", () => { Main.mapFullscreen = false; });
 			Esperar(40);
@@ -304,11 +304,17 @@ namespace TerrakeepMod.Common.GuiaV2
 			Paso("ajustes", () => PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Ajustes, "autoprueba guia v2"));
 			Esperar(20);
 			Paso("ajustes: ocultar", () => PulsarInterruptorMarca(false));
+			Esperar(10);
+			// La captura va en un paso APARTE: el back buffer es el fotograma anterior al clic y
+			// salia el rotulo "activada" justo despues de desactivarla (captura real de F3b).
+			Paso("ajustes: captura oculta", () => CapturarAjustesYCerrar("ajustes-marca-oculta"));
 			Esperar(40);
 			Paso("ajustes: comprobar oculta", () => ComprobarMarcaOculta(true));
 			Paso("ajustes otra vez", () => PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Ajustes, "autoprueba guia v2"));
 			Esperar(20);
 			Paso("ajustes: mostrar", () => PulsarInterruptorMarca(true));
+			Esperar(10);
+			Paso("ajustes: captura visible", () => CapturarAjustesYCerrar("ajustes-marca-visible"));
 			Esperar(40);
 			Paso("ajustes: comprobar visible", () => ComprobarMarcaOculta(false));
 
@@ -317,7 +323,7 @@ namespace TerrakeepMod.Common.GuiaV2
 			Esperar(40);
 			Paso("marca mazmorra", () => ComprobarMarcaSiguiente("skeletron"));
 			Paso("mapa mazmorra", () => AbrirMapaEn(UbicacionGuia.Siguiente));
-			Esperar(50);
+			Esperar(180);
 			Paso("captura mapa mazmorra", () => ComprobarMarcaDibujada("mazmorra"));
 			Paso("cerrar mapa 2", () => { Main.mapFullscreen = false; });
 			Esperar(40);
@@ -332,13 +338,20 @@ namespace TerrakeepMod.Common.GuiaV2
 			// ---- la guia te guia: objeto que falta -> ficha -> Libreria ----
 			Paso("abrir Mi guía", () => AbrirGuia(ContenidoGuiaV2.Vista.MiGuia));
 			Esperar(40);
-			Paso("captura Mi guía", () => { AuditarTexto("mi-guia"); Capturar("mi-guia"); });
+			Paso("captura Mi guía", () => { AuditarTexto("mi-guia"); AuditarEncuadre("mi-guia"); Capturar("mi-guia"); });
 			Paso("clic en objeto que falta", ClicEnObjetoQueFalta);
 			Esperar(30);
 			Paso("ficha", ComprobarFicha);
 			Paso("clic en ingrediente", ClicEnIngredienteDeLaFicha);
 			Esperar(30);
-			Paso("ficha ingrediente", () => { Ok(Guia != null && Guia.Ventana != null, "la ficha del ingrediente se abre desde la ficha (se recorre la cadena)"); Capturar("ficha-ingrediente"); });
+			Paso("ficha ingrediente", () => {
+				// Solo cuenta si de verdad se pulso un ingrediente: antes daba OK aunque el paso se
+				// hubiera saltado (ficha sin receta) porque la ventana abierta era la del objeto.
+				if (_ingredientePulsado == null) { L("NO APLICA: la ficha del objeto que falta no tiene ingredientes que recorrer."); return; }
+				Ok(Guia != null && Guia.Ventana != null && Guia.FichaObjetoAbierta == _ingredientePulsado,
+					"la ficha del ingrediente " + _ingredientePulsado + " se abre desde la ficha (se recorre la cadena)");
+				Capturar("ficha-ingrediente");
+			});
 			Paso("atras", PulsarAtras);
 			Esperar(20);
 			Paso("coger en la libreria", PulsarCogerEnLibreria);
@@ -392,6 +405,10 @@ namespace TerrakeepMod.Common.GuiaV2
 			foreach ((int an, int al) in new[] { (1280, 720), (1600, 900), (1920, 1080), (2560, 1440) }) {
 				int ancho = an, alto = al;
 				Paso("resolucion " + ancho, () => {
+					// UIScale a 1 ANTES de cambiar de resolucion (misma leccion que AutopruebaEspaciado: con la
+					// escala al maximo el motor devuelve la resolucion en unidades de interfaz). El panel se
+					// deja ABIERTO a proposito: tiene que recolocarse solo (PanelTerrakeepState.AjustarAltoMaximo).
+					Main.UIScale = 1f;
 					Main.SetDisplayMode(ancho, alto, false);
 					L("resolucion pedida " + ancho + "x" + alto + " -> real " + Main.screenWidth + "x" + Main.screenHeight + ".");
 				});
@@ -404,30 +421,33 @@ namespace TerrakeepMod.Common.GuiaV2
 							(int)(Main.screenWidth / Main.UIScale) + "x" + (int)(Main.screenHeight / Main.UIScale) + ".");
 					});
 					Esperar(30);
-					string sufijo = Main.screenWidth + "x" + Main.screenHeight;
 					Paso("mi guia " + ancho + e, () => AbrirGuia(ContenidoGuiaV2.Vista.MiGuia));
 					Esperar(40);
 					Paso("medir mi guia " + ancho + e, () => {
-						string s = Main.screenWidth + "x" + Main.screenHeight + "-" + e;
+						string s = ancho + "x" + alto + "-" + e; // la resolucion pedida: dentro de UpdateUI Main.screenWidth es la pantalla LOGICA (con UIScale maximo todas salian "1066x600-max" y se pisaban)
 						AuditarTexto("mi-guia-" + s);
 						AuditarCabecera("mi-guia-" + s);
+						AuditarEncuadre("mi-guia-" + s);
 						Capturar("mi-guia-" + s);
 					});
 					Paso("ruta " + ancho + e, () => AbrirGuia(ContenidoGuiaV2.Vista.Ruta));
 					Esperar(40);
 					Paso("medir ruta " + ancho + e, () => {
-						string s = Main.screenWidth + "x" + Main.screenHeight + "-" + e;
+						string s = ancho + "x" + alto + "-" + e;
 						AuditarTexto("ruta-" + s);
 						Capturar("ruta-" + s);
 						Guia.AbrirFichaObjeto(PrimeraRefFicha(), 1);
 					});
 					Esperar(30);
 					Paso("medir ficha " + ancho + e, () => {
-						string s = Main.screenWidth + "x" + Main.screenHeight + "-" + e;
+						string s = ancho + "x" + alto + "-" + e;
 						AuditarTexto("ficha-" + s);
 						Capturar("ficha-" + s);
 						Guia.Ventana?.Cerrar();
 					});
+					Paso("libreria " + ancho + e, () => PanelTerrakeepSystem.AbrirEnArea(AreaTerrakeep.Libreria, "autoprueba guia v2"));
+					Esperar(30);
+					Paso("medir libreria " + ancho + e, () => { string s = ancho + "x" + alto + "-" + e; AuditarLibreria("libreria-" + s); Capturar("libreria-" + s); });
 				}
 			}
 			Paso("restaurar resolucion", () => {
@@ -621,6 +641,22 @@ namespace TerrakeepMod.Common.GuiaV2
 		private static void AbrirMapaEn(UbicacionGuia.Objetivo o)
 		{
 			if (o == null) { Ok(false, "no hay marca que enseñar en el mapa"); return; }
+			// Solo en la autoprueba (personaje del sandbox): se revela el mapa alrededor del objetivo
+			// para que la captura ENSEÑE lo que hay debajo de la marca (jungla, Mazmorra...). Con el
+			// mapa sin explorar la captura salia negra y no probaba nada a la vista.
+			int rx = 110, ry = 70, reveladas = 0;
+			for (int x = Math.Max(0, (int)o.Tile.X - rx); x < Math.Min(Main.maxTilesX, (int)o.Tile.X + rx); x++) {
+				for (int y = Math.Max(0, (int)o.Tile.Y - ry); y < Math.Min(Main.maxTilesY, (int)o.Tile.Y + ry); y++) {
+					Main.Map.Update(x, y, 255);
+					reveladas++;
+				}
+			}
+			// refreshMap solo se atiende junto con updateMap (Main.cs:79015-79025 del decompilado):
+			// vacia el registro de secciones pintadas y el mapa se repinta por secciones, 5 ms por
+			// fotograma, empezando por las mas cercanas al jugador. De ahi la espera larga despues.
+			Main.refreshMap = true;
+			Main.updateMap = true;
+			L("mapa revelado alrededor del objetivo (" + reveladas + " casillas, solo en el personaje de prueba) para que la captura enseñe el terreno real bajo la marca.");
 			CapaMarcaGuia.FotogramasDibujados = 0;
 			UbicacionGuia.VerEnElMapa(o, false, "autoprueba");
 		}
@@ -652,6 +688,9 @@ namespace TerrakeepMod.Common.GuiaV2
 			Main.mapMinimapScale = 1.25f;
 			CapaMarcaGuia.FotogramasMinimapa = 0;
 			PanelTerrakeepSystem.CerrarPanel("autoprueba guia v2: minimapa");
+			// Con el inventario abierto las ranuras de monedas/municion tapan el minimapa en las
+			// resoluciones pequeñas y la flecha de la marca quedaba medio oculta en la captura.
+			Main.playerInventory = false;
 		}
 
 		private static void ComprobarMinimapa()
@@ -670,7 +709,15 @@ namespace TerrakeepMod.Common.GuiaV2
 			CalculatedStyle d = b.GetDimensions();
 			b.LeftClick(new UIMouseEvent(b, new Vector2(d.X + d.Width / 2f, d.Y + d.Height / 2f)));
 			Ok(AjustesConfig.Instance.MarcaGuiaEnMapa == debeQuedar, "clic real en el interruptor de Ajustes: MarcaGuiaEnMapa = " + AjustesConfig.Instance.MarcaGuiaEnMapa);
-			if (!debeQuedar) Capturar("ajustes-marca-oculta");
+		}
+
+		private static void CapturarAjustesYCerrar(string nombre)
+		{
+			ContenidoAjustes a = PanelTerrakeepSystem.Panel != null ? PanelTerrakeepSystem.Panel.Ajustes : null;
+			if (a != null && a.BotonMarcaMapa != null) {
+				L("rotulo del interruptor a la vista: \"" + a.BotonMarcaMapa.Texto + "\" (activo=" + a.BotonMarcaMapa.Activo + ").");
+			}
+			Capturar(nombre);
 			CapaMarcaGuia.FotogramasMinimapa = 0;
 			PanelTerrakeepSystem.CerrarPanel("autoprueba guia v2: ver el minimapa");
 		}
@@ -697,13 +744,29 @@ namespace TerrakeepMod.Common.GuiaV2
 
 		private static void ClicEnObjetoQueFalta()
 		{
-			ObjetoFilaTk fila = null;
-			Guia?.ExecuteRecursively(e => { if (fila == null && e is ObjetoFilaTk f && !f.LoTienes) fila = f; });
+			// Se prefiere un objeto que falta y SALE DE UNA RECETA, para recorrer tambien la cadena
+			// ficha -> ingrediente; si no hay ninguno, el primero que falte.
+			ObjetoFilaTk fila = null, conReceta = null;
+			Guia?.ExecuteRecursively(e => {
+				if (!(e is ObjetoFilaTk f) || f.LoTienes) return;
+				if (fila == null) fila = f;
+				if (conReceta == null && TieneReceta(GuiaV2Sistema.TipoObjeto(f.Ref))) conReceta = f;
+			});
+			if (conReceta != null) fila = conReceta;
 			if (fila == null) { Ok(false, "hay un objeto que falta en \"Lo que te falta\" para pulsarlo"); return; }
 			_refPulsada = fila.Ref;
 			CalculatedStyle d = fila.GetDimensions();
 			L("clic real en la fila del objeto que falta: " + fila.Ref + " (\"" + GuiaV2Sistema.NombreObjeto(fila.Ref) + "\", tienes " + fila.Tienes + ").");
 			fila.LeftClick(new UIMouseEvent(fila, new Vector2(d.X + d.Width / 2f, d.Y + d.Height / 2f)));
+		}
+
+		private static bool TieneReceta(int tipo)
+		{
+			if (tipo <= 0) return false;
+			for (int i = 0; i < Recipe.numRecipes; i++) {
+				if (Main.recipe[i] != null && Main.recipe[i].createItem != null && Main.recipe[i].createItem.type == tipo) return true;
+			}
+			return false;
 		}
 
 		private static void ComprobarFicha()
@@ -723,6 +786,8 @@ namespace TerrakeepMod.Common.GuiaV2
 			Capturar("ficha-objeto");
 		}
 
+		private static string _ingredientePulsado;
+
 		private static void ClicEnIngredienteDeLaFicha()
 		{
 			ContenidoGuiaV2 g = Guia;
@@ -734,8 +799,10 @@ namespace TerrakeepMod.Common.GuiaV2
 					if (t.TipoDeEnlace(i) == TipoSegmento.Objeto) { conEnlace = t; indice = i; return; }
 				}
 			});
+			_ingredientePulsado = null;
 			if (conEnlace == null) { L("la ficha no tiene ingredientes enlazados (no sale de receta): se salta el paso."); return; }
-			L("se pulsa el ingrediente " + conEnlace.ValorDeEnlace(indice) + " dentro de la ficha.");
+			_ingredientePulsado = conEnlace.ValorDeEnlace(indice);
+			L("se pulsa el ingrediente " + _ingredientePulsado + " dentro de la ficha.");
 			conEnlace.PulsarEnlace(indice);
 		}
 
@@ -769,6 +836,7 @@ namespace TerrakeepMod.Common.GuiaV2
 			bool esta = false;
 			p.Libreria.ExecuteRecursively(e => { if (e is TerrakeepMod.UI.Libreria.SlotCatalogoLibreria s && s.Tipo == tipo) esta = true; });
 			Ok(esta, "la Librería enseña el objeto buscado (" + _refPulsada + ", tipo " + tipo + ") entre sus resultados, listo para cogerlo");
+			AuditarLibreria("libreria-con-objeto");
 			Capturar("libreria-con-objeto");
 		}
 
@@ -863,6 +931,53 @@ namespace TerrakeepMod.Common.GuiaV2
 			if (!ok) _fallos++;
 			bool legible = minEscalaPx >= 11f || textos == 0;
 			Ok(legible, contexto + ": letra legible (la linea mas pequeña mide " + minEscalaPx.ToString("0.0") + " px reales)");
+		}
+
+		/// <summary>El marco del panel entero cabe en la pantalla y esta centrado. AuditarTexto mide
+		/// cada texto contra la caja del panel, asi que un panel descolocado (centrado en la
+		/// pantalla ANTERIOR tras cambiar resolucion/UIScale con el abierto) le pasaba por alto:
+		/// visto en las capturas reales de F3b.</summary>
+		private static void AuditarEncuadre(string contexto)
+		{
+			UIElement marco = Guia;
+			while (marco != null && marco.Parent != null && !(marco.Parent is UIState)) marco = marco.Parent;
+			if (marco == null || !(marco.Parent is UIState)) { Ok(false, contexto + ": se encuentra el marco del panel"); return; }
+			CalculatedStyle d = marco.GetDimensions();
+			// Aqui (UpdateUI) Main.screenWidth/Height son la pantalla LOGICA (divididas por UIScale).
+			float an = Main.screenWidth, al = Main.screenHeight;
+			bool cabe = d.X >= -1f && d.Y >= -1f && d.X + d.Width <= an + 1f && d.Y + d.Height <= al + 1f;
+			float descentrado = Math.Abs((d.X + d.Width / 2f) - an / 2f);
+			Ok(cabe && descentrado <= 2f, contexto + ": el panel cabe en la pantalla y está centrado (marco " + (int)d.X + "," + (int)d.Y + " " +
+				(int)d.Width + "x" + (int)d.Height + " en pantalla lógica " + (int)an + "x" + (int)al + ", descentrado " + descentrado.ToString("0") + " px)");
+			PanelTerrakeepState p = PanelTerrakeepSystem.Panel;
+			if (p != null && p.AyudaPie != null && p.BotonCerrar != null) {
+				float finTexto = p.AyudaPie.GetDimensions().X + FontAssets.MouseText.Value.MeasureString(p.AyudaPie.TextoActual).X * p.AyudaPie.EscalaTexto;
+				float inicioBoton = p.BotonCerrar.GetDimensions().X;
+				Ok(finTexto <= inicioBoton, contexto + ": la ayuda del pie termina antes del botón Cerrar (" + finTexto.ToString("0") + " <= " +
+					inicioBoton.ToString("0") + ", escala " + p.AyudaPie.EscalaTexto.ToString("0.00") + ")");
+			}
+		}
+
+		/// <summary>La Librería es adonde lleva "Coger en la Librería": sus ranuras de destino tienen
+		/// que caer DENTRO del marco del panel (captura real de F3b a 800x720: la Mochila se salía
+		/// por debajo).</summary>
+		private static void AuditarLibreria(string contexto)
+		{
+			PanelTerrakeepState p = PanelTerrakeepSystem.Panel;
+			if (p == null || p.Libreria == null) { Ok(false, contexto + ": la Librería está abierta"); return; }
+			UIElement marco = p.Libreria;
+			while (marco.Parent != null && !(marco.Parent is UIState)) marco = marco.Parent;
+			CalculatedStyle m = marco.GetInnerDimensions();
+			int ranuras = 0, fuera = 0;
+			float peor = 0f;
+			p.Libreria.ExecuteRecursively(el => {
+				if (el.GetType().Name != "SlotObjetoVanilla") return;
+				ranuras++;
+				CalculatedStyle d = el.GetDimensions();
+				float exceso = Math.Max(d.Y + d.Height - (m.Y + m.Height), d.X + d.Width - (m.X + m.Width));
+				if (exceso > 1f) { fuera++; peor = Math.Max(peor, exceso); }
+			});
+			Ok(fuera == 0, contexto + ": las " + ranuras + " ranuras del contenedor elegido quedan dentro del panel (" + fuera + " fuera, la peor " + peor.ToString("0") + " px)");
 		}
 
 		private static void AuditarCabecera(string contexto)

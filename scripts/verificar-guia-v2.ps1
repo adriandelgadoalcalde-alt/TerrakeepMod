@@ -98,9 +98,15 @@ $configSandbox = Join-Path $sandbox 'config.json'
 if (Test-Path $configSandbox) {
 	$json = Get-Content $configSandbox -Raw -Encoding UTF8 | ConvertFrom-Json
 	$json | Add-Member -NotePropertyName 'ShowNewUpdatedModsInfo' -NotePropertyValue $false -Force
+	# Sin clave "Language" el cliente se queda en la pantalla "Select language" del primer arranque
+	# (Main.cs: _needsLanguageSelect = !configuration.Contains("Language") -> menuMode = 1212) y
+	# -skipselect no llega a correr nunca. Las pasadas de servidor dejan un config.json sin ella.
+	if (-not ($json.PSObject.Properties.Name -contains 'Language')) {
+		$json | Add-Member -NotePropertyName 'Language' -NotePropertyValue 'es-ES' -Force
+	}
 	($json | ConvertTo-Json -Depth 10) | Out-File $configSandbox -Encoding utf8
 } else {
-	'{"ShowNewUpdatedModsInfo": false}' | Out-File $configSandbox -Encoding utf8
+	'{"ShowNewUpdatedModsInfo": false, "Language": "es-ES"}' | Out-File $configSandbox -Encoding utf8
 }
 
 # ---- 2. Mods habilitados en el sandbox -------------------------------------------------------

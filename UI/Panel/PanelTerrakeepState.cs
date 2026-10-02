@@ -63,6 +63,9 @@ namespace TerrakeepMod.UI.Panel
 		/// </summary>
 		private const float FraccionAltoMaximoDePantalla = 0.82f;
 
+		/// <summary>Tamaño logico de pantalla con el que se maqueto el marco por ultima vez.</summary>
+		private int _anchoPantallaMaquetado, _altoPantallaMaquetado;
+
 		/// <summary>
 		/// Alto de la fila del titulo, que ademas hace de <b>hueco para el HUD del juego</b>.
 		/// <para />
@@ -86,6 +89,9 @@ namespace TerrakeepMod.UI.Panel
 		private HospedajeFlotanteTk _hospedajeFlotante;
 		private readonly List<BotonTk> _botonesPestana = new List<BotonTk>();
 		private BotonTk _botonCerrar;
+		private EtiquetaTk _ayudaPie;
+		/// <summary>Ayuda del pie (la mide la autoprueba de la Guía v2 contra el botón Cerrar).</summary>
+		public EtiquetaTk AyudaPie => _ayudaPie;
 
 		// --- TM3 (catalogo de rediseño visual): chips de la cabecera, visibles desde cualquier
 		// pestaña - "hoy hay que ir a la pestaña Guía para saber qué toca; un chip lo dice desde
@@ -567,6 +573,7 @@ namespace TerrakeepMod.UI.Panel
 			ayuda.Left.Set(2f, 0f);
 			ayuda.VAlign = 1f;
 			_marco.Append(ayuda);
+			_ayudaPie = ayuda;
 
 			_botonCerrar = new BotonTk("", EstiloTk.EscalaBoton);
 			_botonCerrar.Width.Set(160f, 0f);
@@ -811,6 +818,7 @@ namespace TerrakeepMod.UI.Panel
 			RehacerAreaSiCambioElIdioma();
 			MantenerInventarioAbierto();
 			AjustarAltoMaximo();
+			AjustarAyudaDelPie();
 
 			if (_fotogramasVelo > 0) {
 				_fotogramasVelo--;
@@ -821,6 +829,31 @@ namespace TerrakeepMod.UI.Panel
 			if (Main.gameMenu || Main.LocalPlayer == null || !Main.LocalPlayer.active) {
 				PanelTerrakeepSystem.CerrarPanel("el jugador ha dejado de estar disponible");
 			}
+		}
+
+		/// <summary>
+		/// La ayuda del pie ocupa SOLO el hueco que queda a la izquierda de "Cerrar" y, si su texto
+		/// no cabe a la escala normal, la baja lo justo (mismo criterio que
+		/// <see cref="AjustarEscalaDeLasPestanas"/>). Antes tenia un ancho fijo de 820 px: en cuanto
+		/// el marco medía menos de ~1000 px logicos el final de la frase quedaba DEBAJO del boton
+		/// (captura real de F3b a 800x720: "...en el mapa del juego" tapado por "Cerrar (G)").
+		/// </summary>
+		private void AjustarAyudaDelPie()
+		{
+			if (_ayudaPie == null || _botonCerrar == null || _marco == null) {
+				return;
+			}
+			const float EscalaNormal = 0.75f, EscalaMinima = 0.55f, Hueco = 12f;
+			float disponible = _marco.GetInnerDimensions().Width - _botonCerrar.Width.Pixels - Hueco - 2f;
+			if (disponible <= 0f) {
+				return;
+			}
+			if (Math.Abs(_ayudaPie.Width.Pixels - disponible) >= 0.5f) {
+				_ayudaPie.Width.Set(disponible, 0f);
+				_ayudaPie.Recalculate();
+			}
+			float medido = Terraria.GameContent.FontAssets.MouseText.Value.MeasureString(_ayudaPie.TextoActual).X;
+			_ayudaPie.EscalaTexto = medido <= 0f ? EscalaNormal : Math.Max(EscalaMinima, Math.Min(EscalaNormal, disponible / medido));
 		}
 
 		/// <summary>
@@ -838,12 +871,32 @@ namespace TerrakeepMod.UI.Panel
 				return;
 			}
 
+			// Se vigila el tamaño LOGICO entero (ancho y alto: aqui Main.screenWidth/Height ya
+			// vienen divididos por Main.UIScale), no solo el alto: un cambio de UIScale o de
+			// resolucion que no toque el alto tambien descoloca el marco.
 			float nuevo = Main.screenHeight * FraccionAltoMaximoDePantalla;
-			if (System.Math.Abs(nuevo - _marco.MaxHeight.Pixels) < 0.5f) {
+			bool cambioDeAlto = System.Math.Abs(nuevo - _marco.MaxHeight.Pixels) >= 0.5f;
+			bool cambioDePantalla = Main.screenWidth != _anchoPantallaMaquetado || Main.screenHeight != _altoPantallaMaquetado;
+			if (!cambioDeAlto && !cambioDePantalla) {
 				return;
 			}
+			bool primeraVez = _anchoPantallaMaquetado == 0;
+			_anchoPantallaMaquetado = Main.screenWidth;
+			_altoPantallaMaquetado = Main.screenHeight;
 
 			_marco.MaxHeight.Set(nuevo, 0f);
+			if (!primeraVez) {
+				// El motor NO recalcula este estado al cambiar de resolucion o de UIScale con el
+				// panel abierto: Main.SetDisplayMode solo recalcula UserInterface.ActiveInstance
+				// (la ultima interfaz usada, no necesariamente la que aloja el panel) y el setter de
+				// Main.UIScale no recalcula nada (codigo decompilado de tModLoader 1.4.4.9). Con
+				// _marco.Recalculate() a secas el UIState padre conservaba sus dimensiones viejas y
+				// el marco se centraba en la pantalla ANTERIOR: visto en las capturas reales de F3b
+				// (a 2560x1440 con UIScale maximo el panel salia desplazado y cortado por la derecha
+				// y por abajo). Recalcular el estado entero refresca tambien sus dimensiones.
+				Recalculate();
+				return;
+			}
 
 			// UIElement.MaxHeight.Set(...) por si solo no actualiza nada visible hasta el proximo
 			// Recalculate real - mismo bug real ya documentado y arreglado en

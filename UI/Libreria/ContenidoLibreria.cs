@@ -53,7 +53,18 @@ namespace TerrakeepMod.UI.Libreria
 
 		/// <summary>Paso REAL de un slot de destino (52px de slot vanilla * <see cref="EscalaSlotDestino"/>
 		/// + 2px de separacion).</summary>
-		private const float PasoSlotDestino = 52f * EscalaSlotDestino + 2f;
+		private float PasoSlotDestino => 52f * _escalaSlotDestino + 2f;
+
+		/// <summary>
+		/// Escala REAL de las ranuras de destino: <see cref="EscalaSlotDestino"/> siempre que quepan, y
+		/// menos (hasta <see cref="EscalaSlotDestinoMinima"/>) solo cuando, con las columnas que caben a
+		/// lo ancho, las filas no caben a lo alto. Antes era fija: en la ventana por defecto de 800x720
+		/// salian 5 columnas y 10 filas para la Mochila, y 20 de las 50 ranuras se dibujaban por DEBAJO
+		/// del panel, hasta 136 px (medido por la autoprueba de la Guia v2 en F3b, con captura real:
+		/// adonde lleva "Coger en la Librería").
+		/// </summary>
+		private float _escalaSlotDestino = EscalaSlotDestino;
+		private const float EscalaSlotDestinoMinima = 0.45f;
 
 		private const float SeparacionHerramientas = 14f;
 
@@ -775,7 +786,7 @@ namespace TerrakeepMod.UI.Libreria
 				}
 
 				SlotObjetoVanilla slot = new SlotObjetoVanilla(array, posicion,
-					destino.Contexto(posicion), EscalaSlotDestino);
+					destino.Contexto(posicion), _escalaSlotDestino);
 				slot.Left.Set((k % _columnasDestino) * PasoSlotDestino, 0f);
 				slot.Top.Set((k / _columnasDestino) * PasoSlotDestino, 0f);
 				_rejillaDestino.Append(slot);
@@ -908,8 +919,9 @@ namespace TerrakeepMod.UI.Libreria
 
 			// Mismo patron para la rejilla de DESTINO: cuantas columnas caben de verdad dejandole
 			// sitio real al mini-panel al lado (ver la cabecera de _columnasDestino).
+			float escalaAntes = _escalaSlotDestino;
 			int columnasDestino = CalcularColumnasDestino();
-			if (columnasDestino != _columnasDestino) {
+			if (columnasDestino != _columnasDestino || Math.Abs(escalaAntes - _escalaSlotDestino) > 0.001f) {
 				_columnasDestino = columnasDestino;
 				_rejillaDestino.Width.Set(AnchoRejillaDestino, 0f);
 				_herramientas.Left.Set(AnchoRejillaDestino + SeparacionHerramientas, 0f);
@@ -953,6 +965,23 @@ namespace TerrakeepMod.UI.Libreria
 			float disponible = anchoZona - 16f - SeparacionHerramientas - PanelHerramientasLibreriaTk.Ancho;
 			if (disponible <= 0f) {
 				return ColumnasDestinoMinimo;
+			}
+			// Escala: la mayor (hasta la normal) con la que las filas del contenedor mas grande caben
+			// en el alto real de la rejilla. Se mira el mas grande para que la escala no cambie al
+			// pasar de Mochila a Cofre.
+			float alto = _rejillaDestino != null ? _rejillaDestino.GetDimensions().Height : 0f;
+			int maxRanuras = 0;
+			foreach (DestinoLibreria d in Destinos) {
+				if (d.Cuantos > maxRanuras) maxRanuras = d.Cuantos;
+			}
+			_escalaSlotDestino = EscalaSlotDestino;
+			if (alto > 0f && maxRanuras > 0) {
+				for (float e = EscalaSlotDestino; e >= EscalaSlotDestinoMinima - 0.001f; e -= 0.01f) {
+					_escalaSlotDestino = e;
+					int c = Math.Max(ColumnasDestinoMinimo, Math.Min(ColumnasDestinoMaximo, (int)(disponible / PasoSlotDestino)));
+					int filas = (maxRanuras + c - 1) / c;
+					if (filas * PasoSlotDestino - 2f <= alto) break;
+				}
 			}
 			int columnas = (int)(disponible / PasoSlotDestino);
 			if (columnas > ColumnasDestinoMaximo) {

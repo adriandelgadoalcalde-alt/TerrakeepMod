@@ -69,6 +69,11 @@ if (Test-Path $config) {
 	} else {
 		$json | Add-Member -NotePropertyName 'ShowNewUpdatedModsInfo' -NotePropertyValue $false -Force
 	}
+	# Sin "Language" el cliente se queda en "Select language" (Main.cs: _needsLanguageSelect) y la
+	# prueba no arranca nunca: lo dejan asi las pasadas de servidor sobre el mismo sandbox.
+	if (-not ($json.PSObject.Properties.Name -contains 'Language')) {
+		$json | Add-Member -NotePropertyName 'Language' -NotePropertyValue 'es-ES' -Force
+	}
 	$json | ConvertTo-Json -Depth 10 | Out-File $config -Encoding utf8
 }
 
@@ -99,7 +104,12 @@ if ($Calamity) {
 		Select-Object -First 1
 	if (-not $origenCalamity) { throw 'No se encuentra CalamityMod.tmod en la carpeta Mods real.' }
 	Copy-Item $origenCalamity.FullName (Join-Path $sandbox 'Mods\CalamityMod.tmod') -Force
-	'["TerrakeepMod","CalamityMod"]' | Out-File (Join-Path $sandbox 'Mods\enabled.json') -Encoding utf8
+	# Calamity 2.2.x declara CalamityModMusic como dependencia dura ("Missing mod: CalamityModMusic
+	# required by CalamityMod" -> Calamity DESHABILITADO y la pasada "con Calamity" iba sin el).
+	$musica = Get-ChildItem (Join-Path $env:USERPROFILE 'Documents\My Games\Terraria	ModLoader\Mods') -Filter '*CalamityModMusic.tmod' | Select-Object -First 1
+	if (-not $musica) { throw 'No se encuentra CalamityModMusic.tmod (dependencia de Calamity).' }
+	Copy-Item $musica.FullName (Join-Path $sandbox 'Mods\CalamityModMusic.tmod') -Force
+	'["TerrakeepMod","CalamityMod","CalamityModMusic"]' | Out-File (Join-Path $sandbox 'Mods\enabled.json') -Encoding utf8
 } else {
 	'["TerrakeepMod"]' | Out-File (Join-Path $sandbox 'Mods\enabled.json') -Encoding utf8
 }

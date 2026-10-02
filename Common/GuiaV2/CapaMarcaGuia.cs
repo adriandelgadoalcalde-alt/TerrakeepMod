@@ -93,7 +93,8 @@ namespace TerrakeepMod.Common.GuiaV2
 				}
 
 				Texture2D diana = TexturasMarca.Diana(gd);
-				float e = escala * pulso * (minimapa ? 0.9f : 1.15f);
+				// En el minimapa a 0,9 la diana medía ~14 px; se sube para que se vea de un vistazo.
+				float e = escala * pulso * (minimapa ? 1.1f : 1.15f);
 				Main.spriteBatch.Draw(diana, pos, null, color, 0f, new Vector2(diana.Width / 2f, diana.Height / 2f), e, SpriteEffects.None, 0f);
 				float lado = diana.Width * e;
 				zonaRaton = new Rectangle((int)(pos.X - lado / 2f), (int)(pos.Y - lado / 2f), (int)lado, (int)lado);
@@ -122,7 +123,9 @@ namespace TerrakeepMod.Common.GuiaV2
 				Vector2 borde = centro + dir * t;
 				Texture2D flecha = TexturasMarca.Flecha(gd);
 				float rot = (float)Math.Atan2(dir.Y, dir.X);
-				float e = escala * pulso * (minimapa ? 0.85f : 1.2f);
+				// A 0,85 la flecha del minimapa salía de 8x6 px de color en la captura real (F3b):
+				// demasiado pequeña para algo que tiene que verse siempre.
+				float e = escala * pulso * (minimapa ? 1.3f : 1.2f);
 				Main.spriteBatch.Draw(flecha, borde, null, color, rot, new Vector2(flecha.Width / 2f, flecha.Height / 2f), e, SpriteEffects.None, 0f);
 				float lado = flecha.Width * e;
 				zonaRaton = new Rectangle((int)(borde.X - lado / 2f), (int)(borde.Y - lado / 2f), (int)lado, (int)lado);
@@ -228,7 +231,12 @@ namespace TerrakeepMod.Common.GuiaV2
 			int c = lado / 2;
 			for (int y = 0; y < lado; y++) {
 				for (int x = 0; x < lado; x++) {
-					datos[y * lado + x] = pixel(x, y, c);
+					// SpriteBatch (BlendState.AlphaBlend) mezcla con alfa PREMULTIPLICADO: un blanco
+					// con alfa 34 sin premultiplicar se pinta casi opaco. Visto en la captura real del
+					// mapa (F3b): el interior del anillo de zona salia como un disco naranja macizo
+					// (159,116,27) que tapaba el mapa justo donde esta el objetivo.
+					Color p = pixel(x, y, c);
+					datos[y * lado + x] = new Color(p.R * p.A / 255, p.G * p.A / 255, p.B * p.A / 255, p.A);
 				}
 			}
 			t.SetData(datos);
