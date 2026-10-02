@@ -11838,3 +11838,36 @@ la interfaz del juego. `verificar-espaciado.ps1` con y sin Calamity: ninguna com
 juego ("Desert Medallion" en la búsqueda de la Librería, "Stormlion Mandible" en la línea de una condición), porque
 salen de `Lang` y no de la Guía; la Librería sí encuentra el objeto. Las líneas de Ajustes > Atajos quedan en la
 compresión mínima (0,55) a 1280x720 y 800x720: legibles pero pequeñas.
+
+## 2-oct-2026 (noche) - Guía v2, Fase F4: verificación independiente y arreglos
+
+Tres rondas de verificación independiente (revisor-visual + verificador-qa nuevos en cada ronda).
+
+**Defecto que vio el coordinador (arreglado, ea4ff94):** en `guiav2-hud-inventario-1280x720-max.png` de F3b con
+Calamity, el indicador ("Azote del Desierto ~110 casillas") caía encima del **icono de dificultad de Calamity**
+(`ModeIndicatorUI`: 74x74 en `screenWidth - 400`, y = 82, capa con escala de interfaz, solo con el inventario
+abierto). La autoprueba no lo veía porque su oráculo no conocía ese icono. Ahora `IndicadorGuiaHud.EvitarIndicadorModo`
+lee `MainClickArea` por reflexión (fórmula del decompilado como respaldo) y se corre a la izquierda o baja por
+debajo; el oráculo de la autoprueba añade la zona con la fórmula escrita aparte. Confirmado por el revisor en las
+8 capturas `hud-inventario-*`.
+
+**Arreglos de la revisión visual (8919d8f, 5dca10b, 57331b6):** distancia "a N casillas" (la virgulilla de
+"~N" se pintaba como un guion y parecía negativo) y 6 px de margen derecho; la ficha ya no repite "dato del
+código del juego" en cada botín del mismo archivo:línea; **palabras pegadas con UIScale máxima** ("AlmejaGigante"):
+`EscribirTk.Dibujar` pinta letra a letra por encima de escala 1 y mide más que `MeasureString`, así que
+`TextoRicoTk` mide ahora con `EscribirTk.Ancho` y vuelve a maquetar si cambia `Main.UIScale`; tooltip de la
+escalera con el ID de cada objeto, como la guía HTML del usuario.
+
+**Fallo propio encontrado por el verificador (arreglado en 4050f49):** el texto inglés nuevo `Distancia: {0}
+tiles away` rompía la carga del mod (Hjson lee como objeto un valor sin comillas que empieza por `{`; client.log
+"Found '}' where a key name was expected", línea 2476). `dotnet test` seguía en verde. Prueba nueva
+`HjsonValoresTests` sobre los dos `.hjson` reales (rojo con 8919d8f, verde después; 127/127).
+
+**Evidencia (6ce8303 y siguientes):** `verificar-guia-v2.ps1` 199/0 (vanilla) y 210/0 (Calamity, TerrakeepPruebaCal)
+en 4050f49 y otra vez en 853eee8; `verificar-espaciado.ps1` con y sin Calamity 0 en rojo; 17/17 comprobaciones
+del indicador "no pisa la interfaz del juego" en cada pasada; hashes de las 23 partidas reales idénticos.
+`.tmod` limpio de 0.8.0 (sin .pdb, docs, scripts, evidencia ni tests).
+
+**Observaciones que quedan:** nombres de Calamity en inglés que vienen de CalamityModEsp ("Gladiator's Locket",
+"Desert Medallion" en el buscador de la Librería): se resolverán con la traducción propia en curso. Con UIScale
+máxima a 1280x720 (pantalla lógica 1066x600) el detalle de la parada necesita scroll desde la cabecera.
