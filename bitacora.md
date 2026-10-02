@@ -11683,3 +11683,20 @@ verde, 27a y 27b OK; `verificar-personaje.ps1` (el mismo mini-panel en Personaje
 `dotnet test` 95/95. Capturas abiertas: `docs/screenshots/06-editar-objeto.png` (rehecha) y la de
 Personaje con el desplegable abierto. Turno de pantalla tomado y liberado; hashes de las 116
 partidas reales idénticos antes y después.
+
+## 2-oct-2026 - Guía v2 (Fase F0, en el repo de Terrakeep): lo que cambia para este mod
+
+La F0 de la Guía v2 (encargo "guía grande vanilla + Calamity", requirement 798ecebe) se hizo entera en
+Terrakeep.Core, repo Terrasavr-Native: modelo, evaluador, contenido Calamity incrustado en la DLL y
+documento de diseño `docs/guia-v2-diseno.md` (ahí está todo el detalle). **Este repo no se ha tocado
+todavía** salvo esta nota: `lib\Terrakeep.Core.dll` sigue siendo la anterior y el mod compila igual.
+Para la F3 (UI del mod):
+- Actualizar `lib\Terrakeep.Core.dll` con `scripts\actualizar-core.ps1`. Los cambios de Core son solo
+  aditivos (interfaz `IGuideStateProviderV2` aparte, valores nuevos al final de `TipoRequisitoGuia`), así
+  que `ProveedorEstadoGuiaMod` y `CatalogoGuia` siguen compilando sin cambios.
+- Implementar `IGuideStateProviderV2` (objetos en huchas y equipo, mejoras permanentes vanilla y
+  CalamityPlayer, estado de mundo de Calamity, modo real) y añadir a `BanderasGuia` las 6 banderas nuevas
+  (`downedLeviathan`, `downedEoCAcidRain`, `downedAquaticScourgeAcidRain`, `downedCLAMHardMode`,
+  `downedNuclearTerror`, `downedBossRush`).
+- Marcador permanente en el mapa con `GuiaV2Ubicaciones` sobre `Main.tile`; objeto que falta → ficha de
+  obtención (receta/botín/tienda real) y después atajo a la Librería; progreso manual en `ModPlayer`.
