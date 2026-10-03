@@ -11945,3 +11945,11 @@ máxima a 1280x720 (pantalla lógica 1066x600) el detalle de la parada necesita 
   (sin `.pdb`, scripts, evidencia ni docs), 1.256.477 bytes, SHA256 `3b737b9489a9f49b60bb5008c341d1b95c420c3c8668f00292e8e49dab68952a`.
   La verificación en el juego (`verificar-guia-v2.ps1` vanilla y Calamity, libreria, exploracion) ya se hizo con este mismo Core en `aca7694`
   (ver la entrada anterior); no se ha vuelto a lanzar el juego para no ocupar la pantalla, y las capturas del README no cambian.
+
+### 3-oct-2026 - Ronda de renovación de evidencia tras publicar 0.8.2
+- Con el usuario ausente y `PANTALLA.lock`, sobre el HEAD publicado (Core `aca7694`): `verificar-guia-v2` vanilla 235 OK / 0 en rojo y Calamity
+  (`-Mundo TerrakeepPruebaCal`) 246 OK / 0 en rojo, `verificar-libreria` AUTOPRUEBA WS3 COMPLETA y `verificar-exploracion` AUTOPRUEBA WS6 COMPLETA con el
+  mundo de prueba byte a byte igual; hashes de 118 partidas reales idénticos. **Obstáculo:** la primera pasada de WS6 dio una `NullReferenceException`
+  en `AutopruebaExploracion.cs:119` (`PanelExploracionSystem.Panel` aún nulo 15 fotogramas tras abrir el panel; copia en el scratchpad); repetida
+  una vez sin tocar nada, completa. Intermitente en el arranque, no un fallo de 0.8.2 (el Core no cambia nada ahí); si vuelve a salir dos veces
+  seguidas, esperar a que el panel exista antes del paso 1. El `.tmod` de `Mods\` quedó idéntico al publicado (SHA256 `3b737b94...`).
