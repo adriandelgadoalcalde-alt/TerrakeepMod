@@ -11926,7 +11926,8 @@ máxima a 1280x720 (pantalla lógica 1066x600) el detalle de la parada necesita 
   Planetoids»; además melee, dash, buff, build, Aerialite, Auric, Vernal Pass...). Causa y arreglo en la fuente
   (`scripts/guia-v2/terminos-es.js`) están en la bitácora de Terrakeep. El mod no tiene código propio de estos textos: los recibe
   del Core, así que solo cambia el DLL. Los textos que vienen del propio juego (tooltips) no se tocan.
-- **Verificación en el HEAD `c719901`:** `dotnet test` 146/146; `.tmod` recompilado con `scripts/compilar.ps1`;
+- **Retoque (verificador-qa independiente de Terrakeep):** cinco concordancias más en la Guía (`aca7694`, Core regenerado desde Terrakeep `14890b07`): «otra arma cuerpo a cuerpo», «la Tesla áurica»...
+- **Verificación en el HEAD `aca7694` (segunda ronda; la primera, en `c719901`, dio lo mismo):** `dotnet test` 146/146; `.tmod` recompilado con `scripts/compilar.ps1`;
   `verificar-guia-v2.ps1` vanilla 235 OK / 0 en rojo y `verificar-guia-v2.ps1 -Calamity -Mundo TerrakeepPruebaCal` 246 OK / 0 en rojo
   (2.176 de 2.176 objetos y 532 de 532 NPC resueltos); `verificar-libreria.ps1` AUTOPRUEBA WS3 COMPLETA;
   `verificar-exploracion.ps1` AUTOPRUEBA WS6 COMPLETA con el mundo de prueba byte a byte igual. Todo con carpeta de guardado
