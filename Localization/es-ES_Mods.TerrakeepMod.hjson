@@ -22,6 +22,7 @@ Panel: {
 		// Functions catalogue idea 2 ("DPS meter").
 		Dps: "{0} DPS"
 		DpsSinDatos: Sin golpes recientes
+		DpsSinDatosCorto: Sin datos
 		AyudaDps: Daño por segundo que has hecho en los últimos 10 segundos reales.
 	}
 

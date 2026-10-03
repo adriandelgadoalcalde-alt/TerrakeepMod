@@ -205,6 +205,17 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 
 		public string Texto => _texto;
 
+		/// <summary>SOLO ARNES DE PRUEBAS: rectangulo (en pixeles de la pantalla logica) de la caja
+		/// que este boton dibujo el ultimo fotograma. <see cref="Rectangle.Empty"/> si no se dibujo
+		/// (escondido por falta de ancho).</summary>
+		public Rectangle UltimaCaja { get; private set; }
+
+		/// <summary>SOLO ARNES DE PRUEBAS: rectangulo del texto que este boton dibujo el ultimo
+		/// fotograma, con la misma medicion que usa para colocarlo. <see cref="Rectangle.Empty"/> si
+		/// no dibujo texto. La autoprueba de espaciado exige que este dentro de
+		/// <see cref="UltimaCaja"/>.</summary>
+		public Rectangle UltimoTexto { get; private set; }
+
 		/// <summary>
 		/// Escala del texto. Es escribible para que quien tenga varios botones en una fila apretada
 		/// pueda BAJARLA lo justo para que el rotulo mas largo quepa entero, midiendolo con la
@@ -331,6 +342,20 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			CargarTexturas();
 
 			CalculatedStyle dim = GetDimensions();
+
+			// Un boton sin ancho o sin alto esta ESCONDIDO a proposito (los chips de la cabecera se
+			// quedan a 0 de ancho cuando el panel no tiene sitio, ver
+			// PanelTerrakeepState.AjustarVisibilidadChips): no se dibuja NADA, ni caja ni texto.
+			// Antes se pintaba igual el marco de nueve trozos, que con ancho 0 sigue dibujando sus
+			// dos esquinas de 12 px (una mancha redonda y pequeña, mas pequeña que el texto) y el
+			// texto se salia de ella - defecto visto por el usuario en la cabecera del panel
+			// (capturas de la 0.8.0 y la 0.8.1).
+			if (dim.Width < 1f || dim.Height < 1f) {
+				UltimaCaja = Rectangle.Empty;
+				UltimoTexto = Rectangle.Empty;
+				return;
+			}
+
 			int crecimiento = (int)Crecimiento();
 			int x = (int)dim.X - crecimiento;
 			int y = (int)dim.Y - crecimiento;
@@ -342,6 +367,8 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 				Utils.DrawSplicedPanel(spriteBatch, _texturaFondo.Value, x, y, ancho, alto,
 					MargenMarco, MargenMarco, MargenMarco, MargenMarco, BackgroundColor);
 			}
+			UltimaCaja = new Rectangle(x, y, ancho, alto);
+			UltimoTexto = Rectangle.Empty;
 
 			// Borde: invisible en reposo y luminoso con el raton encima, apareciendo al mismo ritmo
 			// que crece el marco. Es el equivalente al _hoveredBorderTexture de GroupOptionButton.
@@ -426,6 +453,8 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 
 			Color color = Habilitado ? Color.White : new Color(150, 150, 150);
 			EscribirTk.Dibujar(spriteBatch, _texto, posicion, color, escala);
+			UltimoTexto = new Rectangle((int)Math.Floor(posicion.X), (int)Math.Floor(posicion.Y),
+				(int)Math.Ceiling(tamano.X), (int)Math.Ceiling(tamano.Y));
 		}
 
 		/// <summary>

@@ -11949,7 +11949,29 @@ máxima a 1280x720 (pantalla lógica 1066x600) el detalle de la parada necesita 
 ### 3-oct-2026 - Ronda de renovación de evidencia tras publicar 0.8.2
 - Con el usuario ausente y `PANTALLA.lock`, sobre el HEAD publicado (Core `aca7694`): `verificar-guia-v2` vanilla 235 OK / 0 en rojo y Calamity
   (`-Mundo TerrakeepPruebaCal`) 246 OK / 0 en rojo, `verificar-libreria` AUTOPRUEBA WS3 COMPLETA y `verificar-exploracion` AUTOPRUEBA WS6 COMPLETA con el
-  mundo de prueba byte a byte igual; hashes de 118 partidas reales idénticos. **Obstáculo:** la primera pasada de WS6 dio una `NullReferenceException`
-  en `AutopruebaExploracion.cs:119` (`PanelExploracionSystem.Panel` aún nulo 15 fotogramas tras abrir el panel; copia en el scratchpad); repetida
-  una vez sin tocar nada, completa. Intermitente en el arranque, no un fallo de 0.8.2 (el Core no cambia nada ahí); si vuelve a salir dos veces
-  seguidas, esperar a que el panel exista antes del paso 1. El `.tmod` de `Mods\` quedó idéntico al publicado (SHA256 `3b737b94...`).
+  mundo de prueba byte a byte igual; hashes de 118 partidas reales idénticos. **Obstáculo (CAUSA RESUELTA en la 0.8.3):** la primera pasada de WS6 dio una `NullReferenceException`
+  en `AutopruebaExploracion.cs:119`. No era del mod: el arnés de la sesión lanzaba `verificar-libreria.ps1` y luego `verificar-exploracion.ps1` en
+  el MISMO proceso PowerShell, y la primera deja puesta `TERRAKEEP_AUTOTEST_WS3` en el entorno, así que la segunda arrancaba las DOS autopruebas
+  y la de la Librería abría el panel en su área (log: `area=Libreria`), con lo que `Panel.Exploracion` era nulo. Lanzado cada script en su propio
+  proceso, WS6 completa siempre. El `.tmod` de `Mods\` quedó idéntico al publicado (SHA256 `3b737b94...`).
+
+
+## 3-oct-2026 - Parche 0.8.3: la cabecera del panel (chips de hora, Objetivo y DPS)
+
+- **Defecto (visto por el usuario con capturas de `10-equipo.png` de la 0.8.0 y `09-ficha.png` de la 0.8.1):** en la cabecera, junto a «Terrakeep», los tres
+  chips salían como una mancha redonda más pequeña que su texto y desplazada, con el texto saliéndose de ella. **Causa:** con el panel estrecho
+  `PanelTerrakeepState.AjustarVisibilidadChips` los esconde poniendo su ancho a 0 (los chips no pueden pasar de la mitad del marco: la otra mitad es el
+  HUD de vida/maná), pero `BotonTk.DrawSelf` seguía dibujando su marco de nueve trozos (con ancho 0 sigue pintando las dos esquinas de 12 px) y su texto.
+  Además cada caja tenía un ancho fijo (72/100/92) y el aviso largo del DPS se encogía con una escala mínima que aun así podía no caber.
+- **Arreglo:** `BotonTk` no dibuja nada con ancho o alto menores de 1 px; cada caja mide su texto con la fuente real (`MeasureString` x 0,72) más 14 px de
+  relleno por lado, con 56 px de mínimo, y las posiciones se encadenan con esos anchos; el aviso «Sin golpes recientes» se abrevia a «Sin datos»/«No data»
+  (`Panel.Cabecera.DpsSinDatosCorto`) antes de esconder los chips. Ahora a 800x720 los tres chips caben y se ven.
+- **Canario nuevo** (`AutopruebaEspaciado.AuditarCabeceraDelPanel`, `scripts/verificar-espaciado.ps1 -SoloCabecera`): para cada `BotonTk` hijo del marco exige que el
+  rectángulo del texto dibujado (`BotonTk.UltimoTexto`) esté dentro del de su caja (`UltimaCaja`) y que uno escondido no dibuje nada; 4 resoluciones x 3
+  escalas de interfaz x 2 idiomas, y la comprobación también corre en cada resolución del barrido completo. **Rojo/verde:** con la guarda de ancho 0 retirada
+  (el comportamiento de la 0.8.2) fallan 6 de 24 combinaciones (las seis de 800x720: «"08:26" dibuja su texto ... sin caja»); con el arreglo, 24/24 en verde.
+- **Verificación en el juego:** `verificar-espaciado.ps1` completo (0 en rojo), `verificar-guia-v2.ps1` vanilla 235 y Calamity 246 (0 en rojo),
+  `verificar-libreria.ps1` y `verificar-exploracion.ps1` completas; `dotnet test` 146/146. Capturas de la cabecera abiertas y ampliadas (800x720 es/en, 1280x720,
+  1920x1080, 2560x1440, escala mínima y máxima). `docs/screenshots/09-ficha.png` y `10-equipo.png` rehechas y abiertas. Las demás capturas del README
+  (a 1600 px o más) nunca tuvieron el defecto: con el código de la 0.8.2 el canario da 3/3 chips OK a partir de 1280x720.
+- La 0.8.2 ya estaba publicada (tag `v0.8.2`), así que esto sale como **0.8.3** en vez de reescribir una release pública.

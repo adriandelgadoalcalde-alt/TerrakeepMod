@@ -137,6 +137,17 @@ namespace TerrakeepMod.Common.Panel
 		/// </summary>
 		private static void ConstruirCola()
 		{
+			// TERRAKEEP_AUTOTEST_ESPACIADO=cabecera: solo la auditoria de la cabecera del panel (ver
+			// el final de esta cola), sin recorrer todas las areas. Para repetirla rapido.
+			bool soloCabecera = Environment.GetEnvironmentVariable(Variable) == "cabecera";
+			if (!soloCabecera) {
+				ConstruirColaCompleta();
+			}
+			ConstruirColaCabecera();
+		}
+
+		private static void ConstruirColaCompleta()
+		{
 			_acciones.Enqueue(PoblarBuffsDePrueba);
 			// --- Ampliacion 13-sep-2026: auditoria de espaciado para TODO el mod, no solo el
 			// recuadro naranja y Buffs. Ver bitacora.md. Las dos siguientes preparan contenido
@@ -155,6 +166,7 @@ namespace TerrakeepMod.Common.Panel
 					var idi = idioma;
 					_acciones.Enqueue(() => CambiarIdioma(idi.Idioma, idi.Nombre));
 					_acciones.Enqueue(() => AbrirMundo(res.Nombre, idi.Nombre));
+					_acciones.Enqueue(() => AuditarCabeceraDelPanel(res.Nombre, idi.Nombre));
 					_acciones.Enqueue(() => MedirYCapturarAviso(res.Nombre, idi.Nombre));
 					// v0.7.0 (paridad con escritorio 3.3.0): la ficha gana la fila de invasiones
 					// vencidas - se audita el arbol ENTERO de "Este mundo", no solo el recuadro naranja.
@@ -231,7 +243,111 @@ namespace TerrakeepMod.Common.Panel
 			_acciones.Enqueue(RestaurarUiScale);
 		}
 
+		private static void ConstruirColaCabecera()
+		{
+			// --- v0.8.3: la cabecera del panel (chips de hora/objetivo/DPS y los botones del marco)
+			// a las cuatro resoluciones y a tres escalas de interfaz: la minima (1), una intermedia y
+			// la maxima del motor (UIScale se recorta solo a UIScaleMax, asi que en 800x720, donde el
+			// maximo es 1, las tres coinciden). Defecto real visto por el usuario con capturas: las
+			// cajas de los chips salian como una mancha mas pequeña que su texto y desplazada.
+			foreach (var resolucion in new[] { (800, 720, "800x720"), (1280, 720, "1280x720"), (1920, 1080, "1920x1080"), (2560, 1440, "2560x1440") }) {
+				var res = resolucion;
+				foreach (var escala in new[] { (1.0f, "uiscale-min"), (1.5f, "uiscale-medio"), (99f, "uiscale-max") }) {
+					var esc = escala;
+					foreach (var idioma in Idiomas_) {
+						var idi = idioma;
+						string etiqueta = res.Item3 + "-" + esc.Item2;
+						_acciones.Enqueue(RestaurarUiScale);
+						_acciones.Enqueue(() => CambiarResolucion(res.Item1, res.Item2, etiqueta));
+						_acciones.Enqueue(() => FijarUiScale(esc.Item1));
+						_acciones.Enqueue(() => CambiarIdioma(idi.Idioma, idi.Nombre));
+						_acciones.Enqueue(() => AbrirMundo(etiqueta, idi.Nombre));
+						_acciones.Enqueue(() => AuditarCabeceraDelPanel(etiqueta, idi.Nombre));
+					}
+				}
+			}
+			_acciones.Enqueue(RestaurarUiScale);
+		}
+
 		private static float _uiScaleAntes = -1f;
+
+		private static void FijarUiScale(float pedida)
+		{
+			if (_uiScaleAntes < 0f) {
+				_uiScaleAntes = Main.UIScaleWanted;
+			}
+			// El motor recorta solo a UIScaleMax (Main.UIScale.set), asi que 99 = "el maximo".
+			Main.UIScale = pedida;
+			Registro.Linea("AUTOPRUEBA ESPACIADO - escala de interfaz pedida " + pedida.ToString("0.00") +
+				" -> usada " + Main.UIScale.ToString("0.00") + " (maximo del motor " +
+				Main.instance.UIScaleMax.ToString("0.00") + ").");
+			_espera = FotogramasTrasResolucion;
+		}
+
+		/// <summary>
+		/// Cabecera del panel: para cada <c>BotonTk</c> hijo directo del marco (los tres chips de
+		/// hora/objetivo/DPS, las pestañas y el boton de cerrar) exige que el rectangulo del texto
+		/// que SE DIBUJO el ultimo fotograma este dentro del rectangulo de la caja que se dibujo, y
+		/// que un boton escondido (ancho 0) no dibuje ni caja ni texto. Mide lo ya dibujado
+		/// (<c>BotonTk.UltimaCaja/UltimoTexto</c>), no la geometria pensada al construir. Con el
+		/// codigo de la 0.8.2, en cuanto el panel era estrecho los chips escondidos dibujaban su
+		/// texto sin caja: FALLO aqui.
+		/// </summary>
+		private static void AuditarCabeceraDelPanel(string nombreRes, string nombreIdioma)
+		{
+			PanelTerrakeepState panel = PanelTerrakeepSystem.Panel;
+			string cab = "AUTOPRUEBA ESPACIADO/cabecera (" + nombreRes + "/" + nombreIdioma + ")";
+			if (panel == null) {
+				Registro.Linea(cab + " - FALLO: no hay panel abierto que medir.");
+				return;
+			}
+
+			var chips = new HashSet<BotonTk>(panel.ChipsCabeceraParaPrueba());
+			int fallos = 0, botones = 0, chipsVisibles = 0, chipsEscondidos = 0;
+			foreach (UIElement hijo in panel.MarcoHijos) {
+				BotonTk boton = hijo as BotonTk;
+				if (boton == null) {
+					continue;
+				}
+				botones++;
+				Rectangle caja = boton.UltimaCaja;
+				Rectangle texto = boton.UltimoTexto;
+				bool esChip = chips.Contains(boton);
+				bool cajaDibujada = caja.Width > 0 && caja.Height > 0;
+				bool textoDibujado = texto.Width > 0 && texto.Height > 0;
+
+				if (!cajaDibujada) {
+					if (textoDibujado) {
+						fallos++;
+						Registro.Linea(cab + " - FALLO: \"" + boton.Texto + "\" dibuja su texto " + texto + " sin caja (boton escondido que no deberia dibujar nada).");
+					}
+					else if (esChip) {
+						chipsEscondidos++;
+					}
+					continue;
+				}
+
+				if (esChip) {
+					chipsVisibles++;
+				}
+				if (textoDibujado) {
+					const int Tolerancia = 1;
+					bool dentro = texto.Left >= caja.Left - Tolerancia && texto.Right <= caja.Right + Tolerancia &&
+						texto.Top >= caja.Top - Tolerancia && texto.Bottom <= caja.Bottom + Tolerancia;
+					if (!dentro) {
+						fallos++;
+						Registro.Linea(cab + " - FALLO: el texto \"" + boton.Texto + "\" " + texto +
+							" se sale de su caja " + caja + (esChip ? " (chip de la cabecera)." : "."));
+					}
+				}
+			}
+
+			Registro.Linea(cab + " - " + botones + " botones del marco medidos, chips visibles " + chipsVisibles +
+				"/3 (escondidos por falta de sitio " + chipsEscondidos + ") -> " +
+				(fallos == 0 ? "OK, todo texto dibujado cabe en su caja" : (fallos + " FALLO(S)")) + ". " +
+				"UIScale=" + Main.UIScale.ToString("0.00") + " pantalla " + Main.screenWidth + "x" + Main.screenHeight + ". " +
+				CapturaDePantalla.Guardar("cabecera-" + nombreRes + "-" + nombreIdioma));
+		}
 
 		private static void FijarUiScaleMaxima()
 		{

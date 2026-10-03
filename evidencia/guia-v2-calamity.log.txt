@@ -1,497 +1,497 @@
-﻿# Evidencia de la Guia en tiempo real - 2026-10-03 07:25:51
-[07:25:52.004] [Terrakeep] Guia: arbol de progresion cargado. 46 tramos (46 con requisitos evaluables), 116 pasos, 230 requisitos, 0 avisos. Calamity cargado=True.
-[07:25:52.068] [Terrakeep] Guia v2: guias incrustadas en Terrakeep.Core = [calamity, vanilla]; Calamity cargado=True; guia activa=calamity (47 paradas, 186 tareas); referencias=2176 objetos/532 NPC.
-[07:25:53.591] [Terrakeep] Guia v2: evaluacion -> siguiente parada=desert, paradas 2/47, tareas 1/186, modos [clasico], clase CuerpoACuerpo.
-[07:25:53.594] [Terrakeep] Guia v2: ubicacion zona:desierto -> (1693, 292) origen=firma aproximada=False casillas=88400 [2 ms]
-[07:25:56.995] [Terrakeep] AUTOPRUEBA GUIA V2 - comienza: 297 pasos. Resolucion 800x720, UIScale 1,00, Calamity=True.
-[07:25:56.995] [Terrakeep] AUTOPRUEBA GUIA V2 - guias incrustadas en Terrakeep.Core: [calamity, vanilla]; esperada para esta partida: calamity.
-[07:25:56.996] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: guía activa = calamity (47 paradas, 186 tareas, 10 articulos)
-[07:25:56.996] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: referencias de objeto resueltas con ModContent.TryFind/ItemID: 2176 de 2176
-[07:25:56.997] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: referencias de NPC resueltas: 532 de 532
-[07:25:56.997] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: bandera de Calamity downedLeviathan legible (valor False)
-[07:25:56.997] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: bandera de Calamity downedEoCAcidRain legible (valor False)
-[07:25:56.998] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: bandera de Calamity downedAquaticScourgeAcidRain legible (valor False)
-[07:25:56.998] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: bandera de Calamity downedCLAMHardMode legible (valor False)
-[07:25:56.998] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: bandera de Calamity downedNuclearTerror legible (valor False)
-[07:25:56.998] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: bandera de Calamity downedBossRush legible (valor False)
-[07:25:56.999] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: estado de mundo (revenge=False) y mejoras de CalamityPlayer (mFruit=False) legibles por reflexion
-[07:25:57.217] [Terrakeep] AUTOPRUEBA GUIA V2 - progreso manual de partida guardado para restaurarlo al final (2 paradas, 0 tareas, clase "").
-[07:25:57.428] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: evaluación en vivo: 47 paradas, 1/186 tareas, siguiente=desert, modos [clasico]
-[07:25:57.428] [Terrakeep] AUTOPRUEBA GUIA V2 - tareas comprobadas solas por el juego: 120; no evaluables: 0; sin datos: 0.
-[07:25:57.429] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: con partida cargada ninguna condición queda "sin datos"
-[07:25:57.429] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: el modo real de la partida se lee (Clásico)
-[07:25:57.647] [Terrakeep] Guia v2: ubicacion zona:nieve -> (2974, 283) origen=firma aproximada=False casillas=171872 [2 ms]
-[07:25:57.648] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona nieve situada en (2974, 283): 5746 casillas REALES de su firma en 40 casillas a la redonda
-[07:25:57.648] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona desierto situada en (1693, 292): 4291 casillas REALES de su firma en 40 casillas a la redonda
-[07:25:57.652] [Terrakeep] Guia v2: ubicacion zona:desierto_subterraneo -> (1758, 542) origen=firma aproximada=False casillas=41472 [2 ms]
-[07:25:57.652] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona desierto_subterraneo situada en (1758, 542): 2565 casillas REALES de su firma en 40 casillas a la redonda
-[07:25:57.655] [Terrakeep] Guia v2: ubicacion zona:jungla -> (1051, 411) origen=firma aproximada=False casillas=36960 [2 ms]
-[07:25:57.655] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona jungla situada en (1051, 411): 977 casillas REALES de su firma en 40 casillas a la redonda
-[07:25:57.658] [Terrakeep] Guia v2: ubicacion zona:jungla_subterranea -> (1054, 350) origen=firma aproximada=False casillas=248624 [2 ms]
-[07:25:57.658] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona jungla_subterranea situada en (1054, 350): 4683 casillas REALES de su firma en 40 casillas a la redonda
-[07:25:57.661] [Terrakeep] Guia v2: ubicacion zona:setas -> (1943, 597) origen=firma aproximada=False casillas=4592 [2 ms]
-[07:25:57.662] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona setas situada en (1943, 597): 566 casillas REALES de su firma en 40 casillas a la redonda
-[07:25:57.665] [Terrakeep] Guia v2: ubicacion zona:corrupcion -> NO EXISTE en este mundo [2 ms]
-[07:25:57.665] [Terrakeep] AUTOPRUEBA GUIA V2 - zona corrupcion (La Corrupción): no existe en este mundo.
-[07:25:57.668] [Terrakeep] Guia v2: ubicacion zona:carmesi -> (538, 351) origen=firma aproximada=False casillas=33968 [2 ms]
-[07:25:57.668] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona carmesi situada en (538, 351): 2389 casillas REALES de su firma en 40 casillas a la redonda
-[07:25:57.671] [Terrakeep] Guia v2: ubicacion zona:colmena -> (1184, 538) origen=firma aproximada=False casillas=11232 [2 ms]
-[07:25:57.672] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona colmena situada en (1184, 538): 1083 casillas REALES de su firma en 40 casillas a la redonda
-[07:25:57.672] [Terrakeep] Guia v2: ubicacion zona:mazmorra -> (3295, 229) origen=punto:mazmorra aproximada=False casillas=0 [0 ms]
-[07:25:57.672] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona mazmorra situada en (3295, 229): 3282 casillas REALES de su firma en 40 casillas a la redonda
-[07:25:57.675] [Terrakeep] Guia v2: ubicacion zona:inframundo -> (2783, 1117) origen=firma aproximada=False casillas=320016 [2 ms]
-[07:25:57.675] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona inframundo situada en (2783, 1117): 5394 casillas REALES de su firma en 40 casillas a la redonda
-[07:25:57.678] [Terrakeep] Guia v2: ubicacion zona:sagrado -> NO EXISTE en este mundo [2 ms]
-[07:25:57.678] [Terrakeep] AUTOPRUEBA GUIA V2 - zona sagrado (Lo Sagrado): no existe en este mundo.
-[07:25:57.681] [Terrakeep] Guia v2: ubicacion zona:templo -> (924, 602) origen=firma aproximada=False casillas=29856 [2 ms]
-[07:25:57.681] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona templo situada en (924, 602): 5593 casillas REALES de su firma en 40 casillas a la redonda
-[07:25:57.683] [Terrakeep] Guia v2: ubicacion zona:mar_sulfuroso -> (3871, 288) origen=firma aproximada=False casillas=32672 [2 ms]
-[07:25:57.684] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona mar_sulfuroso situada en (3871, 288): 4267 casillas REALES de su firma en 40 casillas a la redonda
-[07:25:57.686] [Terrakeep] Guia v2: ubicacion zona:abismo -> (3934, 926) origen=firma aproximada=False casillas=117152 [1 ms]
-[07:25:57.686] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona abismo situada en (3934, 926): 6365 casillas REALES de su firma en 40 casillas a la redonda
-[07:25:57.688] [Terrakeep] Guia v2: ubicacion zona:abismo_capa4 -> (3934, 926) origen=firma aproximada=False casillas=56384 [1 ms]
-[07:25:57.688] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona abismo_capa4 situada en (3934, 926): 6365 casillas REALES de su firma en 40 casillas a la redonda
-[07:25:57.691] [Terrakeep] Guia v2: ubicacion zona:mar_hundido -> (1566, 802) origen=firma aproximada=False casillas=25552 [1 ms]
-[07:25:57.691] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona mar_hundido situada en (1566, 802): 3889 casillas REALES de su firma en 40 casillas a la redonda
-[07:25:57.693] [Terrakeep] Guia v2: ubicacion zona:penascos_azufre -> (3422, 1118) origen=firma aproximada=False casillas=87008 [1 ms]
-[07:25:57.694] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona penascos_azufre situada en (3422, 1118): 6344 casillas REALES de su firma en 40 casillas a la redonda
-[07:25:57.696] [Terrakeep] Guia v2: ubicacion zona:infeccion_astral -> NO EXISTE en este mundo [1 ms]
-[07:25:57.696] [Terrakeep] AUTOPRUEBA GUIA V2 - zona infeccion_astral (Infección astral): no existe en este mundo (tiles de mod que este mundo no tiene, o todavía no: p. ej. la Infección Astral llega en modo difícil).
-[07:25:57.698] [Terrakeep] Guia v2: ubicacion zona:faro_astral -> NO EXISTE en este mundo [1 ms]
-[07:25:57.698] [Terrakeep] AUTOPRUEBA GUIA V2 - zona faro_astral (Faro astral): no existe en este mundo (tiles de mod que este mundo no tiene, o todavía no: p. ej. la Infección Astral llega en modo difícil).
-[07:25:57.884] [Terrakeep] AUTOPRUEBA GUIA V2 - paradas anteriores a "desert" marcadas a mano: siguiente = desert.
-[07:25:58.784] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: siguiente parada = desert (esperada desert)
-[07:25:58.784] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca del mapa apunta a la parada desert en (1693, 292), origen firma, aproximada=False, lugar "Desierto"; jugador en (2103, 213), spawn (2103, 215), mazmorra (3295, 229)
-[07:25:58.785] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca de desierto cae sobre casillas REALES de su firma (TileID 53): 4291 en 40 casillas a la redonda
-[07:25:58.785] [Terrakeep] AUTOPRUEBA GUIA V2 - tooltip de la marca: "Terrakeep · Guía: siguiente parada — Azote del desierto | Desierto: la parte con más casillas del bioma en tu mundo | A 410 casillas al oeste y 78 hacia abajo."
-[07:25:59.001] [Terrakeep] AUTOPRUEBA GUIA V2 - mapa revelado alrededor del objetivo (30800 casillas, solo en el personaje de prueba) para que la captura enseñe el terreno real bajo la marca.
-[07:25:59.002] [Terrakeep] Guia v2: VER EN EL MAPA via autoprueba -> (1693, 292), aproximada=False, consulta=False.
-[07:26:02.234] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: el mapa a pantalla completa está abierto
-[07:26:02.234] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca se ha dibujado en 194 fotogramas del mapa a pantalla completa
-[07:26:02.234] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca está DENTRO del mapa visible (no como flecha de borde)
-[07:26:02.235] [Terrakeep] AUTOPRUEBA GUIA V2 - marca dibujada en pantalla en (400, 360); centro de pantalla (400, 360); distancia 0 px; mapFullscreenPos=(1693, 292); objetivo en casillas (1693, 292).
-[07:26:02.235] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca cae donde se centró el mapa (el objetivo real), a 0 px del centro
-[07:26:02.271] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mapa-desert.png"
-[07:26:02.458] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
-[07:26:02.458] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
-[07:26:02.459] [Terrakeep] PANEL ABIERTO via vuelta del mapa (Guía v2). Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
-[07:26:02.469] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=16 y=64 w=768 h=590. Resolucion 800x720, escala de interfaz 1. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=26 y=104 87x30] ["Librería" x=119 y=104 87x30] ["Builds" x=213 y=104 87x30] ["Investigación" x=306 y=104 87x30] ["Exploración" x=400 y=104 87x30] ["Ajustes" x=493 y=104 87x30] ["Guía" x=587 y=104 87x30 ACTIVA] ["Álbum" x=680 y=104 87x30] 
-[07:26:03.357] [Terrakeep] PANEL CERRADO via autoprueba guia v2: minimapa. Pestaña al cerrar: "Guía".
-[07:26:04.590] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca se dibuja en el MINIMAPA (74 fotogramas; como flecha en el borde, apuntando al objetivo fuera de vista, en (520, 230))
-[07:26:04.651] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-minimapa.png"
-[07:26:05.405] [Terrakeep] Ajustes: marca de la Guía en el mapa = False (guardado en ModConfig).
-[07:26:05.405] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: clic real en el interruptor de Ajustes: MarcaGuiaEnMapa = False
-[07:26:05.803] [Terrakeep] AUTOPRUEBA GUIA V2 - rotulo del interruptor a la vista: "Marca en el mapa: no" (activo=False).
-[07:26:05.871] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ajustes-marca-oculta.png"
-[07:26:06.749] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: con la marca oculta en Ajustes no se dibuja nada (0 fotogramas)
-[07:26:07.533] [Terrakeep] Ajustes: marca de la Guía en el mapa = True (guardado en ModConfig).
-[07:26:07.534] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: clic real en el interruptor de Ajustes: MarcaGuiaEnMapa = True
-[07:26:07.932] [Terrakeep] AUTOPRUEBA GUIA V2 - rotulo del interruptor a la vista: "Marca en el mapa: sí" (activo=True).
-[07:26:08.000] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ajustes-marca-visible.png"
-[07:26:08.868] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: al volver a activarla se dibuja otra vez (54 fotogramas)
-[07:26:09.085] [Terrakeep] AUTOPRUEBA GUIA V2 - indicador: destino = desert en (1693, 292); jugador en (2103, 213).
-[07:26:09.988] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: indicador dibujado en la pantalla de juego (39 fotogramas, estado en_ruta, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha))
-[07:26:09.989] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador al-este del objetivo: la flecha apunta a -179° (esperado -180° por la colocacion, -179° desde donde ha quedado; 0° = este, 90° = abajo); distancia mostrada "a 110 casillas" (110 casillas reales); destino "Azote del desierto"
-[07:26:09.989] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador al-este: el indicador ({X:212 Y:338 Width:148 Height:44}, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha)) no pisa la interfaz del juego (inventario, vida, minimapa, aire, sigilo)
-[07:26:10.031] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-jugador-al-este.png"
-[07:26:10.897] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: indicador dibujado en la pantalla de juego (39 fotogramas, estado en_ruta, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha))
-[07:26:10.897] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador al-oeste del objetivo: la flecha apunta a -0° (esperado -0° por la colocacion, -0° desde donde ha quedado; 0° = este, 90° = abajo); distancia mostrada "a 110 casillas" (110 casillas reales); destino "Azote del desierto"
-[07:26:10.897] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador al-oeste: el indicador ({X:212 Y:338 Width:148 Height:44}, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha)) no pisa la interfaz del juego (inventario, vida, minimapa, aire, sigilo)
-[07:26:10.973] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-jugador-al-oeste.png"
-[07:26:11.809] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: indicador dibujado en la pantalla de juego (39 fotogramas, estado en_ruta, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha))
-[07:26:11.809] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador encima del objetivo: la flecha apunta a 90° (esperado 90° por la colocacion, 90° desde donde ha quedado; 0° = este, 90° = abajo); distancia mostrada "a 55 casillas" (54 casillas reales); destino "Azote del desierto"
-[07:26:11.810] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador encima: el indicador ({X:212 Y:338 Width:148 Height:44}, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha)) no pisa la interfaz del juego (inventario, vida, minimapa, aire, sigilo)
-[07:26:11.930] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-jugador-encima.png"
-[07:26:12.765] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: indicador dibujado en la pantalla de juego (39 fotogramas, estado en_ruta, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha))
-[07:26:12.766] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador debajo del objetivo: la flecha apunta a -90° (esperado -90° por la colocacion, -90° desde donde ha quedado; 0° = este, 90° = abajo); distancia mostrada "a 65 casillas" (66 casillas reales); destino "Azote del desierto"
-[07:26:12.766] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador debajo: el indicador ({X:212 Y:338 Width:148 Height:44}, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha)) no pisa la interfaz del juego (inventario, vida, minimapa, aire, sigilo)
-[07:26:12.806] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-jugador-debajo.png"
-[07:26:13.642] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: indicador dibujado en la pantalla de juego (39 fotogramas, estado en_ruta, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha))
-[07:26:13.643] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador al-noreste del objetivo: la flecha apunta a 149° (esperado 146° por la colocacion, 149° desde donde ha quedado; 0° = este, 90° = abajo); distancia mostrada "a 110 casillas" (105 casillas reales); destino "Azote del desierto"
-[07:26:13.643] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador al-noreste: el indicador ({X:212 Y:338 Width:148 Height:44}, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha)) no pisa la interfaz del juego (inventario, vida, minimapa, aire, sigilo)
-[07:26:13.721] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-jugador-al-noreste.png"
-[07:26:13.907] [Terrakeep] Guia v2: indicador - aviso "Has llegado: Azote del desierto".
-[07:26:14.557] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: en el objetivo el indicador dice que has llegado (estado llegado, 0 casillas)
-[07:26:14.557] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: aviso breve al llegar: "Has llegado: Azote del desierto"
-[07:26:14.627] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-llegado.png"
-[07:26:15.381] [Terrakeep] Ajustes: indicador de la Guía en pantalla = False (guardado en ModConfig).
-[07:26:15.381] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: clic real en el interruptor del indicador en Ajustes: IndicadorGuia = False
-[07:26:15.946] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: con el indicador desactivado en Ajustes el indicador no se dibuja (0 fotogramas)
-[07:26:16.018] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-desactivado.png"
-[07:26:16.772] [Terrakeep] Ajustes: indicador de la Guía en pantalla = True (guardado en ModConfig).
-[07:26:16.772] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: clic real en el interruptor del indicador en Ajustes: IndicadorGuia = True
-[07:26:17.337] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: al volver a activarlo el indicador se dibuja (34 fotogramas)
-[07:26:17.414] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-reactivado.png"
-[07:26:18.732] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: con la posicion "junto al personaje" el indicador va a su izquierda, a media altura (caja {X:212 Y:338 Width:148 Height:44}, borde izquierdo del personaje en 390, centro en 360)
-[07:26:18.733] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: junto al personaje: no pisa la interfaz del juego (inventario, vida, minimapa, aire, sigilo)
-[07:26:18.788] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-junto-al-personaje.png"
-[07:26:19.456] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: a tamaño 150 % el indicador mide 222 px (esperado 222), colocado junto al personaje (la franja de arriba mide -108 px, demasiado estrecha)
-[07:26:19.513] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-tamano-150.png"
-[07:26:19.698] [Terrakeep] AUTOPRUEBA GUIA V2 - se pulsa el indicador (mismo camino que el clic: IndicadorGuiaHud.Pulsar).
-[07:26:19.698] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
-[07:26:19.698] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
-[07:26:19.699] [Terrakeep] PANEL ABIERTO via indicador de la Guía (autoprueba). Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
-[07:26:19.700] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
-[07:26:19.700] [Terrakeep] Guia v2: indicador pulsado (autoprueba) -> parada desert en el panel.
-[07:26:19.721] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=16 y=64 w=768 h=590. Resolucion 800x720, escala de interfaz 1. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=26 y=104 87x30] ["Librería" x=119 y=104 87x30] ["Builds" x=213 y=104 87x30] ["Investigación" x=306 y=104 87x30] ["Exploración" x=400 y=104 87x30] ["Ajustes" x=493 y=104 87x30] ["Guía" x=587 y=104 87x30 ACTIVA] ["Álbum" x=680 y=104 87x30] 
-[07:26:20.431] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: al pulsar el indicador se abre la parada desert en Guía > Ruta (área Guia, vista Ruta, parada desert)
-[07:26:20.516] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-clic-abre-parada.png"
-[07:26:20.517] [Terrakeep] PANEL CERRADO via autoprueba guia v2: indicador. Pestaña al cerrar: "Guía".
-[07:26:21.052] [Terrakeep] Guia v2: evaluacion -> siguiente parada=skeletron, paradas 10/47, tareas 1/186, modos [clasico], clase CuerpoACuerpo.
-[07:26:21.053] [Terrakeep] Guia v2: ubicacion punto:mazmorra -> (3295, 229) origen=punto:mazmorra aproximada=False casillas=0 [0 ms]
-[07:26:21.053] [Terrakeep] AUTOPRUEBA GUIA V2 - paradas anteriores a "skeletron" marcadas a mano: siguiente = skeletron.
-[07:26:21.053] [Terrakeep] Guia v2: indicador - aviso "Nuevo destino: Esqueletrón".
-[07:26:21.952] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: siguiente parada = skeletron (esperada skeletron)
-[07:26:21.953] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca del mapa apunta a la parada skeletron en (3295, 229), origen punto:mazmorra, aproximada=False, lugar "entrada de la Mazmorra"; jugador en (1803, 272), spawn (2103, 215), mazmorra (3295, 229)
-[07:26:21.953] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca de Esqueletrón está en la entrada real de la Mazmorra (Main.dungeonX/Y), distancia 0,0
-[07:26:21.953] [Terrakeep] AUTOPRUEBA GUIA V2 - tooltip de la marca: "Terrakeep · Guía: siguiente parada — Esqueletrón | entrada de la Mazmorra (posición guardada por el juego) | A 1491 casillas al este y 43 hacia arriba."
-[07:26:22.169] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: al cambiar la siguiente parada el indicador avisa: "Nuevo destino: Esqueletrón" (esperado "Nuevo destino: Esqueletrón")
-[07:26:22.169] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-nuevo-destino: indicador en {X:212 Y:337 Width:148 Height:44} (junto al personaje (la franja de arriba mide -108 px, demasiado estrecha)) en pantalla logica 800x720 con inventario abierto; no pisa la interfaz del juego; destino "Esqueletrón", dibujado
-[07:26:22.226] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-nuevo-destino.png"
-[07:26:22.412] [Terrakeep] AUTOPRUEBA GUIA V2 - mapa revelado alrededor del objetivo (30800 casillas, solo en el personaje de prueba) para que la captura enseñe el terreno real bajo la marca.
-[07:26:22.413] [Terrakeep] Guia v2: VER EN EL MAPA via autoprueba -> (3295, 229), aproximada=False, consulta=False.
-[07:26:25.645] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: el mapa a pantalla completa está abierto
-[07:26:25.645] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca se ha dibujado en 194 fotogramas del mapa a pantalla completa
-[07:26:25.645] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca está DENTRO del mapa visible (no como flecha de borde)
-[07:26:25.645] [Terrakeep] AUTOPRUEBA GUIA V2 - marca dibujada en pantalla en (400, 360); centro de pantalla (400, 360); distancia 0 px; mapFullscreenPos=(3295, 229); objetivo en casillas (3295, 229).
-[07:26:25.646] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca cae donde se centró el mapa (el objetivo real), a 0 px del centro
-[07:26:25.677] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mapa-mazmorra.png"
-[07:26:25.862] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
-[07:26:25.862] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
-[07:26:25.863] [Terrakeep] PANEL ABIERTO via vuelta del mapa (Guía v2). Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
-[07:26:25.867] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=16 y=64 w=768 h=590. Resolucion 800x720, escala de interfaz 1. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=26 y=104 87x30] ["Librería" x=119 y=104 87x30] ["Builds" x=213 y=104 87x30] ["Investigación" x=306 y=104 87x30] ["Exploración" x=400 y=104 87x30] ["Ajustes" x=493 y=104 87x30] ["Guía" x=587 y=104 87x30 ACTIVA] ["Álbum" x=680 y=104 87x30] 
-[07:26:26.762] [Terrakeep] Guia v2: evaluacion -> siguiente parada=sunken, paradas 3/47, tareas 1/186, modos [clasico], clase CuerpoACuerpo.
-[07:26:26.762] [Terrakeep] AUTOPRUEBA GUIA V2 - paradas anteriores a "sunken" marcadas a mano: siguiente = sunken.
-[07:26:26.763] [Terrakeep] Guia v2: indicador - aviso "Nuevo destino: Almeja gigante".
-[07:26:27.495] [Terrakeep] AUTOPRUEBA GUIA V2 - parada "sunken" (Mar Hundido, tiles de Calamity): estado de la marca = exacta en (1566, 802) origen firma.
-[07:26:27.496] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca del Mar Hundido cae sobre tiles reales de Calamity: 3889
-[07:26:27.712] [Terrakeep] Guia v2: evaluacion -> siguiente parada=desert, paradas 2/47, tareas 1/186, modos [clasico], clase CuerpoACuerpo.
-[07:26:27.712] [Terrakeep] AUTOPRUEBA GUIA V2 - paradas anteriores a "desert" marcadas a mano: siguiente = desert.
-[07:26:27.713] [Terrakeep] Guia v2: indicador - aviso "Nuevo destino: Azote del desierto".
-[07:26:28.445] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
-[07:26:29.345] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia: sin restos tecnicos en el texto visible
-[07:26:29.346] [Terrakeep] AUTOPRUEBA GUIA V2 - mi-guia: 11 textos a la vista, 1 enlaces, linea mas baja 20,3 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:26:29.346] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia: letra legible (la linea mas pequeña mide 20,3 px reales)
-[07:26:29.346] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia: el panel cabe en la pantalla y está centrado (marco 16,64 768x590 en pantalla lógica 800x720, descentrado 0 px)
-[07:26:29.346] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia: la ayuda del pie termina antes del botón Cerrar (602 <= 614, escala 0,70)
-[07:26:29.424] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mi-guia.png"
-[07:26:29.613] [Terrakeep] AUTOPRUEBA GUIA V2 - clic real en la fila del objeto que falta: CalamityMod/DesertMedallion ("Medallón del desierto", tienes 0).
-[07:26:29.614] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
-[07:26:30.345] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: el clic abre la ficha "cómo conseguirlo" de CalamityMod/DesertMedallion
-[07:26:30.345] [Terrakeep] AUTOPRUEBA GUIA V2 - contenido de la ficha: Medallón del desierto | Calamity · ID 7428 | No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa | Dónde lo pide la guía | Azote del desierto
-[07:26:30.345] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la ficha explica cómo conseguirlo
-[07:26:30.345] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la ficha ofrece el botón "Coger en la Librería"
-[07:26:30.346] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha: sin restos tecnicos en el texto visible
-[07:26:30.346] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha: 19 textos a la vista, 4 enlaces, linea mas baja 20,3 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:26:30.346] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha: letra legible (la linea mas pequeña mide 20,3 px reales)
-[07:26:30.427] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-objeto.png"
-[07:26:30.449] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: barrido de fichas: 2176 objetos, 0 con restos tecnicos
-[07:26:30.635] [Terrakeep] AUTOPRUEBA GUIA V2 - se pulsa el ingrediente Terraria/AntlionMandible dentro de la ficha.
-[07:26:30.636] [Terrakeep] Guia v2: FICHA de objeto abierta: Terraria/AntlionMandible (tipo 323, 8 lineas, altar=False): No lo tienes todavía. | Cómo conseguirlo | Botín: cae de Hormiga león — 1/3 (1-2) | Botín: cae de Enjambre de hormigas león — 1/3 (1-2) | Botín: cae de Cargador de hormigas león — 1/3 (1-2) | Botín: cae de Cargador de hormigas león gigantes — 1/3 (1-2) | Botín: cae de Enjambre de hormigas león gigantes — 1/3 (1-2) | Botín: cae de Larva de hormiga león — 1/6
-[07:26:31.368] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la ficha del ingrediente Terraria/AntlionMandible se abre desde la ficha (se recorre la cadena)
-[07:26:31.453] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-ingrediente.png"
-[07:26:31.638] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
-[07:26:31.639] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: "Atrás" vuelve a la ficha del objeto que faltaba
-[07:26:32.224] [Terrakeep] Guia v2: COGER EN LA LIBRERIA CalamityMod/DesertMedallion (tipo 7428) -> busqueda "Desert Medallion", libreria abierta=True.
-[07:26:33.105] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: "Coger en la Librería" lleva a la pestaña Librería
-[07:26:33.105] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la Librería enseña el objeto buscado (CalamityMod/DesertMedallion, tipo 7428) entre sus resultados, listo para cogerlo
-[07:26:33.105] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: libreria-con-objeto: las 50 ranuras del contenedor elegido quedan dentro del panel (0 fuera, la peor 0 px)
-[07:26:33.173] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-libreria-con-objeto.png"
-[07:26:33.359] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
-[07:26:33.359] [Terrakeep] Pestaña activa: "Guía" (via autoprueba guia v2).
-[07:26:33.359] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
-[07:26:34.259] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta: sin restos tecnicos en el texto visible
-[07:26:34.259] [Terrakeep] AUTOPRUEBA GUIA V2 - ruta: 27 textos a la vista, 4 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:26:34.260] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta: letra legible (la linea mas pequeña mide 18,6 px reales)
-[07:26:34.343] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-arriba.png"
-[07:26:34.529] [Terrakeep] Guia v2: tarea desert.1 marcada a mano = True.
-[07:26:34.529] [Terrakeep] Guia v2: evaluacion -> siguiente parada=desert, paradas 2/47, tareas 2/186, modos [clasico], clase CuerpoACuerpo.
-[07:26:34.529] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la casilla de la tarea desert.1 se marca a mano
-[07:26:35.095] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: el progreso manual se guarda en el personaje (ModPlayer.SaveData, clave guiaV2.calamity, 291 bytes de JSON)
-[07:26:35.096] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: y se vuelve a leer igual (LoadData)
-[07:26:35.961] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-tareas.png"
-[07:26:36.149] [Terrakeep] Guia v2: sub-pestaña "Equipo".
-[07:26:37.154] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: Equipo: sin restos tecnicos en el texto visible
-[07:26:37.154] [Terrakeep] AUTOPRUEBA GUIA V2 - Equipo: 7 textos a la vista, 1 enlaces, linea mas baja 19,7 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:26:37.154] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: Equipo: letra legible (la linea mas pequeña mide 19,7 px reales)
-[07:26:37.227] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-equipo.png"
-[07:26:37.413] [Terrakeep] Guia v2: articulo "inicio-guia" (25 bloques).
-[07:26:37.413] [Terrakeep] Guia v2: sub-pestaña "Manual" (articulo inicio-guia).
-[07:26:38.313] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: Manual: sin restos tecnicos en el texto visible
-[07:26:38.313] [Terrakeep] AUTOPRUEBA GUIA V2 - Manual: 18 textos a la vista, 0 enlaces, linea mas baja 20,9 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:26:38.313] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: Manual: letra legible (la linea mas pequeña mide 20,9 px reales)
-[07:26:38.398] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-manual.png"
-[07:26:38.584] [Terrakeep] Guia v2: sub-pestaña "Perdido".
-[07:26:39.484] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: Perdido: sin restos tecnicos en el texto visible
-[07:26:39.484] [Terrakeep] AUTOPRUEBA GUIA V2 - Perdido: 9 textos a la vista, 2 enlaces, linea mas baja 20,9 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:26:39.484] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: Perdido: letra legible (la linea mas pequeña mide 20,9 px reales)
-[07:26:39.563] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-perdido.png"
-[07:26:39.749] [Terrakeep] Guia v2: sub-pestaña "Raro".
-[07:26:40.649] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: Raro: sin restos tecnicos en el texto visible
-[07:26:40.649] [Terrakeep] AUTOPRUEBA GUIA V2 - Raro: 12 textos a la vista, 9 enlaces, linea mas baja 19,1 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:26:40.649] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: Raro: letra legible (la linea mas pequeña mide 19,1 px reales)
-[07:26:40.729] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-raro.png"
-[07:26:40.916] [Terrakeep] Guia v2: articulo "mapa" (20 bloques).
-[07:26:40.916] [Terrakeep] Guia v2: sub-pestaña "Manual" (articulo mapa).
-[07:26:41.816] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: manual-mapa: sin restos tecnicos en el texto visible
-[07:26:41.816] [Terrakeep] AUTOPRUEBA GUIA V2 - manual-mapa: 21 textos a la vista, 3 enlaces, linea mas baja 19,1 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:26:41.816] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: manual-mapa: letra legible (la linea mas pequeña mide 19,1 px reales)
-[07:26:41.897] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-manual-mapa.png"
-[07:26:42.083] [Terrakeep] Guia v2: FICHA de zona abierta: desierto -> (1693, 292) aproximada=False.
-[07:26:42.816] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la ficha de zona se abre
-[07:26:42.816] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-zona: sin restos tecnicos en el texto visible
-[07:26:42.817] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha-zona: 25 textos a la vista, 5 enlaces, linea mas baja 19,1 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:26:42.817] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-zona: letra legible (la linea mas pequeña mide 19,1 px reales)
-[07:26:42.898] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-zona.png"
-[07:26:43.087] [Terrakeep] Guia v2: busqueda "desierto" -> 20 resultados.
-[07:26:43.087] [Terrakeep] Guia v2: sub-pestaña "Busqueda".
-[07:26:43.818] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: el buscador encuentra "desierto" (20 resultados)
-[07:26:43.818] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: busqueda: sin restos tecnicos en el texto visible
-[07:26:43.819] [Terrakeep] AUTOPRUEBA GUIA V2 - busqueda: 14 textos a la vista, 0 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:26:43.819] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: busqueda: letra legible (la linea mas pequeña mide 18,6 px reales)
-[07:26:43.884] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-busqueda.png"
-[07:26:43.885] [Terrakeep] Guia v2: articulo "mapa" (20 bloques).
-[07:26:43.885] [Terrakeep] Guia v2: sub-pestaña "Manual" (articulo mapa).
-[07:26:44.074] [Terrakeep] Guia v2: evaluacion -> siguiente parada=desert, paradas 2/47, tareas 2/185, modos [clasico], clase Magia.
-[07:26:44.075] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: el selector de clase cambia la clase de la guía (CuerpoACuerpo -> Magia)
-[07:26:44.075] [Terrakeep] Guia v2: sub-pestaña "Equipo".
-[07:26:44.998] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: equipo-magia: sin restos tecnicos en el texto visible
-[07:26:44.998] [Terrakeep] AUTOPRUEBA GUIA V2 - equipo-magia: 6 textos a la vista, 1 enlaces, linea mas baja 19,7 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:26:44.999] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: equipo-magia: letra legible (la linea mas pequeña mide 19,7 px reales)
-[07:26:45.074] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-equipo-magia.png"
-[07:26:45.481] [Terrakeep] AUTOPRUEBA GUIA V2 - resolucion pedida 1280x720 -> real 1280x720.
-[07:26:46.377] [Terrakeep] AUTOPRUEBA GUIA V2 - UIScale normal = 1,00 -> pantalla logica 1280x720.
-[07:26:47.111] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
-[07:26:48.011] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-normal: sin restos tecnicos en el texto visible
-[07:26:48.011] [Terrakeep] AUTOPRUEBA GUIA V2 - mi-guia-1280x720-normal: 11 textos a la vista, 1 enlaces, linea mas baja 20,3 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:26:48.011] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-normal: letra legible (la linea mas pequeña mide 20,3 px reales)
-[07:26:48.011] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-normal: la línea de progreso de la cabecera cabe (262 de 660 px, escala 0,74)
-[07:26:48.012] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-normal: el panel cabe en la pantalla y está centrado (marco 100,64 1080x590 en pantalla lógica 1280x720, descentrado 0 px)
-[07:26:48.012] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-normal: la ayuda del pie termina antes del botón Cerrar (729 <= 1010, escala 0,75)
-[07:26:48.111] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mi-guia-1280x720-normal.png"
-[07:26:48.296] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
-[07:26:49.196] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1280x720-normal: sin restos tecnicos en el texto visible
-[07:26:49.197] [Terrakeep] AUTOPRUEBA GUIA V2 - ruta-1280x720-normal: 29 textos a la vista, 4 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:26:49.197] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1280x720-normal: letra legible (la linea mas pequeña mide 18,6 px reales)
-[07:26:49.306] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-1280x720-normal.png"
-[07:26:49.306] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
-[07:26:50.009] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1280x720-normal: sin restos tecnicos en el texto visible
-[07:26:50.009] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha-1280x720-normal: 37 textos a la vista, 7 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:26:50.010] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1280x720-normal: letra legible (la linea mas pequeña mide 18,6 px reales)
-[07:26:50.119] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-1280x720-normal.png"
-[07:26:51.038] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: libreria-1280x720-normal: las 50 ranuras del contenedor elegido quedan dentro del panel (0 fuera, la peor 0 px)
-[07:26:51.130] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-libreria-1280x720-normal.png"
-[07:26:51.882] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-1280x720-normal: indicador en {X:688 Y:6 Width:148 Height:44} (franja superior libre (576-948)) en pantalla logica 1280x720; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
-[07:26:51.950] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-1280x720-normal.png"
-[07:26:52.702] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-inventario-1280x720-normal: indicador en {X:688 Y:74 Width:148 Height:44} (franja superior libre (576-948)) en pantalla logica 1280x720 con inventario abierto; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
-[07:26:52.784] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-inventario-1280x720-normal.png"
-[07:26:52.969] [Terrakeep] AUTOPRUEBA GUIA V2 - UIScale max = 1,20 -> pantalla logica 1066x600.
-[07:26:53.702] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
-[07:26:53.703] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
-[07:26:53.703] [Terrakeep] PANEL ABIERTO via autoprueba guia v2. Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
-[07:26:53.703] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
-[07:26:53.706] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=21 y=54 w=1023 h=492. Resolucion 1066x600, escala de interfaz 1,2. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=31 y=94 119x30] ["Librería" x=156 y=94 119x30] ["Builds" x=282 y=94 119x30] ["Investigación" x=407 y=94 119x30] ["Exploración" x=533 y=94 119x30] ["Ajustes" x=658 y=94 119x30] ["Guía" x=784 y=94 119x30 ACTIVA] ["Álbum" x=909 y=94 119x30] 
-[07:26:54.602] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-max: sin restos tecnicos en el texto visible
-[07:26:54.603] [Terrakeep] AUTOPRUEBA GUIA V2 - mi-guia-1280x720-max: 10 textos a la vista, 1 enlaces, linea mas baja 24,4 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:26:54.603] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-max: letra legible (la linea mas pequeña mide 24,4 px reales)
-[07:26:54.603] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-max: la línea de progreso de la cabecera cabe (262 de 604 px, escala 0,74)
-[07:26:54.603] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-max: el panel cabe en la pantalla y está centrado (marco 21,54 1023x492 en pantalla lógica 1066x600, descentrado 0 px)
-[07:26:54.603] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-max: la ayuda del pie termina antes del botón Cerrar (650 <= 875, escala 0,75)
-[07:26:54.709] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mi-guia-1280x720-max.png"
-[07:26:54.897] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
-[07:26:55.797] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1280x720-max: sin restos tecnicos en el texto visible
-[07:26:55.797] [Terrakeep] AUTOPRUEBA GUIA V2 - ruta-1280x720-max: 23 textos a la vista, 2 enlaces, linea mas baja 22,3 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:26:55.797] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1280x720-max: letra legible (la linea mas pequeña mide 22,3 px reales)
-[07:26:55.908] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-1280x720-max.png"
-[07:26:55.909] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
-[07:26:56.611] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1280x720-max: sin restos tecnicos en el texto visible
-[07:26:56.611] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha-1280x720-max: 31 textos a la vista, 5 enlaces, linea mas baja 22,3 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:26:56.612] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1280x720-max: letra legible (la linea mas pequeña mide 22,3 px reales)
-[07:26:56.729] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-1280x720-max.png"
-[07:26:57.648] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: libreria-1280x720-max: las 50 ranuras del contenedor elegido quedan dentro del panel (0 fuera, la peor 0 px)
-[07:26:57.751] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-libreria-1280x720-max.png"
-[07:26:58.505] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-1280x720-max: indicador en {X:581 Y:6 Width:148 Height:44} (franja superior libre (576-734)) en pantalla logica 1066x600; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
-[07:26:58.576] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-1280x720-max.png"
-[07:26:59.328] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-inventario-1280x720-max: indicador en {X:581 Y:162 Width:148 Height:44} (franja superior libre (576-734); debajo del indicador de dificultad de Calamity) en pantalla logica 1066x600 con inventario abierto; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
-[07:26:59.419] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-inventario-1280x720-max.png"
-[07:26:59.616] [Terrakeep] AUTOPRUEBA GUIA V2 - resolucion pedida 1600x900 -> real 1600x900.
-[07:27:00.512] [Terrakeep] AUTOPRUEBA GUIA V2 - UIScale normal = 1,00 -> pantalla logica 1600x900.
-[07:27:01.245] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
-[07:27:01.246] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
-[07:27:01.246] [Terrakeep] PANEL ABIERTO via autoprueba guia v2. Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
-[07:27:01.246] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
-[07:27:01.249] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=260 y=81 w=1080 h=738. Resolucion 1600x900, escala de interfaz 1. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=270 y=121 126x30] ["Librería" x=402 y=121 126x30] ["Builds" x=535 y=121 126x30] ["Investigación" x=667 y=121 126x30] ["Exploración" x=800 y=121 126x30] ["Ajustes" x=932 y=121 126x30] ["Guía" x=1065 y=121 126x30 ACTIVA] ["Álbum" x=1197 y=121 126x30] 
-[07:27:02.145] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-normal: sin restos tecnicos en el texto visible
-[07:27:02.145] [Terrakeep] AUTOPRUEBA GUIA V2 - mi-guia-1600x900-normal: 16 textos a la vista, 1 enlaces, linea mas baja 20,3 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:27:02.146] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-normal: letra legible (la linea mas pequeña mide 20,3 px reales)
-[07:27:02.146] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-normal: la línea de progreso de la cabecera cabe (262 de 660 px, escala 0,74)
-[07:27:02.146] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-normal: el panel cabe en la pantalla y está centrado (marco 260,81 1080x738 en pantalla lógica 1600x900, descentrado 0 px)
-[07:27:02.146] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-normal: la ayuda del pie termina antes del botón Cerrar (889 <= 1170, escala 0,75)
-[07:27:02.293] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mi-guia-1600x900-normal.png"
-[07:27:02.481] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
-[07:27:03.381] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1600x900-normal: sin restos tecnicos en el texto visible
-[07:27:03.381] [Terrakeep] AUTOPRUEBA GUIA V2 - ruta-1600x900-normal: 40 textos a la vista, 4 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:27:03.381] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1600x900-normal: letra legible (la linea mas pequeña mide 18,6 px reales)
-[07:27:03.548] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-1600x900-normal.png"
-[07:27:03.548] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
-[07:27:04.262] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1600x900-normal: sin restos tecnicos en el texto visible
-[07:27:04.262] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha-1600x900-normal: 48 textos a la vista, 7 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:27:04.262] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1600x900-normal: letra legible (la linea mas pequeña mide 18,6 px reales)
-[07:27:04.419] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-1600x900-normal.png"
-[07:27:05.339] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: libreria-1600x900-normal: las 50 ranuras del contenedor elegido quedan dentro del panel (0 fuera, la peor 0 px)
-[07:27:05.477] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-libreria-1600x900-normal.png"
-[07:27:06.231] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-1600x900-normal: indicador en {X:848 Y:6 Width:148 Height:44} (franja superior libre (576-1268)) en pantalla logica 1600x900; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
-[07:27:06.340] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-1600x900-normal.png"
-[07:27:07.093] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-inventario-1600x900-normal: indicador en {X:848 Y:74 Width:148 Height:44} (franja superior libre (576-1268)) en pantalla logica 1600x900 con inventario abierto; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
-[07:27:07.212] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-inventario-1600x900-normal.png"
-[07:27:07.398] [Terrakeep] AUTOPRUEBA GUIA V2 - UIScale max = 1,50 -> pantalla logica 1066x600.
-[07:27:08.131] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
-[07:27:08.131] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
-[07:27:08.132] [Terrakeep] PANEL ABIERTO via autoprueba guia v2. Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
-[07:27:08.132] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
-[07:27:08.136] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=21 y=54 w=1023 h=492. Resolucion 1066x600, escala de interfaz 1,5. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=31 y=94 119x30] ["Librería" x=156 y=94 119x30] ["Builds" x=282 y=94 119x30] ["Investigación" x=407 y=94 119x30] ["Exploración" x=533 y=94 119x30] ["Ajustes" x=658 y=94 119x30] ["Guía" x=784 y=94 119x30 ACTIVA] ["Álbum" x=909 y=94 119x30] 
-[07:27:09.031] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-max: sin restos tecnicos en el texto visible
-[07:27:09.031] [Terrakeep] AUTOPRUEBA GUIA V2 - mi-guia-1600x900-max: 10 textos a la vista, 1 enlaces, linea mas baja 30,5 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:27:09.032] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-max: letra legible (la linea mas pequeña mide 30,5 px reales)
-[07:27:09.032] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-max: la línea de progreso de la cabecera cabe (262 de 604 px, escala 0,74)
-[07:27:09.032] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-max: el panel cabe en la pantalla y está centrado (marco 21,54 1023x492 en pantalla lógica 1066x600, descentrado 0 px)
-[07:27:09.032] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-max: la ayuda del pie termina antes del botón Cerrar (650 <= 875, escala 0,75)
-[07:27:09.195] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mi-guia-1600x900-max.png"
-[07:27:09.382] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
-[07:27:10.282] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1600x900-max: sin restos tecnicos en el texto visible
-[07:27:10.282] [Terrakeep] AUTOPRUEBA GUIA V2 - ruta-1600x900-max: 23 textos a la vista, 2 enlaces, linea mas baja 27,8 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:27:10.282] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1600x900-max: letra legible (la linea mas pequeña mide 27,8 px reales)
-[07:27:10.447] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-1600x900-max.png"
-[07:27:10.448] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
-[07:27:11.162] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1600x900-max: sin restos tecnicos en el texto visible
-[07:27:11.163] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha-1600x900-max: 31 textos a la vista, 5 enlaces, linea mas baja 27,8 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:27:11.163] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1600x900-max: letra legible (la linea mas pequeña mide 27,8 px reales)
-[07:27:11.336] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-1600x900-max.png"
-[07:27:12.267] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: libreria-1600x900-max: las 50 ranuras del contenedor elegido quedan dentro del panel (0 fuera, la peor 0 px)
-[07:27:12.419] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-libreria-1600x900-max.png"
-[07:27:13.172] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-1600x900-max: indicador en {X:581 Y:6 Width:148 Height:44} (franja superior libre (576-734)) en pantalla logica 1066x600; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
-[07:27:13.284] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-1600x900-max.png"
-[07:27:14.037] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-inventario-1600x900-max: indicador en {X:581 Y:162 Width:148 Height:44} (franja superior libre (576-734); debajo del indicador de dificultad de Calamity) en pantalla logica 1066x600 con inventario abierto; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
-[07:27:14.177] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-inventario-1600x900-max.png"
-[07:27:14.368] [Terrakeep] AUTOPRUEBA GUIA V2 - resolucion pedida 1920x1080 -> real 1920x1080.
-[07:27:15.263] [Terrakeep] AUTOPRUEBA GUIA V2 - UIScale normal = 1,00 -> pantalla logica 1920x1080.
-[07:27:15.997] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
-[07:27:15.997] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
-[07:27:15.997] [Terrakeep] PANEL ABIERTO via autoprueba guia v2. Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
-[07:27:15.998] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
-[07:27:16.001] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=420 y=97 w=1080 h=885. Resolucion 1920x1080, escala de interfaz 1. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=430 y=137 126x30] ["Librería" x=562 y=137 126x30] ["Builds" x=695 y=137 126x30] ["Investigación" x=827 y=137 126x30] ["Exploración" x=960 y=137 126x30] ["Ajustes" x=1092 y=137 126x30] ["Guía" x=1225 y=137 126x30 ACTIVA] ["Álbum" x=1357 y=137 126x30] 
-[07:27:16.896] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-normal: sin restos tecnicos en el texto visible
-[07:27:16.897] [Terrakeep] AUTOPRUEBA GUIA V2 - mi-guia-1920x1080-normal: 21 textos a la vista, 2 enlaces, linea mas baja 19,1 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:27:16.897] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-normal: letra legible (la linea mas pequeña mide 19,1 px reales)
-[07:27:16.897] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-normal: la línea de progreso de la cabecera cabe (262 de 660 px, escala 0,74)
-[07:27:16.897] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-normal: el panel cabe en la pantalla y está centrado (marco 420,97 1080x885 en pantalla lógica 1920x1080, descentrado 0 px)
-[07:27:16.897] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-normal: la ayuda del pie termina antes del botón Cerrar (1049 <= 1330, escala 0,75)
-[07:27:17.108] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mi-guia-1920x1080-normal.png"
-[07:27:17.304] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
-[07:27:18.204] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1920x1080-normal: sin restos tecnicos en el texto visible
-[07:27:18.204] [Terrakeep] AUTOPRUEBA GUIA V2 - ruta-1920x1080-normal: 46 textos a la vista, 6 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:27:18.204] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1920x1080-normal: letra legible (la linea mas pequeña mide 18,6 px reales)
-[07:27:18.433] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-1920x1080-normal.png"
-[07:27:18.434] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
-[07:27:19.140] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1920x1080-normal: sin restos tecnicos en el texto visible
-[07:27:19.140] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha-1920x1080-normal: 54 textos a la vista, 9 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:27:19.140] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1920x1080-normal: letra legible (la linea mas pequeña mide 18,6 px reales)
-[07:27:19.358] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-1920x1080-normal.png"
-[07:27:20.280] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: libreria-1920x1080-normal: las 50 ranuras del contenedor elegido quedan dentro del panel (0 fuera, la peor 0 px)
-[07:27:20.471] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-libreria-1920x1080-normal.png"
-[07:27:21.234] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-1920x1080-normal: indicador en {X:1008 Y:6 Width:148 Height:44} (franja superior libre (576-1588)) en pantalla logica 1920x1080; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
-[07:27:21.392] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-1920x1080-normal.png"
-[07:27:22.146] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-inventario-1920x1080-normal: indicador en {X:1008 Y:74 Width:148 Height:44} (franja superior libre (576-1588)) en pantalla logica 1920x1080 con inventario abierto; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
-[07:27:22.316] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-inventario-1920x1080-normal.png"
-[07:27:22.511] [Terrakeep] AUTOPRUEBA GUIA V2 - UIScale max = 1,80 -> pantalla logica 1066x600.
-[07:27:23.245] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
-[07:27:23.245] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
-[07:27:23.246] [Terrakeep] PANEL ABIERTO via autoprueba guia v2. Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
-[07:27:23.246] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
-[07:27:23.252] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=21 y=54 w=1024 h=492. Resolucion 1066x600, escala de interfaz 1,8. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=31 y=94 119x30] ["Librería" x=156 y=94 119x30] ["Builds" x=282 y=94 119x30] ["Investigación" x=407 y=94 119x30] ["Exploración" x=533 y=94 119x30] ["Ajustes" x=658 y=94 119x30] ["Guía" x=784 y=94 119x30 ACTIVA] ["Álbum" x=909 y=94 119x30] 
-[07:27:24.145] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-max: sin restos tecnicos en el texto visible
-[07:27:24.145] [Terrakeep] AUTOPRUEBA GUIA V2 - mi-guia-1920x1080-max: 10 textos a la vista, 1 enlaces, linea mas baja 36,5 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:27:24.146] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-max: letra legible (la linea mas pequeña mide 36,5 px reales)
-[07:27:24.146] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-max: la línea de progreso de la cabecera cabe (262 de 604 px, escala 0,74)
-[07:27:24.146] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-max: el panel cabe en la pantalla y está centrado (marco 21,54 1024x492 en pantalla lógica 1066x600, descentrado 0 px)
-[07:27:24.146] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-max: la ayuda del pie termina antes del botón Cerrar (650 <= 875, escala 0,75)
-[07:27:24.368] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mi-guia-1920x1080-max.png"
-[07:27:24.556] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
-[07:27:25.456] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1920x1080-max: sin restos tecnicos en el texto visible
-[07:27:25.456] [Terrakeep] AUTOPRUEBA GUIA V2 - ruta-1920x1080-max: 23 textos a la vista, 2 enlaces, linea mas baja 33,4 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:27:25.457] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1920x1080-max: letra legible (la linea mas pequeña mide 33,4 px reales)
-[07:27:25.692] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-1920x1080-max.png"
-[07:27:25.693] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
-[07:27:26.397] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1920x1080-max: sin restos tecnicos en el texto visible
-[07:27:26.397] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha-1920x1080-max: 31 textos a la vista, 5 enlaces, linea mas baja 33,4 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:27:26.397] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1920x1080-max: letra legible (la linea mas pequeña mide 33,4 px reales)
-[07:27:26.639] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-1920x1080-max.png"
-[07:27:27.559] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: libreria-1920x1080-max: las 50 ranuras del contenedor elegido quedan dentro del panel (0 fuera, la peor 0 px)
-[07:27:27.779] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-libreria-1920x1080-max.png"
-[07:27:28.533] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-1920x1080-max: indicador en {X:581 Y:6 Width:148 Height:44} (franja superior libre (576-734)) en pantalla logica 1066x600; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
-[07:27:28.697] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-1920x1080-max.png"
-[07:27:29.460] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-inventario-1920x1080-max: indicador en {X:581 Y:162 Width:148 Height:44} (franja superior libre (576-734); debajo del indicador de dificultad de Calamity) en pantalla logica 1066x600 con inventario abierto; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
-[07:27:29.656] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-inventario-1920x1080-max.png"
-[07:27:29.856] [Terrakeep] AUTOPRUEBA GUIA V2 - resolucion pedida 2560x1440 -> real 2560x1440.
-[07:27:30.751] [Terrakeep] AUTOPRUEBA GUIA V2 - UIScale normal = 1,00 -> pantalla logica 2560x1440.
-[07:27:31.485] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
-[07:27:31.485] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
-[07:27:31.486] [Terrakeep] PANEL ABIERTO via autoprueba guia v2. Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
-[07:27:31.486] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
-[07:27:31.490] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=740 y=129 w=1080 h=1180. Resolucion 2560x1440, escala de interfaz 1. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=750 y=169 126x30] ["Librería" x=882 y=169 126x30] ["Builds" x=1015 y=169 126x30] ["Investigación" x=1147 y=169 126x30] ["Exploración" x=1280 y=169 126x30] ["Ajustes" x=1412 y=169 126x30] ["Guía" x=1545 y=169 126x30 ACTIVA] ["Álbum" x=1677 y=169 126x30] 
-[07:27:32.385] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-normal: sin restos tecnicos en el texto visible
-[07:27:32.385] [Terrakeep] AUTOPRUEBA GUIA V2 - mi-guia-2560x1440-normal: 27 textos a la vista, 7 enlaces, linea mas baja 19,1 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:27:32.385] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-normal: letra legible (la linea mas pequeña mide 19,1 px reales)
-[07:27:32.386] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-normal: la línea de progreso de la cabecera cabe (262 de 660 px, escala 0,74)
-[07:27:32.386] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-normal: el panel cabe en la pantalla y está centrado (marco 740,129 1080x1180 en pantalla lógica 2560x1440, descentrado 0 px)
-[07:27:32.386] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-normal: la ayuda del pie termina antes del botón Cerrar (1369 <= 1650, escala 0,75)
-[07:27:32.729] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mi-guia-2560x1440-normal.png"
-[07:27:32.916] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
-[07:27:33.816] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-2560x1440-normal: sin restos tecnicos en el texto visible
-[07:27:33.817] [Terrakeep] AUTOPRUEBA GUIA V2 - ruta-2560x1440-normal: 62 textos a la vista, 6 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:27:33.817] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-2560x1440-normal: letra legible (la linea mas pequeña mide 18,6 px reales)
-[07:27:34.177] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-2560x1440-normal.png"
-[07:27:34.178] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
-[07:27:34.882] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-2560x1440-normal: sin restos tecnicos en el texto visible
-[07:27:34.882] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha-2560x1440-normal: 70 textos a la vista, 9 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:27:34.883] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-2560x1440-normal: letra legible (la linea mas pequeña mide 18,6 px reales)
-[07:27:35.215] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-2560x1440-normal.png"
-[07:27:36.138] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: libreria-2560x1440-normal: las 50 ranuras del contenedor elegido quedan dentro del panel (0 fuera, la peor 0 px)
-[07:27:36.431] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-libreria-2560x1440-normal.png"
-[07:27:37.193] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-2560x1440-normal: indicador en {X:1328 Y:6 Width:148 Height:44} (franja superior libre (576-2228)) en pantalla logica 2560x1440; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
-[07:27:37.452] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-2560x1440-normal.png"
-[07:27:38.205] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-inventario-2560x1440-normal: indicador en {X:1328 Y:74 Width:148 Height:44} (franja superior libre (576-2228)) en pantalla logica 2560x1440 con inventario abierto; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
-[07:27:38.475] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-inventario-2560x1440-normal.png"
-[07:27:38.662] [Terrakeep] AUTOPRUEBA GUIA V2 - UIScale max = 2,40 -> pantalla logica 1066x600.
-[07:27:39.396] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
-[07:27:39.396] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
-[07:27:39.397] [Terrakeep] PANEL ABIERTO via autoprueba guia v2. Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
-[07:27:39.397] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
-[07:27:39.401] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=21 y=54 w=1023 h=492. Resolucion 1066x600, escala de interfaz 2,4. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=31 y=94 119x30] ["Librería" x=156 y=94 119x30] ["Builds" x=282 y=94 119x30] ["Investigación" x=407 y=94 119x30] ["Exploración" x=533 y=94 119x30] ["Ajustes" x=658 y=94 119x30] ["Guía" x=784 y=94 119x30 ACTIVA] ["Álbum" x=909 y=94 119x30] 
-[07:27:40.296] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-max: sin restos tecnicos en el texto visible
-[07:27:40.296] [Terrakeep] AUTOPRUEBA GUIA V2 - mi-guia-2560x1440-max: 10 textos a la vista, 1 enlaces, linea mas baja 48,7 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:27:40.296] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-max: letra legible (la linea mas pequeña mide 48,7 px reales)
-[07:27:40.297] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-max: la línea de progreso de la cabecera cabe (262 de 604 px, escala 0,74)
-[07:27:40.297] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-max: el panel cabe en la pantalla y está centrado (marco 21,54 1023x492 en pantalla lógica 1066x600, descentrado 0 px)
-[07:27:40.297] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-max: la ayuda del pie termina antes del botón Cerrar (650 <= 875, escala 0,75)
-[07:27:40.658] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mi-guia-2560x1440-max.png"
-[07:27:40.846] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
-[07:27:41.746] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-2560x1440-max: sin restos tecnicos en el texto visible
-[07:27:41.747] [Terrakeep] AUTOPRUEBA GUIA V2 - ruta-2560x1440-max: 23 textos a la vista, 2 enlaces, linea mas baja 44,5 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:27:41.747] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-2560x1440-max: letra legible (la linea mas pequeña mide 44,5 px reales)
-[07:27:42.131] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-2560x1440-max.png"
-[07:27:42.132] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
-[07:27:42.845] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-2560x1440-max: sin restos tecnicos en el texto visible
-[07:27:42.846] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha-2560x1440-max: 31 textos a la vista, 5 enlaces, linea mas baja 44,5 px en pantalla -> OK: ningun texto se sale de su caja.
-[07:27:42.846] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-2560x1440-max: letra legible (la linea mas pequeña mide 44,5 px reales)
-[07:27:43.240] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-2560x1440-max.png"
-[07:27:44.170] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: libreria-2560x1440-max: las 50 ranuras del contenedor elegido quedan dentro del panel (0 fuera, la peor 0 px)
-[07:27:44.528] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-libreria-2560x1440-max.png"
-[07:27:45.283] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-2560x1440-max: indicador en {X:581 Y:6 Width:148 Height:44} (franja superior libre (576-734)) en pantalla logica 1066x600; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
-[07:27:45.554] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-2560x1440-max.png"
-[07:27:46.307] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-inventario-2560x1440-max: indicador en {X:581 Y:162 Width:148 Height:44} (franja superior libre (576-734); debajo del indicador de dificultad de Calamity) en pantalla logica 1066x600 con inventario abierto; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
-[07:27:46.638] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-inventario-2560x1440-max.png"
-[07:27:47.558] [Terrakeep] Guia v2: evaluacion -> siguiente parada=desert, paradas 2/47, tareas 1/186, modos [clasico], clase CuerpoACuerpo.
-[07:27:47.558] [Terrakeep] AUTOPRUEBA GUIA V2 - progreso manual restaurado; siguiente parada = desert.
-[07:27:48.208] [Terrakeep] AUTOPRUEBA GUIA V2 - RESUMEN: 246 comprobaciones, 0 en rojo. Barridos de zona: 21.
-[07:27:48.208] [Terrakeep] AUTOPRUEBA GUIA V2 COMPLETA
+﻿# Evidencia de la Guia en tiempo real - 2026-10-03 08:13:47
+[08:13:47.301] [Terrakeep] Guia: arbol de progresion cargado. 46 tramos (46 con requisitos evaluables), 116 pasos, 230 requisitos, 0 avisos. Calamity cargado=True.
+[08:13:47.345] [Terrakeep] Guia v2: guias incrustadas en Terrakeep.Core = [calamity, vanilla]; Calamity cargado=True; guia activa=calamity (47 paradas, 186 tareas); referencias=2176 objetos/532 NPC.
+[08:13:48.897] [Terrakeep] Guia v2: evaluacion -> siguiente parada=desert, paradas 2/47, tareas 1/186, modos [clasico], clase CuerpoACuerpo.
+[08:13:48.900] [Terrakeep] Guia v2: ubicacion zona:desierto -> (1693, 292) origen=firma aproximada=False casillas=88400 [2 ms]
+[08:13:52.290] [Terrakeep] AUTOPRUEBA GUIA V2 - comienza: 297 pasos. Resolucion 800x720, UIScale 1,00, Calamity=True.
+[08:13:52.290] [Terrakeep] AUTOPRUEBA GUIA V2 - guias incrustadas en Terrakeep.Core: [calamity, vanilla]; esperada para esta partida: calamity.
+[08:13:52.290] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: guía activa = calamity (47 paradas, 186 tareas, 10 articulos)
+[08:13:52.291] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: referencias de objeto resueltas con ModContent.TryFind/ItemID: 2176 de 2176
+[08:13:52.292] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: referencias de NPC resueltas: 532 de 532
+[08:13:52.292] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: bandera de Calamity downedLeviathan legible (valor False)
+[08:13:52.292] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: bandera de Calamity downedEoCAcidRain legible (valor False)
+[08:13:52.292] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: bandera de Calamity downedAquaticScourgeAcidRain legible (valor False)
+[08:13:52.292] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: bandera de Calamity downedCLAMHardMode legible (valor False)
+[08:13:52.293] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: bandera de Calamity downedNuclearTerror legible (valor False)
+[08:13:52.293] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: bandera de Calamity downedBossRush legible (valor False)
+[08:13:52.293] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: estado de mundo (revenge=False) y mejoras de CalamityPlayer (mFruit=False) legibles por reflexion
+[08:13:52.511] [Terrakeep] AUTOPRUEBA GUIA V2 - progreso manual de partida guardado para restaurarlo al final (2 paradas, 0 tareas, clase "").
+[08:13:52.723] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: evaluación en vivo: 47 paradas, 1/186 tareas, siguiente=desert, modos [clasico]
+[08:13:52.723] [Terrakeep] AUTOPRUEBA GUIA V2 - tareas comprobadas solas por el juego: 120; no evaluables: 0; sin datos: 0.
+[08:13:52.723] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: con partida cargada ninguna condición queda "sin datos"
+[08:13:52.724] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: el modo real de la partida se lee (Clásico)
+[08:13:52.942] [Terrakeep] Guia v2: ubicacion zona:nieve -> (2974, 283) origen=firma aproximada=False casillas=171872 [2 ms]
+[08:13:52.943] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona nieve situada en (2974, 283): 5746 casillas REALES de su firma en 40 casillas a la redonda
+[08:13:52.943] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona desierto situada en (1693, 292): 4291 casillas REALES de su firma en 40 casillas a la redonda
+[08:13:52.945] [Terrakeep] Guia v2: ubicacion zona:desierto_subterraneo -> (1758, 542) origen=firma aproximada=False casillas=41472 [2 ms]
+[08:13:52.946] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona desierto_subterraneo situada en (1758, 542): 2565 casillas REALES de su firma en 40 casillas a la redonda
+[08:13:52.949] [Terrakeep] Guia v2: ubicacion zona:jungla -> (1051, 411) origen=firma aproximada=False casillas=36976 [2 ms]
+[08:13:52.949] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona jungla situada en (1051, 411): 977 casillas REALES de su firma en 40 casillas a la redonda
+[08:13:52.952] [Terrakeep] Guia v2: ubicacion zona:jungla_subterranea -> (1054, 350) origen=firma aproximada=False casillas=248624 [2 ms]
+[08:13:52.952] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona jungla_subterranea situada en (1054, 350): 4683 casillas REALES de su firma en 40 casillas a la redonda
+[08:13:52.955] [Terrakeep] Guia v2: ubicacion zona:setas -> (1943, 597) origen=firma aproximada=False casillas=4592 [2 ms]
+[08:13:52.955] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona setas situada en (1943, 597): 566 casillas REALES de su firma en 40 casillas a la redonda
+[08:13:52.958] [Terrakeep] Guia v2: ubicacion zona:corrupcion -> NO EXISTE en este mundo [2 ms]
+[08:13:52.958] [Terrakeep] AUTOPRUEBA GUIA V2 - zona corrupcion (La Corrupción): no existe en este mundo.
+[08:13:52.961] [Terrakeep] Guia v2: ubicacion zona:carmesi -> (538, 351) origen=firma aproximada=False casillas=33968 [2 ms]
+[08:13:52.961] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona carmesi situada en (538, 351): 2389 casillas REALES de su firma en 40 casillas a la redonda
+[08:13:52.964] [Terrakeep] Guia v2: ubicacion zona:colmena -> (1184, 538) origen=firma aproximada=False casillas=11232 [2 ms]
+[08:13:52.964] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona colmena situada en (1184, 538): 1083 casillas REALES de su firma en 40 casillas a la redonda
+[08:13:52.965] [Terrakeep] Guia v2: ubicacion zona:mazmorra -> (3295, 229) origen=punto:mazmorra aproximada=False casillas=0 [0 ms]
+[08:13:52.965] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona mazmorra situada en (3295, 229): 3282 casillas REALES de su firma en 40 casillas a la redonda
+[08:13:52.968] [Terrakeep] Guia v2: ubicacion zona:inframundo -> (2783, 1117) origen=firma aproximada=False casillas=320016 [2 ms]
+[08:13:52.968] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona inframundo situada en (2783, 1117): 5394 casillas REALES de su firma en 40 casillas a la redonda
+[08:13:52.971] [Terrakeep] Guia v2: ubicacion zona:sagrado -> NO EXISTE en este mundo [2 ms]
+[08:13:52.971] [Terrakeep] AUTOPRUEBA GUIA V2 - zona sagrado (Lo Sagrado): no existe en este mundo.
+[08:13:52.974] [Terrakeep] Guia v2: ubicacion zona:templo -> (924, 602) origen=firma aproximada=False casillas=29856 [2 ms]
+[08:13:52.974] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona templo situada en (924, 602): 5593 casillas REALES de su firma en 40 casillas a la redonda
+[08:13:52.976] [Terrakeep] Guia v2: ubicacion zona:mar_sulfuroso -> (3871, 288) origen=firma aproximada=False casillas=32672 [1 ms]
+[08:13:52.977] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona mar_sulfuroso situada en (3871, 288): 4267 casillas REALES de su firma en 40 casillas a la redonda
+[08:13:52.979] [Terrakeep] Guia v2: ubicacion zona:abismo -> (3934, 926) origen=firma aproximada=False casillas=117152 [1 ms]
+[08:13:52.979] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona abismo situada en (3934, 926): 6365 casillas REALES de su firma en 40 casillas a la redonda
+[08:13:52.981] [Terrakeep] Guia v2: ubicacion zona:abismo_capa4 -> (3934, 926) origen=firma aproximada=False casillas=56384 [1 ms]
+[08:13:52.982] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona abismo_capa4 situada en (3934, 926): 6365 casillas REALES de su firma en 40 casillas a la redonda
+[08:13:52.984] [Terrakeep] Guia v2: ubicacion zona:mar_hundido -> (1566, 802) origen=firma aproximada=False casillas=25552 [1 ms]
+[08:13:52.984] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona mar_hundido situada en (1566, 802): 3889 casillas REALES de su firma en 40 casillas a la redonda
+[08:13:52.986] [Terrakeep] Guia v2: ubicacion zona:penascos_azufre -> (3422, 1118) origen=firma aproximada=False casillas=87008 [1 ms]
+[08:13:52.987] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: zona penascos_azufre situada en (3422, 1118): 6344 casillas REALES de su firma en 40 casillas a la redonda
+[08:13:52.989] [Terrakeep] Guia v2: ubicacion zona:infeccion_astral -> NO EXISTE en este mundo [1 ms]
+[08:13:52.989] [Terrakeep] AUTOPRUEBA GUIA V2 - zona infeccion_astral (Infección astral): no existe en este mundo (tiles de mod que este mundo no tiene, o todavía no: p. ej. la Infección Astral llega en modo difícil).
+[08:13:52.991] [Terrakeep] Guia v2: ubicacion zona:faro_astral -> NO EXISTE en este mundo [1 ms]
+[08:13:52.991] [Terrakeep] AUTOPRUEBA GUIA V2 - zona faro_astral (Faro astral): no existe en este mundo (tiles de mod que este mundo no tiene, o todavía no: p. ej. la Infección Astral llega en modo difícil).
+[08:13:53.176] [Terrakeep] AUTOPRUEBA GUIA V2 - paradas anteriores a "desert" marcadas a mano: siguiente = desert.
+[08:13:54.076] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: siguiente parada = desert (esperada desert)
+[08:13:54.077] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca del mapa apunta a la parada desert en (1693, 292), origen firma, aproximada=False, lugar "Desierto"; jugador en (2103, 213), spawn (2103, 215), mazmorra (3295, 229)
+[08:13:54.078] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca de desierto cae sobre casillas REALES de su firma (TileID 53): 4291 en 40 casillas a la redonda
+[08:13:54.078] [Terrakeep] AUTOPRUEBA GUIA V2 - tooltip de la marca: "Terrakeep · Guía: siguiente parada — Azote del desierto | Desierto: la parte con más casillas del bioma en tu mundo | A 410 casillas al oeste y 78 hacia abajo."
+[08:13:54.294] [Terrakeep] AUTOPRUEBA GUIA V2 - mapa revelado alrededor del objetivo (30800 casillas, solo en el personaje de prueba) para que la captura enseñe el terreno real bajo la marca.
+[08:13:54.294] [Terrakeep] Guia v2: VER EN EL MAPA via autoprueba -> (1693, 292), aproximada=False, consulta=False.
+[08:13:57.526] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: el mapa a pantalla completa está abierto
+[08:13:57.526] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca se ha dibujado en 194 fotogramas del mapa a pantalla completa
+[08:13:57.527] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca está DENTRO del mapa visible (no como flecha de borde)
+[08:13:57.527] [Terrakeep] AUTOPRUEBA GUIA V2 - marca dibujada en pantalla en (400, 360); centro de pantalla (400, 360); distancia 0 px; mapFullscreenPos=(1693, 292); objetivo en casillas (1693, 292).
+[08:13:57.527] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca cae donde se centró el mapa (el objetivo real), a 0 px del centro
+[08:13:57.563] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mapa-desert.png"
+[08:13:57.751] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
+[08:13:57.751] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
+[08:13:57.751] [Terrakeep] PANEL ABIERTO via vuelta del mapa (Guía v2). Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
+[08:13:57.759] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=16 y=64 w=768 h=590. Resolucion 800x720, escala de interfaz 1. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=26 y=104 87x30] ["Librería" x=119 y=104 87x30] ["Builds" x=213 y=104 87x30] ["Investigación" x=306 y=104 87x30] ["Exploración" x=400 y=104 87x30] ["Ajustes" x=493 y=104 87x30] ["Guía" x=587 y=104 87x30 ACTIVA] ["Álbum" x=680 y=104 87x30] 
+[08:13:58.650] [Terrakeep] PANEL CERRADO via autoprueba guia v2: minimapa. Pestaña al cerrar: "Guía".
+[08:13:59.883] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca se dibuja en el MINIMAPA (74 fotogramas; como flecha en el borde, apuntando al objetivo fuera de vista, en (520, 230))
+[08:13:59.942] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-minimapa.png"
+[08:14:00.696] [Terrakeep] Ajustes: marca de la Guía en el mapa = False (guardado en ModConfig).
+[08:14:00.696] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: clic real en el interruptor de Ajustes: MarcaGuiaEnMapa = False
+[08:14:01.094] [Terrakeep] AUTOPRUEBA GUIA V2 - rotulo del interruptor a la vista: "Marca en el mapa: no" (activo=False).
+[08:14:01.161] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ajustes-marca-oculta.png"
+[08:14:02.040] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: con la marca oculta en Ajustes no se dibuja nada (0 fotogramas)
+[08:14:02.824] [Terrakeep] Ajustes: marca de la Guía en el mapa = True (guardado en ModConfig).
+[08:14:02.825] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: clic real en el interruptor de Ajustes: MarcaGuiaEnMapa = True
+[08:14:03.223] [Terrakeep] AUTOPRUEBA GUIA V2 - rotulo del interruptor a la vista: "Marca en el mapa: sí" (activo=True).
+[08:14:03.292] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ajustes-marca-visible.png"
+[08:14:04.160] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: al volver a activarla se dibuja otra vez (54 fotogramas)
+[08:14:04.377] [Terrakeep] AUTOPRUEBA GUIA V2 - indicador: destino = desert en (1693, 292); jugador en (2103, 213).
+[08:14:05.288] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: indicador dibujado en la pantalla de juego (39 fotogramas, estado en_ruta, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha))
+[08:14:05.288] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador al-este del objetivo: la flecha apunta a -179° (esperado -180° por la colocacion, -179° desde donde ha quedado; 0° = este, 90° = abajo); distancia mostrada "a 110 casillas" (110 casillas reales); destino "Azote del desierto"
+[08:14:05.288] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador al-este: el indicador ({X:212 Y:338 Width:148 Height:44}, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha)) no pisa la interfaz del juego (inventario, vida, minimapa, aire, sigilo)
+[08:14:05.330] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-jugador-al-este.png"
+[08:14:06.189] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: indicador dibujado en la pantalla de juego (39 fotogramas, estado en_ruta, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha))
+[08:14:06.189] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador al-oeste del objetivo: la flecha apunta a -0° (esperado -0° por la colocacion, -0° desde donde ha quedado; 0° = este, 90° = abajo); distancia mostrada "a 110 casillas" (110 casillas reales); destino "Azote del desierto"
+[08:14:06.189] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador al-oeste: el indicador ({X:212 Y:338 Width:148 Height:44}, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha)) no pisa la interfaz del juego (inventario, vida, minimapa, aire, sigilo)
+[08:14:06.264] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-jugador-al-oeste.png"
+[08:14:07.101] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: indicador dibujado en la pantalla de juego (39 fotogramas, estado en_ruta, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha))
+[08:14:07.102] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador encima del objetivo: la flecha apunta a 90° (esperado 90° por la colocacion, 90° desde donde ha quedado; 0° = este, 90° = abajo); distancia mostrada "a 55 casillas" (54 casillas reales); destino "Azote del desierto"
+[08:14:07.102] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador encima: el indicador ({X:212 Y:338 Width:148 Height:44}, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha)) no pisa la interfaz del juego (inventario, vida, minimapa, aire, sigilo)
+[08:14:07.219] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-jugador-encima.png"
+[08:14:08.056] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: indicador dibujado en la pantalla de juego (39 fotogramas, estado en_ruta, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha))
+[08:14:08.056] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador debajo del objetivo: la flecha apunta a -90° (esperado -90° por la colocacion, -90° desde donde ha quedado; 0° = este, 90° = abajo); distancia mostrada "a 65 casillas" (66 casillas reales); destino "Azote del desierto"
+[08:14:08.056] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador debajo: el indicador ({X:212 Y:338 Width:148 Height:44}, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha)) no pisa la interfaz del juego (inventario, vida, minimapa, aire, sigilo)
+[08:14:08.097] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-jugador-debajo.png"
+[08:14:08.933] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: indicador dibujado en la pantalla de juego (39 fotogramas, estado en_ruta, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha))
+[08:14:08.934] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador al-noreste del objetivo: la flecha apunta a 149° (esperado 146° por la colocacion, 149° desde donde ha quedado; 0° = este, 90° = abajo); distancia mostrada "a 110 casillas" (105 casillas reales); destino "Azote del desierto"
+[08:14:08.934] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: jugador al-noreste: el indicador ({X:212 Y:338 Width:148 Height:44}, junto al personaje (la franja de arriba mide -108 px, demasiado estrecha)) no pisa la interfaz del juego (inventario, vida, minimapa, aire, sigilo)
+[08:14:09.009] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-jugador-al-noreste.png"
+[08:14:09.195] [Terrakeep] Guia v2: indicador - aviso "Has llegado: Azote del desierto".
+[08:14:09.845] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: en el objetivo el indicador dice que has llegado (estado llegado, 0 casillas)
+[08:14:09.845] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: aviso breve al llegar: "Has llegado: Azote del desierto"
+[08:14:09.915] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-llegado.png"
+[08:14:10.669] [Terrakeep] Ajustes: indicador de la Guía en pantalla = False (guardado en ModConfig).
+[08:14:10.669] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: clic real en el interruptor del indicador en Ajustes: IndicadorGuia = False
+[08:14:11.234] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: con el indicador desactivado en Ajustes el indicador no se dibuja (0 fotogramas)
+[08:14:11.314] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-desactivado.png"
+[08:14:12.067] [Terrakeep] Ajustes: indicador de la Guía en pantalla = True (guardado en ModConfig).
+[08:14:12.067] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: clic real en el interruptor del indicador en Ajustes: IndicadorGuia = True
+[08:14:12.633] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: al volver a activarlo el indicador se dibuja (34 fotogramas)
+[08:14:12.714] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-reactivado.png"
+[08:14:14.033] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: con la posicion "junto al personaje" el indicador va a su izquierda, a media altura (caja {X:212 Y:338 Width:148 Height:44}, borde izquierdo del personaje en 390, centro en 360)
+[08:14:14.033] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: junto al personaje: no pisa la interfaz del juego (inventario, vida, minimapa, aire, sigilo)
+[08:14:14.089] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-junto-al-personaje.png"
+[08:14:14.758] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: a tamaño 150 % el indicador mide 222 px (esperado 222), colocado junto al personaje (la franja de arriba mide -108 px, demasiado estrecha)
+[08:14:14.814] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-tamano-150.png"
+[08:14:15.000] [Terrakeep] AUTOPRUEBA GUIA V2 - se pulsa el indicador (mismo camino que el clic: IndicadorGuiaHud.Pulsar).
+[08:14:15.000] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
+[08:14:15.000] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
+[08:14:15.001] [Terrakeep] PANEL ABIERTO via indicador de la Guía (autoprueba). Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
+[08:14:15.001] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
+[08:14:15.002] [Terrakeep] Guia v2: indicador pulsado (autoprueba) -> parada desert en el panel.
+[08:14:15.018] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=16 y=64 w=768 h=590. Resolucion 800x720, escala de interfaz 1. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=26 y=104 87x30] ["Librería" x=119 y=104 87x30] ["Builds" x=213 y=104 87x30] ["Investigación" x=306 y=104 87x30] ["Exploración" x=400 y=104 87x30] ["Ajustes" x=493 y=104 87x30] ["Guía" x=587 y=104 87x30 ACTIVA] ["Álbum" x=680 y=104 87x30] 
+[08:14:15.733] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: al pulsar el indicador se abre la parada desert en Guía > Ruta (área Guia, vista Ruta, parada desert)
+[08:14:15.818] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-clic-abre-parada.png"
+[08:14:15.818] [Terrakeep] PANEL CERRADO via autoprueba guia v2: indicador. Pestaña al cerrar: "Guía".
+[08:14:16.354] [Terrakeep] Guia v2: evaluacion -> siguiente parada=skeletron, paradas 10/47, tareas 1/186, modos [clasico], clase CuerpoACuerpo.
+[08:14:16.354] [Terrakeep] Guia v2: ubicacion punto:mazmorra -> (3295, 229) origen=punto:mazmorra aproximada=False casillas=0 [0 ms]
+[08:14:16.354] [Terrakeep] AUTOPRUEBA GUIA V2 - paradas anteriores a "skeletron" marcadas a mano: siguiente = skeletron.
+[08:14:16.355] [Terrakeep] Guia v2: indicador - aviso "Nuevo destino: Esqueletrón".
+[08:14:17.254] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: siguiente parada = skeletron (esperada skeletron)
+[08:14:17.254] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca del mapa apunta a la parada skeletron en (3295, 229), origen punto:mazmorra, aproximada=False, lugar "entrada de la Mazmorra"; jugador en (1803, 272), spawn (2103, 215), mazmorra (3295, 229)
+[08:14:17.254] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca de Esqueletrón está en la entrada real de la Mazmorra (Main.dungeonX/Y), distancia 0,0
+[08:14:17.255] [Terrakeep] AUTOPRUEBA GUIA V2 - tooltip de la marca: "Terrakeep · Guía: siguiente parada — Esqueletrón | entrada de la Mazmorra (posición guardada por el juego) | A 1491 casillas al este y 43 hacia arriba."
+[08:14:17.470] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: al cambiar la siguiente parada el indicador avisa: "Nuevo destino: Esqueletrón" (esperado "Nuevo destino: Esqueletrón")
+[08:14:17.471] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-nuevo-destino: indicador en {X:212 Y:337 Width:148 Height:44} (junto al personaje (la franja de arriba mide -108 px, demasiado estrecha)) en pantalla logica 800x720 con inventario abierto; no pisa la interfaz del juego; destino "Esqueletrón", dibujado
+[08:14:17.534] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-nuevo-destino.png"
+[08:14:17.720] [Terrakeep] AUTOPRUEBA GUIA V2 - mapa revelado alrededor del objetivo (30800 casillas, solo en el personaje de prueba) para que la captura enseñe el terreno real bajo la marca.
+[08:14:17.720] [Terrakeep] Guia v2: VER EN EL MAPA via autoprueba -> (3295, 229), aproximada=False, consulta=False.
+[08:14:20.952] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: el mapa a pantalla completa está abierto
+[08:14:20.952] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca se ha dibujado en 194 fotogramas del mapa a pantalla completa
+[08:14:20.952] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca está DENTRO del mapa visible (no como flecha de borde)
+[08:14:20.953] [Terrakeep] AUTOPRUEBA GUIA V2 - marca dibujada en pantalla en (400, 360); centro de pantalla (400, 360); distancia 0 px; mapFullscreenPos=(3295, 229); objetivo en casillas (3295, 229).
+[08:14:20.953] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca cae donde se centró el mapa (el objetivo real), a 0 px del centro
+[08:14:20.984] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mapa-mazmorra.png"
+[08:14:21.169] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
+[08:14:21.169] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
+[08:14:21.170] [Terrakeep] PANEL ABIERTO via vuelta del mapa (Guía v2). Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
+[08:14:21.174] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=16 y=64 w=768 h=590. Resolucion 800x720, escala de interfaz 1. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=26 y=104 87x30] ["Librería" x=119 y=104 87x30] ["Builds" x=213 y=104 87x30] ["Investigación" x=306 y=104 87x30] ["Exploración" x=400 y=104 87x30] ["Ajustes" x=493 y=104 87x30] ["Guía" x=587 y=104 87x30 ACTIVA] ["Álbum" x=680 y=104 87x30] 
+[08:14:22.069] [Terrakeep] Guia v2: evaluacion -> siguiente parada=sunken, paradas 3/47, tareas 1/186, modos [clasico], clase CuerpoACuerpo.
+[08:14:22.069] [Terrakeep] AUTOPRUEBA GUIA V2 - paradas anteriores a "sunken" marcadas a mano: siguiente = sunken.
+[08:14:22.070] [Terrakeep] Guia v2: indicador - aviso "Nuevo destino: Almeja gigante".
+[08:14:22.802] [Terrakeep] AUTOPRUEBA GUIA V2 - parada "sunken" (Mar Hundido, tiles de Calamity): estado de la marca = exacta en (1566, 802) origen firma.
+[08:14:22.803] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la marca del Mar Hundido cae sobre tiles reales de Calamity: 3889
+[08:14:23.019] [Terrakeep] Guia v2: evaluacion -> siguiente parada=desert, paradas 2/47, tareas 1/186, modos [clasico], clase CuerpoACuerpo.
+[08:14:23.019] [Terrakeep] AUTOPRUEBA GUIA V2 - paradas anteriores a "desert" marcadas a mano: siguiente = desert.
+[08:14:23.020] [Terrakeep] Guia v2: indicador - aviso "Nuevo destino: Azote del desierto".
+[08:14:23.752] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
+[08:14:24.652] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia: sin restos tecnicos en el texto visible
+[08:14:24.653] [Terrakeep] AUTOPRUEBA GUIA V2 - mi-guia: 11 textos a la vista, 1 enlaces, linea mas baja 20,3 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:24.653] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia: letra legible (la linea mas pequeña mide 20,3 px reales)
+[08:14:24.653] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia: el panel cabe en la pantalla y está centrado (marco 16,64 768x590 en pantalla lógica 800x720, descentrado 0 px)
+[08:14:24.653] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia: la ayuda del pie termina antes del botón Cerrar (602 <= 614, escala 0,70)
+[08:14:24.731] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mi-guia.png"
+[08:14:24.918] [Terrakeep] AUTOPRUEBA GUIA V2 - clic real en la fila del objeto que falta: CalamityMod/DesertMedallion ("Medallón del desierto", tienes 0).
+[08:14:24.919] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
+[08:14:25.651] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: el clic abre la ficha "cómo conseguirlo" de CalamityMod/DesertMedallion
+[08:14:25.652] [Terrakeep] AUTOPRUEBA GUIA V2 - contenido de la ficha: Medallón del desierto | Calamity · ID 7428 | No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa | Dónde lo pide la guía | Azote del desierto
+[08:14:25.652] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la ficha explica cómo conseguirlo
+[08:14:25.652] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la ficha ofrece el botón "Coger en la Librería"
+[08:14:25.653] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha: sin restos tecnicos en el texto visible
+[08:14:25.653] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha: 19 textos a la vista, 4 enlaces, linea mas baja 20,3 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:25.653] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha: letra legible (la linea mas pequeña mide 20,3 px reales)
+[08:14:25.733] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-objeto.png"
+[08:14:25.755] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: barrido de fichas: 2176 objetos, 0 con restos tecnicos
+[08:14:25.940] [Terrakeep] AUTOPRUEBA GUIA V2 - se pulsa el ingrediente Terraria/AntlionMandible dentro de la ficha.
+[08:14:25.941] [Terrakeep] Guia v2: FICHA de objeto abierta: Terraria/AntlionMandible (tipo 323, 8 lineas, altar=False): No lo tienes todavía. | Cómo conseguirlo | Botín: cae de Hormiga león — 1/3 (1-2) | Botín: cae de Enjambre de hormigas león — 1/3 (1-2) | Botín: cae de Cargador de hormigas león — 1/3 (1-2) | Botín: cae de Cargador de hormigas león gigantes — 1/3 (1-2) | Botín: cae de Enjambre de hormigas león gigantes — 1/3 (1-2) | Botín: cae de Larva de hormiga león — 1/6
+[08:14:26.674] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la ficha del ingrediente Terraria/AntlionMandible se abre desde la ficha (se recorre la cadena)
+[08:14:26.757] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-ingrediente.png"
+[08:14:26.942] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
+[08:14:26.943] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: "Atrás" vuelve a la ficha del objeto que faltaba
+[08:14:27.520] [Terrakeep] Guia v2: COGER EN LA LIBRERIA CalamityMod/DesertMedallion (tipo 7428) -> busqueda "Desert Medallion", libreria abierta=True.
+[08:14:28.409] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: "Coger en la Librería" lleva a la pestaña Librería
+[08:14:28.409] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la Librería enseña el objeto buscado (CalamityMod/DesertMedallion, tipo 7428) entre sus resultados, listo para cogerlo
+[08:14:28.409] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: libreria-con-objeto: las 50 ranuras del contenedor elegido quedan dentro del panel (0 fuera, la peor 0 px)
+[08:14:28.476] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-libreria-con-objeto.png"
+[08:14:28.661] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
+[08:14:28.662] [Terrakeep] Pestaña activa: "Guía" (via autoprueba guia v2).
+[08:14:28.662] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
+[08:14:29.562] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta: sin restos tecnicos en el texto visible
+[08:14:29.562] [Terrakeep] AUTOPRUEBA GUIA V2 - ruta: 27 textos a la vista, 4 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:29.562] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta: letra legible (la linea mas pequeña mide 18,6 px reales)
+[08:14:29.644] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-arriba.png"
+[08:14:29.830] [Terrakeep] Guia v2: tarea desert.1 marcada a mano = True.
+[08:14:29.830] [Terrakeep] Guia v2: evaluacion -> siguiente parada=desert, paradas 2/47, tareas 2/186, modos [clasico], clase CuerpoACuerpo.
+[08:14:29.830] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la casilla de la tarea desert.1 se marca a mano
+[08:14:30.396] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: el progreso manual se guarda en el personaje (ModPlayer.SaveData, clave guiaV2.calamity, 291 bytes de JSON)
+[08:14:30.397] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: y se vuelve a leer igual (LoadData)
+[08:14:31.264] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-tareas.png"
+[08:14:31.452] [Terrakeep] Guia v2: sub-pestaña "Equipo".
+[08:14:32.447] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: Equipo: sin restos tecnicos en el texto visible
+[08:14:32.447] [Terrakeep] AUTOPRUEBA GUIA V2 - Equipo: 7 textos a la vista, 1 enlaces, linea mas baja 19,7 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:32.447] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: Equipo: letra legible (la linea mas pequeña mide 19,7 px reales)
+[08:14:32.520] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-equipo.png"
+[08:14:32.707] [Terrakeep] Guia v2: articulo "inicio-guia" (25 bloques).
+[08:14:32.707] [Terrakeep] Guia v2: sub-pestaña "Manual" (articulo inicio-guia).
+[08:14:33.607] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: Manual: sin restos tecnicos en el texto visible
+[08:14:33.607] [Terrakeep] AUTOPRUEBA GUIA V2 - Manual: 18 textos a la vista, 0 enlaces, linea mas baja 20,9 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:33.607] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: Manual: letra legible (la linea mas pequeña mide 20,9 px reales)
+[08:14:33.691] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-manual.png"
+[08:14:33.877] [Terrakeep] Guia v2: sub-pestaña "Perdido".
+[08:14:34.777] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: Perdido: sin restos tecnicos en el texto visible
+[08:14:34.777] [Terrakeep] AUTOPRUEBA GUIA V2 - Perdido: 9 textos a la vista, 2 enlaces, linea mas baja 20,9 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:34.778] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: Perdido: letra legible (la linea mas pequeña mide 20,9 px reales)
+[08:14:34.856] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-perdido.png"
+[08:14:35.042] [Terrakeep] Guia v2: sub-pestaña "Raro".
+[08:14:35.942] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: Raro: sin restos tecnicos en el texto visible
+[08:14:35.942] [Terrakeep] AUTOPRUEBA GUIA V2 - Raro: 12 textos a la vista, 9 enlaces, linea mas baja 19,1 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:35.942] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: Raro: letra legible (la linea mas pequeña mide 19,1 px reales)
+[08:14:36.021] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-raro.png"
+[08:14:36.208] [Terrakeep] Guia v2: articulo "mapa" (20 bloques).
+[08:14:36.209] [Terrakeep] Guia v2: sub-pestaña "Manual" (articulo mapa).
+[08:14:37.109] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: manual-mapa: sin restos tecnicos en el texto visible
+[08:14:37.109] [Terrakeep] AUTOPRUEBA GUIA V2 - manual-mapa: 21 textos a la vista, 3 enlaces, linea mas baja 19,1 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:37.109] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: manual-mapa: letra legible (la linea mas pequeña mide 19,1 px reales)
+[08:14:37.191] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-manual-mapa.png"
+[08:14:37.376] [Terrakeep] Guia v2: FICHA de zona abierta: desierto -> (1693, 292) aproximada=False.
+[08:14:38.110] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: la ficha de zona se abre
+[08:14:38.110] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-zona: sin restos tecnicos en el texto visible
+[08:14:38.110] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha-zona: 25 textos a la vista, 5 enlaces, linea mas baja 19,1 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:38.111] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-zona: letra legible (la linea mas pequeña mide 19,1 px reales)
+[08:14:38.184] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-zona.png"
+[08:14:38.373] [Terrakeep] Guia v2: busqueda "desierto" -> 20 resultados.
+[08:14:38.373] [Terrakeep] Guia v2: sub-pestaña "Busqueda".
+[08:14:39.104] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: el buscador encuentra "desierto" (20 resultados)
+[08:14:39.104] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: busqueda: sin restos tecnicos en el texto visible
+[08:14:39.104] [Terrakeep] AUTOPRUEBA GUIA V2 - busqueda: 14 textos a la vista, 0 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:39.105] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: busqueda: letra legible (la linea mas pequeña mide 18,6 px reales)
+[08:14:39.170] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-busqueda.png"
+[08:14:39.170] [Terrakeep] Guia v2: articulo "mapa" (20 bloques).
+[08:14:39.171] [Terrakeep] Guia v2: sub-pestaña "Manual" (articulo mapa).
+[08:14:39.359] [Terrakeep] Guia v2: evaluacion -> siguiente parada=desert, paradas 2/47, tareas 2/185, modos [clasico], clase Magia.
+[08:14:39.360] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: el selector de clase cambia la clase de la guía (CuerpoACuerpo -> Magia)
+[08:14:39.361] [Terrakeep] Guia v2: sub-pestaña "Equipo".
+[08:14:40.282] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: equipo-magia: sin restos tecnicos en el texto visible
+[08:14:40.282] [Terrakeep] AUTOPRUEBA GUIA V2 - equipo-magia: 6 textos a la vista, 1 enlaces, linea mas baja 19,7 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:40.282] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: equipo-magia: letra legible (la linea mas pequeña mide 19,7 px reales)
+[08:14:40.357] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-equipo-magia.png"
+[08:14:40.765] [Terrakeep] AUTOPRUEBA GUIA V2 - resolucion pedida 1280x720 -> real 1280x720.
+[08:14:41.661] [Terrakeep] AUTOPRUEBA GUIA V2 - UIScale normal = 1,00 -> pantalla logica 1280x720.
+[08:14:42.394] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
+[08:14:43.294] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-normal: sin restos tecnicos en el texto visible
+[08:14:43.294] [Terrakeep] AUTOPRUEBA GUIA V2 - mi-guia-1280x720-normal: 11 textos a la vista, 1 enlaces, linea mas baja 20,3 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:43.294] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-normal: letra legible (la linea mas pequeña mide 20,3 px reales)
+[08:14:43.295] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-normal: la línea de progreso de la cabecera cabe (262 de 660 px, escala 0,74)
+[08:14:43.295] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-normal: el panel cabe en la pantalla y está centrado (marco 100,64 1080x590 en pantalla lógica 1280x720, descentrado 0 px)
+[08:14:43.295] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-normal: la ayuda del pie termina antes del botón Cerrar (729 <= 1010, escala 0,75)
+[08:14:43.393] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mi-guia-1280x720-normal.png"
+[08:14:43.579] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
+[08:14:44.478] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1280x720-normal: sin restos tecnicos en el texto visible
+[08:14:44.479] [Terrakeep] AUTOPRUEBA GUIA V2 - ruta-1280x720-normal: 29 textos a la vista, 4 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:44.479] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1280x720-normal: letra legible (la linea mas pequeña mide 18,6 px reales)
+[08:14:44.587] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-1280x720-normal.png"
+[08:14:44.588] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
+[08:14:45.290] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1280x720-normal: sin restos tecnicos en el texto visible
+[08:14:45.291] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha-1280x720-normal: 37 textos a la vista, 7 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:45.291] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1280x720-normal: letra legible (la linea mas pequeña mide 18,6 px reales)
+[08:14:45.401] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-1280x720-normal.png"
+[08:14:46.319] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: libreria-1280x720-normal: las 50 ranuras del contenedor elegido quedan dentro del panel (0 fuera, la peor 0 px)
+[08:14:46.413] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-libreria-1280x720-normal.png"
+[08:14:47.165] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-1280x720-normal: indicador en {X:688 Y:6 Width:148 Height:44} (franja superior libre (576-948)) en pantalla logica 1280x720; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
+[08:14:47.234] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-1280x720-normal.png"
+[08:14:47.987] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-inventario-1280x720-normal: indicador en {X:688 Y:74 Width:148 Height:44} (franja superior libre (576-948)) en pantalla logica 1280x720 con inventario abierto; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
+[08:14:48.069] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-inventario-1280x720-normal.png"
+[08:14:48.254] [Terrakeep] AUTOPRUEBA GUIA V2 - UIScale max = 1,20 -> pantalla logica 1066x600.
+[08:14:48.988] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
+[08:14:48.988] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
+[08:14:48.988] [Terrakeep] PANEL ABIERTO via autoprueba guia v2. Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
+[08:14:48.989] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
+[08:14:48.992] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=21 y=54 w=1023 h=492. Resolucion 1066x600, escala de interfaz 1,2. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=31 y=94 119x30] ["Librería" x=156 y=94 119x30] ["Builds" x=282 y=94 119x30] ["Investigación" x=407 y=94 119x30] ["Exploración" x=533 y=94 119x30] ["Ajustes" x=658 y=94 119x30] ["Guía" x=784 y=94 119x30 ACTIVA] ["Álbum" x=909 y=94 119x30] 
+[08:14:49.888] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-max: sin restos tecnicos en el texto visible
+[08:14:49.888] [Terrakeep] AUTOPRUEBA GUIA V2 - mi-guia-1280x720-max: 10 textos a la vista, 1 enlaces, linea mas baja 24,4 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:49.888] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-max: letra legible (la linea mas pequeña mide 24,4 px reales)
+[08:14:49.888] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-max: la línea de progreso de la cabecera cabe (262 de 604 px, escala 0,74)
+[08:14:49.889] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-max: el panel cabe en la pantalla y está centrado (marco 21,54 1023x492 en pantalla lógica 1066x600, descentrado 0 px)
+[08:14:49.889] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1280x720-max: la ayuda del pie termina antes del botón Cerrar (650 <= 875, escala 0,75)
+[08:14:49.996] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mi-guia-1280x720-max.png"
+[08:14:50.183] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
+[08:14:51.083] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1280x720-max: sin restos tecnicos en el texto visible
+[08:14:51.083] [Terrakeep] AUTOPRUEBA GUIA V2 - ruta-1280x720-max: 23 textos a la vista, 2 enlaces, linea mas baja 22,3 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:51.084] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1280x720-max: letra legible (la linea mas pequeña mide 22,3 px reales)
+[08:14:51.195] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-1280x720-max.png"
+[08:14:51.196] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
+[08:14:51.899] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1280x720-max: sin restos tecnicos en el texto visible
+[08:14:51.899] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha-1280x720-max: 31 textos a la vista, 5 enlaces, linea mas baja 22,3 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:51.899] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1280x720-max: letra legible (la linea mas pequeña mide 22,3 px reales)
+[08:14:52.017] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-1280x720-max.png"
+[08:14:52.937] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: libreria-1280x720-max: las 50 ranuras del contenedor elegido quedan dentro del panel (0 fuera, la peor 0 px)
+[08:14:53.040] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-libreria-1280x720-max.png"
+[08:14:53.794] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-1280x720-max: indicador en {X:581 Y:6 Width:148 Height:44} (franja superior libre (576-734)) en pantalla logica 1066x600; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
+[08:14:53.867] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-1280x720-max.png"
+[08:14:54.619] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-inventario-1280x720-max: indicador en {X:581 Y:162 Width:148 Height:44} (franja superior libre (576-734); debajo del indicador de dificultad de Calamity) en pantalla logica 1066x600 con inventario abierto; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
+[08:14:54.711] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-inventario-1280x720-max.png"
+[08:14:54.903] [Terrakeep] AUTOPRUEBA GUIA V2 - resolucion pedida 1600x900 -> real 1600x900.
+[08:14:55.798] [Terrakeep] AUTOPRUEBA GUIA V2 - UIScale normal = 1,00 -> pantalla logica 1600x900.
+[08:14:56.532] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
+[08:14:56.532] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
+[08:14:56.533] [Terrakeep] PANEL ABIERTO via autoprueba guia v2. Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
+[08:14:56.533] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
+[08:14:56.536] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=260 y=81 w=1080 h=738. Resolucion 1600x900, escala de interfaz 1. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=270 y=121 126x30] ["Librería" x=402 y=121 126x30] ["Builds" x=535 y=121 126x30] ["Investigación" x=667 y=121 126x30] ["Exploración" x=800 y=121 126x30] ["Ajustes" x=932 y=121 126x30] ["Guía" x=1065 y=121 126x30 ACTIVA] ["Álbum" x=1197 y=121 126x30] 
+[08:14:57.432] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-normal: sin restos tecnicos en el texto visible
+[08:14:57.432] [Terrakeep] AUTOPRUEBA GUIA V2 - mi-guia-1600x900-normal: 16 textos a la vista, 1 enlaces, linea mas baja 20,3 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:57.432] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-normal: letra legible (la linea mas pequeña mide 20,3 px reales)
+[08:14:57.433] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-normal: la línea de progreso de la cabecera cabe (262 de 660 px, escala 0,74)
+[08:14:57.433] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-normal: el panel cabe en la pantalla y está centrado (marco 260,81 1080x738 en pantalla lógica 1600x900, descentrado 0 px)
+[08:14:57.433] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-normal: la ayuda del pie termina antes del botón Cerrar (889 <= 1170, escala 0,75)
+[08:14:57.583] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mi-guia-1600x900-normal.png"
+[08:14:57.771] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
+[08:14:58.671] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1600x900-normal: sin restos tecnicos en el texto visible
+[08:14:58.671] [Terrakeep] AUTOPRUEBA GUIA V2 - ruta-1600x900-normal: 40 textos a la vista, 4 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:58.671] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1600x900-normal: letra legible (la linea mas pequeña mide 18,6 px reales)
+[08:14:58.832] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-1600x900-normal.png"
+[08:14:58.833] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
+[08:14:59.536] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1600x900-normal: sin restos tecnicos en el texto visible
+[08:14:59.536] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha-1600x900-normal: 48 textos a la vista, 7 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:14:59.536] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1600x900-normal: letra legible (la linea mas pequeña mide 18,6 px reales)
+[08:14:59.694] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-1600x900-normal.png"
+[08:15:00.614] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: libreria-1600x900-normal: las 50 ranuras del contenedor elegido quedan dentro del panel (0 fuera, la peor 0 px)
+[08:15:00.753] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-libreria-1600x900-normal.png"
+[08:15:01.514] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-1600x900-normal: indicador en {X:848 Y:6 Width:148 Height:44} (franja superior libre (576-1268)) en pantalla logica 1600x900; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
+[08:15:01.623] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-1600x900-normal.png"
+[08:15:02.376] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-inventario-1600x900-normal: indicador en {X:848 Y:74 Width:148 Height:44} (franja superior libre (576-1268)) en pantalla logica 1600x900 con inventario abierto; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
+[08:15:02.496] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-inventario-1600x900-normal.png"
+[08:15:02.682] [Terrakeep] AUTOPRUEBA GUIA V2 - UIScale max = 1,50 -> pantalla logica 1066x600.
+[08:15:03.416] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
+[08:15:03.416] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
+[08:15:03.416] [Terrakeep] PANEL ABIERTO via autoprueba guia v2. Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
+[08:15:03.417] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
+[08:15:03.421] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=21 y=54 w=1023 h=492. Resolucion 1066x600, escala de interfaz 1,5. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=31 y=94 119x30] ["Librería" x=156 y=94 119x30] ["Builds" x=282 y=94 119x30] ["Investigación" x=407 y=94 119x30] ["Exploración" x=533 y=94 119x30] ["Ajustes" x=658 y=94 119x30] ["Guía" x=784 y=94 119x30 ACTIVA] ["Álbum" x=909 y=94 119x30] 
+[08:15:04.316] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-max: sin restos tecnicos en el texto visible
+[08:15:04.316] [Terrakeep] AUTOPRUEBA GUIA V2 - mi-guia-1600x900-max: 10 textos a la vista, 1 enlaces, linea mas baja 30,5 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:15:04.316] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-max: letra legible (la linea mas pequeña mide 30,5 px reales)
+[08:15:04.316] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-max: la línea de progreso de la cabecera cabe (262 de 604 px, escala 0,74)
+[08:15:04.317] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-max: el panel cabe en la pantalla y está centrado (marco 21,54 1023x492 en pantalla lógica 1066x600, descentrado 0 px)
+[08:15:04.317] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1600x900-max: la ayuda del pie termina antes del botón Cerrar (650 <= 875, escala 0,75)
+[08:15:04.475] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mi-guia-1600x900-max.png"
+[08:15:04.663] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
+[08:15:05.563] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1600x900-max: sin restos tecnicos en el texto visible
+[08:15:05.563] [Terrakeep] AUTOPRUEBA GUIA V2 - ruta-1600x900-max: 23 textos a la vista, 2 enlaces, linea mas baja 27,8 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:15:05.563] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1600x900-max: letra legible (la linea mas pequeña mide 27,8 px reales)
+[08:15:05.729] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-1600x900-max.png"
+[08:15:05.730] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
+[08:15:06.445] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1600x900-max: sin restos tecnicos en el texto visible
+[08:15:06.446] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha-1600x900-max: 31 textos a la vista, 5 enlaces, linea mas baja 27,8 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:15:06.446] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1600x900-max: letra legible (la linea mas pequeña mide 27,8 px reales)
+[08:15:06.621] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-1600x900-max.png"
+[08:15:07.553] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: libreria-1600x900-max: las 50 ranuras del contenedor elegido quedan dentro del panel (0 fuera, la peor 0 px)
+[08:15:07.706] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-libreria-1600x900-max.png"
+[08:15:08.460] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-1600x900-max: indicador en {X:581 Y:6 Width:148 Height:44} (franja superior libre (576-734)) en pantalla logica 1066x600; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
+[08:15:08.579] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-1600x900-max.png"
+[08:15:09.333] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-inventario-1600x900-max: indicador en {X:581 Y:162 Width:148 Height:44} (franja superior libre (576-734); debajo del indicador de dificultad de Calamity) en pantalla logica 1066x600 con inventario abierto; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
+[08:15:09.473] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-inventario-1600x900-max.png"
+[08:15:09.664] [Terrakeep] AUTOPRUEBA GUIA V2 - resolucion pedida 1920x1080 -> real 1920x1080.
+[08:15:10.559] [Terrakeep] AUTOPRUEBA GUIA V2 - UIScale normal = 1,00 -> pantalla logica 1920x1080.
+[08:15:11.293] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
+[08:15:11.293] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
+[08:15:11.293] [Terrakeep] PANEL ABIERTO via autoprueba guia v2. Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
+[08:15:11.294] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
+[08:15:11.297] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=420 y=97 w=1080 h=885. Resolucion 1920x1080, escala de interfaz 1. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=430 y=137 126x30] ["Librería" x=562 y=137 126x30] ["Builds" x=695 y=137 126x30] ["Investigación" x=827 y=137 126x30] ["Exploración" x=960 y=137 126x30] ["Ajustes" x=1092 y=137 126x30] ["Guía" x=1225 y=137 126x30 ACTIVA] ["Álbum" x=1357 y=137 126x30] 
+[08:15:12.193] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-normal: sin restos tecnicos en el texto visible
+[08:15:12.193] [Terrakeep] AUTOPRUEBA GUIA V2 - mi-guia-1920x1080-normal: 21 textos a la vista, 2 enlaces, linea mas baja 19,1 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:15:12.193] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-normal: letra legible (la linea mas pequeña mide 19,1 px reales)
+[08:15:12.193] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-normal: la línea de progreso de la cabecera cabe (262 de 660 px, escala 0,74)
+[08:15:12.194] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-normal: el panel cabe en la pantalla y está centrado (marco 420,97 1080x885 en pantalla lógica 1920x1080, descentrado 0 px)
+[08:15:12.194] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-normal: la ayuda del pie termina antes del botón Cerrar (1049 <= 1330, escala 0,75)
+[08:15:12.403] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mi-guia-1920x1080-normal.png"
+[08:15:12.590] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
+[08:15:13.490] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1920x1080-normal: sin restos tecnicos en el texto visible
+[08:15:13.490] [Terrakeep] AUTOPRUEBA GUIA V2 - ruta-1920x1080-normal: 46 textos a la vista, 6 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:15:13.490] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1920x1080-normal: letra legible (la linea mas pequeña mide 18,6 px reales)
+[08:15:13.719] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-1920x1080-normal.png"
+[08:15:13.719] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
+[08:15:14.426] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1920x1080-normal: sin restos tecnicos en el texto visible
+[08:15:14.426] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha-1920x1080-normal: 54 textos a la vista, 9 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:15:14.426] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1920x1080-normal: letra legible (la linea mas pequeña mide 18,6 px reales)
+[08:15:14.645] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-1920x1080-normal.png"
+[08:15:15.568] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: libreria-1920x1080-normal: las 50 ranuras del contenedor elegido quedan dentro del panel (0 fuera, la peor 0 px)
+[08:15:15.761] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-libreria-1920x1080-normal.png"
+[08:15:16.524] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-1920x1080-normal: indicador en {X:1008 Y:6 Width:148 Height:44} (franja superior libre (576-1588)) en pantalla logica 1920x1080; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
+[08:15:16.682] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-1920x1080-normal.png"
+[08:15:17.436] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-inventario-1920x1080-normal: indicador en {X:1008 Y:74 Width:148 Height:44} (franja superior libre (576-1588)) en pantalla logica 1920x1080 con inventario abierto; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
+[08:15:17.607] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-inventario-1920x1080-normal.png"
+[08:15:17.793] [Terrakeep] AUTOPRUEBA GUIA V2 - UIScale max = 1,80 -> pantalla logica 1066x600.
+[08:15:18.527] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
+[08:15:18.527] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
+[08:15:18.527] [Terrakeep] PANEL ABIERTO via autoprueba guia v2. Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
+[08:15:18.528] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
+[08:15:18.533] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=21 y=54 w=1024 h=492. Resolucion 1066x600, escala de interfaz 1,8. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=31 y=94 119x30] ["Librería" x=156 y=94 119x30] ["Builds" x=282 y=94 119x30] ["Investigación" x=407 y=94 119x30] ["Exploración" x=533 y=94 119x30] ["Ajustes" x=658 y=94 119x30] ["Guía" x=784 y=94 119x30 ACTIVA] ["Álbum" x=909 y=94 119x30] 
+[08:15:19.427] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-max: sin restos tecnicos en el texto visible
+[08:15:19.427] [Terrakeep] AUTOPRUEBA GUIA V2 - mi-guia-1920x1080-max: 10 textos a la vista, 1 enlaces, linea mas baja 36,5 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:15:19.427] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-max: letra legible (la linea mas pequeña mide 36,5 px reales)
+[08:15:19.427] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-max: la línea de progreso de la cabecera cabe (262 de 604 px, escala 0,74)
+[08:15:19.428] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-max: el panel cabe en la pantalla y está centrado (marco 21,54 1024x492 en pantalla lógica 1066x600, descentrado 0 px)
+[08:15:19.428] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-1920x1080-max: la ayuda del pie termina antes del botón Cerrar (650 <= 875, escala 0,75)
+[08:15:19.650] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mi-guia-1920x1080-max.png"
+[08:15:19.838] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
+[08:15:20.738] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1920x1080-max: sin restos tecnicos en el texto visible
+[08:15:20.738] [Terrakeep] AUTOPRUEBA GUIA V2 - ruta-1920x1080-max: 23 textos a la vista, 2 enlaces, linea mas baja 33,4 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:15:20.738] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-1920x1080-max: letra legible (la linea mas pequeña mide 33,4 px reales)
+[08:15:20.973] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-1920x1080-max.png"
+[08:15:20.974] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
+[08:15:21.678] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1920x1080-max: sin restos tecnicos en el texto visible
+[08:15:21.679] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha-1920x1080-max: 31 textos a la vista, 5 enlaces, linea mas baja 33,4 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:15:21.679] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-1920x1080-max: letra legible (la linea mas pequeña mide 33,4 px reales)
+[08:15:21.921] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-1920x1080-max.png"
+[08:15:22.841] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: libreria-1920x1080-max: las 50 ranuras del contenedor elegido quedan dentro del panel (0 fuera, la peor 0 px)
+[08:15:23.061] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-libreria-1920x1080-max.png"
+[08:15:23.816] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-1920x1080-max: indicador en {X:581 Y:6 Width:148 Height:44} (franja superior libre (576-734)) en pantalla logica 1066x600; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
+[08:15:23.980] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-1920x1080-max.png"
+[08:15:24.732] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-inventario-1920x1080-max: indicador en {X:581 Y:162 Width:148 Height:44} (franja superior libre (576-734); debajo del indicador de dificultad de Calamity) en pantalla logica 1066x600 con inventario abierto; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
+[08:15:24.929] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-inventario-1920x1080-max.png"
+[08:15:25.132] [Terrakeep] AUTOPRUEBA GUIA V2 - resolucion pedida 2560x1440 -> real 2560x1440.
+[08:15:26.027] [Terrakeep] AUTOPRUEBA GUIA V2 - UIScale normal = 1,00 -> pantalla logica 2560x1440.
+[08:15:26.761] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
+[08:15:26.761] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
+[08:15:26.761] [Terrakeep] PANEL ABIERTO via autoprueba guia v2. Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
+[08:15:26.762] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
+[08:15:26.766] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=740 y=129 w=1080 h=1180. Resolucion 2560x1440, escala de interfaz 1. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=750 y=169 126x30] ["Librería" x=882 y=169 126x30] ["Builds" x=1015 y=169 126x30] ["Investigación" x=1147 y=169 126x30] ["Exploración" x=1280 y=169 126x30] ["Ajustes" x=1412 y=169 126x30] ["Guía" x=1545 y=169 126x30 ACTIVA] ["Álbum" x=1677 y=169 126x30] 
+[08:15:27.661] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-normal: sin restos tecnicos en el texto visible
+[08:15:27.661] [Terrakeep] AUTOPRUEBA GUIA V2 - mi-guia-2560x1440-normal: 27 textos a la vista, 7 enlaces, linea mas baja 19,1 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:15:27.661] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-normal: letra legible (la linea mas pequeña mide 19,1 px reales)
+[08:15:27.661] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-normal: la línea de progreso de la cabecera cabe (262 de 660 px, escala 0,74)
+[08:15:27.661] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-normal: el panel cabe en la pantalla y está centrado (marco 740,129 1080x1180 en pantalla lógica 2560x1440, descentrado 0 px)
+[08:15:27.662] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-normal: la ayuda del pie termina antes del botón Cerrar (1369 <= 1650, escala 0,75)
+[08:15:28.006] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mi-guia-2560x1440-normal.png"
+[08:15:28.193] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
+[08:15:29.093] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-2560x1440-normal: sin restos tecnicos en el texto visible
+[08:15:29.093] [Terrakeep] AUTOPRUEBA GUIA V2 - ruta-2560x1440-normal: 62 textos a la vista, 6 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:15:29.094] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-2560x1440-normal: letra legible (la linea mas pequeña mide 18,6 px reales)
+[08:15:29.453] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-2560x1440-normal.png"
+[08:15:29.453] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
+[08:15:30.158] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-2560x1440-normal: sin restos tecnicos en el texto visible
+[08:15:30.158] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha-2560x1440-normal: 70 textos a la vista, 9 enlaces, linea mas baja 18,6 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:15:30.158] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-2560x1440-normal: letra legible (la linea mas pequeña mide 18,6 px reales)
+[08:15:30.490] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-2560x1440-normal.png"
+[08:15:31.411] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: libreria-2560x1440-normal: las 50 ranuras del contenedor elegido quedan dentro del panel (0 fuera, la peor 0 px)
+[08:15:31.704] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-libreria-2560x1440-normal.png"
+[08:15:32.468] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-2560x1440-normal: indicador en {X:1328 Y:6 Width:148 Height:44} (franja superior libre (576-2228)) en pantalla logica 2560x1440; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
+[08:15:32.727] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-2560x1440-normal.png"
+[08:15:33.480] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-inventario-2560x1440-normal: indicador en {X:1328 Y:74 Width:148 Height:44} (franja superior libre (576-2228)) en pantalla logica 2560x1440 con inventario abierto; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
+[08:15:33.750] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-inventario-2560x1440-normal.png"
+[08:15:33.937] [Terrakeep] AUTOPRUEBA GUIA V2 - UIScale max = 2,40 -> pantalla logica 1066x600.
+[08:15:34.671] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
+[08:15:34.671] [Terrakeep] Pestaña activa: "Guía" (via reapertura).
+[08:15:34.671] [Terrakeep] PANEL ABIERTO via autoprueba guia v2. Pestaña: "Guía". Jugador: "TerrakeepPrueba". Mundo: "TerrakeepPruebaCal". Main.inFancyUI=True, InGameUI.CurrentState=TerrakeepMod.UI.Panel.PanelTerrakeepState
+[08:15:34.672] [Terrakeep] Guia v2: sub-pestaña "MiGuia".
+[08:15:34.676] [Terrakeep] Panel de Terrakeep dibujado. Marco en coordenadas de pantalla: x=21 y=54 w=1023 h=492. Resolucion 1066x600, escala de interfaz 2,4. Pestaña abierta: "Guía". Barra de pestañas: ["Personaje" x=31 y=94 119x30] ["Librería" x=156 y=94 119x30] ["Builds" x=282 y=94 119x30] ["Investigación" x=407 y=94 119x30] ["Exploración" x=533 y=94 119x30] ["Ajustes" x=658 y=94 119x30] ["Guía" x=784 y=94 119x30 ACTIVA] ["Álbum" x=909 y=94 119x30] 
+[08:15:35.571] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-max: sin restos tecnicos en el texto visible
+[08:15:35.571] [Terrakeep] AUTOPRUEBA GUIA V2 - mi-guia-2560x1440-max: 10 textos a la vista, 1 enlaces, linea mas baja 48,7 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:15:35.571] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-max: letra legible (la linea mas pequeña mide 48,7 px reales)
+[08:15:35.571] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-max: la línea de progreso de la cabecera cabe (262 de 604 px, escala 0,74)
+[08:15:35.572] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-max: el panel cabe en la pantalla y está centrado (marco 21,54 1023x492 en pantalla lógica 1066x600, descentrado 0 px)
+[08:15:35.572] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: mi-guia-2560x1440-max: la ayuda del pie termina antes del botón Cerrar (650 <= 875, escala 0,75)
+[08:15:35.934] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-mi-guia-2560x1440-max.png"
+[08:15:36.123] [Terrakeep] Guia v2: sub-pestaña "Ruta" (parada desert).
+[08:15:37.023] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-2560x1440-max: sin restos tecnicos en el texto visible
+[08:15:37.023] [Terrakeep] AUTOPRUEBA GUIA V2 - ruta-2560x1440-max: 23 textos a la vista, 2 enlaces, linea mas baja 44,5 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:15:37.024] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ruta-2560x1440-max: letra legible (la linea mas pequeña mide 44,5 px reales)
+[08:15:37.408] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ruta-2560x1440-max.png"
+[08:15:37.409] [Terrakeep] Guia v2: FICHA de objeto abierta: CalamityMod/DesertMedallion (tipo 7428, 4 lineas, altar=True): No lo tienes todavía. | Cómo conseguirlo | Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león (tienes 0) + 2 × Mandíbula de hormiga tormenta (tienes 0) | Estación: Altar demoníaco / Altar carmesí — está en el mundo (no se puede llevar): usa el botón del mapa
+[08:15:38.122] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-2560x1440-max: sin restos tecnicos en el texto visible
+[08:15:38.123] [Terrakeep] AUTOPRUEBA GUIA V2 - ficha-2560x1440-max: 31 textos a la vista, 5 enlaces, linea mas baja 44,5 px en pantalla -> OK: ningun texto se sale de su caja.
+[08:15:38.123] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: ficha-2560x1440-max: letra legible (la linea mas pequeña mide 44,5 px reales)
+[08:15:38.518] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-ficha-2560x1440-max.png"
+[08:15:39.449] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: libreria-2560x1440-max: las 50 ranuras del contenedor elegido quedan dentro del panel (0 fuera, la peor 0 px)
+[08:15:39.808] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-libreria-2560x1440-max.png"
+[08:15:40.563] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-2560x1440-max: indicador en {X:581 Y:6 Width:148 Height:44} (franja superior libre (576-734)) en pantalla logica 1066x600; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
+[08:15:40.836] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-2560x1440-max.png"
+[08:15:41.589] [Terrakeep] AUTOPRUEBA GUIA V2 - OK: hud-inventario-2560x1440-max: indicador en {X:581 Y:162 Width:148 Height:44} (franja superior libre (576-734); debajo del indicador de dificultad de Calamity) en pantalla logica 1066x600 con inventario abierto; no pisa la interfaz del juego; destino "Azote del desierto", dibujado
+[08:15:41.920] [Terrakeep] AUTOPRUEBA GUIA V2 - captura real del back buffer guardada en "%USERPROFILE%\Documents\My Games\Terraria\tModLoader-TerrakeepGuiaV2\terrakeep-capturas\guiav2-hud-inventario-2560x1440-max.png"
+[08:15:42.840] [Terrakeep] Guia v2: evaluacion -> siguiente parada=desert, paradas 2/47, tareas 1/186, modos [clasico], clase CuerpoACuerpo.
+[08:15:42.840] [Terrakeep] AUTOPRUEBA GUIA V2 - progreso manual restaurado; siguiente parada = desert.
+[08:15:43.490] [Terrakeep] AUTOPRUEBA GUIA V2 - RESUMEN: 246 comprobaciones, 0 en rojo. Barridos de zona: 21.
+[08:15:43.490] [Terrakeep] AUTOPRUEBA GUIA V2 COMPLETA

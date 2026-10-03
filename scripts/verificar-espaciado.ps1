@@ -16,6 +16,7 @@
 
 param(
 	[switch]$Calamity,
+	[switch]$SoloCabecera,
 	[int]$SegundosEspera = 900
 )
 
@@ -123,7 +124,7 @@ for ($i = 0; $i -lt 60; $i++) {
 	Start-Sleep -Seconds 2
 }
 
-$env:TERRAKEEP_AUTOTEST_ESPACIADO = '1'
+$env:TERRAKEEP_AUTOTEST_ESPACIADO = $(if ($SoloCabecera) { 'cabecera' } else { '1' })
 # El resto de autopruebas se apagan explicitamente para que no se peleen por la misma interfaz.
 $env:TERRAKEEP_AUTOTEST = ''
 $env:TERRAKEEP_AUTOTEST_PANEL = ''

@@ -22,6 +22,7 @@ Panel: {
 		// Functions catalogue idea 2 ("DPS meter").
 		Dps: "{0} DPS"
 		DpsSinDatos: No recent hits
+		DpsSinDatosCorto: No data
 		AyudaDps: Damage per second you've dealt in the last 10 real seconds.
 	}
 

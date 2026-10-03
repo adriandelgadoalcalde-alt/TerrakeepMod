@@ -105,21 +105,21 @@ namespace TerrakeepMod.UI.Panel
 		/// aqui, porque el propio vida/mana se descarto (ver ConstruirCabeceraChips). Dato real de
 		/// <see cref="MedidorDanio"/>.</summary>
 		private BotonTk _chipDps;
-		private const float AnchoChipDps = 92f;
+		private const float AnchoChipDps = 56f;
 
 		/// <summary>Deja sitio real al texto del titulo ("Terrakeep", invariable, nunca se
 		/// traduce - ver <c>Panel.Titulo</c> en los dos <c>.hjson</c>): medido con la fuente real a
 		/// escala 1.15, ronda los 120px; 140 deja un respiro pequeño sin desperdiciar ancho.</summary>
 		private const float LeftChips = 140f;
-		private const float AnchoChipHora = 72f;
+		private const float AnchoChipHora = 56f;
 
 		/// <summary>
 		/// El chip de objetivo enseña un rotulo CORTO fijo ("Objetivo"/"Objective"), nunca el
 		/// nombre real del tramo - ver <see cref="RefrescarCabeceraChips"/> para el porque (nombres
 		/// reales medidos hasta 36 caracteres, ver <c>Guia.Tramo.InicioModoDificil.Nombre</c> en el
-		/// <c>.hjson</c>). 100px es de sobra para "Objetivo"/"Objective" a escala 0.72.
+		/// <c>.hjson</c>). 56 px es solo el MINIMO de la caja: el ancho real sale del texto medido (ver <see cref="AjustarAnchosChips"/>).
 		/// </summary>
-		private const float AnchoChipObjetivo = 100f;
+		private const float AnchoChipObjetivo = 56f;
 		private const float SeparacionChips = 8f;
 
 		/// <summary>
@@ -174,6 +174,15 @@ namespace TerrakeepMod.UI.Panel
 		/// <summary>SOLO PARA AUTOPRUEBAS: el texto que se ve ahora mismo en el chip de DPS de la
 		/// cabecera (idea 2 del catalogo de funciones, ver <see cref="MedidorDanio"/>).</summary>
 		public string ChipDpsParaPrueba => _chipDps != null ? _chipDps.Texto : "";
+
+		/// <summary>SOLO ARNES DE PRUEBAS: los tres chips de la cabecera (hora, objetivo, DPS), para
+		/// que la autoprueba de espaciado mida su caja y su texto.</summary>
+		public System.Collections.Generic.IEnumerable<BotonTk> ChipsCabeceraParaPrueba()
+		{
+			if (_chipHora != null) { yield return _chipHora; }
+			if (_chipObjetivo != null) { yield return _chipObjetivo; }
+			if (_chipDps != null) { yield return _chipDps; }
+		}
 
 		/// <summary>SOLO PARA AUTOPRUEBAS: el rectangulo REAL en pantalla del marco del panel ahora
 		/// mismo - lo usa el diagnostico del titulo recortado para comprobar si su X es negativa
@@ -428,50 +437,74 @@ namespace TerrakeepMod.UI.Panel
 				if (MedidorDanio.HayDatosRecientes()) {
 					int dps = (int)System.Math.Round(MedidorDanio.DpsUltimos10s());
 					_chipDps.FijarTexto(Idiomas.Texto("Panel.Cabecera.Dps", dps));
+					_dpsSinDatos = false;
 				}
 				else {
 					_chipDps.FijarTexto(Idiomas.Texto("Panel.Cabecera.DpsSinDatos"));
+					_dpsSinDatos = true;
 				}
-				AjustarEscalaChip(_chipDps, AnchoChipDps);
 			}
 		}
 
-		/// <summary>Escala base con la que se construyo <see cref="_chipDps"/> - el suelo real por
-		/// debajo del cual <see cref="AjustarEscalaChip"/> nunca reduce, el mismo suelo que usa
-		/// <see cref="AjustarEscalaDeLasPestanas"/> para el mismo tipo de caso limite.</summary>
-		private const float EscalaChipMinima = 0.55f;
+		/// <summary>Escala del texto de los tres chips de la cabecera (la misma con la que se
+		/// construyen, ver <see cref="ConstruirCabeceraChips"/>).</summary>
+		private const float EscalaChip = 0.72f;
+
+		/// <summary>Relleno horizontal de cada lado entre el borde de la caja y el texto: las dos
+		/// esquinas del marco de nueve trozos miden 12 px (<c>BotonTk.MargenMarco</c>), asi que con
+		/// menos el texto montaria sobre la esquina.</summary>
+		private const float RellenoChip = 14f;
+
+		/// <summary>Ancho real de cada chip ahora mismo. Arrancan en los anchos base y
+		/// <see cref="AjustarAnchosChips"/> los hace crecer con el texto medido.</summary>
+		private float _anchoHoraActual = AnchoChipHora;
+		private float _anchoObjetivoActual = AnchoChipObjetivo;
+		private float _anchoDpsActual = AnchoChipDps;
+
+		/// <summary>true mientras el chip DPS enseña el aviso "sin datos" (ver
+		/// <see cref="RefrescarCabeceraChips"/>): es el unico texto largo de la cabecera y el unico
+		/// que se abrevia ("Sin datos"/"No data") cuando el panel no tiene sitio para el entero.</summary>
+		private bool _dpsSinDatos;
+
+		private static float AnchoCajaParaTexto(string texto, float anchoBase)
+		{
+			if (string.IsNullOrEmpty(texto)) {
+				return anchoBase;
+			}
+			float anchoTexto = Terraria.GameContent.FontAssets.MouseText.Value.MeasureString(texto).X * EscalaChip;
+			return Math.Max(anchoBase, (float)Math.Ceiling(anchoTexto + RellenoChip * 2f));
+		}
 
 		/// <summary>
-		/// Bug real reportado por el usuario, en vivo, con captura (21-sep-2026): el texto
-		/// "Sin golpes recientes"/"No recent hits" (el estado sin datos de
-		/// <see cref="Panel.Cabecera.DpsSinDatos"/>) se salia de la pastilla del chip DPS, que tiene
-		/// un ancho FIJO de <see cref="AnchoChipDps"/> (92px) pensado para su otro estado, mucho mas
-		/// corto ("{0} DPS"). <see cref="BotonTk"/> no envuelve ni recorta su propio texto - lo deja
-		/// desbordar sin mas.
+		/// Defecto real visto por el usuario con capturas de la 0.8.0 y la 0.8.1: en la cabecera, los
+		/// tres chips (hora, "Objetivo" y "Sin golpes recientes") salian como una mancha redonda mas
+		/// pequeña que su texto y desplazada, con el texto saliendose de ella. Causa: con el panel
+		/// estrecho los chips se esconden poniendo su ancho a 0 (ver
+		/// <see cref="AjustarVisibilidadChips"/>) pero <c>BotonTk</c> seguia dibujando su marco - con
+		/// ancho 0 el marco de nueve trozos pinta igualmente sus dos esquinas de 12 px - y su texto.
+		/// Ademas el ancho de cada caja era una constante, asi que un texto mas largo que ella
+		/// (el aviso sin datos del DPS en algun idioma, o una fuente mas ancha) se salia.
 		/// <para />
-		/// Mismo patron ya establecido en este panel para el mismo tipo de caso
-		/// (<see cref="AjustarEscalaDeLasPestanas"/>): mide con la fuente real el texto que el chip
-		/// tiene AHORA MISMO y, si no cabe a su escala base, la reduce lo justo para que quepa entero
-		/// - nunca lo recorta ni lo deja salirse. Se llama cada vez que el texto del chip cambia
-		/// (<see cref="RefrescarCabeceraChips"/>, incluye el cambio de idioma en caliente), asi que
-		/// cubre TODOS los estados reales del chip, no solo el reportado: el numerico
-		/// ("{0} DPS") con cualquier cantidad de cifras, y las dos traducciones (es-ES/en-US) del
-		/// aviso sin datos.
+		/// Arreglo: <c>BotonTk</c> no dibuja nada con ancho 0, y aqui cada caja se dimensiona con el
+		/// texto MEDIDO con la fuente real (<c>FontAssets.MouseText.MeasureString</c> x escala) mas el
+		/// relleno del estilo del panel; nunca por debajo del ancho base. El texto va siempre a la
+		/// escala base: si no cabe, crece la caja, no se encoge el texto.
 		/// </summary>
-		private static void AjustarEscalaChip(BotonTk chip, float anchoCaja)
+		private void AjustarAnchosChips()
 		{
-			const float MargenInterno = 10f; // mismo margen que BotonTk.DibujarTexto reparte a cada lado, aproximado
-			float anchoDisponible = anchoCaja - MargenInterno * 2f;
-			if (anchoDisponible <= 0f || string.IsNullOrEmpty(chip.Texto)) {
+			if (_chipHora == null || _chipObjetivo == null || _chipDps == null) {
 				return;
 			}
 
-			const float EscalaBase = 0.72f; // la misma con la que se construyo el BotonTk (ver ConstruirCabeceraChips)
-			float anchoTexto = Terraria.GameContent.FontAssets.MouseText.Value.MeasureString(chip.Texto).X * EscalaBase;
+			_chipHora.EscalaTexto = EscalaChip;
+			_chipObjetivo.EscalaTexto = EscalaChip;
+			_chipDps.EscalaTexto = EscalaChip;
 
-			chip.EscalaTexto = anchoTexto > anchoDisponible
-				? Math.Max(EscalaChipMinima, EscalaBase * (anchoDisponible / anchoTexto))
-				: EscalaBase;
+			// La hora se mide con el peor caso de digitos ("88:88"), no con la hora de ahora mismo: asi
+			// la caja no baila un pixel cada minuto.
+			_anchoHoraActual = AnchoCajaParaTexto("88:88", AnchoChipHora);
+			_anchoObjetivoActual = AnchoCajaParaTexto(_chipObjetivo.Texto, AnchoChipObjetivo);
+			_anchoDpsActual = AnchoCajaParaTexto(_chipDps.Texto, AnchoChipDps);
 		}
 
 		/// <summary>Nombre completo (posiblemente largo) del objetivo actual de la Guia, o el
@@ -491,20 +524,38 @@ namespace TerrakeepMod.UI.Panel
 				return;
 			}
 
+			AjustarAnchosChips();
+
 			float anchoMarco = _marco.GetDimensions().Width;
-			float necesario = LeftChips + AnchoChipHora + SeparacionChips + AnchoChipObjetivo +
-				SeparacionChips + AnchoChipDps;
+			float necesario = LeftChips + _anchoHoraActual + SeparacionChips + _anchoObjetivoActual +
+				SeparacionChips + _anchoDpsActual;
 			bool hayHueco = anchoMarco > 0f && necesario <= anchoMarco * FraccionMaximaCabecera;
 
-			float anchoHora = hayHueco ? AnchoChipHora : 0f;
-			float anchoObjetivo = hayHueco ? AnchoChipObjetivo : 0f;
-			float anchoDps = hayHueco ? AnchoChipDps : 0f;
+			// Si el aviso largo del DPS no cabe, se abrevia antes de esconder los chips: la caja se
+			// vuelve a medir con el texto corto, nunca con el texto saliendose de ella.
+			if (!hayHueco && _dpsSinDatos && anchoMarco > 0f) {
+				_chipDps.FijarTexto(Idiomas.Texto("Panel.Cabecera.DpsSinDatosCorto"));
+				AjustarAnchosChips();
+				necesario = LeftChips + _anchoHoraActual + SeparacionChips + _anchoObjetivoActual +
+					SeparacionChips + _anchoDpsActual;
+				hayHueco = necesario <= anchoMarco * FraccionMaximaCabecera;
+			}
+
+			float anchoHora = hayHueco ? _anchoHoraActual : 0f;
+			float anchoObjetivo = hayHueco ? _anchoObjetivoActual : 0f;
+			float anchoDps = hayHueco ? _anchoDpsActual : 0f;
+			float leftObjetivo = LeftChips + _anchoHoraActual + SeparacionChips;
+			float leftDps = leftObjetivo + _anchoObjetivoActual + SeparacionChips;
 			if (Math.Abs(_chipHora.Width.Pixels - anchoHora) > 0.5f ||
 				Math.Abs(_chipObjetivo.Width.Pixels - anchoObjetivo) > 0.5f ||
-				Math.Abs(_chipDps.Width.Pixels - anchoDps) > 0.5f) {
+				Math.Abs(_chipDps.Width.Pixels - anchoDps) > 0.5f ||
+				Math.Abs(_chipObjetivo.Left.Pixels - leftObjetivo) > 0.5f ||
+				Math.Abs(_chipDps.Left.Pixels - leftDps) > 0.5f) {
 				_chipHora.Width.Set(anchoHora, 0f);
 				_chipObjetivo.Width.Set(anchoObjetivo, 0f);
 				_chipDps.Width.Set(anchoDps, 0f);
+				_chipObjetivo.Left.Set(leftObjetivo, 0f);
+				_chipDps.Left.Set(leftDps, 0f);
 				_marco.Recalculate();
 			}
 		}

@@ -129,6 +129,18 @@ tecnología externa al juego.
 
 ## Novedades
 
+### 0.8.3 (3-oct-2026)
+
+Parche de la cabecera del panel.
+
+- **Los tres chips de la cabecera** (la hora, «Objetivo» y «Sin golpes recientes») ya no salen como una mancha
+  pequeña y desplazada con el texto saliéndose de su caja cuando el panel es estrecho (ventana de 800x720 o
+  interfaz muy grande). Ahora cada caja se dimensiona con el texto medido; si el aviso largo del DPS no cabe se
+  abrevia («Sin datos») y, si ni así hay sitio, el chip se esconde del todo en vez de dibujarse a medias.
+- Probado en el juego a 800x720, 1280x720, 1920x1080 y 2560x1440 con la escala de interfaz mínima, intermedia y
+  máxima, en español e inglés: en cada caso el texto dibujado cabe dentro de su caja.
+- Versión del mod: `0.8.2` → `0.8.3`. Comparte contenido con Terrakeep de escritorio 3.4.2.
+
 ### 0.8.2 (3-oct-2026)
 
 Parche de textos de la Guía.
