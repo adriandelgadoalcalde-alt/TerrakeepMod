@@ -416,10 +416,15 @@ namespace TerrakeepMod.UI.GuiaV2
 			if (GuiaV2Sistema.Refs != null) {
 				GuiaV2Sistema.Refs.Objetos.TryGetValue(referencia, out o);
 			}
-			string origen = referencia.StartsWith("Terraria/", StringComparison.Ordinal) ? "Terraria" : referencia.Split('/')[0];
-			string otroIdioma = o != null ? (Idiomas.EnEspanol ? o.En : o.Es) : "";
-			return origen + (tipo > 0 ? " · ID " + tipo : "") + (otroIdioma.Length > 0 ? " · " + otroIdioma : "") +
-				(o != null && o.FuenteEs == "sin traduccion" ? " · " + Idiomas.Texto("GuiaV2.Ficha.SinTraduccion") : "");
+			// Parche 0.8.1: solo "ID 7428" y, si el objeto es de Calamity, "Calamity". Antes salia el
+			// nombre interno del mod ("CalamityMod"), el nombre del otro idioma ("Desert Medallion") y
+			// "Terraria" - datos de desarrollador que el jugador no necesita.
+			string origen = referencia.StartsWith("CalamityMod/", StringComparison.Ordinal) ? "Calamity" : "";
+			List<string> partes = new List<string>();
+			if (origen.Length > 0) partes.Add(origen);
+			if (tipo > 0) partes.Add("ID " + tipo);
+			if (o != null && o.FuenteEs == "sin traduccion") partes.Add(Idiomas.Texto("GuiaV2.Ficha.SinTraduccion"));
+			return string.Join(" · ", partes);
 		}
 
 		private static List<string> ParadasQueCitan(string referencia)

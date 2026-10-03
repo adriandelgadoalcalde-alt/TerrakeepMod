@@ -49,10 +49,6 @@ namespace TerrakeepMod.Common.GuiaV2
 			public List<Linea> Lineas = new List<Linea>();
 			/// <summary>true si alguna receta pide un altar (para ofrecer "Ver el altar más cercano").</summary>
 			public bool PideAltar;
-			/// <summary>Ultima linea "dato del código del juego" pintada: varias formas de
-			/// conseguirlo seguidas suelen salir del MISMO archivo:linea (p. ej. cinco botines de
-			/// ItemDropDatabase.cs:1104) y repetirla en cada una era ruido (revisión visual F4).</summary>
-			public string UltimaFuente;
 		}
 
 		public static Ficha Construir(string referencia, int cantidadNecesaria)
@@ -159,30 +155,32 @@ namespace TerrakeepMod.Common.GuiaV2
 						Anadir(f, Idiomas.Texto("GuiaV2.Ficha.Estacion", GuiaV2Sistema.NombreEstacion(est), estado), color, 0.74f);
 					}
 					foreach (string c in ob.Condiciones) {
-						Anadir(f, Idiomas.Texto("GuiaV2.Ficha.Condicion", Legible(c)), Colores.Suave, 0.72f);
+						string legible = Legible(c);
+						if (legible.Length > 0) {
+							Anadir(f, Idiomas.Texto("GuiaV2.Ficha.Condicion", legible), Colores.Suave, 0.72f);
+						}
 					}
 					break;
 				}
 				case "botin":
-					Anadir(f, Idiomas.Texto("GuiaV2.Ficha.Botin", "{n:" + ob.De + "}", ob.Probabilidad) +
-						(string.IsNullOrEmpty(ob.Condicion) ? "" : " · " + Legible(ob.Condicion)), Color.White, 0.8f);
+					Anadir(f, Idiomas.Texto("GuiaV2.Ficha.Botin", "{n:" + ob.De + "}", ob.Probabilidad) + SufijoCondicion(ob.Condicion), Color.White, 0.8f);
 					break;
 				case "bolsa":
-					Anadir(f, Idiomas.Texto("GuiaV2.Ficha.Bolsa", "{o:" + ob.De + "}", ob.Probabilidad) +
-						(string.IsNullOrEmpty(ob.Condicion) ? "" : " · " + Legible(ob.Condicion)), Color.White, 0.8f);
+					Anadir(f, Idiomas.Texto("GuiaV2.Ficha.Bolsa", "{o:" + ob.De + "}", ob.Probabilidad) + SufijoCondicion(ob.Condicion), Color.White, 0.8f);
 					break;
 				case "tienda":
-					Anadir(f, Idiomas.Texto("GuiaV2.Ficha.Tienda", "{n:" + ob.De + "}") +
-						(string.IsNullOrEmpty(ob.Condicion) ? "" : " · " + Legible(ob.Condicion)), Color.White, 0.8f);
+					Anadir(f, Idiomas.Texto("GuiaV2.Ficha.Tienda", "{n:" + ob.De + "}") + SufijoCondicion(ob.Condicion), Color.White, 0.8f);
 					break;
-				default:
-					Anadir(f, Legible(ob.Tipo + " " + (ob.De ?? "") + " " + ob.Condicion), Color.White, 0.78f);
+				default: {
+					string otra = Legible(ob.Condicion);
+					if (otra.Length > 0) {
+						Anadir(f, otra, Color.White, 0.78f);
+					}
 					break;
+				}
 			}
-			if (!string.IsNullOrEmpty(ob.FuenteCodigo) && ob.FuenteCodigo != f.UltimaFuente) {
-				Anadir(f, Idiomas.Texto("GuiaV2.Ficha.FuenteCodigo", ob.FuenteCodigo), Colores.Tenue, 0.62f);
-			}
-			f.UltimaFuente = ob.FuenteCodigo;
+			// Parche 0.8.1: la linea "dato del código del juego: archivo.cs:NN" ya no se enseña (era un
+			// dato para desarrolladores). El archivo:linea sigue en la tabla de referencias (ob.FuenteCodigo).
 		}
 
 		private static void AnadirRecetaViva(Ficha f, Recipe r)
@@ -338,7 +336,15 @@ namespace TerrakeepMod.Common.GuiaV2
 			return total;
 		}
 
-		public static string Legible(string condicion) => ContratoGuiaV2.Legible(condicion);
+		public static string Legible(string condicion) => GuiaV2Condiciones.Legible(condicion, Idiomas.EnEspanol);
+
+		/// <summary>" · condición" para añadir a una línea, o nada si la condición del código no tiene
+		/// una forma legible para el jugador (nunca se enseña código).</summary>
+		private static string SufijoCondicion(string condicion)
+		{
+			string l = Legible(condicion);
+			return l.Length == 0 ? "" : " · " + l;
+		}
 
 		private static void Anadir(Ficha f, string texto, Color color, float escala)
 		{

@@ -96,13 +96,87 @@ public class GuiaV2ContratoTests
         }
     }
 
+    // Parche 0.8.1: las condiciones del codigo se traducen (Terrakeep.Core.Guia.V2.GuiaV2Condiciones,
+    // compartida con Terrakeep escritorio) y, si no hay forma legible, se omiten: nunca se enseña codigo.
     [Theory]
-    [InlineData("CalamityConditions.DownedOldDuke", "Downed Old Duke")]
-    [InlineData("Condition.Hardmode", "Hardmode")]
-    [InlineData("solo modo normal (DefineNormalOnlyDropSet)", "solo modo normal (Define Normal Only Drop Set)")]
+    [InlineData("CalamityConditions.DownedOldDuke", "tras derrotar al Viejo Duque")]
+    [InlineData("Condition.Hardmode", "en Modo Difícil")]
+    [InlineData("solo modo normal (DefineNormalOnlyDropSet)", "solo en modo normal")]
+    [InlineData("DropHelper.GFB | por jugador (PerPlayer)", "")]
     [InlineData("", "")]
     public void CondicionLegible(string entrada, string esperada)
     {
-        Assert.Equal(esperada, ContratoGuiaV2.Legible(entrada));
+        Assert.Equal(esperada, GuiaV2Condiciones.Legible(entrada, true));
+    }
+
+    [Fact]
+    public void NingunaCondicionDeLaTablaSeEnseñaComoCodigo()
+    {
+        GuiaV2Referencias refs = GuiaV2Cargador.CargarReferenciasIncrustadas();
+        int vistas = 0;
+        foreach (RefObjeto o in refs.Objetos.Values)
+        {
+            foreach (Obtencion ob in o.Obtencion)
+            {
+                foreach (string c in ob.Condiciones.Concat(new[] { ob.Condicion }))
+                {
+                    foreach (bool es in new[] { true, false })
+                    {
+                        string l = GuiaV2Condiciones.Legible(c, es);
+                        string resto = ContratoGuiaV2.RestoTecnico(l);
+                        Assert.True(resto == null, "«" + c + "» → «" + l + "»: " + resto);
+                    }
+                    vistas++;
+                }
+            }
+        }
+        Assert.True(vistas > 1000, "condiciones revisadas: " + vistas);
+    }
+
+    [Theory]
+    [InlineData(5098, "ID 5098")]
+    [InlineData(7428, "ID 7428")]
+    [InlineData(0, "")]
+    [InlineData(-1, "")]
+    public void BajoElSpriteSoloVaElIdONada(int tipo, string esperado)
+    {
+        Assert.Equal(esperado, ContratoGuiaV2.IdVisible(tipo));
+    }
+
+    [Theory]
+    [InlineData("CalamityMod/BurntSienna")]
+    [InlineData("CalamityMod/WulfrumController")]
+    [InlineData("dato del código del juego: CalamityMod.Items.SummonItems.DesertMedallion.cs:56")]
+    [InlineData("40 × Cualquiera Bloque de arena")]
+    [InlineData("{z:sunken_sea}")]
+    [InlineData("Guia.Ficha.Receta")]
+    [InlineData("DropHelper.PostDoG()")]
+    public void ElCanarioDeRestosTecnicosCazaLosDefectosDeLaRelease080(string texto)
+    {
+        Assert.NotNull(ContratoGuiaV2.RestoTecnico(texto));
+    }
+
+    [Theory]
+    [InlineData("Medallón del desierto")]
+    [InlineData("Receta: 40 × Cualquier bloque de arena (tienes 0) + 4 × Mandíbula de hormiga león")]
+    [InlineData("ID 7428")]
+    [InlineData("Calamity · ID 7428")]
+    [InlineData("Estación: Altar demoníaco / Altar carmesí")]
+    public void ElCanarioDeRestosTecnicosDejaPasarElTextoLimpio(string texto)
+    {
+        Assert.Null(ContratoGuiaV2.RestoTecnico(texto));
+    }
+
+    [Fact]
+    public void LosGruposDeRecetaSonFrases()
+    {
+        GuiaV2Referencias refs = GuiaV2Cargador.CargarReferenciasIncrustadas();
+        Assert.Equal("Cualquier bloque de arena", refs.Grupos["Sand"].Es);
+        Assert.Equal("Cualquier madera", refs.Grupos["Wood"].Es);
+        Assert.Equal("Cualquier lingote de hierro", refs.Grupos["IronBar"].Es);
+        foreach (var kv in refs.Grupos)
+        {
+            Assert.Null(ContratoGuiaV2.RestoTecnico(kv.Value.Es));
+        }
     }
 }

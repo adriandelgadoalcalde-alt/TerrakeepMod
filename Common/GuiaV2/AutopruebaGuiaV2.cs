@@ -827,6 +827,30 @@ namespace TerrakeepMod.Common.GuiaV2
 			Ok(hayLibreria, "la ficha ofrece el botón \"Coger en la Librería\"");
 			AuditarTexto("ficha");
 			Capturar("ficha-objeto");
+			BarridoDeFichas();
+		}
+
+		private static bool _barridoHecho;
+
+		/// <summary>Parche 0.8.1: construye la ficha de CADA objeto de la tabla de referencias (la misma
+		/// que pinta la ventana) y comprueba que ninguna linea lleva restos tecnicos. Una vez por sesion.</summary>
+		private static void BarridoDeFichas()
+		{
+			if (_barridoHecho || GuiaV2Sistema.Refs == null) return;
+			_barridoHecho = true;
+			int fichas = 0, mal = 0;
+			List<string> ejemplos = new List<string>();
+			foreach (string clave in GuiaV2Sistema.Refs.Objetos.Keys) {
+				ObtencionGuia.Ficha f;
+				try { f = ObtencionGuia.Construir(clave, 1); }
+				catch (Exception ex) { mal++; if (ejemplos.Count < 5) ejemplos.Add(clave + ": excepcion " + ex.GetType().Name); continue; }
+				fichas++;
+				foreach (ObtencionGuia.Linea l in f.Lineas) {
+					string r = ContratoGuiaV2.RestoTecnico(GuiaV2Sistema.PlanoLocal(l.Texto));
+					if (r != null) { mal++; if (ejemplos.Count < 5) ejemplos.Add(clave + ": " + r); break; }
+				}
+			}
+			Ok(mal == 0 && fichas > 1000, "barrido de fichas: " + fichas + " objetos, " + mal + " con restos tecnicos" + (ejemplos.Count == 0 ? "" : " -> " + string.Join(" || ", ejemplos)));
 		}
 
 		private static string _ingredientePulsado;
@@ -968,6 +992,15 @@ namespace TerrakeepMod.Common.GuiaV2
 				if (ancho > b.GetDimensions().Width - 4f) { botonesMal++; peor = "boton \"" + b.Texto + "\""; }
 			});
 			bool ok = salidos == 0 && botonesMal == 0;
+			// Parche 0.8.1: ningun texto visible lleva restos tecnicos (nombres internos Mod/Clase, rutas
+			// .cs, claves, marcas sin resolver, "Cualquiera Nombre").
+			List<string> restos = new List<string>();
+			g.ExecuteRecursively(e => {
+				string t = e is TextoRicoTk tr ? tr.TextoPlano : (e is BotonTk bt ? bt.Texto : null);
+				string r = ContratoGuiaV2.RestoTecnico(t);
+				if (r != null && restos.Count < 5) restos.Add(r + " en \"" + (t.Length > 80 ? t.Substring(0, 80) : t) + "\"");
+			});
+			Ok(restos.Count == 0, contexto + ": sin restos tecnicos en el texto visible" + (restos.Count == 0 ? "" : " -> " + string.Join(" || ", restos)));
 			L(contexto + ": " + textos + " textos a la vista, " + enlaces + " enlaces, linea mas baja " + minEscalaPx.ToString("0.0") +
 				" px en pantalla -> " + (ok ? "OK: ningun texto se sale de su caja." : "NO CABE: " + salidos + " textos y " + botonesMal + " botones se salen (\"" + peor + "\")."));
 			_comprobaciones++;

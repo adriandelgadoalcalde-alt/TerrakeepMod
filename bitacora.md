@@ -11901,3 +11901,17 @@ máxima a 1280x720 (pantalla lógica 1066x600) el detalle de la parada necesita 
   sustituyó por `%USERPROFILE%` antes de cualquier push.
 - **Paquete:** `TerrakeepMod-0.8.0.tmod`, 1.249.616 bytes, SHA256
   `8F4633559122F29A9A230F415166A5B84ED255325711128E14394239DD92951B`.
+
+## 3-oct-2026 - Parche 0.8.1: la Guía deja de enseñar restos técnicos
+
+- **Arreglos:** `UI/GuiaV2/RejillaObjetosTk.cs` (`IdDe` -> `ContratoGuiaV2.IdVisible`: solo «ID n» o nada, nunca
+  `CalamityMod/Clase`), `Common/GuiaV2/ObtencionGuia.cs` (fuera la línea `FuenteCodigo` y su clave hjson; condiciones
+  vía `Terrakeep.Core.Guia.V2.GuiaV2Condiciones`, que traduce u omite), `UI/GuiaV2/ContenidoGuiaV2.cs`
+  (`SubtituloObjeto`: «Calamity · ID n», sin nombre inglés ni `CalamityMod`). Grupos de receta como frase
+  («Cualquier bloque de arena») llegan con `lib/Terrakeep.Core.dll` regenerado (`scripts/actualizar-core.ps1`).
+- **Canarios:** `ContratoGuiaV2.RestoTecnico` (+ tests en `GuiaV2ContratoTests`), y la autoprueba en el juego revisa el
+  texto de cada pantalla y un barrido de las 2.176 fichas (0 con restos). El test viejo de `Legible` ("Downed Old Duke")
+  se sustituyó por los nuevos: documentaba justo el comportamiento que se retira.
+- **Verificación:** `dotnet test` 146/146; `verificar-guia-v2.ps1 -Calamity` (241 comprobaciones, 0 en rojo) y vanilla (235, 0);
+  hashes de partidas reales antes/después idénticos (23 archivos). Capturas `docs/screenshots/09-ficha.png` y
+  `10-equipo.png` rehechas y abiertas. `.tmod` limpio de 20 archivos, 1.256.115 bytes.

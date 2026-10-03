@@ -88,8 +88,9 @@ namespace TerrakeepMod.UI.GuiaV2
 
 		private int PorFila(float ancho) => Math.Max(1, (int)((ancho + Hueco) / (AnchoCelda + Hueco)));
 
-		private static string IdDe(Celda c) => c.Ref != null && c.Ref.StartsWith("Terraria/", StringComparison.Ordinal) && c.Tipo > 0 && c.Tipo < ItemID.Count
-			? "ID " + c.Tipo : c.Ref;
+		// Parche 0.8.1: SOLO el ID numerico ("ID 5098"), igual en vanilla y en Calamity (el id real de
+		// esta partida), o nada si el objeto no esta cargado. Nunca el nombre interno "CalamityMod/Clase".
+		private static string IdDe(Celda c) => ContratoGuiaV2.IdVisible(c.Tipo);
 
 		public override void Update(GameTime gameTime)
 		{
@@ -111,11 +112,10 @@ namespace TerrakeepMod.UI.GuiaV2
 				string nombre = GuiaV2Sistema.NombreObjeto(c.Ref);
 				int tienes = c.Tipo > 0 ? ProveedorEstadoGuiaV2Mod.CuantosPoseeDe(Main.LocalPlayer, c.Tipo) : 0;
 				// Estado SIEMPRE explicito (lo tienes / te falta), no solo cuando lo tienes.
-				// Sprite + ID de cada objeto, como la escalera de la guia HTML del usuario ("ID 65" en
-				// vanilla, "CalamityMod/Nombre" en Calamity); en la rejilla solo cabe el sprite.
+				// Sprite + ID de cada objeto, como la escalera de la guia HTML del usuario ("ID 65").
 				string id = IdDe(c);
 				BotonTk.PedirTooltip(nombre + "  (" + Idiomas.Texto(tienes > 0 ? "GuiaV2.Objeto.LoTienes" : "GuiaV2.Objeto.TeFalta") + ")" +
-					"\n" + id +
+					(id.Length > 0 ? "\n" + id : "") +
 					(string.IsNullOrEmpty(c.Ayuda) ? "" : "\n" + c.Ayuda) + "\n" + Idiomas.Texto("GuiaV2.Enlace.ObjetoCorto"));
 			}
 		}

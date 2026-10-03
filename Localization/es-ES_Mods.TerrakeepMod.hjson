@@ -2427,9 +2427,8 @@ GuiaV2: {
 		Botin: **Botín**: cae de {0} — {1}
 		Bolsa: **Bolsa del tesoro**: sale de {0} — {1}
 		Tienda: **Tienda**: lo vende {0}
-		FuenteCodigo: dato del código del juego: {0}
 		RecetaViva: receta leída de tu partida
-		EnElMundo: No sale de recetas, botín ni tiendas según el código del juego: se consigue en el mundo (cofres, minería, pesca o eventos). Mira el capítulo **Mapa y biomas** del Manual.
+		EnElMundo: No sale de recetas, botín ni tiendas: se consigue en el mundo (cofres, minería, pesca o eventos). Mira el capítulo **Mapa y biomas** del Manual.
 		EnLaGuia: Dónde lo pide la guía
 		CogerEnLibreria: Coger en la Librería
 		CogerEnLibreriaAyuda: Atajo: abre la Librería con este objeto ya buscado para cogerlo con el ratón.

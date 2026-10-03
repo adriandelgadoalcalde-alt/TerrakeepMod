@@ -68,7 +68,7 @@ Ocho pestañas, todas con la interfaz nativa de Terraria (sin ninguna ventana ex
   la que también puedes traer a un vecino que falte o echar a uno que ya viva aquí.
 - **Ajustes** - idioma (Español/English) en vivo sin reiniciar, historial de deshacer/rehacer,
   y la lista real de atajos de teclado.
-- **Guía** - la guía grande paso a paso, la misma que Terrakeep de escritorio 3.4.0 y con el
+- **Guía** - la guía grande paso a paso, la misma que Terrakeep de escritorio 3.4.1 y con el
   mismo contenido: **vanilla** (49 paradas, 210 tareas) y, si tienes Calamity instalado,
   **Calamity** (47 paradas, 186 tareas), elegida sola según tu partida. Cada parada trae cómo
   empezar el encuentro, *Prepárate* (vida objetivo, objetos y equipo de tu clase), *Haz esto, en
@@ -128,6 +128,26 @@ Toda la interfaz está construida con los bloques nativos de Terraria (`IngameFa
 tecnología externa al juego.
 
 ## Novedades
+
+### 0.8.1 (3-oct-2026)
+
+Parche de pulido de la Guía: la ficha de cada objeto y la escalera de equipo ya no enseñan datos
+técnicos.
+
+- La **escalera de equipo** enseñaba bajo los objetos de Calamity su nombre interno
+  (`CalamityMod/BurntSienna`). Ahora sale el **ID** numérico real de tu partida (`ID 7728`), igual
+  que en vanilla, o nada.
+- La **ficha de objeto** ya no enseña la línea de desarrollador «dato del código del juego:
+  ….cs:56», ni el nombre en inglés ni el nombre interno del mod en la cabecera: queda `Calamity ·
+  ID 7428`.
+- Los **grupos de receta** se leen como una frase correcta: «40 × Cualquier bloque de arena»
+  (antes «Cualquiera Bloque de arena»), «Cualquier madera», «Cualquier lingote de hierro»…
+- Las **condiciones** de recetas, botín y tiendas salían como código (`DropHelper.PostDoG()`);
+  ahora se traducen («tras derrotar al Devorador de dioses») y, si no tienen forma legible, no se
+  enseñan.
+- Las pruebas ahora **comprueban todo el texto visible** de la Guía y de las 2.176 fichas de
+  objeto (también dentro del juego) para que no vuelva a colarse ningún resto técnico.
+- Versión del mod: `0.8.0` → `0.8.1`. Comparte contenido con Terrakeep de escritorio 3.4.1.
 
 ### 0.8.0 (2-oct-2026)
 

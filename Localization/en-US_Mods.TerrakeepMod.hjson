@@ -2427,9 +2427,8 @@ GuiaV2: {
 		Botin: **Drop**: from {0} — {1}
 		Bolsa: **Treasure bag**: from {0} — {1}
 		Tienda: **Shop**: sold by {0}
-		FuenteCodigo: from the game code: {0}
 		RecetaViva: recipe read from your game
-		EnElMundo: According to the game code it does not come from recipes, drops or shops: you find it in the world (chests, mining, fishing or events). See the **Map and biomes** chapter of the Manual.
+		EnElMundo: It does not come from recipes, drops or shops: you find it in the world (chests, mining, fishing or events). See the **Map and biomes** chapter of the Manual.
 		EnLaGuia: Where the guide asks for it
 		CogerEnLibreria: Grab in the Library
 		CogerEnLibreriaAyuda: Shortcut: opens the Library with this item already searched so you can grab it with the mouse.

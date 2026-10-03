@@ -1,4 +1,5 @@
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace TerrakeepMod.Common.GuiaV2
 {
@@ -6,7 +7,7 @@ namespace TerrakeepMod.Common.GuiaV2
 	/// Logica PURA de la Guia v2 en el mod (sin Terraria ni FNA), enlazada tal cual en
 	/// TerrakeepMod.LogicaPura para que TerrakeepMod.Tests la pruebe contra el contenido REAL
 	/// incrustado en lib\Terrakeep.Core.dll: nombres de las banderas que el mod sabe leer, la
-	/// consulta que usa "Coger en la Librería" y la forma legible de una condicion del codigo.
+	/// consulta que usa "Coger en la Librería".
 	/// </summary>
 	public static class ContratoGuiaV2
 	{
@@ -58,30 +59,40 @@ namespace TerrakeepMod.Common.GuiaV2
 			return nombre.Trim();
 		}
 
-		/// <summary>Condicion del codigo (p. ej. "CalamityConditions.DownedOldDuke") en forma legible:
-		/// sin espacio de nombres y con las palabras separadas. No traduce ni interpreta: es el
-		/// nombre real del codigo.</summary>
-		public static string Legible(string condicion)
+		/// <summary>Parche 0.8.1: lo que se escribe bajo el sprite de un objeto (escalera de equipo,
+		/// rejilla): SOLO el ID numerico ("ID 5098") o nada. Nunca el nombre interno "CalamityMod/Clase".</summary>
+		public static string IdVisible(int tipo) => tipo > 0 ? "ID " + tipo : "";
+
+		private static readonly (string Nombre, Regex Patron)[] RestosProhibidos = {
+			("marca sin resolver", new Regex(@"[{}]")),
+			("nombre interno Mod/Clase", new Regex(@"\b(CalamityMod|Terraria|ModLoader)/\w")),
+			("ruta de codigo", new Regex(@"\.cs\b")),
+			("identificador de codigo", new Regex(@"\b(Condition|Conditions|CalamityConditions|DropHelper|DownedBossSystem|Main|NPC)\.[A-Za-z]")),
+			("clave de localizacion", new Regex(@"\bGuia(V2)?\.[A-Za-z]|\bMods\.TerrakeepMod")),
+			("expresion de codigo", new Regex(@"=>|\(\)|\bout var\b")),
+			("caracter roto", new Regex("\uFFFD")),
+			("Cualquiera + Nombre", new Regex(@"\bCualquiera [A-ZÁÉÍÓÚ]")),
+		};
+
+		/// <summary>Primer resto tecnico que NO debe ver el jugador en un texto ("nombre interno Mod/Clase:
+		/// CalamityMod/B"), o null si esta limpio. Lo usan la autoprueba en el juego y los tests.</summary>
+		public static string RestoTecnico(string texto)
 		{
-			if (string.IsNullOrEmpty(condicion)) {
-				return "";
+			if (string.IsNullOrEmpty(texto)) {
+				return null;
 			}
-			string c = condicion.Trim();
-			int paren = c.IndexOf('(');
-			string cabeza = paren > 0 ? c.Substring(0, paren) : c;
-			int punto = cabeza.LastIndexOf('.');
-			if (punto >= 0 && paren < 0) {
-				c = cabeza.Substring(punto + 1);
-			}
-			StringBuilder sb = new StringBuilder();
-			for (int i = 0; i < c.Length; i++) {
-				char ch = c[i];
-				if (i > 0 && char.IsUpper(ch) && char.IsLower(c[i - 1])) {
-					sb.Append(' ');
+			foreach ((string nombre, Regex patron) in RestosProhibidos) {
+				Match m = patron.Match(texto);
+				if (m.Success) {
+					return nombre + ": " + m.Value;
 				}
-				sb.Append(ch);
 			}
-			return sb.ToString();
+			return null;
 		}
+
+		// Parche 0.8.1: la forma legible de una condicion del codigo salio de aqui y vive en
+		// Terrakeep.Core.Guia.V2.GuiaV2Condiciones (compartida con Terrakeep escritorio). Antes
+		// devolvia el nombre del codigo con las palabras separadas ("Downed Old Duke"), que es
+		// justo lo que el jugador no debe ver.
 	}
 }
