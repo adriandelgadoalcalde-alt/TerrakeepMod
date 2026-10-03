@@ -11915,3 +11915,22 @@ máxima a 1280x720 (pantalla lógica 1066x600) el detalle de la parada necesita 
 - **Verificación:** `dotnet test` 146/146; `verificar-guia-v2.ps1 -Calamity` (241 comprobaciones, 0 en rojo) y vanilla (235, 0);
   hashes de partidas reales antes/después idénticos (23 archivos). Capturas `docs/screenshots/09-ficha.png` y
   `10-equipo.png` rehechas y abiertas. `.tmod` limpio de 20 archivos, 1.256.115 bytes.
+
+## 3-oct-2026 - Cierre: la Guía sin inglés suelto (pendiente de publicar en 0.8.2)
+
+**PENDIENTE DE PUBLICAR:** el cambio llega al jugador (los textos de la Guía) y no está en ninguna release (0.8.1 es la
+última publicada). Saldrá en la próxima versión (0.8.2); a petición expresa no se ha publicado nada en este cierre.
+
+- **Qué:** `lib/Terrakeep.Core.dll` regenerado con `scripts/actualizar-core.ps1` (commit `c719901`): los datos de la Guía v2 de
+  Terrakeep ya no tienen inglés suelto dentro de los textos en español (la escalera de Calamity decía «busca islas flotantes y
+  Planetoids»; además melee, dash, buff, build, Aerialite, Auric, Vernal Pass...). Causa y arreglo en la fuente
+  (`scripts/guia-v2/terminos-es.js`) están en la bitácora de Terrakeep. El mod no tiene código propio de estos textos: los recibe
+  del Core, así que solo cambia el DLL. Los textos que vienen del propio juego (tooltips) no se tocan.
+- **Verificación en el HEAD `c719901`:** `dotnet test` 146/146; `.tmod` recompilado con `scripts/compilar.ps1`;
+  `verificar-guia-v2.ps1` vanilla 235 OK / 0 en rojo y `verificar-guia-v2.ps1 -Calamity -Mundo TerrakeepPruebaCal` 246 OK / 0 en rojo
+  (2.176 de 2.176 objetos y 532 de 532 NPC resueltos); `verificar-libreria.ps1` AUTOPRUEBA WS3 COMPLETA;
+  `verificar-exploracion.ps1` AUTOPRUEBA WS6 COMPLETA con el mundo de prueba byte a byte igual. Todo con carpeta de guardado
+  aislada, turno de pantalla (`PANTALLA.lock`) y hashes de las partidas reales idénticos antes y después (23 archivos en cada
+  script; 118 en la comprobación global del cierre). Evidencia (`evidencia/*.log.txt`) refrescada.
+- El arreglo del temblor de las tarjetas de Terrakeep (`NavCardButton`) no aplica al mod: la interfaz del mod es de tModLoader,
+  no WPF.
