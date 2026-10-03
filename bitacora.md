@@ -11885,3 +11885,19 @@ máxima a 1280x720 (pantalla lógica 1066x600) el detalle de la parada necesita 
   evidencia del requirement 0446b3c9 por criterio.
 - **Siguiente paso al reanudar:** esas pasadas, confirmar en capturas que el mod no tiene píldoras, y con la
   decisión del coordinador push + release v0.8.0 con el `.tmod` limpio.
+
+## 3-oct-2026 - F4 cerrada: rondas 4 y 5 de verificación independiente, v0.8.0 publicada
+
+- **Core** actualizado dos veces (162abe5, f73716b) con los nombres de Calamity de la traducción propia de la
+  familia (CalamityKeep-Traduccion-ES, trabajo de T6 en Terrakeep): la Guía ya no tiene nombres en inglés.
+- **Escalera de equipo con nombre e ID** junto a cada sprite (0a123f6, `RejillaObjetosTk.ConNombre`): la revisión
+  visual de la ronda 4 la dio por corta frente a la guía HTML del usuario con solo sprites.
+- **Ronda 4** (verificador): `verificar-guia-v2` 199/0 y 210/0, `verificar-libreria.ps1` WS3 COMPLETA,
+  `verificar-exploracion.ps1` WS6 COMPLETA (mundo de prueba byte a byte igual), hashes de 118 partidas idénticos.
+  **Ronda 5** (verificador y revisor nuevos, HEAD 25bfe2e): 127/127, 210/0 con Calamity, 17/17 del indicador sin
+  pisar la interfaz, `.tmod` 0.8.0 con 20 archivos y `lib/Terrakeep.Core.dll` idéntico al del repo; revisor PASS
+  (escalera con nombres sin cortes ni solapes, marca, ficha → Librería, indicador).
+- Evidencia saneada: `ws3-libreria.log.txt`/`ws6-exploracion.log.txt` traían la ruta personal de Windows; se
+  sustituyó por `%USERPROFILE%` antes de cualquier push.
+- **Paquete:** `TerrakeepMod-0.8.0.tmod`, 1.249.616 bytes, SHA256
+  `8F4633559122F29A9A230F415166A5B84ED255325711128E14394239DD92951B`.
