@@ -129,6 +129,17 @@ tecnología externa al juego.
 
 ## Novedades
 
+### 0.8.2 (3-oct-2026)
+
+Parche de textos de la Guía.
+
+- Los **textos de la Guía están 100 % en español**: desaparecen las palabras inglesas sueltas dentro
+  de las frases (la escalera de Calamity decía «busca islas flotantes y Planetoids»; además
+  «melee», «dash», «buff», «build», «Aerialite», «Vernal Pass»…) y las concordancias quedan bien
+  («otra arma cuerpo a cuerpo», «la Tesla áurica»). Los textos que vienen del propio juego (los
+  tooltips) no se tocan.
+- Versión del mod: `0.8.1` → `0.8.2`. Comparte contenido con Terrakeep de escritorio 3.4.2.
+
 ### 0.8.1 (3-oct-2026)
 
 Parche de pulido de la Guía: la ficha de cada objeto y la escalera de equipo ya no enseñan datos

@@ -11935,3 +11935,13 @@ máxima a 1280x720 (pantalla lógica 1066x600) el detalle de la parada necesita 
   script; 118 en la comprobación global del cierre). Evidencia (`evidencia/*.log.txt`) refrescada.
 - El arreglo del temblor de las tarjetas de Terrakeep (`NavCardButton`) no aplica al mod: la interfaz del mod es de tModLoader,
   no WPF.
+
+## 3-oct-2026 - Parche 0.8.2 publicado (la Guía sin inglés suelto)
+
+- Publicado lo que quedaba pendiente del cierre anterior: `lib/Terrakeep.Core.dll` (Core de Terrakeep `14890b07`, idéntico al de HEAD) con los
+  textos de la Guía v2 sin inglés suelto. El mod no tiene código propio de esos textos; el temblor de tarjetas y los prefijos de Builds de
+  Terrakeep 3.4.2 no aplican (UI de tModLoader; los prefijos del mod ya salían localizados desde la 0.7.x).
+- `build.txt` 0.8.1 -> 0.8.2, README «Novedades». `dotnet test` 146/146; `scripts/compilar.ps1` + `limpiar-tmod.ps1`: `.tmod` de 20 archivos
+  (sin `.pdb`, scripts, evidencia ni docs), 1.256.477 bytes, SHA256 `3b737b9489a9f49b60bb5008c341d1b95c420c3c8668f00292e8e49dab68952a`.
+  La verificación en el juego (`verificar-guia-v2.ps1` vanilla y Calamity, libreria, exploracion) ya se hizo con este mismo Core en `aca7694`
+  (ver la entrada anterior); no se ha vuelto a lanzar el juego para no ocupar la pantalla, y las capturas del README no cambian.
