@@ -11975,3 +11975,32 @@ máxima a 1280x720 (pantalla lógica 1066x600) el detalle de la parada necesita 
   1920x1080, 2560x1440, escala mínima y máxima). `docs/screenshots/09-ficha.png` y `10-equipo.png` rehechas y abiertas. Las demás capturas del README
   (a 1600 px o más) nunca tuvieron el defecto: con el código de la 0.8.2 el canario da 3/3 chips OK a partir de 1280x720.
 - La 0.8.2 ya estaba publicada (tag `v0.8.2`), así que esto sale como **0.8.3** en vez de reescribir una release pública.
+
+
+## 7-oct-2026 - Parche 0.8.4: el tooltip de la Guía ya no parpadea con el salto de fotogramas desactivado
+
+- **Defecto (visto por el usuario):** en la Guía (v2), al pasar el ratón por un objeto o un enlace, el tooltip parpadeaba sin parar.
+  **Causa (confirmada en `Main.DoUpdate` decompilado, ~16971):** con `FrameSkipMode.Off` (el del usuario, `"FrameSkipMode": 0` en su `config.json`) la lógica
+  corre a 60/s pero se dibuja en CADA fotograma; a más de 60 FPS hay Draw sin Update. Los elementos de `UI/GuiaV2` (`TextoRicoTk`, `RejillaObjetosTk`,
+  `FilasGuiaTk`, `BloquesGuia`) pedían el tooltip con `BotonTk.PedirTooltip` desde `Update` y `DibujarTooltipPendiente` lo consumía al dibujar: el fotograma
+  siguiente sin Update lo veía vacío.
+- **Arreglo (commit `ea29027`):** `PedirTooltip` escribe en `_tooltipDeLogica`, que NO se consume al dibujar y que vacía `BotonTk.EmpezarActualizacion()` al principio de
+  `PanelTerrakeepState.Update`. `_tooltipPendiente` (el de los botones, pedido desde `DrawSelf`) sigue consumiéndose y manda sobre el otro. `LimpiarTooltipPendiente`
+  (cierre del panel) vacía los dos.
+- **Revisión crítica:** (1) cambio de pestaña: el contenido viejo ya no pide nada y el siguiente Update lo vacía (como mucho dura un fotograma); (2) cierre del panel:
+  `CerrarPanel` llama a `LimpiarTooltipPendiente`, que ahora limpia también el nuevo campo; (3) pausa/ventana sin foco: `DoUpdate` sigue ejecutando `InGameUI.Update`
+  (`UpdateUIStates`), no he encontrado un caso en el que `Draw` siga sin `Update` durante más de los fotogramas intercalados; (4) otros sitios: `grep` de
+  `PedirTooltip`/`MouseText`/`hoverItemName`/`HoverItem` en todo el mod: los únicos `PedirTooltip` desde `Update` son los cuatro de la Guía v2 ya arreglados; los
+  `Main.instance.MouseText` (`IndicadorGuiaHud`, `IconoHudTerrakeep`) y `_tooltipPendiente`/`hoverItemName` se piden en `Draw`, así que no tienen este problema.
+- **Canario** (`AutopruebaGuiaV2`, pasos «tooltip: ...», dentro de `verificar-guia-v2.ps1`): con `Main.FrameSkipMode = Off`, el ratón sobre la primera fila de objeto de Mi guía
+  (`MouseOver` a mano + un Update de la fila), `PanelTerrakeepState.CongelarActualizacionParaPrueba = true` (el panel solo se dibuja: lo que pasa a >60 FPS) y exige que
+  el tooltip se dibuje en TODOS los Draw (`BotonTk.LlamadasDeDibujoParaPrueba` / `TooltipsDibujadosParaPrueba`); luego aparta el ratón, deja correr Updates y exige que
+  no quede tooltip pedido ni se dibuje ninguno. **Rojo/verde:** con `PedirTooltip` escribiendo en `_tooltipPendiente` (comportamiento antiguo) sale
+  «NO CUADRA: el tooltip se dibuja en TODOS los fotogramas sin Update: 1 de 65 Draw» (239 comprobaciones, 1 en rojo); con el arreglo, «65 de 65 Draw» y 0 en rojo.
+- **Verificación en el juego:** `verificar-guia-v2.ps1` vanilla 239 comprobaciones y Calamity 245 (0 en rojo; el recuento de Calamity varía con el mundo generado: 22 barridos de zona
+  frente a 21 en la 0.8.3), `verificar-espaciado.ps1` completo (0 en rojo), `dotnet test` 146/146. Captura real del back buffer con 60+ Draw sin Update y el tooltip
+  pintado: `evidencia/tooltip-guia-sin-update/guiav2-tooltip-objeto-sin-update.png` (abierta y mirada: «Esporas de la selva: pulsa para ver cómo conseguirlo» con marco propio; sale
+  en la esquina inferior derecha porque la fila queda bajo el pliegue y el tooltip se ajusta a la pantalla).
+- **No verificado:** el parpadeo en sí con un ratón físico a >60 FPS reales (sin usuario delante); lo cubre el canario que reproduce los Draw sin Update.
+- **Publicación:** `.tmod` 0.8.4 de 20 archivos tras `compilar.ps1` + `limpiar-tmod.ps1`, SHA256 `2C73C66F856B20F2BE87800D1F5783DEAB945FAC2B7440F0B7388288738088B0`. Paso del Steam Workshop
+  (`PUBLICAR-WORKSHOP.md`, Develop Mods -> Publish dentro de tModLoader con la sesión de Steam) NO hecho: lo tiene que dar el usuario.
