@@ -95,6 +95,18 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// </summary>
 		private static string _tooltipPendiente;
 
+		/// <summary>
+		/// Tooltip pedido desde un <c>Update</c> (los enlaces, rejillas y tareas de la Guía v2) con
+		/// <see cref="PedirTooltip"/>. NO se consume al dibujarlo: dura hasta el siguiente
+		/// <c>PanelTerrakeepState.Update</c>, que lo vacia con <see cref="EmpezarActualizacion"/>.
+		/// Motivo, confirmado en <c>Main.DoUpdate</c> decompilado: con "Salto de fotogramas" en
+		/// Desactivado (<c>FrameSkipMode.Off</c>, el del usuario) la logica sigue a 60 por segundo
+		/// pero se dibuja en CADA fotograma, asi que a mas de 60 FPS hay fotogramas sin Update. Si se
+		/// consumiera al dibujar como <see cref="_tooltipPendiente"/>, esos fotogramas lo verian vacio
+		/// y el tooltip parpadeaba sin parar (bug reportado por el usuario el 07-oct-2026).
+		/// </summary>
+		private static string _tooltipDeLogica;
+
 		private string _texto;
 		private float _escalaTexto;
 		private float _escalaAnimada = EscalaReposo;
@@ -477,16 +489,25 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		/// <summary>SOLO ARNES DE PRUEBAS: valor real de <see cref="_tooltipPendiente"/> ahora
 		/// mismo, sin consumirlo. Lo usa el diagnostico del "tooltip huerfano" (bitacora.md) para
 		/// comprobar el estado interno de verdad, no solo lo que se ve en una captura.</summary>
-		public static string TooltipPendienteParaPrueba => _tooltipPendiente;
+		public static string TooltipPendienteParaPrueba => _tooltipPendiente ?? _tooltipDeLogica;
 
 		/// <summary>Pide el MISMO tooltip de los botones para cualquier otro elemento del panel (lo
-		/// usan los enlaces de la Guía v2: objetos, zonas y paradas dentro del texto). Se dibuja y
-		/// se consume igual que el de un boton.</summary>
+		/// usan los enlaces de la Guía v2: objetos, zonas y paradas dentro del texto). Pensado para
+		/// llamarse desde <c>Update</c>: se dibuja igual que el de un boton pero dura hasta el
+		/// siguiente Update (ver <see cref="_tooltipDeLogica"/>).</summary>
 		public static void PedirTooltip(string texto)
 		{
 			if (!string.IsNullOrEmpty(texto)) {
-				_tooltipPendiente = texto;
+				_tooltipDeLogica = texto;
 			}
+		}
+
+		/// <summary>Lo llama <c>PanelTerrakeepState.Update</c> ANTES de actualizar el arbol: vacia el
+		/// tooltip pedido en la actualizacion anterior, para que solo quede el que vuelva a pedir
+		/// quien siga con el raton encima en esta.</summary>
+		public static void EmpezarActualizacion()
+		{
+			_tooltipDeLogica = null;
 		}
 
 		/// <summary>
@@ -502,11 +523,13 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 		public static void LimpiarTooltipPendiente()
 		{
 			_tooltipPendiente = null;
+			_tooltipDeLogica = null;
 		}
 
 		public static void DibujarTooltipPendiente(SpriteBatch spriteBatch)
 		{
-			string texto = _tooltipPendiente;
+			// El de un DrawSelf (botones) manda; si no hay, el pedido desde Update (Guía v2).
+			string texto = _tooltipPendiente ?? _tooltipDeLogica;
 			_tooltipPendiente = null; // Consumido: si nadie lo vuelve a pedir, no se dibuja nada el fotograma que viene.
 			if (string.IsNullOrEmpty(texto)) {
 				return;

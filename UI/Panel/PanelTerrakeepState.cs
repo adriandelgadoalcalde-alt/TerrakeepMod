@@ -863,6 +863,9 @@ namespace TerrakeepMod.UI.Panel
 
 		public override void Update(GameTime gameTime)
 		{
+			// Antes de actualizar el arbol: el tooltip de la Guía v2 se vuelve a pedir en cada Update
+			// mientras el raton siga encima (ver BotonTk._tooltipDeLogica).
+			TerrakeepMod.UI.Personaje.Widgets.BotonTk.EmpezarActualizacion();
 			base.Update(gameTime);
 
 			RefrescarTextos();
