@@ -375,6 +375,13 @@ namespace TerrakeepMod.Common.GuiaV2
 			Paso("abrir Mi guía", () => AbrirGuia(ContenidoGuiaV2.Vista.MiGuia));
 			Esperar(40);
 			Paso("captura Mi guía", () => { AuditarTexto("mi-guia"); AuditarEncuadre("mi-guia"); Capturar("mi-guia"); });
+			// Parche 0.8.4: el tooltip de un objeto de la Guia no parpadea con el salto de fotogramas
+			// desactivado (fotogramas dibujados SIN Update). Va antes del clic: aun hay Mi guia abierta.
+			Paso("tooltip: sobre un objeto", TooltipPonerRatonYActualizar);
+			Paso("tooltip: dibujos sin Update", TooltipComprobarDibujosSinUpdate);
+			Paso("tooltip: apartar", TooltipApartarRaton);
+			Paso("tooltip: comprobar que se va", TooltipComprobarQueSeVa);
+			Paso("tooltip: sigue sin dibujarse", TooltipComprobarSinDibujos);
 			Paso("clic en objeto que falta", ClicEnObjetoQueFalta);
 			Esperar(30);
 			Paso("ficha", ComprobarFicha);
@@ -781,6 +788,78 @@ namespace TerrakeepMod.Common.GuiaV2
 				Guia.Ventana?.Cerrar();
 				Guia.CambiarVista(v);
 			}
+		}
+
+		// ---- Parche 0.8.4: tooltip estable con Draw sin Update ----
+		private static ObjetoFilaTk _filaTooltip;
+		private static int _llamadasAntes, _dibujadosAntes;
+		private static Terraria.Enums.FrameSkipMode _saltoAntes;
+		private static bool _forzandoRaton;
+		private static int _ratonX, _ratonY;
+
+		/// <summary>Pisa Main.mouseX/Y justo antes del Draw del panel (mismo patron que
+		/// AutopruebaTooltipPestana.ReafirmarRaton): el tooltip se pinta junto al raton y asi la captura
+		/// lo enseña junto a la fila y no en la esquina.</summary>
+		public static void ReafirmarRaton()
+		{
+			if (_forzandoRaton) { Main.mouseX = _ratonX; Main.mouseY = _ratonY; }
+		}
+
+		private static void TooltipPonerRatonYActualizar()
+		{
+			ObjetoFilaTk fila = null;
+			Guia?.ExecuteRecursively(e => { if (fila == null && e is ObjetoFilaTk f) fila = f; });
+			if (fila == null) { Ok(false, "hay una fila de objeto en Mi guía para probar su tooltip"); return; }
+			_filaTooltip = fila;
+			_saltoAntes = Main.FrameSkipMode;
+			Main.FrameSkipMode = Terraria.Enums.FrameSkipMode.Off;
+			// A partir de aqui el panel solo se DIBUJA: es lo que pasa a mas de 60 FPS con el salto desactivado.
+			PanelTerrakeepState.CongelarActualizacionParaPrueba = true;
+			CalculatedStyle d = fila.GetDimensions();
+			_ratonX = (int)(d.X + d.Width / 2f); _ratonY = (int)(d.Y + d.Height / 2f); _forzandoRaton = true;
+			fila.MouseOver(new UIMouseEvent(fila, new Vector2(_ratonX, _ratonY)));
+			BotonTk.EmpezarActualizacion();
+			fila.Update(new GameTime());
+			_llamadasAntes = BotonTk.LlamadasDeDibujoParaPrueba;
+			_dibujadosAntes = BotonTk.TooltipsDibujadosParaPrueba;
+			Ok(!string.IsNullOrEmpty(BotonTk.TooltipPendienteParaPrueba), "con el ratón sobre \"" + fila.Ref + "\" y un Update, el tooltip queda pedido: \"" +
+				(BotonTk.TooltipPendienteParaPrueba ?? "(null)") + "\" (salto de fotogramas " + Main.FrameSkipMode + ")");
+		}
+
+		private static void TooltipComprobarDibujosSinUpdate()
+		{
+			int llamadas = BotonTk.LlamadasDeDibujoParaPrueba - _llamadasAntes;
+			int dibujados = BotonTk.TooltipsDibujadosParaPrueba - _dibujadosAntes;
+			Ok(llamadas >= 5 && dibujados == llamadas, "el tooltip se dibuja en TODOS los fotogramas sin Update: " + dibujados + " de " + llamadas + " Draw (parpadeo si son menos)");
+			Capturar("tooltip-objeto-sin-update");
+		}
+
+		private static void TooltipApartarRaton()
+		{
+			PanelTerrakeepState.CongelarActualizacionParaPrueba = false;
+			_forzandoRaton = false;
+			Main.mouseX = 2; Main.mouseY = 2;
+			if (_filaTooltip != null) {
+				_filaTooltip.MouseOut(new UIMouseEvent(_filaTooltip, new Vector2(2f, 2f)));
+			}
+			// Se apartan el raton real y el de la fila: el siguiente Update del panel ya no lo vuelve a pedir.
+		}
+
+		private static void TooltipComprobarQueSeVa()
+		{
+			string t = BotonTk.TooltipPendienteParaPrueba;
+			Ok(string.IsNullOrEmpty(t), "al apartar el ratón y volver a actualizar, el tooltip desaparece (queda \"" + (t ?? "(null)") + "\")");
+			_dibujadosAntes = BotonTk.TooltipsDibujadosParaPrueba;
+			_llamadasAntes = BotonTk.LlamadasDeDibujoParaPrueba;
+		}
+
+		private static void TooltipComprobarSinDibujos()
+		{
+			int dibujados = BotonTk.TooltipsDibujadosParaPrueba - _dibujadosAntes;
+			int llamadas = BotonTk.LlamadasDeDibujoParaPrueba - _llamadasAntes;
+			Ok(llamadas >= 5 && dibujados == 0, "con el ratón apartado no se dibuja ningún tooltip: " + dibujados + " dibujados en " + llamadas + " Draw");
+			Main.FrameSkipMode = _saltoAntes;
+			_filaTooltip = null;
 		}
 
 		private static string _refPulsada;

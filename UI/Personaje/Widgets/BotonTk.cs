@@ -526,14 +526,22 @@ namespace TerrakeepMod.UI.Personaje.Widgets
 			_tooltipDeLogica = null;
 		}
 
+		/// <summary>SOLO ARNES DE PRUEBAS: veces que se ha llamado a <see cref="DibujarTooltipPendiente"/>
+		/// (un Draw del panel cada una) y veces que de verdad ha pintado un tooltip. Con el raton quieto
+		/// sobre un enlace de la Guia v2 deben crecer a la par, tambien en fotogramas sin Update.</summary>
+		public static int LlamadasDeDibujoParaPrueba;
+		public static int TooltipsDibujadosParaPrueba;
+
 		public static void DibujarTooltipPendiente(SpriteBatch spriteBatch)
 		{
+			LlamadasDeDibujoParaPrueba++;
 			// El de un DrawSelf (botones) manda; si no hay, el pedido desde Update (Guía v2).
 			string texto = _tooltipPendiente ?? _tooltipDeLogica;
 			_tooltipPendiente = null; // Consumido: si nadie lo vuelve a pedir, no se dibuja nada el fotograma que viene.
 			if (string.IsNullOrEmpty(texto)) {
 				return;
 			}
+			TooltipsDibujadosParaPrueba++;
 
 			CargarTexturas();
 

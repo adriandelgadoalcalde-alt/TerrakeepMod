@@ -129,6 +129,18 @@ tecnología externa al juego.
 
 ## Novedades
 
+### 0.8.4 (7-oct-2026)
+
+Parche del tooltip de la Guía.
+
+- **El tooltip de la Guía ya no parpadea** al pasar el ratón por un objeto, una zona o un enlace (y por las tareas
+  y las filas «Lo que te falta»). Pasaba con el «Salto de fotogramas» del juego en Desactivado: la lógica va a 60
+  por segundo pero se dibuja en cada fotograma, y a más de 60 FPS había fotogramas sin actualización que veían el
+  tooltip ya consumido. Ahora lo pedido desde la actualización dura hasta la siguiente.
+- Canario nuevo en el arnés de la Guía: con el ratón sobre un objeto y 65 fotogramas dibujados sin ninguna
+  actualización, el tooltip se pinta en los 65 (el comportamiento anterior: 1 de 65); al apartar el ratón desaparece.
+- Versión del mod: `0.8.3` → `0.8.4`. Comparte contenido con Terrakeep de escritorio 3.4.2.
+
 ### 0.8.3 (3-oct-2026)
 
 Parche de la cabecera del panel.

@@ -861,8 +861,15 @@ namespace TerrakeepMod.UI.Panel
 			}
 		}
 
+		/// <summary>SOLO ARNES DE PRUEBAS: con true, <see cref="Update"/> no hace nada y el panel solo se
+		/// dibuja - lo que pasa a mas de 60 FPS con el salto de fotogramas desactivado (Draw sin Update).</summary>
+		public static bool CongelarActualizacionParaPrueba;
+
 		public override void Update(GameTime gameTime)
 		{
+			if (CongelarActualizacionParaPrueba) {
+				return;
+			}
 			// Antes de actualizar el arbol: el tooltip de la Guía v2 se vuelve a pedir en cada Update
 			// mientras el raton siga encima (ver BotonTk._tooltipDeLogica).
 			TerrakeepMod.UI.Personaje.Widgets.BotonTk.EmpezarActualizacion();
@@ -1037,6 +1044,7 @@ namespace TerrakeepMod.UI.Panel
 			// entorno sin poner) esta llamada no hace nada.
 			AutopruebaTooltipObjeto.ReafirmarRaton();
 			AutopruebaTooltipPestana.ReafirmarRaton();
+			TerrakeepMod.Common.GuiaV2.AutopruebaGuiaV2.ReafirmarRaton();
 
 			base.Draw(spriteBatch);
 
